@@ -23,6 +23,7 @@
 package org.pentaho.di.connections.vfs;
 
 import org.pentaho.di.connections.ConnectionDetails;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,8 +40,15 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   }
 
   /**
-   * Returns true if vfs connections supports buckets. Defaults to {@code true}
-   * @return true if has buckets, false otherwise
+   * Indicates if the connection has buckets as the first-level folders.
+   * <p>
+   * The buckets of a connection are obtained via {@link VFSConnectionProvider#getLocations(VFSConnectionDetails)}.
+   * Bucket management is done using provider specific means. For example, it is not possible to create a bucket folder
+   * using the {@code KettleVFS} API, as a child of the connection's root folder.
+   * <p>
+   * The default interface implementation returns {@code true}.
+   *
+   * @return {@code true} if the connection supports buckets; {@code false}, otherwise.
    */
   default boolean hasBuckets() {
     return true;
@@ -49,16 +57,14 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   /**
    * Returns true if vfs connection supports root path
    * Defaults to {@code false}.
-   *
    */
-  default boolean isSupportsRootPath() {
+  default boolean isRootPathSupported() {
     return false;
   }
 
   /**
    * Returns true if vfs connection requires root path
    * Defaults to {@code false}.
-   *
    */
   default boolean isRootPathRequired() {
     return false;
@@ -67,14 +73,14 @@ public interface VFSConnectionDetails extends ConnectionDetails {
   /**
    * Gets the root folder path of this VFS connection.
    * <p>
-   * The root folder path allows limiting the files exposed through a <code>pvfs</code> URL.
+   * The root folder path allows limiting the files exposed through a PVFS URL.
    * <p>
    * The default interface implementation exists to ensure backward compatibility and returns {@code null}.
    * <h3>
-   *   Semantics of the Root Folder Path
+   * Semantics of the Root Folder Path
    * </h3>
    * Assume a connection without a configured root folder path, <code>connection-name</code>.
-   * The general structure of a <code>pvfs</code> URL that resolves to a file in this connection is
+   * The general structure of a PVFS URL that resolves to a file in this connection is
    * <code>pvfs://(connection-name)/(rest-path)</code>.
    * If the <code>rest-path</code> component is split in two parts, the root path and the remainder,
    * the following form is achieved: <code>pvfs://(connection-name)/(root-path)/(rest-rest-path)</code>.
@@ -90,7 +96,7 @@ public interface VFSConnectionDetails extends ConnectionDetails {
    * <code>pvfs</code> URL. Folder segments of a <code>pvfs</code> URL cannot have the special names <code>.</code> or
    * <code>..</code>.
    * <h3>
-   *   Syntax of the Root Folder Path
+   * Syntax of the Root Folder Path
    * </h3>
    * The syntax of the root folder path is that of one or more folder names separated by a folder separator,
    * <code>/</code>. For example, the following would be syntactically valid: <code>my-vfs-bucket/my-folder</code>.
@@ -100,7 +106,7 @@ public interface VFSConnectionDetails extends ConnectionDetails {
    * The value stored in this property is subject to variable substitution and thus may not conform to the syntax
    * of a root folder path. The syntax is validated only after variable substitution is performed.
    * <h3>
-   *   Impact of Root Folder Path on Provider URLs
+   * Impact of Root Folder Path on Provider URLs
    * </h3>
    * While omitted from the <code>pvfs</code> URL, the root folder path is incorporated in the <i>provider-specific</i>
    * (a.k.a. internal) URL, as a result of the conversion process from <code>pvfs</code> to <code>provider</code> URL.
@@ -116,7 +122,7 @@ public interface VFSConnectionDetails extends ConnectionDetails {
    * The provider URL structure for specific providers may vary from this general structure. However, the semantics of
    * the root folder path property should be respected.
    * <h3>
-   *   Examples of <code>pvfs</code> and Provider URLs
+   * Examples of <code>pvfs</code> and Provider URLs
    * </h3>
    * Given an S3 connection, with a configured root folder path of <code>my-bucket/my-folder</code>,
    * the <code>pvfs</code> URL, <code>pvfs://my-s3-connection/my-sub-folder/my-file</code>, would convert to the
@@ -128,6 +134,9 @@ public interface VFSConnectionDetails extends ConnectionDetails {
    * <code>hcp://my-domain.com:3000/my-folder/my-sub-folder/my-file</code>.
    *
    * @return A non-empty root path, if any; {@code null}, otherwise.
+   *
+   * @see ConnectionFileNameParser
+   * @see VFSConnectionManagerHelper#getResolvedRootPath(VFSConnectionDetails)
    */
   default String getRootPath() {
     return null;
@@ -150,6 +159,7 @@ public interface VFSConnectionDetails extends ConnectionDetails {
    * <p>
    * Access control does not distinguish between types of access operations (such as read, write, delete).
    * Access is granted to either all or none of the operations.
+   *
    * @return A non-null list of roles.
    */
   default List<String> getBaRoles() {

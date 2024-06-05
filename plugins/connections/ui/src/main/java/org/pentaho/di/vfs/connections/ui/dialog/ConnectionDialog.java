@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.vfs.connections.ui.dialog;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -47,8 +46,6 @@ import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ui.dialog.ConnectionRenameDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
-import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
-import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSDetailsComposite;
 import org.pentaho.di.core.Const;
@@ -69,7 +66,6 @@ import org.pentaho.di.ui.util.HelpUtils;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -315,7 +311,7 @@ public class ConnectionDialog extends Dialog {
 
   private void addRootPathComponent() {
     VFSConnectionDetails vfsConnectionDetails = asVFSConnectionDetails( connectionDetails );
-    if ( vfsConnectionDetails != null && vfsConnectionDetails.isSupportsRootPath() ) {
+    if ( vfsConnectionDetails != null && vfsConnectionDetails.isRootPathSupported() ) {
       Control control = getLastWidgetFromParentComposite( wDetailsWrapperComp );
       Label wlRootPath =  helper.createLabel( wDetailsWrapperComp, SWT.LEFT | SWT.WRAP, "ConnectionDialog.RootFolderPath.Label", control );
       wRootPath = helper.createTextVar( variableSpace, wDetailsWrapperComp, TEXT_VAR_FLAGS, wlRootPath, 0 );
@@ -471,15 +467,9 @@ public class ConnectionDialog extends Dialog {
 
   private void test() {
     if ( validateEntries() ) {
-      boolean result;
       MessageBox mb;
       try {
-        VFSConnectionDetails vfsConnectionDetails = asVFSConnectionDetails( connectionDetails );
-        if ( vfsConnectionDetails != null && vfsConnectionDetails.isSupportsRootPath() ) {
-          result = connectionManager.test( vfsConnectionDetails, new VFSConnectionTestOptions( false ) );
-        } else {
-          result = connectionManager.test( connectionDetails );
-        }
+        boolean result = connectionManager.test( connectionDetails );
         if ( !result ) {
           mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
           mb.setMessage( BaseMessages.getString( PKG, "ConnectionDialog.test.failure" ) );

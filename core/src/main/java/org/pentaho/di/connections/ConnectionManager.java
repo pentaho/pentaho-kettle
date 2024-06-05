@@ -25,10 +25,12 @@ package org.pentaho.di.connections;
 import com.google.common.annotations.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.connections.utils.EncryptUtils;
-import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
 import org.pentaho.di.connections.vfs.VFSConnectionProvider;
+import org.pentaho.di.connections.vfs.VFSConnectionTestOptions;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
@@ -71,8 +73,12 @@ public class ConnectionManager {
   private ConcurrentHashMap<String, ConnectionProvider<? extends ConnectionDetails>> connectionProviders =
     new ConcurrentHashMap<>();
 
-  private Map<String, List<String>> namesByConnectionProvider = new ConcurrentHashMap<>();
-  private Map<String, ConnectionDetails> detailsByName = new ConcurrentHashMap<>();
+  private final Map<String, List<String>> namesByConnectionProvider = new ConcurrentHashMap<>();
+  private final Map<String, ConnectionDetails> detailsByName = new ConcurrentHashMap<>();
+
+  @NonNull
+  private final VFSConnectionManagerHelper vfsConnectionManagerHelper;
+
   private boolean initialized;
 
   private ConnectionManager() {
@@ -80,9 +86,18 @@ public class ConnectionManager {
     this( getMetastoreSupplierUnchecked( DefaultBowl.getInstance() ), DefaultBowl.getInstance() );
   }
 
-  @VisibleForTesting ConnectionManager( @NonNull Supplier<IMetaStore> metaStoreSupplier, @NonNull Bowl bowl ) {
+  @VisibleForTesting
+  ConnectionManager( @NonNull Supplier<IMetaStore> metaStoreSupplier, @NonNull Bowl bowl ) {
+    this( metaStoreSupplier, bowl, VFSConnectionManagerHelper.getInstance() );
+  }
+
+  @VisibleForTesting
+  ConnectionManager( @NonNull Supplier<IMetaStore> metaStoreSupplier,
+                    @NonNull Bowl bowl,
+                    @NonNull VFSConnectionManagerHelper vfsConnectionManagerHelper ) {
     this.metaStoreSupplier = Objects.requireNonNull( metaStoreSupplier );
     this.bowl = Objects.requireNonNull( bowl );
+    this.vfsConnectionManagerHelper = Objects.requireNonNull( vfsConnectionManagerHelper );
   }
 
   @NonNull
@@ -115,7 +130,7 @@ public class ConnectionManager {
   }
 
   /**
-   * Resets the in-memory storage. The next call that needs it will will refresh the connection information from the
+   * Resets the in-memory storage. The next call that needs it will refresh the connection information from the
    * metastore.
    *
    */
@@ -131,7 +146,7 @@ public class ConnectionManager {
   /**
    * This getter should not generally be used because it is limited to the global scope. It would be better to have
    * almost all callers use Bowl.getConnectionManager().
-   *
+   * <p>
    * This instance may still be used to register ConnectionProviders and Lookup Filters.
    *
    * @return ConnectionManager
@@ -200,7 +215,7 @@ public class ConnectionManager {
   @VisibleForTesting
   @NonNull
   Supplier<IMetaStore> getMetastoreSupplier() {
-    return this.metaStoreSupplier;
+    return metaStoreSupplier;
   }
 
   /**
@@ -212,6 +227,18 @@ public class ConnectionManager {
   public Bowl getBowl() {
     return bowl;
   }
+
+  /**
+   * Gets the connection manager helper for VFS connections.
+   * @return A VFS connection manager helper.
+   */
+  @VisibleForTesting
+  @NonNull
+  VFSConnectionManagerHelper getVfsConnectionManagerHelper(  ) {
+    return vfsConnectionManagerHelper;
+  }
+
+  // region Provider
 
   /**
    * Add a key lookup filter
@@ -239,6 +266,10 @@ public class ConnectionManager {
    * @return The connection provider
    */
   public ConnectionProvider<? extends ConnectionDetails> getConnectionProvider( String key ) {
+    if ( key == null ) {
+      return null;
+    }
+
     return connectionProviders.get( getLookupKey( key ) );
   }
 
@@ -257,6 +288,7 @@ public class ConnectionManager {
     }
     return value;
   }
+  // endregion
 
   /**
    * Save a named connection to a specific meta store
@@ -333,37 +365,32 @@ public class ConnectionManager {
   }
 
   /**
-   * Run a test operation on the named connection
+   * Tests if a connection is valid, given its details, with default testing options.
+   * <p>
+   * If the given connection details is a VFS connection, this method delegates to
+   * {@link VFSConnectionManagerHelper#test(ConnectionManager, VFSConnectionDetails, VFSConnectionTestOptions)}.
+   * Otherwise, this method delegates directly to {@link ConnectionProvider#test(ConnectionDetails)}.
    *
-   * @param connectionDetails The named connection details to test
-   * @return A boolean signifying the success of the test operation
+   * @param details The details of the connection to test.
+   * @return {@code true} if the connection is valid; {@code false} otherwise.
    */
   @SuppressWarnings( "unchecked" )
-  public <T extends ConnectionDetails> boolean test( T connectionDetails ) throws KettleException {
-    ConnectionProvider<T> connectionProvider =
-      (ConnectionProvider<T>) connectionProviders.get( connectionDetails.getType() );
-    return connectionProvider.test( connectionDetails );
-  }
-
-  /**
-   * Tests if a given VFS connection is valid, optionally, with certain testing options.
-   *
-   * @param connectionDetails The VFS connection.
-   * @param options The testing options, or {@code null}. When {@code null}, a default instance of
-   *    {@link VFSConnectionTestOptions} is constructed and used.
-   * @return {@code true} if the connection is valid; {@code false}, otherwise.
-   */
-  public <T extends VFSConnectionDetails> boolean test( @NonNull T connectionDetails, @Nullable VFSConnectionTestOptions options )
-          throws KettleException {
-    Objects.requireNonNull( connectionDetails );
-
-    if ( options == null ) {
-     options = new VFSConnectionTestOptions();
+  public <T extends ConnectionDetails> boolean test( @NonNull T details ) throws KettleException {
+    // FIXME: At least Catalog is VFSConnectionDetails but only ConnectionProvider!
+    // Supposedly, as a means to not be browsable by File Open Save Dialog (which only shows VFS providers).
+    // Instead, define VFSConnectionProvider#isBrowsable().
+    ConnectionProvider<T> provider = (ConnectionProvider<T>) connectionProviders.get( details.getType() );
+    if ( provider instanceof VFSConnectionProvider && details instanceof VFSConnectionDetails ) {
+      return vfsConnectionManagerHelper.test( this, (VFSConnectionDetails) details, null );
     }
 
-    VFSConnectionProvider<T> connectionProvider = (VFSConnectionProvider<T>) connectionProviders.get(connectionDetails.getType());
+    // The specified connection details may not exist saved in the meta-store,
+    // but still needs to have a non-empty name in it, to be able to form a temporary PVFS URI.
+    if ( StringUtils.isEmpty( details.getName() ) ) {
+      return false;
+    }
 
-    return connectionProvider.test( connectionDetails, options );
+    return provider.test( details );
   }
 
   /**
@@ -422,14 +449,16 @@ public class ConnectionManager {
   /**
    * Get a list of connection providers by type
    *
-   * @param clazz The type of provider to filter by
+   * @param providerClass The type of provider to filter by
    * @return A list of connection providers
    */
   public List<ConnectionProvider<? extends ConnectionDetails>> getProvidersByType(
-    Class<? extends ConnectionProvider> clazz ) {
-    return Collections.list( connectionProviders.elements() ).stream().filter(
-      connectionProvider -> clazz.isAssignableFrom( connectionProvider.getClass() )
-    ).collect( Collectors.toList() );
+    Class<? extends ConnectionProvider> providerClass ) {
+
+    return Collections.list( connectionProviders.elements() )
+      .stream()
+      .filter( provider -> providerClass.isAssignableFrom( provider.getClass() ) )
+      .collect( Collectors.toList() );
   }
 
   /**
@@ -536,21 +565,19 @@ public class ConnectionManager {
   /**
    * Get the names of named connection by connection provider type
    *
-   * @param clazz The connection provider type
+   * @param providerClass The connection provider type
    * @return A list of named connection names
    */
-  public List<String> getNamesByType( Class<? extends ConnectionProvider> clazz ) {
+  public <T extends ConnectionProvider<?>> List<String> getNamesByType( Class<T> providerClass ) {
     List<String> detailNames = new ArrayList<>();
-    List<ConnectionProvider<? extends ConnectionDetails>> providers =
-      Collections.list( connectionProviders.elements() ).stream().filter(
-        connectionProvider -> clazz.isAssignableFrom( connectionProvider.getClass() )
-      ).collect( Collectors.toList() );
-    for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
+
+    for ( ConnectionProvider<? extends ConnectionDetails> provider : getProvidersByType( providerClass ) ) {
       List<String> names = getNames( provider );
       if ( names != null) {
         detailNames.addAll( names );
       }
     }
+
     return detailNames;
   }
 
@@ -620,6 +647,46 @@ public class ConnectionManager {
   public ConnectionDetails getConnectionDetails( String name ) {
     initialize();
     return detailsByName.get( name );
+  }
+
+  /* The following are sugar methods: `getDetails` and `getExistingDetails`. These perform casting of the result to the
+   * caller's result type. This removes the need for a lot of helper methods or casting code with unchecked warnings
+   * proliferating out there. The variant which assumes existence, returns non-null or throws, also adds to usage.
+   * Regarding the name simplification, from `getConnectionDetails` to `getDetails`, this is because changing the
+   * original `getConnectionDetails` signature to have a generic return type would be a breaking change. Also, arguably,
+   * in this context, it's clear that "details" and "provider" are of connections.
+   */
+
+  /**
+   * Gets a connection given its name, casting it to the type parameter.
+   *
+   * @param name The connection name
+   * @return The named connection details
+   */
+  @SuppressWarnings( "unchecked" )
+  @Nullable
+  public <T extends ConnectionDetails> T getDetails( @Nullable String name ) {
+    return (T) getConnectionDetails( name );
+  }
+
+  /**
+   * Gets the details of a connection, given its name, casting it to the type parameter,
+   * and throwing if it does not exist.
+   *
+   * @param name The connection name
+   * @return The named connection details
+   * @throws KettleException When a connection with the given name is not defined.
+   */
+  @NonNull
+  public <T extends ConnectionDetails> T getExistingDetails( @Nullable String name )
+    throws KettleException {
+
+    T details = getDetails( name );
+    if ( details == null ) {
+      throw new KettleException( String.format( "Undefined connection '%s'.", name ) );
+    }
+
+    return details;
   }
 
   /**
@@ -756,12 +823,26 @@ public class ConnectionManager {
    * @return A list of value/label pairs of named connection types
    */
   public List<Type> getItems() {
+    return getItemsByType( null );
+  }
+
+  /**
+   * Get a list of value/label pairs of named connection types, optionally filtered to be of a given provider class.
+   *
+   * @param providerClass The provider class; when {@code null}, all providers are returned.
+   * @return A list of value/label pairs of named connection types.
+   */
+  public <T extends ConnectionProvider<?>> List<Type> getItemsByType( @Nullable Class<T> providerClass ) {
+
     List<Type> types = new ArrayList<>();
-    List<ConnectionProvider<? extends ConnectionDetails>> providers =
-      Collections.list( connectionProviders.elements() );
-    for ( ConnectionProvider provider : providers ) {
-      types.add( new ConnectionManager.Type( provider.getKey(), provider.getName() ) );
+
+    List<ConnectionProvider<?>> providers = Collections.list( connectionProviders.elements() );
+    for ( ConnectionProvider<?> provider : providers ) {
+      if ( providerClass == null || providerClass.isAssignableFrom( provider.getClass() ) ) {
+        types.add( new ConnectionManager.Type( provider.getKey(), provider.getName() ) );
+      }
     }
+
     return types;
   }
 

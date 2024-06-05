@@ -22,7 +22,10 @@
 
 package org.pentaho.di.connections.vfs.provider;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.commons.vfs2.FileContent;
+import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.FileSystemException;
@@ -31,93 +34,112 @@ import org.apache.commons.vfs2.RandomAccessContent;
 import org.apache.commons.vfs2.operations.FileOperations;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
-import org.apache.commons.vfs2.provider.URLFileName;
 import org.apache.commons.vfs2.util.RandomAccessMode;
 import org.pentaho.di.core.vfs.AliasedFileObject;
-import org.pentaho.di.core.vfs.KettleVFS;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * The FileObject implementation for the PVFS (Pentaho VFS) vfs provider.
- *
- * The purpose of ConnectionFileObject is to represent a named connection FileObject. ConnectionFileObject holds a
- * reference to the resolved FileObject and delegates metadata calls to that reference object, but for other calls, such
- * as getChildren, ConnectionFileObject resolves the child FileObjects, but converts them to pvfs FileObjects to
- * maintain named connection information.
+ * The abstract base {@link FileObject} implementation for the PVFS (Pentaho VFS) VFS provider.
+ * <p>
+ * The purpose of {@code ConnectionFileObject} is to represent a named connection {@code FileObject}.
+ * {@code ConnectionFileObject} holds a reference to the resolved {@code ConnectionFileObject} and delegates metadata
+ * calls to that reference object, but for other calls, such as getChildren, {@code ConnectionFileObject} resolves the
+ * child file objects, but converts them to PVFS file objects to maintain named connection information.
+ * <p>
+ * The various subclasses clarify the cases for which connection file objects and {@link ConnectionFileName} are used,
+ * as well as allow providing more precise error messages to the user
+ * (see {@link ConnectionFileObject#requireResolvedFileObject()}).
+ * The subclasses are:
+ * <ul>
+ *   <li>{@link PvfsRootFileObject}</li>
+ *   <li>{@link UndefinedConnectionFileObject}</li>
+ *   <li>{@link ConnectionWithBucketsRootFileObject}</li>
+ *   <li>{@link ResolvedConnectionFileObject}</li>
+ * </ul>
+ * The de facto factory of connection file objects is the method
+ * {@link ConnectionFileSystem#createFile(AbstractFileName)}.
  */
-public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSystem> implements AliasedFileObject {
+@SuppressWarnings( "resource" )
+public abstract class ConnectionFileObject extends AbstractFileObject<ConnectionFileSystem>
+  implements AliasedFileObject {
 
-  public static final String DELIMITER = "/";
-  private final AbstractFileObject<ConnectionFileSystem> resolvedFileObject;
-  private final String domain;
+  @NonNull
+  public static final String DELIMITER = FileName.SEPARATOR;
 
-  public ConnectionFileObject( AbstractFileName name, ConnectionFileSystem fs,
-                               AbstractFileObject<ConnectionFileSystem> resolvedFileObject,
-                               String domain ) {
+  protected ConnectionFileObject( @NonNull ConnectionFileName name, @NonNull ConnectionFileSystem fs ) {
     super( name, fs );
-    this.resolvedFileObject = resolvedFileObject;
-    this.domain = domain;
   }
 
-  @Override protected long doGetContentSize() throws Exception {
+  @Override
+  public ConnectionFileName getName() {
+    return (ConnectionFileName) super.getName();
+  }
+
+  @Override
+  protected long doGetContentSize() throws Exception {
     return 0;
   }
 
-  @Override protected InputStream doGetInputStream() throws Exception {
+  @Override
+  protected InputStream doGetInputStream() throws Exception {
     return null;
   }
 
-  @Override protected FileType doGetType() throws Exception {
+  @Override
+  protected FileType doGetType() throws Exception {
     return null;
   }
 
-  @Override protected String[] doListChildren() throws Exception {
+  @Override
+  protected String[] doListChildren() throws Exception {
     return new String[ 0 ];
   }
 
-  @Override public boolean canRenameTo( FileObject newfile ) {
-    return resolvedFileObject.canRenameTo( newfile );
+  @Override
+  public void close() throws FileSystemException {
+    requireResolvedFileObject().close();
   }
 
-  @Override public void close() throws FileSystemException {
-    resolvedFileObject.close();
+  @Override
+  public void copyFrom( FileObject file, FileSelector selector ) throws FileSystemException {
+    requireResolvedFileObject().copyFrom( file, selector );
   }
 
-  @Override public void copyFrom( FileObject file, FileSelector selector ) throws FileSystemException {
-    resolvedFileObject.copyFrom( file, selector );
+  @Override
+  public void createFile() throws FileSystemException {
+    requireResolvedFileObject().createFile();
   }
 
-  @Override public void createFile() throws FileSystemException {
-    resolvedFileObject.createFile();
+  @Override
+  public void createFolder() throws FileSystemException {
+    requireResolvedFileObject().createFolder();
   }
 
-  @Override public void createFolder() throws FileSystemException {
-    resolvedFileObject.createFolder();
+  @Override
+  public boolean delete() throws FileSystemException {
+    return requireResolvedFileObject().delete();
   }
 
-  @Override public boolean delete() throws FileSystemException {
-    return resolvedFileObject.delete();
+  @Override
+  public int delete( FileSelector selector ) throws FileSystemException {
+    return requireResolvedFileObject().delete( selector );
   }
 
-  @Override public int delete( FileSelector selector ) throws FileSystemException {
-    return resolvedFileObject.delete( selector );
+  @Override
+  public int deleteAll() throws FileSystemException {
+    return requireResolvedFileObject().deleteAll();
   }
 
-  @Override public int deleteAll() throws FileSystemException {
-    return resolvedFileObject.deleteAll();
-  }
+  @Nullable
+  @Override
+  public FileObject getChild( String name ) throws FileSystemException {
+    // Returns null if not found.
+    @Nullable
+    FileObject resolvedChildFileObject = requireResolvedFileObject().getChild( name );
 
-  @Override public boolean exists() throws FileSystemException {
-    if ( resolvedFileObject == null ) {
-      return false;
-    }
-    return resolvedFileObject.exists();
-  }
-
-  @Override public FileObject getChild( String name ) throws FileSystemException {
-    return getChild( resolvedFileObject.getChild( name ) );
+    return resolvedChildFileObject != null ? createChild( resolvedChildFileObject ) : null;
   }
 
   /**
@@ -126,120 +148,87 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
    * @return File objects with PVFS scheme
    * @throws FileSystemException File doesn't exist
    */
-  @Override public FileObject[] getChildren() throws FileSystemException {
-    FileObject[] resolvedChildren = resolvedFileObject.getChildren();
-    FileObject[] children = new FileObject[ resolvedChildren.length ];
-    for ( int i = 0; i < resolvedChildren.length; i++ ) {
-      children[ i ] = getChild( resolvedChildren[ i ] );
+  @Override
+  public FileObject[] getChildren() throws FileSystemException {
+    FileObject[] providerChildren = requireResolvedFileObject().getChildren();
+    FileObject[] children = new FileObject[ providerChildren.length ];
+    for ( int i = 0; i < providerChildren.length; i++ ) {
+      children[ i ] = createChild( providerChildren[ i ] );
     }
+
     return children;
   }
 
   /**
-   * Convert resolved file object to PVFS scheme
+   * Convert child provider file object to a child PVFS file object.
    *
-   * @param fileObject The resolve FileObject
-   * @return PVFS scheme FileObject
+   * @param childProviderFileObject The child provider FileObject.
+   * @return The child PVFS FileObject.
    * @throws FileSystemException File doesn't exist
    */
-  private FileObject getChild( FileObject fileObject ) throws FileSystemException {
-    String connectionName = ( (ConnectionFileName) this.getName() ).getConnection();
-    StringBuilder connectionPath = new StringBuilder();
-    connectionPath.append( ConnectionFileProvider.SCHEME );
-    connectionPath.append( "://" );
-    connectionPath.append( connectionName );
-    connectionPath.append( DELIMITER );
-    if ( domain == null || domain.equals( "" ) ) {
-      // S3 does not return a URLFleName; but Google does hence the difference here
-      if ( fileObject.getName() instanceof URLFileName ) {
-        URLFileName urlFileName = (URLFileName) fileObject.getName();
-        connectionPath.append( urlFileName.getHostName() );
-      } else {
-        connectionPath.append( fileObject.getURL().getHost() );
-      }
-    }
-    connectionPath.append( fileObject.getName().getPath() );
-
-    return this.resolveFile( connectionPath.toString() );
+  @NonNull
+  protected FileObject createChild( @NonNull FileObject childProviderFileObject ) throws FileSystemException {
+    return getAbstractFileSystem().createChild( this, childProviderFileObject );
   }
 
-  @Override public FileContent getContent() throws FileSystemException {
-    return resolvedFileObject.getContent();
+  @Override
+  public FileContent getContent() throws FileSystemException {
+    return requireResolvedFileObject().getContent();
   }
 
-  @Override public FileOperations getFileOperations() throws FileSystemException {
-    return resolvedFileObject.getFileOperations();
+  @Override
+  public FileOperations getFileOperations() throws FileSystemException {
+    return requireResolvedFileObject().getFileOperations();
   }
 
-  @Override public InputStream getInputStream() throws FileSystemException {
-    return resolvedFileObject.getInputStream();
+  @Override
+  public InputStream getInputStream() throws FileSystemException {
+    return requireResolvedFileObject().getInputStream();
   }
 
-  @Override public OutputStream getOutputStream() throws FileSystemException {
-    return resolvedFileObject.getOutputStream();
+  @Override
+  public OutputStream getOutputStream() throws FileSystemException {
+    return requireResolvedFileObject().getOutputStream();
   }
 
-  @Override public OutputStream getOutputStream( boolean bAppend ) throws FileSystemException {
-    return resolvedFileObject.getOutputStream( bAppend );
+  @Override
+  public OutputStream getOutputStream( boolean bAppend ) throws FileSystemException {
+    return requireResolvedFileObject().getOutputStream( bAppend );
   }
 
-  @Override public RandomAccessContent getRandomAccessContent( RandomAccessMode mode ) throws FileSystemException {
-    return resolvedFileObject.getRandomAccessContent( mode );
+  @Override
+  public RandomAccessContent getRandomAccessContent( RandomAccessMode mode ) throws FileSystemException {
+    return requireResolvedFileObject().getRandomAccessContent( mode );
   }
 
-  @Override public FileType getType() throws FileSystemException {
-    return resolvedFileObject.getType();
+  @Override
+  public void moveTo( FileObject destFile ) throws FileSystemException {
+    requireResolvedFileObject().moveTo( destFile );
   }
 
-  @Override public void holdObject( Object strongRef ) {
-    resolvedFileObject.holdObject( strongRef );
+  @Override
+  public void refresh() throws FileSystemException {
+    requireResolvedFileObject().refresh();
   }
 
-  @Override public boolean isAttached() {
-    return resolvedFileObject.isAttached();
-  }
+  /**
+   * Gets the resolved file object.
+   * @return The resolved file object, if one is available; {@code null}, otherwise.
+   */
+  @Nullable
+  public abstract FileObject getResolvedFileObject();
 
-  @Override public boolean isContentOpen() {
-    return resolvedFileObject.isContentOpen();
-  }
-
-  @Override public boolean isExecutable() throws FileSystemException {
-    return resolvedFileObject.isExecutable();
-  }
-
-  @Override public boolean isFile() throws FileSystemException {
-    return resolvedFileObject.isFile();
-  }
-
-  @Override public boolean isFolder() throws FileSystemException {
-    return resolvedFileObject.isFolder();
-  }
-
-  @Override public boolean isHidden() throws FileSystemException {
-    return resolvedFileObject.isHidden();
-  }
-
-  @Override public boolean isReadable() throws FileSystemException {
-    return resolvedFileObject.isReadable();
-  }
-
-  @Override public boolean isWriteable() throws FileSystemException {
-    return resolvedFileObject.isWriteable();
-  }
-
-  @Override public void moveTo( FileObject destFile ) throws FileSystemException {
-    resolvedFileObject.moveTo( destFile );
-  }
-
-  @Override public void refresh() throws FileSystemException {
-    if ( resolvedFileObject != null ) {
-      resolvedFileObject.refresh();
-    }
-  }
-
-  public FileObject getResolvedFileObject() {
-    return resolvedFileObject;
-  }
+  // see also BACKLOG-40732
+  /**
+   * Gets the resolved file object, throwing if it is not available.
+   * <p>
+   * Implementers of this method should throw an exception that makes it clear the reason for a resolved file object
+   * not being available, such as being the PVFS root or an undefined connection.
+   *
+   * @return The resolved file object.
+   */
+  @NonNull
+  protected abstract AbstractFileObject<?> requireResolvedFileObject() throws FileSystemException;
 
   @Override
   public String getOriginalURIString() {
@@ -248,6 +237,8 @@ public class ConnectionFileObject extends AbstractFileObject<ConnectionFileSyste
 
   @Override
   public String getAELSafeURIString() {
-    return resolvedFileObject.getPublicURIString().replaceFirst( "s3://", "s3a://" );
+    throw new UnsupportedOperationException( String.format(
+      "This connection file object does not support this operation: '%s'",
+      this.getOriginalURIString() ) );
   }
 }
