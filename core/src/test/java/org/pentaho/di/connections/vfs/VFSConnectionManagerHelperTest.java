@@ -408,11 +408,11 @@ public class VFSConnectionManagerHelperTest {
   }
 
   @Test
-  public void testTestReturnsTrueWhenRootPathInvalidAndOptionsToIgnoreRootPath() throws KettleException {
+  public void testTestReturnsTrueWhenRootPathInvalidAndOptionsToRootPathIgnored() throws KettleException {
 
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "../invalid" );
 
-    assertTrue( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsIgnoreRootPath() ) );
+    assertTrue( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsRootPathIgnored() ) );
   }
 
   @Test
@@ -514,7 +514,7 @@ public class VFSConnectionManagerHelperTest {
   }
 
   @NonNull
-  private static VFSConnectionTestOptions getTestOptionsIgnoreRootPath() {
+  private static VFSConnectionTestOptions getTestOptionsRootPathIgnored() {
     return new VFSConnectionTestOptions( true );
   }
   // endregion

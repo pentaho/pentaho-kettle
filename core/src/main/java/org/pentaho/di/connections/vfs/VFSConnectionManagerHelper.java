@@ -300,7 +300,7 @@ public class VFSConnectionManagerHelper {
    * immediately returning {@code false}, when unsuccessful.
    * <p>
    * When base validation is successful, if {@code options} has a {@code true}
-   * {@link VFSConnectionTestOptions#isIgnoreRootPath()}, this method should immediately return {@code true}.
+   * {@link VFSConnectionTestOptions#isRootPathIgnored()}, this method should immediately return {@code true}.
    * <p>
    * Otherwise, the method should validate that the connection's root folder path is valid, taking into account the
    * values of {@link VFSConnectionDetails#isRootPathSupported()}, {@link VFSConnectionDetails#isRootPathRequired()} and
@@ -332,7 +332,7 @@ public class VFSConnectionManagerHelper {
       return false;
     }
 
-    if ( !details.isRootPathSupported() || options.isIgnoreRootPath() ) {
+    if ( !details.isRootPathSupported() || options.isRootPathIgnored() ) {
       return true;
     }
 
