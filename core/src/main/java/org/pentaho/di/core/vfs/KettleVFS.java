@@ -123,8 +123,8 @@ public class KettleVFS {
    * hashcode() to make this work.
    *
    * It is also critical that there is only one ConnectionManager for a given Bowl. Anything that needs a
-   * ConnectionManager (especially including VFS code) should only use Bowl.getConnectionManager() to ensure there is a
-   * single instance per bowl.
+   * ConnectionManager (especially including VFS code) should only Bowl.getManager( ConnectionManager.class ) to ensure
+   * there is a single instance per bowl.
    *
    * @param bowl the bowl for the current context
    * @return IKettleVFS The API for file operations.

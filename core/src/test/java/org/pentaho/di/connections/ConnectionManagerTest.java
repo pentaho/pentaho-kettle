@@ -92,7 +92,8 @@ public class ConnectionManagerTest {
   public void setup() throws Exception {
     bowl = mock( Bowl.class );
     memoryMetaStore = new MemoryMetaStore();
-    connectionManager = new ConnectionManager( () -> memoryMetaStore, bowl );
+    when( bowl.getMetastore() ).thenReturn( memoryMetaStore );
+    connectionManager = new ConnectionManager( bowl );
   }
 
   @Test
@@ -112,11 +113,12 @@ public class ConnectionManagerTest {
   }
 
   @Test
-  public void testGetInstanceOfBowlRespectsGivenBowlAndMetaStore() {
+  public void testGetInstanceOfBowlRespectsGivenBowlAndMetaStore() throws Exception {
     IMetaStore metaStore = mock( IMetaStore.class );
     Bowl bowl = mock( Bowl.class );
+    when( bowl.getMetastore() ).thenReturn( metaStore );
 
-    ConnectionManager adhocConnectionManager = ConnectionManager.getInstance( () -> metaStore, bowl );
+    ConnectionManager adhocConnectionManager = ConnectionManager.getInstance( bowl );
 
     assertSame( bowl, adhocConnectionManager.getBowl() );
     assertSame( metaStore, adhocConnectionManager.getMetastoreSupplier().get() );
@@ -141,6 +143,32 @@ public class ConnectionManagerTest {
         .getConnectionDetails( TestConnectionProvider.SCHEME, CONNECTION_NAME );
     Assert.assertEquals( CONNECTION_NAME, testConnectionDetails1.getName() );
   }
+
+  @Test
+  public void testSubscribers() {
+
+    class MyConnectionUpdateSubscriber implements ConnectionUpdateSubscriber {
+        boolean called = false;
+
+        public void notifyChanged() {
+          called = true;
+        }
+      };
+    MyConnectionUpdateSubscriber sub = new MyConnectionUpdateSubscriber();
+
+    connectionManager.addSubscriber( sub );
+    addOne();
+    Assert.assertTrue( sub.called );
+
+    sub.called = false;
+    connectionManager.delete( CONNECTION_NAME );
+    Assert.assertTrue( sub.called );
+
+    sub.called = false;
+    connectionManager.reset();
+    Assert.assertTrue( sub.called );
+  }
+
 
   @Test
   public void testEncryptedField() throws Exception {

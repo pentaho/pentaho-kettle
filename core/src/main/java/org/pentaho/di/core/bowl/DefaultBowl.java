@@ -17,6 +17,7 @@
 package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.IMetaStore;
@@ -42,35 +43,26 @@ public class DefaultBowl extends BaseBowl {
     return INSTANCE;
   }
 
-
-  @Override
-  public IMetaStore getExplicitMetastore() throws MetaStoreException {
-    return metastoreSupplier.get();
-  }
-
   @Override
   public IMetaStore getMetastore() throws MetaStoreException {
     return metastoreSupplier.get();
   }
 
-
   @Override
-  public ConnectionManager getConnectionManager() throws MetaStoreException {
-    // need to override getConnectionManager so this instance of DefaultBowl shares the same ConnectionManager
+  public <T> T getManager( Class<T> managerClass) throws KettleException {
+    // need to override getManager so this instance of DefaultBowl shares the same ConnectionManager
     // instance with ConnectionManager.getInstance()
-    if ( customSupplier ) {
-      return super.getConnectionManager();
+    if ( managerClass == ConnectionManager.class && !customSupplier ) {
+      return managerClass.cast( ConnectionManager.getInstance() );
     } else {
-      return ConnectionManager.getInstance();
+      return super.getManager( managerClass );
     }
   }
 
-  @Override
-  public ConnectionManager getExplicitConnectionManager() throws MetaStoreException {
-    return getConnectionManager();
-  }
-
-
+  /**
+   * Set a specific metastore supplier for use by later calls to this class. Note that this will cause the
+   * ConnectionManager from this class and from ConnectionManager.getInstance() to return different instances.
+   */
   @VisibleForTesting
   public void setMetastoreSupplier( Supplier<IMetaStore> metastoreSupplier ) {
     this.metastoreSupplier = metastoreSupplier;

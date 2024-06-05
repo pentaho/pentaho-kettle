@@ -85,7 +85,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     String connectionName = ( (ConnectionFileName) abstractFileName ).getConnection();
     Bowl bowl = KettleGenericFileSystemConfigBuilder.getInstance().getBowl( getFileSystemOptions() );
     VFSConnectionDetails connectionDetails =
-      (VFSConnectionDetails) bowl.getConnectionManager().getConnectionDetails( connectionName );
+      (VFSConnectionDetails) bowl.getManager( ConnectionManager.class ).getConnectionDetails( connectionName );
     FileSystemOptions opts = super.getFileSystemOptions();
     IKettleFileSystemConfigBuilder configBuilder = KettleFileSystemConfigBuilderFactory.getConfigBuilder
       ( new Variables(), ConnectionFileProvider.SCHEME );
