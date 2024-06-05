@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -56,11 +56,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-@RunWith( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class ActiveMQProviderTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Mock LogChannelInterfaceFactory logChannelFactory;
@@ -99,8 +100,8 @@ public class ActiveMQProviderTest {
   public void setUp() {
     KettleLogStore.setLogChannelInterfaceFactory( logChannelFactory );
     doReturn( LogLevel.BASIC ).when( logChannel ).getLogLevel();
-    when( logChannelFactory.create( any(), any() ) ).thenReturn( logChannel );
-    when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
+    lenient().when( logChannelFactory.create( any(), any() ) ).thenReturn( logChannel );
+    lenient().when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
   }
 
   @Test public void testFullCircle() throws KettleException, InterruptedException, TimeoutException,

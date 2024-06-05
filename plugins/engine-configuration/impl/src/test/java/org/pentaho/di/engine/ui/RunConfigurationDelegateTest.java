@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -24,22 +24,15 @@
 
 package org.pentaho.di.engine.ui;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
-
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -51,36 +44,38 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.ui.spoon.Spoon;
 
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
   * @author Luis Martins (16-Feb-2018)
   */
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( { Spoon.class, ExtensionPointHandler.class, RunConfigurationDelegate.class } )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class RunConfigurationDelegateTest {
 
   private Spoon spoon;
   private RunConfigurationService service;
   private RunConfigurationDelegate delegate;
+  private MockedStatic<Spoon> mockedSpoon;
 
   @Before
   public void setup() {
     spoon = mock( Spoon.class );
     doReturn( mock( Shell.class ) ).when( spoon ).getShell();
 
-    PowerMockito.mockStatic( Spoon.class );
+    mockedSpoon = mockStatic( Spoon.class );
     when( Spoon.getInstance() ).thenReturn( spoon );
 
     delegate = spy( new RunConfigurationDelegate() );
@@ -88,11 +83,13 @@ public class RunConfigurationDelegateTest {
     delegate.setRunConfigurationManager( service );
   }
 
+  @After
+  public void teardown() {
+    mockedSpoon.close();
+  }
+
   @Test
   public void testCreate() throws Exception {
-    RunConfigurationDialog dialog = mock( RunConfigurationDialog.class );
-    whenNew( RunConfigurationDialog.class ).withAnyArguments().thenReturn( dialog );
-
     List<String> list = new ArrayList<>();
     list.add( "Configuration 1" );
 
@@ -101,49 +98,48 @@ public class RunConfigurationDelegateTest {
     config.setServer( "localhost" );
 
     doReturn( list ).when( service ).getNames();
-    doReturn( config ).when( dialog ).open();
 
-    delegate.create();
+    try ( MockedConstruction<RunConfigurationDialog> mockedConfDialog = mockConstruction( RunConfigurationDialog.class,
+      (mock, context) -> when( mock.open() ).thenReturn( config ) ) ) {
+      delegate.create();
 
-    verify( service, times( 1 ) ).save( config );
-    verify( spoon, times( 1 ) ).refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
+      verify( service, times( 1 ) ).save( config );
+      verify( spoon, times( 1 ) ).refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
+    }
   }
 
   @Test
   public void testDelete() throws Exception {
-    RunConfigurationDeleteDialog dialog = mock( RunConfigurationDeleteDialog.class );
-    whenNew( RunConfigurationDeleteDialog.class ).withAnyArguments().thenReturn( dialog );
-
     DefaultRunConfiguration config = new DefaultRunConfiguration();
     config.setName( "Test" );
     config.setServer( "localhost" );
 
-    doReturn( SWT.YES ).when( dialog ).open();
+    try ( MockedConstruction<RunConfigurationDeleteDialog> mockedConfDialog = mockConstruction( RunConfigurationDeleteDialog.class,
+      (mock, context) -> when( mock.open() ).thenReturn( SWT.YES ) ) ) {
+      delegate.delete( config );
 
-    delegate.delete( config );
-
-    verify( service, times( 1 ) ).delete( "Test" );
-    verify( spoon, times( 1 ) ).refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
+      verify( service, times( 1 ) ).delete( "Test" );
+      verify( spoon, times( 1 ) ).refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
+    }
   }
 
   @Test
   public void testEdit() throws Exception {
-    RunConfigurationDialog dialog = mock( RunConfigurationDialog.class );
-    whenNew( RunConfigurationDialog.class ).withAnyArguments().thenReturn( dialog );
-
     DefaultRunConfiguration config = new DefaultRunConfiguration();
     config.setName( "Test" );
     config.setServer( "localhost" );
 
-    doReturn( config ).when( dialog ).open();
     doNothing().when( delegate ).updateLoadedJobs( "Test", config );
 
-    delegate.edit( config );
+    try ( MockedConstruction<RunConfigurationDialog> mockedConfDialog = mockConstruction( RunConfigurationDialog.class,
+      (mock, context) -> when( mock.open() ).thenReturn( config ) ) ) {
+      delegate.edit( config );
 
-    verify( delegate, times( 1 ) ).updateLoadedJobs( "Test", config );
-    verify( service, times( 1 ) ).delete( "Test" );
-    verify( service, times( 1 ) ).save( config );
-    verify( spoon, times( 1 ) ).refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
+      verify( delegate, times( 1 ) ).updateLoadedJobs( "Test", config );
+      verify( service, times( 1 ) ).delete( "Test" );
+      verify( service, times( 1 ) ).save( config );
+      verify( spoon, times( 1 ) ).refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
+    }
   }
 
   @Test
@@ -192,11 +188,11 @@ public class RunConfigurationDelegateTest {
     LogChannelInterface log = mock( LogChannelInterface.class );
     doReturn( log ).when( spoon ).getLog();
 
-    PowerMockito.mockStatic( ExtensionPointHandler.class );
-    PowerMockito.when( ExtensionPointHandler.class, "callExtensionPoint", any(), any(), any() ).thenThrow( KettleException.class );
+    try ( MockedStatic<ExtensionPointHandler> mockedHandler = mockStatic( ExtensionPointHandler.class ) ) {
+      mockedHandler.when( () -> ExtensionPointHandler.callExtensionPoint( any(), any(), any() ) ).thenThrow( KettleException.class );
+      delegate.updateLoadedJobs( "key", config );
 
-    delegate.updateLoadedJobs( "key", config );
-
-    verify( log, times( 1 ) ).logBasic( any() );
+      verify( log, times( 1 ) ).logBasic( any() );
+    }
   }
 }

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2020-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2020-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
@@ -43,13 +43,14 @@ import org.pentaho.di.job.entry.JobEntryRunConfigurableInterface;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class RunConfigurationSaveExtensionPointTest {
 
   private static final int JOB_ENTRY_COUNT = 10;
@@ -67,8 +68,8 @@ public class RunConfigurationSaveExtensionPointTest {
     for ( int i = 0; i < JOB_ENTRY_COUNT; i++ ) {
       String configurationName = RUN_CONFIGURATION + i;
       RunConfiguration runConfiguration = mock( RunConfiguration.class );
-      when( runConfiguration.getName() ).thenReturn( configurationName );
-      when( runConfigurationManager.load( configurationName ) ).thenReturn( runConfiguration );
+      lenient().when( runConfiguration.getName() ).thenReturn( configurationName );
+      lenient().when( runConfigurationManager.load( configurationName ) ).thenReturn( runConfiguration );
     }
   }
 
