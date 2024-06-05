@@ -124,7 +124,7 @@ public class DefaultVFSConnectionFileNameTransformer<T extends VFSConnectionDeta
   protected void appendProviderUriRootPath( @NonNull StringBuilder providerUriBuilder, @NonNull T details )
     throws KettleException {
 
-    if ( details.isSupportsRootPath() ) {
+    if ( details.isRootPathSupported() ) {
       // Root path is assumed to already be percent-encoded according to the rules of the specific
       // file/connection provider.
       connectionFileNameUtils

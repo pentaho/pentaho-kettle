@@ -311,7 +311,7 @@ public class ConnectionDialog extends Dialog {
 
   private void addRootPathComponent() {
     VFSConnectionDetails vfsConnectionDetails = asVFSConnectionDetails( connectionDetails );
-    if ( vfsConnectionDetails != null && vfsConnectionDetails.isSupportsRootPath() ) {
+    if ( vfsConnectionDetails != null && vfsConnectionDetails.isRootPathSupported() ) {
       Control control = getLastWidgetFromParentComposite( wDetailsWrapperComp );
       Label wlRootPath =  helper.createLabel( wDetailsWrapperComp, SWT.LEFT | SWT.WRAP, "ConnectionDialog.RootFolderPath.Label", control );
       wRootPath = helper.createTextVar( variableSpace, wDetailsWrapperComp, TEXT_VAR_FLAGS, wlRootPath, 0 );

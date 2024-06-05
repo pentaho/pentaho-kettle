@@ -58,7 +58,7 @@ public interface VFSConnectionDetails extends ConnectionDetails {
    * Returns true if vfs connection supports root path
    * Defaults to {@code false}.
    */
-  default boolean isSupportsRootPath() {
+  default boolean isRootPathSupported() {
     return false;
   }
 

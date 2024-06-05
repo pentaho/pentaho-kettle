@@ -101,7 +101,7 @@ public class VFSConnectionManagerHelperTest {
     vfsConnectionDetails = mock( VFSConnectionDetails.class );
     when( vfsConnectionDetails.getName() ).thenReturn( TEST_CONNECTION_NAME );
     when( vfsConnectionDetails.getType() ).thenReturn( TEST_CONNECTION_TYPE );
-    when( vfsConnectionDetails.isSupportsRootPath() ).thenReturn( true );
+    when( vfsConnectionDetails.isRootPathSupported() ).thenReturn( true );
     when( vfsConnectionDetails.isRootPathRequired() ).thenReturn( true );
     when( vfsConnectionDetails.getRootPath() ).thenReturn( TEST_ROOT_PATH );
     when( vfsConnectionDetails.getSpace() ).thenReturn( space );
@@ -400,7 +400,7 @@ public class VFSConnectionManagerHelperTest {
   @Test
   public void testTestReturnsTrueWhenRootPathInvalidAndConnectionDoesNotSupportRootPath() throws KettleException {
 
-    when( vfsConnectionDetails.isSupportsRootPath() ).thenReturn( false );
+    when( vfsConnectionDetails.isRootPathSupported() ).thenReturn( false );
 
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "../invalid" );
 
