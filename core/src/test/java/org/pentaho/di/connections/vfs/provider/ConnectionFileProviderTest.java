@@ -22,9 +22,9 @@
 
 package org.pentaho.di.connections.vfs.provider;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.connections.ConnectionManager;
@@ -34,8 +34,17 @@ import org.pentaho.di.connections.common.bucket.TestFileProvider;
 import org.pentaho.di.connections.common.domain.TestConnectionWithDomainDetails;
 import org.pentaho.di.connections.common.domain.TestConnectionWithDomainProvider;
 import org.pentaho.di.connections.common.domain.TestFileWithDomainProvider;
+import org.pentaho.di.core.bowl.BaseBowl;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ConnectionFileProviderTest {
 
@@ -50,22 +59,20 @@ public class ConnectionFileProviderTest {
 
   // Provider type "test2" which are domain based
   private static String CONNECTION_NAME_2 = "Connection Name 2";
-  public static final String PVFS_FILE_PATH_2 = "pvfs://Connection Name 2/path/to/file.txt";
-  public static final String RESOLVED_FILE_PATH_2 = "test2://example.com/path/to/file.txt";
-  public static final String PVFS_PARENT_FILE_PATH_2 = "pvfs://Connection Name 2/path/to";
   public static final String PVFS_DIRECTORY_PATH_2 = "pvfs://Connection Name 2/path/to/directory";
   public static final String RESOLVED_DIRECTORY_PATH_2 = "test2://example.com/path/to/directory";
 
   // Does not exist
   public static final String PVFS_FILE_PATH_1 = "pvfs://Fake Item/path/to/file.txt";
 
+  private Bowl bowl;
   private ConnectionManager connectionManager;
-  private MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
 
   @Before
   public void setup() throws Exception {
-    connectionManager = ConnectionManager.getInstance();
-    connectionManager.setMetastoreSupplier( () -> memoryMetaStore );
+    bowl = createTestBowl();
+    connectionManager = bowl.getConnectionManager();
+
     addOne();
 
     DefaultFileSystemManager fsm = (DefaultFileSystemManager) KettleVFS.getInstance().getFileSystemManager();
@@ -78,6 +85,28 @@ public class ConnectionFileProviderTest {
     if ( !fsm.hasProvider( TestFileWithDomainProvider.SCHEME ) ) {
       fsm.addProvider( TestFileWithDomainProvider.SCHEME, new TestFileWithDomainProvider() );
     }
+  }
+
+  @NonNull
+  private Bowl createTestBowl() {
+    MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
+
+    return new BaseBowl() {
+      @Override
+      public IMetaStore getMetastore() {
+        return memoryMetaStore;
+      }
+
+      @Override
+      public IMetaStore getExplicitMetastore() {
+        return memoryMetaStore;
+      }
+    };
+  }
+
+  @NonNull
+  private IKettleVFS getKettleVFS() {
+    return KettleVFS.getInstance( bowl );
   }
 
   private void addProvider() {
@@ -106,27 +135,31 @@ public class ConnectionFileProviderTest {
 
   @Test
   public void testGetFile() throws Exception {
-    ConnectionFileObject fileObject = (ConnectionFileObject) KettleVFS.getFileObject( PVFS_FILE_PATH );
-    Assert.assertTrue( fileObject.exists() );
-    Assert.assertEquals( PVFS_FILE_PATH, fileObject.getPublicURIString() );
-    Assert.assertEquals( PVFS_PARENT_FILE_PATH, fileObject.getParent().getPublicURIString() );
-    Assert.assertEquals( RESOLVED_FILE_PATH, fileObject.getResolvedFileObject().getPublicURIString() );
+    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( PVFS_FILE_PATH );
+    assertTrue( fileObject.exists() );
+    assertNotNull( fileObject.getResolvedFileObject() );
+
+    assertEquals( PVFS_FILE_PATH, fileObject.getPublicURIString() );
+    assertEquals( PVFS_PARENT_FILE_PATH, fileObject.getParent().getPublicURIString() );
+    assertEquals( RESOLVED_FILE_PATH, fileObject.getResolvedFileObject().getPublicURIString() );
   }
 
   @Test
   public void testGetFileNotFound() throws Exception {
-    FileObject fileObject = KettleVFS.getFileObject( PVFS_FILE_PATH_1 );
-    Assert.assertFalse( fileObject.exists() );
-    Assert.assertEquals( PVFS_FILE_PATH_1, fileObject.getPublicURIString() );
+    FileObject fileObject = getKettleVFS().getFileObject( PVFS_FILE_PATH_1 );
+    assertFalse( fileObject.exists() );
+    assertEquals( PVFS_FILE_PATH_1, fileObject.getPublicURIString() );
   }
 
   @Test
   public void testGetChildren() throws Exception {
-    ConnectionFileObject fileObject = (ConnectionFileObject) KettleVFS.getFileObject( PVFS_DIRECTORY_PATH );
-    Assert.assertEquals( RESOLVED_DIRECTORY_PATH, fileObject.getResolvedFileObject().getPublicURIString() );
+    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( PVFS_DIRECTORY_PATH );
+    assertNotNull( fileObject.getResolvedFileObject() );
+
+    assertEquals( RESOLVED_DIRECTORY_PATH, fileObject.getResolvedFileObject().getPublicURIString() );
     FileObject[] children = fileObject.getChildren();
     for ( FileObject child : children ) {
-      Assert.assertTrue( child.getPublicURIString().startsWith( PVFS_PREFIX ) );
+      assertTrue( child.getPublicURIString().startsWith( PVFS_PREFIX ) );
     }
   }
 
@@ -134,9 +167,9 @@ public class ConnectionFileProviderTest {
   public void testGetFileWithDomain() throws Exception {
     addConnectionWithDomain();
 
-    ConnectionFileObject fileObject = (ConnectionFileObject) KettleVFS.getFileObject( PVFS_DIRECTORY_PATH_2 );
-    Assert.assertEquals( RESOLVED_DIRECTORY_PATH_2, fileObject.getResolvedFileObject().getPublicURIString() );
+    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( PVFS_DIRECTORY_PATH_2 );
+    assertNotNull( fileObject.getResolvedFileObject() );
+
+    assertEquals( RESOLVED_DIRECTORY_PATH_2, fileObject.getResolvedFileObject().getPublicURIString() );
   }
-
-
 }

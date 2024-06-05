@@ -119,10 +119,16 @@ public class ConnectionManagerTest {
 
     assertSame( defaultBowl, defaultConnectionManager.getBowl() );
 
-    // Testing that the value is DefaultBowl.getInstance().getMetastore() wouldn't work due to tests running in
-    // parallel. The actual meta-store captured by the default connection manager instance can vary due to multiple
-    // threads calling the @BeforeClass method.
-    assertNotNull( defaultConnectionManager.getMetastoreSupplier().get() );
+    // Unfortunately, it's not currently possible to test the metastore of the connection manager in unit testing.
+    // The problem is:
+    // 1. In the unit test environment, the DefaultBowl metastore is null, and needs to be explicitly initialized
+    //    by tests.
+    // 2. When the static ConnectionManager class is initialized, or first call to ConnectionManager.getInstance() is
+    //    made, the default bowl's metastore is still null.
+    //
+    // Testing the metastore value would fail unpredictably, depending on the order tests run.
+    // assertEquals( DefaultBowl.getInstance().getMetastore(), defaultConnectionManager.getMetastoreSupplier().get() );
+    // assertNotNull( defaultConnectionManager.getMetastoreSupplier().get() );
 
     assertSame( defaultVfsConnectionManagerHelper, defaultConnectionManager.getVfsConnectionManagerHelper() );
   }
