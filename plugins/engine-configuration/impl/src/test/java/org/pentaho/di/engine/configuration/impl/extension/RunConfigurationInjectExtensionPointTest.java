@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2018-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2018-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
@@ -43,19 +43,19 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.anyString;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by bmorrise on 5/4/17.
  */
-@RunWith( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class RunConfigurationInjectExtensionPointTest {
 
   RunConfigurationInjectExtensionPoint runConfigurationInjectExtensionPoint;
@@ -87,8 +87,6 @@ public class RunConfigurationInjectExtensionPointTest {
     runConfigurationInjectExtensionPoint.setRunConfigurationManager( runConfigurationManager );
     executionExt = new JobExecutionExtension( job, result, jobEntryCopy, false );
 
-    when( abstractMeta.getEmbeddedMetaStore() ).thenReturn( embeddedMetaStore );
-    when( transExecutionConfiguration.getRunConfiguration() ).thenReturn( runConfName );
     when( runConfigurationManager.load( runConfName ) ).thenReturn( runConfiguration );
 
     when( job.getJobMeta() ).thenReturn( jobMeta );
