@@ -54,7 +54,7 @@ jobs:
     runs-on: k8s
 
     container:
-      image: one.hitachivantara.com/docker/groovy-hosted
+      image: repo.orl.eng.hitachivantara.com/docker/groovy-hosted
       credentials:
         username: ${{ secrets.PENTAHO_CICD_ONE_USER }}
         password: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
@@ -80,7 +80,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/$tmp_folder"
 
           ${GITHUB_WORKSPACE}/scripts/hosted/hosted.groovy \
-            --rtURL https://one.hitachivantara.com/artifactory \
+            --rtURL https://repo.orl.eng.hitachivantara.com/artifactory \
             --rtUsername '${{ secrets.PENTAHO_CICD_ONE_USER }}' \
             --rtPassword '${{ secrets.PENTAHO_CICD_ONE_KEY }}' \
             --buildHostingRoot "$RUNNER_TEMP/$tmp_folder" \
