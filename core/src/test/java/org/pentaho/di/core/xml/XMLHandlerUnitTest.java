@@ -30,8 +30,7 @@ import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXParseException;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+
 import javax.xml.parsers.DocumentBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -44,7 +43,6 @@ import java.util.GregorianCalendar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.when;
 
 public class XMLHandlerUnitTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
@@ -200,7 +198,7 @@ public class XMLHandlerUnitTest {
   @Test
   public void addTagValueBinary() throws IOException {
     byte[] input = "Test Data".getBytes();
-    String result = "H4sIAAAAAAAAAAtJLS5RcEksSQQAL4PL8QkAAAA=";
+    String result = "H4sIAAAAAAAA/wtJLS5RcEksSQQAL4PL8QkAAAA=";
 
     assertEquals( "<bytedata>" + result + "</bytedata>" + cr, XMLHandler.addTagValue( "bytedata", input ) );
     assertEquals( "<bytedata>" + result + "</bytedata>" + cr, XMLHandler.addTagValue( "bytedata", input, true ) );
