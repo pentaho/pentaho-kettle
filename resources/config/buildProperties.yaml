@@ -60,6 +60,7 @@ SCM_API_TOKEN_CREDENTIALS_ID     : github-api-token-buildguy
 DEFAULT_BRANCH                   : master
 
 # Version control properties
+VERSION_MERGER_VERSION           : 1.0.9
 RELEASE_BUILD_NUMBER             : ${BUILD_NUMBER}
 RELEASE_VERSION                  : 10.2.0.0
 DEPLOYMENT_FOLDER                : 10.2.0.0
