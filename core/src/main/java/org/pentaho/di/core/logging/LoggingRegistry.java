@@ -102,6 +102,15 @@ public class LoggingRegistry {
 
     updateFromProperties();
     installPurgeTimer();
+    Runtime.getRuntime().addShutdownHook( new Thread( new Runnable() {
+      @Override
+      public void run() {
+        if ( purgeTimer != null ) {
+          purgeTimer.cancel();
+          purgeTimer.purge();
+        }
+      }
+    } ) );
   }
 
   public static LoggingRegistry getInstance() {
@@ -470,7 +479,7 @@ public class LoggingRegistry {
       }
     }
   }
-
+  
   /**
    * Method that performs the cleanup the Registry on the PurgeTimerTasks.
    */
