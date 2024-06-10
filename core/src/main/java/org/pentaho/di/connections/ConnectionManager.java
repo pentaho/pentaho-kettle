@@ -592,6 +592,26 @@ public class ConnectionManager {
   }
 
   /**
+   * Makes defensive copies so modifications by callers don't affect the internal state before "save" is called.
+   *
+   *
+   * @param source ConnectionDetails to clone
+   *
+   * @return ConnectionDetails cloned object.
+   */
+  private static ConnectionDetails clone( ConnectionDetails source ) {
+    if ( source == null ) {
+      return null;
+    }
+    try {
+      return source.cloneDetails();
+    } catch ( MetaStoreException ex ) {
+      // should really not happen.
+      throw new RuntimeException( ex );
+    }
+  }
+
+  /**
    * Get the named connection from the default meta store
    *
    * @param key  The provider key
@@ -606,7 +626,7 @@ public class ConnectionManager {
       if ( names == null || !names.contains(name) ) {
         return null;
       }
-      return detailsByName.get( name );
+      return clone( detailsByName.get( name ) );
     }
     return null;
   }
@@ -619,7 +639,7 @@ public class ConnectionManager {
    */
   public ConnectionDetails getConnectionDetails( String name ) {
     initialize();
-    return detailsByName.get( name );
+    return clone( detailsByName.get( name ) );
   }
 
   /**
@@ -712,7 +732,7 @@ public class ConnectionManager {
       if ( names != null && !names.isEmpty() ) {
         List<ConnectionDetails> details = new ArrayList<>();
         for ( String name : names ) {
-          details.add( detailsByName.get( name ) );
+          details.add( clone( detailsByName.get( name ) ) );
         }
         return details;
       }
