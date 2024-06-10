@@ -17,15 +17,27 @@
 package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.Set;
 
 
 /**
  * A Bowl is a generic container/context/workspace concept. Different plugin implementations may implement this for
  * additional features.
- *
- * All implementations of Bowl should implement equals() and hashcode()
+ * <p>
+ * Bowls provide access to various "Manager" classes that in turn provide access to specific types of stored objects
+ * that may be specificially grouped in the Bowl. As much as possible, Managers should generally not depend on
+ * Bowl-specific features *except* common underlying storage mechanisms that are defined as APIs on Bowl itself (this
+ * interface). For example, ConnectionManager does not directly depend on Bowl-specific attributes, except for the
+ * MetaStore.
+ * <p>
+ * Specific subclasses for contexts should implement their custom logic to get a MetaStore or other underlying storage,
+ * and the managers should just build on that and not have any other Bowl-specific code.
+ * <p>
+ * All implementations of Bowl should implement equals() and hashcode().
  *
  */
 public interface Bowl {
@@ -39,34 +51,25 @@ public interface Bowl {
   IMetaStore getMetastore() throws MetaStoreException;
 
   /**
-   * Gets a Metastore only for accessing any bowl-specific objects.
+   * Gets a Manager for some type of object specifically in the context of this Bowl.
+   * <p>
+   * Since constructing and initializing Managers can be expensive, and instances may share state or have other
+   * limitations, callers with a Bowl should use this method in favor of directly using the manager type.
+   * <p>
+   * @see BowlManagerFactoryRegistry for how Managers should be registered.
    *
-   *
-   * @return IMetaStore A metastore for the specified Bowl. Never null.
+   * @return a manager instance, never null.
+   * @throws NotFoundException if the manager type is unknown
+   * @throws KettleException for other errors.
    */
-  IMetaStore getExplicitMetastore() throws MetaStoreException;
+  <T> T getManager( Class<T> managerClazz ) throws KettleException;
 
   /**
-   * Gets a ConnectionManager for this Bowl. Uses a metastore from getMetastore(), so global connections will be
-   * returned as well. This ConnectionManager is effectively read-only.
+   * Parent Bowls are any Bowls that a particular Bowl inherits from.
    *
-   * Since constructing and initializing ConnectionManagers can be expensive, and ConnectionManager instances don't
-   * share state, consumers should always use this method instead of ConnectionManager.getInstance()
    *
-   * @return ConnectionManager, never null.
+   * @return Set&lt;Bowl&gt; A set of Parent Bowls. Should not be null.
    */
-  ConnectionManager getConnectionManager() throws MetaStoreException;
-
-  /**
-   * Gets a ConnectionManager for this Bowl. Uses a metastore from getExplicitMetastore(). This ConnectionManager
-   * allows writes.
-   *
-   * Since constructing and initializing ConnectionManagers can be expensive, and ConnectionManager instances don't
-   * share state, consumers should always use this method instead of ConnectionManager.getInstance()
-   *
-   * @return ConnectionManager, never null.
-   */
-  ConnectionManager getExplicitConnectionManager() throws MetaStoreException;
-
+  Set<Bowl> getParentBowls();
 
 }

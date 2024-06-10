@@ -84,7 +84,7 @@ public class RunConfigurationDelegateTest {
     PowerMockito.mockStatic( Spoon.class );
     when( Spoon.getInstance() ).thenReturn( spoon );
 
-    delegate = spy( RunConfigurationDelegate.getInstance( () -> DefaultBowl.getInstance().getExplicitMetastore() ) );
+    delegate = spy( RunConfigurationDelegate.getInstance( () -> DefaultBowl.getInstance().getMetastore() ) );
     service = mock( RunConfigurationManager.class );
     delegate.setRunConfigurationManager( service );
   }

@@ -9546,10 +9546,21 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     this.metaStoreSupplier = metaStoreSupplier;
   }
 
+  /**
+   * Retrieves the Bowl for the Management context. This Bowl should be used for write operations. This Bowl will only
+   * return objects directly owned by the particular context. It will not include objects owned by the global context.
+   * Use DefaultBowl to access the global context.
+   *
+   * @return Bowl The Bowl that should be used during execution.
+   */
   public Bowl getBowl() {
     return bowl;
   }
 
+  /**
+   * Sets the Bowl for the management context. This Bowl should be used for write operations.
+   *
+   */
   public void setBowl( Bowl bowl ) {
     this.bowl = Objects.requireNonNull( bowl );
     forceRefreshTree();

@@ -32,11 +32,11 @@ import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.util.function.Supplier;
 
@@ -68,10 +68,9 @@ public class ConnectionDelegate {
       Spoon spoon = spoonSupplier.get();
       Bowl bowl = spoon.getBowl();
       ConnectionDialog connectionDialog = new ConnectionDialog( spoon.getShell(), WIDTH, HEIGHT,
-                                                                bowl.getExplicitConnectionManager() );
+                                                                bowl.getManager( ConnectionManager.class ) );
       connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.new.title" ) );
-      resetConnectionManagerIfNeeded( spoon );
-    } catch ( MetaStoreException e ) {
+    } catch ( KettleException e ) {
       showError( e );
     }
   }
@@ -81,10 +80,9 @@ public class ConnectionDelegate {
       Spoon spoon = spoonSupplier.get();
       Bowl bowl = getBowl( spoon, level );
       ConnectionDialog connectionDialog = new ConnectionDialog( spoon.getShell(), WIDTH, HEIGHT,
-                                                                bowl.getExplicitConnectionManager() );
+                                                                bowl.getManager( ConnectionManager.class ) );
       connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.edit.title" ), name );
-      resetConnectionManagerIfNeeded( spoon );
-    } catch ( MetaStoreException e ) {
+    } catch ( KettleException e ) {
       showError( e );
     }
   }
@@ -95,9 +93,8 @@ public class ConnectionDelegate {
       if ( connectionDeleteDialog.open( name ) == SWT.YES ) {
         Spoon spoon = spoonSupplier.get();
         Bowl bowl = getBowl( spoon, level );
-        ConnectionManager connectionManager = bowl.getExplicitConnectionManager();
+        ConnectionManager connectionManager = bowl.getManager( ConnectionManager.class );
         connectionManager.delete( name );
-        resetConnectionManagerIfNeeded( spoon );
 
         spoonSupplier.get().getShell().getDisplay().asyncExec( () -> spoonSupplier.get().refreshTree(
           ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
@@ -106,7 +103,7 @@ public class ConnectionDelegate {
           ( (AbstractMeta) engineMetaInterface ).setChanged();
         }
       }
-    } catch ( MetaStoreException e ) {
+    } catch ( KettleException e ) {
       showError( e );
     }
   }
@@ -129,7 +126,7 @@ public class ConnectionDelegate {
 
   private void moveCopy( String name, Bowl sourceBowl, Bowl targetBowl, boolean deleteSource ) {
     try {
-      ConnectionDetails targetConnection = targetBowl.getExplicitConnectionManager().getConnectionDetails( name );
+      ConnectionDetails targetConnection = targetBowl.getManager( ConnectionManager.class ).getConnectionDetails( name );
       if ( targetConnection != null ) {
         ConnectionOverwriteDialog connectionOverwriteDialog =
           new ConnectionOverwriteDialog( spoonSupplier.get().getShell() );
@@ -138,27 +135,18 @@ public class ConnectionDelegate {
         }
       }
 
-      ConnectionDetails details = sourceBowl.getExplicitConnectionManager().getConnectionDetails( name );
+      ConnectionDetails details = sourceBowl.getManager( ConnectionManager.class ).getConnectionDetails( name );
       if ( details == null ) {
-        throw new MetaStoreException( "Connection not found: " + name );
+        throw new KettleException( "Connection not found: " + name );
       }
-      targetBowl.getExplicitConnectionManager().save( details );
+      targetBowl.getManager( ConnectionManager.class ).save( details );
       if ( deleteSource ) {
-        sourceBowl.getExplicitConnectionManager().delete( name );
+        sourceBowl.getManager( ConnectionManager.class ).delete( name );
       }
-      resetConnectionManagerIfNeeded( spoonSupplier.get() );
       spoonSupplier.get().getShell().getDisplay().asyncExec( () -> spoonSupplier.get().refreshTree(
         ConnectionFolderProvider.STRING_VFS_CONNECTIONS ) );
-    } catch ( MetaStoreException e ) {
+    } catch ( KettleException e ) {
       showError( e );
-    }
-  }
-
-  private void resetConnectionManagerIfNeeded( Spoon spoon ) throws MetaStoreException {
-    // if an edit was made, and the current bowl isn't default, reset it's (non-explicit) ConnectionManager
-    Bowl bowl = spoon.getBowl();
-    if ( !bowl.equals( DefaultBowl.getInstance() ) ) {
-      bowl.getConnectionManager().reset();
     }
   }
 

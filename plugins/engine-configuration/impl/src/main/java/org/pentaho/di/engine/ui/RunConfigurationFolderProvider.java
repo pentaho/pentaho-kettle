@@ -61,7 +61,7 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
     Bowl currentBowl = Spoon.getInstance().getBowl();
     if ( !currentBowl.equals( DefaultBowl.getInstance() ) ) {
       RunConfigurationDelegate bowlDelegate =
-        RunConfigurationDelegate.getInstance( () -> currentBowl.getExplicitMetastore() );
+        RunConfigurationDelegate.getInstance( () -> currentBowl.getMetastore() );
       for ( RunConfiguration runConfiguration : bowlDelegate.load() ) {
         if ( !filterMatch( runConfiguration.getName(), filter ) ) {
           continue;
@@ -80,7 +80,7 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
     }
 
     RunConfigurationDelegate globalDelegate =
-      RunConfigurationDelegate.getInstance( () -> DefaultBowl.getInstance().getExplicitMetastore() );
+      RunConfigurationDelegate.getInstance( () -> DefaultBowl.getInstance().getMetastore() );
 
     for ( RunConfiguration runConfiguration : globalDelegate.load() ) {
       if ( !filterMatch( runConfiguration.getName(), filter ) ) {

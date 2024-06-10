@@ -99,7 +99,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
         public void widgetSelected( SelectionEvent selectionEvent ) {
           // new goes to the Spoon's current bowl
           Bowl bowl = Spoon.getInstance().getBowl();
-          CheckedMetaStoreSupplier ms = () -> bowl.getExplicitMetastore();
+          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
           runConfigurationDelegate.create();
         }
@@ -116,7 +116,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
       editMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
           Bowl bowl = getEventBowl();
-          CheckedMetaStoreSupplier ms = () -> bowl.getExplicitMetastore();
+          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
           RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
           runConfigurationDelegate.edit( runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
@@ -128,7 +128,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
       deleteMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
           Bowl bowl = getEventBowl();
-          CheckedMetaStoreSupplier ms = () -> bowl.getExplicitMetastore();
+          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
           RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
           runConfigurationDelegate.delete( runConfigurationManager.load( runConfigurationTreeItem.getName() ) );

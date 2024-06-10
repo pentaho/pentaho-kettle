@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.connections.ConnectionDetails;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ConnectionProvider;
 import org.pentaho.di.connections.utils.ConnectionUriParser;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
@@ -39,6 +40,7 @@ import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileSystem;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
@@ -52,7 +54,6 @@ import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.service.KettleVFSService;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,11 +149,12 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     VFSTree vfsTree = new VFSTree( NAME );
 
     try {
+      ConnectionManager connectionManager = bowl.getManager( ConnectionManager.class );
       List<ConnectionProvider<? extends ConnectionDetails>> providers =
-        bowl.getConnectionManager().getProvidersByType( VFSConnectionProvider.class );
+        connectionManager.getProvidersByType( VFSConnectionProvider.class );
 
       for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
-        for ( ConnectionDetails connectionDetails : provider.getConnectionDetails( bowl.getConnectionManager() ) ) {
+        for ( ConnectionDetails connectionDetails : provider.getConnectionDetails( connectionManager ) ) {
           VFSConnectionDetails vfsConnectionDetails = (VFSConnectionDetails) connectionDetails;
           VFSLocation vfsLocation = new VFSLocation();
           vfsLocation.setName( connectionDetails.getName() );
@@ -169,7 +171,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
           }
         }
       }
-    } catch ( MetaStoreException e ) {
+    } catch ( KettleException e ) {
       // ignored
     }
     return vfsTree;
@@ -196,15 +198,15 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     VFSConnectionDetails vfsConnectionDetails;
     VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider;
     try {
-      vfsConnectionDetails = (VFSConnectionDetails) bowl.getConnectionManager()
+      vfsConnectionDetails = (VFSConnectionDetails) bowl.getManager( ConnectionManager.class )
         .getConnectionDetails( getConnectionName( fileConnectionRoot ) );
       if ( !hasBuckets( vfsConnectionDetails ) ) {
         return null;
       }
       @SuppressWarnings( "unchecked" )
       VFSConnectionProvider<VFSConnectionDetails> temp =
-        (VFSConnectionProvider<VFSConnectionDetails>) bowl
-          .getConnectionManager().getConnectionProvider( vfsConnectionDetails.getType() );
+        (VFSConnectionProvider<VFSConnectionDetails>)
+          bowl.getManager( ConnectionManager.class ).getConnectionProvider( vfsConnectionDetails.getType() );
       vfsConnectionProvider = temp;
 
       vfsRoots = vfsConnectionProvider.getLocations( vfsConnectionDetails );
@@ -658,10 +660,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     try {
       @SuppressWarnings( "unchecked" )
       VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
-        (VFSConnectionProvider<VFSConnectionDetails>) bowl.getConnectionManager()
+        (VFSConnectionProvider<VFSConnectionDetails>) bowl.getManager( ConnectionManager.class )
           .getConnectionProvider( key );
       return vfsConnectionProvider;
-    } catch ( MetaStoreException ex ) {
+    } catch ( KettleException ex ) {
       return null;
     }
   }

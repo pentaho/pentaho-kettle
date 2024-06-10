@@ -26,6 +26,7 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
@@ -45,19 +46,20 @@ public class VFSHelper {
   public static FileSystemOptions getOpts( String file, String connection, VariableSpace space ) {
     try {
       return getOpts( DefaultBowl.getInstance(), file, connection, space );
-    } catch ( MetaStoreException ex ) {
+    } catch ( KettleException ex ) {
       // deprecated behavior was to ignore failures and return nulls.
       return null;
     }
   }
 
   public static FileSystemOptions getOpts( Bowl bowl, String file, String connection, VariableSpace space )
-    throws MetaStoreException {
+    throws KettleException {
     if ( connection != null ) {
+      ConnectionManager connectionManager = bowl.getManager( ConnectionManager.class );
       VFSConnectionDetails vfsConnectionDetails =
-        (VFSConnectionDetails) bowl.getConnectionManager().getConnectionDetails( file, connection );
+        (VFSConnectionDetails) connectionManager.getConnectionDetails( file, connection );
       VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
-        (VFSConnectionProvider<VFSConnectionDetails>) bowl.getConnectionManager().getConnectionProvider( file );
+        (VFSConnectionProvider<VFSConnectionDetails>) connectionManager.getConnectionProvider( file );
       if ( vfsConnectionDetails != null && vfsConnectionProvider != null ) {
         vfsConnectionDetails.setSpace( space );
         FileSystemOptions opts = vfsConnectionProvider.getOpts( vfsConnectionDetails );

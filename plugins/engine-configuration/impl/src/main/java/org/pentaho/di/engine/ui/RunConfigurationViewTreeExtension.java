@@ -66,7 +66,7 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
           bowl = Spoon.getInstance().getBowl();
         }
         RunConfigurationDelegate runConfigurationDelegate =
-          RunConfigurationDelegate.getInstance( () -> bowl.getExplicitMetastore() );
+          RunConfigurationDelegate.getInstance( () -> bowl.getMetastore() );
 
         runConfigurationDelegate.edit( runConfigurationDelegate.load( name ) );
       }

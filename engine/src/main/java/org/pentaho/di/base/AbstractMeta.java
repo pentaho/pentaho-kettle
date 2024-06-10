@@ -404,10 +404,19 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     setInternalKettleVariables();
   }
 
+  /**
+   * Retrieves the Bowl for the execution context. This Bowl should not be used for write operations.
+   *
+   * @return Bowl The Bowl that should be used during execution.
+   */
   public Bowl getBowl() {
     return bowl;
   }
 
+  /**
+   * Set the Bowl for the execution context. This Bowl should not be used for write operations.
+   *
+   */
   public void setBowl( Bowl bowl ) {
     this.bowl = bowl;
   }

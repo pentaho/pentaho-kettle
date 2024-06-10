@@ -27,6 +27,7 @@ import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -35,7 +36,6 @@ import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -61,7 +61,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
       Set<String> bowlNames = new HashSet<>();
       Bowl currentBowl = Spoon.getInstance().getBowl();
       if ( !currentBowl.equals( DefaultBowl.getInstance() ) ) {
-        ConnectionManager bowlCM = currentBowl.getExplicitConnectionManager();
+        ConnectionManager bowlCM = currentBowl.getManager( ConnectionManager.class );
         for ( String name : bowlCM.getNames() ) {
           if ( !filterMatch( name, filter ) ) {
             continue;
@@ -72,7 +72,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
         }
       }
 
-      ConnectionManager globalCM = DefaultBowl.getInstance().getExplicitConnectionManager();
+      ConnectionManager globalCM = DefaultBowl.getInstance().getManager( ConnectionManager.class );
       for ( String name : globalCM.getNames() ) {
         if ( !filterMatch( name, filter ) ) {
           continue;
@@ -80,7 +80,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
         createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree(), LeveledTreeNode.LEVEL.GLOBAL,
                         bowlNames.contains( name ) );
       }
-    } catch ( MetaStoreException e ) {
+    } catch ( KettleException e ) {
       new ErrorDialog( Spoon.getInstance().getShell(),
               BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
               BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingVFSConnections" ),
