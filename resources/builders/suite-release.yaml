@@ -32,7 +32,7 @@ buildProperties:
 
   # Version based control properties
   RUN_STAGE_VERSION                : ${RUN_STAGE_BUILD}
-  VERSION_MERGER_LOG_LEVEL         : WARN
+  VERSION_MERGER_LOG_LEVEL         : INFO
   RELEASE_VERSION                  : 10.2.0.0
   DEPLOYMENT_FOLDER                : 10.2-QAT
   RELEASE_MODE                     : true
