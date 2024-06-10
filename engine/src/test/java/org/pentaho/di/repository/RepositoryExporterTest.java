@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -103,7 +104,7 @@ public class RepositoryExporterTest {
     };
 
     when(
-      repository.loadJob( anyString(), any( RepositoryDirectoryInterface.class ), any( ProgressMonitorListener.class ), anyString() ) ).thenAnswer( jobLoader );
+      repository.loadJob( anyString(), any( RepositoryDirectoryInterface.class ), nullable( ProgressMonitorListener.class ), nullable( String.class ) ) ).thenAnswer( jobLoader );
 
     // and this is for transformation load
     Answer<TransMeta> transLoader = new Answer<TransMeta>() {
@@ -117,7 +118,7 @@ public class RepositoryExporterTest {
       }
     };
     when(
-      repository.loadTransformation( anyString(), any( RepositoryDirectoryInterface.class ), any( ProgressMonitorListener.class ), anyBoolean(), anyString() ) ).thenAnswer( transLoader );
+      repository.loadTransformation( anyString(), any( RepositoryDirectoryInterface.class ), nullable( ProgressMonitorListener.class ), anyBoolean(), nullable( String.class ) ) ).thenAnswer( transLoader );
 
     // export file
     xmlFileName = TestUtils.createRamFile( getClass().getSimpleName() + "/export.xml" );

@@ -24,7 +24,6 @@
     <pentaho-osgi-bundles.version>10.2.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <pdi-pur-plugin.version>10.2.0.0-SNAPSHOT</pdi-pur-plugin.version>
     <junit.version>4.11</junit.version>
-    <mockito-core.version>1.9.5</mockito-core.version>
   </properties>
 
   <dependencies>
@@ -84,7 +83,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>${mockito-core.version}</version>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

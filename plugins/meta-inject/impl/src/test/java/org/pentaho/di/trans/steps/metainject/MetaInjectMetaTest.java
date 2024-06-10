@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,22 +22,6 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -55,6 +39,22 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MetaInjectMetaTest {
 
@@ -207,8 +207,8 @@ public class MetaInjectMetaTest {
       // be sure that transformation name was resolved correctly
       assertEquals( originalArgument, fileName );
       return mock( TransMeta.class );
-    } ).when( rep ).loadTransformation( anyString(), any( RepositoryDirectoryInterface.class ),
-      any( ProgressMonitorListener.class ), anyBoolean(), anyString() );
+    } ).when( rep ).loadTransformation( anyString(), nullable( RepositoryDirectoryInterface.class ),
+      nullable( ProgressMonitorListener.class ), anyBoolean(), nullable( String.class ) );
 
     assertNotNull( MetaInjectMeta.loadTransformationMeta( metaInjectMetaMock, rep, null, variables ) );
   }

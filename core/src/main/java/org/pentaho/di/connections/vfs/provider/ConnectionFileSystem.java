@@ -65,15 +65,12 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     String url = null;
 
     if ( vfsConnectionDetails != null ) {
-      if ( KettleVFS.SMB_SCHEME.equalsIgnoreCase( vfsConnectionDetails.getType() ) ) {
-        url = abstractFileName.getURI().replaceFirst( "pvfs:", KettleVFS.SMB_SCHEME_COLON );
-      } else {
-        String domain = vfsConnectionDetails.getDomain();
-        if ( !domain.equals( "" ) ) {
-          domain = "/" + domain;
-        }
-        url = vfsConnectionDetails.getType() + ":/" + domain + abstractFileName.getPath();
+      String domain = vfsConnectionDetails.getDomain();
+      if ( !domain.equals( "" ) ) {
+        domain = "/" + domain;
       }
+      url = vfsConnectionDetails.getType() + ":/" + domain + abstractFileName.getPath();
+      //TODO Looks like a bug. For now excluding this for connections with hasBuckets. For future, needs to be re-analyzed.
       if ( url.matches( DOMAIN_ROOT ) && vfsConnectionDetails.hasBuckets() ) {
         url += vfsConnectionDetails.getName();
       }

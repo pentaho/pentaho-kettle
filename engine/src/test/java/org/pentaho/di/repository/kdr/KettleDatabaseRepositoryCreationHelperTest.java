@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.repository.kdr;
 
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyString;
@@ -105,7 +106,7 @@ public class KettleDatabaseRepositoryCreationHelperTest {
 
     when( db.getDatabaseMeta() ).thenReturn( meta );
     // always return some create sql.
-    when( db.getDDL( anyString(), any( RowMetaInterface.class ), anyString(), anyBoolean(), anyString(), anyBoolean() ) ).thenReturn( "### CREATE TABLE;" );
+    when( db.getDDL( nullable( String.class ), any( RowMetaInterface.class ), nullable( String.class ), anyBoolean(), anyString(), anyBoolean() ) ).thenReturn( "### CREATE TABLE;" );
     when( repository.getDatabase() ).thenReturn( db );
     when( repository.getDatabaseMeta() ).thenReturn( meta );
 

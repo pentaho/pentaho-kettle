@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,13 @@
 
 package org.pentaho.di.trans.steps.s3csvinput;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
@@ -42,29 +40,30 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.TextFileInputFieldValidator;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
  * @author Tatsiana_Kasiankova
  *
  */
 @SuppressWarnings( "deprecation" )
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( EnvUtil.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class S3CsvInputMetaTest {
 
   private static final String TEST_AWS_SECRET_KEY = "TestAwsSecretKey";
   private static final String TEST_ACCESS_KEY = "TestAccessKey";
   private static final String TEST_AWS_SECRET_KEY_ENCRYPTED = "Encrypted 2eafddcbc2bd081b7ae1abc75cab9aac3";
   private static final String TEST_ACCESS_KEY_ENCRYPTED = "Encrypted 2be98af9c0fd486a5a81aab63cdb9aac3";
+  private MockedStatic<EnvUtil> mockEnvUtil;
 
   @BeforeClass
   public static void once() throws KettleException {
@@ -77,7 +76,12 @@ public class S3CsvInputMetaTest {
 
   @Before
   public void setup() {
-    mockStatic( EnvUtil.class );
+    mockEnvUtil = mockStatic( EnvUtil.class );
+  }
+
+  @After
+  public void tearDown() {
+    mockEnvUtil.close();
   }
 
   @Test

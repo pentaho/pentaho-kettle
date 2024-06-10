@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -69,7 +69,7 @@ public class StreamToTransNodeConverterTest {
     when( converter.connectToRepository() ).thenReturn( repository );
 
     TransMeta transMeta = mock( TransMeta.class );
-    when( repository.loadTransformation( any(), anyString() ) ).thenReturn( transMeta );
+    when( repository.loadTransformation( any(), any() ) ).thenReturn( transMeta );
     RepositoryFile file = mock( RepositoryFile.class );
     when( file.getId() ).thenReturn( "fileId" );
 

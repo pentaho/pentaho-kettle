@@ -84,7 +84,7 @@ public class PurRepository_DatabaseNames_Test extends RepositoryTestLazySupport 
 
     List<RepositoryFile> files = Arrays.asList( file( "a" ), file( EXISTING_DB ), file( "b" ) );
     purRepository = spy( purRepository );
-    doReturn( files ).when( purRepository ).getAllFilesOfType( any( ObjectId.class ),
+    doReturn( files ).when( purRepository ).getAllFilesOfType( any(),
         eq( RepositoryObjectType.DATABASE ), anyBoolean() );
 
     ObjectId databaseID = purRepository.getDatabaseID( lookupName );

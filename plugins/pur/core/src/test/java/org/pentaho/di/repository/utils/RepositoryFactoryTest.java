@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  */
 package org.pentaho.di.repository.utils;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -51,8 +51,8 @@ public class RepositoryFactoryTest {
     KettleEnvironment.init();
   }
 
-  @After
-  public void reset() {
+  @AfterClass
+  public static void reset() {
     PentahoSystem.clearObjectFactory();
   }
 
