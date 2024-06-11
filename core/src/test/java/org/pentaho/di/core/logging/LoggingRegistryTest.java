@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -75,7 +75,6 @@ public class LoggingRegistryTest {
     String id = "1";
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     LogChannelFileWriterBuffer buffer = new LogChannelFileWriterBuffer( id );
     loggingRegistry.registerLogChannelFileWriterBuffer( buffer );
 
@@ -87,7 +86,6 @@ public class LoggingRegistryTest {
     String id = "1";
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     LogChannelFileWriterBuffer buffer = new LogChannelFileWriterBuffer( id );
     loggingRegistry.registerLogChannelFileWriterBuffer( buffer );
 
@@ -99,7 +97,6 @@ public class LoggingRegistryTest {
     String id = "1";
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     LogChannelFileWriterBuffer buffer = new LogChannelFileWriterBuffer( id );
     loggingRegistry.registerLogChannelFileWriterBuffer( buffer );
 
@@ -111,7 +108,6 @@ public class LoggingRegistryTest {
   @Test
   public void getLogChannelFileWriterBufferTest() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     Map<String, LogChannelFileWriterBuffer> fileWriterBuffers = getDummyFileWriterBuffers();
 
     loggingRegistry.setFileWriterBuffers( fileWriterBuffers );
@@ -131,7 +127,6 @@ public class LoggingRegistryTest {
   @Test
   public void getLogChannelFileWriterBufferOnlyOnePossibilityTest() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     Map<String, LogChannelFileWriterBuffer> fileWriterBuffers = getDummyFileWriterBuffers();
 
     fileWriterBuffers.remove( "7c1526bc-789e-4f5a-8d68-1f9c39488ceb" );
@@ -163,6 +158,7 @@ public class LoggingRegistryTest {
   public void testPurgeTimerReset()  {
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.schedulePurgeTimer();
     loggingRegistry.setMaxSize( 10 );
 
     int beforeReset = loggingRegistry.getTimerHashCode();
@@ -181,6 +177,8 @@ public class LoggingRegistryTest {
   @Test
   public void testSimplePurge() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.updateFromProperties();
+    loggingRegistry.schedulePurgeTimer();
     loggingRegistry.setMaxSize( 10 );
     loggingRegistry.reset();
 
@@ -218,6 +216,8 @@ public class LoggingRegistryTest {
   @Test
   public void testPurgeErrorCase() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.updateFromProperties();
+    loggingRegistry.schedulePurgeTimer();
     loggingRegistry.setMaxSize( 10 );
     loggingRegistry.reset();
 
@@ -249,6 +249,8 @@ public class LoggingRegistryTest {
   @Test
   public void testDump() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.schedulePurgeTimer();
+    loggingRegistry.updateFromProperties();
     loggingRegistry.reset();
 
     LoggingObjectInterface obj = new SimpleLoggingObject( UUID.randomUUID().toString(),  LoggingObjectType.JOB, null );
@@ -263,6 +265,8 @@ public class LoggingRegistryTest {
   @Test
   public void testModificationTime() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.schedulePurgeTimer();
+    loggingRegistry.updateFromProperties();
     loggingRegistry.reset();
 
     LoggingObjectInterface obj = new SimpleLoggingObject( UUID.randomUUID().toString(),  LoggingObjectType.JOB, null );
@@ -279,6 +283,8 @@ public class LoggingRegistryTest {
   public void testFindWithComplexRegistry() {
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.updateFromProperties();
+    loggingRegistry.schedulePurgeTimer();
     loggingRegistry.setPurgeTimeout( 60000 ); // ensure normal purge time out.
     loggingRegistry.reset();
 
