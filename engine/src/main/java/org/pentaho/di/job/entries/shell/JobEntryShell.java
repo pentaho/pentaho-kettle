@@ -442,7 +442,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
       }
     }
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

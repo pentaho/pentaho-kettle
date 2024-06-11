@@ -439,7 +439,6 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
       logError( BaseMessages.getString( PKG, "JobMysqlBulkFile.Nofilename.Label" ) );
     }
 
-    setLoggingObjectInUse( false );
     return result;
 
   }

@@ -1571,11 +1571,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     this.logLevel = logLevel;
   }
 
-  @Override
-  public boolean isLoggingObjectInUse() {
-    return getParent() == null ? false : getParent().isLoggingObjectInUse();
-  }
-
   public IMetaStore getMetaStore() {
     return metaStore;
   }

@@ -292,7 +292,6 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
       result.setNrErrors( 0 );
       result.setResult( true );
     }
-    setLoggingObjectInUse( false );
     return result;
   }
 

@@ -582,7 +582,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
     }
 
     displayResults();
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

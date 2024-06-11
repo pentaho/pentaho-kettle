@@ -163,7 +163,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
       result.setNrErrors( 1 );
       logError( BaseMessages.getString( PKG, "JobEntryFileExists.ERROR_0005_No_Filename_Defined" ) );
     }
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

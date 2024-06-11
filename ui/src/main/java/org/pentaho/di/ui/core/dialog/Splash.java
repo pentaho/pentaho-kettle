@@ -85,7 +85,7 @@ public class Splash {
   }
 
   protected Splash( Display display, Shell splashShell ) {
-    log = new LogChannel( Spoon.APP_NAME, false, false );
+    log = new LogChannel( Spoon.APP_NAME );
 
     Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 

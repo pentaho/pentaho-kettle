@@ -395,7 +395,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     }
 
     displayResults();
-    setLoggingObjectInUse( false );
+
     return result;
   }
 
