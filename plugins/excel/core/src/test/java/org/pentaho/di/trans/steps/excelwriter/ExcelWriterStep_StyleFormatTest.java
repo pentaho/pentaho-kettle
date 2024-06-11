@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,41 +22,38 @@
 
 package org.pentaho.di.trans.steps.excelwriter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.math.BigDecimal;
-
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import org.pentaho.di.core.RowSet;
-import org.pentaho.di.core.row.value.ValueMetaBigNumber;
-import org.pentaho.di.core.row.value.ValueMetaInteger;
-import org.pentaho.di.core.row.value.ValueMetaNumber;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -85,7 +82,7 @@ public class ExcelWriterStep_StyleFormatTest {
         stepMockHelper.logChannelInterface );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString() );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), any( Object[].class ) );
-    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), (Throwable) anyObject() );
+    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), (Throwable) any() );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 

@@ -26,12 +26,10 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -41,18 +39,15 @@ import javax.ws.rs.core.MediaType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( Client.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class RestTest {
 
   @Test
@@ -60,16 +55,15 @@ public class RestTest {
     Invocation.Builder builder = mock( Invocation.Builder.class );
 
     WebTarget resource = mock( WebTarget.class );
-    doReturn( builder ).when( resource ).request();
+    lenient().doReturn( builder ).when( resource ).request();
 
     Client client = mock( Client.class );
-    doReturn( resource ).when( client ).target( anyString() );
+    lenient().doReturn( resource ).when( client ).target( anyString() );
 
     ClientBuilder clientBuilder = mock( ClientBuilder.class );
-    when( clientBuilder.build() ).thenReturn( client );
+    lenient().when( clientBuilder.build() ).thenReturn( client );
 
     RestMeta meta = mock( RestMeta.class );
-    doReturn( false ).when( meta ).isDetailed();
     doReturn( false ).when( meta ).isUrlInField();
     doReturn( false ).when( meta ).isDynamicMethod();
 
@@ -85,12 +79,12 @@ public class RestTest {
     data.resultHeaderFieldName = "headers";
     data.realUrl = "https://www.hitachivantara.com/en-us/home.html";
 
-    Rest rest = mock( Rest.class, Answers.RETURNS_DEFAULTS.get() );
+    Rest rest = mock( Rest.class );
     doCallRealMethod().when( rest ).callRest( any() );
     doCallRealMethod().when( rest ).searchForHeaders( any() );
 
-    setInternalState( rest, "meta", meta );
-    setInternalState( rest, "data", data );
+    ReflectionTestUtils.setField( rest, "meta", meta );
+    ReflectionTestUtils.setField( rest, "data", data );
 
     Object[] output = rest.callRest( new Object[] { 0 } );
     //Should not get any exception but a non-null output
@@ -114,21 +108,19 @@ public class RestTest {
     Invocation.Builder builder = mock( Invocation.Builder.class );
 
     WebTarget resource = mock( WebTarget.class );
-    doReturn( builder ).when( resource ).request();
+    lenient().doReturn( builder ).when( resource ).request();
 
     Client client = mock( Client.class );
-    doReturn( resource ).when( client ).target( anyString() );
+    lenient().doReturn( resource ).when( client ).target( anyString() );
 
     ClientBuilder clientBuilder = mock( ClientBuilder.class );
-    when( clientBuilder.build() ).thenReturn( client );
+    lenient().when( clientBuilder.build() ).thenReturn( client );
 
     RestMeta meta = mock( RestMeta.class );
-    doReturn( false ).when( meta ).isDetailed();
     doReturn( false ).when( meta ).isUrlInField();
     doReturn( false ).when( meta ).isDynamicMethod();
 
     RowMetaInterface rmi = mock( RowMetaInterface.class );
-    doReturn( 1 ).when( rmi ).size();
     doReturn( params[0] ).when( rmi ).getString( params, 0 );
 
     RestData data = mock( RestData.class );
@@ -147,12 +139,11 @@ public class RestTest {
     data.indexOfParamFields = new int[] {0};
     data.paramNames = new String[] {"param1"};
 
-    Rest rest = mock( Rest.class, Answers.RETURNS_DEFAULTS.get() );
+    Rest rest = mock( Rest.class );
     doCallRealMethod().when( rest ).callRest( any() );
-    doCallRealMethod().when( rest ).searchForHeaders( any() );
 
-    setInternalState( rest, "meta", meta );
-    setInternalState( rest, "data", data );
+    ReflectionTestUtils.setField( rest, "meta", meta );
+    ReflectionTestUtils.setField( rest, "data", data );
 
     try {
       Object[] output = rest.callRest( params );
@@ -175,21 +166,19 @@ public class RestTest {
     Invocation.Builder builder = mock( Invocation.Builder.class );
 
     WebTarget resource = mock( WebTarget.class );
-    doReturn( builder ).when( resource ).request();
+    lenient().doReturn( builder ).when( resource ).request();
 
     Client client = mock( Client.class );
-    doReturn( resource ).when( client ).target( anyString() );
+    lenient().doReturn( resource ).when( client ).target( anyString() );
 
     ClientBuilder clientBuilder = mock( ClientBuilder.class );
-    when( clientBuilder.build() ).thenReturn( client );
+    lenient().when( clientBuilder.build() ).thenReturn( client );
 
     RestMeta meta = mock( RestMeta.class );
-    doReturn( false ).when( meta ).isDetailed();
-    doReturn( false ).when( meta ).isUrlInField();
-    doReturn( false ).when( meta ).isDynamicMethod();
+    lenient().doReturn( false ).when( meta ).isUrlInField();
+    lenient().doReturn( false ).when( meta ).isDynamicMethod();
 
     RowMetaInterface rmi = mock( RowMetaInterface.class );
-    doReturn( 1 ).when( rmi ).size();
 
     RestData data = mock( RestData.class );
     data.method = RestMeta.HTTP_METHOD_PUT;
@@ -200,12 +189,11 @@ public class RestTest {
     data.useBody = true;
     // do not set data.indexOfBodyField
 
-    Rest rest = mock( Rest.class, Answers.RETURNS_DEFAULTS.get() );
+    Rest rest = mock( Rest.class );
     doCallRealMethod().when( rest ).callRest( any() );
-    doCallRealMethod().when( rest ).searchForHeaders( any() );
 
-    setInternalState( rest, "meta", meta );
-    setInternalState( rest, "data", data );
+    ReflectionTestUtils.setField( rest, "meta", meta );
+    ReflectionTestUtils.setField( rest, "data", data );
 
     try {
       rest.callRest( new Object[] { 0 } );

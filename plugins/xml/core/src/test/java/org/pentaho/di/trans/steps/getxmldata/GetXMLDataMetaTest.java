@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,14 +27,13 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.internal.util.reflection.Whitebox.getInternalState;
-import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 
 public class GetXMLDataMetaTest {
 
@@ -43,8 +42,8 @@ public class GetXMLDataMetaTest {
     GetXMLDataMeta getXMLDataMeta = new GetXMLDataMeta();
     String[] fileName = new String[] {};
     GetXMLDataField[] inputFields = new GetXMLDataField[] {};
-    setInternalState( getXMLDataMeta, "fileName", fileName );
-    setInternalState( getXMLDataMeta, "inputFields", inputFields );
+    ReflectionTestUtils.setField( getXMLDataMeta, "fileName", fileName );
+    ReflectionTestUtils.setField( getXMLDataMeta, "inputFields", inputFields );
 
     Repository rep = mock( Repository.class );
     IMetaStore metaStore = mock( IMetaStore.class );
@@ -52,21 +51,21 @@ public class GetXMLDataMetaTest {
     ObjectId idStep = mock( ObjectId.class );
 
     String shortFileFieldName = UUID.randomUUID().toString();
-    setInternalState( getXMLDataMeta, "shortFileFieldName", shortFileFieldName );
+    ReflectionTestUtils.setField( getXMLDataMeta, "shortFileFieldName", shortFileFieldName );
     String extensionFieldName = UUID.randomUUID().toString();
-    setInternalState( getXMLDataMeta, "extensionFieldName", extensionFieldName );
+    ReflectionTestUtils.setField( getXMLDataMeta, "extensionFieldName", extensionFieldName );
     String pathFieldName = UUID.randomUUID().toString();
-    setInternalState( getXMLDataMeta, "pathFieldName", pathFieldName );
+    ReflectionTestUtils.setField( getXMLDataMeta, "pathFieldName", pathFieldName );
     String sizeFieldName = UUID.randomUUID().toString();
-    setInternalState( getXMLDataMeta, "sizeFieldName", sizeFieldName );
+    ReflectionTestUtils.setField( getXMLDataMeta, "sizeFieldName", sizeFieldName );
     String hiddenFieldName = UUID.randomUUID().toString();
-    setInternalState( getXMLDataMeta, "hiddenFieldName", hiddenFieldName );
+    ReflectionTestUtils.setField( getXMLDataMeta, "hiddenFieldName", hiddenFieldName );
     String lastModificationTimeFieldName = UUID.randomUUID().toString();
-    setInternalState( getXMLDataMeta, "lastModificationTimeFieldName", lastModificationTimeFieldName );
+    ReflectionTestUtils.setField( getXMLDataMeta, "lastModificationTimeFieldName", lastModificationTimeFieldName );
     String uriNameFieldName = UUID.randomUUID().toString();
-    setInternalState( getXMLDataMeta, "uriNameFieldName", uriNameFieldName );
+    ReflectionTestUtils.setField( getXMLDataMeta, "uriNameFieldName", uriNameFieldName );
     String rootUriNameFieldName = UUID.randomUUID().toString();
-    setInternalState( getXMLDataMeta, "rootUriNameFieldName", rootUriNameFieldName );
+    ReflectionTestUtils.setField( getXMLDataMeta, "rootUriNameFieldName", rootUriNameFieldName );
 
     getXMLDataMeta.saveRep( rep, metaStore, idTransformation, idStep );
 

@@ -142,6 +142,7 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
+import org.pentaho.di.www.CarteSingleton;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
 import org.pentaho.di.www.RegisterPackageServlet;
 import org.pentaho.di.www.RegisterTransServlet;
@@ -5124,6 +5125,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return the socket repository
    */
   public SocketRepository getSocketRepository() {
+    if ( socketRepository == null ) {
+      return ( socketRepository = CarteSingleton.getInstance().getSocketRepository() );
+    }
     return socketRepository;
   }
 

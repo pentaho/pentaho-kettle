@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.trans.SubtransExecutor;
 
 import javax.jms.Destination;
@@ -45,10 +45,11 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith ( MockitoJUnitRunner.class )
+@RunWith ( MockitoJUnitRunner.StrictStubs.class )
 public class JmsStreamSourceTest {
 
   @Mock private JmsContext context;
@@ -63,7 +64,7 @@ public class JmsStreamSourceTest {
 
   @Before
   public void before() throws JMSException {
-    when( subtransExecutor.getPrefetchCount() ).thenReturn( 1000 );
+    lenient().when( subtransExecutor.getPrefetchCount() ).thenReturn( 1000 );
     when( consumerStep.getSubtransExecutor() ).thenReturn( subtransExecutor );
     source = new JmsStreamSource( consumerStep, delegate, 0 );
     when( delegate.getJmsContext() ).thenReturn( context );

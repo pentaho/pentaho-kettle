@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,10 +34,10 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.io.File;
 import java.io.IOException;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -93,7 +93,10 @@ public class OraBulkDataOutputTest {
 
   @Test
   public void testOpenFileException() {
-    doThrow( IOException.class ).when( oraBulkLoaderMeta ).getDataFile();
+    // Using thenAnswer() instead of thenThrow() as a workaround for new mockito exception behavior.
+    // getDataFile doesn't actually throw this, and the place that could actually throw this in
+    // OraBulkDataOutput.open() is difficult to mock
+    when( oraBulkLoaderMeta.getDataFile() ).thenAnswer( i -> { throw new IOException(); } );
     try {
       oraBulkDataOutput.open( space, sqlldrProcess );
       fail( "An IOException was supposed to be thrown, failing test" );

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,10 +42,10 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
  * 
  */
 
-@RunWith( org.mockito.runners.MockitoJUnitRunner.class )
+@RunWith( org.mockito.junit.MockitoJUnitRunner.class )
 public class TrashBrowseControllerTest {
 
   private TrashBrowseControllerSpy trBrController;
@@ -121,7 +121,6 @@ public class TrashBrowseControllerTest {
   @Test
   public void testUnDeleteNoFileSelected() throws Exception {
     when( selectedTrashFileItemsMock.toArray() ).thenReturn( new TrashBrowseController.UIDeletedObject[0] );
-    when( selectedTrashFileItemsMock.size() ).thenReturn( 0 );
     expectedException.expect( RuntimeException.class );
 
     trBrController.undelete();
@@ -162,8 +161,6 @@ public class TrashBrowseControllerTest {
     List<TrashBrowseController.UIDeletedObject> uiDeleteObjects = Arrays.asList( uiDeleteObjectMock );
     when( selectedTrashFileItemsMock.toArray() )
         .thenReturn( new TrashBrowseController.UIDeletedObject[] { uiDeleteObjectMock } );
-    when( selectedTrashFileItemsMock.size() ).thenReturn( 1 );
-    doReturn( uiDeleteObjectMock ).when( selectedTrashFileItemsMock ).get( 0 );
     doReturn( "/home/admin" ).when( uiDeleteObjectMock ).getOriginalParentPath();
     doReturn( objectIdMock ).when( uiDeleteObjectMock ).getId();
     doReturn( deletedObjectType ).when( uiDeleteObjectMock ).getType();
@@ -188,8 +185,6 @@ public class TrashBrowseControllerTest {
   public void testUnDeleteDirectory() throws Exception {
     when( selectedTrashFileItemsMock.toArray() )
         .thenReturn( new TrashBrowseController.UIDeletedObject[] { uiDirectoryObjectMock } );
-    when( selectedTrashFileItemsMock.size() ).thenReturn( 1 );
-    doReturn( uiDirectoryObjectMock ).when( selectedTrashFileItemsMock ).get( 0 );
     doReturn( "/home/admin" ).when( uiDirectoryObjectMock ).getOriginalParentPath();
     doReturn( objectIdMock ).when( uiDirectoryObjectMock ).getId();
     doReturn( null ).when( uiDirectoryObjectMock ).getType();
@@ -218,8 +213,6 @@ public class TrashBrowseControllerTest {
     List<TrashBrowseController.UIDeletedObject> uiDeleteObjects = Arrays.asList( uiDirectoryObjectMock );
     when( selectedTrashFileItemsMock.toArray() )
         .thenReturn( new TrashBrowseController.UIDeletedObject[] { uiDirectoryObjectMock } );
-    when( selectedTrashFileItemsMock.size() ).thenReturn( 1 );
-    doReturn( uiDirectoryObjectMock ).when( selectedTrashFileItemsMock ).get( 0 );
     doReturn( "/home/admin" ).when( uiDirectoryObjectMock ).getOriginalParentPath();
     doReturn( objectIdMock ).when( uiDirectoryObjectMock ).getId();
     doReturn( null ).when( uiDirectoryObjectMock ).getType();
@@ -252,8 +245,6 @@ public class TrashBrowseControllerTest {
     RuntimeException runtimeException = new RuntimeException( "Exception handle" );
     when( selectedTrashFileItemsMock.toArray() )
         .thenReturn( new TrashBrowseController.UIDeletedObject[] { uiDirectoryObjectMock } );
-    when( selectedTrashFileItemsMock.size() ).thenReturn( 1 );
-    doReturn( uiDirectoryObjectMock ).when( selectedTrashFileItemsMock ).get( 0 );
     doThrow( runtimeException ).when( trashServiceMock ).undelete( anyList() );
     doReturn( false ).when( mainControllerMock ).handleLostRepository( any( Throwable.class ) );
 
@@ -271,8 +262,6 @@ public class TrashBrowseControllerTest {
     RuntimeException runtimeException = new RuntimeException( "Exception handle" );
     when( selectedTrashFileItemsMock.toArray() )
         .thenReturn( new TrashBrowseController.UIDeletedObject[] { uiDirectoryObjectMock } );
-    when( selectedTrashFileItemsMock.size() ).thenReturn( 1 );
-    doReturn( uiDirectoryObjectMock ).when( selectedTrashFileItemsMock ).get( 0 );
     doThrow( runtimeException ).when( trashServiceMock ).undelete( anyList() );
     doReturn( true ).when( mainControllerMock ).handleLostRepository( any( Throwable.class ) );
 
@@ -289,14 +278,11 @@ public class TrashBrowseControllerTest {
   public void testUnDeleteNotFoundDir() throws Exception {
     when( selectedTrashFileItemsMock.toArray() )
         .thenReturn( new TrashBrowseController.UIDeletedObject[] { uiDirectoryObjectMock } );
-    when( selectedTrashFileItemsMock.size() ).thenReturn( 1 );
-    doReturn( uiDirectoryObjectMock ).when( selectedTrashFileItemsMock ).get( 0 );
     doReturn( "/home/admin" ).when( uiDirectoryObjectMock ).getOriginalParentPath();
     doReturn( objectIdMock ).when( uiDirectoryObjectMock ).getId();
     doReturn( null ).when( uiDirectoryObjectMock ).getType();
     doReturn( Arrays.asList( uiDirectoryObjectMock ) ).when( trashServiceMock ).getTrash();
     doReturn( null ).when( repositoryMock ).findDirectory( "/home/admin" );
-    doReturn( transMetaMock ).when( repositoryMock ).loadTransformation( objectIdMock, null );
     doReturn( "directory" ).when( uiDirectoryObjectMock ).getName();
     doReturn( null ).when( repositoryMock ).findDirectory( "/home/admin/directory" );
 

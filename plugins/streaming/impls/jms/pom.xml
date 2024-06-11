@@ -42,7 +42,8 @@
     <ibmmq.version>9.0.4.0</ibmmq.version>
     <jms.version>2.0.1</jms.version>
     <pdi.version>10.2.0.0-SNAPSHOT</pdi.version>
-    <artemis.version>2.5.0</artemis.version>
+    <artemis.version>2.33.0</artemis.version>
+    <netty-transport-native.version>4.1.108.Final</netty-transport-native.version>
   </properties>
 
   <dependencies>
@@ -94,6 +95,11 @@
       <artifactId>artemis-jms-client-osgi</artifactId>
       <version>${artemis.version}</version>
       <exclusions>
+        <!--latest artemis bundles slf4j-->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
         <exclusion>
           <!--use org.jms instead-->
           <groupId>org.apache.geronimo.specs</groupId>
@@ -129,12 +135,12 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-transport-native-kqueue</artifactId>
-      <version>4.1.22.Final</version>
+      <version>${netty-transport-native.version}</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-transport-native-epoll</artifactId>
-      <version>4.1.22.Final</version>
+      <version>${netty-transport-native.version}</version>
     </dependency>
 
     <dependency>
@@ -146,8 +152,8 @@
 
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>${mockito-all.version}</version>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

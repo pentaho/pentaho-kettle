@@ -37,7 +37,8 @@
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -62,12 +63,6 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>ftps-plugin-impl</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

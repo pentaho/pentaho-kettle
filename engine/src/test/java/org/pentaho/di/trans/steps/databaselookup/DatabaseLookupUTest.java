@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,8 +29,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -55,11 +53,8 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.RowHandler;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
@@ -73,18 +68,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -155,10 +146,10 @@ public class DatabaseLookupUTest {
 
     RowMeta inputRowMeta = new RowMeta();
     RowSet rowSet = mock( RowSet.class );
-    when( rowSet.getRowWait( anyLong(), any( TimeUnit.class ) ) ).thenReturn( new Object[ 0 ] ).thenReturn( null );
+    when( rowSet.getRowWait( nullable( Long.class ), nullable( TimeUnit.class ) ) ).thenReturn( new Object[ 0 ] ).thenReturn( null );
     when( rowSet.getRowMeta() ).thenReturn( inputRowMeta );
 
-    when( mockHelper.trans.findRowSet( anyString(), anyInt(), anyString(), anyInt() ) ).thenReturn( rowSet );
+    when( mockHelper.trans.findRowSet( nullable( String.class ), nullable( Integer.class ), nullable( String.class ), nullable( Integer.class ) ) ).thenReturn( rowSet );
 
     when( mockHelper.transMeta.findNextSteps( ArgumentMatchers.any( StepMeta.class ) ) )
       .thenReturn( Collections.singletonList( mock( StepMeta.class ) ) );
@@ -230,7 +221,7 @@ public class DatabaseLookupUTest {
     db.setConnection( connection );
 
     db = spy( db );
-    doNothing().when( db ).normalConnect( anyString() );
+    doNothing().when( db ).normalConnect( nullable( String.class ) );
 
     ValueMetaInterface binary = new ValueMetaString( BINARY_FIELD );
     binary.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
@@ -416,10 +407,11 @@ public class DatabaseLookupUTest {
                                           DatabaseLookupMeta meta ) throws KettleException {
     DatabaseLookup step = spyLookup( mockHelper, db, meta.getDatabaseMeta() );
     doNothing().when( step ).determineFieldsTypesQueryingDb();
-    doReturn( null ).when( step ).lookupValues( any( RowMetaInterface.class ), any( Object[].class ) );
+    doReturn( null ).when( step ).lookupValues( nullable( RowMetaInterface.class ), nullable( Object[].class ) );
 
     RowMeta input = new RowMeta();
     input.addValueMeta( new ValueMetaInteger( "Test" ) );
+    doCallRealMethod().when( step ).setInputRowMeta( any() );
     step.setInputRowMeta( input );
     return step;
   }
@@ -433,21 +425,20 @@ public class DatabaseLookupUTest {
     doNothing().when( db ).connect();
     doNothing().when( db ).connect( any() );
 
-    RowHandler mockRowhandler = mock( RowHandler.class );
-    when( mockRowhandler.getRow() ).thenReturn( new Object[0] );
-
     RowMeta returnRowMeta = new RowMeta();
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
-    when( db.getTableFields( nullable( String.class ) ) ).thenReturn( returnRowMeta );
 
     DatabaseLookupMeta meta = createTestMeta();
-    meta.setTableKeyField( new String[] { "foo" } );
     DatabaseLookupData data = new DatabaseLookupData();
-    data.db = db;
 
     DatabaseLookup step = createSpiedStep( db, mockHelper, meta );
+    doCallRealMethod().when( step ).init( any(), any() );
+    doCallRealMethod().when( step ).processRow( any(), any() );
+    doCallRealMethod().when( step ).getRow();
+    doCallRealMethod().when( step ).getRowHandler();
+    step.setStopped( false );
     step.init( meta, data );
 
     data.db = db;

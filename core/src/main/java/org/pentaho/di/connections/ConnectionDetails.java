@@ -67,10 +67,6 @@ public interface ConnectionDetails {
 
   void setSpace( VariableSpace space );
 
-  default boolean hasBuckets() {
-    return true;
-  }
-
   /**
    * Clones the connection details instance.
    * <p>

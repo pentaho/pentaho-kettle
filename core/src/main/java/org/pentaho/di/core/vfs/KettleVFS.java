@@ -33,25 +33,17 @@ import org.apache.commons.vfs2.cache.WeakRefFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.local.LocalFile;
-import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
-import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
-import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
 import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.regex.Matcher;
@@ -65,8 +57,6 @@ import java.util.regex.Pattern;
  */
 public class KettleVFS {
   public static final String TEMP_DIR = System.getProperty( "java.io.tmpdir" );
-  public static final String SMB_SCHEME = "smb";
-  public static final String SMB_SCHEME_COLON = SMB_SCHEME + ":";
 
   private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
 

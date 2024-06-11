@@ -34,7 +34,7 @@
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <pdi.version>10.2.0.0-SNAPSHOT</pdi.version>
-    <mockito.version>1.9.5</mockito.version>
+    <mockito.version>5.10.0</mockito.version>
     <saxon.version>8.7</saxon.version>
     <poi.version>4.1.1</poi.version>
     <platform.version>10.2.0.0-SNAPSHOT</platform.version>
@@ -120,7 +120,7 @@
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
+        <artifactId>mockito-core</artifactId>
         <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
@@ -140,6 +140,12 @@
         <groupId>net.sf.saxon</groupId>
         <artifactId>saxon-dom</artifactId>
         <version>${saxon.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

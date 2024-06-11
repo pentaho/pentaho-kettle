@@ -293,7 +293,7 @@ public class FileController {
     try {
       FileProvider<File> fromFileProvider = providerService.get( file.getProvider() );
       FileProvider<File> toFileProvider = providerService.get( destDir.getProvider() );
-      if ( !path.startsWith( ConnectionFileProvider.SCHEME + "://") ) {
+      if ( !path.startsWith( ConnectionFileProvider.ROOT_URI ) ) {
         path = toFileProvider.sanitizeName( destDir, path );
       }
 

@@ -1,4 +1,3 @@
-
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -21,37 +20,27 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.utils;
+package org.pentaho.di.ui.spoon.tree.extension;
 
-/**
- * This class contains options that control the testing of VFS Connection.
- */
-public class VFSConnectionTestOptions {
+import org.eclipse.swt.widgets.Composite;
 
-  private boolean ignoreRootPath;
+public interface TreePaneExtension {
 
-  public VFSConnectionTestOptions() {
-  }
-
-  public VFSConnectionTestOptions( boolean ignoreRootPath ) {
-    this.ignoreRootPath = ignoreRootPath;
+  /**
+   * Controller to open/close the pane
+   */
+  public interface ExpandController {
+    void show();
+    void hide();
   }
 
   /**
-   * Indicates if the root path should be ignored when testing the connection.
-   * @return {@code true}, if the root path should be ignored; {@code false}, otherwise.
+   * @param main
+   *          Container where to create the extension pane. Implementors should keep a reference to it or its contents.
+   *          It has not default layout.
+   * @param expander
+   *          Callback to show or hide the area.
+   * @return if extension will start enabled
    */
-  public boolean isIgnoreRootPath() {
-    return ignoreRootPath;
-  }
-
-
-  /**
-   * Sets if the root path should be ignored when testing the connection.
-   * @param ignoreRootPath The ignore root path flag.
-   * {@code true} to ignore the root path; {@code false}, otherwise.
-   */
-  public void setIgnoreRootPath( boolean ignoreRootPath ) {
-    this.ignoreRootPath = ignoreRootPath;
-  }
+  boolean createPane( Composite main, ExpandController expander );
 }

@@ -22,20 +22,12 @@
 
 package org.pentaho.di.connections.common.bucket;
 
-  import org.pentaho.di.connections.ConnectionManager;
-  import org.pentaho.di.connections.ConnectionProvider;
-  import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.connections.vfs.BaseVFSConnectionProvider;
+import org.pentaho.di.connections.vfs.VFSRoot;
 
-  import java.util.List;
+import java.util.List;
 
-public class TestConnectionProvider implements ConnectionProvider<TestConnectionDetails> {
-
-  private ConnectionManager connectionManager;
-
-  public TestConnectionProvider( ConnectionManager connectionManager ) {
-    this.connectionManager = connectionManager;
-  }
-
+public class TestConnectionProvider extends BaseVFSConnectionProvider<TestConnectionDetails> {
   public static final String NAME = "Test";
   public static final String SCHEME = "test";
 
@@ -47,33 +39,19 @@ public class TestConnectionProvider implements ConnectionProvider<TestConnection
     return SCHEME;
   }
 
+  @Override public List<VFSRoot> getLocations( TestConnectionDetails vfsConnectionDetails ) {
+    return null;
+  }
+
+  @Override public String getProtocol( TestConnectionDetails vfsConnectionDetails ) {
+    return SCHEME;
+  }
+
   @Override public Class<TestConnectionDetails> getClassType() {
     return TestConnectionDetails.class;
   }
 
-  @Override public List<String> getNames( ConnectionManager connectionManager ) {
-    return connectionManager.getNamesByType( getClass() );
-  }
-
-  @Override public List<String> getNames() {
-    return connectionManager.getNamesByType( getClass() );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  @Override public List<TestConnectionDetails> getConnectionDetails() {
-    return (List<TestConnectionDetails>) connectionManager.getConnectionDetailsByScheme( getKey() );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  @Override public List<TestConnectionDetails> getConnectionDetails( ConnectionManager connectionManager ) {
-    return (List<TestConnectionDetails>) connectionManager.getConnectionDetailsByScheme( getKey() );
-  }
-
   @Override public boolean test( TestConnectionDetails connectionDetails ) {
     return true;
-  }
-
-  @Override public TestConnectionDetails prepare( TestConnectionDetails connectionDetails ) {
-    return connectionDetails;
   }
 }

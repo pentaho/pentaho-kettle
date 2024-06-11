@@ -23,37 +23,37 @@
 package org.pentaho.di.connections.vfs;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileType;
-import org.pentaho.di.connections.ConnectionDetails;
+import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.utils.VFSConnectionTestOptions;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import static org.pentaho.di.connections.vfs.provider.ConnectionFileObject.DELIMITER;
-
 public abstract class BaseVFSConnectionProvider<T extends VFSConnectionDetails> implements VFSConnectionProvider<T> {
 
+  @NonNull
   private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger( BaseVFSConnectionProvider.class );
+  /**
+   * This method was added solely to support unit testing of deprecated behavior.
+   *
+   * @param connectionManagerSupplier A supplier of connection manager.
+   * @deprecated
+   */
+  @Deprecated( forRemoval = true )
+  protected void setConnectionManagerSupplier( @NonNull Supplier<ConnectionManager> connectionManagerSupplier ) {
+    this.connectionManagerSupplier = Objects.requireNonNull( connectionManagerSupplier );
+  }
 
   @Override
   public List<String> getNames() {
-    return connectionManagerSupplier.get().getNamesByType( getClass() );
+    return getNames( connectionManagerSupplier.get() );
   }
 
   @Override
@@ -62,22 +62,29 @@ public abstract class BaseVFSConnectionProvider<T extends VFSConnectionDetails> 
   }
 
   @Override
-  public List<String> getNames( ConnectionManager connectionManager ) {
+  public List<String> getNames( @NonNull ConnectionManager connectionManager ) {
     return connectionManager.getNamesByType( getClass() );
   }
 
   @SuppressWarnings( "unchecked" )
   @Override
-  public List<T> getConnectionDetails( ConnectionManager connectionManager ) {
+  public List<T> getConnectionDetails( @NonNull ConnectionManager connectionManager ) {
     return (List<T>) connectionManager.getConnectionDetailsByScheme( getKey() );
   }
 
-  @Override public T prepare( T connectionDetails ) throws KettleException {
+  @Override
+  public T prepare( T connectionDetails ) throws KettleException {
     return connectionDetails;
   }
 
-  @Override public String sanitizeName( String string ) {
+  @Override
+  public String sanitizeName( String string ) {
     return string;
+  }
+
+  @Override
+  public FileSystemOptions getOpts( T connectionDetails ) {
+    return new FileSystemOptions();
   }
 
   // Utility method to perform variable substitution on values
@@ -100,77 +107,8 @@ public abstract class BaseVFSConnectionProvider<T extends VFSConnectionDetails> 
     return Objects.equals( Boolean.TRUE, ValueMetaBase.convertStringToBoolean( defaultValue ) );
   }
 
-  protected VariableSpace getSpace( ConnectionDetails connectionDetails ) {
+  @NonNull
+  protected VariableSpace getSpace( @NonNull T connectionDetails ) {
     return connectionDetails.getSpace() == null ? Variables.getADefaultVariableSpace() : connectionDetails.getSpace();
   }
-
-  @Override
-  public boolean test( @NonNull T connectionDetails, @NonNull VFSConnectionTestOptions connectionTestOptions ) throws KettleException {
-    boolean valid = test( connectionDetails );
-    if ( !valid ) {
-      return false;
-    }
-
-    if ( !connectionDetails.isSupportsRootPath()  || connectionTestOptions.isIgnoreRootPath() ) {
-      return true;
-    }
-
-    String resolvedRootPath = getResolvedRootPath( connectionDetails );
-    if ( StringUtils.isEmpty( resolvedRootPath ) ) {
-      return !connectionDetails.isRootPathRequired();
-    }
-
-    String internalUrl = buildUrl( connectionDetails, resolvedRootPath );
-    FileObject fileObject = KettleVFS.getFileObject( internalUrl, new Variables(), getOpts( connectionDetails ) );
-
-    try {
-      return fileObject.exists() && this.isFolder( fileObject );
-    } catch ( FileSystemException fileSystemException ) {
-      LOGGER.error( fileSystemException.getMessage() );
-      return false;
-    }
-  }
-
-  @Override
-  public String getResolvedRootPath( @NonNull T connectionDetails ) {
-    if ( StringUtils.isNotEmpty( connectionDetails.getRootPath() ) ) {
-      VariableSpace space = getSpace( connectionDetails );
-      String resolvedRootPath = getVar( connectionDetails.getRootPath(), space );
-      if ( StringUtils.isNotBlank( resolvedRootPath ) ) {
-        return normalizeRootPath( resolvedRootPath );
-      }
-    }
-
-    return StringUtils.EMPTY;
-  }
-
-  private String normalizeRootPath( String rootPath ) {
-    if ( StringUtils.isNotEmpty( rootPath ) ) {
-      if ( !rootPath.startsWith( DELIMITER ) ) {
-        rootPath = DELIMITER + rootPath;
-      }
-      if (rootPath.endsWith( DELIMITER ) ) {
-        rootPath = rootPath.substring( 0, rootPath.length() - 1 );
-      }
-    }
-    return rootPath;
-  }
-
-  private String buildUrl( VFSConnectionDetails connectionDetails, String rootPath ) {
-    String domain = connectionDetails.getDomain();
-    if ( !domain.isEmpty() ) {
-      domain = DELIMITER + domain;
-    }
-    return connectionDetails.getType() + ":/" + domain + rootPath;
-  }
-
-  private boolean isFolder( @NonNull FileObject fileObject ) {
-    try {
-
-      return fileObject.getType() != null && fileObject.getType().equals( FileType.FOLDER );
-    } catch ( FileSystemException e ) {
-      return false;
-    }
-  }
 }
-

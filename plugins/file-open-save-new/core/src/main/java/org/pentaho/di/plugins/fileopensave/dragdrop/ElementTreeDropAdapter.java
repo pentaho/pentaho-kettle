@@ -36,7 +36,7 @@ import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.Entity;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
-import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
+import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSDirectory;
 
 import java.util.Arrays;
 
@@ -60,8 +60,8 @@ public class ElementTreeDropAdapter extends ViewerDropAdapter {
   public boolean performDrop( Object data ) {
     int location = getCurrentLocation();
     Object genericTarget = getCurrentTarget() == null ? getViewer().getInput() : getCurrentTarget();
-    if ( !( genericTarget instanceof Entity ) || ( genericTarget instanceof VFSLocation
-      && ( (VFSLocation) genericTarget ).hasBuckets() ) ) {
+    if ( !( genericTarget instanceof Entity )
+      || ( genericTarget instanceof VFSDirectory && !( (VFSDirectory) genericTarget ).isCanAddChildren() ) ) {
       MessageBox errorBox = new MessageBox( getViewer().getControl().getShell(), SWT.ICON_ERROR | SWT.OK );
       errorBox.setMessage( "Error.  This item is not a valid drop item. Please pick a real folder to drop on." );
       errorBox.open();

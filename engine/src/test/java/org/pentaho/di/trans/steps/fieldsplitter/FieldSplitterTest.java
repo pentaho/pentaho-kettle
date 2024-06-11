@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.fieldsplitter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
@@ -95,8 +96,8 @@ public class FieldSplitterTest {
     FieldSplitterMeta processRowMeta = smh.processRowsStepMetaInterface;
     doReturn( "field to split" ).when( processRowMeta ).getSplitField();
     doCallRealMethod().when( processRowMeta ).getFields( any( RowMetaInterface.class ), anyString(),
-        any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
-        any( IMetaStore.class ) );
+        nullable( RowMetaInterface[].class ), nullable( StepMeta.class ), any( VariableSpace.class ), nullable( Repository.class ),
+      nullable( IMetaStore.class ) );
     doReturn( new String[] { "a", "b" } ).when( processRowMeta ).getFieldName();
     doReturn( new int[] { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } ).when( processRowMeta )
         .getFieldType();

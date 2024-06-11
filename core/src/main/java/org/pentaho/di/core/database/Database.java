@@ -546,7 +546,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   /**
    * Connect using the correct classname
    *
-   * @param classname for example "org.gjt.mm.mysql.Driver"
+   * @param classname for example "com.mysql.jdbc.Driver"
    * @return true if the connect was successful, false if something went wrong.
    */
   private void connectUsingClass( String classname, String partitionId ) throws KettleDatabaseException {

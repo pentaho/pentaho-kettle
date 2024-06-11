@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,27 +22,21 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
 
 import java.util.Base64;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.reflect.Whitebox.getInternalState;
-import static org.powermock.reflect.Whitebox.setInternalState;
+import static org.pentaho.test.util.InternalState.setInternalState;
+import static org.pentaho.test.util.InternalState.getInternalState;
 
-@RunWith( PowerMockRunner.class )
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@PrepareForTest( Client.class )
 public class RepositoryCleanupUtilTest {
 
   @Test
@@ -62,12 +56,15 @@ public class RepositoryCleanupUtilTest {
     doCallRealMethod().when( client ).getHeadHandler();
     doReturn( resource ).when( client ).resource( anyString() );
 
-    mockStatic( Client.class );
-    when( Client.create( any( ClientConfig.class ) ) ).thenReturn( client );
-    util.authenticateLoginCredentials();
+    try( MockedStatic<Client> mockedClient = mockStatic( Client.class) ) {
+      mockedClient.when( () -> Client.create( any( ClientConfig.class ) ) ).thenReturn( client );
 
-    // the expected value is: "Basic <base64 encoded username:password>"
-    assertEquals( "Basic " + new String( Base64.getEncoder().encode( "admin:password".getBytes( "utf-8" ) ) ),
+      when( Client.create( any( ClientConfig.class ) ) ).thenReturn( client );
+      util.authenticateLoginCredentials();
+
+      // the expected value is: "Basic <base64 encoded username:password>"
+      assertEquals( "Basic " + new String( Base64.getEncoder().encode( "admin:password".getBytes( "utf-8" ) ) ),
       getInternalState( client.getHeadHandler(), "authentication" ) );
+    }
   }
 }

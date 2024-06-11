@@ -25,15 +25,16 @@ package org.pentaho.di.core.logging;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.trans.HasDatabasesInterface;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyInt;
@@ -48,7 +49,7 @@ public class BaseLogTableTest {
   @Test
   public void testSecondJobExecutionDoesNotReturnLogFromFirstExecution() throws Exception {
     try ( MockedStatic<KettleLogStore> kettleLogStoreMockedStatic = mockStatic( KettleLogStore.class );
-    MockedStatic<LoggingRegistry> loggingRegistryMockedStatic = mockStatic( LoggingRegistry.class ) ) {
+          MockedStatic<LoggingRegistry> loggingRegistryMockedStatic = mockStatic( LoggingRegistry.class ) ) {
 
       LoggingBuffer lb = spy( new LoggingBuffer( 10 ) );
       kettleLogStoreMockedStatic.when( KettleLogStore::getAppender ).thenReturn( lb );
@@ -70,15 +71,18 @@ public class BaseLogTableTest {
       KettleLoggingEvent kLE1 = spy( KettleLoggingEvent.class );
       LogMessage lm = new LogMessage( "First Job Execution Logging Event", "1", LogLevel.BASIC );
       kLE1.setMessage( lm );
-      addToBuffer( bl, new BufferLine( kLE1 ) );
-
-      BaseLogTable baseLogTable = mock( BaseLogTable.class );
-      doCallRealMethod().when( baseLogTable )
-        .getLogBuffer( any( VariableSpace.class ), anyString(), any( LogStatus.class ), anyString(), anyInt() );
+      BufferLine firstBufferLine = new BufferLine( kLE1 );
+      Field bufferSequenceNum = BufferLine.class.getDeclaredField( "sequence" );
+      ReflectionUtils.makeAccessible( bufferSequenceNum );
+      int startingBufferSequence =
+        ( (AtomicInteger) ReflectionUtils.getField( bufferSequenceNum, firstBufferLine ) ).intValue();
+      addToBuffer( bl, firstBufferLine );
 
       VariableSpace vs = mock( VariableSpace.class );
 
-      String s1 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 1 );
+      BaseLogTable baseLogTable = new BaseLogTableTestImpl( vs, null, "", "", "" );
+
+      String s1 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", startingBufferSequence );
       assertTrue( s1.contains( "First Job Execution Logging Event" ) );
 
       KettleLoggingEvent kLE2 = spy( KettleLoggingEvent.class );
@@ -86,7 +90,7 @@ public class BaseLogTableTest {
       kLE2.setMessage( lm2 );
       addToBuffer( bl, new BufferLine( kLE2 ) );
 
-      String s2 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", 2 );
+      String s2 = baseLogTable.getLogBuffer( vs, "1", LogStatus.START, "", startingBufferSequence + 1 );
       assertFalse( s2.contains( "First Job Execution Logging Event" ) );
       assertTrue( s2.contains( "Second Job Execution Logging Event" ) );
     }
@@ -94,6 +98,31 @@ public class BaseLogTableTest {
 
   private void addToBuffer( ConcurrentSkipListMap bl, BufferLine bufferLine ) {
     bl.put( bufferLine.getNr(), bufferLine );
+  }
+
+  // this may not be essential but it's easier to debug than a mocked abstract class
+  class BaseLogTableTestImpl extends BaseLogTable {
+
+    public BaseLogTableTestImpl( VariableSpace space, HasDatabasesInterface databasesInterface,
+                                 String connectionName, String schemaName, String tableName ) {
+      super( space, databasesInterface, connectionName, schemaName, tableName );
+    }
+
+    @Override public String getLogTableCode() {
+      return "";
+    }
+
+    @Override public String getConnectionNameVariable() {
+      return "";
+    }
+
+    @Override public String getSchemaNameVariable() {
+      return "";
+    }
+
+    @Override public String getTableNameVariable() {
+      return "";
+    }
   }
 
 }
