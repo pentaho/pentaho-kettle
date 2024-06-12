@@ -768,7 +768,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       }
 
     }
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

@@ -771,7 +771,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public Spoon( Repository rep ) {
     super( null );
     this.addMenuBar();
-    log = new LogChannel( APP_NAME, false, false );
+    log = new LogChannel( APP_NAME );
     SpoonFactory.setSpoonInstance( this );
 
     props = PropsUI.getInstance();
@@ -8238,7 +8238,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // start with the default logger until we find out otherwise
     //
-    log = new LogChannel( APP_NAME, false, false );
+    log = new LogChannel( APP_NAME );
 
     // Parse the options...
     if ( !CommandLineOption.parseArguments( args, clOptions, log ) ) {

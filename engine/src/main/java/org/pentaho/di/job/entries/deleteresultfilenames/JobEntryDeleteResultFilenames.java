@@ -218,7 +218,6 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
         logError( BaseMessages.getString( PKG, "JobEntryDeleteResultFilenames.Error", e.toString() ) );
       }
     }
-    setLoggingObjectInUse( false );
     return result;
   }
 

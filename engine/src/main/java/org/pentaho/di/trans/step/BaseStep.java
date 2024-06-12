@@ -161,8 +161,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
   protected LogChannelInterface log;
 
-  protected boolean loggingObjectInUse;
-
   private String containerObjectId;
 
   private Trans trans;
@@ -577,8 +575,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     sdi.setStatus( StepExecutionStatus.STATUS_INIT );
 
-    setLoggingObjectInUse(true);
-
     String slaveNr = transMeta.getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER );
     String clusterSize = transMeta.getVariable( Const.INTERNAL_VARIABLE_CLUSTER_SIZE );
     boolean master = "Y".equalsIgnoreCase( transMeta.getVariable( Const.INTERNAL_VARIABLE_CLUSTER_MASTER ) );
@@ -822,7 +818,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    setLoggingObjectInUse(false);
     sdi.setStatus( StepExecutionStatus.STATUS_DISPOSED );
   }
 
@@ -4344,15 +4339,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   @Override
   public boolean isForcingSeparateLogging() {
     return log != null && log.isForcingSeparateLogging();
-  }
-
-  @Override
-  public boolean isLoggingObjectInUse() {
-    return loggingObjectInUse;
-  }
-
-  public void setLoggingObjectInUse( boolean inUse ) {
-    loggingObjectInUse = inUse;
   }
 
   @Override

@@ -372,7 +372,6 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       logError( BaseMessages.getString( PKG, "JobEntrySetVariables.UnExcpectedError", e.getMessage() ) );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

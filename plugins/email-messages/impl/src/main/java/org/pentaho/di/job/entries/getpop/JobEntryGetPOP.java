@@ -1072,7 +1072,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       }
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 
