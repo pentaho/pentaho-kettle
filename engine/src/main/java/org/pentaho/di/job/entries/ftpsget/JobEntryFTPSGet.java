@@ -825,7 +825,6 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 
     displayResults();
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

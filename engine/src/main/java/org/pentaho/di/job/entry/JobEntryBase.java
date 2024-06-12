@@ -118,8 +118,6 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /** The log channel interface object, used for logging */
   protected LogChannelInterface log;
 
-  private boolean loggingObjectInUse;
-
   /** The log level */
   private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 
@@ -138,13 +136,11 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * Instantiates a new job entry base object.
    */
   public JobEntryBase() {
-    setLoggingObjectInUse( true );
     name = null;
     description = null;
     log = new LogChannel( this );
     attributesMap = new HashMap<>();
     extensionDataMap = new HashMap<>();
-
   }
 
   /**
@@ -156,7 +152,6 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *          the description of the job entry
    */
   public JobEntryBase( String name, String description ) {
-    setLoggingObjectInUse( true );
     setName( name );
     setDescription( description );
     setObjectId( null );
@@ -1052,15 +1047,6 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    */
   public Job getParentJob() {
     return parentJob;
-  }
-
-  @Override
-  public boolean isLoggingObjectInUse() {
-    return loggingObjectInUse;
-  }
-
-  public void setLoggingObjectInUse( boolean inUse ) {
-    loggingObjectInUse = inUse;
   }
 
   /**

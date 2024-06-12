@@ -187,8 +187,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   protected LogChannelInterface log;
 
-  protected boolean loggingObjectInUse;
-
   /**
    * The log level.
    */
@@ -570,7 +568,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * Instantiates a new transformation.
    */
   public Trans() {
-    setLoggingObjectInUse(true);
     status = new AtomicInteger();
 
     transListeners = Collections.synchronizedList( new ArrayList<TransListener>() );
@@ -653,15 +650,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         String.valueOf( transMeta.nrTransHops() ) ) );
     }
 
-  }
-
-  @Override
-  public boolean isLoggingObjectInUse() {
-    return loggingObjectInUse;
-  }
-
-  public void setLoggingObjectInUse( boolean inUse ) {
-    loggingObjectInUse = inUse;
   }
 
   /**
@@ -1641,7 +1629,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException if any errors occur during notification
    */
   protected void fireTransFinishedListeners() throws KettleException {
-    setLoggingObjectInUse( false );
     // PDI-5229 sync added
     synchronized ( transListeners ) {
       if ( transListeners.size() == 0 ) {

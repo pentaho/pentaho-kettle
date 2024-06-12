@@ -1241,7 +1241,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       result.setResult( true );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 
