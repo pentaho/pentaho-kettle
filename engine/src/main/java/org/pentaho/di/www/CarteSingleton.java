@@ -196,6 +196,10 @@ public class CarteSingleton {
 
                     jobMap.removeJob( entry );
 
+                    // Remove the logging information from the log registry & central log store
+                    KettleLogStore.discardLines( job.getLogChannelId(), false );
+
+
                     log.logMinimal( "Cleaned up job "
                       + entry.getName() + " with id " + entry.getId() + " from " + job.getLogDate() );
                   }
