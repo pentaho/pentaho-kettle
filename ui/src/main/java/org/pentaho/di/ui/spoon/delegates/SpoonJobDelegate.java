@@ -47,6 +47,7 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -1334,8 +1335,14 @@ public class SpoonJobDelegate extends SpoonDelegate {
       variableMap.put( fields[idx], data[idx].toString() );
     }
 
+    // apply used variables from all loaded files
+    for ( TransMeta meta : spoon.getLoadedTransformations() ) {
+      ExecutionConfiguration.getUsedVariables( meta, variableMap );
+    }
+    for ( JobMeta meta : spoon.getLoadedJobs() ) {
+      ExecutionConfiguration.getUsedVariables( meta, variableMap );
+    }
     executionConfiguration.setVariables( variableMap );
-    executionConfiguration.getUsedVariables( jobMeta );
     executionConfiguration.setReplayDate( replayDate );
     executionConfiguration.setRepository( spoon.rep );
     executionConfiguration.setSafeModeEnabled( safe );

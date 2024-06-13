@@ -252,6 +252,7 @@ public class JobExecutionConfigurationTest {
     List<String> list0 = new ArrayList<>();
     list0.add( "var1" );
     when( jobMeta0.getUsedVariables(  ) ).thenReturn( list0 );
+    when( jobMeta0.listVariables(  ) ).thenReturn( new String[0] );
     // Const.INTERNAL_VARIABLE_PREFIX values
     when( jobMeta0.getVariable( anyString() ) ).thenReturn( "internalDummyValue" );
 
@@ -274,6 +275,7 @@ public class JobExecutionConfigurationTest {
     List<String> list0 = new ArrayList<>();
     list0.add( "var1" );
     when( jobMeta0.getUsedVariables(  ) ).thenReturn( list0 );
+    when( jobMeta0.listVariables(  ) ).thenReturn( new String[0] );
     when( jobMeta0.getVariable( anyString() ) ).thenReturn( "internalDummyValue" );
 
     executionConfiguration.getUsedVariables( jobMeta0 );
@@ -295,6 +297,7 @@ public class JobExecutionConfigurationTest {
     List<String> list0 = new ArrayList<>();
     list0.add( "var1" );
     when( jobMeta0.getUsedVariables(  ) ).thenReturn( list0 );
+    when( jobMeta0.listVariables(  ) ).thenReturn( new String[0] );
     when( jobMeta0.getVariable( anyString() ) ).thenReturn( "internalDummyValue" );
 
     executionConfiguration.getUsedVariables( jobMeta0 );

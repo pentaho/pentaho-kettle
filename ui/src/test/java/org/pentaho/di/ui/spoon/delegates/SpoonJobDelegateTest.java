@@ -141,6 +141,8 @@ public class SpoonJobDelegateTest {
     doReturn( jobExecutionConfigurationDialog ).when( delegate )
       .newJobExecutionConfigurationDialog( jobExecutionConfiguration, jobMeta );
     doReturn( activeJobGraph ).when( spoon ).getActiveJobGraph();
+    doReturn( new TransMeta[0] ).when( spoon ).getLoadedTransformations();
+    doReturn( new JobMeta[0] ).when( spoon ).getLoadedJobs();
     doReturn( MAP_WITH_TEST_VARIABLE ).when( jobExecutionConfiguration ).getVariables();
     doReturn( MAP_WITH_TEST_PARAM ).when( jobExecutionConfiguration ).getParams();
     doReturn( TEST_LOG_LEVEL ).when( jobExecutionConfiguration ).getLogLevel();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -128,6 +129,8 @@ public class SpoonTransformationDelegateTest {
     doReturn( rowMeta ).when( spoon.variables ).getRowMeta();
     doReturn( EMPTY_STRING_ARRAY ).when( rowMeta ).getFieldNames();
     doReturn( transExecutionConfiguration ).when( spoon ).getTransExecutionConfiguration();
+    doReturn( new TransMeta[0] ).when( spoon ).getLoadedTransformations();
+    doReturn( new JobMeta[0] ).when( spoon ).getLoadedJobs();
     doReturn( MAP_WITH_TEST_PARAM ).when( transExecutionConfiguration ).getParams();
     doReturn( activeTransGraph ).when( spoon ).getActiveTransGraph();
     doReturn( TEST_LOG_LEVEL ).when( transExecutionConfiguration ).getLogLevel();

@@ -23,6 +23,8 @@
 package org.pentaho.di.connections.vfs.provider;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import java.util.Collections;
+import java.util.Set;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.junit.Before;
@@ -36,6 +38,7 @@ import org.pentaho.di.connections.common.domain.TestConnectionWithDomainProvider
 import org.pentaho.di.connections.common.domain.TestFileWithDomainProvider;
 import org.pentaho.di.core.bowl.BaseBowl;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.metastore.api.IMetaStore;
@@ -95,6 +98,14 @@ public class ConnectionFileProviderTest {
       @Override
       public IMetaStore getMetastore() {
         return memoryMetaStore;
+      }
+      @Override
+      public VariableSpace getADefaultVariableSpace() {
+        return null;
+      }
+      @Override
+      public Set<Bowl> getParentBowls() {
+        return Collections.emptySet();
       }
     };
   }

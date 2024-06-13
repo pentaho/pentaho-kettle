@@ -462,6 +462,14 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected abstract void setInternalFilenameKettleVariables( VariableSpace var );
 
   /**
+   * Return a list of the names of all the variables used by this meta or its contents
+   *
+   *
+   * @return List&lt;String&gt; the names of used variables
+   */
+  public abstract List<String> getUsedVariables();
+
+  /**
    * Find a database connection by it's name
    *
    * @param name The database name to look for
