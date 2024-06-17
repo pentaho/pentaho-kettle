@@ -3,6 +3,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
+<meta http-equiv="refresh" content="300">
 <style>
   body, html {
       background-color: #2d2d2d;
@@ -35,7 +36,9 @@
     }
 
     // Show the specific tab content
-    document.getElementById(pageName).style.display = "block";
+    if (document.getElementById(pageName)) {
+      document.getElementById(pageName).style.display = "block";
+    }
   }
 
   window.onload=function(){
