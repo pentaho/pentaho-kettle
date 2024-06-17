@@ -27,41 +27,36 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.www.SlaveServerJobStatus;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
-import java.io.IOException;
-
-import org.pentaho.di.core.KettleClientEnvironment;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.www.SlaveServerJobStatus;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -125,8 +120,8 @@ public class JobEntryJobIT extends JobEntryJob {
     doReturn( FILE.toString() ).when( job ).environmentSubstitute( LOG_FILE_NAME );
     doReturn( REMOTE_SLAVE_SERVER_NAME ).when( job ).environmentSubstitute( REMOTE_SLAVE_SERVER_NAME );
     doReturn( jobMeta ).when( job ).getJobMeta( any( Repository.class ), any( VariableSpace.class ) );
-    doNothing().when( job ).copyVariablesFrom( anyObject() );
-    doNothing().when( job ).setParentVariableSpace( anyObject() );
+    doNothing().when( job ).copyVariablesFrom( any( VariableSpace.class ) );
+    doNothing().when( job ).setParentVariableSpace( any( VariableSpace.class ) );
 
     job.setLogfile = true;
     job.createParentFolder = false;
