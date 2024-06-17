@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,14 @@
 
 package org.pentaho.di.pan;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Result;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Result;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -41,11 +38,18 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.core.service.PluginServiceLoader;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.kitchen.Kitchen;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 public class Pan {
   private static Class<?> PKG = Pan.class; // for i18n purposes, needed by Translator2!!
@@ -77,6 +81,7 @@ public class Pan {
       StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
       StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
       StringBuilder optionBase64Zip, optionUuid;
+      StringBuilder pluginParam = new StringBuilder();
 
       NamedParams optionParams = new NamedParamsDefault();
 
@@ -164,12 +169,12 @@ public class Pan {
             "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
             new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
 
-
+      List<CommandLineOption> updatedOptionList = getAdditionalCommandlineOption( options, pluginParam );
       if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
-        CommandLineOption.printUsage( options );
+        CommandLineOption.printUsage( updatedOptionList.toArray( new CommandLineOption[ 0 ] ) );
         exitJVM( CommandExecutorCodes.Pan.CMD_LINE_PRINT.getCode() );
       }
-
+      options = updatedOptionList.toArray( new CommandLineOption[ 0 ] );
 
       // Parse the options...
       if ( !CommandLineOption.parseArguments( args, options, log ) ) {
@@ -213,7 +218,6 @@ public class Pan {
         log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.Loglevel", log.getLogLevel().getDescription() ) );
       }
 
-      // ///////////////////////////////////////////////////////////////////////////////////////////////////
       // This is where the action starts.
       // Print the options before we start processing when running in Debug or Rowlevel
       //
@@ -239,46 +243,86 @@ public class Pan {
         }
       }
 
+      if ( !Utils.isEmpty( pluginParam.toString() ) ) {
+        CommandExecutorResult result = validateAndSetPluginParam( log, pluginParam.toString() );// it should take the List class field just added.
+        if ( result.getCode() != 0 ) {
+          log.logError( result.getDescription() );
+          exitJVM( result.getCode() );
+        }
+      }
+
       Params.Builder builder =
         optionUuid.length() > 0 ? new Params.Builder( optionUuid.toString() ) : new Params.Builder();
       Params transParams = ( builder )
-              .blockRepoConns( optionNorep.toString() )
-              .repoName( optionRepname.toString() )
-              .repoUsername( optionUsername.toString() )
-              .trustRepoUser( optionTrustUser.toString() )
-              .repoPassword( optionPassword.toString() )
-              .inputDir( optionDirname.toString() )
-              .inputFile( optionTransname.toString() )
-              .listRepoFiles( optionListtrans.toString() )
-              .listRepoDirs( optionListdir.toString() )
-              .exportRepo( optionExprep.toString() )
-              .localFile( optionFilename.toString() )
-              .localJarFile( optionJarFilename.toString() )
-              .localInitialDir( initialDir.toString() )
-              .listRepos( optionListrep.toString() )
-              .safeMode( optionSafemode.toString() )
-              .metrics( optionMetrics.toString() )
-              .listFileParams( optionListParam.toString() )
-              .logLevel( "" )
-              .maxLogLines( "" )
-              .maxLogTimeout( "" )
-              .logFile( "" )
-              .oldLogFile( "" )
-              .version( "" )
-              .resultSetStepName( optionResultSetStepName.toString() )
-              .resultSetCopyNumber( optionResultSetCopyNumber.toString() )
-              .base64Zip( optionBase64Zip.toString() )
-              .namedParams( optionParams )
-              .build();
+        .blockRepoConns( optionNorep.toString() )
+        .repoName( optionRepname.toString() )
+        .repoUsername( optionUsername.toString() )
+        .trustRepoUser( optionTrustUser.toString() )
+        .repoPassword( optionPassword.toString() )
+        .inputDir( optionDirname.toString() )
+        .inputFile( optionTransname.toString() )
+        .listRepoFiles( optionListtrans.toString() )
+        .listRepoDirs( optionListdir.toString() )
+        .exportRepo( optionExprep.toString() )
+        .localFile( optionFilename.toString() )
+        .localJarFile( optionJarFilename.toString() )
+        .localInitialDir( initialDir.toString() )
+        .listRepos( optionListrep.toString() )
+        .safeMode( optionSafemode.toString() )
+        .metrics( optionMetrics.toString() )
+        .listFileParams( optionListParam.toString() )
+        .logLevel( "" )
+        .maxLogLines( "" )
+        .maxLogTimeout( "" )
+        .logFile( "" )
+        .oldLogFile( "" )
+        .version( "" )
+        .resultSetStepName( optionResultSetStepName.toString() )
+        .resultSetCopyNumber( optionResultSetCopyNumber.toString() )
+        .base64Zip( optionBase64Zip.toString() )
+        .namedParams( optionParams )
+        .build();
 
-      Result result = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] ) );
+      Result rslt = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] ) );
 
-      exitJVM( result.getExitStatus() );
+      exitJVM( rslt.getExitStatus() );
 
     } catch ( Throwable t ) {
       t.printStackTrace();
       exitJVM( CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode() );
     }
+  }
+
+  private static CommandExecutorResult validateAndSetPluginParam( LogChannelInterface log, String param ) {
+    CommandExecutorResult result = null;
+    try {
+      for ( CommandLineOptionProvider provider : PluginServiceLoader.loadServices( CommandLineOptionProvider.class ) ) {
+        result = provider.handleParameter( log, param );
+        if ( result.getCode() != 0 ) {
+          break; // if result is NOT SUCCESS, break out of the loop
+        }
+      }
+    } catch ( KettleException e ) {
+      throw new RuntimeException( e );
+    }
+    return result;
+  }
+
+  private static List<CommandLineOption> getAdditionalCommandlineOption( CommandLineOption[] options,
+                                                                         StringBuilder param ) {
+    List<CommandLineOption> modifiableList = new ArrayList<>();
+
+    Collections.addAll( modifiableList, options );
+    try {
+      for ( CommandLineOptionProvider provider : PluginServiceLoader.loadServices( CommandLineOptionProvider.class ) ) {
+        provider.prepareAdditionalCommandlineOption( modifiableList, param );
+        //above returning the newly added CommandLineOption
+        //add it to a List<CommandlineOption> pluginParams as class field.
+      }
+    } catch ( KettlePluginException e ) {
+      System.out.println( "Exception loading CommandLineOptionProvider services" + e.toString() );
+    }
+    return modifiableList;
   }
 
   /**
