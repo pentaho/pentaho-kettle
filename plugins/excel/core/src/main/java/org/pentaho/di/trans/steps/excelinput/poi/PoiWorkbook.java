@@ -39,6 +39,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 
 public class PoiWorkbook implements KWorkbook {
 
@@ -73,7 +74,7 @@ public class PoiWorkbook implements KWorkbook {
         } catch ( Exception ofe ) {
           try {
             opcpkg = OPCPackage.open( excelFile );
-            workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create( opcpkg );
+            workbook = XSSFWorkbookFactory.createWorkbook( opcpkg );
           } catch ( Exception ex ) {
             workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create( excelFile, password );
           }

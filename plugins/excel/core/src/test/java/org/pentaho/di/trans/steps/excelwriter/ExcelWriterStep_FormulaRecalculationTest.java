@@ -57,7 +57,8 @@ public class ExcelWriterStep_FormulaRecalculationTest {
       mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
     step = spy( step );
     // ignoring to avoid useless errors in log
-    doNothing().when( step ).prepareNextOutputFile();
+    boolean createSXSSFWorkbook = false;
+    doNothing().when( step ).prepareNextOutputFile(createSXSSFWorkbook);
 
     data = new ExcelWriterStepData();
 

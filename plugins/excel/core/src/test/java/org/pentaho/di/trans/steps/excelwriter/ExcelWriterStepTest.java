@@ -90,6 +90,7 @@ public class ExcelWriterStepTest {
 
   private ExcelWriterStepMeta metaMock;
   private ExcelWriterStepData dataMock;
+  boolean createSXSSFWorkbook = false;
 
   @Before
   public void setUp() throws Exception {
@@ -125,7 +126,7 @@ public class ExcelWriterStepTest {
     step.init( mockHelper.initStepMetaInterface, mockHelper.initStepDataInterface );
 
     try {
-      step.prepareNextOutputFile();
+      step.prepareNextOutputFile(createSXSSFWorkbook);
       // An exception should have been thrown!
       fail();
     } catch ( KettleException e ) {
@@ -149,7 +150,7 @@ public class ExcelWriterStepTest {
     dataMock.createNewFile = true;
     dataMock.realTemplateFileName = getTemplateTestXlsx().getFile();
     dataMock.realSheetname = SHEET_NAME;
-    step.prepareNextOutputFile();
+    step.prepareNextOutputFile(createSXSSFWorkbook);
   }
 
   @Test
@@ -181,7 +182,7 @@ public class ExcelWriterStepTest {
     doReturn( 10 ).when( dataMock.inputRowMeta ).size();
     doReturn( vmi ).when( dataMock.inputRowMeta ).getValueMeta( anyInt() );
 
-    step.prepareNextOutputFile();
+    step.prepareNextOutputFile(createSXSSFWorkbook);
 
     assertTrue( "must use streaming", dataMock.sheet instanceof SXSSFSheet );
     dataMock.posY = 1;
@@ -439,7 +440,7 @@ public class ExcelWriterStepTest {
     doReturn( 1 ).when( dataMock.inputRowMeta ).size();
     doReturn( vmi ).when( dataMock.inputRowMeta ).getValueMeta( anyInt() );
 
-    step.prepareNextOutputFile();
+    step.prepareNextOutputFile(createSXSSFWorkbook);
 
     assertNull( dataMock.sheet.getRow( 1 ) );
 

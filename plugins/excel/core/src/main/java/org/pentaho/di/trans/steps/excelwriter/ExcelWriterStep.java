@@ -98,6 +98,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
     meta = (ExcelWriterStepMeta) smi;
     data = (ExcelWriterStepData) sdi;
+    boolean createSXSSFWorkbook = true;
 
     // get next row
     Object[] r = getRow();
@@ -119,7 +120,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         data.firstFileOpened = true;
 
         try {
-          prepareNextOutputFile();
+          // As the file is being created and the rows are being initialized,
+          // so there will be no read and re-write operation for the first time, creating SXSSFWorkbook
+          prepareNextOutputFile(createSXSSFWorkbook);
         } catch ( KettleException e ) {
           logError( BaseMessages.getString( PKG, "ExcelWriterStep.Exception.CouldNotPrepareFile",
             environmentSubstitute( meta.getFileName() ) ) );
@@ -133,7 +136,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         // if we are supposed to init the file delayed, here we go
         if ( meta.isDoNotOpenNewFileInit() ) {
           data.firstFileOpened = true;
-          prepareNextOutputFile();
+          prepareNextOutputFile(false);
         }
 
         // Let's remember where the fields are in the input row
@@ -196,7 +199,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( !meta.isAppendLines() && meta.getSplitEvery() > 0 && data.datalines > 0
           && data.datalines % meta.getSplitEvery() == 0 ) {
         closeOutputFile();
-        prepareNextOutputFile();
+        prepareNextOutputFile(false);
       }
 
       writeNextLine( r );
@@ -632,7 +635,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     }
   }
 
-  public void prepareNextOutputFile() throws KettleException {
+  public void prepareNextOutputFile(boolean createSXSSFWorkbook) throws KettleException {
     try {
       // sheet name shouldn't exceed 31 character
       if ( data.realSheetname != null && data.realSheetname.length() > 31 ) {
@@ -691,6 +694,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           // In that case, one needs to initialize it later, after writing header/template, because
           // SXSSFWorkbook can't read/rewrite existing data, only append.
           data.wb = new XSSFWorkbook( inputStream );
+          // As the file is being created and the rows are being initialized,
+          // so there will be no read and re-write operation for the first time, creating SXSSFWorkbook
+          if(createSXSSFWorkbook) {
+            data.wb = new SXSSFWorkbook( (XSSFWorkbook) data.wb, STREAMING_WINDOW_SIZE );
+          }
         } else {
           data.wb = new HSSFWorkbook( inputStream );
         }
@@ -860,7 +868,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
     } else {
       // handle fresh file case, just create a fresh workbook
-      try ( Workbook wb = XLSX.equalsIgnoreCase( meta.getExtension() ) ? new XSSFWorkbook() : new HSSFWorkbook();
+      try ( Workbook wb = XLSX.equalsIgnoreCase( meta.getExtension() ) ? new SXSSFWorkbook() : new HSSFWorkbook();
           BufferedOutputStreamWithCloseDetection out =
               new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) ) ) {
         wb.createSheet( data.realSheetname );

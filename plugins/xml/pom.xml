@@ -36,7 +36,7 @@
     <pdi.version>10.2.0.0-SNAPSHOT</pdi.version>
     <mockito.version>5.10.0</mockito.version>
     <saxon.version>8.7</saxon.version>
-    <poi.version>4.1.1</poi.version>
+    <poi.version>5.2.5</poi.version>
     <platform.version>10.2.0.0-SNAPSHOT</platform.version>
   </properties>
 

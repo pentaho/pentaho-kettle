@@ -46,6 +46,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTRst;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTXf;
+import org.apache.poi.xssf.model.SharedStrings;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.xmlbeans.XmlObject;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
@@ -291,7 +294,7 @@ public class StaxPoiSheetTest {
   }
 
   private XSSFReader mockXSSFReader( final String sheetId,
-                                     final String sheetContent, final SharedStringsTable sst, final StylesTable styles )
+                                     final String sheetContent, final SharedStrings sst, final StylesTable styles )
     throws Exception {
     XSSFReader reader = mock( XSSFReader.class );
     when( reader.getSharedStringsTable() ).thenReturn( sst );
@@ -330,10 +333,8 @@ public class StaxPoiSheetTest {
 
   private SharedStringsTable mockSharedStringsTable( String... strings ) {
     SharedStringsTable sst = new SharedStringsTable();
-    for ( String str : strings ) {
-      CTRst st = CTRst.Factory.newInstance();
-      st.setT( str );
-      sst.addEntry( st );
+    for (String str : strings) {
+      sst.addSharedStringItem(new XSSFRichTextString(str));
     }
     return sst;
   }
