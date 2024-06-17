@@ -57,6 +57,7 @@ ee:
         - pentaho-hadoop-shims-ee-dataproc1421-kar-${pentaho-hadoop-shims.version}.kar
         - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
         - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-apachevanilla-kar-${pentaho-hadoop-shims.version}.kar
     container-images:
         - pdi-carte-ee-aws-${platform.version}.tar.gz
         - pdi-carte-ee-bigdata-aws-${platform.version}.tar.gz
