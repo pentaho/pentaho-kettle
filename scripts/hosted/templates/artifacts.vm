@@ -27,7 +27,7 @@
       #end
 
       <tr>
-        <td class="Item" align="left"><a href="${artifactoryURL}${file.repo}/${file.path}/${file.name}" target="_new">${file.name}</a></td>
+        <td class="Item" align="left"><a href="${file.signedURL}" target="_new">${file.name}</a></td>
         <td class="Item" align="center">$osName</td>
         <td class="Item" align="right">$fileSize</td>
         <td class="Item" align="left">SHA1=<b>${file.actual_sha1}</b></td>
