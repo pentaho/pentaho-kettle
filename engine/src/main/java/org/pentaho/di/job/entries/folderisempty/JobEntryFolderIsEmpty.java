@@ -259,7 +259,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
       result.setNrErrors( 1 );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

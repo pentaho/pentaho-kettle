@@ -439,7 +439,6 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
     result.setNrLinesRead( rowsCount );
     result.setNrErrors( errCount );
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -86,6 +86,7 @@ public class LoggingRegistry {
   private int purgeTimerCount;
   /** Stat that counts the amount of Objects removed from registry map.**/
   private int purgedObjectCount;
+  private boolean purgeTimerScheduledAlready = false;
 
   /** Sync object **/
   private final Object syncObject = new Object();
@@ -99,9 +100,6 @@ public class LoggingRegistry {
     this.lastModificationTime = new Date();
     this.purgeTimerCount = 0;
     this.purgedObjectCount = 0;
-
-    updateFromProperties();
-    installPurgeTimer();
   }
 
   public static LoggingRegistry getInstance() {
@@ -241,6 +239,17 @@ public class LoggingRegistry {
     this.purgeTimeout = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOGGING_REGISTRY_PURGE_TIMEOUT ),
       DEFAULT_PURGE_TIMER );
   }
+
+  /**
+   * Schedule the Purge Timer.
+   */
+  public void schedulePurgeTimer() {
+    if ( !purgeTimerScheduledAlready ) {
+      installPurgeTimer();
+      purgeTimerScheduledAlready = true;
+    }
+  }
+
 
   /**
    * Searches for a LogChannel and returns a list of children IDs.
@@ -544,7 +553,7 @@ public class LoggingRegistry {
       String objId = obj.getLogChannelId();
 
       // Only Objects that are tied to a buffer can be purged.
-      if ( !channelsNotToRemove.contains( objId ) && !map.get(objId).isLoggingObjectInUse() ) {
+      if ( !channelsNotToRemove.contains( objId ) ) {
         // Object is safe to remove, but the counter for purged objects will only be incremented if it is really
         // removed from the map as it's possible for the object to not exist on the map.
         if ( null != map.remove( objId ) ) {
@@ -604,7 +613,7 @@ public class LoggingRegistry {
   /**
    * Setups and schedules the PurgeTimer task.
    */
-  private void installPurgeTimer() {
+  private void  installPurgeTimer( ) {
 
     if ( purgeTimer == null ) {
       purgeTimer = new Timer( "LoggingRegistryPurgeTimer", true );

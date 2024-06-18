@@ -442,7 +442,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       result.setNrErrors( NbrFail );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

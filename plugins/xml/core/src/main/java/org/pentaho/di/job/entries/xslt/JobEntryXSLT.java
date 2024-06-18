@@ -413,7 +413,6 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
     result.setNrErrors( NrErrors );
     result.setNrLinesWritten( NrSuccess );
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

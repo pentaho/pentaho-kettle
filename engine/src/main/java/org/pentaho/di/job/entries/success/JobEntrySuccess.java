@@ -101,7 +101,6 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
     result.setNrErrors( 0 );
     result.setResult( true );
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

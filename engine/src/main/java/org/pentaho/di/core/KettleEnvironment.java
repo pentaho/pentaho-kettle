@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -151,6 +151,9 @@ public class KettleEnvironment {
 
         // Update Variables for LoggingRegistry
         LoggingRegistry.getInstance().updateFromProperties();
+
+        // Schedule the purge timer task
+        LoggingRegistry.getInstance().schedulePurgeTimer();
 
         // Initialize the Lifecycle Listeners
         //

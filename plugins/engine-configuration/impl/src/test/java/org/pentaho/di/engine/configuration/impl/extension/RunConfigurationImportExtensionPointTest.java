@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
@@ -39,7 +39,6 @@ import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
-
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,7 +53,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by bmorrise on 5/15/17.
  */
-@RunWith( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class RunConfigurationImportExtensionPointTest {
 
   private RunConfigurationImportExtensionPoint runConfigurationImportExtensionPoint;
@@ -92,10 +91,6 @@ public class RunConfigurationImportExtensionPointTest {
 
     ArgumentCaptor<DefaultRunConfiguration> rcCaptor =  ArgumentCaptor.forClass( DefaultRunConfiguration.class );
     when( jobMeta.getEmbeddedMetaStore() ).thenReturn( embeddedMetaStore );
-    when( jobMeta.getSlaveServers() ).thenReturn( Arrays.asList(
-            new SlaveServer( "carte1", "host1", "1234", "user", "passw" ),
-            new SlaveServer( "carte2", "host2", "1234", "user", "passw" )
-            ) );
     when( jobMeta.getJobCopies() ).thenReturn( Arrays.asList( jobEntryCopy1, jobEntryCopy2, jobEntryCopy3 ) );
     when( jobEntryCopy1.getEntry() ).thenReturn( trans1 );
     when( jobEntryCopy2.getEntry() ).thenReturn( trans2 );
