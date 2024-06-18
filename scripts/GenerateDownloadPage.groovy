@@ -206,7 +206,7 @@ directories.each { dir ->
       }
       fileList.sort { it.name }
 
-      def extensionsRegex = /(.*\.zip$|.*\.tar.gz$|.*\.exe$|.*\.jar$|.*\.bin$|.*\.pdf)/
+      def extensionsRegex = /(.*\.zip$|.*\.tar.gz$|.*\.exe$|.*\.jar$|.*\.bin$|.*\.pdf|.*\.kar)/
       fileList.each { file ->
         def name = file.getName()
         def matcher = (name =~ extensionsRegex)
