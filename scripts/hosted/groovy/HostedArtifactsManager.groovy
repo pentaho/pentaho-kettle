@@ -188,6 +188,7 @@ class HostedArtifactsManager implements Serializable {
     if (isSnapshotBuild()) {
       artifactsMetadata = getLatestArtifacts(artifactsMetadata)
     }
+    artifactsMetadata = this.artifactoryHandler.addArtifactsSignedURLs(artifactsMetadata)
 
     if (replaceDisplayLinkText != null) {
       replaceDisplayLinkText.call()

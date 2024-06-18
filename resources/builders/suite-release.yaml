@@ -11,7 +11,7 @@ buildProperties:
     test   : test -Djs.no.sandbox
 
   ARTIFACT_DEPLOYER_CREDENTIALS_ID : jfrog-pentaho-service-cicd
-  ARTIFACTORY_BASE_URL             : https://repo.orl.eng.hitachivantara.com
+  ARTIFACTORY_BASE_URL             : https://one.hitachivantara.com
   ARTIFACTORY_BASE_API_URL         : ${ARTIFACTORY_BASE_URL}/artifactory
 
   MAVEN_RESOLVE_REPO_URL           : https://one.hitachivantara.com/artifactory/pnt-mvn/
