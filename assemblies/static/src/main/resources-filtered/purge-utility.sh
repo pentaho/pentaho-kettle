@@ -30,6 +30,13 @@ DIR=`pwd`
 . "$DIR/set-pentaho-env.sh"
 setPentahoEnv
 
+JAVA_ADD_OPENS=""
+JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
+JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/java.lang=ALL-UNNAMED"
+JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/java.net=ALL-UNNAMED"
+JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/sun.net.www.protocol.http=ALL-UNNAMED"
+JAVA_ADD_OPENS="$JAVA_ADD_OPENS --add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED"
+
 # uses Java 6 classpath wildcards
 # quotes required around classpath to prevent shell expansion
-"$_PENTAHO_JAVA" -Xmx2048m -classpath "$DIR/plugins/pdi-pur-plugin/*:$DIR/lib/*:$DIR/classes" com.pentaho.di.purge.RepositoryCleanupUtil "$@"
+"$_PENTAHO_JAVA" $JAVA_ADD_OPENS -Xmx2048m -classpath "$DIR/plugins/pdi-pur-plugin/*:$DIR/lib/*:$DIR/classes" com.pentaho.di.purge.RepositoryCleanupUtil "$@"

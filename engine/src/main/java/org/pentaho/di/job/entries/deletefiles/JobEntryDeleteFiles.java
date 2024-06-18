@@ -248,7 +248,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       result.setNrErrors( numberOfErrFiles );
       result.setResult( false );
     }
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

@@ -23,6 +23,7 @@
 package org.pentaho.di.core.vfs;
 
 import org.pentaho.di.connections.vfs.VFSHelper;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileSystem;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -61,7 +62,7 @@ import org.apache.commons.vfs2.provider.local.LocalFile;
  *
  */
 public class KettleVFSImpl implements IKettleVFS {
-  public static final String CONNECTION = "connection";
+  public static final String CONNECTION = ConnectionFileSystem.CONNECTION;
 
   private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
   private static final int TIMEOUT_LIMIT = 9000;

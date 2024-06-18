@@ -130,7 +130,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         driverClass = "com.mysql.cj.jdbc.Driver";
         Class.forName( driverClass );
       } catch ( ClassNotFoundException e ) {
-        driverClass = "org.gjt.mm.mysql.Driver";
+        driverClass = "com.mysql.jdbc.Driver";
       }
     }
     return driverClass;

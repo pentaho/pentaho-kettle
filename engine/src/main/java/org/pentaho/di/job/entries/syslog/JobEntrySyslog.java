@@ -322,7 +322,6 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
       }
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

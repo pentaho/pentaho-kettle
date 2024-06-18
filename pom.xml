@@ -64,7 +64,6 @@
     <jface.version>3.3.0-I20070606-0010</jface.version>
 
     <!-- Test dependencies -->
-    <mockito-all.version>1.10.19</mockito-all.version>
     <mockito.version>5.10.0</mockito.version>
 
     <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
@@ -201,18 +200,6 @@
       </dependency>
 
       <!-- Test dependencies -->
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${mockito-all.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>java-hamcrest</artifactId>

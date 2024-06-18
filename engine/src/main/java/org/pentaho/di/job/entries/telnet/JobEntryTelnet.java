@@ -200,7 +200,7 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
       logError( BaseMessages.getString( PKG, "JobTelnet.NOK.Label", hostname, String.valueOf( port ) ) );
       logError( BaseMessages.getString( PKG, "JobTelnet.Error.Label" ) + ex.getMessage() );
     }
-    setLoggingObjectInUse( false );
+
     return result;
   }
 

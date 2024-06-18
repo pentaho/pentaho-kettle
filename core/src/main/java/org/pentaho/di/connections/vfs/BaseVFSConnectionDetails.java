@@ -62,7 +62,7 @@ public abstract class BaseVFSConnectionDetails implements VFSConnectionDetails {
    * @default {@code true}
    */
   @Override
-  public boolean isSupportsRootPath() {
+  public boolean isRootPathSupported() {
     return true;
   }
 

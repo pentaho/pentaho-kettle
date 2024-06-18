@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,7 +36,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -75,7 +74,6 @@ public class LoggingRegistryTest {
     String id = "1";
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     LogChannelFileWriterBuffer buffer = new LogChannelFileWriterBuffer( id );
     loggingRegistry.registerLogChannelFileWriterBuffer( buffer );
 
@@ -87,7 +85,6 @@ public class LoggingRegistryTest {
     String id = "1";
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     LogChannelFileWriterBuffer buffer = new LogChannelFileWriterBuffer( id );
     loggingRegistry.registerLogChannelFileWriterBuffer( buffer );
 
@@ -99,7 +96,6 @@ public class LoggingRegistryTest {
     String id = "1";
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     LogChannelFileWriterBuffer buffer = new LogChannelFileWriterBuffer( id );
     loggingRegistry.registerLogChannelFileWriterBuffer( buffer );
 
@@ -111,7 +107,6 @@ public class LoggingRegistryTest {
   @Test
   public void getLogChannelFileWriterBufferTest() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     Map<String, LogChannelFileWriterBuffer> fileWriterBuffers = getDummyFileWriterBuffers();
 
     loggingRegistry.setFileWriterBuffers( fileWriterBuffers );
@@ -131,7 +126,6 @@ public class LoggingRegistryTest {
   @Test
   public void getLogChannelFileWriterBufferOnlyOnePossibilityTest() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
     Map<String, LogChannelFileWriterBuffer> fileWriterBuffers = getDummyFileWriterBuffers();
 
     fileWriterBuffers.remove( "7c1526bc-789e-4f5a-8d68-1f9c39488ceb" );
@@ -163,12 +157,13 @@ public class LoggingRegistryTest {
   public void testPurgeTimerReset()  {
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.schedulePurgeTimer();
     loggingRegistry.setMaxSize( 10 );
 
     int beforeReset = loggingRegistry.getTimerHashCode();
 
     loggingRegistry.reset();
-    populateLoggingRegistry( 20, loggingRegistry, true, false);
+    populateLoggingRegistry( 20, loggingRegistry, true, false );
 
     // Verify that the objects are changed after the reset... Java Timers do not give much for an API.
     // This will have to do.
@@ -181,6 +176,8 @@ public class LoggingRegistryTest {
   @Test
   public void testSimplePurge() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.updateFromProperties();
+    loggingRegistry.schedulePurgeTimer();
     loggingRegistry.setMaxSize( 10 );
     loggingRegistry.reset();
 
@@ -190,34 +187,20 @@ public class LoggingRegistryTest {
     assertEquals( 0, loggingRegistry.getPurgedObjectCount() );
 
     loggingRegistry.reset();
-    populateLoggingRegistry( 20, loggingRegistry, true, false, true );
+    populateLoggingRegistry( 20, loggingRegistry, true, false );
 
     // Test that the registry purged the expected amount 11 objects with a max size of 20.
     loggingRegistry.invokePurge();
     assertThat( loggingRegistry.getRegistryMapSize(), lessThan( 10 ) );
     assertEquals( 11, loggingRegistry.getPurgedObjectCount() );
 
-
-    // Test that only the 5 objects were removed
-    loggingRegistry.reset();
-    populateLoggingRegistry( 5, loggingRegistry, true, false, true );
-    populateLoggingRegistry( 15, loggingRegistry, true, false );
-    loggingRegistry.invokePurge();
-    assertEquals( 5, loggingRegistry.getPurgedObjectCount() );
-    assertEquals( 15, loggingRegistry.getRegistryMapSize() );
-
-    // Test that at least 6 objects in use are not removed, but the registry Max size is respected
-    loggingRegistry.reset();
-    populateLoggingRegistry( 5, loggingRegistry, true, false, true );
-    populateLoggingRegistry( 6, loggingRegistry, true, false );
-    loggingRegistry.invokePurge();
-    assertThat( loggingRegistry.getRegistryMapSize(), lessThan( 10 ) );
-    assertThat( loggingRegistry.getRegistryMapSize(), greaterThanOrEqualTo( 6 ) );
   }
 
   @Test
   public void testPurgeErrorCase() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.updateFromProperties();
+    loggingRegistry.schedulePurgeTimer();
     loggingRegistry.setMaxSize( 10 );
     loggingRegistry.reset();
 
@@ -249,6 +232,8 @@ public class LoggingRegistryTest {
   @Test
   public void testDump() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.schedulePurgeTimer();
+    loggingRegistry.updateFromProperties();
     loggingRegistry.reset();
 
     LoggingObjectInterface obj = new SimpleLoggingObject( UUID.randomUUID().toString(),  LoggingObjectType.JOB, null );
@@ -263,6 +248,8 @@ public class LoggingRegistryTest {
   @Test
   public void testModificationTime() {
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.schedulePurgeTimer();
+    loggingRegistry.updateFromProperties();
     loggingRegistry.reset();
 
     LoggingObjectInterface obj = new SimpleLoggingObject( UUID.randomUUID().toString(),  LoggingObjectType.JOB, null );
@@ -279,6 +266,8 @@ public class LoggingRegistryTest {
   public void testFindWithComplexRegistry() {
 
     LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
+    loggingRegistry.updateFromProperties();
+    loggingRegistry.schedulePurgeTimer();
     loggingRegistry.setPurgeTimeout( 60000 ); // ensure normal purge time out.
     loggingRegistry.reset();
 
@@ -297,10 +286,6 @@ public class LoggingRegistryTest {
   }
 
   private void populateLoggingRegistry( int parentCount, LoggingRegistry registry, boolean isPurgeable, boolean addBuffer ) {
-    populateLoggingRegistry( parentCount, registry, isPurgeable, addBuffer, false );
-  }
-
-  private void populateLoggingRegistry( int parentCount, LoggingRegistry registry, boolean isPurgeable, boolean addBuffer, boolean simulateLifecycle ) {
 
     for ( int i = 0; i < parentCount; i++ ) {
       LoggingObjectInterface obj = new SimpleLoggingObject( UUID.randomUUID().toString(),  LoggingObjectType.JOB, null );
@@ -311,11 +296,6 @@ public class LoggingRegistryTest {
         registry.registerLogChannelFileWriterBuffer( fileWriterBuffer );
       }
 
-    }
-
-    if ( simulateLifecycle ) {
-      //Simulate object lifecycle and change loggingObjectInUse
-      registry.dumpItems().entrySet().iterator().forEachRemaining( e -> ((LoggingObject)e.getValue()).setLoggingObjectInUse( false ) );
     }
   }
 

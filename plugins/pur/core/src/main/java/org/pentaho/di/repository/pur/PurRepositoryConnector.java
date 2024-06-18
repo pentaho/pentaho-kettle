@@ -16,6 +16,7 @@
  */
 package org.pentaho.di.repository.pur;
 
+import com.google.gwt.user.server.Base64Utils;
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
 import com.pentaho.pdi.ws.RepositorySyncException;
 import org.apache.commons.lang.BooleanUtils;
@@ -105,7 +106,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     final String decryptedPassword = Encr.decryptPasswordOptionallyEncrypted( password );
     final RepositoryConnectResult result = new RepositoryConnectResult( purRepositoryServiceRegistry );
     try {
-      final String urlEncodedPassword = URLEncoder.encode( decryptedPassword, StandardCharsets.UTF_8.name() );
+      final String urlEncodedPassword = encodePassword( decryptedPassword );
       /*
        * Three scenarios: 1. Connect in process: username fetched using PentahoSessionHolder; no authentication occurs
        * 2. Connect externally with trust: username specified is assumed authenticated if IP of calling code is trusted
@@ -327,6 +328,15 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     }
     return result;
   }
+
+  private static String encodePassword( String decryptedPassword ) throws UnsupportedEncodingException {
+    if ( StringUtils.isEmpty( decryptedPassword ) ) {
+      return null;
+    }
+    String urlEncodedPassword = URLEncoder.encode( decryptedPassword, StandardCharsets.UTF_8.name() );
+    return "ENC:" + Base64Utils.toBase64( urlEncodedPassword.getBytes() );
+  }
+
   ExecutorService getExecutor() {
     return ExecutorUtil.getExecutor();
   }

@@ -358,7 +358,6 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
       logError( "No filename is defined." );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

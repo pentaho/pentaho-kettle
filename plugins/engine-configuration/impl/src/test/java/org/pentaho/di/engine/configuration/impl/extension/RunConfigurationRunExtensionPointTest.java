@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017-2022 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by bmorrise on 5/4/17.
  */
-@RunWith( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class RunConfigurationRunExtensionPointTest {
 
   RunConfigurationRunExtensionPoint runConfigurationRunExtensionPoint;
@@ -84,9 +84,6 @@ public class RunConfigurationRunExtensionPointTest {
 
   @Test
   public void testCallExtensionPointEmbedded() throws Exception {
-
-    when( runConfigurationManager.load( "RUN_CONF" ) ).thenReturn( null );
-
     try {
       runConfigurationRunExtensionPoint.callExtensionPoint( log, new Object[] {
         transExecutionConfiguration, abstractMeta, variableSpace

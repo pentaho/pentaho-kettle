@@ -245,11 +245,6 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     }
 
     @Override
-    public boolean isLoggingObjectInUse() {
-      return parent == null ? false : parent.isLoggingObjectInUse();
-    }
-
-    @Override
     public void setForcingSeparateLogging( boolean forcingSeparateLogging ) {
       log.setForcingSeparateLogging( forcingSeparateLogging );
     }
@@ -318,7 +313,6 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
   @Override
   public Result execute( Result prev_result, int nr ) {
     prev_result.setResult( evaluate( prev_result ) );
-    setLoggingObjectInUse( false );
     return prev_result;
   }
 

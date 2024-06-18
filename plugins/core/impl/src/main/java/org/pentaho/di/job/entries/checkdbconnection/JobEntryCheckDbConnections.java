@@ -387,7 +387,6 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
       logDetailed( "=======================================" );
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

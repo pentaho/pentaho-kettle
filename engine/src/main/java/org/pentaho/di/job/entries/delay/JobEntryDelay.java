@@ -214,7 +214,6 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       }
     }
 
-    setLoggingObjectInUse( false );
     return result;
   }
 

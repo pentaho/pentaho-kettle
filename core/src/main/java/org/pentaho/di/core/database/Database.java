@@ -59,7 +59,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.util.Utils;
@@ -161,8 +160,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   private LogChannelInterface log;
   private LoggingObjectInterface parentLoggingObject;
-
-  private boolean loggingObjectInUse;
   private static final String[] TABLE_TYPES_TO_GET = { "TABLE", "VIEW" };
   private static final String TABLES_META_DATA_TABLE_NAME = "TABLE_NAME";
 
@@ -363,15 +360,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     return dataSource;
   }
 
-  @Override
-  public boolean isLoggingObjectInUse() {
-    return loggingObjectInUse;
-  }
-
-  public void setLoggingObjectInUse( boolean inUse ) {
-    loggingObjectInUse = inUse;
-  }
-
   /**
    * Open the database connection.
    *
@@ -393,7 +381,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   public synchronized void connect( String group, String partitionId ) throws KettleDatabaseException {
     try {
-      setLoggingObjectInUse( true );
+
       log.snap( Metrics.METRIC_DATABASE_CONNECT_START, databaseMeta.getName() );
 
       // Before anything else, let's see if we already have a connection defined
@@ -546,7 +534,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   /**
    * Connect using the correct classname
    *
-   * @param classname for example "org.gjt.mm.mysql.Driver"
+   * @param classname for example "com.mysql.jdbc.Driver"
    * @return true if the connect was successful, false if something went wrong.
    */
   private void connectUsingClass( String classname, String partitionId ) throws KettleDatabaseException {
@@ -657,12 +645,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * Disconnect from the database and close all open prepared statements.
    */
   public synchronized void disconnect() {
-    setLoggingObjectInUse( false );
-
     if ( connection == null ) {
       return; // Nothing to do...
     }
-
     try {
       if ( connection.isClosed() ) {
         return; // Nothing to do...

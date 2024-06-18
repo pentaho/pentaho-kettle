@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ package org.pentaho.di.trans.step.jms.context;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 
 import javax.jms.Destination;
@@ -41,7 +41,7 @@ import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.W
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.QUEUE;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.TOPIC;
 
-@RunWith ( MockitoJUnitRunner.class )
+@RunWith ( MockitoJUnitRunner.StrictStubs.class )
 public class WebsphereMQProviderTest {
 
 

@@ -22,19 +22,12 @@
 
 package org.pentaho.di.connections.common.domain;
 
-import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.ConnectionProvider;
-import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.connections.vfs.BaseVFSConnectionProvider;
+import org.pentaho.di.connections.vfs.VFSRoot;
 
 import java.util.List;
 
-public class TestConnectionWithDomainProvider implements ConnectionProvider<TestConnectionWithDomainDetails> {
-
-  private ConnectionManager connectionManager;
-
-  public TestConnectionWithDomainProvider( ConnectionManager connectionManager ) {
-    this.connectionManager = connectionManager;
-  }
+public class TestConnectionWithDomainProvider extends BaseVFSConnectionProvider<TestConnectionWithDomainDetails> {
 
   public static final String NAME = "Test2";
   public static final String SCHEME = "test2";
@@ -47,33 +40,19 @@ public class TestConnectionWithDomainProvider implements ConnectionProvider<Test
     return SCHEME;
   }
 
+  @Override public List<VFSRoot> getLocations( TestConnectionWithDomainDetails vfsConnectionDetails ) {
+    return null;
+  }
+
+  @Override public String getProtocol( TestConnectionWithDomainDetails vfsConnectionDetails ) {
+    return null;
+  }
+
   @Override public Class<TestConnectionWithDomainDetails> getClassType() {
     return TestConnectionWithDomainDetails.class;
   }
 
-  @Override public List<String> getNames() {
-    return connectionManager.getNamesByType( getClass() );
-  }
-
-  @Override public List<String> getNames( ConnectionManager connectionManager ) {
-    return connectionManager.getNamesByType( getClass() );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  @Override public List<TestConnectionWithDomainDetails> getConnectionDetails() {
-    return (List<TestConnectionWithDomainDetails>) connectionManager.getConnectionDetailsByScheme( getKey() );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  @Override public List<TestConnectionWithDomainDetails> getConnectionDetails( ConnectionManager connectionManager ) {
-    return (List<TestConnectionWithDomainDetails>) connectionManager.getConnectionDetailsByScheme( getKey() );
-  }
-
   @Override public boolean test( TestConnectionWithDomainDetails connectionDetails ) {
     return true;
-  }
-
-  @Override public TestConnectionWithDomainDetails prepare( TestConnectionWithDomainDetails connectionDetails ) {
-    return connectionDetails;
   }
 }
