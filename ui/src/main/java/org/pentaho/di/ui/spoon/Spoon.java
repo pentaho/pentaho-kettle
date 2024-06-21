@@ -6508,9 +6508,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     KettlePropertiesFileDialog dialog = new KettlePropertiesFileDialog( shell, SWT.NONE );
     Map<String, String> newProperties = dialog.open();
     if ( newProperties != null ) {
+      VariableSpace bowlSpace;
+      if ( bowl.equals( DefaultBowl.getInstance() ) ) {
+        bowlSpace = new Variables();
+      } else {
+        bowlSpace = bowl.getADefaultVariableSpace();
+      }
       for ( String name : newProperties.keySet() ) {
         String value = newProperties.get( name );
-        applyVariableToAllLoadedObjects( name, value );
+        if ( bowlSpace.getVariable( name ) == null ) {
+          // if the variable is defined in the bowl, that should remain in place.
+          applyVariableToAllLoadedObjects( name, value );
+        }
 
         // Also set as a JVM property
         //
