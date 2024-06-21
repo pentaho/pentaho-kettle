@@ -2218,6 +2218,7 @@ public class JobMeta extends AbstractMeta
    *
    * @return the used variables
    */
+  @Override
   public List<String> getUsedVariables() {
     // Get the list of Strings.
     List<StringSearchResult> stringList = getStringList( true, true, false );

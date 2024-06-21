@@ -5317,6 +5317,7 @@ public class TransMeta extends AbstractMeta
    *
    * @return a list of the used variables in this transformation.
    */
+  @Override
   public List<String> getUsedVariables() {
     // Get the list of Strings.
     List<StringSearchResult> stringList = getStringList( true, true, false, true );

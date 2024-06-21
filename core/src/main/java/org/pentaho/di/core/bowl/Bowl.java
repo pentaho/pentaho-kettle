@@ -18,6 +18,7 @@ package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.IMetaStore;
 
@@ -71,5 +72,14 @@ public interface Bowl {
    * @return Set&lt;Bowl&gt; A set of Parent Bowls. Should not be null.
    */
   Set<Bowl> getParentBowls();
+
+  /**
+   * Get a default variable space using this Bowl's context. Everytime you will get a new instance.
+   * <p>
+   * Implementations may include different sets of Variables depending on what is in context for that Bowl.
+   *
+   * @return a default variable space.
+   */
+  VariableSpace getADefaultVariableSpace();
 
 }

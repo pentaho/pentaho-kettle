@@ -827,6 +827,11 @@ public class AbstractMetaTest {
     }
 
     @Override
+    public List<String> getUsedVariables() {
+      return Collections.emptyList();
+    }
+
+    @Override
     public String getXML() throws KettleException {
       return null;
     }

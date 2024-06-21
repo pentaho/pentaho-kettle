@@ -18,6 +18,8 @@ package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.IMetaStore;
@@ -57,6 +59,13 @@ public class DefaultBowl extends BaseBowl {
     } else {
       return super.getManager( managerClass );
     }
+  }
+
+  @Override
+  public VariableSpace getADefaultVariableSpace() {
+    VariableSpace space = new Variables();
+    space.initializeVariablesFrom( null );
+    return space;
   }
 
   /**

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -250,6 +250,8 @@ public class Variables implements VariableSpace {
 
   /**
    * Get a default variable space as a placeholder. Everytime you will get a new instance.
+   *
+   * @see org.pentaho.di.core.bowl.Bowl#getADefaultVariableSpace()
    *
    * @return a default variable space.
    */

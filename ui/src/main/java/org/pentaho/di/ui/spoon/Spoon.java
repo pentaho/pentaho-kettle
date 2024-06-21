@@ -1333,7 +1333,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     Properties sp = new Properties();
     sp.putAll( System.getProperties() );
 
-    VariableSpace space = Variables.getADefaultVariableSpace();
+    VariableSpace space = bowl.getADefaultVariableSpace();
     String[] keys = space.listVariables();
     for ( String key : keys ) {
       sp.put( key, space.getVariable( key ) );
@@ -1361,18 +1361,53 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void setVariables() {
-    fillVariables( variables );
+    // work with a local copy, and get a baseline before modification.
+    RowMetaAndData locvariables = variables.clone();
+    fillVariables( locvariables );
+    RowMetaAndData origValues = locvariables.clone();
 
     // Now ask the use for more info on these!
-    EnterStringsDialog esd = new EnterStringsDialog( shell, SWT.NONE, variables );
+    EnterStringsDialog esd = new EnterStringsDialog( shell, SWT.NONE, locvariables );
     esd.setTitle( BaseMessages.getString( PKG, "Spoon.Dialog.SetVariables.Title" ) );
     esd.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.SetVariables.Message" ) );
     esd.setReadOnly( false );
     esd.setShellImage( GUIResource.getInstance().getImageVariable() );
     if ( esd.open() != null ) {
+      for ( int i = 0; i < locvariables.getRowMeta().size(); i++ ) {
+        ValueMetaInterface valueMeta = locvariables.getRowMeta().getValueMeta( i );
+        String value = getStringValue( valueMeta, locvariables.getData()[i] );
+        int origIndex = origValues.getRowMeta().indexOfValue( valueMeta.getName() );
+        if ( origIndex < 0 ) {
+          // new variable
+          variables.addValue( valueMeta, locvariables.getData()[i] );
+        } else {
+          String origValue = getStringValue( origValues.getRowMeta().getValueMeta( origIndex ),
+                                             origValues.getData()[origIndex] );
+          if ( ! Objects.equals( value, origValue ) ) {
+            int varIndex = variables.getRowMeta().indexOfValue( valueMeta.getName() );
+            if ( varIndex < 0 ) {
+              variables.addValue( valueMeta, locvariables.getData()[i] );
+            } else {
+              variables.getData()[varIndex] = locvariables.getData()[i];
+            }
+          }
+        }
+      }
+      // Note: this does not handle removing any variables that were previously set. UI changes will be needed for that.
       applyVariables();
     }
   }
+
+  private String getStringValue( ValueMetaInterface valueMeta, Object valueData ) {
+    String string;
+    try {
+      string = valueMeta.getString( valueData );
+    } catch ( KettleValueException e ) {
+      string = "";
+    }
+    return string;
+  }
+
 
   public void applyVariables() {
     for ( int i = 0; i < variables.size(); i++ ) {
@@ -1409,10 +1444,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void showVariables() {
-    fillVariables( variables );
+    RowMetaAndData locvariables = variables.clone();
+    fillVariables( locvariables );
 
     // Now ask the use for more info on these!
-    EnterStringsDialog esd = new EnterStringsDialog( shell, SWT.NONE, variables );
+    EnterStringsDialog esd = new EnterStringsDialog( shell, SWT.NONE, locvariables );
     esd.setTitle( BaseMessages.getString( PKG, "Spoon.Dialog.ShowVariables.Title" ) );
     esd.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.ShowVariables.Message" ) );
     esd.setReadOnly( true );

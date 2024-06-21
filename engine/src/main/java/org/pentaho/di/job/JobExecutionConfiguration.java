@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -254,7 +254,7 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
 
   public void getUsedVariables( JobMeta jobMeta ) {
     Properties sp = new Properties();
-    VariableSpace space = Variables.getADefaultVariableSpace();
+    VariableSpace space = jobMeta;
 
     String[] keys = space.listVariables();
     for ( int i = 0; i < keys.length; i++ ) {
