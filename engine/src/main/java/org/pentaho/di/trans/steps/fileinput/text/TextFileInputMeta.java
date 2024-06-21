@@ -1205,9 +1205,9 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
 
   public int getFileFormatTypeNr() {
     // calculate the file format type in advance so we can use a switch
-    if ( content.fileFormat.equalsIgnoreCase( "DOS" ) ) {
+    if ( StringUtils.equalsIgnoreCase( content.fileFormat,  "DOS" ) ) {
       return FILE_FORMAT_DOS;
-    } else if ( content.fileFormat.equalsIgnoreCase( "unix" ) ) {
+    } else if ( StringUtils.equalsIgnoreCase( content.fileFormat, "unix" ) ) {
       return TextFileInputMeta.FILE_FORMAT_UNIX;
     } else {
       return TextFileInputMeta.FILE_FORMAT_MIXED;

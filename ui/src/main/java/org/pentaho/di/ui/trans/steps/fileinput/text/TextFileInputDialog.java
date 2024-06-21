@@ -90,11 +90,9 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.file.BaseFileField;
-import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
-import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInput;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileFilter;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -2740,72 +2738,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   // Get the first x lines
   private List<String> getFirst( int nrlines, boolean skipHeaders ) throws KettleException {
-    TextFileInputMeta meta = new TextFileInputMeta();
-    getInfo( meta, true );
-    FileInputList textFileList = meta.getFileInputList( transMeta.getBowl(), transMeta );
+    Trans trans = new Trans( transMeta, null );
+    trans.rowsets = new ArrayList<>();
 
-    InputStream fi;
-    CompressionInputStream f = null;
-    StringBuilder lineStringBuilder = new StringBuilder( 256 );
-    int fileFormatType = meta.getFileFormatTypeNr();
-
-    List<String> retval = new ArrayList<>();
-
-    if ( textFileList.nrOfFiles() > 0 ) {
-      FileObject file = textFileList.getFile( 0 );
-      try {
-        fi = KettleVFS.getInputStream( file );
-
-        CompressionProvider provider =
-            CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.content.fileCompression );
-        f = provider.createInputStream( fi );
-
-        BufferedInputStreamReader reader;
-        if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
-          reader = new BufferedInputStreamReader( new InputStreamReader( f, meta.getEncoding() ) );
-        } else {
-          reader = new BufferedInputStreamReader( new InputStreamReader( f ) );
-        }
-        EncodingType encodingType = EncodingType.guessEncodingType( reader.getEncoding() );
-
-        int linenr = 0;
-        int maxnr = nrlines + ( meta.content.header ? meta.content.nrHeaderLines : 0 );
-
-        if ( skipHeaders ) {
-          // Skip the header lines first if more then one, it helps us position
-          if ( meta.content.layoutPaged && meta.content.nrLinesDocHeader > 0 ) {
-            TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType,
-              lineStringBuilder,  meta.content.nrLinesDocHeader - 1, meta.getEnclosure(), meta.getEscapeCharacter(), 0 );
-          }
-
-          // Skip the header lines first if more then one, it helps us position
-          if ( meta.content.header && meta.content.nrHeaderLines > 0 ) {
-            TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType,
-              lineStringBuilder,  meta.content.nrHeaderLines - 1, meta.getEnclosure(), meta.getEscapeCharacter(), 0 );
-          }
-        }
-
-        String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder, meta.getEnclosure(), meta.getEscapeCharacter() );
-        while ( line != null && ( linenr < maxnr || nrlines == 0 ) ) {
-          retval.add( line );
-          linenr++;
-          line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder, meta.getEnclosure(), meta.getEscapeCharacter() );
-        }
-      } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG, "TextFileInputDialog.Exception.ErrorGettingFirstLines",
-            "" + nrlines, file.getName().getURI() ), e );
-      } finally {
-        try {
-          if ( f != null ) {
-            f.close();
-          }
-        } catch ( Exception e ) {
-          // Ignore errors
-        }
-      }
-    }
-
-    return retval;
+    getInfo( input, true );
+    TextFileInput step = (TextFileInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+    step.setStepMetaInterface( input );
+    return step.getFirst( nrlines, skipHeaders );
   }
 
   private void getFixed() {

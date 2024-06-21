@@ -42,6 +42,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.TimeZone;
 
 
@@ -148,7 +149,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
 
   @Override
   public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans ) {
+                              Trans trans, Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     try {
       Method actionMethod = SalesforceStep.class.getDeclaredMethod( fieldName + "Action" );

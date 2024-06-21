@@ -512,7 +512,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   }
 
   default JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                               Trans trans ) {
+                               Trans trans, Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     response.put( ACTION_STATUS, FAILURE_METHOD_NOT_RESPONSE );
     return response;
