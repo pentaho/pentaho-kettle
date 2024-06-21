@@ -33,18 +33,14 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public interface VFSConnectionFileNameTransformer<T extends VFSConnectionDetails> {
   /**
-   * Transforms a <i>PVFS</i> file name to a provider URI string.
-   * <p>
-   * This method accepts a connection file name and returns a provider URI string. To obtain an actual provider
-   * {@link org.apache.commons.vfs2.FileName}, the result needs to be further transformed by the provider's
-   * {@link org.apache.commons.vfs2.provider.FileNameParser}.
+   * Transforms a <i>PVFS</i> file name to a provider file name.
    *
    * @param pvfsFileName The <i>PVFS</i> file name.
    * @param details      The connection details of the connection referenced by {@code pvfsFileName}.
-   * @return The provider URI string.
+   * @return The provider file name.
    */
   @NonNull
-  String toProviderUri( @NonNull ConnectionFileName pvfsFileName, @NonNull T details ) throws KettleException;
+  FileName toProviderFileName( @NonNull ConnectionFileName pvfsFileName, @NonNull T details ) throws KettleException;
 
   /**
    * Transforms a provider file name to a <i>PVFS</i> file name.
