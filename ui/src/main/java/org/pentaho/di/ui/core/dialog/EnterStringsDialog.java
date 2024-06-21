@@ -113,11 +113,12 @@ public class EnterStringsDialog extends Dialog {
     int margin = Const.MARGIN;
 
     // Message line
-    wlFields = new Label( shell, SWT.NONE );
+    wlFields = new Label( shell, SWT.WRAP );
     wlFields.setText( message );
     props.setLook( wlFields );
     fdlFields = new FormData();
     fdlFields.left = new FormAttachment( 0, 0 );
+    fdlFields.right = new FormAttachment( 100, 0 );
     fdlFields.top = new FormAttachment( 0, margin );
     wlFields.setLayoutData( fdlFields );
 
