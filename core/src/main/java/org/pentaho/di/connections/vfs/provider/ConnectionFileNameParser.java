@@ -69,7 +69,7 @@ import static org.apache.commons.vfs2.provider.UriParser.TRANS_SEPARATOR;
  *   <li>"." path segments are removed</li>
  *   <li>".." path segments are validated and resolved</li>
  *   <li>a path with a trailing slash is recognized as a folder</li>
- *   <li>any percent-encoded characters in path segments which are not {@link #encodeCharacter(char)}  reserved} are
+ *   <li>any percent-encoded characters in path segments which are not {@link #encodeCharacter(char)} reserved} are
  *       decoded</li>
  * </ul>
  *
@@ -241,9 +241,8 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
     // May be null/empty, in case pvfsUri = "pvfs://".
     @Nullable
     String connectionName = UriParser.extractFirstElement( name );
-
-    // A connection with a percent (as %25) would throw here.
     if ( StringUtils.isNotEmpty( connectionName )) {
+      // A connection with a percent (as %25) would throw here.
       validateConnectionName( connectionName );
     }
 

@@ -23,6 +23,7 @@
 package org.pentaho.di.connections.vfs;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.junit.Before;
@@ -108,9 +109,14 @@ public class VFSConnectionManagerHelperTest {
 
     // ---
 
+    connectionManager = mock( ConnectionManager.class );
+
+    // ---
+
     vfsConnectionProvider = (VFSConnectionProvider<VFSConnectionDetails>) mock( VFSConnectionProvider.class );
     when( vfsConnectionProvider.getKey() ).thenReturn( TEST_CONNECTION_TYPE );
-    when( vfsConnectionProvider.getFileNameTransformer() ).thenReturn( vfsConnectionFileNameTransformer );
+    when( vfsConnectionProvider.getFileNameTransformer( connectionManager ) ).thenReturn(
+      vfsConnectionFileNameTransformer );
 
     // By default, provider testing is successful.
     when( vfsConnectionProvider.test( any( VFSConnectionDetails.class ) ) ).thenReturn( true );
@@ -125,7 +131,6 @@ public class VFSConnectionManagerHelperTest {
 
     memoryMetaStore = new MemoryMetaStore();
 
-    connectionManager = mock( ConnectionManager.class );
     doReturn( vfsConnectionProvider ).when( connectionManager ).getConnectionProvider( TEST_CONNECTION_TYPE );
     doReturn( bowl ).when( connectionManager ).getBowl();
 
@@ -139,14 +144,14 @@ public class VFSConnectionManagerHelperTest {
     when( connectionRootProviderFileObject.exists() ).thenReturn( true );
     when( connectionRootProviderFileObject.isFolder() ).thenReturn( true );
 
-    doAnswer( invocationOnMock -> getConnectionRootProviderUri() )
+    doAnswer( invocationOnMock -> getConnectionRootProviderFileName() )
       .when( vfsConnectionFileNameTransformer )
-      .toProviderUri( connectionRootFileName, vfsConnectionDetails );
+      .toProviderFileName( connectionRootFileName, vfsConnectionDetails );
 
     when( kettleVFS.getFileObject(
       argThat( uri -> {
         try {
-          return getConnectionRootProviderUri().equals( uri );
+          return getConnectionRootProviderFileName().getURI().equals( uri );
         } catch ( KettleException e ) {
           // Should not happen, but rethrowing JIC, to catch any testing bugs.
           throw new RuntimeException( e );
@@ -158,8 +163,11 @@ public class VFSConnectionManagerHelperTest {
   }
 
   // This method assumes that `getResolvedRootPath` is not being tested.
-  String getConnectionRootProviderUri() throws KettleException {
-    return TEST_CONNECTION_TYPE + "://" + vfsConnectionManagerHelper.getResolvedRootPath( vfsConnectionDetails );
+  FileName getConnectionRootProviderFileName() throws KettleException {
+    FileName fileName = mock( FileName.class );
+    doReturn( TEST_CONNECTION_TYPE + "://" + vfsConnectionManagerHelper.getResolvedRootPath( vfsConnectionDetails ) )
+      .when( fileName ).getURI();
+    return fileName;
   }
 
   // region getResolvedRootPath(..)
@@ -314,48 +322,56 @@ public class VFSConnectionManagerHelperTest {
   }
   // endregion
 
-  // region getConnectionRootProviderUri( . )
+  // region getConnectionRootProviderFileName( . )
   @Test
   public void testGetConnectionRootProviderUriReturnsCorrectUriWhenRootPath() throws KettleException {
-    assertEquals(
-      TEST_CONNECTION_TYPE + "://" + TEST_ROOT_PATH,
-      vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails ) );
+    FileName fileName = vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+
+    assertNotNull( fileName );
+    assertEquals( TEST_CONNECTION_TYPE + "://" + TEST_ROOT_PATH, fileName.getURI() );
   }
 
   @Test
-  public void testGetConnectionRootProviderUriIncludesNormalizedRootPath() throws KettleException {
+  public void testGetConnectionRootProviderFileNameIncludesNormalizedRootPath() throws KettleException {
 
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "./sub-folder/\\../other-sub-folder//" );
 
-    assertEquals(
-      TEST_CONNECTION_TYPE + "://" + "other-sub-folder",
-      vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails ) );
+    FileName fileName = vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+
+    assertNotNull( fileName );
+    assertEquals( TEST_CONNECTION_TYPE + "://" + "other-sub-folder", fileName.getURI() );
   }
 
   @Test( expected = KettleException.class )
-  public void testGetConnectionRootProviderUriThrowsWhenRootPathHasInvalidRelativeSegments() throws KettleException {
+  public void testGetConnectionRootProviderFileNameThrowsWhenRootPathHasInvalidRelativeSegments()
+    throws KettleException {
 
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "../other-connection" );
 
-    vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+    vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void testGetConnectionRootProviderUriThrowsWhenConnectionNameIsNull() throws KettleException {
+  public void testGetConnectionRootProviderFileNameThrowsWhenConnectionNameIsNull() throws KettleException {
 
     when( vfsConnectionDetails.getName() ).thenReturn( null );
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "root/path" );
 
-    vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+    vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void testGetConnectionRootProviderUriThrowsWhenConnectionNameIsEmpty() throws KettleException {
+  public void testGetConnectionRootProviderFileNameThrowsWhenConnectionNameIsEmpty() throws KettleException {
 
     when( vfsConnectionDetails.getName() ).thenReturn( "" );
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "root/path" );
 
-    vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+    vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
   }
   // endregion
 
@@ -434,7 +450,7 @@ public class VFSConnectionManagerHelperTest {
 
     assertFalse( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
 
-    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderUri( any(), any() );
+    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderFileName( any(), any() );
 
     // ---
 
@@ -442,7 +458,7 @@ public class VFSConnectionManagerHelperTest {
 
     assertFalse( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
 
-    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderUri( any(), any() );
+    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderFileName( any(), any() );
   }
 
   @Test
@@ -454,7 +470,7 @@ public class VFSConnectionManagerHelperTest {
 
     assertTrue( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
 
-    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderUri( any(), any() );
+    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderFileName( any(), any() );
 
     // ---
 
@@ -462,7 +478,7 @@ public class VFSConnectionManagerHelperTest {
 
     assertTrue( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
 
-    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderUri( any(), any() );
+    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderFileName( any(), any() );
   }
 
   @Test
