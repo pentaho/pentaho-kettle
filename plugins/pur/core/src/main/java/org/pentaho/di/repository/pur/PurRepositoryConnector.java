@@ -330,6 +330,9 @@ public class PurRepositoryConnector implements IRepositoryConnector {
   }
 
   private static String encodePassword( String decryptedPassword ) throws UnsupportedEncodingException {
+    if ( StringUtils.isEmpty( decryptedPassword ) ) {
+      return null;
+    }
     String urlEncodedPassword = URLEncoder.encode( decryptedPassword, StandardCharsets.UTF_8.name() );
     return "ENC:" + Base64Utils.toBase64( urlEncodedPassword.getBytes() );
   }

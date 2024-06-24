@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,6 +73,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
   private final ObjectId metaObjectId;
   private final String friendlyMetaType; //For error text
   private String filename;
+  private boolean useCache = false;
 
   private BaseStepMeta baseStepMeta;
 
@@ -108,6 +109,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
     } else {
       throw new IllegalArgumentException( "JobEntryBase must be a JobEntryTrans or JobEntryJob object" );
     }
+    useCache = "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_USE_META_FILE_CACHE, Const.KETTLE_USE_META_FILE_CACHE_DEFAULT ) );
   }
 
   /**
@@ -143,6 +145,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
     } else {
       throw new IllegalArgumentException( "JobEntryBase must be a JobEntryTrans or JobEntryJob object" );
     }
+    useCache = "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_USE_META_FILE_CACHE, Const.KETTLE_USE_META_FILE_CACHE_DEFAULT ) );
   }
 
   public T getMetaForEntry( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
@@ -259,7 +262,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
   }
 
   private void cacheMeta( String cacheKey, T theMeta ) {
-    if ( theMeta != null && metaFileCache != null ) {
+    if ( useCache && theMeta != null && metaFileCache != null ) {
       if ( isTransMeta() ) {
         TransMeta transMeta = (TransMeta) theMeta;
         transMeta.setMetaFileCache( metaFileCache );
@@ -333,7 +336,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
   }
 
   private T attemptCacheRead( String realFilename ) {
-    if ( "N".equalsIgnoreCase( System.getProperty( Const.KETTLE_USE_META_FILE_CACHE, Const.KETTLE_USE_META_FILE_CACHE_DEFAULT ) ) || metaFileCache == null ) {
+    if ( !useCache || metaFileCache == null ) {
       return null;
     }
     return isTransMeta()
