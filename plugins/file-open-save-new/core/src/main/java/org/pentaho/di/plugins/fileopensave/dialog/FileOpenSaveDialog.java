@@ -69,7 +69,7 @@ public class FileOpenSaveDialog extends ThinDialog implements FileDetails {
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
   private static final String LOCALHOST = "127.0.0.1";
   private static final String HELP_URL =
-    Const.getDocUrl( "Products/Work_with_transformations#Open_a_transformation" );
+    Const.getDocUrl( "mk-95pdia003/data-integration-perspective-in-the-pdi-client/work-with-transformations/open-a-transformation" );
 
   public static final String PATH_PARAM = "path";
   public static final String USE_SCHEMA_PARAM = "useSchema";

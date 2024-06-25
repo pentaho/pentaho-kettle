@@ -68,7 +68,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 @PluginDialog( id = "CheckSum", image = "CSM.svg", pluginType = PluginDialog.PluginType.STEP,
-    documentationUrl = "Products/Add_a_Checksum" )
+    documentationUrl = "mk-95pdia003/pdi-transformation-steps/add-a-checksum" )
 public class CheckSumDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = CheckSumDialog.class; // for i18n purposes, needed by Translator2!!
 

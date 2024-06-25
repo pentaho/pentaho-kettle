@@ -10,7 +10,7 @@
     <property name="mainType" value="org.pentaho.di.trans.step.StepMetaInterface"/>
     <property name="name" value="ETL metadata injection"/>
     <property name="ID" value="MetaInject"/>
-    <property name="documentationUrl" value="Products/ETL_Metadata_Injection"/>
+    <property name="documentationUrl" value="mk-95pdia003/pdi-transformation-steps/etl-metadata-injection"/>
     <property name="imageFile" value="org/pentaho/di/ui/trans/steps/metainject/img/GenericTransform.svg"/>
     <property name="description" value="i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MetaInject"/>
     <property name="pluginTypeInterface" value="org.pentaho.di.core.plugins.StepPluginType"/>
