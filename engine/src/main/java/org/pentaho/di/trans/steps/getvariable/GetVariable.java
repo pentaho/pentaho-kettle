@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,13 @@
 
 package org.pentaho.di.trans.steps.getvariable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -142,6 +147,37 @@ public class GetVariable extends BaseStep implements StepInterface {
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     super.dispose( smi, sdi );
+  }
+
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                             Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+
+    try {
+      Method actionMethod = GetVariable.class.getDeclaredMethod( fieldName + "Action" );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  private JSONObject getVariableAction() {
+    JSONObject response = new JSONObject();
+    String[] keys = getTransMeta().listVariables();
+    JSONArray variables = new JSONArray();
+    for ( String key : keys ) {
+      JSONObject variable = new JSONObject();
+      variable.put( "name", key );
+      variable.put( "variable", "${" + key + "}" );
+      variable.put( "type", "String" );
+      variables.add( variable );
+    }
+    response.put( "variables", variables );
+    return response;
   }
 
 }
