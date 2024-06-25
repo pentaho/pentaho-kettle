@@ -53,6 +53,7 @@ ee:
         - pentaho-hadoop-shims-ee-cdpdc71-kar-${pentaho-hadoop-shims.version}.kar
         - pentaho-hadoop-shims-ee-hdi40-kar-${pentaho-hadoop-shims.version}.kar
         - pentaho-hadoop-shims-ee-apachevanilla-kar-${pentaho-hadoop-shims.version}.kar
+        - pentaho-hadoop-shims-ee-emr700-kar-${pentaho-hadoop-shims.version}.kar
 
 
 #CE Stuff
