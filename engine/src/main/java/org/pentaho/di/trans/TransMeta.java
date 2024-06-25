@@ -3044,6 +3044,7 @@ public class TransMeta extends AbstractMeta
           dbcon.shareVariablesWith( this );
           if ( !dbcon.isShared() ) {
             privateTransformationDatabases.add( dbcon.getName() );
+            localDbMetas.put(dbcon.getName(), dbcon );
           }
 
           DatabaseMeta exist = findDatabase( dbcon.getName() );

@@ -18,9 +18,12 @@ package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.metastore.MetaStoreConst;
+import org.pentaho.di.shared.SharedObjectsIO;
+import org.pentaho.di.shared.VfsSharedObjectsIO;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.IMetaStore;
 
@@ -37,6 +40,8 @@ public class DefaultBowl extends BaseBowl {
   // for testing
   private Supplier<IMetaStore> metastoreSupplier = MetaStoreConst.getDefaultMetastoreSupplier();
   private boolean customSupplier = false;
+
+  private SharedObjectsIO sharedObjectsIO;
 
   private DefaultBowl() {
   }
@@ -78,5 +83,16 @@ public class DefaultBowl extends BaseBowl {
     this.customSupplier = true;
   }
 
+  /**
+   * Creates and return an instance of SharedObjectsIO using the default shared objects file location
+   * @return SharedObjectsIO
+   */
+  @Override
+  public SharedObjectsIO getSharedObjectsIO()  {
+    if ( sharedObjectsIO == null ) {
+      sharedObjectsIO = new VfsSharedObjectsIO();
+    }
+    return sharedObjectsIO;
+  }
 
 }
