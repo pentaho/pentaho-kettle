@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
     description = "SalesforceDelete.TypeTooltipDesc.SalesforceDelete",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
     image = "SFD.svg",
-    documentationUrl = "Products/Salesforce_Delete" )
+    documentationUrl = "mk-95pdia003/pdi-transformation-steps/salesforce-delete" )
 public class SalesforceDeleteMeta extends SalesforceStepMeta {
   private static Class<?> PKG = SalesforceDeleteMeta.class; // for i18n purposes, needed by Translator2!!
 

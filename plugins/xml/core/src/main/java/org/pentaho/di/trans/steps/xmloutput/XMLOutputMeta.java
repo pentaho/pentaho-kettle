@@ -71,7 +71,7 @@ import org.w3c.dom.Node;
  */
 @Step( id = "XMLOutput", image = "XOU.svg", i18nPackageName = "org.pentaho.di.trans.steps.xmloutput",
     name = "XMLOutput.name", description = "XMLOutput.description", categoryDescription = "XMLOutput.category",
-    documentationUrl = "/Products/XML_Output" )
+    documentationUrl = "mk-95pdia003/pdi-transformation-steps/xml-output" )
 @InjectionSupported( localizationPrefix = "XMLOutput.Injection.", groups = "OUTPUT_FIELDS" )
 public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = XMLOutputMeta.class; // for i18n purposes, needed by Translator2!!
