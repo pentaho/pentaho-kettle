@@ -648,3 +648,29 @@ jobGroups:
           }
         }
       testable: false
+
+    - jobID: rebuild-download-page-json
+      scmUrl: https://github.com/pentaho/devops-download-proxy-server.git
+      dockerImage: groovy:jdk11
+      buildFramework: DSL_SCRIPT
+      script: |
+        { ->
+          catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            withCredentials([usernamePassword(credentialsId: '${ARTIFACT_DEPLOYER_CREDENTIALS_ID}',
+              usernameVariable: 'JF_USER', passwordVariable: 'JF_TOKEN')]) {
+              def scriptToRun = """\
+                ${WORKSPACE}/scripts/hosted/hosted.groovy \
+                  --rtURL '${ARTIFACTORY_BASE_API_URL}' \
+                  --rtUsername '${JF_USER}' \
+                  --rtPassword '${JF_TOKEN}' \
+                  --deploymentFolder ${DEPLOYMENT_FOLDER} \
+                  --manifest-file ${ARCHIVING_CONFIG} \
+                  --versions-file ${BUILD_CONFIG_ROOT_PATH}/version.properties \
+                  --releaseVersion ${RELEASE_VERSION} \
+                  --isSnapshot true
+                  """
+              sh(script: scriptToRun)
+            }
+          }
+        }
+      testable: false
