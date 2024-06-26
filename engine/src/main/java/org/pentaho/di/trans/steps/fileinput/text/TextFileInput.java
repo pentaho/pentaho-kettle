@@ -26,11 +26,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -124,48 +122,6 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
       log.logError( e.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
-  private JSONObject getEncodingsAction( Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      JSONArray encodings = new JSONArray();
-      Charset.availableCharsets().values().forEach( charset -> {
-        encodings.add( charset.displayName() );
-      });
-      response.put( "encodings", encodings );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
-    return response;
-  }
-
-  private JSONObject getAvailableLocalesAction( Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Locale[] locale = Locale.getAvailableLocales();
-      JSONArray dateLocales = new JSONArray();
-      for ( int i = 0; i < locale.length; i++ ) {
-        dateLocales.add( locale[i].toString() );
-      }
-      response.put( "availableLocales", dateLocales );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
-    return response;
-  }
-
-  private JSONObject getDefaultLocaleAction( Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      response.put( "defaultLocale", Locale.getDefault().toString() );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
     }
     return response;
   }
