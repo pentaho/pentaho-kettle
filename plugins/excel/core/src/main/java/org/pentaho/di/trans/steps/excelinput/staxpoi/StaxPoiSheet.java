@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,7 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
-import org.apache.poi.xssf.model.SharedStringsTable;
+import org.apache.poi.xssf.model.SharedStrings;
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTXf;
@@ -87,7 +87,7 @@ public class StaxPoiSheet implements KSheet {
   private KCell[] currentRowCells;
 
   // full shared strings table
-  private SharedStringsTable sst;
+  private SharedStrings sst;
   // custom styles
   private StylesTable styles;
 
@@ -137,8 +137,10 @@ public class StaxPoiSheet implements KSheet {
                     event = sheetReader.next();
                     if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( TAG_V ) ) {
                       int idx = Integer.parseInt( sheetReader.getElementText() );
-                      String content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
-                      headerRow.add( content );
+                      if (sst != null && sst.getCount() > 0) {
+                        String content = new XSSFRichTextString(sst.getItemAt(idx).getString()).toString();
+                        headerRow.add( content );
+                      }
                       break;
                     }
                   }
@@ -287,7 +289,9 @@ public class StaxPoiSheet implements KSheet {
             // read content as string
             if ( cellType != null && cellType.equals( "s" ) ) {
               int idx = Integer.parseInt( sheetReader.getElementText() );
-              content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
+              if (sst != null && sst.getCount() > 0) {
+                content = new XSSFRichTextString(sst.getItemAt(idx).getString()).toString();
+              }
             } else {
               content = sheetReader.getElementText();
             }
