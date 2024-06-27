@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,8 @@ import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTXf;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
+import org.apache.poi.xssf.model.SharedStrings;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
 public class StaxPoiSheetTest {
 
@@ -291,7 +293,7 @@ public class StaxPoiSheetTest {
   }
 
   private XSSFReader mockXSSFReader( final String sheetId,
-                                     final String sheetContent, final SharedStringsTable sst, final StylesTable styles )
+                                     final String sheetContent, final SharedStrings sst, final StylesTable styles )
     throws Exception {
     XSSFReader reader = mock( XSSFReader.class );
     when( reader.getSharedStringsTable() ).thenReturn( sst );
@@ -330,10 +332,8 @@ public class StaxPoiSheetTest {
 
   private SharedStringsTable mockSharedStringsTable( String... strings ) {
     SharedStringsTable sst = new SharedStringsTable();
-    for ( String str : strings ) {
-      CTRst st = CTRst.Factory.newInstance();
-      st.setT( str );
-      sst.addEntry( st );
+    for (String str : strings) {
+      sst.addSharedStringItem(new XSSFRichTextString(str));
     }
     return sst;
   }

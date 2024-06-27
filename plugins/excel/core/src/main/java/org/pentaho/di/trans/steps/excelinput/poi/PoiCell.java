@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,7 @@ package org.pentaho.di.trans.steps.excelinput.poi;
 import java.sql.Date;
 import java.util.TimeZone;
 
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -45,7 +45,7 @@ public class PoiCell implements KCell {
     if ( type == CellType.BOOLEAN ) {
       return KCellType.BOOLEAN;
     } else if ( type == CellType.NUMERIC ) {
-      if ( HSSFDateUtil.isCellDateFormatted( cell ) ) {
+      if ( DateUtil.isCellDateFormatted( cell ) ) {
         return KCellType.DATE;
       } else {
         return KCellType.NUMBER;
@@ -63,7 +63,7 @@ public class PoiCell implements KCell {
       } else if ( CellType.STRING.equals( cachedFormulaResultType ) ) {
         return KCellType.STRING_FORMULA;
       } else if ( CellType.NUMERIC.equals( cachedFormulaResultType ) ) {
-        if ( HSSFDateUtil.isCellDateFormatted( cell ) ) {
+        if ( DateUtil.isCellDateFormatted( cell ) ) {
           return KCellType.DATE_FORMULA;
         } else {
           return KCellType.NUMBER_FORMULA;
