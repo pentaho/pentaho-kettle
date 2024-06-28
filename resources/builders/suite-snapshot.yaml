@@ -667,10 +667,10 @@ jobGroups:
                   https://api.github.com/repos/pentaho/devops-download-proxy-server/actions/workflows/update-file-mapping-json.yml/dispatches \
                   -d '{ "ref":"main", \
                         "inputs":{ \
-                          "deployment-folder":"${DEPLOYMENT_FOLDER} ", \
-                          "is-snapshot":"true", \
-                          "release-version":"${RELEASE_VERSION}", \
-                          "jenkins-pipelines-branch:"${PIPELINE_BRANCH}" \
+                          "deployment-folder": "${DEPLOYMENT_FOLDER}", \
+                          "is-snapshot": "true", \
+                          "release-version": "${RELEASE_VERSION}", \
+                          "jenkins-pipelines-branch": "${PIPELINE_BRANCH}" \
                         } \
                       }'
               """
