@@ -57,7 +57,7 @@ class UndefinedConnectionFileObject extends ConnectionFileObject {
 
   @Override
   public boolean isAttached() {
-    return false;
+    return true;
   }
 
   @Override
