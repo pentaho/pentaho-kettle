@@ -657,7 +657,6 @@ jobGroups:
         { ->
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
             withCredentials([string(credentialsId: '${SCM_API_TOKEN_CREDENTIALS_ID}', variable: 'GITHUB_TOKEN')]) {
-              env.BRANCH_NAME = scm.branches[0].name
               def script2Run = """\
                 # dispatch the github workflow
                 curl -L \
@@ -671,7 +670,7 @@ jobGroups:
                           "deployment-folder":"${DEPLOYMENT_FOLDER} ", \
                           "is-snapshot":"true", \
                           "release-version":"${RELEASE_VERSION}", \
-                          "jenkins-pipelines-branch:"${env.BRANCH_NAME}" \
+                          "jenkins-pipelines-branch:"${PIPELINE_BRANCH}" \
                         } \
                       }'
               """
