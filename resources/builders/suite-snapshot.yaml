@@ -657,7 +657,7 @@ jobGroups:
         { ->
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
             withCredentials([string(credentialsId: '${SCM_API_TOKEN_CREDENTIALS_ID}', variable: 'GITHUB_TOKEN')]) {
-              env.BRANCH_NAME = "${GIT_BRANCH.split("/")[1]}"
+              env.BRANCH_NAME = scm.branches[0].name
               def script2Run = """\
                 # dispatch the github workflow
                 curl -L \
