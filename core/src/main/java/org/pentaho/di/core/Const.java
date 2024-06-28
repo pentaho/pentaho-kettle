@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1448,6 +1448,13 @@ public class Const {
     }
     return driversLocation;
   }
+
+  /**
+   * Determines whether failure to find the HDFS file system is a fatal error in Hadoop File Input step.
+   * Default (legacy) behavior is false.
+   */
+  public static final String KETTLE_FATAL_ERROR_ON_HDFS_NOT_FOUND = "KETTLE_FATAL_ERROR_ON_HDFS_NOT_FOUND";
+  public static final String KETTLE_FATAL_ERROR_ON_HDFS_NOT_FOUND_DEFAULT = "N";
 
   /**
    * <p>This environment is used to specify how many attempts before failing to read an XML from within a Zip file
