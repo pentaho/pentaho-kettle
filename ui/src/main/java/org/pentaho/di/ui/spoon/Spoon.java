@@ -292,11 +292,8 @@ import org.pentaho.di.ui.spoon.tree.extension.TreePaneExtension;
 import org.pentaho.di.ui.spoon.tree.extension.TreePaneManager;
 import org.pentaho.di.ui.spoon.tree.provider.ClustersFolderProvider;
 import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
-import org.pentaho.di.ui.spoon.tree.provider.HopsFolderProvider;
-import org.pentaho.di.ui.spoon.tree.provider.JobEntriesFolderProvider;
 import org.pentaho.di.ui.spoon.tree.provider.PartitionsFolderProvider;
 import org.pentaho.di.ui.spoon.tree.provider.SlavesFolderProvider;
-import org.pentaho.di.ui.spoon.tree.provider.StepsFolderProvider;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage1;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.ui.trans.dialog.TransDialogPluginType;
@@ -335,6 +332,7 @@ import org.w3c.dom.Node;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.DataOutputStream;
@@ -2087,7 +2085,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       log.logError( e.getLocalizedMessage(), e );
     }
 
-    SashForm mainViewComposite = new SashForm( tabFolder, SWT.VERTICAL | SWT.BORDER );
+    SashForm mainViewComposite = new SashForm( tabFolder, SWT.VERTICAL );
+    mainViewComposite.setBackground( GUIResource.getInstance().getColorDemoGray() );
     // build view along with any other registered extensions
     viewTabPanes.buildPanes( mainViewComposite );
 
