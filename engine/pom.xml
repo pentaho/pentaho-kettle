@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-engine</artifactId>
-  <version>10.1.0.0-SNAPSHOT</version>
+  <version>10.1.0.1-348</version>
   <packaging>jar</packaging>
 
   <name>PDI Engine</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>10.1.0.0-SNAPSHOT</version>
+    <version>10.1.0.1-348</version>
   </parent>
 
   <properties>
@@ -24,10 +24,10 @@
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
 
     <!-- Pentaho dependencies -->
-    <pentaho-reporting.version>10.1.0.0-SNAPSHOT</pentaho-reporting.version>
-    <pentaho-registry.version>10.1.0.0-SNAPSHOT</pentaho-registry.version>
-    <pentaho-connections.version>10.1.0.0-SNAPSHOT</pentaho-connections.version>
-    <mondrian.version>10.1.0.0-SNAPSHOT</mondrian.version>
+    <pentaho-reporting.version>10.1.0.1-348</pentaho-reporting.version>
+    <pentaho-registry.version>10.1.0.1-348</pentaho-registry.version>
+    <pentaho-connections.version>10.1.0.1-348</pentaho-connections.version>
+    <mondrian.version>10.1.0.1-348</mondrian.version>
 
     <!-- Third-party dependencies -->
     <antlr-complete.version>3.5.2</antlr-complete.version>
@@ -628,7 +628,7 @@
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.1-api</artifactId>
-      <version>1.0.2.Final</version>
+      <version>1.0.0.Final</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
