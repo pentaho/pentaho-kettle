@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2022 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2023 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,11 @@ public class MetastoreLocatorImpl implements MetastoreLocator, MetastoreLocatorO
 
   @Override
   public IMetaStore getMetastore( String providerKey ) {
-    IMetaStore metaStore = getExplicitMetastore( MetastoreLocator.REPOSITORY_PROVIDER_KEY );
+    //Look for VFS metastore.
+    IMetaStore metaStore = getExplicitMetastore( MetastoreLocator.VFS_PROVIDER_KEY );
+    if ( metaStore == null ) {
+      metaStore = getExplicitMetastore( MetastoreLocator.REPOSITORY_PROVIDER_KEY );
+    }
     if ( metaStore == null ) {
       metaStore = getExplicitMetastore( MetastoreLocator.LOCAL_PROVIDER_KEY );
     }

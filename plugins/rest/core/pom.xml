@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>rest</artifactId>
-    <version>9.6.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>rest-core</artifactId>
@@ -14,24 +14,28 @@
 
   <name>PDI Rest Plugin Core</name>
   <properties>
-    <pdi.version>9.6.0.0-SNAPSHOT</pdi.version>
-    <pentaho-metaverse.version>9.6.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <platform.version>9.6.0.0-SNAPSHOT</platform.version>
+    <pdi.version>10.1.0.0-SNAPSHOT</pdi.version>
+    <pentaho-metaverse.version>10.1.0.0-SNAPSHOT</pentaho-metaverse.version>
+    <platform.version>10.1.0.0-SNAPSHOT</platform.version>
     <commons-lang.version>2.6</commons-lang.version>
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
-    <jersey-client.version>1.19.1</jersey-client.version>
-    <jersey-core.version>1.19.1</jersey-core.version>
-    <jersey-bundle.version>1.19.1</jersey-bundle.version>
     <json-simple.version>1.1</json-simple.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
     <powermock.version>1.7.3</powermock.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
-
+    <jersey2-apache-connector.version>2.30</jersey2-apache-connector.version>
+    <jersey2.version>2.38</jersey2.version>
+    <jaxrs.version>2.1.6</jaxrs.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.glassfish.jersey.connectors</groupId>
+      <artifactId>jersey-apache-connector</artifactId>
+      <version>${jersey2-apache-connector.version}</version>
+    </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
@@ -60,17 +64,6 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
       <version>${pdi.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-apache-client4</artifactId>
-      <version>${jersey-client.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -80,10 +73,53 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>${jaxrs.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet</artifactId>
+      <version>${jersey2.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet-core</artifactId>
+      <version>${jersey2.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-server</artifactId>
+      <version>${jersey2.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
-      <version>${jersey-client.version}</version>
-      <scope>provided</scope>
+      <version>${jersey2.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -92,10 +128,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-bundle</artifactId>
-      <version>${jersey-bundle.version}</version>
-      <scope>provided</scope>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-common</artifactId>
+      <version>${jersey2.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -104,16 +139,14 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-core</artifactId>
-      <version>${jersey-core.version}</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <version>${jersey2.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -147,6 +180,7 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-metaverse-api</artifactId>
       <version>${pentaho-metaverse.version}</version>
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -158,6 +192,7 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
       <version>${platform.version}</version>
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -169,6 +204,7 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
       <version>${platform.version}</version>
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

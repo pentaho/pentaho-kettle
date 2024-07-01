@@ -95,6 +95,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
@@ -305,7 +306,6 @@ import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.di.version.BuildVersion;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
@@ -360,6 +360,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -609,7 +610,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private CommandLineOption[] commandLineOptions;
 
-  public DelegatingMetaStore metaStore;
+  /* package for testing */ Supplier<IMetaStore> metaStoreSupplier = MetaStoreConst.getDefaultMetastoreSupplier();
 
   private static PrintStream originalSystemOut = System.out;
   private static PrintStream originalSystemErr = System.err;
@@ -773,21 +774,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     this.addMenuBar();
     log = new LogChannel( APP_NAME, false, false );
     SpoonFactory.setSpoonInstance( this );
-
-    // Load at least one local Pentaho metastore and add it to the delegating metastore
-    //
-    metaStore = new DelegatingMetaStore();
-    try {
-      IMetaStore localMetaStore = MetaStoreConst.openLocalPentahoMetaStore();
-      metaStore.addMetaStore( localMetaStore );
-      metaStore.setActiveMetaStoreName( localMetaStore.getName() );
-      if ( rep != null ) {
-        metaStore.addMetaStore( 0, rep.getMetaStore() );
-        metaStore.setActiveMetaStoreName( rep.getMetaStore().getName() );
-      }
-    } catch ( MetaStoreException e ) {
-      new ErrorDialog( shell, "Error opening Pentaho Metastore", "Unable to open local Pentaho Metastore", e );
-    }
 
     setRepository( rep );
 
@@ -2141,7 +2127,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // CTRL-F5 : metastore explorer
         //
         if ( e.keyCode == SWT.F5 && ( e.stateMask & SWT.CONTROL ) != 0 ) {
-          new MetaStoreExplorerDialog( shell, metaStore ).open();
+          new MetaStoreExplorerDialog( shell, metaStoreSupplier.get() ).open();
         }
       }
     } );
@@ -3454,7 +3440,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Load the steps...
       for ( int i = 0; i < nr; i++ ) {
         Node stepNode = XMLHandler.getSubNodeByNr( stepsNode, "step", i );
-        steps[i] = new StepMeta( stepNode, transMeta.getDatabases(), metaStore );
+        steps[i] = new StepMeta( stepNode, transMeta.getDatabases(), metaStoreSupplier.get() );
 
         if ( loc != null ) {
           Point p = steps[i].getLocation();
@@ -4302,15 +4288,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( rep != null ) {
           rep.disconnect();
         }
-        if ( metaStore.getMetaStoreList().size() > 1 ) {
-          try {
-            metaStore.getMetaStoreList().remove( 0 );
-            metaStore.setActiveMetaStoreName( metaStore.getMetaStoreList().get( 0 ).getName() );
-          } catch ( MetaStoreException e ) {
-            new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorRemovingMetaStore.Title" ),
-                BaseMessages.getString( PKG, "Spoon.ErrorRemovingMetaStore.Message" ), e );
-          }
-        }
 
         setRepository( null );
         setShellText();
@@ -5058,7 +5035,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // Pass repository information
     //
     transMeta.setRepository( rep );
-    transMeta.setMetaStore( metaStore );
+    transMeta.setMetaStore( metaStoreSupplier.get() );
 
     try {
       SharedObjects sharedObjects =
@@ -5116,7 +5093,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Pass repository information
       //
       jobMeta.setRepository( rep );
-      jobMeta.setMetaStore( metaStore );
+      jobMeta.setMetaStore( metaStoreSupplier.get() );
 
       try {
         // TODO: MAKE LIKE TRANS
@@ -5416,7 +5393,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean saved = false;
 
     ( (AbstractMeta) meta ).setRepository( rep );
-    ( (AbstractMeta) meta ).setMetaStore( metaStore );
+    ( (AbstractMeta) meta ).setMetaStore( metaStoreSupplier.get() );
 
     if ( getLog().isDetailed() ) {
       // "Save to file or repository...
@@ -5738,7 +5715,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     ( (AbstractMeta) meta ).setRepository( rep );
-    ( (AbstractMeta) meta ).setMetaStore( metaStore );
+    ( (AbstractMeta) meta ).setMetaStore( metaStoreSupplier.get() );
 
     String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
@@ -5821,7 +5798,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           // Export the resources linked to the currently loaded file...
           TopLevelResource topLevelResource =
                   ResourceUtil.serializeResourceExportInterface(
-                          zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStore);
+                          zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStoreSupplier.get() );
           String message =
                   ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(), resourceExportInterface);
 
@@ -5894,7 +5871,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       //
       TopLevelResource topLevelResource =
         ResourceUtil.serializeResourceExportInterface(
-          zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStore );
+          zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStoreSupplier.get() );
       String message =
         ResourceUtil.getExplanation( zipFilename, topLevelResource.getResourceName(), resourceExportInterface );
 
@@ -8702,7 +8679,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void sendTransformationXMLToSlaveServer( TransMeta transMeta,
     TransExecutionConfiguration executionConfiguration ) {
     try {
-      Trans.sendToSlaveServer( transMeta, executionConfiguration, rep, metaStore );
+      Trans.sendToSlaveServer( transMeta, executionConfiguration, rep, metaStoreSupplier.get() );
     } catch ( Exception e ) {
       new ErrorDialog( shell, "Error", "Error sending transformation to server", e );
     }
@@ -8945,37 +8922,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void setRepository( Repository rep ) {
     this.rep = rep;
     this.repositoryName = rep != null ? rep.getName() : null;
-    try {
-
-      // Keep one metastore here...
-      //
-      if ( metaStore.getMetaStoreList().size() > 1 ) {
-        metaStore.getMetaStoreList().remove( 0 );
-        metaStore.setActiveMetaStoreName( metaStore.getMetaStoreList().get( 0 ).getName() );
-      }
-
       if ( rep != null ) {
         this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-
-        // add a wrapper metastore to the delegation
-        //
-        IMetaStore repositoryMetaStore = rep.getMetaStore();
-        if ( repositoryMetaStore != null ) {
-          metaStore.addMetaStore( 0, repositoryMetaStore ); // first priority for explicitly connected repositories.
-          metaStore.setActiveMetaStoreName( repositoryMetaStore.getName() );
-          log.logBasic( "Connected to metastore : "
-            + repositoryMetaStore.getName() + ", added to delegating metastore" );
-        } else {
-          log.logBasic( "No metastore found in the repository : "
-            + rep.getName() + ", connected? " + rep.isConnected() );
-        }
       }
-    } catch ( MetaStoreException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorAddingRepositoryMetaStore.Title" ), BaseMessages
-          .getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message" ), e );
-    }
 
+    ConnectionManager.getInstance().reset();
     // Registering the UI Support classes
     UISupportRegistery.getInstance().registerUISupport(
       RepositorySecurityProvider.class, BaseRepositoryExplorerUISupport.class );
@@ -9565,12 +9516,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return startupPerspective;
   }
 
-  public DelegatingMetaStore getMetaStore() {
-    return metaStore;
+  public IMetaStore getMetaStore() {
+    return metaStoreSupplier == null ? null : metaStoreSupplier.get();
   }
 
-  public void setMetaStore( DelegatingMetaStore metaStore ) {
-    this.metaStore = metaStore;
+  public Supplier<IMetaStore> getMetaStoreSupplier() {
+    return metaStoreSupplier;
+  }
+
+  public void setMetaStoreSupplier( Supplier<IMetaStore> metaStoreSupplier ) {
+    this.metaStoreSupplier = metaStoreSupplier;
   }
 
   private void onLoginError( Throwable t ) {

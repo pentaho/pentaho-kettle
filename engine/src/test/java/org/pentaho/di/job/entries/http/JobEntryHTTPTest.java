@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -114,7 +114,7 @@ public class JobEntryHTTPTest {
   public void testDateTimeAddedFieldIsSetInTrue_WhenRepoReturnsTrue() throws KettleException {
     when( ktlDbRepMock.getJobEntryAttributeBoolean( objIdMock, "date_time_added" ) ).thenReturn( true );
 
-    jobEntryHttp.loadRep( ktlDbRepMock, ktlDbRepMock.getMetaStore(), objIdMock, null, null );
+    jobEntryHttp.loadRep( ktlDbRepMock, ktlDbRepMock.getRepositoryMetaStore(), objIdMock, null, null );
     verify( ktlDbRepMock, never() ).getJobEntryAttributeString( objIdMock, "date_time_added" );
     verify( ktlDbRepMock ).getJobEntryAttributeBoolean( objIdMock, "date_time_added" );
     assertTrue( "DateTimeAdded field should be TRUE.", jobEntryHttp.isDateTimeAdded() );
@@ -134,30 +134,29 @@ public class JobEntryHTTPTest {
   public void testExecute_simpleConfiguration() throws IOException {
     String validURL = HTTP_SERVER_BASEURL;
     String invalidURL = "http://www.www.www.www";
+    File tempTargetFile = File.createTempFile( "targetFile", ".tmp" );
+    tempTargetFile.deleteOnExit();
     Result result = new Result();
     JobEntryHTTP basicHttpJobEntry = new JobEntryHTTP();
+    basicHttpJobEntry.setTargetFilename( tempTargetFile.getAbsolutePath() );
     basicHttpJobEntry.setAddFilenameToResult( false );
 
     // Test valid URL
-    File tempTargetFile1 = File.createTempFile( "targetFile", ".tmp" );
-    tempTargetFile1.deleteOnExit();
-    basicHttpJobEntry.setTargetFilename( tempTargetFile1.getAbsolutePath() );
     basicHttpJobEntry.setUrl( validURL );
     basicHttpJobEntry.execute( result, 0 );
     assertEquals( 0L, result.getNrErrors() );
     assertEquals( HttpStatus.SC_OK, basicHttpJobEntry.getResponseStatusCode() );
-    assertTrue( FileUtils.sizeOf( tempTargetFile1 ) > 0 );
+    assertTrue( FileUtils.sizeOf( tempTargetFile ) > 0 );
+    tempTargetFile.delete();
 
     // Test invalid URL
     result = new Result();
-    File tempTargetFile2 = File.createTempFile( "targetFile", ".tmp" );
-    tempTargetFile2.deleteOnExit();
-    basicHttpJobEntry.setTargetFilename( tempTargetFile2.getAbsolutePath() );
     basicHttpJobEntry.setUrl( invalidURL );
     basicHttpJobEntry.execute( result, 0 );
     assertEquals( 1L, result.getNrErrors() );
     assertEquals( 0, basicHttpJobEntry.getResponseStatusCode() );
-    assertTrue( FileUtils.sizeOf( tempTargetFile2 ) == 0 );
+    assertTrue( FileUtils.sizeOf( tempTargetFile ) == 0 );
+    tempTargetFile.delete();
   }
 
   @Test

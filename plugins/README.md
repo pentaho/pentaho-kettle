@@ -30,6 +30,8 @@ __List of the current core plugins:__
 * excel
 * ivw-bulk-loader
 * edi2xml
+* random-cc-number-generator
+* credit-card-validator
 * engine-configuration
 * pur
 * repositories
@@ -39,6 +41,7 @@ __List of the current core plugins:__
 * yaml-input
 * pentaho-reporting
 * mondrianinput
+* get-repository-names
 
 __Deprecated plugins:__
 

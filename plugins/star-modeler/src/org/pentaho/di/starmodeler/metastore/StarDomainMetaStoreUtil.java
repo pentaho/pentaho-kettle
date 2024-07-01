@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+* Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -33,7 +33,6 @@ import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreElementTypeExistsException;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.pentaho.metastore.util.MetaStoreUtil;
 import org.pentaho.metastore.util.PentahoDefaults;
 
@@ -116,7 +115,7 @@ public class StarDomainMetaStoreUtil extends MetaStoreUtil {
     return list;
   }
 
-  public static StarDomain loadStarDomain(DelegatingMetaStore metaStore, String id) throws MetaStoreException {
+  public static StarDomain loadStarDomain( IMetaStore metaStore, String id ) throws MetaStoreException {
     IMetaStoreElementType elementType = getStarDomainElementType(metaStore);
     IMetaStoreElement element = metaStore.getElement(namespace, elementType, id);
     if (element==null) {

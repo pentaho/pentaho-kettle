@@ -22,20 +22,13 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.api.uri.UriComponent;
-import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config;
-import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
-import com.sun.jersey.client.urlconnection.HTTPSProperties;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
+import org.glassfish.jersey.client.RequestEntityProcessing;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.uri.UriComponent;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
@@ -50,16 +43,21 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.util.HttpClientManager;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -87,8 +85,8 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   /* for unit test*/
-  MultivaluedMapImpl createMultivalueMap( String paramName, String paramValue ) {
-    MultivaluedMapImpl queryParams = new MultivaluedMapImpl();
+  MultivaluedHashMap createMultivalueMap( String paramName, String paramValue ) {
+    MultivaluedHashMap queryParams = new MultivaluedHashMap();
     queryParams.add( paramName, UriComponent.encode( paramValue, UriComponent.Type.QUERY_PARAM ) );
     return queryParams;
   }
@@ -105,7 +103,7 @@ public class Rest extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.MethodMissing" ) );
       }
     }
-    WebResource webResource = null;
+    WebTarget webResource = null;
     Client client = null;
     Object[] newRow = null;
     if ( rowData != null ) {
@@ -115,16 +113,21 @@ public class Rest extends BaseStep implements StepInterface {
       if ( isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", data.realUrl ) );
       }
-      // Register a custom StringMessageBodyWriter to solve PDI-17423
-      MessageBodyWriter<String> stringMessageBodyWriter = new StringMessageBodyWriter();
-      data.config.getSingletons().add( stringMessageBodyWriter );
-      // create an instance of the com.sun.jersey.api.client.Client class
-      client = Client.create( data.config );
+      //      // Register a custom StringMessageBodyWriter to solve PDI-17423
+      ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+      clientBuilder
+        .withConfig( data.config )
+        .property( HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true );
+      if ( meta.isIgnoreSsl() || !Utils.isEmpty( data.trustStoreFile ) ) {
+        clientBuilder.sslContext( data.sslContext );
+        clientBuilder.hostnameVerifier( ( s1, s2 ) -> true );
+      }
+      client = clientBuilder.build();
       if ( data.basicAuthentication != null ) {
-        client.addFilter( data.basicAuthentication );
+        client.register( data.basicAuthentication );
       }
       // create a WebResource object, which encapsulates a web resource for the client
-      webResource = client.resource( data.realUrl );
+      webResource = client.target( data.realUrl );
 
       // used for calculating the responseTime
       long startTime = System.currentTimeMillis();
@@ -141,7 +144,7 @@ public class Rest extends BaseStep implements StepInterface {
           builder = builder.matrixParam( data.matrixParamNames[ i ],
             UriComponent.encode( value, UriComponent.Type.QUERY_PARAM ) );
         }
-        webResource = client.resource( builder.build() );
+        webResource = client.target( builder.build() );
       }
 
       if ( data.useParams ) {
@@ -151,13 +154,13 @@ public class Rest extends BaseStep implements StepInterface {
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[ i ], value ) );
           }
-          webResource = webResource.queryParams( createMultivalueMap( data.paramNames[ i ], value ) );
+          webResource = webResource.queryParam( data.paramNames[ i ], value );
         }
       }
       if ( isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", webResource.getURI() ) );
+        logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", webResource.getUri() ) );
       }
-      WebResource.Builder builder = webResource.getRequestBuilder();
+      Invocation.Builder invocationBuilder = webResource.request();
       String contentType = null; // media type override, if not null
       if ( data.useHeaders ) {
         // Add headers
@@ -165,7 +168,7 @@ public class Rest extends BaseStep implements StepInterface {
           String value = data.inputRowMeta.getString( rowData, data.indexOfHeaderFields[ i ] );
 
           // unsure if an already set header will be returned to builder
-          builder = builder.header( data.headerNames[ i ], value );
+          invocationBuilder.header( data.headerNames[ i ], value );
           if ( "Content-Type".equals( data.headerNames[ i ] ) ) {
             contentType = value;
           }
@@ -175,7 +178,7 @@ public class Rest extends BaseStep implements StepInterface {
         }
       }
 
-      ClientResponse response = null;
+      Response response = null;
       String entityString = null;
       if ( data.useBody ) {
         // Set Http request entity
@@ -186,38 +189,41 @@ public class Rest extends BaseStep implements StepInterface {
       }
       try {
         if ( data.method.equals( RestMeta.HTTP_METHOD_GET ) ) {
-          response = builder.get( ClientResponse.class );
+          response = invocationBuilder.get( Response.class );
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_POST ) ) {
           if ( null != contentType ) {
-            response = builder.type( contentType ).post( ClientResponse.class, entityString );
+            response = invocationBuilder.post( Entity.entity( entityString, contentType ) );
           } else {
-            response = builder.type( data.mediaType ).post( ClientResponse.class, entityString );
+            //            response = builder.type( data.mediaType ).post( ClientResponse.class, entityString );
+            response = invocationBuilder.post( Entity.entity( entityString, data.mediaType ) );
           }
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_PUT ) ) {
           if ( null != contentType ) {
-            response = builder.type( contentType ).put( ClientResponse.class, entityString );
+            response = invocationBuilder.put( Entity.entity( entityString, contentType ) );
           } else {
-            response = builder.type( data.mediaType ).put( ClientResponse.class, entityString );
+            response = invocationBuilder.put( Entity.entity( entityString, data.mediaType ) );
           }
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_DELETE ) ) {
-          response = builder.delete( ClientResponse.class );
+          response = invocationBuilder.delete();
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_HEAD ) ) {
-          response = builder.head();
+          response = invocationBuilder.head();
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_OPTIONS ) ) {
-          response = builder.options( ClientResponse.class );
+          response = invocationBuilder.options();
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_PATCH ) ) {
           if ( null != contentType ) {
             response =
-              builder.type( contentType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class, entityString );
+              invocationBuilder.method(
+                RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, contentType ) );
           } else {
-            response = builder.type( data.mediaType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class,
-              entityString );
+            response =
+              invocationBuilder.method(
+                RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, data.mediaType ) );
           }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
         }
-      } catch ( UniformInterfaceException u ) {
-        response = u.getResponse();
+      } catch ( Exception e ) {
+        throw new KettleException( "Request could not be processed", e );
       }
       // Get response time
       long responseTime = System.currentTimeMillis() - startTime;
@@ -237,16 +243,16 @@ public class Rest extends BaseStep implements StepInterface {
       String body;
       String headerString = null;
       try {
-        body = response.getEntity( String.class );
-      } catch ( UniformInterfaceException ex ) {
+        body = response.readEntity( String.class );
+      } catch ( Exception ex ) {
         body = "";
       }
       // get Header
-      MultivaluedMap<String, String> headers = searchForHeaders( response );
+      MultivaluedMap<String, Object> headers = searchForHeaders( response );
       JSONObject json = new JSONObject();
-      for ( java.util.Map.Entry<String, List<String>> entry : headers.entrySet() ) {
+      for ( java.util.Map.Entry<String, List<Object>> entry : headers.entrySet() ) {
         String name = entry.getKey();
-        List<String> value = entry.getValue();
+        List<Object> value = entry.getValue();
         if ( value.size() > 1 ) {
           json.put( name, value );
         } else {
@@ -284,7 +290,7 @@ public class Rest extends BaseStep implements StepInterface {
         webResource = null;
       }
       if ( client != null ) {
-        client.destroy();
+        client.close();
       }
     }
     return newRow;
@@ -292,58 +298,70 @@ public class Rest extends BaseStep implements StepInterface {
 
   private void setConfig() throws KettleException {
     if ( data.config == null ) {
-      // Use ApacheHttpClient for supporting proxy authentication.
-      data.config = new DefaultApacheHttpClient4Config();
+      data.config = new ClientConfig();
+      data.config.connectorProvider( new ApacheConnectorProvider() );
+      data.config.property( ClientProperties.REQUEST_ENTITY_PROCESSING, RequestEntityProcessing.BUFFERED );
       if ( !Utils.isEmpty( data.realProxyHost ) ) {
         // PROXY CONFIGURATION
-        data.config.getProperties()
-          .put( ApacheHttpClient4Config.PROPERTY_PROXY_URI, "http://" + data.realProxyHost + ":" + data.realProxyPort );
+        data.config.property( ClientProperties.PROXY_URI, "http://" + data.realProxyHost + ":" + data.realProxyPort );
         if ( !Utils.isEmpty( data.realHttpLogin ) && !Utils.isEmpty( data.realHttpPassword ) ) {
-          AuthScope authScope = new AuthScope( data.realProxyHost, data.realProxyPort );
-          UsernamePasswordCredentials credentials =
-            new UsernamePasswordCredentials( data.realHttpLogin, data.realHttpPassword );
-          CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-          credentialsProvider.setCredentials( authScope, credentials );
-          data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_CREDENTIALS_PROVIDER, credentialsProvider );
+          data.config.property( ClientProperties.PROXY_USERNAME, data.realHttpLogin );
+          data.config.property( ClientProperties.PROXY_PASSWORD, data.realHttpPassword );
         }
       } else {
         if ( !Utils.isEmpty( data.realHttpLogin ) ) {
           // Basic authentication
-          data.basicAuthentication = new HTTPBasicAuthFilter( data.realHttpLogin, data.realHttpPassword );
+          data.basicAuthentication =
+            HttpAuthenticationFeature.basicBuilder()
+              .credentials( data.realHttpLogin, data.realHttpPassword )
+              .build();
         }
-      }
-      if ( meta.isPreemptive() ) {
-        data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_PREEMPTIVE_BASIC_AUTHENTICATION, true );
       }
       // SSL TRUST STORE CONFIGURATION
-      if ( !Utils.isEmpty( data.trustStoreFile ) ) {
-        try {
-          SSLContext ctx = getSslContext( data.trustStoreFile, data.trustStorePassword );
-          HostnameVerifier hv = new HostnameVerifier() {
-            public boolean verify( String hostname, SSLSession session ) {
-              if ( isDebug() ) {
-                logDebug( "Warning: URL Host: " + hostname + " vs. " + session.getPeerHost() );
-              }
-              return true;
-            }
-          };
-          data.config.getProperties().put( HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties( hv, ctx ) );
-        } catch ( NoSuchAlgorithmException e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
-        } catch ( KeyStoreException | UnrecoverableKeyException e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyStoreException" ), e );
-        } catch ( CertificateException e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CertificateException" ), e );
-        } catch ( FileNotFoundException e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.FileNotFound", data.trustStoreFile ), e );
-        } catch ( IOException e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.IOException" ), e );
-        } catch ( KeyManagementException e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
-        }
+      if ( !Utils.isEmpty( data.trustStoreFile ) && !meta.isIgnoreSsl() ) {
+        setTrustStoreFile();
       }
-    }
+      if ( meta.isIgnoreSsl() ) {
+        setTrustAll();
+      }
 
+    }
+  }
+
+  private void setTrustAll() throws KettleException {
+    try {
+      SSLContext ctx = HttpClientManager.getTrustAllSslContext();
+
+      data.sslContext = ctx;
+    } catch ( NoSuchAlgorithmException e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
+    } catch ( KeyManagementException e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
+    }
+  }
+
+  private void setTrustStoreFile() throws KettleException {
+    try ( FileInputStream trustFileStream = new FileInputStream( data.trustStoreFile ) ) {
+
+      SSLContext ctx =
+        HttpClientManager.getSslContextWithTrustStoreFile(
+          trustFileStream, data.trustStorePassword );
+
+      data.sslContext = ctx;
+    } catch ( NoSuchAlgorithmException e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
+    } catch ( KeyStoreException e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyStoreException" ), e );
+    } catch ( CertificateException e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CertificateException" ), e );
+    } catch ( FileNotFoundException e ) {
+      throw new KettleException(
+        BaseMessages.getString( PKG, "Rest.Error.FileNotFound", data.trustStoreFile ), e );
+    } catch ( IOException e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.IOException" ), e );
+    } catch ( KeyManagementException e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
+    }
   }
 
   protected SSLContext getSslContext( String trustFile, String trustStorePassword )
@@ -378,7 +396,7 @@ public class Rest extends BaseStep implements StepInterface {
     }
   }
 
-  protected MultivaluedMap<String, String> searchForHeaders( ClientResponse response ) {
+  protected MultivaluedMap<String, Object> searchForHeaders( Response response ) {
     return response.getHeaders();
   }
 

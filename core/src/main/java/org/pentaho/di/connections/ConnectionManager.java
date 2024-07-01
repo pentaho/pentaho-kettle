@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,10 +28,13 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -47,11 +50,49 @@ public class ConnectionManager {
 
   private static final ConnectionManager instance = new ConnectionManager();
 
+  private static final Logger logger = LoggerFactory.getLogger( ConnectionManager.class );
+
   private List<LookupFilter> lookupFilters = new ArrayList<>();
   private Supplier<IMetaStore> metaStoreSupplier;
   private ConcurrentHashMap<String, ConnectionProvider<? extends ConnectionDetails>> connectionProviders =
     new ConcurrentHashMap<>();
-  private List<String> nameCache = new ArrayList<>();
+
+  private Map<String, List<String>> namesByConnectionProvider = new ConcurrentHashMap<>();
+  private Map<String, ConnectionDetails> detailsByName = new ConcurrentHashMap<>();
+  private boolean initialized;
+
+  // This isn't really a cache. We load *all* the connection information from the metastore, and then only
+  // contact the metastore again when we write changes.
+  // public APIs that have a metastore as an argument bypass these in-memory structures
+  private synchronized void initialize() {
+    if ( !initialized ) {
+      List<ConnectionProvider<? extends ConnectionDetails>> providers = getProviders();
+      for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
+        List<String> names = loadNames( provider );
+        if ( names != null && !names.isEmpty() ) {
+          namesByConnectionProvider.put( provider.getName(), names );
+          for ( String name : names ) {
+            detailsByName.put( name, getConnectionDetails( metaStoreSupplier.get(), name ) );
+          }
+        }
+      }
+      initialized = true;
+    }
+  }
+
+  /**
+   * Resets the in-memory storage. The next call that needs it will will refresh the connection information from the
+   * metastore.
+   *
+   */
+  public synchronized void reset() {
+    // synchronized isn't actually enough to make this thread safe if we ever thought there would be readers at the
+    // same time as something calling this method. Since this is only currently driven by user input (e.g. connecting
+    // and disconnecting from a repository) just synchronized seems safe enough.
+    namesByConnectionProvider.clear();
+    detailsByName.clear();
+    initialized = false;
+  }
 
   public static ConnectionManager getInstance() {
     return instance;
@@ -155,6 +196,7 @@ public class ConnectionManager {
    */
   @SuppressWarnings( "unchecked" )
   public <T extends ConnectionDetails> boolean save( IMetaStore metaStore, T connectionDetails, boolean prepare ) {
+    initialize();
     if ( connectionDetails.getType() == null ) {
       return false;
     }
@@ -165,15 +207,13 @@ public class ConnectionManager {
         connectionProvider.prepare( connectionDetails );
       }
     } catch ( KettleException e ) {
+      logger.error( "Error saving connection {}", connectionDetails.getName(), e );
       // Ignore the exception and save anyway.
     }
 
     if ( !saveElement( getMetaStoreFactory( metaStore, (Class<T>) connectionDetails.getClass() ),
       connectionDetails ) ) {
       return false;
-    }
-    if ( !nameCache.contains( connectionDetails.getName() ) ) {
-      nameCache.add( connectionDetails.getName() );
     }
     return true;
   }
@@ -185,7 +225,27 @@ public class ConnectionManager {
    * @return A boolean signifying the success of the save operation
    */
   public <T extends ConnectionDetails> boolean save( T connectionDetails ) {
-    return save( metaStoreSupplier.get(), connectionDetails );
+    initialize();
+    IMetaStore metaStore = metaStoreSupplier.get();
+    boolean success = save( metaStore, connectionDetails );
+    if ( success ) {
+      // saveElement modified the connectionDetails! load it fresh
+      ConnectionProvider<T> connectionProvider =
+        (ConnectionProvider<T>) connectionProviders.get( connectionDetails.getType() );
+      ConnectionDetails reloaded =
+        loadElement( getMetaStoreFactory( metaStore, (Class<T>) connectionDetails.getClass() ),
+                     connectionDetails.getName() );
+      detailsByName.put( connectionDetails.getName(), reloaded );
+      List<String> names = namesByConnectionProvider.get( connectionProvider.getName() );
+      if ( names == null ) {
+        names = new ArrayList<>();
+        namesByConnectionProvider.put( connectionProvider.getName(), names );
+      }
+      if ( !names.contains( connectionDetails.getName() ) ) {
+        names.add( connectionDetails.getName() );
+      }
+    }
+    return success;
   }
 
   /**
@@ -207,7 +267,8 @@ public class ConnectionManager {
    * @param name The name of the named connection
    */
   public void delete( String name ) {
-    delete( metaStoreSupplier.get(), name );
+    initialize();
+    delete( metaStoreSupplier.get(), name, true );
   }
 
   /**
@@ -217,6 +278,11 @@ public class ConnectionManager {
    * @param name      The name of the named connection
    */
   public void delete( IMetaStore metaStore, String name ) {
+    initialize();
+    delete( metaStore, name, false );
+  }
+
+  private void delete( IMetaStore metaStore, String name, boolean removeFromMemory ) {
     List<ConnectionProvider<? extends ConnectionDetails>> providers =
       Collections.list( connectionProviders.elements() );
     for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
@@ -225,7 +291,13 @@ public class ConnectionManager {
           loadElement( getMetaStoreFactory( metaStore, provider.getClassType() ), name );
         if ( connectionDetails != null ) {
           getMetaStoreFactory( metaStore, provider.getClassType() ).deleteElement( name );
-          nameCache.remove( name );
+          if ( removeFromMemory ) {
+            detailsByName.remove( connectionDetails.getName() );
+            List<String> names = namesByConnectionProvider.get( provider.getName() );
+            if ( names != null ) {
+              names.remove( connectionDetails.getName() );
+            }
+          }
         }
       } catch ( MetaStoreException ignored ) {
         // Isn't in that metastore
@@ -266,6 +338,7 @@ public class ConnectionManager {
     try {
       return getMetaStoreFactory( metaStore, provider.getClassType() ).getElementNames();
     } catch ( MetaStoreException mse ) {
+      logger.error( "Error calling metastore getElementNames()", mse );
       return Collections.emptyList();
     }
   }
@@ -276,7 +349,7 @@ public class ConnectionManager {
    * @param provider A provider
    * @return A list of named connection names
    */
-  private List<String> getNames( ConnectionProvider<? extends ConnectionDetails> provider ) {
+  private List<String> loadNames( ConnectionProvider<? extends ConnectionDetails> provider ) {
     if ( metaStoreSupplier == null || metaStoreSupplier.get() == null ) {
       return Collections.emptyList();
     }
@@ -284,37 +357,41 @@ public class ConnectionManager {
   }
 
   /**
+   * Get the names of named connections by provider from default meta store
+   *
+   * @param provider A provider
+   * @return A list of named connection names
+   */
+  private List<String> getNames( ConnectionProvider<? extends ConnectionDetails> provider ) {
+    initialize();
+    return namesByConnectionProvider.get( provider.getName() );
+  }
+
+  /**
    * Get the names of named connections by provider from specified meta store
    *
    * @param metaStore  A meta store
-   * @param clearCache Whether or not to clear cache
+   * @param clearCache Whether or not to clear cache. (UNUSED)
    * @return A list of named connection names
    */
-  public List<String> getNames( IMetaStore metaStore, boolean clearCache ) {
-    if ( clearCache ) {
-      nameCache.clear();
-    }
-    if ( !nameCache.isEmpty() ) {
-      return nameCache;
-    }
+  private List<String> getNames( IMetaStore metaStore, boolean clearCache ) {
     List<String> detailNames = new ArrayList<>();
     List<ConnectionProvider<? extends ConnectionDetails>> providers =
       Collections.list( connectionProviders.elements() );
     for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
       detailNames.addAll( getNames( metaStore, provider ) );
     }
-    nameCache.addAll( detailNames );
     return detailNames;
   }
 
   /**
    * Get the names of named connections by provider from the default meta store
    *
-   * @param clearCache - Whether or not to clear cache
+   * @param clearCache - Whether or not to clear cache (unused)
    * @return A list of named connection names
    */
   public List<String> getNames( boolean clearCache ) {
-    return getNames( metaStoreSupplier.get(), clearCache );
+    return getNames();
   }
 
   /**
@@ -323,7 +400,8 @@ public class ConnectionManager {
    * @return A list of named connection names
    */
   public List<String> getNames() {
-    return getNames( metaStoreSupplier.get(), true );
+    initialize();
+    return new ArrayList<>( detailsByName.keySet() );
   }
 
   /**
@@ -343,7 +421,8 @@ public class ConnectionManager {
    * @return A boolean whether or not the connection exists
    */
   public boolean exists( String name ) {
-    return getNames().stream().anyMatch( name::equalsIgnoreCase );
+    initialize();
+    return detailsByName.containsKey( name );
   }
 
   /**
@@ -406,10 +485,16 @@ public class ConnectionManager {
    * @return The named connection details
    */
   public ConnectionDetails getConnectionDetails( String key, String name ) {
-    if ( metaStoreSupplier == null || metaStoreSupplier.get() == null ) {
-      return null;
+    initialize();
+    ConnectionProvider<? extends ConnectionDetails> connectionProvider = getConnectionProvider( key );
+    if ( connectionProvider != null ) {
+      List<String> names = namesByConnectionProvider.get( connectionProvider.getName() );
+      if ( names == null || !names.contains(name) ) {
+        return null;
+      }
+      return detailsByName.get( name );
     }
-    return getConnectionDetails( metaStoreSupplier.get(), key, name );
+    return null;
   }
 
   /**
@@ -419,10 +504,8 @@ public class ConnectionManager {
    * @return The named connection details
    */
   public ConnectionDetails getConnectionDetails( String name ) {
-    if ( metaStoreSupplier == null || metaStoreSupplier.get() == null ) {
-      return null;
-    }
-    return getConnectionDetails( metaStoreSupplier.get(), name );
+    initialize();
+    return detailsByName.get( name );
   }
 
   /**
@@ -458,7 +541,8 @@ public class ConnectionManager {
       EncryptUtils.encryptFields( connectionDetails );
       metaStoreFactory.saveElement( connectionDetails );
       return true;
-    } catch ( MetaStoreException ignored ) {
+    } catch ( MetaStoreException e ) {
+      logger.error( "Error in saveElement {}", connectionDetails.getName(), e );
       return false;
     }
   }
@@ -478,6 +562,7 @@ public class ConnectionManager {
       }
       return connectionDetails;
     } catch ( MetaStoreException e ) {
+      logger.error( "Error in loadElement {}", name, e );
       return null;
     }
   }
@@ -493,6 +578,7 @@ public class ConnectionManager {
       ConnectionProvider<? extends ConnectionDetails> provider = connectionProviders.get( scheme );
       return provider.getClassType().newInstance();
     } catch ( Exception e ) {
+      logger.error( "Error in createConnectionDetails {}", scheme, e );
       return null;
     }
   }
@@ -505,12 +591,19 @@ public class ConnectionManager {
    */
   @SuppressWarnings( "unchecked" )
   public List<? extends ConnectionDetails> getConnectionDetailsByScheme( String scheme ) {
+    initialize();
     ConnectionProvider provider = connectionProviders.get( scheme );
-    try {
-      return getMetaStoreFactory( provider.getClassType() ).getElements();
-    } catch ( Exception e ) {
-      return Collections.emptyList();
+    if ( provider != null ) {
+      List<String> names = namesByConnectionProvider.get( provider.getName() );
+      if ( names != null && !names.isEmpty() ) {
+        List<ConnectionDetails> details = new ArrayList<>();
+        for ( String name : names ) {
+          details.add( detailsByName.get( name ) );
+        }
+        return details;
+      }
     }
+    return Collections.emptyList();
   }
 
   /**

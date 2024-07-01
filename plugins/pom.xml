@@ -5,14 +5,14 @@
 
   <groupId>org.pentaho.di.plugins</groupId>
   <artifactId>pdi-plugins</artifactId>
-  <version>9.6.0.0-SNAPSHOT</version>
+  <version>10.1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Plugins</name>
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>9.6.0.0-SNAPSHOT</version>
+    <version>10.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -37,6 +37,8 @@
         <module>infobright-bulk-loader</module>
         <module>ivw-bulk-loader</module>
         <module>edi2xml</module>
+        <module>random-cc-number-generator</module>
+        <module>credit-card-validator</module>
         <module>mysql-bulk-loader</module>
         <module>yaml-input</module>
         <module>metastore-locator</module>
@@ -44,6 +46,7 @@
         <module>rss</module>
         <module>mondrianinput</module>
         <module>avro-format</module>
+        <module>get-repository-names</module>
       </modules>
     </profile>
 

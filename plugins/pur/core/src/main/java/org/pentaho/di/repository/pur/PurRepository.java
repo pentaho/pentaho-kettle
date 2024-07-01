@@ -221,9 +221,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   private String connectMessage = null;
 
-  protected PurRepositoryMetaStore metaStore;
-
   private ConnectionManager connectionManager = ConnectionManager.getInstance();
+  private IMetaStore metaStore;
 
   // The servers (DI Server, BA Server) that a user can authenticate to
   protected enum RepositoryServers {
@@ -342,13 +341,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         if ( log.isDetailed() ) {
           log.logDetailed( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
         }
-        metaStore = new PurRepositoryMetaStore( this );
-        IMetaStore activeMetaStore = metaStore;
-        if ( activeMetaStore != null ) {
-          final IMetaStore connectedMetaStore = activeMetaStore;
-          connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
-        }
 
+        metaStore = new PurRepositoryMetaStore( this );
         // Create the default Pentaho namespace if it does not exist
         try {
           metaStore.createNamespace( PentahoDefaults.NAMESPACE );
@@ -380,17 +374,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override public void disconnect() {
     connected = false;
     metaStore = null;
-    IMetaStore activeMetaStore = null;
-    try {
-      activeMetaStore = MetaStoreConst.openLocalPentahoMetaStore();
-    } catch ( MetaStoreException e ) {
-      activeMetaStore = null;
-    }
-    if ( activeMetaStore != null ) {
-      final IMetaStore connectedMetaStore = activeMetaStore;
-      connectionManager.setMetastoreSupplier( () -> connectedMetaStore );
-    }
-
     purRepositoryConnector.disconnect();
   }
 
@@ -2519,7 +2502,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     transMeta.setObjectRevision( revision );
     transMeta.setRepository( this );
     transMeta.setRepositoryDirectory( parentDir );
-    transMeta.setMetaStore( getMetaStore() );
+    transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
     readTransSharedObjects( transMeta ); // This should read from the local cache
     transDelegate.dataNodeToElement( data.getNode(), transMeta );
     transMeta.clearChanged();
@@ -2634,7 +2617,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     jobMeta.setObjectRevision( revision );
     jobMeta.setRepository( this );
     jobMeta.setRepositoryDirectory( parentDir );
-    jobMeta.setMetaStore( getMetaStore() );
+    jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
     readJobMetaSharedObjects( jobMeta ); // This should read from the local cache
     jobDelegate.dataNodeToElement( data.getNode(), jobMeta );
     jobMeta.clearChanged();
@@ -3226,7 +3209,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         jobMeta.setRepository( this );
         jobMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
 
-        jobMeta.setMetaStore( getMetaStore() ); // inject metastore
+        jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
 
         readJobMetaSharedObjects( jobMeta );
         // Additional obfuscation through obscurity
@@ -3270,7 +3253,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         transMeta.setRepository( this );
         transMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
         transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
-        transMeta.setMetaStore( getMetaStore() ); // inject metastore
+        transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
 
         readTransSharedObjects( transMeta );
 
@@ -3370,7 +3353,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   @Override
-  public IMetaStore getMetaStore() {
+  public IMetaStore getRepositoryMetaStore() {
     return metaStore;
   }
 

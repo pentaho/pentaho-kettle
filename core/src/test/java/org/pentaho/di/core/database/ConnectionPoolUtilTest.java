@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.core.database;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -50,6 +50,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyString;
@@ -206,7 +208,7 @@ public class ConnectionPoolUtilTest implements Driver {
     verify( dataSource ).addConnectionProperty( "user", "suzy" );
     verify( dataSource ).addConnectionProperty( "password", "password" );
     verify( dataSource ).setInitialSize( INITIAL_SIZE );
-    verify( dataSource ).setMaxActive( MAX_SIZE );
+    verify( dataSource ).setMaxTotal( MAX_SIZE );
   }
 
   @Test
@@ -220,7 +222,12 @@ public class ConnectionPoolUtilTest implements Driver {
   @Override
   public Connection connect( String url, Properties info ) throws SQLException {
     String password = info.getProperty( "password" );
-    return PASSWORD.equals( password ) ? mock( Connection.class ) : null;
+    if ( PASSWORD.equals( password )) {
+      Connection mockConnection = mock( Connection.class );
+      when( mockConnection.isValid( anyInt() ) ).thenReturn( true );
+      return mockConnection;
+    }
+    return null;
   }
 
   @Override

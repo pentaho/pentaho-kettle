@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.core.database;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.util.DatabaseUtil;
@@ -182,7 +182,7 @@ public class ConnectionPoolUtil {
   @SuppressWarnings( "deprecation" )
   private static void setPoolProperties( BasicDataSource ds, Properties properties, int initialSize, int maxSize ) {
     ds.setInitialSize( initialSize );
-    ds.setMaxActive( maxSize );
+    ds.setMaxTotal( maxSize );
 
     String value = properties.getProperty( DEFAULT_AUTO_COMMIT );
     if ( !Utils.isEmpty( value ) ) {
@@ -211,7 +211,7 @@ public class ConnectionPoolUtil {
 
     value = properties.getProperty( MAX_ACTIVE );
     if ( !Utils.isEmpty( value ) ) {
-      ds.setMaxActive( Integer.valueOf( value ) );
+      ds.setMaxTotal( Integer.valueOf( value ) );
     }
 
     value = properties.getProperty( MAX_IDLE );
@@ -226,7 +226,7 @@ public class ConnectionPoolUtil {
 
     value = properties.getProperty( MAX_WAIT );
     if ( !Utils.isEmpty( value ) ) {
-      ds.setMaxWait( Long.valueOf( value ) );
+      ds.setMaxWaitMillis( Long.valueOf( value ) );
     }
 
     value = properties.getProperty( VALIDATION_QUERY );
@@ -271,7 +271,7 @@ public class ConnectionPoolUtil {
 
     value = properties.getProperty( REMOVE_ABANDONED );
     if ( !Utils.isEmpty( value ) ) {
-      ds.setRemoveAbandoned( Boolean.valueOf( value ) );
+      ds.setRemoveAbandonedOnBorrow( Boolean.valueOf( value ) );
     }
 
     value = properties.getProperty( REMOVE_ABANDONED_TIMEOUT );

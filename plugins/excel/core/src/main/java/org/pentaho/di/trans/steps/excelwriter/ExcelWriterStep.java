@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -53,6 +54,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -68,6 +70,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.utils.CommonExcelUtils;
 import org.pentaho.di.workarounds.BufferedOutputStreamWithCloseDetection;
 
 @SuppressWarnings( "deprecation" )
@@ -84,6 +87,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   public ExcelWriterStep( StepMeta s, StepDataInterface stepDataInterface, int c, TransMeta t, Trans dis ) {
     super( s, stepDataInterface, c, t, dis );
+    CommonExcelUtils.setZipBombConfiguration();
   }
 
   @Override
@@ -865,7 +869,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     if ( sheet instanceof HSSFSheet ) {
       // Write protect Sheet by setting password
       // works only for xls output at the moment
-      sheet.protectSheet( password );
+      sheet.protectSheet(password);
     }
   }
 }

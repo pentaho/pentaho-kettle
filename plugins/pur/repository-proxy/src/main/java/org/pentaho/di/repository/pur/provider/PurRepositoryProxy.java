@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 Hitachi Vantara.  All rights reserved.
+ * Copyright 2018-2023 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -717,8 +717,8 @@ public class PurRepositoryProxy implements Repository {
   }
 
   @Override
-  public IMetaStore getMetaStore() {
-    return getDelegate().getMetaStore();
+  public IMetaStore getRepositoryMetaStore() {
+    return getDelegate().getRepositoryMetaStore();
   }
 
   @Override

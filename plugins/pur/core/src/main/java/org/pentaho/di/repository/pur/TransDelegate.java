@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2021 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2023 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -652,7 +653,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       DataNode stepCustomNode = new DataNode( NODE_STEP_CUSTOM );
       Repository proxy = new RepositoryProxy( stepCustomNode );
       compatibleSaveRep( stepMetaInterface, proxy, null, null );
-      stepMetaInterface.saveRep( proxy, proxy.getMetaStore(), null, null );
+      stepMetaInterface.saveRep( proxy, MetaStoreConst.getDefaultMetastore(), null, null );
       stepNode.addNode( stepCustomNode );
 
       // Save the partitioning information by reference as well...

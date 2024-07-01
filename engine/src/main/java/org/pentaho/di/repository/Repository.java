@@ -757,9 +757,10 @@ public interface Repository {
 
   /**
    * @return the Metastore that is implemented in this Repository. Return null if this repository doesn't implement a
-   *         Metastore.
+   *         Metastore. This should only be used when you want a specific repository instance
+   *         (see RepositoryMetastoreProvider), for all generic metastore usage use MetaStoreConst.getDefaultMetastore()
    */
-  public IMetaStore getMetaStore();
+  public IMetaStore getRepositoryMetaStore();
 
   /**
    * @return repository for connect to server
