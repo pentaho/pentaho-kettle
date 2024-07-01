@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -119,10 +119,10 @@ import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
 import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
 import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
 import org.pentaho.di.ui.core.FileDialogOperation;
-import org.pentaho.di.ui.core.FormDataBuilder;
-import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.FileDialogOperation.CustomImage;
 import org.pentaho.di.ui.core.FileDialogOperation.CustomImageProvider;
+import org.pentaho.di.ui.core.FormDataBuilder;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.WarningDialog;
@@ -354,11 +354,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   LabelProvider labelProvider = new LabelProvider() {
     @Override public String getText( Object element ) {
       if ( element instanceof Tree ) {
-        return ( (Tree) element ).getName();
+        return ( (Tree) element ).getNameDecoded();
       } else if ( element instanceof Directory ) {
-        return ( (Directory) element ).getName();
+        return ( (Directory) element ).getNameDecoded();
       } else if ( element instanceof File ) {
-        return ( (File) element ).getName();
+        return ((File) element).getNameDecoded();
       }
       return null;
     }
@@ -1471,7 +1471,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
       @Override public String getText( Object element ) {
         File f = (File) element;
-        return f.getName();
+        return f.getNameDecoded();
       }
 
       @Override public Image getImage( Object element ) {

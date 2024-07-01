@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2020-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2020-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.plugins.fileopensave.api.providers;
+
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 
 import java.util.List;
 
@@ -46,4 +48,12 @@ public interface Tree<T extends Entity> extends Providerable {
   default EntityType getEntityType(){
     return EntityType.TREE;
   }
+
+  /**
+   * Gets the decoded version of name of an element.
+   * Defaults to {@link #getName()}.
+   *
+   * @return A non-empty name of an element.
+   */
+  default String getNameDecoded() { return getName(); }
 }
