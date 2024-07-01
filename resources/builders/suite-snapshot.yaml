@@ -651,7 +651,6 @@ jobGroups:
 
     - jobID: rebuild-download-page-json
       scmUrl: https://github.com/pentaho/devops-download-proxy-server.git
-      dockerImage: groovy:jdk11
       buildFramework: DSL_SCRIPT
       script: |
         { ->
