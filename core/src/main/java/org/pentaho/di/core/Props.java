@@ -436,6 +436,10 @@ public class Props implements Cloneable {
     return properties.getProperty( propertyName );
   }
 
+  public void removeProperty( String propertyName ) {
+    properties.remove( propertyName );
+  }
+
   public void setAskAboutReplacingDatabaseConnections( boolean ask ) {
     properties.setProperty( STRING_ASK_ABOUT_REPLACING_DATABASES, ask ? "Y" : "N" );
   }
