@@ -27,11 +27,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.compress.CompressionOutputStream;
 import org.pentaho.di.core.compress.zip.ZIPCompressionProvider;
@@ -1021,6 +1026,54 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
       }
     }
+  }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                             Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = TextFileOutput.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  private JSONObject getFormatsAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    JSONArray array = new JSONArray();
+    for ( String format : TextFileOutputMeta.formatMapperLineTerminator ) {
+      // add e.g. TextFileOutputDialog.Format.DOS, .UNIX, .CR, .None
+      array.add( BaseMessages.getString( PKG, "TextFileOutputDialog.Format." + format ) );
+    }
+    response.put( "formats", array );
+    return response;
+  }
+
+  private JSONObject showFilesAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+
+    String filter = queryParams.get( "filter" );
+    String isRegex = queryParams.get( "isRegex" );
+
+    TextFileOutputMeta tfoi = (TextFileOutputMeta) getStepMetaInterface();
+
+    JSONArray files = new JSONArray();
+    for ( String file : tfoi.getFiles( getTransMeta() ) ) {
+      files.add( file );
+    }
+    try {
+      response.put( "files", files );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
   }
 
   /**
