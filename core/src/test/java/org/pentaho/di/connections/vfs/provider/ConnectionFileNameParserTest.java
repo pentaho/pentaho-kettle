@@ -302,4 +302,48 @@ public class ConnectionFileNameParserTest {
     }
   }
   // endregion
+
+  // region isValidConnectionNameCharacter
+  @Test
+  public void testIsValidConnectionNameCharacterReturnsFalseForInvalidCharacters() {
+    for ( char c : CONNECTION_NAME_INVALID_CHARACTERS.toCharArray() ) {
+      assertFalse( fileNameParser.isValidConnectionNameCharacter( c ) );
+    }
+  }
+
+  @Test
+  public void testIsValidConnectionNameCharacterReturnsTrueOnValidCharacters() {
+    for ( char c : ACCEPTED_CHARACTERS_FULL_SET.toCharArray() ) {
+      assertTrue( fileNameParser.isValidConnectionNameCharacter( c ) );
+    }
+  }
+  // endregion
+
+  // region sanitizeConnectionName
+  @Test
+  public void testSanitizeConnectionNameRemovesInvalidCharacters() {
+    String sanitizedName = fileNameParser.sanitizeConnectionName(
+      "connection"
+        + CONNECTION_NAME_INVALID_CHARACTERS
+        + ACCEPTED_CHARACTERS_FULL_SET
+        + "name" );
+
+    for ( char c : CONNECTION_NAME_INVALID_CHARACTERS.toCharArray() ) {
+      assertFalse( sanitizedName.indexOf( c ) >= 0 );
+    }
+  }
+
+  @Test
+  public void testSanitizeConnectionNamePreservesValidCharacters() {
+    String sanitizedName = fileNameParser.sanitizeConnectionName(
+      "connection"
+        + CONNECTION_NAME_INVALID_CHARACTERS
+        + ACCEPTED_CHARACTERS_FULL_SET
+        + "name" );
+
+    for ( char c : ACCEPTED_CHARACTERS_FULL_SET.toCharArray() ) {
+      assertTrue( sanitizedName.indexOf( c ) >= 0 );
+    }
+  }
+  // endregion
 }
