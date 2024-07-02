@@ -38,6 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser.CONNECTION_NAME_INVALID_CHARACTERS;
 import static org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser.SPECIAL_CHARACTERS;
 
 public class ConnectionFileNameParserTest {
@@ -268,6 +269,50 @@ public class ConnectionFileNameParserTest {
     StringBuilder sb = new StringBuilder( characterSet.length() );
     characterSetList.forEach( sb::append );
     return sb.toString();
+  }
+  // endregion
+
+  // region isValidConnectionNameCharacter
+  @Test
+  public void testIsValidConnectionNameCharacterReturnsFalseForInvalidCharacters() {
+    for ( char c : CONNECTION_NAME_INVALID_CHARACTERS.toCharArray() ) {
+      assertFalse( fileNameParser.isValidConnectionNameCharacter( c ) );
+    }
+  }
+
+  @Test
+  public void testIsValidConnectionNameCharacterReturnsTrueOnValidCharacters() throws FileSystemException {
+    for ( char c : ACCEPTED_CHARACTERS_FULL_SET.toCharArray() ) {
+      fileNameParser.isValidConnectionNameCharacter( c );
+    }
+  }
+  // endregion
+
+  // region sanitizeConnectionName
+  @Test
+  public void testSanitizeConnectionNameRemovesInvalidCharacters() {
+    String sanitizedName = fileNameParser.sanitizeConnectionName(
+      "connection"
+      + CONNECTION_NAME_INVALID_CHARACTERS
+      + ACCEPTED_CHARACTERS_FULL_SET
+      + "name");
+
+    for ( char c : CONNECTION_NAME_INVALID_CHARACTERS.toCharArray() ) {
+      assertFalse( sanitizedName.indexOf( c ) >= 0 );
+    }
+  }
+
+  @Test
+  public void testSanitizeConnectionNamePreservesValidCharacters() {
+    String sanitizedName = fileNameParser.sanitizeConnectionName(
+      "connection"
+        + CONNECTION_NAME_INVALID_CHARACTERS
+        + ACCEPTED_CHARACTERS_FULL_SET
+        + "name");
+
+    for ( char c : ACCEPTED_CHARACTERS_FULL_SET.toCharArray() ) {
+      assertTrue( sanitizedName.indexOf( c ) >= 0 );
+    }
   }
   // endregion
 }

@@ -48,6 +48,7 @@ import org.pentaho.di.connections.ui.dialog.ConnectionRenameDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSDetailsComposite;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -82,6 +83,7 @@ public class ConnectionDialog extends Dialog {
   private static final int MARGIN = Const.MARGIN;
   private static final ConnectionManager connectionManager = ConnectionManager.getInstance();
   private static final int TEXT_VAR_FLAGS = SWT.SINGLE | SWT.LEFT | SWT.BORDER;
+
   private final VariableSpace variableSpace = Variables.getADefaultVariableSpace();
 
   Supplier<Spoon> spoonSupplier = Spoon::getInstance;
@@ -233,6 +235,14 @@ public class ConnectionDialog extends Dialog {
     populateWidgets();
 
     //add listeners
+
+    // Cancel typing invalid characters for a connection name.
+    wName.addListener( SWT.KeyDown, event -> {
+      if ( !getConnectionFileNameParser().isValidConnectionNameCharacter( event.character ) ) {
+        event.doit = false;
+      }
+    } );
+
     wName.addModifyListener( modifyEvent -> setName( wName.getText() ) );
     wConnectionType.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
@@ -241,6 +251,10 @@ public class ConnectionDialog extends Dialog {
       }
     } );
     wDescription.addModifyListener( modifyEvent -> connectionDetails.setDescription( wDescription.getText() ) );
+  }
+
+  protected ConnectionFileNameParser getConnectionFileNameParser() {
+    return ConnectionFileNameParser.getInstance();
   }
 
   private void setConnectionType() { // When first loaded
@@ -375,8 +389,12 @@ public class ConnectionDialog extends Dialog {
   private void populateWidgets() {
     wConnectionType.select( getIndexOfKey( connectionTypeKey ) );
     updateConnectionType( connectionTypeKey );
-    wName.setText( Const.NVL( connectionDetails.getName(), "" ) );
+    updateNameWidget();
     wDescription.setText( Const.NVL( connectionDetails.getDescription(), "" ) );
+  }
+
+  private void updateNameWidget() {
+    wName.setText( Const.NVL( connectionDetails.getName(), "" ) );
   }
 
   private String convertTypeLabelToKey( String typeLabel ) {
@@ -404,8 +422,18 @@ public class ConnectionDialog extends Dialog {
   }
 
   private void setName( String name ) {
-    connectionDetails.setName( name );
-    connectionName = name;
+    // While the KeyDown event prevents directly typing special characters, as well as any flashing that would otherwise
+    // occur from allowing to type a character, and to then remove it, this sanitization ensures that if the user, for
+    // example, pastes text into the text box, it still gets sanitized.
+    String sanitizedName = getConnectionFileNameParser().sanitizeConnectionName( name );
+
+    connectionDetails.setName( sanitizedName );
+    connectionName = sanitizedName;
+
+    // Update back the name widget, but only if any sanitization actually occurred, avoiding cycles.
+    if ( !sanitizedName.equals( name ) ) {
+      updateNameWidget();
+    }
   }
 
   private void cancel() {
