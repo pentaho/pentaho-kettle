@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.common.domain;
+package org.pentaho.di.connections.common.bucket;
 
 import org.pentaho.di.connections.annotations.Encrypted;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
@@ -29,12 +29,11 @@ import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
 @MetaStoreElementType(
-  name = "Test VFS Connection With Domain And Not Buckets",
+  name = "Test VFS Connection With Buckets",
   description = "Defines the connection details for a test vfs connection" )
-public class TestConnectionWithDomainDetails extends BaseVFSConnectionDetails {
+public class TestConnectionWithBucketsDetails extends BaseVFSConnectionDetails {
 
-  private static String TYPE = "test2";
-  private VariableSpace space;
+  private static String TYPE = "test";
 
   @MetaStoreAttribute
   private String name;
@@ -49,10 +48,6 @@ public class TestConnectionWithDomainDetails extends BaseVFSConnectionDetails {
   @Encrypted
   @MetaStoreAttribute
   private String password1;
-
-  @Override public boolean hasBuckets() {
-    return false;
-  }
 
   @Override public String getName() {
     return name;
@@ -90,15 +85,11 @@ public class TestConnectionWithDomainDetails extends BaseVFSConnectionDetails {
     this.password1 = password1;
   }
 
-  @Override public String getDomain() {
-    return "example.com";
-  }
-
   @Override public VariableSpace getSpace() {
-    return space;
+    return null;
   }
 
   @Override public void setSpace( VariableSpace space ) {
-    this.space = space;
+
   }
 }

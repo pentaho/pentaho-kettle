@@ -169,21 +169,6 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
     }
   }
 
-  public void validatePathSegment( @Nullable String pathSegment ) throws FileSystemException {
-    if ( StringUtils.isEmpty( pathSegment ) ) {
-      throw new KettleVFSFileSystemException( "ConnectionFileNameParser.PathSegmentEmpty" );
-    }
-
-    for ( char c : pathSegment.toCharArray() ) {
-      if ( CONNECTION_NAME_INVALID_CHARACTERS.indexOf( c ) >= 0 ) {
-        throw new KettleVFSFileSystemException(
-          "ConnectionFileNameParser.PathSegmentInvalidCharacter",
-          pathSegment,
-          c );
-      }
-    }
-  }
-
   /**
    * Parses a PVFS URI under an Apache VFS context.
    *

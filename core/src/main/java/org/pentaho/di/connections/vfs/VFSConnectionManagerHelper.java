@@ -86,8 +86,6 @@ public class VFSConnectionManagerHelper {
     return instance;
   }
 
-  // region getProviders
-
   @SuppressWarnings( "unchecked" )
   public List<VFSConnectionProvider<VFSConnectionDetails>> getProviders( @NonNull ConnectionManager manager ) {
     return manager.getProvidersByType( VFSConnectionProvider.class )
@@ -95,7 +93,6 @@ public class VFSConnectionManagerHelper {
       .map( provider -> (VFSConnectionProvider<VFSConnectionDetails>) provider )
       .collect( Collectors.toList() );
   }
-  // endregion
 
   @NonNull
   public List<VFSConnectionDetails> getAllDetails( @NonNull ConnectionManager manager ) {
