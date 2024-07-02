@@ -21,7 +21,7 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
-    <elasticsearch.version>6.4.2</elasticsearch.version>
+    <elasticsearch.version>6.8.17</elasticsearch.version>
   </properties>
 
   <dependencies>
