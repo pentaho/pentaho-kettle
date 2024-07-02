@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,8 +43,7 @@ public class SpoonUiExtenderPluginType extends BasePluginType implements PluginT
 
   private SpoonUiExtenderPluginType() {
     super( SpoonUiExtenderPlugin.class, "SPOONUIEXTENDERPLUGIN", "Spoon UI Extender Plugin" );
-
-    pluginFolders.add( new PluginFolder( "plugins", false, true ) );
+    populateFolders( null );
   }
 
   private static SpoonUiExtenderPluginType pluginType;
