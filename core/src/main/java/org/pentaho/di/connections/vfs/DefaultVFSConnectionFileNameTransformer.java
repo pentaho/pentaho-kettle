@@ -102,6 +102,11 @@ public class DefaultVFSConnectionFileNameTransformer<T extends VFSConnectionDeta
 
     // Examples: "hcp://domain.my:443/root/path/folder/sub-folder" | "s3://folder/sub-folder"
 
+    // Preserve file type information.
+    if ( pvfsFileName.getType().hasChildren() ) {
+      providerUriBuilder.append( SEPARATOR );
+    }
+
     return parseUri( providerUriBuilder.toString() );
   }
 
@@ -196,8 +201,12 @@ public class DefaultVFSConnectionFileNameTransformer<T extends VFSConnectionDeta
     String connectionRootProviderUri = getConnectionRootProviderUriPrefix( details );
     String providerUri = providerFileName.getURI();
 
-    if ( !connectionFileNameUtils.isDescendent( providerUri, connectionRootProviderUri ) ) {
-      throw new IllegalStateException( "Provider URI does not start with the provider's connection root URI." );
+    if ( !connectionFileNameUtils.isDescendantOrSelf( providerUri, connectionRootProviderUri ) ) {
+      throw new IllegalArgumentException(
+        String.format(
+          "Provider file name '%s' is not a descendant of the connection root '%s'.",
+          providerUri,
+          connectionRootProviderUri ) );
     }
 
     String restUriPath = providerUri.substring( connectionRootProviderUri.length() );

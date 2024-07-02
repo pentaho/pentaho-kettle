@@ -32,17 +32,17 @@ import org.apache.commons.vfs2.provider.AbstractFileSystem;
 
 import java.util.Collection;
 
-public class TestFileSystem extends AbstractFileSystem implements FileSystem {
+public class TestFileWithBucketsSystem extends AbstractFileSystem implements FileSystem {
 
-  public TestFileSystem( FileName rootName, FileSystemOptions fileSystemOptions ) {
+  public TestFileWithBucketsSystem( FileName rootName, FileSystemOptions fileSystemOptions ) {
     super( rootName, null, fileSystemOptions );
   }
 
   @Override protected FileObject createFile( AbstractFileName abstractFileName ) throws Exception {
-    return new TestFileObject( abstractFileName, this );
+    return new TestFileWithBucketsObject( abstractFileName, this );
   }
 
   @Override protected void addCapabilities( Collection<Capability> collection ) {
-    collection.addAll( TestFileProvider.capabilities );
+    collection.addAll( TestFileWithBucketsProvider.capabilities );
   }
 }

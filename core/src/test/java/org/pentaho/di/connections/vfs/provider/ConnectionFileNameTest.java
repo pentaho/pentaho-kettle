@@ -79,6 +79,55 @@ public class ConnectionFileNameTest {
     assertEquals( "/my folder % with special Character name &#! <>", fileName.getPathDecoded() );
   }
 
+  // region createChildName( name, type )
+  @Test
+  public void testCreateChildNameOfConnectionRootReturnsFileNameWithCorrectPath() {
+    ConnectionFileName parentFileName = new ConnectionFileName( "connection", "/", FileType.FOLDER );
+
+    assertEquals( "pvfs://connection/", parentFileName.getURI() );
+
+    ConnectionFileName childFileName = parentFileName.createChildName( "child", FileType.FOLDER );
+
+    assertEquals( "pvfs://connection/child", childFileName.getURI() );
+  }
+
+  @Test
+  public void testCreateChildNameOfSubFolderReturnsFileNameWithCorrectPath() {
+    ConnectionFileName parentFileName = new ConnectionFileName( "connection", "/folder", FileType.FOLDER );
+
+    assertEquals( "pvfs://connection/folder", parentFileName.getURI() );
+
+    ConnectionFileName childFileName = parentFileName.createChildName( "child", FileType.FOLDER );
+
+    assertEquals( "pvfs://connection/folder/child", childFileName.getURI() );
+  }
+
+  @Test
+  public void testCreateChildNameRespectsSpecifiedFileType() {
+    ConnectionFileName parentFileName = new ConnectionFileName( "connection", "/", FileType.FOLDER );
+
+    ConnectionFileName childFileName = parentFileName.createChildName( "child", FileType.FILE );
+
+    assertEquals( FileType.FILE, childFileName.getType() );
+
+    // ---
+
+    childFileName = parentFileName.createChildName( "child", FileType.FOLDER );
+
+    assertEquals( FileType.FOLDER, childFileName.getType() );
+  }
+
+  @Test
+  public void testCreateChildNameRespectsPercentEncodingOfChildName() {
+    ConnectionFileName parentFileName = new ConnectionFileName( "connection", "/", FileType.FOLDER );
+
+    ConnectionFileName childFileName = parentFileName.createChildName( "child%25%20folder", FileType.FOLDER );
+
+    assertEquals( "pvfs://connection/child%25%20folder", childFileName.getURI() );
+  }
+  // endregion
+
+  // region Helpers
   private static void assertPvsRoot( ConnectionFileName fileName ) {
     assertTrue( fileName.isPvfsRoot() );
     assertFalse( fileName.isConnectionRoot() );
@@ -129,4 +178,5 @@ public class ConnectionFileNameTest {
     assertEquals( encodedPath, fileName.getPath() );
     assertEquals( fileType, fileName.getType() );
   }
+  // endregion
 }

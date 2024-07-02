@@ -25,7 +25,7 @@ package org.pentaho.di.connections.utils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.connections.common.bucket.TestConnectionDetailsChild;
+import org.pentaho.di.connections.common.bucket.TestConnectionWithBucketsDetailsChild;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.encryption.Encr;
 
@@ -43,7 +43,7 @@ public class EncryptUtilsTest {
 
   @Test
   public void testTransformFields() {
-    TestConnectionDetailsChild testConnectionDetails = new TestConnectionDetailsChild();
+    TestConnectionWithBucketsDetailsChild testConnectionDetails = new TestConnectionWithBucketsDetailsChild();
     testConnectionDetails.setPassword( PASSWORD );
     testConnectionDetails.setPassword3( PASSWORD3 );
     EncryptUtils.transformFields( testConnectionDetails, Encr::encryptPasswordIfNotUsingVariables );
@@ -52,7 +52,7 @@ public class EncryptUtilsTest {
 
   @Test
   public void testGetValue() throws NoSuchFieldException {
-    TestConnectionDetailsChild testConnectionDetails = new TestConnectionDetailsChild();
+    TestConnectionWithBucketsDetailsChild testConnectionDetails = new TestConnectionWithBucketsDetailsChild();
     testConnectionDetails.setPassword( PASSWORD );
     testConnectionDetails.setPassword3( PASSWORD3 );
     String value = EncryptUtils.getValue( testConnectionDetails,
@@ -63,7 +63,7 @@ public class EncryptUtilsTest {
 
   @Test
   public void testSetValue() throws NoSuchFieldException {
-    TestConnectionDetailsChild testConnectionDetails = new TestConnectionDetailsChild();
+    TestConnectionWithBucketsDetailsChild testConnectionDetails = new TestConnectionWithBucketsDetailsChild();
     testConnectionDetails.setPassword( PASSWORD );
     testConnectionDetails.setPassword3( PASSWORD3 );
     EncryptUtils.setValue( testConnectionDetails,

@@ -219,6 +219,8 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
       bucketRoots = vfsConnectionProvider.getLocations( details );
     } catch ( Exception e ) {
+      // Catching either the very unlikely undefined provider for the given details,
+      // or a RuntimeException's possibly thrown by getLocations(.) (see BACKLOG-36560)
       throw new FileException(
         "Error getting VFS locations. Check your credentials and for connectivity." + e.getMessage(), e );
     }

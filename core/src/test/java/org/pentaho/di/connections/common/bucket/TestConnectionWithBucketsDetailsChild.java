@@ -27,7 +27,7 @@ import org.pentaho.metastore.persist.MetaStoreAttribute;
 /**
  * Child class to validate encrypted fields in Parent Classes getting encrypted without failure
  */
-public class TestConnectionDetailsChild extends TestConnectionDetails {
+public class TestConnectionWithBucketsDetailsChild extends TestConnectionWithBucketsDetails {
 
   @MetaStoreAttribute
   private String password3;
