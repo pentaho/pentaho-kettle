@@ -322,17 +322,28 @@ public class ConnectionDialog extends Dialog {
       Object adapter = vfsDetailsComposite.getRootPathSelectionAdapter( wRootPath );
       if ( adapter instanceof SelectionAdapterFileDialogTextVar ) {
         SelectionAdapterFileDialogTextVar selectionAdapterFileDialogTextVar = (SelectionAdapterFileDialogTextVar) adapter;
-        addBrowseButtonForRootPathComponent( selectionAdapterFileDialogTextVar );
+        addBrowseButtonForRootPathComponent( selectionAdapterFileDialogTextVar, wlRootPath );
       }
     }
   }
 
-  private void addBrowseButtonForRootPathComponent( SelectionAdapterFileDialogTextVar adapter ) {
+  private void addBrowseButtonForRootPathComponent( SelectionAdapterFileDialogTextVar adapter, Label wlRootPath ) {
+
     Button wBrowseButton = new Button( wDetailsWrapperComp, SWT.PUSH );
     wBrowseButton.setText( BaseMessages.getString( PKG, "ConnectionDialog.Browse.Label" ) );
     props.setLook( wBrowseButton );
-    wBrowseButton.setLayoutData( helper.getFormDataLabel( wRootPath ) );
+    FormData fdButton = new FormData();
+    fdButton.top = new FormAttachment( wlRootPath, MARGIN * 2 );
+    fdButton.right = new FormAttachment( 100, 0 );
+    wBrowseButton.setLayoutData( fdButton );
     wBrowseButton.addSelectionListener( adapter );
+
+    FormData fdTextVar = new FormData();
+    fdTextVar.top = new FormAttachment( wlRootPath, MARGIN * 2 );
+    fdTextVar.left = new FormAttachment( 0, 0 );
+    fdTextVar.right = new FormAttachment( wBrowseButton, -8 );
+    wRootPath.setLayoutData( fdTextVar );
+
   }
 
   private Control getLastWidgetFromParentComposite( Composite composite ) {

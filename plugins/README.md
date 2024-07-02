@@ -22,7 +22,6 @@ __List of the current core plugins:__
 * s3csvinput
 * sap
 * shapefilereader
-* version-checker
 * xml
 * log4j
 * lucid-db-streaming-loader

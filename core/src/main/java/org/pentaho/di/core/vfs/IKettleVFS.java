@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.vfs;
 
+import org.apache.commons.vfs2.FileName;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
 
@@ -49,6 +50,15 @@ public interface IKettleVFS {
 
   FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions )
     throws KettleFileException;
+
+  /**
+   * Resolves the given URI to a file name.
+   *
+   * @param uri The URI to resolve.
+   * @return A {@link FileName} that matches the URI; never {@code null}.
+   * @throws KettleFileException if this is not possible.
+   */
+  FileName resolveURI( String uri ) throws KettleFileException;
 
   // warning, was not public
   FileSystemOptions getFileSystemOptions( String scheme, String vfsFilename, VariableSpace space,

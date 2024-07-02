@@ -51,7 +51,7 @@
     <odfdom-java.version>0.8.6</odfdom-java.version>
     <commons-collections4.version>4.4</commons-collections4.version>
     <commons-math3.version>3.6.1</commons-math3.version>
-    <xmlbeans.version>3.1.0</xmlbeans.version>
+    <xmlbeans.version>5.2.0</xmlbeans.version>
     <curvesapi.version>1.06</curvesapi.version>
     <SassyReader.version>0.5</SassyReader.version>
     <saxon.version>9.1.0.8</saxon.version>

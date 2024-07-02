@@ -14,7 +14,7 @@
   <name>PDI Excel Plugins Core</name>
 
   <properties>
-    <poi.version>4.1.1</poi.version>
+    <xmlbeans.version>5.2.0</xmlbeans.version>
     <platform.version>10.2.0.0-SNAPSHOT</platform.version>
   </properties>
 
@@ -75,7 +75,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
-      <artifactId>poi-ooxml-schemas</artifactId>
+      <artifactId>poi-ooxml-full</artifactId>
       <version>${poi.version}</version>
       <exclusions>
         <exclusion>
@@ -83,6 +83,11 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlbeans</groupId>
+      <artifactId>xmlbeans</artifactId>
+      <version>${xmlbeans.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -126,6 +131,11 @@
       <artifactId>kettle-engine</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>${poi.version}</version>
     </dependency>
   </dependencies>
 </project>

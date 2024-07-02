@@ -25,10 +25,13 @@ package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.provider.UriParser;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
 
 import java.util.Date;
@@ -185,5 +188,15 @@ public class VFSFile extends BaseEntity implements File {
 
   public EntityType getEntityType(){
     return EntityType.VFS_FILE;
+  }
+
+  @Override
+  public String getNameDecoded() {
+    try {
+      return UriParser.decode( getName() );
+    } catch ( FileSystemException e ) {
+      // Fallback to original name
+      return getName();
+    }
   }
 }

@@ -22,6 +22,8 @@
 
 package org.pentaho.di.core.vfs;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
+import org.apache.commons.vfs2.FileName;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileSystem;
 import org.pentaho.di.core.bowl.Bowl;
@@ -120,30 +122,8 @@ public class KettleVFSImpl implements IKettleVFS {
 
     try {
       FileSystemManager fsManager = KettleVFS.getInstance().getFileSystemManager();
-      String[] schemes = fsManager.getSchemes();
 
-      String scheme = KettleVFS.getScheme( schemes, vfsFilename );
-
-      //Waiting condition - PPP-4374:
-      //We have to check for hasScheme even if scheme is null because that scheme could not
-      //be available by getScheme at the time we validate our scheme flag ( Kitchen loading problem )
-      //So we check if - even it has not a scheme - our vfsFilename has a possible scheme format (PROVIDER_PATTERN_SCHEME)
-      //If it does, then give it some time and tries to load. It stops when timeout is up or a scheme is found.
-      int timeOut = TIMEOUT_LIMIT;
-      if ( KettleVFS.hasSchemePattern( vfsFilename, KettleVFS.PROVIDER_PATTERN_SCHEME ) ) {
-        while (scheme == null && timeOut > 0) {
-          // ask again to refresh schemes list
-          schemes = fsManager.getSchemes();
-          try {
-            Thread.sleep( TIME_TO_SLEEP_STEP );
-            timeOut -= TIME_TO_SLEEP_STEP;
-            scheme = KettleVFS.getScheme( schemes, vfsFilename );
-          } catch ( InterruptedException e ) {
-            Thread.currentThread().interrupt();
-            break;
-          }
-        }
-      }
+      String scheme = getSchemeSafe( vfsFilename, fsManager );
 
       fsOptions = getFileSystemOptions( scheme, vfsFilename, space, fsOptions );
 
@@ -153,6 +133,51 @@ public class KettleVFSImpl implements IKettleVFS {
 
     } catch ( IOException e ) {
       throw new KettleFileException( "Unable to get VFS File object for filename '"
+        + KettleVFS.cleanseFilename( vfsFilename ) + "' : " + e.getMessage(), e );
+    }
+  }
+
+  private static String getSchemeSafe( String vfsFilename, FileSystemManager fsManager ) {
+    String[] schemes = fsManager.getSchemes();
+
+    String scheme = KettleVFS.getScheme( schemes, vfsFilename );
+
+    //Waiting condition - PPP-4374:
+    //We have to check for hasScheme even if scheme is null because that scheme could not
+    //be available by getScheme at the time we validate our scheme flag ( Kitchen loading problem )
+    //So we check if - even it has not a scheme - our vfsFilename has a possible scheme format (PROVIDER_PATTERN_SCHEME)
+    //If it does, then give it some time and tries to load. It stops when timeout is up or a scheme is found.
+    int timeOut = TIMEOUT_LIMIT;
+    if ( KettleVFS.hasSchemePattern( vfsFilename, KettleVFS.PROVIDER_PATTERN_SCHEME ) ) {
+      while (scheme == null && timeOut > 0) {
+        // ask again to refresh schemes list
+        schemes = fsManager.getSchemes();
+        try {
+          Thread.sleep( TIME_TO_SLEEP_STEP );
+          timeOut -= TIME_TO_SLEEP_STEP;
+          scheme = KettleVFS.getScheme( schemes, vfsFilename );
+        } catch ( InterruptedException e ) {
+          Thread.currentThread().interrupt();
+          break;
+        }
+      }
+    }
+
+    return scheme;
+  }
+
+  @Override
+  public FileName resolveURI( String vfsFilename ) throws KettleFileException {
+    try {
+      FileSystemManager fsManager = KettleVFS.getInstance().getFileSystemManager();
+
+      // Make sure to wait for all providers to be loaded.
+      getSchemeSafe( vfsFilename, fsManager );
+
+      return fsManager.resolveURI( vfsFilename );
+
+    } catch ( FileSystemException e ) {
+      throw new KettleFileException( "Unable to resolve file name for VFS URI '"
         + KettleVFS.cleanseFilename( vfsFilename ) + "' : " + e.getMessage(), e );
     }
   }

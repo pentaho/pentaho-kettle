@@ -60,6 +60,10 @@ public class ConnectionFileNameUtils {
     urlBuilder.append( path );
   }
 
+  public boolean isDescendent( @NonNull String descendantPath, @NonNull String basePath ) {
+    return ensureTrailingSeparator( descendantPath ).startsWith( ensureTrailingSeparator( basePath ) );
+  }
+
   @NonNull
   public String trimLeadingSeparator( @NonNull String path ) {
     return path.startsWith( SEPARATOR )

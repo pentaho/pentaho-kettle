@@ -24,6 +24,7 @@ package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 
 public class VFSFileTest {
 
@@ -64,6 +65,14 @@ public class VFSFileTest {
     file.setConnection( "someConnectionName" );
     file.setDomain( "fake.com" );
     Assert.assertEquals( pvfsPath, file.getConnectionPath() );
+  }
+
+  @Test
+  public void getNameDecodedTest() {
+    VFSFile file = new VFSFile();
+    String name = "some%25Connection%25Name";
+    file.setName( name );
+    Assert.assertEquals( "some%Connection%Name", file.getNameDecoded() );
   }
 
 }
