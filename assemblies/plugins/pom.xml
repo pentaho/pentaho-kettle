@@ -18,7 +18,6 @@
     <!-- plugins -->
     <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
     <big-data-plugin.version>10.2.0.0-SNAPSHOT</big-data-plugin.version>
-    <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
     <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
     <kettle-shapefilereader-plugin.version>${project.version}</kettle-shapefilereader-plugin.version>
     <kettle-drools5-plugin.version>${project.version}</kettle-drools5-plugin.version>
@@ -87,18 +86,6 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-core-plugins</artifactId>
       <version>${pdi-core-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>kettle-version-checker</artifactId>
-      <version>${kettle-version-checker.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
