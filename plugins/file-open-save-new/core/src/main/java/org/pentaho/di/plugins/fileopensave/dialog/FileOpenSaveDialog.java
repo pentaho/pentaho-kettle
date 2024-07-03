@@ -529,15 +529,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private void setPreviousSelection() {
     String targetPath = this.fileDialogOperation.getPath();
     if ( StringUtils.isNotEmpty( targetPath ) ) {
-      // If the path is file, set the parent to be the target path
       if ( targetPath.startsWith( "file:///" ) ) {
         targetPath = targetPath.substring( 7 );
-      }
-      java.io.File filePath = new java.io.File( targetPath );
-      if ( !filePath.exists() && !ProviderFilterType.REPOSITORY.toString().equalsIgnoreCase( fileDialogOperation.getProvider() ) ) {
-        return;
-      } else if ( filePath.isFile() ) {
-        targetPath = filePath.getParent();
       }
     }
 
