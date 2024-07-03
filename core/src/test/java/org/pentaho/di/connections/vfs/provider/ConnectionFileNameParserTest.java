@@ -38,6 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser.CONNECTION_NAME_INVALID_CHARACTERS;
 import static org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser.SPECIAL_CHARACTERS;
 
 public class ConnectionFileNameParserTest {
@@ -268,6 +269,81 @@ public class ConnectionFileNameParserTest {
     StringBuilder sb = new StringBuilder( characterSet.length() );
     characterSetList.forEach( sb::append );
     return sb.toString();
+  }
+  // endregion
+
+  // region validateConnectionName
+  @Test
+  public void testValidateConnectionNameThrowsOnNullOrEmptyName() {
+    assertValidateConnectionNameThrows( fileNameParser, null );
+    assertValidateConnectionNameThrows( fileNameParser, "" );
+  }
+
+  @Test
+  public void testValidateConnectionNameThrowsOnInvalidCharacters() {
+    for ( char c : CONNECTION_NAME_INVALID_CHARACTERS.toCharArray() ) {
+      assertValidateConnectionNameThrows( fileNameParser, "connection" + c + "name" );
+    }
+  }
+
+  @Test
+  public void testValidateConnectionNameAcceptsValidCharacters() throws FileSystemException {
+    for ( char c : ACCEPTED_CHARACTERS_FULL_SET.toCharArray() ) {
+      fileNameParser.validateConnectionName( "connection" + c + "name" );
+    }
+  }
+
+  void assertValidateConnectionNameThrows( @NonNull ConnectionFileNameParser fileNameParser, String name ) {
+    try {
+      fileNameParser.validateConnectionName( name );
+      fail( "Expected `FileSystemException` to be thrown." );
+    } catch ( FileSystemException e ) {
+      assertNotNull( e );
+    }
+  }
+  // endregion
+
+  // region isValidConnectionNameCharacter
+  @Test
+  public void testIsValidConnectionNameCharacterReturnsFalseForInvalidCharacters() {
+    for ( char c : CONNECTION_NAME_INVALID_CHARACTERS.toCharArray() ) {
+      assertFalse( fileNameParser.isValidConnectionNameCharacter( c ) );
+    }
+  }
+
+  @Test
+  public void testIsValidConnectionNameCharacterReturnsTrueOnValidCharacters() {
+    for ( char c : ACCEPTED_CHARACTERS_FULL_SET.toCharArray() ) {
+      assertTrue( fileNameParser.isValidConnectionNameCharacter( c ) );
+    }
+  }
+  // endregion
+
+  // region sanitizeConnectionName
+  @Test
+  public void testSanitizeConnectionNameRemovesInvalidCharacters() {
+    String sanitizedName = fileNameParser.sanitizeConnectionName(
+      "connection"
+        + CONNECTION_NAME_INVALID_CHARACTERS
+        + ACCEPTED_CHARACTERS_FULL_SET
+        + "name" );
+
+    for ( char c : CONNECTION_NAME_INVALID_CHARACTERS.toCharArray() ) {
+      assertFalse( sanitizedName.indexOf( c ) >= 0 );
+    }
+  }
+
+  @Test
+  public void testSanitizeConnectionNamePreservesValidCharacters() {
+    String sanitizedName = fileNameParser.sanitizeConnectionName(
+      "connection"
+        + CONNECTION_NAME_INVALID_CHARACTERS
+        + ACCEPTED_CHARACTERS_FULL_SET
+        + "name" );
+
+    for ( char c : ACCEPTED_CHARACTERS_FULL_SET.toCharArray() ) {
+      assertTrue( sanitizedName.indexOf( c ) >= 0 );
+    }
   }
   // endregion
 }
