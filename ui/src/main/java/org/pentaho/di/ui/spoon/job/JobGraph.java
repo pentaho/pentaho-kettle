@@ -1487,7 +1487,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       magnification = possibleFloatMagnification;
       if ( magnification < MIN_ZOOM || magnification > MAX_ZOOM ) {
         magnification = previousMagnification;
-        throw new IllegalArgumentException( "Invalid zoom value: " + zoomLabel.getText() );
+        throw new IllegalArgumentException( );
       }
       if ( zoomLabel.getText().indexOf( '%' ) < 0 ) {
         zoomLabel.setText( zoomLabel.getText().concat( "%" ) );
