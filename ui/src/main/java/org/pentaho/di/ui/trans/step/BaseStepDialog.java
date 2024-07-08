@@ -1529,12 +1529,7 @@ public class BaseStepDialog extends Dialog {
         clone.setObjectId( databaseMeta.getObjectId() );
         String connectionName = showDbDialogUnlessCancelledOrValid( clone, databaseMeta );
         if ( connectionName != null ) {
-          // need to replace the old connection with a new one
-          if ( databaseMeta.isShared() ) {
-            if ( !replaceSharedConnection( databaseMeta, clone ) ) {
-              return;
-            }
-          }
+          // These changes won't update shared.xml
           transMeta.removeDatabase( transMeta.indexOfDatabase( databaseMeta ) );
           transMeta.addDatabase( clone );
           reinitConnectionDropDown( wConnection, connectionName );

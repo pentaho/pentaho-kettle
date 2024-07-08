@@ -2615,63 +2615,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     previousShowJob = showJob;
   }
 
-  protected void shareObject( SharedObjectInterface sharedObject ) {
-    sharedObject.setShared( true );
-    EngineMetaInterface meta = getActiveMeta();
-    try {
-      if ( meta != null ) {
-        SharedObjects sharedObjects = null;
-        if ( meta instanceof TransMeta ) {
-          sharedObjects = ( (TransMeta) meta ).getSharedObjects();
-        }
-        if ( meta instanceof JobMeta ) {
-          sharedObjects = ( (JobMeta) meta ).getSharedObjects();
-        }
-        if ( sharedObjects != null ) {
-          sharedObjects.storeObject( sharedObject );
-          sharedObjects.saveToFile();
-        }
-      }
-    } catch ( Exception e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Title" ), BaseMessages
-          .getString( PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Message" ), e );
-    }
-    refreshTree( selectionTreeManager.getNameByType( sharedObject.getClass() ) );
-  }
-
-  protected void unShareObject( SharedObjectInterface sharedObject ) {
-    MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_WARNING );
-    // "Are you sure you want to stop sharing?"
-    mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.StopSharing.Message" ) );
-    mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.StopSharing.Title" ) ); // Warning!
-    int answer = mb.open();
-    if ( answer == SWT.YES ) {
-      sharedObject.setShared( false );
-      EngineMetaInterface meta = getActiveMeta();
-      try {
-        if ( meta != null ) {
-          SharedObjects sharedObjects = null;
-          if ( meta instanceof TransMeta ) {
-            sharedObjects = ( (TransMeta) meta ).getSharedObjects();
-          }
-          if ( meta instanceof JobMeta ) {
-            sharedObjects = ( (JobMeta) meta ).getSharedObjects();
-          }
-          if ( sharedObjects != null ) {
-            sharedObjects.removeObject( sharedObject );
-            sharedObjects.saveToFile();
-          }
-        }
-      } catch ( Exception e ) {
-        new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Title" ), BaseMessages
-            .getString( PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Message" ), e );
-      }
-      refreshTree( selectionTreeManager.getNameByType( sharedObject.getClass() ) );
-    }
-  }
-
   /**
    * @return The object that is selected in the tree or null if we couldn't figure it out. (titles etc. == null)
    */
@@ -2916,34 +2859,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     PluginInterface stepPlugin =
       PluginRegistry.getInstance().findPluginWithId( StepPluginType.class, stepMeta.getStepID() );
     HelpUtils.openHelpDialog( shell, stepPlugin );
-  }
-
-  public void shareObject( String id ) {
-    if ( "database-inst-share".equals( id ) ) {
-      final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-      if ( databaseMeta.isShared() ) {
-        unShareObject( databaseMeta );
-      } else {
-        shareObject( databaseMeta );
-      }
-    }
-    if ( "step-inst-share".equals( id ) ) {
-      final StepMeta stepMeta = (StepMeta) selectionObject;
-      shareObject( stepMeta );
-    }
-    if ( "partition-schema-inst-share".equals( id ) ) {
-      final PartitionSchema partitionSchema = (PartitionSchema) selectionObject;
-      shareObject( partitionSchema );
-    }
-    if ( "cluster-schema-inst-share".equals( id ) ) {
-      final ClusterSchema clusterSchema = (ClusterSchema) selectionObject;
-      shareObject( clusterSchema );
-    }
-    if ( "slave-server-inst-share".equals( id ) ) {
-      final SlaveServer slaveServer = (SlaveServer) selectionObject;
-      shareObject( slaveServer );
-    }
-    sharedObjectSyncUtil.reloadSharedObjects();
   }
 
   public void editJobEntry() {
@@ -5466,8 +5381,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
     }
-
-    meta.saveSharedObjects(); // throws Exception in case anything goes wrong
 
     try {
       if ( props.useDBCache() && meta instanceof TransMeta ) {

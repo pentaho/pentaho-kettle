@@ -88,10 +88,8 @@ public class EditConnectionListenerTest {
 
     editConnectionListener.widgetSelected( null );
 
-    verify( editConnectionListener ).replaceSharedConnection( any( DatabaseMeta.class ), any( DatabaseMeta.class ) );
-    verify( sharedObjects ).removeObject( any( SharedObjectInterface.class ) );
-    verify( sharedObjects ).storeObject( any( SharedObjectInterface.class ) );
-    verify( sharedObjects ).saveToFile();
+    verify( editConnectionListener, never() ).replaceSharedConnection( any( DatabaseMeta.class ), any( DatabaseMeta.class ) );
+
   }
 
   @Test
