@@ -62,8 +62,8 @@ DEFAULT_BRANCH                   : master
 # Version control properties
 VERSION_MERGER_VERSION           : 1.0.8
 RELEASE_BUILD_NUMBER             : ${BUILD_NUMBER}
-RELEASE_VERSION                  : 10.2.0.0
-DEPLOYMENT_FOLDER                : 10.2.0.0
+RELEASE_VERSION                  : 10.3.0.0
+DEPLOYMENT_FOLDER                : 10.3.0.0
 BUILD_ID_TAIL                    : -${RELEASE_BUILD_NUMBER}
 RELEASE_MODE                     : false
 
