@@ -27,8 +27,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.di.connections.common.bucket.TestConnectionDetails;
-import org.pentaho.di.connections.common.bucket.TestConnectionProvider;
+import org.pentaho.di.connections.common.bucket.TestConnectionWithBucketsDetails;
+import org.pentaho.di.connections.common.bucket.TestConnectionWithBucketsProvider;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelperTest;
@@ -153,8 +153,8 @@ public class ConnectionManagerTest {
   public void testAddConnectionProvider() {
     addProvider();
 
-    TestConnectionProvider testConnectionProvider1 =
-      (TestConnectionProvider) connectionManager.getConnectionProvider( TestConnectionProvider.SCHEME );
+    TestConnectionWithBucketsProvider testConnectionProvider1 =
+      (TestConnectionWithBucketsProvider) connectionManager.getConnectionProvider( TestConnectionWithBucketsProvider.SCHEME );
 
     assertNotNull( testConnectionProvider1 );
   }
@@ -163,9 +163,9 @@ public class ConnectionManagerTest {
   public void testSaveConnection() {
     addOne();
 
-    TestConnectionDetails testConnectionDetails1 =
-      (TestConnectionDetails) connectionManager
-        .getConnectionDetails( TestConnectionProvider.SCHEME, CONNECTION_NAME );
+    TestConnectionWithBucketsDetails testConnectionDetails1 =
+      (TestConnectionWithBucketsDetails) connectionManager
+        .getConnectionDetails( TestConnectionWithBucketsProvider.SCHEME, CONNECTION_NAME );
     assertEquals( CONNECTION_NAME, testConnectionDetails1.getName() );
   }
 
@@ -199,15 +199,15 @@ public class ConnectionManagerTest {
   public void testEncryptedField() throws Exception {
     addOne();
 
-    TestConnectionDetails testConnectionDetails1 =
-      (TestConnectionDetails) connectionManager
-        .getConnectionDetails( TestConnectionProvider.SCHEME, CONNECTION_NAME );
+    TestConnectionWithBucketsDetails testConnectionDetails1 =
+      (TestConnectionWithBucketsDetails) connectionManager
+        .getConnectionDetails( TestConnectionWithBucketsProvider.SCHEME, CONNECTION_NAME );
     assertEquals( PASSWORD, testConnectionDetails1.getPassword() );
     assertEquals( PASSWORD2, testConnectionDetails1.getPassword1() );
 
-    MetaStoreFactory<TestConnectionDetails> metaStoreFactory =
-      new MetaStoreFactory<>( TestConnectionDetails.class, memoryMetaStore, NAMESPACE );
-    TestConnectionDetails testConnectionDetails = metaStoreFactory.loadElement( CONNECTION_NAME );
+    MetaStoreFactory<TestConnectionWithBucketsDetails> metaStoreFactory =
+      new MetaStoreFactory<>( TestConnectionWithBucketsDetails.class, memoryMetaStore, NAMESPACE );
+    TestConnectionWithBucketsDetails testConnectionDetails = metaStoreFactory.loadElement( CONNECTION_NAME );
     Assert.assertTrue( testConnectionDetails.getPassword().startsWith( "Encrypted " ) );
     Assert.assertTrue( testConnectionDetails.getPassword1().startsWith( "Encrypted " ) );
   }
@@ -220,10 +220,10 @@ public class ConnectionManagerTest {
   @Test
   public void testLookupFilter() {
     VFSLookupFilter vfsLookupFilter = new VFSLookupFilter();
-    vfsLookupFilter.addKeyLookup( EXAMPLE, TestConnectionProvider.SCHEME );
+    vfsLookupFilter.addKeyLookup( EXAMPLE, TestConnectionWithBucketsProvider.SCHEME );
     connectionManager.addLookupFilter( vfsLookupFilter );
 
-    assertEquals( TestConnectionProvider.SCHEME, connectionManager.getLookupKey( EXAMPLE ) );
+    assertEquals( TestConnectionWithBucketsProvider.SCHEME, connectionManager.getLookupKey( EXAMPLE ) );
   }
 
   @Test
@@ -241,7 +241,7 @@ public class ConnectionManagerTest {
     addOne();
     connectionManager.delete( CONNECTION_NAME );
 
-    Assert.assertNull( connectionManager.getConnectionDetails( TestConnectionProvider.SCHEME, CONNECTION_NAME ) );
+    Assert.assertNull( connectionManager.getConnectionDetails( TestConnectionWithBucketsProvider.SCHEME, CONNECTION_NAME ) );
   }
 
   @Test
@@ -249,7 +249,7 @@ public class ConnectionManagerTest {
     addProvider();
 
     assertEquals( 1, connectionManager.getProviders().size() );
-    assertEquals( TestConnectionProvider.SCHEME, connectionManager.getProviders().get( 0 ).getKey() );
+    assertEquals( TestConnectionWithBucketsProvider.SCHEME, connectionManager.getProviders().get( 0 ).getKey() );
   }
 
   @Test
@@ -257,8 +257,8 @@ public class ConnectionManagerTest {
     addProvider();
 
     assertEquals( 1, connectionManager.getProviders().size() );
-    assertEquals( TestConnectionProvider.SCHEME,
-      connectionManager.getProvidersByType( TestConnectionProvider.class ).get( 0 ).getKey() );
+    assertEquals( TestConnectionWithBucketsProvider.SCHEME,
+      connectionManager.getProvidersByType( TestConnectionWithBucketsProvider.class ).get( 0 ).getKey() );
   }
 
   @Test
@@ -289,7 +289,7 @@ public class ConnectionManagerTest {
   public void testGetNamesByType() {
     addOne();
 
-    List<String> names = connectionManager.getNamesByType( TestConnectionProvider.class );
+    List<String> names = connectionManager.getNamesByType( TestConnectionWithBucketsProvider.class );
     assertEquals( 1, names.size() );
     assertEquals( CONNECTION_NAME, names.get( 0 ) );
   }
@@ -313,13 +313,13 @@ public class ConnectionManagerTest {
   @Test
   public void testCreateConnectionDetails() {
     addProvider();
-    assertNotNull( connectionManager.createConnectionDetails( TestConnectionProvider.SCHEME ) );
+    assertNotNull( connectionManager.createConnectionDetails( TestConnectionWithBucketsProvider.SCHEME ) );
   }
 
   @Test
   public void testGetConnectionDetailsByScheme() {
     addOne();
-    assertEquals( 1, connectionManager.getConnectionDetailsByScheme( TestConnectionProvider.SCHEME ).size() );
+    assertEquals( 1, connectionManager.getConnectionDetailsByScheme( TestConnectionWithBucketsProvider.SCHEME ).size() );
   }
 
   @Test
@@ -352,8 +352,8 @@ public class ConnectionManagerTest {
   @Test
   public void testBaRolesNotNull() {
     addOne();
-    TestConnectionDetails connectionDetails =
-      (TestConnectionDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
+    TestConnectionWithBucketsDetails connectionDetails =
+      (TestConnectionWithBucketsDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
     assertNotNull( connectionDetails );
     assertNotNull( connectionDetails.getBaRoles() );
   }
@@ -361,8 +361,8 @@ public class ConnectionManagerTest {
   @Test
   public void testDefaultPropertiesNotNull() {
     addOne();
-    TestConnectionDetails connectionDetails =
-      (TestConnectionDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
+    TestConnectionWithBucketsDetails connectionDetails =
+      (TestConnectionWithBucketsDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
     assertNotNull( connectionDetails );
     assertNotNull( connectionDetails.getProperties() );
     assertNotNull( connectionDetails.getProperties().get( "baRoles" ) );
@@ -394,12 +394,12 @@ public class ConnectionManagerTest {
   // endregion
 
   private void addProvider() {
-    connectionManager.addConnectionProvider( TestConnectionProvider.SCHEME, new TestConnectionProvider() );
+    connectionManager.addConnectionProvider( TestConnectionWithBucketsProvider.SCHEME, new TestConnectionWithBucketsProvider() );
   }
 
   private void addOne() {
     addProvider();
-    TestConnectionDetails testConnectionDetails = new TestConnectionDetails();
+    TestConnectionWithBucketsDetails testConnectionDetails = new TestConnectionWithBucketsDetails();
     testConnectionDetails.setDescription( DESCRIPTION );
     testConnectionDetails.setName( CONNECTION_NAME );
     testConnectionDetails.setPassword( PASSWORD );

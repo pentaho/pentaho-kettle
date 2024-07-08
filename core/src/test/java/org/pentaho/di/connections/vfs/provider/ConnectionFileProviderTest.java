@@ -27,20 +27,29 @@ import java.util.Collections;
 import java.util.Set;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
+import org.apache.commons.vfs2.provider.FileNameParser;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.common.bucket.TestConnectionDetails;
-import org.pentaho.di.connections.common.bucket.TestConnectionProvider;
-import org.pentaho.di.connections.common.bucket.TestFileProvider;
+import org.pentaho.di.connections.common.basic.TestBasicConnectionDetails;
+import org.pentaho.di.connections.common.basic.TestBasicConnectionProvider;
+import org.pentaho.di.connections.common.basic.TestBasicFileProvider;
+import org.pentaho.di.connections.common.bucket.TestConnectionWithBucketsDetails;
+import org.pentaho.di.connections.common.bucket.TestConnectionWithBucketsProvider;
+import org.pentaho.di.connections.common.bucket.TestFileWithBucketsProvider;
 import org.pentaho.di.connections.common.domain.TestConnectionWithDomainDetails;
 import org.pentaho.di.connections.common.domain.TestConnectionWithDomainProvider;
 import org.pentaho.di.connections.common.domain.TestFileWithDomainProvider;
+import org.pentaho.di.connections.common.domainbuckets.TestConnectionWithDomainAndBucketsDetails;
+import org.pentaho.di.connections.common.domainbuckets.TestConnectionWithDomainAndBucketsProvider;
+import org.pentaho.di.connections.common.domainbuckets.TestFileWithDomainAndBucketsProvider;
 import org.pentaho.di.core.bowl.BaseBowl;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.KettleVFSFileSystemException;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
@@ -48,27 +57,11 @@ import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class ConnectionFileProviderTest {
-
-  // Provider type "test" which are bucket based
-  private static String CONNECTION_NAME = "Connection Name";
-  public static final String PVFS_FILE_PATH = "pvfs://Connection Name/bucket/path/to/file.txt";
-  public static final String RESOLVED_FILE_PATH = "test://bucket/path/to/file.txt";
-  public static final String PVFS_PARENT_FILE_PATH = "pvfs://Connection Name/bucket/path/to";
-  public static final String PVFS_DIRECTORY_PATH = "pvfs://Connection Name/bucket/path/to/directory";
-  public static final String RESOLVED_DIRECTORY_PATH = "test://bucket/path/to/directory";
-  public static final String PVFS_PREFIX = "pvfs://Connection Name/bucket";
-
-  // Provider type "test2" which are domain based
-  private static String CONNECTION_NAME_2 = "Connection Name 2";
-  public static final String PVFS_DIRECTORY_PATH_2 = "pvfs://Connection Name 2/path/to/directory";
-  public static final String RESOLVED_DIRECTORY_PATH_2 = "test2://example.com/path/to/directory";
-
-  // Does not exist
-  public static final String PVFS_FILE_PATH_1 = "pvfs://Fake Item/path/to/file.txt";
-
   private Bowl bowl;
   private ConnectionManager connectionManager;
 
@@ -77,18 +70,67 @@ public class ConnectionFileProviderTest {
     bowl = createTestBowl();
     connectionManager = bowl.getManager( ConnectionManager.class );
 
-    addOne();
+    // Connection Types
+
+    connectionManager.addConnectionProvider(
+      TestConnectionWithBucketsProvider.SCHEME,
+      new TestConnectionWithBucketsProvider() );
+
+    connectionManager.addConnectionProvider(
+      TestConnectionWithDomainProvider.SCHEME,
+      new TestConnectionWithDomainProvider() );
+
+    connectionManager.addConnectionProvider(
+      TestConnectionWithDomainAndBucketsProvider.SCHEME,
+      new TestConnectionWithDomainAndBucketsProvider() );
+
+    connectionManager.addConnectionProvider(
+      TestBasicConnectionProvider.SCHEME,
+      new TestBasicConnectionProvider() );
+
+    // Apache VFS File Providers
 
     DefaultFileSystemManager fsm = (DefaultFileSystemManager) KettleVFS.getInstance().getFileSystemManager();
+
     if ( !fsm.hasProvider( ConnectionFileProvider.SCHEME ) ) {
       fsm.addProvider( ConnectionFileProvider.SCHEME, new ConnectionFileProvider() );
     }
-    if ( !fsm.hasProvider( TestFileProvider.SCHEME ) ) {
-      fsm.addProvider( TestFileProvider.SCHEME, new TestFileProvider() );
+
+    if ( !fsm.hasProvider( TestFileWithBucketsProvider.SCHEME ) ) {
+      fsm.addProvider( TestFileWithBucketsProvider.SCHEME, new TestFileWithBucketsProvider() );
     }
+
     if ( !fsm.hasProvider( TestFileWithDomainProvider.SCHEME ) ) {
       fsm.addProvider( TestFileWithDomainProvider.SCHEME, new TestFileWithDomainProvider() );
     }
+
+    if ( !fsm.hasProvider( TestFileWithDomainAndBucketsProvider.SCHEME ) ) {
+      fsm.addProvider( TestFileWithDomainAndBucketsProvider.SCHEME, new TestFileWithDomainAndBucketsProvider() );
+    }
+
+    if ( !fsm.hasProvider( TestBasicFileProvider.SCHEME ) ) {
+      fsm.addProvider( TestBasicFileProvider.SCHEME, new TestBasicFileProvider() );
+    }
+
+    // Connection Instances
+
+    ConnectionDetails details;
+
+    details = new TestConnectionWithBucketsDetails();
+    details.setName( "Connection With Buckets" );
+    connectionManager.save( details );
+
+    details = new TestConnectionWithDomainDetails();
+    details.setName( "Connection With Domain" );
+    connectionManager.save( details );
+
+    details = new TestConnectionWithDomainAndBucketsDetails();
+    details.setName( "Connection With Domain And Buckets" );
+    connectionManager.save( details );
+
+    details = new TestBasicConnectionDetails();
+    details.setName( "Basic Connection" );
+    connectionManager.save( details );
   }
 
   @NonNull
@@ -122,67 +164,205 @@ public class ConnectionFileProviderTest {
     return KettleVFS.getInstance( bowl );
   }
 
-  private void addProvider() {
-    connectionManager.addConnectionProvider(
-      TestConnectionProvider.SCHEME,
-      new TestConnectionProvider() );
-
-    connectionManager.addConnectionProvider(
-      TestConnectionWithDomainProvider.SCHEME,
-      new TestConnectionWithDomainProvider() );
+  @Test( expected = IllegalArgumentException.class )
+  public void testSetFileNameParserThrowsIfIncorrectType() {
+    try ( ConnectionFileProvider provider = new ConnectionFileProvider() ) {
+      provider.setFileNameParser( mock( FileNameParser.class ) );
+    }
   }
 
-  private void addOne() {
-    addProvider();
-    TestConnectionDetails testConnectionDetails = new TestConnectionDetails();
-    testConnectionDetails.setName( CONNECTION_NAME );
-    connectionManager.save( testConnectionDetails );
+  // region PVFS Root File
+  @Test
+  public void testGetRootFile() throws Exception {
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( ConnectionFileProvider.ROOT_URI );
+
+    assertTrue( fileObject.exists() );
+    assertNull( fileObject.getResolvedFileObject() );
+    assertEquals( ConnectionFileProvider.ROOT_URI, fileObject.getPublicURIString() );
+    assertNull( fileObject.getParent() );
+
+    assertTrue( fileObject.isAttached() );
+    assertTrue( fileObject.isFolder() );
+    assertFalse( fileObject.isHidden() );
+    assertTrue( fileObject.isReadable() );
+    assertFalse( fileObject.isWriteable() );
+    assertFalse( fileObject.isExecutable() );
+    assertFalse( fileObject.canRenameTo( mock( FileObject.class ) ) );
   }
 
-  private void addConnectionWithDomain() {
-    addProvider();
-    TestConnectionWithDomainDetails testConnectionDetails = new TestConnectionWithDomainDetails();
-    testConnectionDetails.setName( CONNECTION_NAME_2 );
-    connectionManager.save( testConnectionDetails );
+  @Test( expected = KettleVFSFileSystemException.class )
+  public void testRootFileThrowsOnMutationOperation() throws Exception {
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( ConnectionFileProvider.ROOT_URI );
+
+    fileObject.delete();
+  }
+  // endregion
+
+  // region Undefined Connection Root File
+  @Test
+  public void testGetUndefinedConnectionRootFile() throws Exception {
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( "pvfs://undefined-connection" );
+
+    assertFalse( fileObject.exists() );
+    assertNull( fileObject.getResolvedFileObject() );
+    assertEquals( "pvfs://undefined-connection/", fileObject.getPublicURIString() );
+
+    assertTrue( fileObject.isAttached() );
+    assertFalse( fileObject.isHidden() );
+    assertFalse( fileObject.isReadable() );
+    assertFalse( fileObject.isWriteable() );
+    assertFalse( fileObject.isExecutable() );
+    assertFalse( fileObject.canRenameTo( mock( FileObject.class ) ) );
+  }
+
+  @Test( expected = KettleVFSFileSystemException.class )
+  public void testUndefinedConnectionRootFileThrowsOnMutationOperation() throws Exception {
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( "pvfs://undefined-connection" );
+
+    fileObject.delete();
+  }
+  // endregion
+
+  // region Connection With Buckets Root File
+  @Test
+  public void testGetConnectionWithBucketsRootFile() throws Exception {
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( "pvfs://Connection With Buckets" );
+
+    assertTrue( fileObject.exists() );
+    assertNull( fileObject.getResolvedFileObject() );
+    assertEquals( "pvfs://Connection With Buckets/", fileObject.getPublicURIString() );
+
+    assertTrue( fileObject.isAttached() );
+    assertTrue( fileObject.isFolder() );
+    assertFalse( fileObject.isHidden() );
+    assertTrue( fileObject.isReadable() );
+    assertFalse( fileObject.isWriteable() );
+    assertFalse( fileObject.isExecutable() );
+    assertFalse( fileObject.canRenameTo( mock( FileObject.class ) ) );
+  }
+
+  @Test( expected = KettleVFSFileSystemException.class )
+  public void testConnectionWithBucketsRootFileThrowsOnMutationOperation() throws Exception {
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( "pvfs://Connection With Buckets" );
+
+    fileObject.delete();
   }
 
   @Test
-  public void testGetFile() throws Exception {
-    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( PVFS_FILE_PATH );
+  public void testGetConnectionWithDomainAndBucketsRootFile() throws Exception {
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( "pvfs://Connection With Domain And Buckets" );
+
+    assertTrue( fileObject.exists() );
+    assertNull( fileObject.getResolvedFileObject() );
+    assertEquals( "pvfs://Connection With Domain And Buckets/", fileObject.getPublicURIString() );
+  }
+
+  @Test( expected = KettleVFSFileSystemException.class )
+  public void testConnectionWithDomainAndBucketsRootFileThrowsOnMutationOperation() throws Exception {
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( "pvfs://Connection With Domain And Buckets" );
+
+    fileObject.delete();
+  }
+  // endregion
+
+  // region Resolved Files
+  @Test
+  public void testGetBasicConnectionRootFile() throws Exception {
+    String pvfsUri = "pvfs://Basic Connection";
+    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( pvfsUri );
     assertTrue( fileObject.exists() );
     assertNotNull( fileObject.getResolvedFileObject() );
 
-    assertEquals( PVFS_FILE_PATH, fileObject.getPublicURIString() );
-    assertEquals( PVFS_PARENT_FILE_PATH, fileObject.getParent().getPublicURIString() );
-    assertEquals( RESOLVED_FILE_PATH, fileObject.getResolvedFileObject().getPublicURIString() );
+    assertEquals( "pvfs://Basic Connection/", fileObject.getPublicURIString() );
+    assertEquals( "test4:///", fileObject.getResolvedFileObject().getPublicURIString() );
   }
 
   @Test
-  public void testGetFileNotFound() throws Exception {
-    FileObject fileObject = getKettleVFS().getFileObject( PVFS_FILE_PATH_1 );
-    assertFalse( fileObject.exists() );
-    assertEquals( PVFS_FILE_PATH_1, fileObject.getPublicURIString() );
+  public void testGetFileOfBasicConnection() throws Exception {
+    String pvfsUri = "pvfs://Basic Connection/path/to/file.txt";
+    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( pvfsUri );
+    assertTrue( fileObject.exists() );
+    assertNotNull( fileObject.getResolvedFileObject() );
+
+    assertEquals( pvfsUri, fileObject.getPublicURIString() );
+    assertEquals( "pvfs://Basic Connection/path/to", fileObject.getParent().getPublicURIString() );
+    assertEquals( "test4:///path/to/file.txt", fileObject.getResolvedFileObject().getPublicURIString() );
   }
+
+  @Test
+  public void testGetFileOfConnectionWithBuckets() throws Exception {
+    String pvfsUri = "pvfs://Connection With Buckets/bucket/path/to/file.txt";
+    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( pvfsUri );
+    assertTrue( fileObject.exists() );
+    assertNotNull( fileObject.getResolvedFileObject() );
+
+    assertEquals( pvfsUri, fileObject.getPublicURIString() );
+    assertEquals( "pvfs://Connection With Buckets/bucket/path/to", fileObject.getParent().getPublicURIString() );
+    assertEquals( "test://bucket/path/to/file.txt", fileObject.getResolvedFileObject().getPublicURIString() );
+  }
+
+  @Test
+  public void testGetFileOfConnectionWithDomain() throws Exception {
+    String pvfsUri = "pvfs://Connection With Domain/path/to/file.txt";
+    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( pvfsUri );
+    assertTrue( fileObject.exists() );
+    assertNotNull( fileObject.getResolvedFileObject() );
+
+    assertEquals( pvfsUri, fileObject.getPublicURIString() );
+    assertEquals( "pvfs://Connection With Domain/path/to", fileObject.getParent().getPublicURIString() );
+    assertEquals( "test2://example.com/path/to/file.txt", fileObject.getResolvedFileObject().getPublicURIString() );
+  }
+
+  @Test
+  public void testGetFileOfConnectionWithDomainAndBuckets() throws Exception {
+    String pvfsUri = "pvfs://Connection With Domain And Buckets/bucket/path/to/file.txt";
+    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( pvfsUri );
+    assertTrue( fileObject.exists() );
+    assertNotNull( fileObject.getResolvedFileObject() );
+
+    assertEquals( pvfsUri, fileObject.getPublicURIString() );
+    assertEquals( "pvfs://Connection With Domain And Buckets/bucket/path/to",
+      fileObject.getParent().getPublicURIString() );
+    assertEquals( "test3://example.com/bucket/path/to/file.txt",
+      fileObject.getResolvedFileObject().getPublicURIString() );
+  }
+
+  @Test
+  public void testGetFileOfUndefinedConnection() throws Exception {
+    String pvfsUri = "pvfs://Fake Item/path/to/file.txt";
+    FileObject fileObject = getKettleVFS().getFileObject( pvfsUri );
+    assertFalse( fileObject.exists() );
+    assertEquals( pvfsUri, fileObject.getPublicURIString() );
+  }
+  // endregion
 
   @Test
   public void testGetChildren() throws Exception {
-    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( PVFS_DIRECTORY_PATH );
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( "pvfs://Connection With Buckets/bucket/path/to/directory" );
     assertNotNull( fileObject.getResolvedFileObject() );
 
-    assertEquals( RESOLVED_DIRECTORY_PATH, fileObject.getResolvedFileObject().getPublicURIString() );
+    assertEquals( "test://bucket/path/to/directory", fileObject.getResolvedFileObject().getPublicURIString() );
     FileObject[] children = fileObject.getChildren();
     for ( FileObject child : children ) {
-      assertTrue( child.getPublicURIString().startsWith( PVFS_PREFIX ) );
+      assertTrue( child.getPublicURIString().startsWith( "pvfs://Connection With Buckets/bucket" ) );
     }
   }
 
   @Test
   public void testGetFileWithDomain() throws Exception {
-    addConnectionWithDomain();
-
-    ConnectionFileObject fileObject = (ConnectionFileObject) getKettleVFS().getFileObject( PVFS_DIRECTORY_PATH_2 );
+    ConnectionFileObject fileObject =
+      (ConnectionFileObject) getKettleVFS().getFileObject( "pvfs://Connection With Domain/path/to/directory" );
     assertNotNull( fileObject.getResolvedFileObject() );
 
-    assertEquals( RESOLVED_DIRECTORY_PATH_2, fileObject.getResolvedFileObject().getPublicURIString() );
+    assertEquals( "test2://example.com/path/to/directory", fileObject.getResolvedFileObject().getPublicURIString() );
   }
 }

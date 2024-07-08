@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.common.bucket;
+package org.pentaho.di.connections.common.basic;
 
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
@@ -29,10 +29,10 @@ import org.apache.commons.vfs2.provider.AbstractFileObject;
 
 import java.io.InputStream;
 
-public class TestFileObject extends AbstractFileObject<TestFileSystem> {
+public class TestBasicFileObject extends AbstractFileObject<TestBasicFileSystem> {
 
-  public TestFileObject( AbstractFileName name,
-                         TestFileSystem fs ) {
+  public TestBasicFileObject( AbstractFileName name,
+                              TestBasicFileSystem fs ) {
     super( name, fs );
   }
 

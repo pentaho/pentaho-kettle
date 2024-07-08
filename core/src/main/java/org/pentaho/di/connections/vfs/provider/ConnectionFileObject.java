@@ -44,9 +44,9 @@ import java.io.OutputStream;
  * The abstract base {@link FileObject} implementation for the PVFS (Pentaho VFS) VFS provider.
  * <p>
  * The purpose of {@code ConnectionFileObject} is to represent a named connection {@code FileObject}.
- * {@code ConnectionFileObject} holds a reference to the resolved {@code ConnectionFileObject} and delegates metadata
- * calls to that reference object, but for other calls, such as getChildren, {@code ConnectionFileObject} resolves the
- * child file objects, but converts them to PVFS file objects to maintain named connection information.
+ * {@code ConnectionFileObject} holds a reference to the resolved {@code FileObject} and delegates metadata calls to
+ * that reference object, but for other calls, such as getChildren, {@code ConnectionFileObject} resolves the child file
+ * objects, but converts them to PVFS file objects to maintain named connection information.
  * <p>
  * The various subclasses clarify the cases for which connection file objects and {@link ConnectionFileName} are used,
  * as well as allow providing more precise error messages to the user
@@ -184,6 +184,11 @@ public abstract class ConnectionFileObject extends AbstractFileObject<Connection
   @Override
   public InputStream getInputStream() throws FileSystemException {
     return requireResolvedFileObject().getInputStream();
+  }
+
+  @Override
+  public InputStream getInputStream( int bufferSize ) throws FileSystemException {
+    return requireResolvedFileObject().getInputStream( bufferSize );
   }
 
   @Override
