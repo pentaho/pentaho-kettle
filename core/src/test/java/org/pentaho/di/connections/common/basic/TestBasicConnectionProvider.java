@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,16 +20,16 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.common.bucket;
+package org.pentaho.di.connections.common.basic;
 
 import org.pentaho.di.connections.vfs.BaseVFSConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSRoot;
 
 import java.util.List;
 
-public class TestConnectionProvider extends BaseVFSConnectionProvider<TestConnectionDetails> {
+public class TestBasicConnectionProvider extends BaseVFSConnectionProvider<TestBasicConnectionDetails> {
   public static final String NAME = "Test";
-  public static final String SCHEME = "test";
+  public static final String SCHEME = "test4";
 
   @Override public String getName() {
     return NAME;
@@ -39,19 +39,19 @@ public class TestConnectionProvider extends BaseVFSConnectionProvider<TestConnec
     return SCHEME;
   }
 
-  @Override public List<VFSRoot> getLocations( TestConnectionDetails vfsConnectionDetails ) {
+  @Override public List<VFSRoot> getLocations( TestBasicConnectionDetails vfsConnectionDetails ) {
     return null;
   }
 
-  @Override public String getProtocol( TestConnectionDetails vfsConnectionDetails ) {
+  @Override public String getProtocol( TestBasicConnectionDetails vfsConnectionDetails ) {
     return SCHEME;
   }
 
-  @Override public Class<TestConnectionDetails> getClassType() {
-    return TestConnectionDetails.class;
+  @Override public Class<TestBasicConnectionDetails> getClassType() {
+    return TestBasicConnectionDetails.class;
   }
 
-  @Override public boolean test( TestConnectionDetails connectionDetails ) {
+  @Override public boolean test( TestBasicConnectionDetails connectionDetails ) {
     return true;
   }
 }
