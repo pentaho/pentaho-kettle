@@ -1904,6 +1904,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       magnification = possibleFloatMagnification;
       if ( magnification < MIN_ZOOM || magnification > MAX_ZOOM ) {
         magnification = previousMagnification;
+        log.logError( "Invalid zoom value: " + zoomLabel.getText() );
         throw new IllegalArgumentException( );
       }
       if ( zoomLabel.getText().indexOf( '%' ) < 0 ) {
