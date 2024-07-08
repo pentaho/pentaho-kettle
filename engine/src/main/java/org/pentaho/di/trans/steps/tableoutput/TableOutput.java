@@ -22,8 +22,10 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
@@ -34,17 +36,22 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Writes rows to a database table.
@@ -607,6 +614,115 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
       super.dispose( smi, sdi );
     }
   }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = TableOutput.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getSQLAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    try {
+      SQLStatement sql = sql( queryParams.get( "stepName" ) );
+      if ( Objects.nonNull( sql ) ) {
+        if ( !sql.hasError() ) {
+          if ( sql.hasSQL() ) {
+            response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+            response.put( "sqlString", sql.getSQL() );
+          } else {
+            response.put( "details", BaseMessages.getString( PKG, "TableOutput.NoSQL.DialogMessage" ) );
+          }
+        } else {
+          response.put( "details", sql.getError() );
+        }
+      } else {
+        response.put( "details", BaseMessages.getString( PKG, "TableOutput.NoSQL.EmptyCSVFields" ) );
+      }
+
+    } catch ( KettleStepException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+      response.put( "details", e.getMessage() );
+    }
+    return response;
+  }
+
+  public SQLStatement sql( String stepName ) throws KettleStepException {
+
+    TableOutputMeta info = (TableOutputMeta) getStepMetaInterface();
+
+    RowMetaInterface prev = getTransMeta().getPrevStepFields( stepName );
+    if ( info.isTableNameInField() && !info.isTableNameInTable() && info.getTableNameField().length() > 0 ) {
+      int idx = prev.indexOfValue( info.getTableNameField() );
+      if ( idx >= 0 ) {
+        prev.removeValueMeta( idx );
+      }
+    }
+    StepMeta stepMeta = getTransMeta().findStep( stepName );
+
+    if ( info.specifyFields() ) {
+      // Only use the fields that were specified.
+      RowMetaInterface prevNew = new RowMeta();
+
+      for ( int i = 0; i < info.getFieldDatabase().length; i++ ) {
+        ValueMetaInterface insValue = prev.searchValueMeta( info.getFieldStream()[ i ] );
+        if ( insValue != null ) {
+          ValueMetaInterface insertValue = insValue.clone();
+          insertValue.setName( info.getFieldDatabase()[ i ] );
+          prevNew.addValueMeta( insertValue );
+        } else {
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "TableOutputDialog.FailedToFindField.Message", info.getFieldStream()[ i ] ) );
+        }
+      }
+      prev = prevNew;
+    }
+
+    boolean autoInc = false;
+    String pk = null;
+
+    // Add the auto-increment field too if any is present.
+    //
+    if ( info.isReturningGeneratedKeys() && !Utils.isEmpty( info.getGeneratedKeyField() ) ) {
+      ValueMetaInterface valueMeta = new ValueMetaInteger( info.getGeneratedKeyField() );
+      valueMeta.setLength( 15 );
+      prev.addValueMeta( 0, valueMeta );
+      autoInc = true;
+      pk = info.getGeneratedKeyField();
+    }
+
+    if ( isValidRowMeta( prev ) ) {
+      SQLStatement sql = info.getSQLStatements( getTransMeta(), stepMeta, prev, pk, autoInc, pk );
+      return sql;
+    } else {
+      return null;
+    }
+
+  }
+
+  private static boolean isValidRowMeta( RowMetaInterface rowMeta ) {
+    for ( ValueMetaInterface value : rowMeta.getValueMetaList() ) {
+      String name = value.getName();
+      if ( name == null || name.isEmpty() ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 
   /**
    * Allows subclasses of TableOuput to get hold of the step meta
