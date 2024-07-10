@@ -85,7 +85,7 @@ public class PluginFolder implements PluginFolderInterface {
    */
   public static List<PluginFolderInterface> populateFolders( String xmlSubfolder ) {
     List<PluginFolderInterface> pluginFolders = new ArrayList<>();
-    String folderPaths = EnvUtil.getSystemProperty( "KETTLE_PLUGIN_BASE_FOLDERS" );
+    String folderPaths = EnvUtil.getSystemProperty( Const.PLUGIN_BASE_FOLDERS_PROP );
     if ( folderPaths == null ) {
       folderPaths = Const.DEFAULT_PLUGIN_BASE_FOLDERS;
     }

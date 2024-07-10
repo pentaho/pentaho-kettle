@@ -19,7 +19,6 @@ import java.util.Map;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.BasePluginType;
 import org.pentaho.di.core.plugins.PluginAnnotationType;
-import org.pentaho.di.core.plugins.PluginFolder;
 import org.pentaho.di.core.plugins.PluginMainClassType;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 
@@ -29,8 +28,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
 
   private SpoonPluginType() {
     super( SpoonPlugin.class, "SPOONPLUGIN", "Spoon Plugin" );
-
-    pluginFolders.add( new PluginFolder( "plugins", false, true ) );
+    populateFolders( null );
   }
 
   private static SpoonPluginType pluginType;
