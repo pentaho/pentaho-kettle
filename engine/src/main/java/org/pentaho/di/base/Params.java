@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,9 +26,9 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.UnknownParamException;
 
-import java.util.Map;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Params implements IParams {
 
@@ -101,7 +101,7 @@ public class Params implements IParams {
       this( java.util.UUID.randomUUID().toString() );
     }
 
-    public Builder( String  uuid ) {
+    public Builder( String uuid ) {
       this.uuid = uuid;
     }
 
@@ -272,7 +272,8 @@ public class Params implements IParams {
       params.oldLogFile = oldLogFile;
       params.version = version;
       params.resultSetStepName = resultSetStepName;
-      params.resultSetCopyNumber = NumberUtils.isNumber( resultSetCopyNumber ) ? resultSetCopyNumber : "0" /* default */;
+      params.resultSetCopyNumber =
+        NumberUtils.isNumber( resultSetCopyNumber ) ? resultSetCopyNumber : "0" /* default */;
       params.base64Zip = base64Zip;
       params.namedParams = namedParams;
       params.customNamedParams = customNamedParams;
