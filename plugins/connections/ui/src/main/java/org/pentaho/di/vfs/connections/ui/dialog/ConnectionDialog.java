@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.ui.dialog.ConnectionRenameDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSDetailsComposite;
@@ -98,6 +97,7 @@ public class ConnectionDialog extends Dialog {
 
   private Shell shell;
   private String connectionName;
+  private String newConnectionName;
   private VFSDetailsComposite vfsDetailsComposite;
   private Composite wConnectionTypeComp;
   private VFSDetailsCompositeHelper helper;
@@ -131,7 +131,13 @@ public class ConnectionDialog extends Dialog {
 
   //This open called for an existing connection
   public void open( String title, String existingConnectionName ) {
+    open( title, existingConnectionName, null );
+  }
+
+  //This open called for Duplicating a connection
+  public void open( String title, String existingConnectionName, String newConnectionName ) {
     this.connectionName = existingConnectionName;
+    this.newConnectionName = newConnectionName;
     Shell parent = getParent();
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     shell.setSize( width, height );
@@ -264,6 +270,10 @@ public class ConnectionDialog extends Dialog {
       originalName = connectionName;
       if ( connectionDetails != null ) {
         connectionTypeKey = connectionDetails.getType();
+        if ( newConnectionName != null ) {
+          connectionDetails.setName( newConnectionName );
+          originalName = null;
+        }
       }
       return;
     }
@@ -448,18 +458,9 @@ public class ConnectionDialog extends Dialog {
 
   private void ok() {
     if ( validateEntries() ) {
+      connectionManager.save( connectionDetails );
       if ( originalName != null && !originalName.equals( connectionDetails.getName() ) ) {
-        ConnectionRenameDialog connectionDeleteDialog = new ConnectionRenameDialog( spoonSupplier.get().getShell() );
-        int answer = connectionDeleteDialog.open( originalName, connectionDetails.getName() );
-        if ( answer == SWT.CANCEL ) {
-          return;
-        }
-        connectionManager.save( connectionDetails );
-        if ( answer == SWT.NO ) {
-          connectionManager.delete( originalName );
-        }
-      } else {
-        connectionManager.save( connectionDetails );
+        connectionManager.delete( originalName );
       }
       refreshMenu();
       dispose();

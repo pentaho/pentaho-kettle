@@ -160,7 +160,17 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
       } );
     }
 
-
+    MenuItem duplicateMenuItem = new MenuItem( itemMenu, SWT.NONE );
+    if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
+      duplicateMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.DuplicateGlobal" ) );
+    } else {
+      duplicateMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.DuplicateProject" ) );
+    }
+    duplicateMenuItem.addSelectionListener( new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        vfsConnectionDelegate.duplicate( vfsConnectionTreeItem.getName(), vfsConnectionTreeItem.getLevel() );
+      }
+    } );
 
     return itemMenu;
   }
