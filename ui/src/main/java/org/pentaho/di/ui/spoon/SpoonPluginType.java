@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,6 @@ import java.util.Map;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.BasePluginType;
 import org.pentaho.di.core.plugins.PluginAnnotationType;
-import org.pentaho.di.core.plugins.PluginFolder;
 import org.pentaho.di.core.plugins.PluginMainClassType;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 
@@ -38,8 +37,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
 
   private SpoonPluginType() {
     super( SpoonPlugin.class, "SPOONPLUGIN", "Spoon Plugin" );
-
-    pluginFolders.add( new PluginFolder( "plugins", false, true ) );
+    populateFolders( null );
   }
 
   private static SpoonPluginType pluginType;
