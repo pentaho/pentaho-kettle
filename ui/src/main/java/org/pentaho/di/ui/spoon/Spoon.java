@@ -8978,7 +8978,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } else {
       this.repositoryName = null;
       lastFileOpened = props.getLastUsedLocalFile();
-      lastFileOpenedProvider = ProviderFilterType.LOCAL.toString();
+      // we don't know what the provider is.
+      lastFileOpenedProvider = null;
     }
       if ( rep != null ) {
         this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
