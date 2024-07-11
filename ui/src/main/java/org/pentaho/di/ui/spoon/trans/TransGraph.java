@@ -1894,6 +1894,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    * Allows for magnifying to any percentage entered by the user...
    */
   private void readMagnification() {
+    float previousMagnification = magnification;
     String possibleText = zoomLabel.getText();
     possibleText = possibleText.replace( "%", "" );
 
@@ -1901,12 +1902,17 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     try {
       possibleFloatMagnification = Float.parseFloat( possibleText ) / 100;
       magnification = possibleFloatMagnification;
+      if ( magnification < MIN_ZOOM || magnification > MAX_ZOOM ) {
+        magnification = previousMagnification;
+        log.logError( "Invalid zoom value: " + zoomLabel.getText() );
+        throw new IllegalArgumentException( );
+      }
       if ( zoomLabel.getText().indexOf( '%' ) < 0 ) {
         zoomLabel.setText( zoomLabel.getText().concat( "%" ) );
       }
     } catch ( Exception e ) {
       modalMessageDialog( getString( "TransGraph.Dialog.InvalidZoomMeasurement.Title" ),
-        getString( "TransGraph.Dialog.InvalidZoomMeasurement.Message", zoomLabel.getText() ),
+        getString( "TransGraph.Dialog.InvalidZoomMeasurement.Message", String.valueOf( (int) ( MIN_ZOOM * 100 ) ), String.valueOf( (int) MAX_ZOOM * 100 ) ),
         SWT.YES | SWT.ICON_ERROR );
     }
     redraw();
