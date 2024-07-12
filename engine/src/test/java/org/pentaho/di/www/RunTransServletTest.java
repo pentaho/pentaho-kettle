@@ -25,7 +25,6 @@ package org.pentaho.di.www;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -39,14 +38,14 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -153,8 +152,9 @@ public class RunTransServletTest {
     Mockito.when( transMeta.getVariable( Mockito.anyString() ) ).thenReturn( "default value" );
 
     Mockito.when( transMeta.listParameters() ).thenReturn( new String[] { testParameter } );
-    Mockito.when( request.getParameterNames() ).thenReturn( new StringTokenizer( testParameter ) );
-
+    List<String> params = new ArrayList<>();
+    params.add(testParameter);
+    Mockito.when(request.getParameterNames()).thenReturn(Collections.enumeration(params));
     String testValue = "testValue";
     Mockito.when( request.getParameterValues( testParameter ) ).thenReturn( new String[] { testValue } );
 

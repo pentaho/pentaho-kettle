@@ -182,12 +182,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.woodstox</groupId>
-        <artifactId>wstx-asl</artifactId>
-        <version>${wstx-asl.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>com.github.mwiede</groupId>
         <artifactId>jsch</artifactId>
         <version>${jsch.version}</version>

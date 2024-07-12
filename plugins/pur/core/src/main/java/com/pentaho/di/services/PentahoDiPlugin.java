@@ -16,16 +16,17 @@
  */
 package com.pentaho.di.services;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
 import org.pentaho.di.repository.IRepositoryService;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Generated;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
+import jakarta.annotation.Generated;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import org.glassfish.jersey.client.ClientConfig;
 
 @Generated( value = { "wadl|file:/C:/env/ws/pdi-ee-plugin/wadl2java/wadl-resource/application.wadl.xml" },
     comments = "wadl2java, http://wadl.java.net", date = "2015-04-30T15:20:38.668-04:00" )
@@ -68,7 +69,7 @@ public class PentahoDiPlugin {
   }
 
   public static PentahoDiPlugin.PurRepositoryPluginApiRevision purRepositoryPluginApiRevision(
-      com.sun.jersey.api.client.Client client, URI baseURI ) {
+      jakarta.ws.rs.client.Client client, URI baseURI ) {
     return new PentahoDiPlugin.PurRepositoryPluginApiRevision( client, baseURI );
   }
 
@@ -83,16 +84,16 @@ public class PentahoDiPlugin {
    * Template method to allow tooling to override Client factory
    * 
    */
-  private static com.sun.jersey.api.client.Client createClientInstance( ClientConfig cc ) {
-    return com.sun.jersey.api.client.Client.create( cc );
+  private static jakarta.ws.rs.client.Client createClientInstance( ClientConfig cc ) {
+    return jakarta.ws.rs.client.ClientBuilder.newClient( cc );
   }
 
   /**
    * Create a new Client instance
    * 
    */
-  public static com.sun.jersey.api.client.Client createClient() {
-    ClientConfig cc = new DefaultClientConfig();
+  public static jakarta.ws.rs.client.Client createClient() {
+    ClientConfig cc = new ClientConfig();
     customizeClientConfiguration( cc );
     return createClientInstance( cc );
   }
@@ -102,12 +103,12 @@ public class PentahoDiPlugin {
   }
 
   public static PentahoDiPlugin.PurRepositoryPluginApiRevision purRepositoryPluginApiRevision(
-      com.sun.jersey.api.client.Client client ) {
+      jakarta.ws.rs.client.Client client ) {
     return purRepositoryPluginApiRevision( client, BASE_URI );
   }
 
   public static PentahoDiPlugin.PurRepositoryPluginApiPurge purRepositoryPluginApiPurge(
-      com.sun.jersey.api.client.Client client, URI baseURI ) {
+      jakarta.ws.rs.client.Client client, URI baseURI ) {
     return new PentahoDiPlugin.PurRepositoryPluginApiPurge( client, baseURI );
   }
 
@@ -116,17 +117,17 @@ public class PentahoDiPlugin {
   }
 
   public static PentahoDiPlugin.PurRepositoryPluginApiPurge purRepositoryPluginApiPurge(
-      com.sun.jersey.api.client.Client client ) {
+      jakarta.ws.rs.client.Client client ) {
     return purRepositoryPluginApiPurge( client, BASE_URI );
   }
 
   public static class PurRepositoryPluginApiPurge implements IRepositoryService {
 
-    private com.sun.jersey.api.client.Client _client;
+    private jakarta.ws.rs.client.Client _client;
     private UriBuilder _uriBuilder;
     private Map<String, Object> _templateAndMatrixParameterValues;
 
-    private PurRepositoryPluginApiPurge( com.sun.jersey.api.client.Client client, UriBuilder uriBuilder,
+    private PurRepositoryPluginApiPurge( jakarta.ws.rs.client.Client client, UriBuilder uriBuilder,
         Map<String, Object> map ) {
       _client = client;
       _uriBuilder = uriBuilder.clone();
@@ -137,7 +138,7 @@ public class PentahoDiPlugin {
      * Create new instance using existing Client instance, and a base URI and any parameters
      * 
      */
-    public PurRepositoryPluginApiPurge( com.sun.jersey.api.client.Client client, URI baseUri ) {
+    public PurRepositoryPluginApiPurge( jakarta.ws.rs.client.Client client, URI baseUri ) {
       _client = client;
       _uriBuilder = UriBuilder.fromUri( baseUri );
       _uriBuilder = _uriBuilder.path( "/pur-repository-plugin/api/purge" );
@@ -151,11 +152,11 @@ public class PentahoDiPlugin {
 
     public static class PathIdPurge implements IRepositoryService {
 
-      private com.sun.jersey.api.client.Client _client;
+      private jakarta.ws.rs.client.Client _client;
       private UriBuilder _uriBuilder;
       private Map<String, Object> _templateAndMatrixParameterValues;
 
-      private PathIdPurge( com.sun.jersey.api.client.Client client, UriBuilder uriBuilder, Map<String, Object> map ) {
+      private PathIdPurge( jakarta.ws.rs.client.Client client, UriBuilder uriBuilder, Map<String, Object> map ) {
         _client = client;
         _uriBuilder = uriBuilder.clone();
         _templateAndMatrixParameterValues = map;
@@ -165,7 +166,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and a base URI and any parameters
        * 
        */
-      public PathIdPurge( com.sun.jersey.api.client.Client client, URI baseUri, String pathid ) {
+      public PathIdPurge( jakarta.ws.rs.client.Client client, URI baseUri, String pathid ) {
         _client = client;
         _uriBuilder = UriBuilder.fromUri( baseUri );
         _uriBuilder = _uriBuilder.path( "{pathId : .+}/purge" );
@@ -177,7 +178,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and the URI from which the parameters will be extracted
        * 
        */
-      public PathIdPurge( com.sun.jersey.api.client.Client client, URI uri ) {
+      public PathIdPurge( jakarta.ws.rs.client.Client client, URI uri ) {
         _client = client;
         StringBuilder template = new StringBuilder( BASE_URI.toString() );
         if ( template.charAt( ( template.length() - 1 ) ) != '/' ) {
@@ -187,7 +188,7 @@ public class PentahoDiPlugin {
         }
         _uriBuilder = UriBuilder.fromPath( template.toString() );
         _templateAndMatrixParameterValues = new HashMap<String, Object>();
-        com.sun.jersey.api.uri.UriTemplate uriTemplate = new com.sun.jersey.api.uri.UriTemplate( template.toString() );
+        org.glassfish.jersey.uri.UriTemplate uriTemplate = new org.glassfish.jersey.uri.UriTemplate( template.toString() );
         HashMap<String, String> parameters = new HashMap<String, String>();
         uriTemplate.match( uri.toString(), parameters );
         _templateAndMatrixParameterValues.putAll( parameters );
@@ -213,39 +214,39 @@ public class PentahoDiPlugin {
         return new PentahoDiPlugin.PurRepositoryPluginApiPurge.PathIdPurge( _client, copyUriBuilder, copyMap );
       }
 
-      public <T> T postMultipartFormDataAs( Object input, com.sun.jersey.api.client.GenericType<T> returnType ) {
+      public <T> T postMultipartFormDataAs( Object input, jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "*/*" );
-        resourceBuilder = resourceBuilder.type( "multipart/form-data" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "POST", com.sun.jersey.api.client.ClientResponse.class, input );
+        resourceBuilder = resourceBuilder.header("Content-Type", "multipart/form-data");
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "POST");
         if ( response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
-              .status( response.getClientResponseStatus() ).build() );
+              .status( response.getStatus() ).build() );
         }
-        return response.getEntity( returnType );
+        return (T) response.getEntity();
       }
 
       public <T> T postMultipartFormDataAs( Object input, Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "*/*" );
-        resourceBuilder = resourceBuilder.type( "multipart/form-data" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "POST", com.sun.jersey.api.client.ClientResponse.class, input );
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
+        resourceBuilder = resourceBuilder.header( "Content-Type", "multipart/form-data" );
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "POST");
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           if ( response.getStatus() >= 400 ) {
             throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response.status(
-                response.getClientResponseStatus() ).build() );
+                response.getStatus() ).build() );
           }
         }
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
-          return response.getEntity( returnType );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+          return (T) response.getEntity();
         } else {
           return returnType.cast( response );
         }
@@ -257,11 +258,11 @@ public class PentahoDiPlugin {
 
   public static class PurRepositoryPluginApiRevision implements IRepositoryService {
 
-    private com.sun.jersey.api.client.Client _client;
+    private jakarta.ws.rs.client.Client _client;
     private UriBuilder _uriBuilder;
     private Map<String, Object> _templateAndMatrixParameterValues;
 
-    private PurRepositoryPluginApiRevision( com.sun.jersey.api.client.Client client, UriBuilder uriBuilder,
+    private PurRepositoryPluginApiRevision( jakarta.ws.rs.client.Client client, UriBuilder uriBuilder,
         Map<String, Object> map ) {
       _client = client;
       _uriBuilder = uriBuilder.clone();
@@ -272,7 +273,7 @@ public class PentahoDiPlugin {
      * Create new instance using existing Client instance, and a base URI and any parameters
      * 
      */
-    public PurRepositoryPluginApiRevision( com.sun.jersey.api.client.Client client, URI baseUri ) {
+    public PurRepositoryPluginApiRevision( jakarta.ws.rs.client.Client client, URI baseUri ) {
       _client = client;
       _uriBuilder = UriBuilder.fromUri( baseUri );
       _uriBuilder = _uriBuilder.path( "/pur-repository-plugin/api/revision" );
@@ -292,11 +293,11 @@ public class PentahoDiPlugin {
 
     public static class PathIdRevisions implements IRepositoryService {
 
-      private com.sun.jersey.api.client.Client _client;
+      private jakarta.ws.rs.client.Client _client;
       private UriBuilder _uriBuilder;
       private Map<String, Object> _templateAndMatrixParameterValues;
 
-      private PathIdRevisions( com.sun.jersey.api.client.Client client, UriBuilder uriBuilder, Map<String, Object> map ) {
+      private PathIdRevisions( jakarta.ws.rs.client.Client client, UriBuilder uriBuilder, Map<String, Object> map ) {
         _client = client;
         _uriBuilder = uriBuilder.clone();
         _templateAndMatrixParameterValues = map;
@@ -306,7 +307,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and a base URI and any parameters
        * 
        */
-      public PathIdRevisions( com.sun.jersey.api.client.Client client, URI baseUri, String pathid ) {
+      public PathIdRevisions( jakarta.ws.rs.client.Client client, URI baseUri, String pathid ) {
         _client = client;
         _uriBuilder = UriBuilder.fromUri( baseUri );
         _uriBuilder = _uriBuilder.path( "{pathId : .+}/revisions" );
@@ -318,7 +319,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and the URI from which the parameters will be extracted
        * 
        */
-      public PathIdRevisions( com.sun.jersey.api.client.Client client, URI uri ) {
+      public PathIdRevisions( jakarta.ws.rs.client.Client client, URI uri ) {
         _client = client;
         StringBuilder template = new StringBuilder( BASE_URI.toString() );
         if ( template.charAt( ( template.length() - 1 ) ) != '/' ) {
@@ -328,7 +329,7 @@ public class PentahoDiPlugin {
         }
         _uriBuilder = UriBuilder.fromPath( template.toString() );
         _templateAndMatrixParameterValues = new HashMap<String, Object>();
-        com.sun.jersey.api.uri.UriTemplate uriTemplate = new com.sun.jersey.api.uri.UriTemplate( template.toString() );
+        org.glassfish.jersey.uri.UriTemplate uriTemplate = new org.glassfish.jersey.uri.UriTemplate( template.toString() );
         HashMap<String, String> parameters = new HashMap<String, String>();
         uriTemplate.match( uri.toString(), parameters );
         _templateAndMatrixParameterValues.putAll( parameters );
@@ -354,73 +355,73 @@ public class PentahoDiPlugin {
         return new PentahoDiPlugin.PurRepositoryPluginApiRevision.PathIdRevisions( _client, copyUriBuilder, copyMap );
       }
 
-      public <T> T getAsXml( com.sun.jersey.api.client.GenericType<T> returnType ) {
+      public <T> T getAsXml( jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
         if ( response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
-              .status( response.getClientResponseStatus() ).build() );
+              .status( response.getStatus() ).build() );
         }
-        return response.getEntity( returnType );
+        return (T) response.getEntity();
       }
 
       public <T> T getAsXml( Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           if ( response.getStatus() >= 400 ) {
             throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response.status(
-                response.getClientResponseStatus() ).build() );
+                response.getStatus() ).build() );
           }
         }
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
-          return response.getEntity( returnType );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+          return (T) response.getEntity();
         } else {
           return returnType.cast( response );
         }
       }
 
-      public <T> T getAsJson( com.sun.jersey.api.client.GenericType<T> returnType ) {
+      public <T> T getAsJson( jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
         if ( response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
-              .status( response.getClientResponseStatus() ).build() );
+              .status( response.getStatus() ).build() );
         }
-        return response.getEntity( returnType );
+        return (T) response.getEntity();
       }
 
       public <T> T getAsJson( Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           if ( response.getStatus() >= 400 ) {
             throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response.status(
-                response.getClientResponseStatus() ).build() );
+                response.getStatus() ).build() );
           }
         }
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
-          return response.getEntity( returnType );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+          return (T) response.getEntity();
         } else {
           return returnType.cast( response );
         }
@@ -430,11 +431,11 @@ public class PentahoDiPlugin {
 
     public static class PathIdVersioningConfiguration implements IRepositoryService {
 
-      private com.sun.jersey.api.client.Client _client;
+      private jakarta.ws.rs.client.Client _client;
       private UriBuilder _uriBuilder;
       private Map<String, Object> _templateAndMatrixParameterValues;
 
-      private PathIdVersioningConfiguration( com.sun.jersey.api.client.Client client, UriBuilder uriBuilder,
+      private PathIdVersioningConfiguration( jakarta.ws.rs.client.Client client, UriBuilder uriBuilder,
           Map<String, Object> map ) {
         _client = client;
         _uriBuilder = uriBuilder.clone();
@@ -445,7 +446,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and a base URI and any parameters
        * 
        */
-      public PathIdVersioningConfiguration( com.sun.jersey.api.client.Client client, URI baseUri, String pathid ) {
+      public PathIdVersioningConfiguration( jakarta.ws.rs.client.Client client, URI baseUri, String pathid ) {
         _client = client;
         _uriBuilder = UriBuilder.fromUri( baseUri );
         _uriBuilder = _uriBuilder.path( "{pathId}/versioningConfiguration" );
@@ -457,7 +458,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and the URI from which the parameters will be extracted
        * 
        */
-      public PathIdVersioningConfiguration( com.sun.jersey.api.client.Client client, URI uri ) {
+      public PathIdVersioningConfiguration( jakarta.ws.rs.client.Client client, URI uri ) {
         _client = client;
         StringBuilder template = new StringBuilder( BASE_URI.toString() );
         if ( template.charAt( ( template.length() - 1 ) ) != '/' ) {
@@ -467,7 +468,7 @@ public class PentahoDiPlugin {
         }
         _uriBuilder = UriBuilder.fromPath( template.toString() );
         _templateAndMatrixParameterValues = new HashMap<String, Object>();
-        com.sun.jersey.api.uri.UriTemplate uriTemplate = new com.sun.jersey.api.uri.UriTemplate( template.toString() );
+        org.glassfish.jersey.uri.UriTemplate uriTemplate = new org.glassfish.jersey.uri.UriTemplate( template.toString() );
         HashMap<String, String> parameters = new HashMap<String, String>();
         uriTemplate.match( uri.toString(), parameters );
         _templateAndMatrixParameterValues.putAll( parameters );
@@ -496,50 +497,50 @@ public class PentahoDiPlugin {
 
       public FileVersioningConfiguration getAsFileVersioningConfigurationXml() {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
         if ( response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
-              .status( response.getClientResponseStatus() ).build() );
+              .status( response.getStatus() ).build() );
         }
-        return response.getEntity( FileVersioningConfiguration.class );
+        return (FileVersioningConfiguration) response.getEntity();
       }
 
-      public <T> T getAsXml( com.sun.jersey.api.client.GenericType<T> returnType ) {
+      public <T> T getAsXml( jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
         if ( response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
-              .status( response.getClientResponseStatus() ).build() );
+              .status( response.getStatus() ).build() );
         }
-        return response.getEntity( returnType );
+        return (T) response.getEntity();
       }
 
       public <T> T getAsXml( Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           if ( response.getStatus() >= 400 ) {
             throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response.status(
-                response.getClientResponseStatus() ).build() );
+                response.getStatus() ).build() );
           }
         }
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
-          return response.getEntity( returnType );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+          return (T) response.getEntity();
         } else {
           return returnType.cast( response );
         }
@@ -547,50 +548,50 @@ public class PentahoDiPlugin {
 
       public FileVersioningConfiguration getAsFileVersioningConfigurationJson() {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
         if ( response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
-              .status( response.getClientResponseStatus() ).build() );
+              .status( response.getStatus() ).build() );
         }
-        return response.getEntity( FileVersioningConfiguration.class );
+        return (FileVersioningConfiguration) response.getEntity();
       }
 
-      public <T> T getAsJson( com.sun.jersey.api.client.GenericType<T> returnType ) {
+      public <T> T getAsJson( jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
         if ( response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
-              .status( response.getClientResponseStatus() ).build() );
+              .status( response.getStatus() ).build() );
         }
-        return response.getEntity( returnType );
+        return (T) response.getEntity();
       }
 
       public <T> T getAsJson( Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        com.sun.jersey.api.client.WebResource resource =
-            _client.resource( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        com.sun.jersey.api.client.WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+        jakarta.ws.rs.client.WebTarget resource =
+            _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
+        jakarta.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        com.sun.jersey.api.client.ClientResponse response;
-        response = resourceBuilder.method( "GET", com.sun.jersey.api.client.ClientResponse.class );
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
+        jakarta.ws.rs.core.Response response;
+        response = resourceBuilder.method( "GET", jakarta.ws.rs.core.Response.class );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           if ( response.getStatus() >= 400 ) {
             throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response.status(
-                response.getClientResponseStatus() ).build() );
+                response.getStatus() ).build() );
           }
         }
-        if ( !com.sun.jersey.api.client.ClientResponse.class.isAssignableFrom( returnType ) ) {
-          return response.getEntity( returnType );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+          return (T) response.getEntity();
         } else {
           return returnType.cast( response );
         }
@@ -625,7 +626,7 @@ public class PentahoDiPlugin {
     }
 
     public String toString() {
-      String s = "javax.ws.rs.WebApplicationException";
+      String s = "jakarta.WebApplicationException";
       String message = getLocalizedMessage();
       return ( s + ( ": " + message ) );
     }
