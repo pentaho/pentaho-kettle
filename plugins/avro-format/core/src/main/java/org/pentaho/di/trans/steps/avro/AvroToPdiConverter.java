@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2022-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.avro;
 
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.pentaho.di.trans.steps.avro.input.IAvroInputField;
 import org.pentaho.di.trans.steps.avro.input.AvroInputField;
 import org.pentaho.di.trans.steps.avro.input.PentahoAvroInputFormat;
@@ -29,8 +31,6 @@ import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.util.Utf8;
-import org.codehaus.jackson.node.NullNode;
-import org.codehaus.jackson.node.TextNode;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 
