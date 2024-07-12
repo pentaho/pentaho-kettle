@@ -44,7 +44,7 @@
         <module>credit-card-validator</module>
         <module>mysql-bulk-loader</module>
         <module>yaml-input</module>
-        <module>metastore-locator</module>
+        <!--<module>metastore-locator</module>-->
         <module>repository-locator</module>
         <module>rss</module>
         <module>mondrianinput</module>
@@ -98,7 +98,7 @@
         <module>ms-access</module>
         <module>xml</module>
         <module>streaming</module>
-        <module>metastore-locator</module>
+        <!--<module>metastore-locator</module>-->
         <module>repository-locator</module>
         <module>ldap</module>
         <module>excel</module>

@@ -39,8 +39,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -153,7 +153,7 @@ public class RunTransServletTest {
     Mockito.when( transMeta.getVariable( Mockito.anyString() ) ).thenReturn( "default value" );
 
     Mockito.when( transMeta.listParameters() ).thenReturn( new String[] { testParameter } );
-    Mockito.when( request.getParameterNames() ).thenReturn( new StringTokenizer( testParameter ) );
+   // Mockito.when( request.getParameterNames() ).thenReturn( new StringTokenizer( testParameter ) );
 
     String testValue = "testValue";
     Mockito.when( request.getParameterValues( testParameter ) ).thenReturn( new String[] { testValue } );

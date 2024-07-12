@@ -20,7 +20,8 @@
         <!--project.build.sourceEncoding>UTF-8</project.build.sourceEncoding-->
         <project.junit.version>4.4</project.junit.version>
         <pdi.version>10.3.0.0-SNAPSHOT</pdi.version>
-    </properties>
+        <jetty-server.version>11.0.14</jetty-server.version>
+        </properties>
 
     <build>
         <resources>
@@ -85,6 +86,17 @@
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-ui-swt</artifactId>
             <version>${pdi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>5.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty-server.version}</version>
         </dependency>
 
     </dependencies>

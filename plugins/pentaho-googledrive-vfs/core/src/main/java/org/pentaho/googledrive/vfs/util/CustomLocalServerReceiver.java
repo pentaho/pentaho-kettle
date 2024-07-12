@@ -23,14 +23,15 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.URL;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 public class CustomLocalServerReceiver implements VerificationCodeReceiver {
 
@@ -63,12 +64,12 @@ public class CustomLocalServerReceiver implements VerificationCodeReceiver {
     Connector[] arr$ = this.server.getConnectors();
     int len$ = arr$.length;
 
-    for ( int i$ = 0; i$ < len$; ++i$ ) {
-      Connector c = arr$[i$];
-      c.setHost( this.host );
-    }
+//    for ( int i$ = 0; i$ < len$; ++i$ ) {
+//      Connector c = arr$[i$];
+//      c.setHost( this.host );
+//    }
 
-    this.server.addHandler( new CustomLocalServerReceiver.CallbackHandler() );
+    this.server.setHandler( new CallbackHandler() );
 
     try {
       this.server.start();
@@ -138,7 +139,8 @@ public class CustomLocalServerReceiver implements VerificationCodeReceiver {
             && CustomLocalServerReceiver.this.error.equals( "access_denied" ) ) {
           response.sendRedirect( CustomLocalServerReceiver.this.url );
         } else {
-          super.handle( target, request, response, dispatch );
+          Request baseRequest = null;
+          super.handle( target, baseRequest, request, response );
         }
         ( (Request) request ).setHandled( true );
       }

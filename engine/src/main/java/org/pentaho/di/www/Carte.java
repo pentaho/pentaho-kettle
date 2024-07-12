@@ -53,12 +53,10 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.api.json.JSONConfiguration;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 public class Carte {
   private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
@@ -343,26 +341,24 @@ public class Carte {
     try {
       KettleClientEnvironment.init();
 
-      ClientConfig clientConfig = new DefaultClientConfig();
-      clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
-      Client client = Client.create( clientConfig );
-
-      client.addFilter( new HTTPBasicAuthFilter( username, Encr.decryptPasswordOptionallyEncrypted( password ) ) );
+      HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(username, Encr.decryptPasswordOptionallyEncrypted(password));
+      Client client = ClientBuilder.newClient();
+      client.register(feature);
 
       // check if the user can access the carte server. Don't really need this call but may want to check it's output at
       // some point
       String contextURL = "http://" + hostname + ":" + port + "/kettle";
-      WebResource resource = client.resource( contextURL + "/status/?xml=Y" );
-      String response = resource.get( String.class );
+      WebTarget target = client.target(contextURL + "/status/?xml=Y");
+      String response = target.request().get(String.class);
       if ( response == null || !response.contains( "<serverstatus>" ) ) {
         throw new Carte.CarteCommandException( BaseMessages.getString( PKG, "Carte.Error.NoServerFound", hostname, ""
             + port ) );
       }
 
       // This is the call that matters
-      resource = client.resource( contextURL + "/stopCarte" );
-      response = resource.get( String.class );
-      if ( response == null || !response.contains( "Shutting Down" ) ) {
+      WebTarget target1 = client.target(contextURL + "/stopCarte");
+      String response1 = target1.request().get(String.class);
+      if ( response1 == null || !response1.contains( "Shutting Down" ) ) {
         throw new Carte.CarteCommandException( BaseMessages.getString( PKG, "Carte.Error.NoShutdown", hostname, ""
             + port ) );
       }
