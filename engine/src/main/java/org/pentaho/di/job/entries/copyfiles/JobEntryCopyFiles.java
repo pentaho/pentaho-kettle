@@ -93,6 +93,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   public static final String DEST_URL = "EMPTY_DEST_URL-";
   public static final String SOURCE_URL = "EMPTY_SOURCE_URL-";
 
+  private static final String XML_INDENTATION = "          ";
+
   public boolean copy_empty_folders;
   public boolean arg_from_previous;
   public boolean overwrite_files;
@@ -175,7 +177,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           parentJobMeta.getNamedClusterEmbedManager().registerUrl( vsourcefilefolder[i] );
           parentJobMeta.getNamedClusterEmbedManager().registerUrl( vdestinationfilefolder[i] );
         }
-        retval.append( "          " ).append( XMLHandler.addTagValue( "wildcard", wildcard[i] ) );
+        retval.append( XML_INDENTATION ).append( XMLHandler.addTagValue( "wildcard", wildcard[i] ) );
         retval.append( "        </field>" ).append( Const.CR );
       }
     }
@@ -232,15 +234,16 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
   protected void saveSource( StringBuilder retval, String source ) {
     String namedCluster = configurationMappings.get( source );
-
-    retval.append( "          " ).append( XMLHandler.addTagValue( SOURCE_FILE_FOLDER, KettleVFS.cleanseFilename( source ) ) );
-    retval.append( "          " ).append( XMLHandler.addTagValue( SOURCE_CONFIGURATION_NAME, namedCluster ) );
+    String saveURL = saveURL( source, namedCluster, getMetaStore(), configurationMappings  ) ;
+    retval.append( XML_INDENTATION ).append( XMLHandler.addTagValue( SOURCE_FILE_FOLDER, saveURL ) );
+    retval.append( XML_INDENTATION ).append( XMLHandler.addTagValue( SOURCE_CONFIGURATION_NAME, namedCluster ) );
   }
 
   protected void saveDestination( StringBuilder retval, String destination ) {
     String namedCluster = configurationMappings.get( destination );
-    retval.append( "          " ).append( XMLHandler.addTagValue( DESTINATION_FILE_FOLDER, KettleVFS.cleanseFilename( destination ) ) );
-    retval.append( "          " ).append( XMLHandler.addTagValue( DESTINATION_CONFIGURATION_NAME, namedCluster ) );
+    String saveURL = saveURL( destination, namedCluster, getMetaStore(), configurationMappings  ) ;
+    retval.append( XML_INDENTATION ).append( XMLHandler.addTagValue( DESTINATION_FILE_FOLDER, saveURL ) );
+    retval.append( XML_INDENTATION ).append( XMLHandler.addTagValue( DESTINATION_CONFIGURATION_NAME, namedCluster ) );
   }
 
   protected String loadSourceRep( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
@@ -258,14 +261,16 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   protected void saveSourceRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value )
     throws KettleException {
     String namedCluster = configurationMappings.get( value );
-    rep.saveJobEntryAttribute( id_job, getObjectId(), i, SOURCE_FILE_FOLDER, value );
+    String saveURL = saveURL( value, namedCluster, getMetaStore(), configurationMappings );
+    rep.saveJobEntryAttribute( id_job, getObjectId(), i, SOURCE_FILE_FOLDER, saveURL );
     rep.saveJobEntryAttribute( id_job, id_jobentry, i, SOURCE_CONFIGURATION_NAME, namedCluster );
   }
 
   protected void saveDestinationRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value )
     throws KettleException {
     String namedCluster = configurationMappings.get( value );
-    rep.saveJobEntryAttribute( id_job, getObjectId(), i, DESTINATION_FILE_FOLDER, value );
+    String saveURL = saveURL( value, namedCluster, getMetaStore(), configurationMappings );
+    rep.saveJobEntryAttribute( id_job, getObjectId(), i, DESTINATION_FILE_FOLDER, saveURL );
     rep.saveJobEntryAttribute( id_job, id_jobentry, i, DESTINATION_CONFIGURATION_NAME, namedCluster );
   }
 
@@ -1155,11 +1160,32 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     return true;
   }
 
+  /**
+   * Unmarshalling job entry xml fields ( {@link #SOURCE_FILE_FOLDER } and {@link #DESTINATION_FILE_FOLDER} )
+   * to the actual URL.
+   * @param url
+   * @param ncName
+   * @param metastore
+   * @param mappings
+   * @return
+   */
   public String loadURL( String url, String ncName, IMetaStore metastore, Map<String, String> mappings ) {
     if ( !Utils.isEmpty( ncName ) && !Utils.isEmpty( url ) ) {
       mappings.put( url, ncName );
     }
     return url;
+  }
+
+  /**
+   * Marshalling the actual URL to job entry xml fields ( {@link #SOURCE_FILE_FOLDER } and {@link #DESTINATION_FILE_FOLDER} )
+   * @param url
+   * @param ncName
+   * @param metastore
+   * @param mappings
+   * @return
+   */
+  public String saveURL( String url, String ncName, IMetaStore metastore, Map<String, String> mappings ) {
+    return url; // simple function, arguments match #loadURL, sub classes can provide custom implementation.
   }
 
   public void setConfigurationMappings( Map<String, String> mappings ) {
