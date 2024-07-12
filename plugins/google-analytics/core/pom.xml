@@ -20,7 +20,7 @@
     <pdi.version>10.3.0.0-SNAPSHOT</pdi.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
-    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+    <jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
@@ -142,9 +142,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>${javax.servlet-api.version}</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>${jakarta.servlet-api.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

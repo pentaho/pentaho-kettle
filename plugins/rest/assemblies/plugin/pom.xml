@@ -17,7 +17,7 @@
   <properties>
     <project.revision>10.3.0.0-SNAPSHOT</project.revision>
     <jersey2-apache-connector.version>2.30</jersey2-apache-connector.version>
-    <jersey2.version>2.38</jersey2.version>
+    <jersey2.version>3.1.7</jersey2.version>
     <jaxrs.version>2.1.6</jaxrs.version>
   </properties>
 
@@ -64,9 +64,9 @@
       <version>${jersey2.version}</version>
     </dependency>
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <version>1.3.2</version>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>3.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.inject</groupId>
