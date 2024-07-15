@@ -301,10 +301,6 @@ public class Kitchen {
         .build();
 
       result = getCommandExecutor().execute( jobParams, args.toArray( new String[ args.size() ] ) );
-      if ( result.getExitStatus() != 0 ) {
-        blockAndThrow( kettleInitFuture );
-        exitJVM( result.getExitStatus() );
-      }
 
     } catch ( Throwable t ) {
       t.printStackTrace();
