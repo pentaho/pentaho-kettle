@@ -49,6 +49,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.DatabaseConnectionManager;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.trans.step.RowDistributionPluginType;
 
 import java.util.Arrays;
@@ -266,7 +267,7 @@ public class KettleEnvironment {
    * Registers the SharedObject type specific factory with the Bowl factory registry.
    */
   private static void registerSharedObjectManagersWithBowl(){
-    BowlManagerFactoryRegistry.getInstance().registerManagerFactory( DatabaseConnectionManager.class,
+    BowlManagerFactoryRegistry.getInstance().registerManagerFactory( DatabaseManagementInterface.class,
                         new DatabaseConnectionManager.DbConnectionManagerFactory() );
   }
 }

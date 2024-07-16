@@ -26,7 +26,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.DatabaseConnectionManager;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,17 +38,17 @@ import java.util.Map;
  * @author Andrey Khayrutdinov
  */
 public class DatabasesCollector {
-  private DatabaseConnectionManager dbManager;
+  private DatabaseManagementInterface dbManager;
   private final Repository repository;
   private AbstractMeta meta;
   private List<String> dbNames;
   private Map<String, DatabaseMeta> dbMetaMap;
 
-  public DatabasesCollector( DatabaseConnectionManager dbManager, Repository repository ) {
+  public DatabasesCollector( DatabaseManagementInterface dbManager, Repository repository ) {
     this( dbManager, null, repository );
   }
 
-  public DatabasesCollector( DatabaseConnectionManager dbManager, AbstractMeta meta, Repository repository ) {
+  public DatabasesCollector( DatabaseManagementInterface dbManager, AbstractMeta meta, Repository repository ) {
     this.dbManager = dbManager;
     this.meta = meta;
     this.repository = repository;

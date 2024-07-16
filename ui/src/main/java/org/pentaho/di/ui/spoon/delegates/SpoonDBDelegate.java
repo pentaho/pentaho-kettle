@@ -45,6 +45,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -474,12 +475,33 @@ public class SpoonDBDelegate extends SpoonDelegate {
 
   }
 
-  public void newConnection() {
-    HasDatabasesInterface hasDatabasesInterface = spoon.getActiveHasDatabasesInterface();
-    if ( hasDatabasesInterface == null && spoon.rep == null ) {
-      return;
+  public void newConnection( ) {
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    getDatabaseDialog().setDatabaseMeta( databaseMeta );
+    String con_name = getDatabaseDialog().open();
+    if ( !Utils.isEmpty( con_name ) ) {
+      con_name = con_name.trim();
+      databaseMeta.setName( con_name );
+      databaseMeta.setDisplayName( con_name );
+      databaseMeta = getDatabaseDialog().getDatabaseMeta();
+      try {
+        DatabaseManagementInterface databaseManagementInterface = spoon.getBowl().getManager( DatabaseManagementInterface.class );
+
+        if ( databaseMeta.findDatabase( databaseManagementInterface.getDatabases(), con_name ) == null ) {
+          databaseManagementInterface.addDatabase( databaseMeta );
+          if ( spoon.rep != null ) {
+            saveConnectionToRepository( databaseMeta );
+          }
+          refreshTree();
+        } else {
+          DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
+        }
+      } catch ( KettleException exception ) {
+        new ErrorDialog( spoon.getShell(),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), exception );
+      }
     }
-    newConnection( hasDatabasesInterface );
   }
 
   public void newConnection( HasDatabasesInterface hasDatabasesInterface ) {
@@ -504,23 +526,28 @@ public class SpoonDBDelegate extends SpoonDelegate {
         spoon.addUndoNew( (UndoInterface) hasDatabasesInterface, new DatabaseMeta[]{(DatabaseMeta) databaseMeta
                 .clone()}, new int[]{hasDatabasesInterface.indexOfDatabase( databaseMeta )} );
         if ( spoon.rep != null ) {
-          try {
-            if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
-              // spoon.rep.getDatabaseID(  )
-              spoon.rep.save( databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-            } else {
-              throw new KettleException( BaseMessages.getString(
-                      PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
-            }
-          } catch ( KettleException e ) {
-            new ErrorDialog( spoon.getShell(),
-                    BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
-                    BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), e );
-          }
+         saveConnectionToRepository( databaseMeta );
         }
         refreshTree();
       } else {
         DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
+      }
+    }
+  }
+
+  private void saveConnectionToRepository( DatabaseMeta databaseMeta ) {
+    if ( spoon.rep != null ) {
+      try {
+        if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
+          // spoon.rep.getDatabaseID(  )
+          spoon.rep.save( databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+        } else {
+          throw new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
+        }
+      } catch ( KettleException e ) {
+        new ErrorDialog( spoon.getShell(),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), e );
       }
     }
   }
