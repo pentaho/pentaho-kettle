@@ -1,4 +1,4 @@
-library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: '20240215'}", changelog: false)
+library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: '20240722'}", changelog: false)
 
 node(params.SLAVE_NODE_LABEL ?: 'non-master') {
   timestamps {
