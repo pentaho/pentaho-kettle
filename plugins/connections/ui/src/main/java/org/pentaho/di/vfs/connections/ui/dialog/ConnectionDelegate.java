@@ -22,7 +22,6 @@
 
 package org.pentaho.di.vfs.connections.ui.dialog;
 
-import org.eclipse.swt.SWT;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
@@ -36,9 +35,15 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
+import org.pentaho.di.ui.core.widget.TreeUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.function.Supplier;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.eclipse.swt.SWT;
 
 /**
  * Created by bmorrise on 2/4/19.
@@ -103,6 +108,20 @@ public class ConnectionDelegate {
           ( (AbstractMeta) engineMetaInterface ).setChanged();
         }
       }
+    } catch ( KettleException e ) {
+      showError( e );
+    }
+  }
+
+  public void duplicate( String name, LeveledTreeNode.LEVEL level ) {
+    try {
+      Spoon spoon = spoonSupplier.get();
+      Bowl bowl = getBowl( spoon, level );
+      ConnectionManager connectionManager = bowl.getManager( ConnectionManager.class );
+      Set<String> existingNames = new HashSet<>( connectionManager.getNames() );
+      String newName = TreeUtil.findUniqueSuffix( name, existingNames );
+      ConnectionDialog connectionDialog = new ConnectionDialog( spoon.getShell(), WIDTH, HEIGHT, connectionManager );
+      connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.edit.title" ), name, newName );
     } catch ( KettleException e ) {
       showError( e );
     }
