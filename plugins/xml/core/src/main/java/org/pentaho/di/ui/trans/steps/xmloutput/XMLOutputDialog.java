@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -858,6 +858,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
                     wFilename,
                     transMeta,
                     new SelectionAdapterOptions(
+                            transMeta.getBowl(),
                             SelectionOperation.SAVE_TO,
                             new FilterType[] { FilterType.XML, FilterType.TXT, FilterType.CSV, FilterType.ALL },
                             FilterType.XML,

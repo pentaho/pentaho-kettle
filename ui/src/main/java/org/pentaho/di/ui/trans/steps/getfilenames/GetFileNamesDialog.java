@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -858,7 +858,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE_OR_FOLDER,
         new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.CSV_TXT, FilterType.ALL }, FilterType.CSV_TXT ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -341,7 +341,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 
       // Listen to the browse button next to the file name
     wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wCatalog, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.XML, FilterType.ALL }, FilterType.XML ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...

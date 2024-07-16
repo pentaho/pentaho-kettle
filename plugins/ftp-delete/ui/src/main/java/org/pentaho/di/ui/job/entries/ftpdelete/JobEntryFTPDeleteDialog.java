@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -562,7 +562,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     } );
 
     wbKeyFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wKeyFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL, FilterType.PEM }, FilterType.PEM  ) ) );
 
     // keyfilePass line

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -469,7 +469,7 @@ public class AvroInputDialog extends BaseAvroStepDialog {
       .top( wlSchemaPath ).result() );
 
     wbSchemaBrowse.addSelectionListener( new SelectionAdapterFileDialogTextVar(
-      log, wSchemaPath, transMeta, new SelectionAdapterOptions( selectionOperation() ) ) );
+      log, wSchemaPath, transMeta, new SelectionAdapterOptions( transMeta.getBowl(), selectionOperation() ) ) );
 
 
     wSchemaFieldComposite = new Composite( wSchemaSettingsDynamicArea, SWT.NONE );

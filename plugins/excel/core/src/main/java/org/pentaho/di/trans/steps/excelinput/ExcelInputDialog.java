@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1682,7 +1682,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Listen to the Browse... button
     wbbWarningDestDir.addSelectionListener( new SelectionAdapterFileDialogText( log, wWarningDestDir, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Listen to the Variable... button
     wbvWarningDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter(
@@ -1750,7 +1750,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Listen to the Browse... button
     wbbErrorDestDir.addSelectionListener( new SelectionAdapterFileDialogText( log, wErrorDestDir, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Listen to the Variable... button
     wbvErrorDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter(
@@ -1818,7 +1818,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Listen to the Browse... button
     wbbLineNrDestDir.addSelectionListener( new SelectionAdapterFileDialogText( log, wLineNrDestDir, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Listen to the Variable... button
     wbvLineNrDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter(

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -374,7 +374,7 @@ public class JobEntryPGPEncryptFilesDialog extends JobEntryDialog implements Job
     wGpgExe.setLayoutData( fdGpgExe );
 
     wbbGpgExe.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wGpgExe, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     wlasciiMode = new Label( wSettings, SWT.RIGHT );
@@ -543,7 +543,7 @@ public class JobEntryPGPEncryptFilesDialog extends JobEntryDialog implements Job
     } );
 
     wbSourceFileFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Destination
@@ -589,13 +589,13 @@ public class JobEntryPGPEncryptFilesDialog extends JobEntryDialog implements Job
     wDestinationFileFolder.setLayoutData( fdDestinationFileFolder );
 
     wbSourceDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     wbDestinationDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     wbDestinationFileFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Buttons to the right of the screen...
@@ -1093,7 +1093,7 @@ public class JobEntryPGPEncryptFilesDialog extends JobEntryDialog implements Job
     } );
 
     wbDestinationFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFolder, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Create destination folder/parent folder
     wlCreateMoveToFolder = new Label( wMoveToGroup, SWT.RIGHT );

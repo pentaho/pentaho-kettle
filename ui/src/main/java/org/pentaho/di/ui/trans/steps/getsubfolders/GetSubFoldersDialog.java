@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -576,7 +576,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
     // Listen to the Browse... button
     wbbFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFoldername, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {

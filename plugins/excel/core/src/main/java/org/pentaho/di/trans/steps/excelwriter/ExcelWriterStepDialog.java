@@ -691,6 +691,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
         wFilename,
         transMeta,
         new SelectionAdapterOptions(
+          transMeta.getBowl(),
           SelectionOperation.SAVE_TO,
           new FilterType[] { FilterType.XLS, FilterType.XLSX, FilterType.ALL },
           FilterType.XLS,
@@ -705,6 +706,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
         wTemplateFilename,
         transMeta,
         new SelectionAdapterOptions(
+          transMeta.getBowl(),
           SelectionOperation.FILE,
           new FilterType[] { FilterType.XLS, FilterType.XLSX, FilterType.ALL },
           FilterType.XLS,

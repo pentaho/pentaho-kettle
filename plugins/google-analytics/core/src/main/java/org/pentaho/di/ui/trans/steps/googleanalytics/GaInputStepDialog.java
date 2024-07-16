@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -993,7 +993,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     );
 
     fileChooser.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, keyFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE, new FilterType[] { FilterType.P12, FilterType.ALL },
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
+                                   new FilterType[] { FilterType.P12, FilterType.ALL },
         FilterType.P12, new ProviderFilterType[] { ProviderFilterType.LOCAL } ) ) );
 
     // Set the shell size, based upon previous time...

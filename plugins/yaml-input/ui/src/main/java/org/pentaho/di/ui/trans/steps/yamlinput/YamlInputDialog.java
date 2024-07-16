@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -938,7 +938,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE_OR_FOLDER,
         new FilterType[] { FilterType.YAML, FilterType.ALL }, FilterType.YAML  ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...

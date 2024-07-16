@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -801,7 +801,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     wTargetDirectory.setLayoutData( fdTargetDirectory );
 
     wbTargetDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetDirectory, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
     // Create multi-part file?
     wlAddDate = new Label( wLocalSettings, SWT.RIGHT );
     wlAddDate.setText( BaseMessages.getString( PKG, "JobFTPS.AddDate.Label" ) );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -293,6 +293,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
                     wShape,
                     transMeta,
                     new SelectionAdapterOptions(
+                            transMeta.getBowl(),
                             SelectionOperation.FILE,
                             new FilterType[] { FilterType.SHP, FilterType.ALL },
                             FilterType.SHP,
@@ -311,6 +312,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
                     wDbf,
                     transMeta,
                     new SelectionAdapterOptions(
+                            transMeta.getBowl(),
                             SelectionOperation.FILE,
                             new FilterType[] { FilterType.DBF, FilterType.ALL },
                             FilterType.DBF,

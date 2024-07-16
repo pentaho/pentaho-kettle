@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -356,7 +356,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     wPrivateKey.setLayoutData( fdPrivateKey );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogText( log, wPrivateKey.getTextWidget(), transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.PEM, FilterType.ALL }, FilterType.PEM ) ) );
 
     // Passphraseline

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -546,7 +546,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     } );
 
     wbUploadFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wUploadFile, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     fdUpLoadFile = new FormData();
@@ -599,7 +599,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     wTargetFile.setLayoutData( fdTargetFile );
 
     wbTargetFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFile, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.SAVE_TO,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.SAVE_TO,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Append line

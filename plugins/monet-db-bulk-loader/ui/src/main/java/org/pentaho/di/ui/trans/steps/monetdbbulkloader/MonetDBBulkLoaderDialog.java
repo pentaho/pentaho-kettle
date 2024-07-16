@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -799,7 +799,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     new Thread( runnable ).start();
 
     wbLogFile.addSelectionListener(  new SelectionAdapterFileDialogTextVar( log, wLogFile, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Add listeners
