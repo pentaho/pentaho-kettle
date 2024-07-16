@@ -32,6 +32,7 @@ import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.shared.DatabaseConnectionManager;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
@@ -79,7 +80,7 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
 
     treeNode = new TreeNode();
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
-    when( mockDefaultBowl.getManager( DatabaseConnectionManager.class ) ).thenReturn( mockDbManager );
+    when( mockDefaultBowl.getManager( DatabaseManagementInterface.class ) ).thenReturn( mockDbManager );
   }
 
   @After

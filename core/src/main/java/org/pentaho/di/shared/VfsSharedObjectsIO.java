@@ -79,6 +79,8 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    */
   public VfsSharedObjectsIO( String rootFolder ) {
     this.rootFolder = rootFolder;
+    // Get the complete path to shared.xml
+    this.sharedObjectFile = getSharedObjectFilePath( rootFolder );
   }
 
 
@@ -92,7 +94,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   public synchronized Map<String, Node> getSharedObjects( String type ) throws KettleXMLException {
     if ( !isInitialized ) {
       // Load the shared.xml file
-      loadSharedObjectNodeMap( rootFolder );
+      loadSharedObjectNodeMap( sharedObjectFile );
       isInitialized = true;
     }
     return getNodesMapForType( type );
@@ -103,16 +105,14 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    * where key can be {"connection", "slaveserver", "partitionschema" or  clusterschema"} and
    * value will be xml Node.
    *
-   * @param rootFolder The path to the shared object file
+   * @param pathToSharedObjectFile The path to the shared object file
    * @throws KettleXMLException
    */
-  private void loadSharedObjectNodeMap( String rootFolder ) throws KettleXMLException {
-    // Get the complete path to shared.xml
-    this.sharedObjectFile = getSharedObjectFilePath( rootFolder );
+  private void loadSharedObjectNodeMap( String pathToSharedObjectFile ) throws KettleXMLException {
 
     try {
       // Get the FileObject
-      FileObject file = KettleVFS.getFileObject( sharedObjectFile );
+      FileObject file = KettleVFS.getFileObject( pathToSharedObjectFile );
 
       // If we have a shared file, load the content, otherwise, just keep this one empty
       if ( file.exists() ) {
@@ -132,7 +132,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "SharedOjects.ReadingError",
-        sharedObjectFile ), e );
+        pathToSharedObjectFile ), e );
     }
 
   }
@@ -186,18 +186,15 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    * @throws KettleException
    */
   public void saveSharedObject( String type, String name, Node node ) throws IOException, KettleException {
-    // Find the map for the type
+    // Get the map for the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
-    if ( nodeMap.containsKey( name ) ) {
-      // Update the map entry for this name
-      nodeMap.put( name, node );
+    // Add or Update the map entry for this name
+    nodeMap.put( name, node );
 
-      FileObject fileObject = KettleVFS.getFileObject( sharedObjectFile );
-      Optional<String> backupFileName = createOrGetFileBackup( fileObject );
-      writeToFile( fileObject, backupFileName );
-      isInitialized = false;
-    }
-    // TODO need to handle the case when the new shared object is being added
+    FileObject fileObject = KettleVFS.getFileObject( sharedObjectFile );
+    Optional<String> backupFileName = createOrGetFileBackup( fileObject );
+    writeToFile( fileObject, backupFileName );
+    isInitialized = false;
   }
 
   protected void writeToFile( FileObject fileObject, Optional<String> backupFileName ) throws IOException, KettleException {

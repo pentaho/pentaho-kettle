@@ -30,6 +30,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.shared.DatabaseConnectionManager;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
@@ -69,7 +70,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
       Set<String> projectDbNames = new HashSet<>();
       if ( currentBowl != DefaultBowl.getInstance() ) {
 
-        DatabaseConnectionManager dbManager = currentBowl.getManager( DatabaseConnectionManager.class );
+        DatabaseManagementInterface dbManager = currentBowl.getManager( DatabaseManagementInterface.class );
         DatabasesCollector collector = new DatabasesCollector( dbManager, null );
 
         for ( String databaseName : collector.getDatabaseNames() ) {
@@ -83,7 +84,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
         }
       }
       // Global
-      DatabaseConnectionManager globalDbConnMgr = DefaultBowl.getInstance().getManager( DatabaseConnectionManager.class );
+      DatabaseManagementInterface globalDbConnMgr = DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
       DatabasesCollector collector = new DatabasesCollector( globalDbConnMgr, null, null );
       Set<String> globalDbNames = new HashSet<>();
       for ( String name : collector.getDatabaseNames() ) {
@@ -92,7 +93,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
         }
         DatabaseMeta databaseMeta = collector.getMetaFor( name );
         globalDbNames.add( databaseMeta.getDisplayName() );
-        createTreeNode( treeNode, databaseMeta.getDisplayName(), GUIResource.getInstance().getImageSlaveTree(), LeveledTreeNode.LEVEL.GLOBAL,
+        createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree(), LeveledTreeNode.LEVEL.GLOBAL,
           projectDbNames.contains( name ) );
       }
 
@@ -104,7 +105,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
             continue;
           }
           DatabaseMeta databaseMeta = collector.getMetaFor( name );
-          createTreeNode( treeNode, databaseMeta.getDisplayName(), GUIResource.getInstance().getImageSlaveTree(), LeveledTreeNode.LEVEL.LOCAL,
+          createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree(), LeveledTreeNode.LEVEL.LOCAL,
             projectDbNames.contains( name ) || globalDbNames.contains( name ) );
         }
       }
