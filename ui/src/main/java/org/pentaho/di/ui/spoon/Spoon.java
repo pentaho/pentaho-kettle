@@ -495,7 +495,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public PropsUI props;
 
   // should never be null
-  private Bowl bowl = DefaultBowl.getInstance();
+  private Bowl managementBowl = DefaultBowl.getInstance();
+  private Bowl executionBowl = DefaultBowl.getInstance();
 
   public Repository rep;
   private String repositoryName;
@@ -1331,7 +1332,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     Properties sp = new Properties();
     sp.putAll( System.getProperties() );
 
-    VariableSpace space = bowl.getADefaultVariableSpace();
+    VariableSpace space = executionBowl.getADefaultVariableSpace();
     String[] keys = space.listVariables();
     for ( String key : keys ) {
       sp.put( key, space.getVariable( key ) );
@@ -4286,7 +4287,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       } else {
         try {
           FileDialogOperation fileDialogOperation =
-            new FileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
+            new FileDialogOperation( executionBowl, FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation.setProviderFilter( evaluateFileBrowserProviderFilter() );
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveNew.id,
             fileDialogOperation );
@@ -4564,7 +4565,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void openFileNew( String providerFilter, String fileFilterType, boolean importFile, String command ) throws Exception {
     FileDialogOperation fileDialogOperation =
-            getFileDialogOperation( command, FileDialogOperation.ORIGIN_SPOON );
+            getFileDialogOperation( executionBowl, command, FileDialogOperation.ORIGIN_SPOON );
     fileDialogOperation.setProviderFilter( providerFilter );
     if ( !Utils.isEmpty( lastFileOpened ) ) {
       // Test for Windows vs Linux/Remote parent path
@@ -4690,7 +4691,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public boolean saveAsNew( EngineMetaInterface meta, boolean export, String providerFilter
           , String fileFilterType, String command ) {
     FileDialogOperation fileDialogOperation =
-            getFileDialogOperation( command, FileDialogOperation.ORIGIN_SPOON );
+            getFileDialogOperation( executionBowl, command, FileDialogOperation.ORIGIN_SPOON );
     fileDialogOperation.setFileType( fileFilterType );
     fileDialogOperation.setFilter( deriveFileFilterFromFileType( fileFilterType ) );
     fileDialogOperation.setFilename( meta.getName() );
@@ -5410,8 +5411,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   @VisibleForTesting
-  FileDialogOperation getFileDialogOperation( String command, String origin ) {
-    return new FileDialogOperation( command, origin );
+  FileDialogOperation getFileDialogOperation( Bowl bowl, String command, String origin ) {
+    return new FileDialogOperation( bowl, command, origin );
   }
 
   public boolean saveToRepository( EngineMetaInterface meta, boolean ask_name ) throws KettleException {
@@ -5431,7 +5432,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         try {
           String fileType = meta.getFileType().equals( LastUsedFile.FILE_TYPE_TRANSFORMATION )
             ? FileDialogOperation.TRANSFORMATION : FileDialogOperation.JOB;
-          FileDialogOperation fileDialogOperation = getFileDialogOperation( FileDialogOperation.SAVE,
+          FileDialogOperation fileDialogOperation = getFileDialogOperation( executionBowl,  FileDialogOperation.SAVE,
             FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation.setFileType( fileType );
           fileDialogOperation.setFilter( deriveFileFilterFromFileType( fileType ) );
@@ -5723,7 +5724,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       String zipFilename = null;
       FileDialogOperation fileDialogOperation =
-              getFileDialogOperation(FileDialogOperation.EXPORT_ALL, FileDialogOperation.ORIGIN_SPOON);
+              getFileDialogOperation( executionBowl, FileDialogOperation.EXPORT_ALL, FileDialogOperation.ORIGIN_SPOON);
       fileDialogOperation.setFileType(FilterType.ZIP.toString());
       fileDialogOperation.setFilter(FilterType.ZIP.toString());
       fileDialogOperation.setProviderFilter(ProviderFilterType.LOCAL + "," + ProviderFilterType.VFS);
@@ -6421,10 +6422,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     Map<String, String> newProperties = dialog.open();
     if ( newProperties != null ) {
       VariableSpace bowlSpace;
-      if ( bowl.equals( DefaultBowl.getInstance() ) ) {
+      if ( managementBowl.equals( DefaultBowl.getInstance() ) ) {
         bowlSpace = new Variables();
       } else {
-        bowlSpace = bowl.getADefaultVariableSpace();
+        bowlSpace = managementBowl.getADefaultVariableSpace();
       }
       for ( String name : newProperties.keySet() ) {
         String value = newProperties.get( name );
@@ -9512,7 +9513,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * @return Bowl The Bowl that should be used during execution.
    */
   public Bowl getBowl() {
-    return bowl;
+    return managementBowl;
   }
 
   /**
@@ -9520,7 +9521,27 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   public void setBowl( Bowl bowl ) {
-    this.bowl = Objects.requireNonNull( bowl );
+    this.managementBowl = Objects.requireNonNull( bowl );
+    forceRefreshTree();
+  }
+
+  /**
+   * Retrieves the Bowl for the Management context. This Bowl should be used for write operations. This Bowl will only
+   * return objects directly owned by the particular context. It will not include objects owned by the global context.
+   * Use DefaultBowl to access the global context.
+   *
+   * @return Bowl The Bowl that should be used during execution.
+   */
+  public Bowl getExecutionBowl() {
+    return executionBowl;
+  }
+
+  /**
+   * Sets the Bowl for the management context. This Bowl should be used for write operations.
+   *
+   */
+  public void setExecutionBowl( Bowl bowl ) {
+    this.executionBowl = Objects.requireNonNull( bowl );
     forceRefreshTree();
   }
 

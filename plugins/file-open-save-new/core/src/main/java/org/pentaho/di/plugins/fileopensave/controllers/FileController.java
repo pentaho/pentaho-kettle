@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,40 +23,40 @@
 package org.pentaho.di.plugins.fileopensave.controllers;
 
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.Utils;
-
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
+import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
-import org.pentaho.di.plugins.fileopensave.dragdrop.Element;
-import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
-import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
-import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
-import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
-import org.pentaho.di.plugins.fileopensave.util.Util;
-import org.pentaho.di.ui.core.FileDialogOperation.FileLoadListener;
-import org.pentaho.di.ui.core.FileDialogOperation.FileLookupInfo;
-import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Result;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
-import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
-import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
-import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
-import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
+import org.pentaho.di.plugins.fileopensave.dragdrop.Element;
+import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
+import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
+import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
+import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
+import org.pentaho.di.plugins.fileopensave.util.Util;
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
+import org.pentaho.di.ui.core.FileDialogOperation.FileLoadListener;
+import org.pentaho.di.ui.core.FileDialogOperation.FileLookupInfo;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.function.Predicate;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -67,17 +67,21 @@ import java.util.stream.Collectors;
 public class FileController {
 
   protected final FileCache fileCache;
+  private final Bowl bowl;
   private final ProviderService providerService;
   private VariableSpace space = Variables.getADefaultVariableSpace();
 
   private final Optional<FileLoadListener> fileListener;
 
-  public FileController( FileCache fileCache, ProviderService providerService ) {
+  public FileController( Bowl bowl, FileCache fileCache, ProviderService providerService ) {
+    this.bowl = bowl;
     this.fileCache = fileCache;
     this.providerService = providerService;
     this.fileListener = Optional.empty();
   }
-  public FileController( FileCache fileCache, ProviderService providerService, Optional<FileLoadListener> fileListener ) {
+
+  public FileController( Bowl bowl, FileCache fileCache, ProviderService providerService, Optional<FileLoadListener> fileListener ) {
+    this.bowl = bowl;
     this.fileCache = fileCache;
     this.providerService = providerService;
     this.fileListener = fileListener;
@@ -113,13 +117,13 @@ public class FileController {
     if ( filters.contains( ProviderFilterType.ALL_PROVIDERS.toString() ) ) {
       for ( FileProvider fileProvider : providerService.get() ) {
         if ( fileProvider.isAvailable() ) {
-          trees.add( fileProvider.getTree( connectionTypes ) );
+          trees.add( fileProvider.getTree( bowl, connectionTypes ) );
         }
       }
     } else {
       for ( FileProvider fileProvider : providerService.get() ) {
         if ( fileProvider.isAvailable() && filters.contains( fileProvider.getType() ) ) {
-          trees.add( fileProvider.getTree( connectionTypes ) );
+          trees.add( fileProvider.getTree( bowl, connectionTypes ) );
         }
       }
     }
@@ -137,7 +141,7 @@ public class FileController {
             || org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( f.getName(), filters ) )
           .collect( Collectors.toList() );
       } else {
-        files = fileProvider.getFiles( file, filters, space );
+        files = fileProvider.getFiles( bowl, file, filters, space );
         fileCache.setFiles( file, files );
       }
 
@@ -153,7 +157,7 @@ public class FileController {
     try {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
       if ( LocalFileProvider.TYPE.equals( fileProvider.getType() ) ) {
-        return fileProvider.searchFiles( file, filters, searchString, space );
+        return fileProvider.searchFiles( bowl, file, filters, searchString, space );
       } else {
         return getFiles( file, filters, true ).stream()
           .filter( f -> org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( f.getName(), searchString )
@@ -168,7 +172,7 @@ public class FileController {
   public Boolean fileExists( File dir, String path ) {
     try {
       FileProvider<File> fileProvider = providerService.get( dir.getProvider() );
-      return fileProvider.fileExists( dir, path, space );
+      return fileProvider.fileExists( bowl, dir, path, space );
     } catch ( InvalidFileProviderException | FileException e ) {
       return false;
     }
@@ -177,7 +181,7 @@ public class FileController {
   public Result getNewName( File destDir, String newPath ) {
     try {
       FileProvider<File> fileProvider = providerService.get( destDir.getProvider() );
-      return Result.success( "", fileProvider.getNewName( destDir, newPath, space ) );
+      return Result.success( "", fileProvider.getNewName( bowl, destDir, newPath, space ) );
     } catch ( InvalidFileProviderException | FileException e ) {
       return null;
     }
@@ -186,9 +190,9 @@ public class FileController {
   public Result delete( List<File> files ) {
     try {
       FileProvider<File> fileProvider = providerService.get( files.get( 0 ).getProvider() );
-      List<File> deletedFiles = fileProvider.delete( files, space );
+      List<File> deletedFiles = fileProvider.delete( bowl, files, space );
       for ( File file : deletedFiles ) {
-        fileCache.removeFile( fileProvider.getParent( file ), file );
+        fileCache.removeFile( fileProvider.getParent( bowl, file ), file );
       }
       return Result.success( "", deletedFiles );
     } catch ( InvalidFileProviderException | FileException e ) {
@@ -199,9 +203,9 @@ public class FileController {
   public Result add( File folder ) {
     try {
       FileProvider<File> fileProvider = providerService.get( folder.getProvider() );
-      File newFile = fileProvider.add( folder, space );
+      File newFile = fileProvider.add( bowl, folder, space );
       if ( newFile != null ) {
-        fileCache.addFile( fileProvider.getParent( folder ), newFile );
+        fileCache.addFile( fileProvider.getParent( bowl, folder ), newFile );
         return Result.success( "", newFile );
       } else {
         return Result.error( "Unable to create folder", folder );
@@ -216,9 +220,9 @@ public class FileController {
   public Result rename( File file, String newPath, OverwriteStatus overwriteStatus ) {
     try {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
-      File newFile = fileProvider.rename( file, newPath, overwriteStatus, space );
+      File newFile = fileProvider.rename( bowl, file, newPath, overwriteStatus, space );
       if ( newFile != null ) {
-        fileCache.move( fileProvider.getParent( file ), file, fileProvider.getParent( newFile ), newFile );
+        fileCache.move( fileProvider.getParent( bowl, file ), file, fileProvider.getParent( bowl, newFile ), newFile );
       }
       return Result.success( "", newFile );
     } catch ( InvalidFileProviderException | FileException e ) {
@@ -230,14 +234,15 @@ public class FileController {
     try {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
       File newFile;
-      if ( fileProvider.isSame( file, destDir ) ) {
-        newFile = fileProvider.move( file, newPath, overwriteStatus, space );
+      if ( fileProvider.isSame( bowl, file, destDir ) ) {
+        newFile = fileProvider.move( bowl, file, newPath, overwriteStatus, space );
       } else {
         newFile = moveBetweenProviders( file, destDir, newPath, overwriteStatus );
       }
       if ( newFile != null ) {
         FileProvider newFileProvider = providerService.get( newFile.getProvider() );
-        fileCache.move( fileProvider.getParent( file ), file, newFileProvider.getParent( newFile ), newFile );
+        fileCache.move( fileProvider.getParent( bowl, file ), file, newFileProvider.getParent( bowl, newFile ),
+                        newFile );
         return Result.success( "Move file complete", newFile );
       }
     } catch ( InvalidFileProviderException | FileException e ) {
@@ -249,7 +254,7 @@ public class FileController {
   public File getFile( File file ) {
     try {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
-      return fileProvider.getFile( file, space );
+      return fileProvider.getFile( bowl, file, space );
     } catch ( InvalidFileProviderException e ) {
       return null;
     }
@@ -258,7 +263,7 @@ public class FileController {
   public File getFile( Element element ) {
     try {
       FileProvider<File> fileProvider = providerService.get( element.getProvider() );
-      return (File) fileProvider.getFile( element.getPath(), element.getEntityType().isDirectory() );
+      return (File) fileProvider.getFile( bowl, element.getPath(), element.getEntityType().isDirectory() );
     } catch ( InvalidFileProviderException e ) {
       e.printStackTrace();
     }
@@ -269,14 +274,14 @@ public class FileController {
     try {
       FileProvider<File> fileProvider = providerService.get( file.getProvider() );
       File newFile;
-      if ( fileProvider.isSame( file, destDir ) ) {
-        newFile = fileProvider.copy( file, path, overwriteStatus, space );
+      if ( fileProvider.isSame( bowl, file, destDir ) ) {
+        newFile = fileProvider.copy( bowl, file, path, overwriteStatus, space );
       } else {
         newFile = copyFileBetweenProviders( file, destDir, path, overwriteStatus );
       }
       if ( newFile != null ) {
         FileProvider newFileProvider = providerService.get( newFile.getProvider() );
-        fileCache.addFile( newFileProvider.getParent( newFile ), newFile );
+        fileCache.addFile( newFileProvider.getParent( bowl, newFile ), newFile );
         return Result.success( "Copy file complete", newFile );
       } else if ( overwriteStatus.isSkip() || overwriteStatus.isNone() ) {
         return Result.error( "Duplicate file skipped by user", file );
@@ -294,7 +299,7 @@ public class FileController {
       FileProvider<File> fromFileProvider = providerService.get( file.getProvider() );
       FileProvider<File> toFileProvider = providerService.get( destDir.getProvider() );
       if ( !path.startsWith( ConnectionFileProvider.ROOT_URI ) ) {
-        path = toFileProvider.sanitizeName( destDir, path );
+        path = toFileProvider.sanitizeName( bowl, destDir, path );
       }
 
       return writeFile( fromFileProvider, toFileProvider, file, destDir, path, overwriteStatus );
@@ -331,7 +336,7 @@ public class FileController {
           if ( fileCache.containsKey( file ) ) {
             return fileCache.getFiles( file ).stream().filter( fileFilter ).anyMatch( notDir );
           } else {
-            return fileProvider.getFiles( file, filter, space ).stream().anyMatch( notDir );
+            return fileProvider.getFiles( bowl, file, filter, space ).stream().anyMatch( notDir );
           }
         } catch ( InvalidFileProviderException | FileException e ) {
           return false;
@@ -367,29 +372,30 @@ public class FileController {
                               File destDir, String path, OverwriteStatus overwriteStatus, VariableSpace variables )
     throws FileException, KettleFileException {
     //Even if we do not have a duplicate we have to make this call to reset the mode, if not apply to all
-    Element toFileElement = new Element( destDir ); //The folder gives us the additional values we need like domain
+    Element toFileElement = new Element( bowl, destDir ); //The folder gives us the additional values we need like domain
     toFileElement.setPath( path ); //Then we override the path name and convert it back to a File
     toFileElement.setName( Util.getName( path ) );
     File toFile = toFileElement.convertToFile( variables ); //We now have a File object for the destination...so far
 
-    overwriteStatus.promptOverwriteIfNecessary( toFileProvider.fileExists( destDir, path, variables ),
+    overwriteStatus.promptOverwriteIfNecessary( toFileProvider.fileExists( bowl, destDir, path, variables ),
       toFile.getPath(), "directory" );
     if ( overwriteStatus.isCancel() || overwriteStatus.isSkip() ) {
       return null;
     }
     File toDirectory = null;
     if ( overwriteStatus.isRename() ) {
-      File parentFolder = toFileProvider.createDirectory( destDir.getParent(), toFileProvider.getParent(destDir),
+      File parentFolder = toFileProvider.createDirectory( bowl, destDir.getParent(),
+                                                          toFileProvider.getParent( bowl, destDir ),
         destDir.getName() );
       String newDestination = (String) getNewName( parentFolder, toFile.getPath() ).getData();
-      toDirectory = toFileProvider.createDirectory( destDir.getPath(), destDir, Util.getName( newDestination ) );
+      toDirectory = toFileProvider.createDirectory( bowl, destDir.getPath(), destDir, Util.getName( newDestination ) );
     } else {
       //Only creates directory if it does not already exist
-      toDirectory = toFileProvider.createDirectory( destDir.getPath(), destDir, fromFile.getName() );
+      toDirectory = toFileProvider.createDirectory( bowl, destDir.getPath(), destDir, fromFile.getName() );
     }
 
     // Now copy all files in the folder
-    for ( File child : fromFileProvider.getFiles( fromFile, null, space ) ) {
+    for ( File child : fromFileProvider.getFiles( bowl, fromFile, null, space ) ) {
       //This line should work for both folders and files
       File writtenFile = writeFile( fromFileProvider, toFileProvider, child, toDirectory,
         toDirectory.getPath() + "/" + child.getName(), overwriteStatus );
@@ -405,7 +411,7 @@ public class FileController {
                                File destDir, String path, OverwriteStatus overwriteStatus, VariableSpace variables )
     throws FileException, KettleFileException {
 
-    Element toFileElement = new Element( destDir ); //The folder gives us the additional values we need like domain
+    Element toFileElement = new Element( bowl, destDir ); //The folder gives us the additional values we need like domain
     toFileElement.setPath( path ); //Then we override the path name and convert it back to a File
     toFileElement.setName( Util.getName( path ) );
     toFileElement.setEntityType( fromFile.getEntityType().isDirectory() ? destDir.getEntityType() :
@@ -413,7 +419,7 @@ public class FileController {
     File toFile = toFileElement.convertToFile( variables );
     //Even if we do not have a duplicate we have to make this call to reset the mode, if not apply to all
     overwriteStatus.promptOverwriteIfNecessary(
-      toFileProvider.fileExists( destDir, toFile.getPath(), new Variables() ), toFile.getPath(), "file" );
+      toFileProvider.fileExists( bowl, destDir, toFile.getPath(), new Variables() ), toFile.getPath(), "file" );
     if ( overwriteStatus.isCancel() || overwriteStatus.isSkip() ) {
       return null;
     }
@@ -424,7 +430,7 @@ public class FileController {
       toFile = toFileElement.convertToFile( variables );
     }
 
-    try ( InputStream inputStream = fromFileProvider.readFile( fromFile, space ) ) {
+    try ( InputStream inputStream = fromFileProvider.readFile( bowl, fromFile, space ) ) {
       String toFilePath = toFile.getPath();
       //We strip off the extensions on repository files for some reason
       if ( toFile.getEntityType() == EntityType.REPOSITORY_FILE ) {
@@ -434,7 +440,7 @@ public class FileController {
           toFilePath += ".kjb";
         }
       }
-      return toFileProvider.writeFile( inputStream, destDir, toFilePath, overwriteStatus, space );
+      return toFileProvider.writeFile( bowl, inputStream, destDir, toFilePath, overwriteStatus, space );
     } catch ( IOException e ) {
       return null;
     }
@@ -450,12 +456,12 @@ public class FileController {
 
   public File getParent( Directory directory ) throws InvalidFileProviderException {
     FileProvider fileProvider = providerService.get( directory.getProvider() );
-    return fileProvider.getParent( directory );
+    return fileProvider.getParent( bowl, directory );
   }
 
   @SuppressWarnings( "squid:S3740" )
   public File getParent( File file ) throws InvalidFileProviderException {
     FileProvider fileProvider = providerService.get( file.getProvider() );
-    return fileProvider.getParent( file );
+    return fileProvider.getParent( bowl, file );
   }
 }

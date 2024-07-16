@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,15 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.recents;
 
-import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
-import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
@@ -43,8 +44,8 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Supplier;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class RecentFileProvider extends BaseFileProvider<RecentFile> {
@@ -70,7 +71,8 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     return true;
   }
 
-  @Override public Tree getTree() {
+  @Override
+  public Tree getTree( Bowl bowl ) {
     Tree recentTree;
 
     PropsUI propsUI = getPropsUI();
@@ -98,65 +100,84 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     return recentTree;
   }
 
-  @Override public List<RecentFile> getFiles( RecentFile file, String filters, VariableSpace space ) throws FileException {
+  @Override
+  public List<RecentFile> getFiles( Bowl bowl, RecentFile file, String filters, VariableSpace space )
+    throws FileException {
     return Collections.emptyList();
   }
 
-  @Override public List<RecentFile> delete( List<RecentFile> files, VariableSpace space ) throws FileException {
+  @Override
+  public List<RecentFile> delete( Bowl bowl, List<RecentFile> files, VariableSpace space ) throws FileException {
     return Collections.emptyList();
   }
 
-  @Override public RecentFile add( RecentFile folder, VariableSpace space ) throws FileException {
+  @Override
+  public RecentFile add( Bowl bowl, RecentFile folder, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile getFile( RecentFile file, VariableSpace space ) {
+  @Override
+  public RecentFile getFile( Bowl bowl, RecentFile file, VariableSpace space ) {
     return null;
   }
 
-  @Override public boolean fileExists( RecentFile dir, String path, VariableSpace space ) throws FileException {
+  @Override
+  public boolean fileExists( Bowl bowl, RecentFile dir, String path, VariableSpace space ) throws FileException {
     return false;
   }
 
-  @Override public String getNewName( RecentFile destDir, String newPath, VariableSpace space ) throws FileException {
+  @Override
+  public String getNewName( Bowl bowl, RecentFile destDir, String newPath, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public boolean isSame( File file1, File file2 ) {
+  @Override
+  public boolean isSame( Bowl bowl, File file1, File file2 ) {
     return false;
   }
 
-  @Override public RecentFile rename( RecentFile file, String newPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
+  @Override
+  public RecentFile rename( Bowl bowl, RecentFile file, String newPath, OverwriteStatus overwriteStatus,
+                            VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile copy( RecentFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
+  @Override
+  public RecentFile copy( Bowl bowl, RecentFile file, String toPath, OverwriteStatus overwriteStatus,
+                          VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile move( RecentFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
+  @Override
+  public RecentFile move( Bowl bowl, RecentFile file, String toPath, OverwriteStatus overwriteStatus,
+                          VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public InputStream readFile( RecentFile file, VariableSpace space ) throws FileException {
+  @Override
+  public InputStream readFile( Bowl bowl, RecentFile file, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public RecentFile writeFile( InputStream inputStream, RecentFile destDir, String path,
-                                         OverwriteStatus overwriteStatus, VariableSpace space )
+  @Override
+  public RecentFile writeFile( Bowl bowl, InputStream inputStream, RecentFile destDir, String path,
+                               OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
     return null;
   }
 
-  @Override public RecentFile getParent( RecentFile file ) {
+  @Override
+  public RecentFile getParent( Bowl bowl, RecentFile file ) {
     return null;
   }
 
-  @Override public void clearProviderCache() {
+  @Override
+  public void clearProviderCache() {
     // Not cached
   }
 
-  @Override public RecentFile createDirectory( String parentPath, RecentFile file, String newDirectoryName ) {
+  @Override
+  public RecentFile createDirectory( Bowl bowl, String parentPath, RecentFile file, String newDirectoryName ) {
     return null;
   }
 

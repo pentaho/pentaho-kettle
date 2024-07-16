@@ -88,6 +88,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.TypedListener;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.exception.KettleException;
@@ -206,7 +207,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private String provider;
   private String providerFilter;
   private String command = FileDialogOperation.OPEN;
-  private FileDialogOperation fileDialogOperation = new FileDialogOperation( command );
+  private FileDialogOperation fileDialogOperation;
 
   private Text txtFileName;
   private LogChannelInterface log;
@@ -299,10 +300,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   Label noRecentFilesLabel = null;
 
+  private Bowl bowl;
   private FileController fileController;
 
-  public FileOpenSaveDialog( Shell parentShell, int width, int height, LogChannelInterface logger ) {
+  public FileOpenSaveDialog( Bowl bowl, Shell parentShell, int width, int height, LogChannelInterface logger ) {
     super( parentShell );
+    this.bowl = bowl;
     this.log = logger;
     this.width = width;
     this.height = height;
@@ -323,7 +326,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     this.fileDialogOperation = fileDialogOperation;
     command = fileDialogOperation.getCommand();
     this.fileController =
-        new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.get(), fileDialogOperation.getFileLoadListener() );
+        new FileController( bowl, FileCacheService.INSTANCE.get(), ProviderServiceService.get(),
+                            fileDialogOperation.getFileLoadListener() );
 
     shellTitle = BaseMessages.getString( PKG, "FileOpenSaveDialog.dialog." + command + ".title" );
 
@@ -545,7 +549,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( targetPathArray == null ) {
           return;
         }
-        Tree tree = fileProvider.getTree();
+        Tree tree = fileProvider.getTree( bowl );
         TreeItem[] treeItems = treeViewer.getTree().getItems();
         Tree selectedTree = null;
         for ( TreeItem currentTreeItem : treeItems ) {
@@ -1246,12 +1250,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     treeViewer = new TreeViewer( sashForm, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI );
     PropsUI.getInstance().setLook( treeViewer.getTree() );
     // Add drag/drop support
-    Transfer[] dropTransfers = new Transfer[] { ElementTransfer.getInstance(), FileTransfer.getInstance() };
-    Transfer[] dragTransfers = new Transfer[] { ElementTransfer.getInstance() };
+    Transfer[] dropTransfers = new Transfer[] { ElementTransfer.getInstance( bowl ), FileTransfer.getInstance() };
+    Transfer[] dragTransfers = new Transfer[] { ElementTransfer.getInstance( bowl ) };
     int ops = DND.DROP_COPY | DND.DROP_MOVE;
 
-    treeViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( treeViewer, this, log ) );
-    treeViewer.addDropSupport( ops, dropTransfers, new ElementTreeDropAdapter( treeViewer, log ) );
+    treeViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( bowl, treeViewer, this, log ) );
+    treeViewer.addDropSupport( ops, dropTransfers, new ElementTreeDropAdapter( bowl, treeViewer, log ) );
 
     stackLayout = new StackLayout();
     recentComposite = new Composite( sashForm, SWT.BORDER );
@@ -1324,7 +1328,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     fileTableViewer = new TableViewer( recentComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION );
 
     // Add drag/drop support
-    fileTableViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( fileTableViewer, this, log ) );
+    fileTableViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( bowl, fileTableViewer, this, log ) );
 
     PropsUI.getInstance().setLook( fileTableViewer.getTable() );
     fileTableViewer.getTable().setHeaderVisible( true );
@@ -1966,7 +1970,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     if ( isSaveState() ) {
       path = ( f instanceof Directory ) ? f.getPath() : f.getParent();
       try {
-        File parentFile = ProviderServiceService.get().get( provider ).getParent( f );
+        File parentFile = ProviderServiceService.get().get( provider ).getParent( bowl, f );
         if ( null != parentFile ) {
           parentPath = parentFile.getParent();
         } else {
@@ -2105,7 +2109,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
 
       if ( fileProvider != null ) {
-        File file = fileProvider.createDirectory( parentPathOfSelection, (File) selection, newFolderName );
+        File file = fileProvider.createDirectory( bowl, parentPathOfSelection, (File) selection, newFolderName );
         if ( file == null ) {
           Listener cancel = event -> { /* do nothing close dialog */ };
           Map<String, Listener> listenerMap = new LinkedHashMap<>();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,17 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.local;
 
-import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
-import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
-import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileTypeException;
+import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
+import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalTree;
@@ -40,18 +41,18 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitor;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -87,15 +88,17 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     return TYPE;
   }
 
-  @Override public Tree getTree() {
-    return getTree( new ArrayList<>() );
+  @Override
+  public Tree getTree( Bowl bowl ) {
+    return getTree( bowl, new ArrayList<>() );
   }
 
   /**
    * @param connectionTypes
    * @return
    */
-  @Override public Tree getTree( List<String> connectionTypes ) {
+  @Override
+  public Tree getTree( Bowl bowl, List<String> connectionTypes ) {
     LocalTree localTree = new LocalTree( NAME );
     List<LocalFile> rootFiles = new ArrayList<>();
     ArrayList<Path> paths = new ArrayList<>();
@@ -120,13 +123,15 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     return localTree;
   }
 
-  @Override public List<LocalFile> getFiles( LocalFile file, String filters, VariableSpace space )
+  @Override
+  public List<LocalFile> getFiles( Bowl bowl, LocalFile file, String filters, VariableSpace space )
     throws FileException {
     return getFiles( file, filters );
   }
 
   @Override
-  public List<LocalFile> searchFiles( LocalFile file, String filters, String searchString, VariableSpace space ) {
+  public List<LocalFile> searchFiles( Bowl bowl, LocalFile file, String filters, String searchString,
+                                      VariableSpace space ) {
 
     final List<LocalFile> files = new ArrayList<>();
     FileVisitor<Path> visitor = new FileVisitor<Path>() {
@@ -231,7 +236,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @return
    */
   @Override
-  public List<LocalFile> delete( List<LocalFile> files, VariableSpace space ) {
+  public List<LocalFile> delete( Bowl bowl, List<LocalFile> files, VariableSpace space ) {
     List<LocalFile> deletedFiles = new ArrayList<>();
     for ( LocalFile file : files ) {
       try {
@@ -267,7 +272,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @return
    */
   @Override
-  public LocalFile add( LocalFile folder, VariableSpace space ) throws FileException {
+  public LocalFile add( Bowl bowl, LocalFile folder, VariableSpace space ) throws FileException {
     Path folderPath = Paths.get( folder.getPath() );
     if ( folderPath.toFile().exists() ) {
       throw new FileExistsException();
@@ -297,8 +302,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileException
    */
   @Override
-  public LocalFile rename( LocalFile file, String newPath, OverwriteStatus overwriteStatus, VariableSpace space )
-    throws FileException {
+  public LocalFile rename( Bowl bowl, LocalFile file, String newPath, OverwriteStatus overwriteStatus,
+                           VariableSpace space ) throws FileException {
     return doMove( file.getPath(), newPath, overwriteStatus, space );
   }
 
@@ -310,7 +315,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileException
    */
   @Override
-  public LocalFile move( LocalFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
+  public LocalFile move( Bowl bowl, LocalFile file, String toPath, OverwriteStatus overwriteStatus,
+                         VariableSpace space ) throws FileException {
     return doMove( file.getPath(), toPath, overwriteStatus, space );
   }
 
@@ -351,14 +357,14 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileException
    */
   @Override
-  public LocalFile copy( LocalFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space )
-    throws FileException {
+  public LocalFile copy( Bowl bowl, LocalFile file, String toPath, OverwriteStatus overwriteStatus,
+                         VariableSpace space ) throws FileException {
     try {
       Path newPath = Paths.get( toPath );
       if ( file instanceof Directory ) {
-        Files.walkFileTree( Paths.get( file.getPath() ), new LocalFileVisitor( file, toPath, overwriteStatus ) );
+        Files.walkFileTree( Paths.get( file.getPath() ), new LocalFileVisitor( bowl, file, toPath, overwriteStatus ) );
       } else {
-        newPath = singleFileCopy( Paths.get( file.getPath() ), Paths.get( toPath ), overwriteStatus );
+        newPath = singleFileCopy( bowl, Paths.get( file.getPath() ), Paths.get( toPath ), overwriteStatus );
         if ( newPath == null ) {
           // If here it is likely the user hit cancel or skip
           return null;
@@ -376,7 +382,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     }
   }
 
-  private Path singleFileCopy( Path source, Path destination, OverwriteStatus overwriteStatus ) {
+  private Path singleFileCopy( Bowl bowl, Path source, Path destination, OverwriteStatus overwriteStatus ) {
     try {
       StandardCopyOption sco = null;
       overwriteStatus.promptOverwriteIfNecessary( destination.toFile().exists(), destination.toString(), "file" );
@@ -387,7 +393,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       } else if ( overwriteStatus.isRename() ) {
         LocalFile parentDir =
           LocalFile.create( destination.getParent().getParent().toString(), destination.getParent() );
-        destination = Paths.get( getNewName( parentDir, destination.toString(), new Variables() ) );
+        destination = Paths.get( getNewName( bowl, parentDir, destination.toString(), new Variables() ) );
       }
       return sco == null ? Files.copy( source, destination ) : Files.copy( source, destination, sco );
     } catch ( IOException e ) {
@@ -401,7 +407,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @param space
    * @return
    */
-  @Override public boolean fileExists( LocalFile dir, String path, VariableSpace space ) {
+  @Override
+  public boolean fileExists( Bowl bowl, LocalFile dir, String path, VariableSpace space ) {
     return Paths.get( path ).toFile().exists();
   }
 
@@ -410,7 +417,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @return
    */
   @Override
-  public InputStream readFile( LocalFile file, VariableSpace space ) {
+  public InputStream readFile( Bowl bowl, LocalFile file, VariableSpace space ) {
     try {
       return new BufferedInputStream( new FileInputStream( new File( file.getPath() ) ) );
     } catch ( FileNotFoundException e ) {
@@ -428,9 +435,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @throws FileAlreadyExistsException
    */
   @Override
-  public LocalFile writeFile( InputStream inputStream, LocalFile destDir, String path, OverwriteStatus overwriteStatus,
-                              VariableSpace space )
-    throws FileException {
+  public LocalFile writeFile( Bowl bowl, InputStream inputStream, LocalFile destDir, String path,
+                              OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
     try {
       Files.copy( inputStream, Paths.get( path ), StandardCopyOption.REPLACE_EXISTING );
       return LocalFile.create( destDir.getPath(), Paths.get( path ) );
@@ -447,7 +453,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @return
    */
   @Override
-  public boolean isSame( org.pentaho.di.plugins.fileopensave.api.providers.File file1,
+  public boolean isSame( Bowl bowl, org.pentaho.di.plugins.fileopensave.api.providers.File file1,
                          org.pentaho.di.plugins.fileopensave.api.providers.File file2 ) {
     return file1.getProvider().equals( file2.getProvider() );
   }
@@ -458,7 +464,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @return
    */
   @Override
-  public String getNewName( LocalFile destDir, String newPath, VariableSpace space ) {
+  public String getNewName( Bowl bowl, LocalFile destDir, String newPath, VariableSpace space ) {
     String extension = Utils.getExtension( newPath );
     String parent = Utils.getParent( newPath, File.separator );
     String name = Utils.getName( newPath, File.separator ).replace( "." + extension, "" );
@@ -475,7 +481,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
     return testName;
   }
 
-  @Override public LocalFile getParent( LocalFile file ) {
+  @Override
+  public LocalFile getParent( Bowl bowl, LocalFile file ) {
     for( Path path : FileSystems.getDefault().getRootDirectories() ){
       if( file.getParent() == null
               || path.toString().equals( file.getParent() )
@@ -491,7 +498,8 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   }
 
   //Should do nothing if the directory already exists, or create any directories that do not exist
-  @Override public LocalFile createDirectory( String parentPath, LocalFile file, String newFolderName )
+  @Override
+  public LocalFile createDirectory( Bowl bowl, String parentPath, LocalFile file, String newFolderName )
     throws FileException {
     LocalDirectory newLocalDirectory;
     if ( file instanceof Directory ) {
@@ -501,14 +509,15 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       throw new InvalidFileTypeException( "Illegal attempt to create directory under a file" );
     }
     try {
-      return this.add( newLocalDirectory, null );
+      return this.add( bowl, newLocalDirectory, null );
     } catch ( FileExistsException e ) {
       //The file already exists.  Suppress the error
     }
     return newLocalDirectory;
   }
 
-  @Override public LocalFile getFile( LocalFile file, VariableSpace space ) {
+  @Override
+  public LocalFile getFile( Bowl bowl, LocalFile file, VariableSpace space ) {
      Paths.get( file.getPath() );
     return null;
   }
@@ -516,9 +525,11 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   public class LocalFileVisitor extends SimpleFileVisitor<Path> {
     private final OverwriteStatus overwriteStatus;
     private Map<Path, Path> folderTransversedMap = new HashMap<>();
+    private Bowl bowl;
 
-    public LocalFileVisitor ( LocalFile originalSourceFile, String toPath, OverwriteStatus overwriteStatus ) {
+    public LocalFileVisitor ( Bowl bowl, LocalFile originalSourceFile, String toPath, OverwriteStatus overwriteStatus ) {
       super();
+      this.bowl = bowl;
       this.overwriteStatus = overwriteStatus;
       folderTransversedMap.put( Paths.get( originalSourceFile.getPath() ), Paths.get( toPath ) ); //seed the map
     }
@@ -539,7 +550,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       }
       if ( overwriteStatus.isRename() ) {
         LocalFile parentDir = LocalFile.create( destination.getParent().toString(), destination );
-        Path newDestination = Paths.get( getNewName( parentDir, destination.toString(), new Variables() ) );
+        Path newDestination = Paths.get( getNewName( bowl, parentDir, destination.toString(), new Variables() ) );
         newDestination.toFile().mkdirs();
         folderTransversedMap.put( source, newDestination ); //We changed the destination folder, update the map
         return FileVisitResult.CONTINUE;
@@ -555,7 +566,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
       Objects.requireNonNull( attrs );
       overwriteStatus.setCurrentFileInProgressDialog( source.toString() );
 
-      Path nPath = singleFileCopy( source, convertSourceToDestination( source ), overwriteStatus );
+      Path nPath = singleFileCopy( bowl, source, convertSourceToDestination( source ), overwriteStatus );
       if ( nPath == null ) {
         if ( overwriteStatus.isCancel() ) {
           return FileVisitResult.TERMINATE;

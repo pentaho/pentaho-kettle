@@ -15,6 +15,7 @@
 
 package org.pentaho.di.ui.core;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 
@@ -80,6 +81,7 @@ public class FileDialogOperation {
   public static final String JOB = "job";
   public static final String PROVIDER_REPO = "repository";
 
+  private Bowl bowl;
   private Repository repository;
   private String command;
   private String filter;
@@ -102,13 +104,19 @@ public class FileDialogOperation {
   private boolean showOnlyFolders = false;
   private Predicate<String> openCondition = any -> true;
 
-  public FileDialogOperation( String command ) {
+  public FileDialogOperation( Bowl bowl, String command ) {
+    this.bowl = bowl;
     this.command = command;
   }
 
-  public FileDialogOperation( String command, String origin ) {
+  public FileDialogOperation( Bowl bowl, String command, String origin ) {
+    this.bowl = bowl;
     this.command = command;
     this.origin = origin;
+  }
+
+  public Bowl getBowl() {
+    return bowl;
   }
 
   public String getCommand() {
