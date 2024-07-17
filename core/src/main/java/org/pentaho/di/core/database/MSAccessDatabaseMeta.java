@@ -38,7 +38,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_ODBC };
+    return new int[] {};
   }
 
   @Override

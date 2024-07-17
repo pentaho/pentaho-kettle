@@ -40,25 +40,20 @@ import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 public class VerticaDatabaseMetaTest {
 
-  private VerticaDatabaseMeta nativeMeta, odbcMeta;
+  private VerticaDatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() {
     nativeMeta = new VerticaDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new VerticaDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( 5433, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( 5433, odbcMeta.getDefaultDatabasePort() ); // Inconsistent with all other DatabaseMetas
     assertEquals( "com.vertica.Driver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertEquals( "jdbc:vertica://FOO:BAR/WIBBLE", nativeMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
     assertEquals( "jdbc:vertica://FOO:/WIBBLE", nativeMeta.getURL( "FOO", "", "WIBBLE" ) ); // Believe this is a bug - must have the port. Inconsistent with others
     assertFalse( nativeMeta.isFetchSizeSupported() );

@@ -33,7 +33,7 @@ package org.pentaho.di.core.database;
 public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**

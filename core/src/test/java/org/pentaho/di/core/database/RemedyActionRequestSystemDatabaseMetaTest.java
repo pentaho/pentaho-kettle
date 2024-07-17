@@ -34,12 +34,11 @@ public class RemedyActionRequestSystemDatabaseMetaTest {
   @Before
   public void setupBefore() {
     odbcMeta = new RemedyActionRequestSystemDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_JNDI },
         odbcMeta.getAccessTypeList() );
     assertEquals( 1, odbcMeta.getNotFoundTK( true ) );
     assertEquals( 0, odbcMeta.getNotFoundTK( false ) );

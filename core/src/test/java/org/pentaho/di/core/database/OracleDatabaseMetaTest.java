@@ -54,15 +54,13 @@ import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 public class OracleDatabaseMetaTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
-  private OracleDatabaseMeta nativeMeta, odbcMeta, ociMeta;
+  private OracleDatabaseMeta nativeMeta, ociMeta;
 
   @Before
   public void setupOnce() throws Exception {
     nativeMeta = new OracleDatabaseMeta();
-    odbcMeta = new OracleDatabaseMeta();
     ociMeta = new OracleDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     ociMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_OCI );
     //nativeMeta.setSupportsTimestampDataType( true );
     KettleClientEnvironment.init();
@@ -74,12 +72,9 @@ public class OracleDatabaseMetaTest {
     // according to the features of the DB as we know them
 
     assertEquals( 1521, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertFalse( nativeMeta.supportsAutoInc() );
     assertFalse( nativeMeta.needsToLockAllTables() );
     assertEquals( "oracle.jdbc.driver.OracleDriver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL( null, null, "FOO" ) );
     assertEquals( "jdbc:oracle:thin:@FOO:1024:BAR", nativeMeta.getURL( "FOO", "1024", "BAR" ) );
     assertEquals( "jdbc:oracle:thin:@FOO:11:BAR", nativeMeta.getURL( "FOO", "11", ":BAR" ) );
     assertEquals( "jdbc:oracle:thin:@BAR:65534/FOO", nativeMeta.getURL( "BAR", "65534", "/FOO" ) );

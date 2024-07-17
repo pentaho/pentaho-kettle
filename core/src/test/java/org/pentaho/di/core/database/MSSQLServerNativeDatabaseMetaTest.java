@@ -34,12 +34,8 @@ public class MSSQLServerNativeDatabaseMetaTest extends MSSQLServerDatabaseMetaTe
   public void testMSSQLOverrides() throws Exception {
     MSSQLServerNativeDatabaseMeta localNativeMeta = new MSSQLServerNativeDatabaseMeta();
     localNativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    MSSQLServerNativeDatabaseMeta localOdbcMeta = new MSSQLServerNativeDatabaseMeta();
-    localOdbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
 
     assertEquals( "com.microsoft.sqlserver.jdbc.SQLServerDriver", localNativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", localOdbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:WIBBLE", localOdbcMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
 
     assertEquals( "jdbc:sqlserver://FOO:1234;databaseName=WIBBLE;integratedSecurity=false",
         localNativeMeta.getURL( "FOO", "1234", "WIBBLE" ) );

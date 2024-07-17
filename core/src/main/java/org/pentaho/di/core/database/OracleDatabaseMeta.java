@@ -44,7 +44,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_OCI,
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_OCI,
       DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
@@ -105,18 +105,12 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
-    } else {
-      return "oracle.jdbc.driver.OracleDriver";
-    }
+    return "oracle.jdbc.driver.OracleDriver";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) throws KettleDatabaseException {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "jdbc:odbc:" + databaseName;
-    } else if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
       // the database name can be a SID (starting with :) or a Service (starting with /)
       // <host>:<port>/<service>
       // <host>:<port>:<SID>

@@ -36,7 +36,7 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -60,21 +60,13 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
-    } else {
-      return "com.informix.jdbc.IfxDriver";
-    }
+    return "com.informix.jdbc.IfxDriver";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "jdbc:odbc:" + databaseName;
-    } else {
-      return "jdbc:informix-sqli://"
-        + hostname + ":" + port + "/" + databaseName + ":INFORMIXSERVER=" + getServername() + ";DELIMIDENT=Y";
-    }
+    return "jdbc:informix-sqli://"
+      + hostname + ":" + port + "/" + databaseName + ":INFORMIXSERVER=" + getServername() + ";DELIMIDENT=Y";
   }
 
   /**

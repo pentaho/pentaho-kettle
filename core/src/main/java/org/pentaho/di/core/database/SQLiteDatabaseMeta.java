@@ -36,7 +36,7 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -52,21 +52,12 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      return "org.sqlite.JDBC";
-    } else {
-      return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
-    }
-
+    return "org.sqlite.JDBC";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      return "jdbc:sqlite:" + databaseName;
-    } else {
-      return "jdbc:odbc:" + databaseName;
-    }
+    return "jdbc:sqlite:" + databaseName;
   }
 
   /**
