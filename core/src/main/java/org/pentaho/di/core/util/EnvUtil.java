@@ -126,11 +126,7 @@ public class EnvUtil {
 
   public static void applyKettleProperties( Map<?, ?> kettleProperties, boolean override ) {
     Variables variables = new Variables();
-    for ( Map.Entry entry : kettleProperties.entrySet() ) {
-      String variable = (String) entry.getKey();
-      String value = variables.environmentSubstitute( (String) entry.getValue() );
-      variables.setVariable( variable, value );
-    }
+    kettleProperties.forEach( ( k, v ) -> variables.setVariable( (String) k, (String) v ) );
 
     Properties systemProperties = System.getProperties();
 
