@@ -51,12 +51,11 @@ public class MSAccessDatabaseMetaTest {
   @Before
   public void setupBefore() {
     odbcMeta = new MSAccessDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_ODBC },
+    assertArrayEquals( new int[] {},
         odbcMeta.getAccessTypeList() );
     assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertTrue( odbcMeta.supportsAutoInc() );
