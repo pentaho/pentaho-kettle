@@ -33,9 +33,11 @@ import org.apache.commons.vfs2.provider.FileNameParser;
 import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.commons.vfs2.provider.VfsComponentContext;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.vfs.KettleVFSFileSystemException;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.vfs2.FileName.SEPARATOR;
 import static org.apache.commons.vfs2.FileName.SEPARATOR_CHAR;
@@ -69,7 +71,7 @@ import static org.apache.commons.vfs2.provider.UriParser.TRANS_SEPARATOR;
  *   <li>"." path segments are removed</li>
  *   <li>".." path segments are validated and resolved</li>
  *   <li>a path with a trailing slash is recognized as a folder</li>
- *   <li>any percent-encoded characters in path segments which are not {@link #encodeCharacter(char)}  reserved} are
+ *   <li>any percent-encoded characters in path segments which are not {@link #encodeCharacter(char)} reserved} are
  *       decoded</li>
  * </ul>
  *
@@ -99,6 +101,12 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
    * The characters which are invalid for connection names.
    */
   public static final String CONNECTION_NAME_INVALID_CHARACTERS = INVALID_CHARACTERS + "%";
+
+  /**
+   * The pattern of invalid connection name characters.
+   */
+  public static final Pattern CONNECTION_NAME_INVALID_CHARACTERS_PATTERN = Pattern.compile(
+    "[" + Pattern.quote( CONNECTION_NAME_INVALID_CHARACTERS ) + "]" );
 
   // Overriding just to be able to add the custom doclet. Had to add `final` to quiet Sonar, for complaining about it.
 
@@ -160,7 +168,7 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
     }
 
     for ( char c : connectionName.toCharArray() ) {
-      if ( CONNECTION_NAME_INVALID_CHARACTERS.indexOf( c ) >= 0 ) {
+      if ( !isValidConnectionNameCharacter( c ) ) {
         throw new KettleVFSFileSystemException(
           "ConnectionFileNameParser.ConnectionNameInvalidCharacter",
           connectionName,
@@ -169,19 +177,25 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
     }
   }
 
-  public void validatePathSegment( @Nullable String pathSegment ) throws FileSystemException {
-    if ( StringUtils.isEmpty( pathSegment ) ) {
-      throw new KettleVFSFileSystemException( "ConnectionFileNameParser.PathSegmentEmpty" );
-    }
+  /**
+   * Determines if a given character is a valid in a connection name.
+   *
+   * @param c The character to test.
+   * @return {@code true} if the character is valid; {@code false}, otherwise.
+   */
+  public boolean isValidConnectionNameCharacter( char c ) {
+    return CONNECTION_NAME_INVALID_CHARACTERS.indexOf( c ) < 0;
+  }
 
-    for ( char c : pathSegment.toCharArray() ) {
-      if ( CONNECTION_NAME_INVALID_CHARACTERS.indexOf( c ) >= 0 ) {
-        throw new KettleVFSFileSystemException(
-          "ConnectionFileNameParser.PathSegmentInvalidCharacter",
-          pathSegment,
-          c );
-      }
-    }
+  /**
+   * Removes any invalid characters from a potential connection name.
+   *
+   * @param connectionName The potential connection name.
+   * @return A corresponding sanitized connection name.
+   */
+  public String sanitizeConnectionName( String connectionName ) {
+    return Const.NVL( connectionName, "" )
+      .replaceAll( "[" + Pattern.quote( CONNECTION_NAME_INVALID_CHARACTERS ) + "]", "" );
   }
 
   /**
@@ -241,9 +255,8 @@ public class ConnectionFileNameParser extends AbstractFileNameParser {
     // May be null/empty, in case pvfsUri = "pvfs://".
     @Nullable
     String connectionName = UriParser.extractFirstElement( name );
-
-    // A connection with a percent (as %25) would throw here.
     if ( StringUtils.isNotEmpty( connectionName )) {
+      // A connection with a percent (as %25) would throw here.
       validateConnectionName( connectionName );
     }
 

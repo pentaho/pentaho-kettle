@@ -5,14 +5,14 @@
 
   <groupId>org.pentaho.di.plugins</groupId>
   <artifactId>pdi-plugins</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.3.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Plugins</name>
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -21,6 +21,7 @@
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
     <maven-surefire-plugin.argLine> --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED </maven-surefire-plugin.argLine>
     <maven-failsafe-plugin.argLine> --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED </maven-failsafe-plugin.argLine>
+    <poi.version>5.2.5</poi.version>
   </properties>
 
   <profiles>
@@ -92,7 +93,6 @@
         <module>sap</module>
         <module>shapefilereader</module>
         <module>gpload</module>
-        <module>version-checker</module>
         <module>salesforce</module>
         <module>pur</module>
         <module>ms-access</module>

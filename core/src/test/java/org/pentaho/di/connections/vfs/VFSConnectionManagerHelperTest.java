@@ -23,11 +23,15 @@
 package org.pentaho.di.connections.vfs;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.connections.ConnectionProvider;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileName;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileNameUtils;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
@@ -38,9 +42,14 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -108,9 +117,14 @@ public class VFSConnectionManagerHelperTest {
 
     // ---
 
+    connectionManager = mock( ConnectionManager.class );
+
+    // ---
+
     vfsConnectionProvider = (VFSConnectionProvider<VFSConnectionDetails>) mock( VFSConnectionProvider.class );
     when( vfsConnectionProvider.getKey() ).thenReturn( TEST_CONNECTION_TYPE );
-    when( vfsConnectionProvider.getFileNameTransformer() ).thenReturn( vfsConnectionFileNameTransformer );
+    when( vfsConnectionProvider.getFileNameTransformer( connectionManager ) ).thenReturn(
+      vfsConnectionFileNameTransformer );
 
     // By default, provider testing is successful.
     when( vfsConnectionProvider.test( any( VFSConnectionDetails.class ) ) ).thenReturn( true );
@@ -125,7 +139,6 @@ public class VFSConnectionManagerHelperTest {
 
     memoryMetaStore = new MemoryMetaStore();
 
-    connectionManager = mock( ConnectionManager.class );
     doReturn( vfsConnectionProvider ).when( connectionManager ).getConnectionProvider( TEST_CONNECTION_TYPE );
     doReturn( bowl ).when( connectionManager ).getBowl();
 
@@ -139,14 +152,14 @@ public class VFSConnectionManagerHelperTest {
     when( connectionRootProviderFileObject.exists() ).thenReturn( true );
     when( connectionRootProviderFileObject.isFolder() ).thenReturn( true );
 
-    doAnswer( invocationOnMock -> getConnectionRootProviderUri() )
+    doAnswer( invocationOnMock -> getConnectionRootProviderFileName() )
       .when( vfsConnectionFileNameTransformer )
-      .toProviderUri( connectionRootFileName, vfsConnectionDetails );
+      .toProviderFileName( connectionRootFileName, vfsConnectionDetails );
 
     when( kettleVFS.getFileObject(
       argThat( uri -> {
         try {
-          return getConnectionRootProviderUri().equals( uri );
+          return getConnectionRootProviderFileName().getURI().equals( uri );
         } catch ( KettleException e ) {
           // Should not happen, but rethrowing JIC, to catch any testing bugs.
           throw new RuntimeException( e );
@@ -158,9 +171,186 @@ public class VFSConnectionManagerHelperTest {
   }
 
   // This method assumes that `getResolvedRootPath` is not being tested.
-  String getConnectionRootProviderUri() throws KettleException {
-    return TEST_CONNECTION_TYPE + "://" + vfsConnectionManagerHelper.getResolvedRootPath( vfsConnectionDetails );
+  FileName getConnectionRootProviderFileName() throws KettleException {
+    FileName fileName = mock( FileName.class );
+    doReturn( TEST_CONNECTION_TYPE + "://" + vfsConnectionManagerHelper.getResolvedRootPath( vfsConnectionDetails ) )
+      .when( fileName ).getURI();
+    return fileName;
   }
+
+  // region getProviders( manager )
+  @Test
+  public void testGetProvidersReturnsListOfCastedItemsFromManager() {
+    ConnectionProvider<? extends ConnectionDetails> provider1 =
+      (ConnectionProvider<? extends ConnectionDetails>) mock( VFSConnectionProvider.class );
+    ConnectionProvider<? extends ConnectionDetails> provider2 =
+      (ConnectionProvider<? extends ConnectionDetails>) mock( VFSConnectionProvider.class );
+
+    doReturn( Arrays.asList( provider1, provider2 ) )
+      .when( connectionManager )
+      .getProvidersByType( VFSConnectionProvider.class );
+
+    List<VFSConnectionProvider<VFSConnectionDetails>> providers =
+      vfsConnectionManagerHelper.getProviders( connectionManager );
+
+    assertNotNull( providers );
+    assertEquals( 2, providers.size() );
+    assertSame( provider1, providers.get( 0 ) );
+    assertSame( provider2, providers.get( 1 ) );
+  }
+  // endregion
+
+  // region getProvider( manager, key )
+  @Test
+  public void testGetProviderReturnsExistingCastedProviderFromManager() {
+    String provider1Key = "provider1Key";
+
+    ConnectionProvider<? extends ConnectionDetails> provider1 =
+      (ConnectionProvider<? extends ConnectionDetails>) mock( VFSConnectionProvider.class );
+
+    doReturn( provider1 ).when( connectionManager ).getConnectionProvider( provider1Key );
+
+    VFSConnectionProvider<VFSConnectionDetails> result =
+      vfsConnectionManagerHelper.getProvider( connectionManager, provider1Key );
+
+    assertSame( provider1, result );
+  }
+
+  @Test
+  public void testGetProviderReturnsNullForNonExistingProviderInManager() {
+    VFSConnectionProvider<VFSConnectionDetails> result =
+      vfsConnectionManagerHelper.getProvider( connectionManager, "missingProvider1" );
+
+    assertNull( result );
+  }
+  // endregion
+
+  // region getProvider( manager, details )
+  @Test
+  public void testGetProviderOfDetailsReturnsExistingCastedProviderFromManager() {
+    String provider1Key = "provider1Key";
+
+    VFSConnectionDetails details1 = mock( VFSConnectionDetails.class );
+    doReturn( provider1Key ).when( details1 ).getType();
+
+    ConnectionProvider<? extends ConnectionDetails> provider1 =
+      (ConnectionProvider<? extends ConnectionDetails>) mock( VFSConnectionProvider.class );
+
+    doReturn( provider1 ).when( connectionManager ).getConnectionProvider( provider1Key );
+
+    VFSConnectionProvider<VFSConnectionDetails> result =
+      vfsConnectionManagerHelper.getProvider( connectionManager, details1 );
+
+    assertSame( provider1, result );
+  }
+
+  @Test
+  public void testGetProviderOfDetailsReturnsNullForNonExistingProviderInManager() {
+    String provider1Key = "missingProvider1";
+
+    VFSConnectionDetails details1 = mock( VFSConnectionDetails.class );
+    doReturn( provider1Key ).when( details1 ).getType();
+
+    VFSConnectionProvider<VFSConnectionDetails> result =
+      vfsConnectionManagerHelper.getProvider( connectionManager, details1 );
+
+    assertNull( result );
+  }
+
+  @Test
+  public void testGetProviderOfDetailsReturnsNullWhenGivenNull() {
+    VFSConnectionProvider<VFSConnectionDetails> result =
+      vfsConnectionManagerHelper.getProvider( connectionManager, (VFSConnectionDetails) null );
+
+    assertNull( result );
+  }
+  // endregion
+
+  // region getExistingProvider( manager, key )
+  @Test
+  public void testGetExistingProviderReturnsExistingCastedProviderFromManager() throws KettleException {
+    String provider1Key = "provider1Key";
+
+    ConnectionProvider<? extends ConnectionDetails> provider1 =
+      (ConnectionProvider<? extends ConnectionDetails>) mock( VFSConnectionProvider.class );
+
+    doReturn( provider1 ).when( connectionManager ).getConnectionProvider( provider1Key );
+
+    VFSConnectionProvider<VFSConnectionDetails> result =
+      vfsConnectionManagerHelper.getExistingProvider( connectionManager, provider1Key );
+
+    assertSame( provider1, result );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testGetExistingProviderReturnsNullForNonExistingProviderInManager() throws KettleException {
+    vfsConnectionManagerHelper.getExistingProvider( connectionManager, "missingProvider1" );
+  }
+  // endregion
+
+  // region getExistingProvider( manager, details )
+  @Test
+  public void testGetExistingProviderOfDetailsReturnsExistingCastedProviderFromManager() throws KettleException {
+    String provider1Key = "provider1Key";
+
+    VFSConnectionDetails details1 = mock( VFSConnectionDetails.class );
+    doReturn( provider1Key ).when( details1 ).getType();
+
+    ConnectionProvider<? extends ConnectionDetails> provider1 =
+      (ConnectionProvider<? extends ConnectionDetails>) mock( VFSConnectionProvider.class );
+
+    doReturn( provider1 ).when( connectionManager ).getConnectionProvider( provider1Key );
+
+    VFSConnectionProvider<VFSConnectionDetails> result =
+      vfsConnectionManagerHelper.getExistingProvider( connectionManager, details1 );
+
+    assertSame( provider1, result );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testGetExistingProviderOfDetailsReturnsNullForNonExistingProviderInManager() throws KettleException {
+    String provider1Key = "missingProvider1";
+
+    VFSConnectionDetails details1 = mock( VFSConnectionDetails.class );
+    doReturn( provider1Key ).when( details1 ).getType();
+
+    vfsConnectionManagerHelper.getExistingProvider( connectionManager, details1 );
+  }
+  // endregion
+
+  // region getAllDetails( manager )
+  @Test
+  public void testGetAllDetailsReturnsAllDetailsFromAllVFSProvidersFromManager() {
+    ConnectionProvider<? extends ConnectionDetails> provider1 =
+      (ConnectionProvider<? extends ConnectionDetails>) mock( VFSConnectionProvider.class );
+    ConnectionProvider<? extends ConnectionDetails> provider2 =
+      (ConnectionProvider<? extends ConnectionDetails>) mock( VFSConnectionProvider.class );
+    ConnectionProvider<? extends ConnectionDetails> provider3 =
+      (ConnectionProvider<? extends ConnectionDetails>) mock( VFSConnectionProvider.class );
+
+    doReturn( Arrays.asList( provider1, provider2, provider3 ) )
+      .when( connectionManager )
+      .getProvidersByType( VFSConnectionProvider.class );
+
+    VFSConnectionDetails details1 = mock( VFSConnectionDetails.class );
+    VFSConnectionDetails details2 = mock( VFSConnectionDetails.class );
+    VFSConnectionDetails details3 = mock( VFSConnectionDetails.class );
+    VFSConnectionDetails details4 = mock( VFSConnectionDetails.class );
+
+    doReturn( Arrays.asList( details3, details4 ) ).when( provider1 ).getConnectionDetails( connectionManager );
+    doReturn( null ).when( provider2 ).getConnectionDetails( connectionManager );
+    doReturn( Arrays.asList( details1, details2 ) ).when( provider3 ).getConnectionDetails( connectionManager );
+
+    List<VFSConnectionDetails> allDetails = vfsConnectionManagerHelper.getAllDetails( connectionManager );
+
+    assertNotNull( allDetails );
+    assertEquals( 4, allDetails.size() );
+    assertSame( details3, allDetails.get( 0 ) );
+    assertSame( details4, allDetails.get( 1 ) );
+    assertSame( details1, allDetails.get( 2 ) );
+    assertSame( details2, allDetails.get( 3 ) );
+  }
+  // endregion
 
   // region getResolvedRootPath(..)
   void assertGetResolvedRootPath( String rootPath, String resolvedRootPath ) throws KettleException {
@@ -314,48 +504,56 @@ public class VFSConnectionManagerHelperTest {
   }
   // endregion
 
-  // region getConnectionRootProviderUri( . )
+  // region getConnectionRootProviderFileName( . )
   @Test
   public void testGetConnectionRootProviderUriReturnsCorrectUriWhenRootPath() throws KettleException {
-    assertEquals(
-      TEST_CONNECTION_TYPE + "://" + TEST_ROOT_PATH,
-      vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails ) );
+    FileName fileName = vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+
+    assertNotNull( fileName );
+    assertEquals( TEST_CONNECTION_TYPE + "://" + TEST_ROOT_PATH, fileName.getURI() );
   }
 
   @Test
-  public void testGetConnectionRootProviderUriIncludesNormalizedRootPath() throws KettleException {
+  public void testGetConnectionRootProviderFileNameIncludesNormalizedRootPath() throws KettleException {
 
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "./sub-folder/\\../other-sub-folder//" );
 
-    assertEquals(
-      TEST_CONNECTION_TYPE + "://" + "other-sub-folder",
-      vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails ) );
+    FileName fileName = vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+
+    assertNotNull( fileName );
+    assertEquals( TEST_CONNECTION_TYPE + "://" + "other-sub-folder", fileName.getURI() );
   }
 
   @Test( expected = KettleException.class )
-  public void testGetConnectionRootProviderUriThrowsWhenRootPathHasInvalidRelativeSegments() throws KettleException {
+  public void testGetConnectionRootProviderFileNameThrowsWhenRootPathHasInvalidRelativeSegments()
+    throws KettleException {
 
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "../other-connection" );
 
-    vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+    vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void testGetConnectionRootProviderUriThrowsWhenConnectionNameIsNull() throws KettleException {
+  public void testGetConnectionRootProviderFileNameThrowsWhenConnectionNameIsNull() throws KettleException {
 
     when( vfsConnectionDetails.getName() ).thenReturn( null );
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "root/path" );
 
-    vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+    vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void testGetConnectionRootProviderUriThrowsWhenConnectionNameIsEmpty() throws KettleException {
+  public void testGetConnectionRootProviderFileNameThrowsWhenConnectionNameIsEmpty() throws KettleException {
 
     when( vfsConnectionDetails.getName() ).thenReturn( "" );
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "root/path" );
 
-    vfsConnectionManagerHelper.getConnectionRootProviderUri( vfsConnectionFileNameTransformer, vfsConnectionDetails );
+    vfsConnectionManagerHelper
+      .getConnectionRootProviderFileName( vfsConnectionFileNameTransformer, vfsConnectionDetails );
   }
   // endregion
 
@@ -408,7 +606,7 @@ public class VFSConnectionManagerHelperTest {
   }
 
   @Test
-  public void testTestReturnsTrueWhenRootPathInvalidAndOptionsToRootPathIgnored() throws KettleException {
+  public void testTestReturnsTrueWhenRootPathInvalidAndOptionsToIgnoreRootPath() throws KettleException {
 
     when( vfsConnectionDetails.getRootPath() ).thenReturn( "../invalid" );
 
@@ -434,7 +632,7 @@ public class VFSConnectionManagerHelperTest {
 
     assertFalse( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
 
-    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderUri( any(), any() );
+    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderFileName( any(), any() );
 
     // ---
 
@@ -442,7 +640,7 @@ public class VFSConnectionManagerHelperTest {
 
     assertFalse( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
 
-    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderUri( any(), any() );
+    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderFileName( any(), any() );
   }
 
   @Test
@@ -454,7 +652,7 @@ public class VFSConnectionManagerHelperTest {
 
     assertTrue( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
 
-    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderUri( any(), any() );
+    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderFileName( any(), any() );
 
     // ---
 
@@ -462,11 +660,11 @@ public class VFSConnectionManagerHelperTest {
 
     assertTrue( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
 
-    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderUri( any(), any() );
+    verify( vfsConnectionManagerHelper, never() ).getConnectionRootProviderFileName( any(), any() );
   }
 
   @Test
-  public void testTestReturnsTrueWhenRootPathFileDoesNotExist() throws Exception {
+  public void testTestReturnsFalseWhenRootPathFileDoesNotExist() throws Exception {
 
     when( connectionRootProviderFileObject.exists() ).thenReturn( false );
 
@@ -474,9 +672,17 @@ public class VFSConnectionManagerHelperTest {
   }
 
   @Test
-  public void testTestReturnsTrueWhenRootPathFileExistsButIsNotAFolder() throws Exception {
+  public void testTestReturnsFalseWhenRootPathFileExistsButIsNotAFolder() throws Exception {
 
     when( connectionRootProviderFileObject.isFolder() ).thenReturn( false );
+
+    assertFalse( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
+  }
+
+  @Test
+  public void testTestReturnsFalseWhenRootPathFileExistsButCheckingIfFolderThrows() throws Exception {
+
+    when( connectionRootProviderFileObject.isFolder() ).thenThrow( FileSystemException.class );
 
     assertFalse( vfsConnectionManagerHelper.test( connectionManager, vfsConnectionDetails, getTestOptionsCheckRootPath() ) );
   }

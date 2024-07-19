@@ -29,7 +29,7 @@ import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
 @MetaStoreElementType(
-  name = "Test VFS Connection With Domain",
+  name = "Test VFS Connection With Domain And Not Buckets",
   description = "Defines the connection details for a test vfs connection" )
 public class TestConnectionWithDomainDetails extends BaseVFSConnectionDetails {
 
@@ -49,6 +49,10 @@ public class TestConnectionWithDomainDetails extends BaseVFSConnectionDetails {
   @Encrypted
   @MetaStoreAttribute
   private String password1;
+
+  @Override public boolean hasBuckets() {
+    return false;
+  }
 
   @Override public String getName() {
     return name;

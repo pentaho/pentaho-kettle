@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,11 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.provider.UriParser;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,5 +73,15 @@ public class VFSTree implements Tree<VFSLocation> {
 
   @Override public boolean isHasChildren() {
     return true;
+  }
+
+  @Override
+  public String getNameDecoded() {
+    try {
+      return UriParser.decode( getName() );
+    } catch ( FileSystemException e ) {
+      // Fallback to original name
+      return getName();
+    }
   }
 }

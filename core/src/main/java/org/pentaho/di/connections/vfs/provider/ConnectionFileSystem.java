@@ -94,13 +94,14 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     }
 
     // 4. Normal case, for which there is an associated provider file object.
-    String providerUri = vfsConnectionManagerHelper
+    FileName providerFileName = vfsConnectionManagerHelper
       .getExistingProvider( connectionManager, details )
-      .getFileNameTransformer()
-      .toProviderUri( pvfsFileName, details );
+      .getFileNameTransformer( connectionManager )
+      .toProviderFileName( pvfsFileName, details );
 
     AbstractFileObject<?> providerFileObject =
-      (AbstractFileObject<?>) getKettleVFS().getFileObject( providerUri, initializeVariableSpace( details ) );
+      (AbstractFileObject<?>) getKettleVFS()
+        .getFileObject( providerFileName.getURI(), initializeVariableSpace( details ) );
 
     return new ResolvedConnectionFileObject( pvfsFileName, this, providerFileObject );
   }
@@ -140,7 +141,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     try {
       return vfsConnectionManagerHelper
         .getExistingProvider( connectionManager, details )
-        .getFileNameTransformer()
+        .getFileNameTransformer( connectionManager )
         .toPvfsFileName( providerFileName, details );
     } catch ( KettleException e ) {
       throw new KettleVFSFileSystemException(

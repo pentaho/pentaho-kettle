@@ -25,6 +25,7 @@ package org.pentaho.di.connections.vfs;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ConnectionProvider;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.Variables;
@@ -58,8 +59,13 @@ public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends C
     return KettleVFS.getFileObject( pvfsUrl, new Variables(), getOpts( connectionDetails ) );
   }
 
+  /**
+   * Gets a file name transformer for transforming file names in the context of a given connection manager.
+   * @param connectionManager The connection manager.
+   * @return The file name transformer.
+   */
   @NonNull
-  default VFSConnectionFileNameTransformer<T> getFileNameTransformer() {
-    return new DefaultVFSConnectionFileNameTransformer<>();
+  default VFSConnectionFileNameTransformer<T> getFileNameTransformer( @NonNull ConnectionManager connectionManager ) {
+    return new DefaultVFSConnectionFileNameTransformer<>( connectionManager );
   }
 }

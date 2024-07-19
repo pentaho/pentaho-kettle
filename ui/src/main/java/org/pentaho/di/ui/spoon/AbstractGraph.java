@@ -54,6 +54,10 @@ public abstract class AbstractGraph extends Composite {
 
   protected XulDomContainer xulDomContainer;
 
+  protected static final float MIN_ZOOM = 0.05f;
+
+  protected static final float MAX_ZOOM = 10.0f;
+
   public AbstractGraph( Composite parent, int style ) {
     super( parent, style );
   }

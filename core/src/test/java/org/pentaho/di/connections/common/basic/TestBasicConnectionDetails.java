@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.connections.common.bucket;
+package org.pentaho.di.connections.common.basic;
 
 import org.pentaho.di.connections.annotations.Encrypted;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
@@ -29,11 +29,11 @@ import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
 @MetaStoreElementType(
-  name = "Test VFS Connection",
+  name = "Test VFS Connection With No Domain and No Buckets",
   description = "Defines the connection details for a test vfs connection" )
-public class TestConnectionDetails extends BaseVFSConnectionDetails {
+public class TestBasicConnectionDetails extends BaseVFSConnectionDetails {
 
-  private static String TYPE = "test";
+  private static String TYPE = "test4";
 
   @MetaStoreAttribute
   private String name;
@@ -48,6 +48,10 @@ public class TestConnectionDetails extends BaseVFSConnectionDetails {
   @Encrypted
   @MetaStoreAttribute
   private String password1;
+
+  @Override public boolean hasBuckets() {
+    return false;
+  }
 
   @Override public String getName() {
     return name;

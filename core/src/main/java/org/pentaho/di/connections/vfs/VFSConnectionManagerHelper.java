@@ -26,6 +26,7 @@ import com.google.common.annotations.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.UriParser;
@@ -85,8 +86,6 @@ public class VFSConnectionManagerHelper {
     return instance;
   }
 
-  // region getProviders
-
   @SuppressWarnings( "unchecked" )
   public List<VFSConnectionProvider<VFSConnectionDetails>> getProviders( @NonNull ConnectionManager manager ) {
     return manager.getProvidersByType( VFSConnectionProvider.class )
@@ -94,7 +93,6 @@ public class VFSConnectionManagerHelper {
       .map( provider -> (VFSConnectionProvider<VFSConnectionDetails>) provider )
       .collect( Collectors.toList() );
   }
-  // endregion
 
   @NonNull
   public List<VFSConnectionDetails> getAllDetails( @NonNull ConnectionManager manager ) {
@@ -200,8 +198,8 @@ public class VFSConnectionManagerHelper {
     return new ConnectionFileName( connectionName );
   }
 
-  @NonNull
-  public <T extends VFSConnectionDetails> String getConnectionRootProviderUri(
+  @VisibleForTesting
+  @NonNull <T extends VFSConnectionDetails> FileName getConnectionRootProviderFileName(
     @NonNull VFSConnectionFileNameTransformer<T> fileNameTransformer,
     @NonNull T details )
     throws KettleException {
@@ -209,21 +207,32 @@ public class VFSConnectionManagerHelper {
     // Example: "pvfs://my-connection"
     ConnectionFileName rootPvfsFileName = getConnectionRootFileName( details );
 
-
-    // Example: "s3://root-bucket/root-path-subfolder"
-    return fileNameTransformer.toProviderUri( rootPvfsFileName, details );
+    // Example: "s3://root-path-bucket"
+    // Would fail if only "s3://"
+    return fileNameTransformer.toProviderFileName( rootPvfsFileName, details );
   }
 
+  // For bucketed connections with no domain, a provider file object / file name corresponding to the connection root
+  // can only be obtained if there is a root path. Otherwise, we'd need to be able to build degenerate file name, such
+  // as `s3://`, which is not a valid URI and is not supported by URLFileName, used by many of these connections.
+  // The single caller of this method is the test method, and only calls this when there is a resolved root path,
+  // for which the restriction necessarily does not apply.
   @NonNull
   private <T extends VFSConnectionDetails> FileObject getConnectionRootProviderFileObject(
-    @NonNull IKettleVFS kettleVFS,
-    @NonNull T details,
-    @NonNull VFSConnectionProvider<T> provider )
+    @NonNull ConnectionManager manager,
+    @NonNull VFSConnectionProvider<T> provider,
+    @NonNull T details )
     throws KettleException {
 
-    String rootPathProviderUri = getConnectionRootProviderUri( provider.getFileNameTransformer(), details );
+    FileName rootProviderFileName =
+      getConnectionRootProviderFileName( provider.getFileNameTransformer( manager ), details );
 
-    return kettleVFS.getFileObject( rootPathProviderUri, new Variables(), provider.getOpts( details ) );
+    IKettleVFS kettleVFS = getKettleVFS( manager.getBowl() );
+
+    return kettleVFS.getFileObject(
+      rootProviderFileName.getURI(),
+      new Variables(),
+      provider.getOpts( details ) );
   }
   // endregion
 
@@ -349,7 +358,7 @@ public class VFSConnectionManagerHelper {
     }
 
     // Ensure that root path exists and is a folder.
-    return isFolder( getConnectionRootProviderFileObject( getKettleVFS( manager.getBowl() ), details, provider ) );
+    return isFolder( getConnectionRootProviderFileObject( manager, provider, details ) );
   }
   // endregion
 
