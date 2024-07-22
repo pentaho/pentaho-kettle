@@ -1,12 +1,12 @@
 // This is the master top-level pipeline that triggers both the build pipeline and the downstream triggered jobs
-library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: '20240215'}", changelog: false)
+library(identifier: "${params.LIB_NAME ?: 'pentaho-library'}@${params.LIB_VERSION ?: '20240722'}", changelog: false)
 
 String buildJobName =  'suite-release'
 Map suiteParameters
 def commonJenkinsFile
 def defaultBranch
 
-node('non-master') {
+node(params.SLAVE_NODE_LABEL ?: 'non-master') {
 
   timestamps {
     catchError {
@@ -20,6 +20,11 @@ node('non-master') {
         commonJenkinsFile.config()
         suiteParameters = commonJenkinsFile.getJobParameters(buildJobName)
         defaultBranch = suiteParameters['DEFAULT_BRANCH']
+
+        if (params.SLAVE_NODE_LABEL) {
+          suiteParameters['SLAVE_NODE_LABEL'] = params.SLAVE_NODE_LABEL
+        }
+
       }
 
       if (!params.NOOP) {
