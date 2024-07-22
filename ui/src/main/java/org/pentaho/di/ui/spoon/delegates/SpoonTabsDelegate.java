@@ -504,7 +504,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     }
 
     // Also refresh the tree
-    spoon.refreshTree();
+    spoon.forceRefreshTree();
     spoon.setShellText(); // calls also enableMenus() and markTabsChanged()
   }
 
