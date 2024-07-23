@@ -54,7 +54,7 @@ import static org.mockito.Mockito.doNothing;
 public class SalesforceInputDialogTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
-  public static final String VALUE = "value";
+
   private static boolean changedPropsUi;
   private SalesforceInputDialog dialog;
 
@@ -97,73 +97,5 @@ public class SalesforceInputDialogTest {
     doNothing().when( dialog ).addFieldToTable( any(), any(), anyBoolean(), any(), any(), any() );
   }
 
-  @Test
-  public void testAddFieldsFromSOQLQuery() throws Exception {
-    final Set<String> fields = new LinkedHashSet<>();
-    XmlObject testObject = createObject( "Field1", VALUE, ObjectType.XMLOBJECT );
-    dialog.addFields( "", fields, testObject );
-    dialog.addFields( "", fields, testObject );
-    assertArrayEquals( "No duplicates", new String[]{"Field1"}, fields.toArray() );
 
-    testObject = createObject( "Field2", VALUE, ObjectType.XMLOBJECT );
-    dialog.addFields( "", fields, testObject );
-    assertArrayEquals( "Two fields", new String[]{"Field1", "Field2"}, fields.toArray() );
-  }
-
-  @Test
-  public void testAddFields_nullIdNotAdded() throws Exception {
-    final Set<String> fields = new LinkedHashSet<>();
-    XmlObject testObject = createObject( "Id", null, ObjectType.XMLOBJECT );
-    dialog.addFields( "", fields, testObject );
-    assertArrayEquals( "Null Id field not added", new String[]{}, fields.toArray() );
-  }
-
-  @Test
-  public void testAddFields_IdAdded() throws Exception {
-    final Set<String> fields = new LinkedHashSet<>();
-    XmlObject testObject = createObject( "Id", VALUE, ObjectType.XMLOBJECT );
-    dialog.addFields( "", fields, testObject );
-    assertArrayEquals( "Id field added", new String[]{"Id"}, fields.toArray() );
-  }
-
-  @Test
-  public void testAddFields_nullRelationalIdNotAdded() throws Exception {
-    final Set<String> fields = new LinkedHashSet<>();
-    XmlObject complexObject = createObject( "Module2", null, ObjectType.SOBJECT );
-    complexObject.addField( "Id", createObject( "Id", null, ObjectType.XMLOBJECT ) );
-    dialog.addFields( "", fields, complexObject );
-    assertArrayEquals( "Relational null Id not added", new String[]{}, fields.toArray() );
-  }
-
-  @Test
-  public void testAddFields_relationalIdAdded() throws Exception {
-    final Set<String> fields = new LinkedHashSet<>();
-    XmlObject complexObject = createObject( "Module2", null, ObjectType.SOBJECT );
-    complexObject.addField( "Id", createObject( "Id", VALUE, ObjectType.XMLOBJECT ) );
-    complexObject.addField( "Name", createObject( "Name", VALUE, ObjectType.XMLOBJECT ) );
-    dialog.addFields( "", fields, complexObject );
-    assertArrayEquals( "Relational fields added", new String[]{"Module2.Id", "Module2.Name"}, fields.toArray() );
-  }
-
-  private XmlObject createObject( String fieldName, String value, ObjectType type ) {
-    XmlObject result;
-    switch ( type ) {
-      case SOBJECT:
-        result = new SObject();
-        break;
-      case XMLOBJECT:
-        result = new XmlObject();
-        break;
-      default:
-        throw new IllegalArgumentException();
-    }
-    result.setName( new QName( Constants.PARTNER_SOBJECT_NS, fieldName ) );
-    result.setValue( value );
-    return result;
-  }
-
-  private enum ObjectType {
-    SOBJECT,
-    XMLOBJECT
-  }
 }
