@@ -360,6 +360,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -618,6 +619,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private RepositoriesDialog loginDialog;
 
   private VfsFileChooserDialog vfsFileChooserDialog;
+
+  private Map<String, Runnable> browserFunctions = new ConcurrentHashMap<>();
 
   // the id of the perspective to start in, if any
   protected String startupPerspective = null;
@@ -1805,6 +1808,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     copyJob( getActiveJob() );
   }
 
+  public void addBrowserFunction( String name, Runnable action ) {
+    browserFunctions.put( name, action );
+  }
+
   public void showWelcomePage() {
     try {
       LocationListener listener = new LocationListener() {
@@ -1860,7 +1867,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       };
 
-      HashMap<String, Runnable> functions = new HashMap<String, Runnable>();
+      HashMap<String, Runnable> functions = new HashMap<String, Runnable>( browserFunctions );
       functions.put( "openFileFunction", openFileFunction );
       functions.put( "newTransFunction", newTransFunction );
       functions.put( "newJobFunction", newJobFunction );
