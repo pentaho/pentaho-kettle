@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,9 @@
 
 package org.pentaho.di.plugins.fileopensave.api.providers;
 
-import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
@@ -50,7 +51,7 @@ public interface FileProvider<T extends File> {
    *
    * @return
    */
-  Tree getTree();
+  Tree getTree( Bowl bowl );
 
   /**
    * Optional method to get a filtered tree based on the connection type
@@ -58,8 +59,8 @@ public interface FileProvider<T extends File> {
    * @param connectionTypes
    * @return filteredTree
    */
-  default Tree getTree( List<String> connectionTypes ) {
-    return getTree();
+  default Tree getTree( Bowl bowl, List<String> connectionTypes ) {
+    return getTree( bowl );
   }
 
   /**
@@ -72,48 +73,48 @@ public interface FileProvider<T extends File> {
    * @return
    * @throws FileException
    */
-  List<T> getFiles( T file, String filters, VariableSpace space ) throws FileException;
+  List<T> getFiles( Bowl bowl, T file, String filters, VariableSpace space ) throws FileException;
 
-  List<T> searchFiles( T file, String filters, String searchString, VariableSpace space ) throws FileException;
+  List<T> searchFiles( Bowl bowl, T file, String filters, String searchString, VariableSpace space ) throws FileException;
 
-  List<T> delete( List<T> files, VariableSpace space ) throws FileException;
+  List<T> delete( Bowl bowl, List<T> files, VariableSpace space ) throws FileException;
 
-  T add( T folder, VariableSpace space ) throws FileException;
+  T add( Bowl bowl, T folder, VariableSpace space ) throws FileException;
 
-  T getFile( T file, VariableSpace space );
+  T getFile( Bowl bowl, T file, VariableSpace space );
 
-  boolean fileExists( T dir, String path, VariableSpace space ) throws FileException;
+  boolean fileExists( Bowl bowl, T dir, String path, VariableSpace space ) throws FileException;
 
-  String getNewName( T destDir, String newPath, VariableSpace space ) throws FileException;
+  String getNewName( Bowl bowl, T destDir, String newPath, VariableSpace space ) throws FileException;
 
-  String sanitizeName( T destDir, String newPath );
+  String sanitizeName( Bowl bowl, T destDir, String newPath );
 
-  boolean isSame( File file1, File file2 );
+  boolean isSame( Bowl bowl, File file1, File file2 );
 
-  T rename( T file, String newPath, OverwriteStatus overwrite, VariableSpace space ) throws FileException;
+  T rename( Bowl bowl, T file, String newPath, OverwriteStatus overwrite, VariableSpace space ) throws FileException;
 
-  T copy( T file, String toPath, OverwriteStatus overwrite, VariableSpace space ) throws FileException;
+  T copy( Bowl bowl, T file, String toPath, OverwriteStatus overwrite, VariableSpace space ) throws FileException;
 
-  T move( T file, String toPath, OverwriteStatus overwrite, VariableSpace space ) throws FileException;
+  T move( Bowl bowl, T file, String toPath, OverwriteStatus overwrite, VariableSpace space ) throws FileException;
 
-  InputStream readFile( T file, VariableSpace space ) throws FileException;
+  InputStream readFile( Bowl bowl, T file, VariableSpace space ) throws FileException;
 
-  T writeFile( InputStream inputStream, T destDir, String path, OverwriteStatus overwriteStatus, VariableSpace space )
-    throws FileException, KettleFileException;
+  T writeFile( Bowl bowl, InputStream inputStream, T destDir, String path, OverwriteStatus overwriteStatus,
+               VariableSpace space ) throws FileException, KettleFileException;
 
-  T getParent( T file );
+  T getParent( Bowl bowl, T file );
 
   void clearProviderCache();
 
   void setFileProperties( FileDetails fileDetails, FileDialogOperation fileDialogOperation );
 
 
-  default T createDirectory( String parentPath, T file, String newDirectoryName )
+  default T createDirectory( Bowl bowl, String parentPath, T file, String newDirectoryName )
     throws FileException, KettleFileException {
     throw new UnsupportedOperationException();
   }
 
-  default File getFile( String path, boolean isDirectory ) {
+  default File getFile( Bowl bowl, String path, boolean isDirectory ) {
     throw new UnsupportedOperationException();
   }
 }

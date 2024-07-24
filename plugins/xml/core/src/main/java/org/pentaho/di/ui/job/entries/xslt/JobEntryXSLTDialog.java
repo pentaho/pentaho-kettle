@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -293,7 +293,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     wxmlFilename.setLayoutData( fdxmlFilename );
 
     wbxmlFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wxmlFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL, FilterType.XML }, FilterType.XML  ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
@@ -330,7 +330,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     wxslFilename.setLayoutData( fdxslFilename );
 
     wbxslFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wxslFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL, FilterType.XSL}, FilterType.XSL  ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
@@ -379,10 +379,10 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     wOutputFilename.setLayoutData( fdOutputFilename );
 
     wbOutputDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wOutputFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     wbMovetoDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wOutputFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wOutputFilename.addModifyListener( new ModifyListener() {

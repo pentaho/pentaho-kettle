@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2023-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.MessageBox;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
@@ -35,10 +36,12 @@ import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
  * Supports dropping Elements into a table viewer.
  */
 public class ElementTableDropAdapter extends ViewerDropAdapter {
+  private final Bowl bowl;
   LogChannelInterface log;
 
-  public ElementTableDropAdapter( TableViewer viewer, LogChannelInterface log ) {
+  public ElementTableDropAdapter( Bowl bowl, TableViewer viewer, LogChannelInterface log ) {
     super( viewer );
+    this.bowl = bowl;
     this.log = log;
   }
 
@@ -48,7 +51,7 @@ public class ElementTableDropAdapter extends ViewerDropAdapter {
   public boolean performDrop( Object data ) {
     Element[] toDrop = (Element[]) data;
     Object genericTarget = this.getCurrentTarget();
-    Element target = new Element( genericTarget );  //The file dropped on
+    Element target = new Element( bowl, genericTarget );  //The file dropped on
     log.logDebug( "TableDrop: last target element was \"" + target.getPath() );
     File targetFile = (File) genericTarget;
     String parent = targetFile.getParent();
@@ -59,7 +62,7 @@ public class ElementTableDropAdapter extends ViewerDropAdapter {
       String name = parent.replaceAll( "^.*[\\/\\\\]", "" ); //Strip off the path leaving file name
       // Making parent of target the new actual target to use.
       target =
-        new Element( name, target.calcParentEntityType(), parent, target.getProvider(), target.getRepositoryName() );
+        new Element( bowl, name, target.calcParentEntityType(), parent, target.getProvider(), target.getRepositoryName() );
     }
 
     //Send info to the drag and drop processor to do the work.
@@ -79,6 +82,6 @@ public class ElementTableDropAdapter extends ViewerDropAdapter {
    * Method declared on ViewerDropAdapter
    */
   public boolean validateDrop( Object target, int op, TransferData type ) {
-    return ElementTransfer.getInstance().isSupportedType( type );
+    return ElementTransfer.getInstance( bowl ).isSupportedType( type );
   }
 }

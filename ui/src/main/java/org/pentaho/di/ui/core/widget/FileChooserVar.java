@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.logging.LogChannel;
@@ -47,9 +49,16 @@ public class FileChooserVar extends Composite {
   private TextVar wPath;
   private Button wBrowseButton;
   VariableSpace space;
+  private Bowl bowl;
   protected ObjectLocationSpecificationMethod specificationMethod;
   PropsUI props = PropsUI.getInstance();
 
+  public FileChooserVar( Bowl bowl, VariableSpace space, Composite composite, int flags, String buttonLabel ) {
+    this( bowl, space, composite, flags, buttonLabel, null, null, null );
+  }
+
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
   public FileChooserVar( VariableSpace space, Composite composite, int flags, String buttonLabel ) {
     this( space, composite, flags, buttonLabel, null, null, null );
   }
@@ -64,10 +73,19 @@ public class FileChooserVar extends Composite {
     this( space, composite, flags, buttonLabel, null, getCaretPositionInterface, insertTextInterface );
   }
 
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
   public FileChooserVar( VariableSpace space, Composite composite, int flags, String buttonLabel, String toolTipText,
                          GetCaretPositionInterface getCaretPositionInterface,
                          InsertTextInterface insertTextInterface ) {
+    this( DefaultBowl.getInstance(), space, composite, flags, buttonLabel, toolTipText, getCaretPositionInterface,
+          insertTextInterface );
+  }
+  public FileChooserVar( Bowl bowl, VariableSpace space, Composite composite, int flags, String buttonLabel,
+                         String toolTipText, GetCaretPositionInterface getCaretPositionInterface,
+                         InsertTextInterface insertTextInterface ) {
     super( composite, SWT.NONE );
+    this.bowl = bowl;
     this.space = space;
     initialize( flags, buttonLabel, toolTipText, getCaretPositionInterface, insertTextInterface );
   }
@@ -121,7 +139,7 @@ public class FileChooserVar extends Composite {
     TransMeta meta = new TransMeta( space );
     SelectionAdapterFileDialogTextVar selectionAdapterFileDialogTextVar =
       new SelectionAdapterFileDialogTextVar( log, wPath, meta,
-        new SelectionAdapterOptions( SelectionOperation.FILE,
+        new SelectionAdapterOptions( bowl, SelectionOperation.FILE,
           new FilterType[] { FilterType.ALL }, FilterType.ALL ) );
     selectionAdapterFileDialogTextVar.widgetSelected( null );
     if ( wPath.getText() != null && Const.isWindows() ) {

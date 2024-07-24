@@ -74,7 +74,7 @@ public class ConnectionDelegate {
       Bowl bowl = spoon.getBowl();
       ConnectionDialog connectionDialog = new ConnectionDialog( spoon.getShell(), WIDTH, HEIGHT,
                                                                 bowl.getManager( ConnectionManager.class ) );
-      connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.new.title" ) );
+      connectionDialog.open( bowl, BaseMessages.getString( PKG, "ConnectionDialog.dialog.new.title" ) );
     } catch ( KettleException e ) {
       showError( e );
     }
@@ -86,7 +86,7 @@ public class ConnectionDelegate {
       Bowl bowl = getBowl( spoon, level );
       ConnectionDialog connectionDialog = new ConnectionDialog( spoon.getShell(), WIDTH, HEIGHT,
                                                                 bowl.getManager( ConnectionManager.class ) );
-      connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.edit.title" ), name );
+      connectionDialog.open( bowl, BaseMessages.getString( PKG, "ConnectionDialog.dialog.edit.title" ), name );
     } catch ( KettleException e ) {
       showError( e );
     }
@@ -121,7 +121,7 @@ public class ConnectionDelegate {
       Set<String> existingNames = new HashSet<>( connectionManager.getNames() );
       String newName = TreeUtil.findUniqueSuffix( name, existingNames );
       ConnectionDialog connectionDialog = new ConnectionDialog( spoon.getShell(), WIDTH, HEIGHT, connectionManager );
-      connectionDialog.open( BaseMessages.getString( PKG, "ConnectionDialog.dialog.edit.title" ), name, newName );
+      connectionDialog.open( bowl, BaseMessages.getString( PKG, "ConnectionDialog.dialog.edit.title" ), name, newName );
     } catch ( KettleException e ) {
       showError( e );
     }

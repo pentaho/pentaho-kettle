@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1168,7 +1168,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     } );
 
     selectionAdapterFileDialogTextVar = new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-        new SelectionAdapterOptions( SelectionOperation.FILE,
+        new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
           new FilterType[] { FilterType.PROP, FilterType.ALL},
            FilterType.PROP ) );
 

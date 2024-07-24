@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -194,7 +194,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
     wGPGLocation.setLayoutData( fdGPGLocation );
 
     wbbGpgExe.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wGPGLocation, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Passphrase fieldname ...

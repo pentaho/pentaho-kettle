@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -416,7 +416,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     wKeyFilename.setLayoutData( fdKeyFilename );
 
     wbKeyFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wKeyFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.PEM, FilterType.ALL }, FilterType.PEM  ) ) );
 
     // keyfilePass line

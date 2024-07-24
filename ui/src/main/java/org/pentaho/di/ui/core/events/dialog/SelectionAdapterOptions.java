@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,11 +21,15 @@
  ******************************************************************************/
 package org.pentaho.di.ui.core.events.dialog;
 
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SelectionAdapterOptions {
+  private Bowl bowl;
   private SelectionOperation selectionOperation;
   private String[] filters;
   private String defaultFilter;
@@ -33,8 +37,9 @@ public class SelectionAdapterOptions {
   private List<ConnectionFilterType> connectionFilters = new ArrayList<>();
   private boolean useSchemaPath;
 
-  public SelectionAdapterOptions( SelectionOperation selectionOperation, String[] filters, String defaultFilter,
-                                  String[] providerFilters, boolean useSchemaPath  ) {
+  public SelectionAdapterOptions( Bowl bowl, SelectionOperation selectionOperation, String[] filters,
+                                  String defaultFilter, String[] providerFilters, boolean useSchemaPath  ) {
+    this.bowl = bowl;
     this.selectionOperation = selectionOperation;
     this.filters = filters;
     this.defaultFilter = defaultFilter;
@@ -42,31 +47,88 @@ public class SelectionAdapterOptions {
     this.useSchemaPath = useSchemaPath;
   }
 
-  public SelectionAdapterOptions( SelectionOperation selectionOperation, FilterType[] filters, FilterType defaultFilter,
-                                  String[] providerFilters, boolean useSchemaPath  ) {
+  public SelectionAdapterOptions( Bowl bowl, SelectionOperation selectionOperation, FilterType[] filters,
+                                  FilterType defaultFilter, String[] providerFilters, boolean useSchemaPath  ) {
+    this( bowl, selectionOperation, toStringArray( filters ), toString( defaultFilter ), providerFilters, useSchemaPath );
+  }
+
+  public SelectionAdapterOptions( Bowl bowl, SelectionOperation selectionOperation, String[] filters,
+                                  String defaultFilter ) {
+    this( bowl, selectionOperation, filters, defaultFilter, null, false );
+  }
+
+  public SelectionAdapterOptions( Bowl bowl, SelectionOperation selectionOperation, FilterType[] filters,
+                                  FilterType defaultFilter ) {
+    this( bowl, selectionOperation, toStringArray( filters ), toString( defaultFilter ), null, false );
+  }
+
+  public SelectionAdapterOptions( Bowl bowl, SelectionOperation selectionOperation, String[] filters,
+                                  String defaultFilter, String[] providerFilters ) {
+    this( bowl, selectionOperation, filters, defaultFilter, providerFilters, false );
+  }
+
+  public SelectionAdapterOptions( Bowl bowl, SelectionOperation selectionOperation, FilterType[] filters,
+                                  FilterType defaultFilter, ProviderFilterType[] providerFilters ) {
+    this( bowl, selectionOperation, toStringArray( filters ), toString( defaultFilter ),
+          toStringArray( providerFilters ), false );
+  }
+
+  public SelectionAdapterOptions( Bowl bowl, SelectionOperation selectionOperation ) {
+    this( bowl, selectionOperation, (String[]) null, null, null, false );
+  }
+
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, String[] filters,
+                                  String defaultFilter, String[] providerFilters, boolean useSchemaPath  ) {
+    this( DefaultBowl.getInstance(), selectionOperation, filters, defaultFilter, providerFilters,
+          useSchemaPath );
+  }
+
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, FilterType[] filters,
+                                  FilterType defaultFilter, String[] providerFilters, boolean useSchemaPath  ) {
     this( selectionOperation, toStringArray( filters ), toString( defaultFilter ), providerFilters, useSchemaPath );
   }
 
-  public SelectionAdapterOptions( SelectionOperation selectionOperation, String[] filters, String defaultFilter ) {
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, String[] filters,
+                                  String defaultFilter ) {
     this( selectionOperation, filters, defaultFilter, null, false );
   }
 
-  public SelectionAdapterOptions( SelectionOperation selectionOperation, FilterType[] filters, FilterType defaultFilter ) {
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, FilterType[] filters,
+                                  FilterType defaultFilter ) {
     this( selectionOperation, toStringArray( filters ), toString( defaultFilter ), null, false );
   }
 
-  public SelectionAdapterOptions( SelectionOperation selectionOperation, String[] filters, String defaultFilter,
-                                  String[] providerFilters ) {
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, String[] filters,
+                                  String defaultFilter, String[] providerFilters ) {
     this( selectionOperation, filters, defaultFilter, providerFilters, false );
   }
 
-  public SelectionAdapterOptions( SelectionOperation selectionOperation, FilterType[] filters, FilterType defaultFilter,
-                                  ProviderFilterType[] providerFilters ) {
-    this( selectionOperation, toStringArray( filters ), toString( defaultFilter ), toStringArray( providerFilters ), false );
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
+  public SelectionAdapterOptions( SelectionOperation selectionOperation, FilterType[] filters,
+                                  FilterType defaultFilter, ProviderFilterType[] providerFilters ) {
+    this( selectionOperation, toStringArray( filters ), toString( defaultFilter ),
+          toStringArray( providerFilters ), false );
   }
 
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
   public SelectionAdapterOptions( SelectionOperation selectionOperation ) {
     this( selectionOperation, (String[]) null, null, null, false );
+  }
+
+  public Bowl getBowl() {
+    return bowl;
   }
 
   public SelectionOperation getSelectionOperation() {

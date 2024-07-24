@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -189,7 +189,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     wSortDir.setLayoutData( fdSortDir );
 
     wbSortDir.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSortDir, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wSortDir.addModifyListener( new ModifyListener() {

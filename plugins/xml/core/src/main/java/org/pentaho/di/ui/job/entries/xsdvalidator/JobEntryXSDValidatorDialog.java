@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -210,7 +210,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
     } );
 
     wbxmlFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wxmlFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.XML, FilterType.ALL }, FilterType.XML ) ) );
 
     // Filename 2 line
@@ -246,7 +246,7 @@ public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEnt
     } );
 
     wbxsdFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wxsdFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.XSD, FilterType.ALL }, FilterType.XSD  ) ) );
 
     wOK = new Button( shell, SWT.PUSH );

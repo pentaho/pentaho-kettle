@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.ui.core.events.dialog;
 
+import org.pentaho.di.core.bowl.DefaultBowl;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -34,7 +36,8 @@ public class SelectionAdapterOptionsTest {
   @Test
   public void testOptionsSetter() {
 
-    SelectionAdapterOptions opts = new SelectionAdapterOptions( SelectionOperation.FILE, new String[] { }, "",
+    SelectionAdapterOptions opts = new SelectionAdapterOptions( DefaultBowl.getInstance(), SelectionOperation.FILE,
+                                                                new String[] { }, "",
       new String[] {}, false );
 
     opts.setFilters( new FilterType[] { FilterType.ALL, FilterType.CUBE, FilterType.TXT} ).setDefaultFilter( FilterType.CUBE.toString() );
@@ -68,7 +71,8 @@ public class SelectionAdapterOptionsTest {
     FilterType[] filterTypes = new FilterType[] { FilterType.ALL, FilterType.CSV, FilterType.TXT };
     String[] expectedFilterTypes =  new String[] { "ALL", "CSV", "TXT" };
 
-    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( SelectionOperation.FILE );
+    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( DefaultBowl.getInstance(),
+                                                                                   SelectionOperation.FILE );
     selectionAdapterOptions.setFilters( filterTypes );
 
     assertArrayEquals( expectedFilterTypes, selectionAdapterOptions.getFilters() );
@@ -83,7 +87,8 @@ public class SelectionAdapterOptionsTest {
     boolean useSchemaPath = true;
     String[] expectedFilterTypes =  new String[] { "ALL", "CSV", "TXT" };
 
-    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( selectionOperation, filterTypes,
+    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( DefaultBowl.getInstance(),
+                                                                                   selectionOperation, filterTypes,
         defaultFilter, providerFilters, useSchemaPath );
 
     assertEquals( SelectionOperation.FILE, selectionAdapterOptions.getSelectionOperation() );
@@ -101,7 +106,8 @@ public class SelectionAdapterOptionsTest {
     String[] providerFilters = new String[] { "local" };
     boolean useSchemaPath = true;
 
-    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( selectionOperation, filterTypes,
+    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( DefaultBowl.getInstance(),
+                                                                                   selectionOperation, filterTypes,
       defaultFilter, providerFilters, useSchemaPath );
 
     assertEquals( SelectionOperation.FILE, selectionAdapterOptions.getSelectionOperation() );
@@ -120,7 +126,8 @@ public class SelectionAdapterOptionsTest {
     String[] expectedProviderFilters = new String[] { "local" };
     String[] expectedFilterTypes =  new String[] { "ALL", "CSV", "TXT" };
 
-    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( selectionOperation, filterTypes,
+    SelectionAdapterOptions selectionAdapterOptions = new SelectionAdapterOptions( DefaultBowl.getInstance(),
+                                                                                   selectionOperation, filterTypes,
       defaultFilter, providerFilters );
 
     assertEquals( SelectionOperation.FILE, selectionAdapterOptions.getSelectionOperation() );

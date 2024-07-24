@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -710,8 +710,8 @@ public class SpoonTest {
 
     FileDialogOperation fileDlgOp = mock( FileDialogOperation.class );
     doReturn( repositoryObject ).when( fileDlgOp ).getRepositoryObject();
-    doReturn( fileDlgOp ).when( spoon ).getFileDialogOperation( FileDialogOperation.SAVE,
-      FileDialogOperation.ORIGIN_SPOON );
+    doReturn( fileDlgOp ).when( spoon ).getFileDialogOperation( any(), eq( FileDialogOperation.SAVE ),
+      eq( FileDialogOperation.ORIGIN_SPOON ) );
     doReturn( "newTrans" ).when( repositoryObject ).getName();
     doCallRealMethod().when( spoon ).saveToRepository( mockJobMeta, true );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -247,7 +247,7 @@ public class AvroOutputDialog extends BaseAvroStepDialog implements StepDialogIn
     wbSchemaBrowse.setText( BaseMessages.getString( "System.Button.Browse" ) );
 
     wbSchemaBrowse.addSelectionListener( new SelectionAdapterFileDialogTextVar(
-      log, wSchemaPath, transMeta, new SelectionAdapterOptions( SelectionOperation.SAVE ) ) );
+      log, wSchemaPath, transMeta, new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.SAVE ) ) );
     int bOffset = ( wbSchemaBrowse.computeSize( SWT.DEFAULT, SWT.DEFAULT, false ).y - wSchemaPath.
         computeSize( SWT.DEFAULT, SWT.DEFAULT, false ).y ) / 2;
     wbSchemaBrowse.setLayoutData( new FormDataBuilder().left( wSchemaPath, FIELD_LABEL_SEP ).top( wlSchemaPath, FIELD_LABEL_SEP - bOffset ).result() );

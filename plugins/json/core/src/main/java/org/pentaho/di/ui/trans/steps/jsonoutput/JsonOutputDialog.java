@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -412,7 +412,7 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     wFilename.setLayoutData( fdFilename );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.SAVE_TO,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.SAVE_TO,
         new FilterType[] { FilterType.JSON, FilterType.JS, FilterType.ALL },
         FilterType.JSON ) ) );
 

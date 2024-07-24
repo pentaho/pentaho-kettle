@@ -31,6 +31,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -59,8 +60,9 @@ import java.util.stream.Collectors;
  *
  *  Dialog.java
  *
- * wbFilename.addSelectionListener(  new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta, new SelectionAdapterOptions(
- * SelectionOperation.FILE, new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL }, FilterType.TXT ) ) );
+ * wbFilename.addSelectionListener(  new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta, new
+ * SelectionAdapterOptions( meta.getBowl(), SelectionOperation.FILE, new FilterType[] { FilterType.TXT, FilterType.CSV,
+ * FilterType.ALL }, FilterType.TXT ) ) );
  *
  *
  * Side effect:
@@ -157,8 +159,9 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
       }
 
       try {
-        fileDialogOperation = constructFileDialogOperation( options.getSelectionOperation(), initialFilePath,
-          initialFile, options.getFilters(), options.getProviderFilters(), options.getConnectionFilters() );
+        fileDialogOperation = constructFileDialogOperation( options.getBowl(), options.getSelectionOperation(),
+          initialFilePath, initialFile, options.getFilters(), options.getProviderFilters(),
+          options.getConnectionFilters() );
 
         // open dialog
         extensionPointWrapper.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveNew.id, fileDialogOperation );
@@ -176,10 +179,11 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     }
   }
 
-  private FileDialogOperation constructFileDialogOperation( SelectionOperation selectionOperation, String initialFilePath,
-                                                              FileObject initialFile, String[] filter,
-                                                              String[] providerFilters, List<ConnectionFilterType> connectionFilterTypes ) {
-    FileDialogOperation fileDialogOperation = createFileDialogOperation( selectionOperation );
+  private FileDialogOperation constructFileDialogOperation( Bowl bowl, SelectionOperation selectionOperation,
+                                                            String initialFilePath, FileObject initialFile,
+                                                            String[] filter, String[] providerFilters,
+                                                            List<ConnectionFilterType> connectionFilterTypes ) {
+    FileDialogOperation fileDialogOperation = createFileDialogOperation( bowl, selectionOperation );
 
     setProviderFilters( fileDialogOperation, providerFilters );
     setProvider( fileDialogOperation, initialFile );
@@ -217,23 +221,23 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
     return abstractMeta.environmentSubstitute( unresolvedPath );
   }
 
-  FileDialogOperation createFileDialogOperation( SelectionOperation selectionOperation ) {
+  FileDialogOperation createFileDialogOperation( Bowl bowl, SelectionOperation selectionOperation ) {
 
     switch ( selectionOperation ) {
       case FILE:
-        return new FileDialogOperation( FileDialogOperation.SELECT_FILE, FileDialogOperation.ORIGIN_SPOON );
+        return new FileDialogOperation( bowl, FileDialogOperation.SELECT_FILE, FileDialogOperation.ORIGIN_SPOON );
       case FOLDER:
-        return new FileDialogOperation( FileDialogOperation.SELECT_FOLDER, FileDialogOperation.ORIGIN_SPOON );
+        return new FileDialogOperation( bowl, FileDialogOperation.SELECT_FOLDER, FileDialogOperation.ORIGIN_SPOON );
       case FILE_OR_FOLDER:
-        return new FileDialogOperation( FileDialogOperation.SELECT_FILE_FOLDER, FileDialogOperation.ORIGIN_SPOON );
+        return new FileDialogOperation( bowl, FileDialogOperation.SELECT_FILE_FOLDER, FileDialogOperation.ORIGIN_SPOON );
       case SAVE:
-        return new FileDialogOperation( FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
+        return new FileDialogOperation( bowl, FileDialogOperation.SAVE, FileDialogOperation.ORIGIN_SPOON );
       case SAVE_TO:
-        return new FileDialogOperation( FileDialogOperation.SAVE_TO, FileDialogOperation.ORIGIN_SPOON );
+        return new FileDialogOperation( bowl, FileDialogOperation.SAVE_TO, FileDialogOperation.ORIGIN_SPOON );
       case SAVE_TO_FILE_FOLDER:
-        return new FileDialogOperation( FileDialogOperation.SAVE_TO_FILE_FOLDER, FileDialogOperation.ORIGIN_SPOON );
+        return new FileDialogOperation( bowl, FileDialogOperation.SAVE_TO_FILE_FOLDER, FileDialogOperation.ORIGIN_SPOON );
       case OPEN:
-        return new FileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
+        return new FileDialogOperation( bowl, FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
       default:
         throw new IllegalArgumentException( "Unexpected SelectionOperation: " + selectionOperation );
     }

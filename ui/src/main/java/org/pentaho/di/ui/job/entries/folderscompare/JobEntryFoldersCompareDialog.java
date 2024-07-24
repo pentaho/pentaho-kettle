@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -351,7 +351,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
     wFilename1.setLayoutData( fdFilename1 );
 
     wbDirectory1.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename1, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wFilename1.addModifyListener( new ModifyListener() {
@@ -361,7 +361,7 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
     } );
 
     wbFilename1.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename1, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Filename 2 line
@@ -409,10 +409,10 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
     } );
 
     wbDirectory2.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename2, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     wbFilename2.addSelectionListener(  new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename2, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL ) ) );
 
     wOK = new Button( shell, SWT.PUSH );

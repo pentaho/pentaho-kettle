@@ -23,6 +23,7 @@
 package org.pentaho.di.connections;
 
 import org.pentaho.di.connections.utils.ConnectionDetailsUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
@@ -50,6 +51,12 @@ public interface ConnectionDetails {
     return Collections.emptyMap();
   }
 
+  default Object openDialog( Bowl bowl, Object wTabFolder, Object propsUI ) {
+    return openDialog( wTabFolder, propsUI );
+  }
+
+  /** @deprecated Kept for backwards compatibility only. Use the version with the Bowl */
+  @Deprecated
   default Object openDialog( Object wTabFolder, Object propsUI ) {
     //noop if not defined
     return null;

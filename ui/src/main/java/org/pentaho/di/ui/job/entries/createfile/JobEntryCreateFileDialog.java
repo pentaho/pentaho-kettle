@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -183,7 +183,7 @@ public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntry
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.SAVE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.SAVE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL ) ) );
 
     wlAbortExists = new Label( shell, SWT.RIGHT );

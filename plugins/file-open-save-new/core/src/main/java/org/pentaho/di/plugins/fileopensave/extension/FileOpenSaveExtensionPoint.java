@@ -77,7 +77,8 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
     resolveProvider( fileDialogOperation );
 
     final FileOpenSaveDialog fileOpenSaveDialog =
-            new FileOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT, logChannelInterface );
+            new FileOpenSaveDialog( fileDialogOperation.getBowl(), spoonSupplier.get().getShell(), WIDTH, HEIGHT,
+                                    logChannelInterface );
 
     fileOpenSaveDialog.setProviderFilter( fileDialogOperation.getProviderFilter() );
     fileOpenSaveDialog.open( fileDialogOperation );

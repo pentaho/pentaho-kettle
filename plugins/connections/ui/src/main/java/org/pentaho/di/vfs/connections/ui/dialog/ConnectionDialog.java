@@ -48,6 +48,7 @@ import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSDetailsComposite;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -99,6 +100,7 @@ public class ConnectionDialog extends Dialog {
   private String connectionName;
   private String newConnectionName;
   private VFSDetailsComposite vfsDetailsComposite;
+  private Bowl bowl;
   private Composite wConnectionTypeComp;
   private VFSDetailsCompositeHelper helper;
   private Text wName;
@@ -125,19 +127,20 @@ public class ConnectionDialog extends Dialog {
   }
 
   //This open called for a new connection
-  public void open( String title ) {
-    open( title, null );
+  public void open( Bowl bowl, String title ) {
+    open( bowl, title, null );
   }
 
   //This open called for an existing connection
-  public void open( String title, String existingConnectionName ) {
-    open( title, existingConnectionName, null );
+  public void open( Bowl bowl, String title, String existingConnectionName ) {
+    open( bowl, title, existingConnectionName, null );
   }
 
   //This open called for Duplicating a connection
-  public void open( String title, String existingConnectionName, String newConnectionName ) {
+  public void open( Bowl bowl, String title, String existingConnectionName, String newConnectionName ) {
     this.connectionName = existingConnectionName;
     this.newConnectionName = newConnectionName;
+    this.bowl = bowl;
     Shell parent = getParent();
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     shell.setSize( width, height );
@@ -319,7 +322,7 @@ public class ConnectionDialog extends Dialog {
 
     //Populate all the widgets associated with the chosen connection type
     if ( connectionDetails != null ) {
-      vfsDetailsComposite = (VFSDetailsComposite) connectionDetails.openDialog( wDetailsWrapperComp, props );
+      vfsDetailsComposite = (VFSDetailsComposite) connectionDetails.openDialog( bowl, wDetailsWrapperComp, props );
     }
 
     //root path
