@@ -45,6 +45,7 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
+@Deprecated
 public class MSAccessDatabaseMetaTest {
   private MSAccessDatabaseMeta odbcMeta;
 
