@@ -6506,7 +6506,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     addDragSourceToTree( selectionTree );
   }
 
-  private void forceRefreshTree() {
+  public void forceRefreshTree() {
     if ( selectionTreeManager != null ) {
       selectionTreeManager.updateAll();
       refreshTree();
@@ -6537,24 +6537,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     selectionTreeManager.showRoot( STRING_CONFIGURATIONS, true );
 
-    boolean hasMeta = false;
-    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
-      Object managedObject = entry.getObject().getManagedObject();
-      if ( managedObject instanceof TransMeta ) {
-        hasMeta = true;
-        showMetaTree( activeTransMeta, (TransMeta) managedObject, STRING_CONFIGURATIONS, true );
-      }
-    }
-    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
-      Object managedObject = entry.getObject().getManagedObject();
-      if ( managedObject instanceof JobMeta ) {
-        hasMeta = true;
-        showMetaTree( activeJobMeta, (JobMeta) managedObject, STRING_CONFIGURATIONS, true );
-      }
-    }
-
-    if ( !hasMeta ) {
-      showMetaTree( null, null, STRING_CONFIGURATIONS, true );
+    if ( activeTransMeta != null ) {
+      showMetaTree( activeTransMeta, STRING_CONFIGURATIONS );
+    } else if ( activeJobMeta != null ) {
+      showMetaTree( activeJobMeta, STRING_CONFIGURATIONS );
+    } else {
+      showMetaTree( null, STRING_CONFIGURATIONS );
     }
 
     selectionTreeManager.render();
@@ -6564,11 +6552,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     setShellText();
   }
 
-  private void showMetaTree( AbstractMeta activeMeta, AbstractMeta meta, String type, boolean showAll ) {
-    if ( !props.isOnlyActiveFileShownInTree() || showAll || ( activeMeta != null && activeMeta.equals( meta ) ) ) {
-      selectionTreeManager.checkUpdate( Optional.ofNullable( meta ), type );
-      selectionTreeManager.reset();
-    }
+  private void showMetaTree( AbstractMeta activeMeta, String type ) {
+    selectionTreeManager.checkUpdate( Optional.ofNullable( activeMeta ), type );
+    selectionTreeManager.reset();
   }
 
   @VisibleForTesting TreeItem createTreeItem( TreeItem parent, String text, Image image ) {
