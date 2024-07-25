@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,11 +23,22 @@
 package org.pentaho.di.trans.steps.salesforceinput;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
+import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.bind.XmlObject;
 import mondrian.util.Base64;
+import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -38,8 +49,10 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforce.SalesforceRecordValue;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
@@ -56,8 +69,11 @@ public class SalesforceInput extends SalesforceStep {
   private SalesforceInputMeta meta;
   private SalesforceInputData data;
 
+  private String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'.000'XXX";
+  private String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+
   public SalesforceInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                          Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -196,10 +212,10 @@ public class SalesforceInput extends SalesforceStep {
       }
       for ( int i = 0; i < data.nrfields; i++ ) {
         String value =
-          data.connection.getRecordValue( srvalue.getRecordValue(), meta.getInputFields()[i].getField() );
+          data.connection.getRecordValue( srvalue.getRecordValue(), meta.getInputFields()[ i ].getField() );
 
         // DO Trimming!
-        switch ( meta.getInputFields()[i].getTrimType() ) {
+        switch ( meta.getInputFields()[ i ].getTrimType() ) {
           case SalesforceInputField.TYPE_TRIM_LEFT:
             value = Const.ltrim( value );
             break;
@@ -216,9 +232,9 @@ public class SalesforceInput extends SalesforceStep {
         doConversions( outputRowData, i, value );
 
         // Do we need to repeat this field if it is null?
-        if ( meta.getInputFields()[i].isRepeated() ) {
+        if ( meta.getInputFields()[ i ].isRepeated() ) {
           if ( data.previousRow != null && Utils.isEmpty( value ) ) {
-            outputRowData[i] = data.previousRow[i];
+            outputRowData[ i ] = data.previousRow[ i ];
           }
         }
 
@@ -228,31 +244,31 @@ public class SalesforceInput extends SalesforceStep {
 
       // See if we need to add the url to the row...
       if ( meta.includeTargetURL() && !Utils.isEmpty( meta.getTargetURLField() ) ) {
-        outputRowData[rowIndex++] = data.connection.getURL();
+        outputRowData[ rowIndex++ ] = data.connection.getURL();
       }
 
       // See if we need to add the module to the row...
       if ( meta.includeModule() && !Utils.isEmpty( meta.getModuleField() ) ) {
-        outputRowData[rowIndex++] = data.connection.getModule();
+        outputRowData[ rowIndex++ ] = data.connection.getModule();
       }
 
       // See if we need to add the generated SQL to the row...
       if ( meta.includeSQL() && !Utils.isEmpty( meta.getSQLField() ) ) {
-        outputRowData[rowIndex++] = data.connection.getSQL();
+        outputRowData[ rowIndex++ ] = data.connection.getSQL();
       }
 
       // See if we need to add the server timestamp to the row...
       if ( meta.includeTimestamp() && !Utils.isEmpty( meta.getTimestampField() ) ) {
-        outputRowData[rowIndex++] = data.connection.getServerTimestamp();
+        outputRowData[ rowIndex++ ] = data.connection.getServerTimestamp();
       }
 
       // See if we need to add the row number to the row...
       if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
-        outputRowData[rowIndex++] = new Long( data.rownr );
+        outputRowData[ rowIndex++ ] = new Long( data.rownr );
       }
 
       if ( meta.includeDeletionDate() && !Utils.isEmpty( meta.getDeletionDateField() ) ) {
-        outputRowData[rowIndex++] = srvalue.getDeletionDate();
+        outputRowData[ rowIndex++ ] = srvalue.getDeletionDate();
       }
 
       RowMetaInterface irow = getInputRowMeta();
@@ -272,7 +288,7 @@ public class SalesforceInput extends SalesforceStep {
     ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta( i );
 
     if ( ValueMetaInterface.TYPE_BINARY != targetValueMeta.getType() ) {
-      outputRowData[i] = targetValueMeta.convertData( sourceValueMeta, value );
+      outputRowData[ i ] = targetValueMeta.convertData( sourceValueMeta, value );
     } else {
       // binary type of salesforce requires specific conversion
       if ( value != null ) {
@@ -293,7 +309,7 @@ public class SalesforceInput extends SalesforceStep {
     switch ( meta.getRecordsFilter() ) {
       case SalesforceConnectionUtils.RECORDS_FILTER_UPDATED:
         for ( int i = 0; i < data.nrfields; i++ ) {
-          SalesforceInputField field = fields[i];
+          SalesforceInputField field = fields[ i ];
           sql += environmentSubstitute( field.getField() );
           if ( i < data.nrfields - 1 ) {
             sql += ",";
@@ -303,7 +319,7 @@ public class SalesforceInput extends SalesforceStep {
       case SalesforceConnectionUtils.RECORDS_FILTER_DELETED:
         sql += "SELECT ";
         for ( int i = 0; i < data.nrfields; i++ ) {
-          SalesforceInputField field = fields[i];
+          SalesforceInputField field = fields[ i ];
           sql += environmentSubstitute( field.getField() );
           if ( i < data.nrfields - 1 ) {
             sql += ",";
@@ -314,7 +330,7 @@ public class SalesforceInput extends SalesforceStep {
       default:
         sql += "SELECT ";
         for ( int i = 0; i < data.nrfields; i++ ) {
-          SalesforceInputField field = fields[i];
+          SalesforceInputField field = fields[ i ];
           sql += environmentSubstitute( field.getField() );
           if ( i < data.nrfields - 1 ) {
             sql += ",";
@@ -447,4 +463,161 @@ public class SalesforceInput extends SalesforceStep {
     }
     super.dispose( smi, sdi );
   }
+
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getFieldsAction() {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    try {
+      FieldsResponse fieldsResponse = getFields();
+      response.put( "fieldsResponse", fieldsResponse );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( Exception e ) {
+      response.put( "errorMsg", BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage" ) );
+      response.put( "details", e.getStackTrace() );
+      log.logError( e.getMessage() );
+    }
+    return response;
+  }
+
+  public FieldsResponse getFields() throws Exception {
+    SalesforceConnection connection = null;
+    try {
+      SalesforceInputMeta meta = (SalesforceInputMeta) getStepMetaInterface();
+      String realURL = getTransMeta().environmentSubstitute( meta.getTargetURL() );
+      String realUsername = getTransMeta().environmentSubstitute( meta.getUsername() );
+      String realPassword = Utils.resolvePassword( getTransMeta(), meta.getPassword() );
+      int realTimeOut = Const.toInt( getTransMeta().environmentSubstitute( meta.getTimeout() ), 0 );
+
+      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
+      connection.setTimeOut( realTimeOut );
+      FieldsResponse fieldsResponse = new FieldsResponse( new ArrayList<>(), new HashSet<>() );
+      if ( meta.isSpecifyQuery() ) {
+        // Free hand SOQL
+        String realQuery = getTransMeta().environmentSubstitute( meta.getQuery() );
+        connection.setSQL( realQuery );
+        connection.connect();
+        // We are connected, so let's query
+        XmlObject[] fields = connection.getElements();
+        int nrFields = fields.length;
+        for ( int i = 0; i < nrFields; i++ ) {
+          fieldsResponse.fieldDTOList.addAll( addFields( "", fieldsResponse.fieldNames, fields[ i ] ) );
+        }
+      } else {
+        connection.connect();
+
+        Field[] fields = connection.getObjectFields( meta.getModule() );
+        for ( int i = 0; i < fields.length; i++ ) {
+          Field field = fields[ i ];
+          fieldsResponse.fieldNames.add( field.getName() );
+          fieldsResponse.fieldDTOList.add( addField( field ) );
+        }
+      }
+      return fieldsResponse;
+
+    } finally {
+      if ( connection != null ) {
+        try {
+          connection.close();
+        } catch ( Exception e ) {
+          // Ignore errors
+        }
+      }
+    }
+
+  }
+
+  private boolean isNullIdField( XmlObject field ) {
+    return ( Objects.nonNull( field.getName() ) && "ID".equalsIgnoreCase( field.getName().getLocalPart() ) )
+      && field.getValue() == null;
+  }
+
+  List<FieldDTO> addFields( String prefix, Set<String> fieldNames, XmlObject field ) {
+    //Salesforce SOAP Api sends IDs always in the response, even if we don't request it in SOQL query and
+    //the id's value is null in this case. So, do not add this Id to the fields list
+    if ( isNullIdField( field ) ) {
+      return null;
+    }
+    List<FieldDTO> fieldDTOList = new ArrayList<>();
+    String fieldname = prefix + field.getName().getLocalPart();
+    if ( field instanceof SObject ) {
+      SObject sobject = (SObject) field;
+      for ( XmlObject element : SalesforceConnection.getChildren( sobject ) ) {
+        List<FieldDTO> fields = addFields( fieldname + ".", fieldNames, element );
+        if ( CollectionUtils.isNotEmpty( fields ) ) {
+          fieldDTOList.addAll( fields );
+        }
+      }
+    } else {
+      FieldDTO fieldDTO = addField( fieldname, fieldNames, (String) field.getValue() );
+      fieldDTOList.add( fieldDTO );
+    }
+    return fieldDTOList;
+
+  }
+
+
+  private FieldDTO addField( Field field ) {
+    String fieldType = field.getType().toString();
+
+    String fieldLength = null;
+    String fieldPrecision = null;
+    if ( !fieldType.equals( "boolean" ) && !fieldType.equals( "datetime" ) && !fieldType.equals( "date" ) ) {
+      fieldLength = Integer.toString( field.getLength() );
+      fieldPrecision = Integer.toString( field.getPrecision() );
+    }
+
+    FieldDTO fieldDTO = new FieldDTO();
+    fieldDTO.setType( field.getType().toString() );
+    fieldDTO.setField( field.getName() );
+    fieldDTO.setIdlookup( field.isIdLookup() );
+    fieldDTO.setLength( fieldLength );
+    fieldDTO.setName( field.getLabel() );
+    fieldDTO.setPrecision( fieldPrecision );
+    return fieldDTO;
+
+
+  }
+
+  private FieldDTO addField( String fieldName, Set<String> fieldNames, String firstValue ) {
+    //no duplicates allowed
+    if ( !fieldNames.add( fieldName ) ) {
+      return null;
+    }
+
+    FieldDTO fieldDTO = new FieldDTO();
+    // Try to guess field type
+    // I know it's not clean (see up)
+    final String fieldType;
+    String fieldLength = null;
+    String fieldPrecision = null;
+    if ( Const.NVL( firstValue, "null" ).equals( "null" ) ) {
+      fieldType = "string";
+    } else {
+      if ( StringUtil.IsDate( firstValue, DEFAULT_DATE_TIME_FORMAT ) ) {
+        fieldType = "datetime";
+      } else if ( StringUtil.IsDate( firstValue, DEFAULT_DATE_FORMAT ) ) {
+        fieldType = "date";
+      } else if ( StringUtil.IsInteger( firstValue ) ) {
+        fieldType = "int";
+        fieldLength = Integer.toString( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
+      } else if ( StringUtil.IsNumber( firstValue ) ) {
+        fieldType = "double";
+      } else if ( firstValue.equals( "true" ) || firstValue.equals( "false" ) ) {
+        fieldType = "boolean";
+      } else {
+        fieldType = "string";
+      }
+    }
+    fieldDTO.setType( fieldType );
+    fieldDTO.setField( fieldName );
+    fieldDTO.setIdlookup( false );
+    fieldDTO.setLength( fieldLength );
+    fieldDTO.setName( fieldName );
+    fieldDTO.setPrecision( fieldPrecision );
+    return fieldDTO;
+
+  }
+
 }
