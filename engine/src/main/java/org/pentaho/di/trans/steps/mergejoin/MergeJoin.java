@@ -22,10 +22,10 @@
 
 package org.pentaho.di.trans.steps.mergejoin;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -41,6 +41,13 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Merge rows from 2 sorted streams and output joined rows with matched key fields. Use this instead of hash join is
@@ -461,6 +468,66 @@ public class MergeJoin extends BaseStep implements StepInterface {
     }
     // we got here, all seems to be ok.
     return true;
+  }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = MergeJoin.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+      response.put( "errorDetails", ExceptionUtils.getRootCauseMessage( e ) );
+    }
+    return response;
+  }
+
+  private JSONObject previousKeysAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+
+    String stepIndex = queryParams.get( "stepIndex" );
+    if ( StringUtils.isBlank( stepIndex ) || !StringUtils.isNumeric( stepIndex ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "MergeJoin.Exception.ErrorGettingFields" ) );
+    }
+    try {
+      JSONArray keysList = new JSONArray();
+      String[] keys = getPreviousStepKeys( Integer.parseInt( stepIndex ) );
+      if ( keys != null ) {
+        for ( String key : keys ) {
+          keysList.add( key );
+        }
+      }
+      response.put( "keys", keysList );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
+
+  private String[] getPreviousStepKeys( Integer stepIndex ) throws KettleException {
+    MergeJoinMeta joinMeta = (MergeJoinMeta) getStepMetaInterface();
+
+    try {
+      List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
+
+      StepMeta stepMeta = infoStreams.get( stepIndex ).getStepMeta();
+      if ( stepMeta != null ) {
+        RowMetaInterface prev = getTransMeta().getStepFields( stepMeta );
+        if ( prev != null ) {
+          return prev.getFieldNames();
+        }
+      }
+    } catch ( KettleException e ) {
+      log.logError( e.getMessage() );
+      throw new KettleException( BaseMessages.getString( PKG, "MergeJoin.Exception.ErrorGettingFields" ) );
+    }
+    return null;
   }
 
 }
