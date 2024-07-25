@@ -16,6 +16,7 @@
 package org.pentaho.di.ui.core;
 
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 
@@ -104,11 +105,30 @@ public class FileDialogOperation {
   private boolean showOnlyFolders = false;
   private Predicate<String> openCondition = any -> true;
 
-  public FileDialogOperation( Bowl bowl, String command ) {
-    this.bowl = bowl;
-    this.command = command;
+  /**
+   * Constructs an operation that will not use Bowl VFS Connections.
+   */
+  public FileDialogOperation( String command ) {
+    this( DefaultBowl.getInstance(), command );
   }
 
+  /**
+   * Constructs an operation that will include Bowl VFS Connections.
+   */
+  public FileDialogOperation( Bowl bowl, String command ) {
+    this( bowl, command, null );
+  }
+
+  /**
+   * Constructs an operation that will not use Bowl VFS Connections.
+   */
+  public FileDialogOperation( String command, String origin ) {
+    this( DefaultBowl.getInstance(), command, origin );
+  }
+
+  /**
+   * Constructs an operation that will include Bowl VFS Connections.
+   */
   public FileDialogOperation( Bowl bowl, String command, String origin ) {
     this.bowl = bowl;
     this.command = command;
