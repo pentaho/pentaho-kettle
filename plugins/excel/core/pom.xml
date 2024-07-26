@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>excel</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.0-218</version>
   </parent>
 
   <artifactId>excel-plugins-core</artifactId>
@@ -15,7 +15,7 @@
 
   <properties>
     <xmlbeans.version>5.2.0</xmlbeans.version>
-    <platform.version>10.2.0.0-SNAPSHOT</platform.version>
+    <platform.version>10.2.0.0-218</platform.version>
   </properties>
 
   <dependencies>
