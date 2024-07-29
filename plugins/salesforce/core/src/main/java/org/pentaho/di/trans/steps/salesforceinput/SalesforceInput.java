@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sforce.soap.partner.Field;
 import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.bind.XmlObject;
@@ -478,7 +479,7 @@ public class SalesforceInput extends SalesforceStep {
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
     } catch ( NoSuchMethodException e ) {
       return super.doAction( fieldName, stepMetaInterface, transMeta, trans, queryParamToValues );
-    } catch(  InvocationTargetException | IllegalAccessException e ) {
+    } catch ( InvocationTargetException | IllegalAccessException e ) {
       log.logError( e.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
     }
@@ -491,7 +492,9 @@ public class SalesforceInput extends SalesforceStep {
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
     try {
       FieldsResponse fieldsResponse = getFields();
-      response.put( "fieldsResponse", fieldsResponse );
+      ObjectMapper objectMapper = new ObjectMapper();
+      String jsonString = objectMapper.writeValueAsString( fieldsResponse );
+      response.put( "fieldsResponse", objectMapper.readTree( jsonString ) );
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
     } catch ( Exception e ) {
       response.put( "errorMsg", BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage" ) );
