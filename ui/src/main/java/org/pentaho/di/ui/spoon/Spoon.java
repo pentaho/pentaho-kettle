@@ -6994,8 +6994,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           doc.getElementById( "help-plugins" ).setVisible( true );
         }
         // Only enable certain menu-items if we need to.
-        disableMenuItem( doc, "file-new-database", disableTransMenu && disableJobMenu );
-        disableMenuItem( doc, "menubar-new-database", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "menubar-new-slave", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave );
         disableMenuItem( doc, "toolbar-file-save", disableTransMenu
