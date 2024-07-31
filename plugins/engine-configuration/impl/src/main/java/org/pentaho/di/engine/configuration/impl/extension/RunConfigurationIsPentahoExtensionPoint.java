@@ -49,7 +49,7 @@ public class RunConfigurationIsPentahoExtensionPoint implements ExtensionPointIn
     List<Object> items = (List<Object>) o;
     String name = (String) items.get( 0 );
 
-    Bowl bowl = Spoon.getInstance().getBowl();
+    Bowl bowl = Spoon.getInstance().getExecutionBowl();
     RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( () -> bowl.getMetastore() );
 
     RunConfiguration runConfiguration = runConfigurationManager.load( name );
