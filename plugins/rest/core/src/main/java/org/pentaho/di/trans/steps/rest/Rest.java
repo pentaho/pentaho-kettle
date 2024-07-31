@@ -22,11 +22,9 @@
 
 package org.pentaho.di.trans.steps.rest;
 
+import jakarta.ws.rs.core.*;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider;
-import org.glassfish.jersey.client.RequestEntityProcessing;
+import org.glassfish.jersey.client.*;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.uri.UriComponent;
 import org.json.simple.JSONObject;
@@ -48,16 +46,12 @@ import org.pentaho.di.util.HttpClientManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -263,13 +257,13 @@ public class Rest extends BaseStep implements StepInterface {
 
       // add status to output
       if ( !Utils.isEmpty( data.resultCodeFieldName ) ) {
-        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( status ) );
+        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, Long.valueOf( status ) );
         returnFieldsOffset++;
       }
 
       // add response time to output
       if ( !Utils.isEmpty( data.resultResponseFieldName ) ) {
-        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
+        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset,Long.valueOf( responseTime ) );
         returnFieldsOffset++;
       }
       // add response header to output

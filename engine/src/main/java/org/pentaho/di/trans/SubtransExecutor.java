@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans;
 
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -42,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -70,7 +70,7 @@ public class SubtransExecutor {
     this.parameters = parameters;
     this.subStep = subStep;
     this.statuses = new LinkedHashMap<>();
-    this.running = new ConcurrentHashSet<>();
+    this.running = ConcurrentHashMap.newKeySet();
     this.prefetchCount = prefetchCount;
     this.semaphore = new Semaphore( prefetchCount );
   }

@@ -24,10 +24,12 @@
 
 package org.pentaho.di.engine.api.remote;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.Decoder;
-import javax.websocket.Encoder;
-import javax.websocket.Extension;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.Extension;
+
+import javax.net.ssl.SSLContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,6 +49,11 @@ public class MessageEndpointConfig implements ClientEndpointConfig {
   @Override
   public List<Extension> getExtensions() {
     return new ArrayList<>();
+  }
+
+  @Override
+  public SSLContext getSSLContext() {
+    return null;
   }
 
   @Override

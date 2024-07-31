@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.trans.steps.PDI_11948_StepsTestsParent;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;

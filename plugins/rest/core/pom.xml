@@ -19,15 +19,15 @@
     <platform.version>10.3.0.0-SNAPSHOT</platform.version>
     <commons-xul.version>10.3.0.0-SNAPSHOT</commons-xul.version>
     <commons-lang.version>2.6</commons-lang.version>
-    <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
+    <jakarta.ws.rs-api.version>4.0.0</jakarta.ws.rs-api.version>
+    <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
     <json-simple.version>1.1</json-simple.version>
     <junit.version>4.12</junit.version>
     <mockito.version>5.10.0</mockito.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
     <jersey2-apache-connector.version>2.30</jersey2-apache-connector.version>
-    <jersey2.version>2.38</jersey2.version>
-    <jaxrs.version>2.1.6</jaxrs.version>
+    <jersey2.version>3.1.7</jersey2.version>
     <argLine>
       --add-opens=java.base/java.lang=ALL-UNNAMED
     </argLine>
@@ -68,17 +68,6 @@
       <artifactId>kettle-ui-swt</artifactId>
       <version>${pdi.version}</version>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.ws.rs</groupId>
-      <artifactId>jakarta.ws.rs-api</artifactId>
-      <version>${jaxrs.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -142,9 +131,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <version>1.3.2</version>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>${jakarta.annotation-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.inject</groupId>
@@ -162,9 +151,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>javax.ws.rs-api</artifactId>
-      <version>${javax.ws.rs-api.version}</version>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>${jakarta.ws.rs-api.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -259,20 +248,20 @@
       <version>${dependency.com.tinkerpop.blueprints.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
-      <version>${jetty.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
-      <version>${jetty.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.eclipse.jetty</groupId>-->
+<!--      <artifactId>jetty-servlet</artifactId>-->
+<!--      <version>${jetty.version}</version>-->
+<!--      <classifier>tests</classifier>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.eclipse.jetty</groupId>-->
+<!--      <artifactId>jetty-servlet</artifactId>-->
+<!--      <version>${jetty.version}</version>-->
+<!--      <classifier>tests</classifier>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
