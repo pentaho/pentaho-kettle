@@ -48,7 +48,7 @@ public class RunConfigurationExtensionPoint implements ExtensionPointInterface {
     String type = (String) ( (Object[]) o )[ 1 ];
 
     RunConfigurationManager runConfigurationManager =
-      RunConfigurationManager.getInstance( () -> Spoon.getInstance().getBowl().getMetastore() );
+      RunConfigurationManager.getInstance( () -> Spoon.getInstance().getExecutionBowl().getMetastore() );
 
     runConfigurations.addAll( runConfigurationManager.getNames( type ) );
   }
