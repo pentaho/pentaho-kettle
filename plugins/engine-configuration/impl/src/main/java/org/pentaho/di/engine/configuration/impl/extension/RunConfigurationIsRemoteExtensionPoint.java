@@ -48,7 +48,7 @@ public class RunConfigurationIsRemoteExtensionPoint implements ExtensionPointInt
   public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     List<Object> items = (List<Object>) o;
     String name = (String) items.get( 0 );
-    Bowl bowl = Spoon.getInstance().getBowl();
+    Bowl bowl = Spoon.getInstance().getExecutionBowl();
     RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( () -> bowl.getMetastore() );
 
     RunConfiguration runConfiguration = runConfigurationManager.load( name );
