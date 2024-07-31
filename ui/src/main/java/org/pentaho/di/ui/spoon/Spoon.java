@@ -4507,7 +4507,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     FileObject initialFile;
     FileObject rootFile;
     try {
-      initialFile = KettleVFS.getFileObject( getLastFileOpened() );
+      initialFile = KettleVFS.getInstance( executionBowl ).getFileObject( getLastFileOpened() );
       rootFile = initialFile.getFileSystem().getRoot();
     } catch ( Exception e ) {
       String message = Const.getStackTracker( e );
@@ -4837,7 +4837,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean fileExists = false;
     FileObject file = null;
     try {
-      file = KettleVFS.getFileObject( filename, variableSpace );
+      file = KettleVFS.getInstance( executionBowl ).getFileObject( filename, variableSpace );
       fileExists = file.exists();
     } catch ( final KettleFileException | FileSystemException e ) {
       // nothing to do, null fileObject will be handled below
@@ -6110,7 +6110,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( meta instanceof VariableSpace ) {
           variables.setVariable( CONNECTION, ( (VariableSpace) meta ).getVariable( CONNECTION ) );
         }
-        FileObject f = KettleVFS.getFileObject( filename, variables );
+        FileObject f = KettleVFS.getInstance( executionBowl ).getFileObject( filename, variables );
         if ( f.exists() ) {
           MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
           // "This file already exists.  Do you want to overwrite it?"
@@ -6171,8 +6171,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     FileObject rootFile;
     FileObject initialFile;
     try {
-      initialFile = KettleVFS.getFileObject( getLastFileOpened() );
-      rootFile = KettleVFS.getFileObject( getLastFileOpened() ).getFileSystem().getRoot();
+      initialFile = KettleVFS.getInstance( executionBowl ).getFileObject( getLastFileOpened() );
+      rootFile = KettleVFS.getInstance( executionBowl ).getFileObject( getLastFileOpened() ).getFileSystem().getRoot();
     } catch ( Exception e ) {
       MessageBox messageDialog = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
       messageDialog.setText( "Error" );
@@ -6208,7 +6208,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // See if the file already exists...
       int id = SWT.YES;
       try {
-        FileObject f = KettleVFS.getFileObject( filename );
+        FileObject f = KettleVFS.getInstance( executionBowl ).getFileObject( filename );
         if ( f.exists() ) {
           MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
           // "This file already exists.  Do you want to overwrite it?"
@@ -6302,7 +6302,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       String xml = XMLHandler.getXMLHeader() + meta.getXML();
 
       VariableSpace variableSpace = meta instanceof VariableSpace ? (VariableSpace) meta : null;
-      DataOutputStream dos = new DataOutputStream( KettleVFS.getOutputStream( filename, variableSpace, false ) );
+      DataOutputStream dos = new DataOutputStream( KettleVFS.getInstance( executionBowl ).getOutputStream( filename, variableSpace, false ) );
       dos.write( xml.getBytes( Const.XML_ENCODING ) );
       dos.close();
 
