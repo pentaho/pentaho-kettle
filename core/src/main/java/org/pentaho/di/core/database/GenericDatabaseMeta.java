@@ -70,14 +70,12 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String getDriverClass() {
-    String driverClass = getAttributes().getProperty( ATRRIBUTE_CUSTOM_DRIVER_CLASS, "" );
-    return driverClass;
+    return getAttributes().getProperty( ATRRIBUTE_CUSTOM_DRIVER_CLASS, "" );
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    String url = getAttributes().getProperty( ATRRIBUTE_CUSTOM_URL, "" );
-    return url;
+    return getAttributes().getProperty( ATRRIBUTE_CUSTOM_URL, "" );
   }
 
   /**

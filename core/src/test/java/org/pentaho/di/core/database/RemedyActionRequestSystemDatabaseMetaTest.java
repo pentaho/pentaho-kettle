@@ -28,6 +28,7 @@ import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.Test;
 
+@Deprecated
 public class RemedyActionRequestSystemDatabaseMetaTest {
   RemedyActionRequestSystemDatabaseMeta odbcMeta;
 

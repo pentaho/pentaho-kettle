@@ -30,6 +30,7 @@ package org.pentaho.di.core.database;
  * @since 11-Sep-2007
  */
 
+@Deprecated
 public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
