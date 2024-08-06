@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,21 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -721,6 +726,40 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
       }
     }
     return true;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getSchemaAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    try {
+      String[] schemas = getSchemaNames( queryParams.get( "connection" ) );
+      JSONArray schemaNames = new JSONArray();
+      for ( String schema : schemas ) {
+        schemaNames.add( schema );
+      }
+      response.put( "schemaNames", schemaNames );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( KettleDatabaseException e ) {
+      log.logError( e.getMessage() );
+    }
+    return response;
+  }
+
+  public String[] getSchemaNames( String dbname ) throws KettleDatabaseException {
+    DatabaseMeta databaseMeta = getTransMeta().findDatabase( dbname );
+    if ( databaseMeta != null ) {
+      LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+        "Table Output Step", LoggingObjectType.STEP, null );
+      Database database = new Database( loggingObject, databaseMeta );
+      try {
+        database.connect();
+        return Const.sortStrings( database.getSchemas() );
+      } finally {
+        database.disconnect();
+      }
+    }
+    return new String[ 0 ];
   }
 
 

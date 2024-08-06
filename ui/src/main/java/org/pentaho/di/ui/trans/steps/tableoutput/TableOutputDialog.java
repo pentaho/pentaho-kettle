@@ -1051,37 +1051,33 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     }
   }
   private void getSchemaNames() {
-    DatabaseMeta databaseMeta = transMeta.findDatabase( wConnection.getText() );
-    if ( databaseMeta != null ) {
-      Database database = new Database( loggingObject, databaseMeta );
-      try {
-        database.connect();
-        String[] schemas = database.getSchemas();
-
-        if ( null != schemas && schemas.length > 0 ) {
-          schemas = Const.sortStrings( schemas );
-          EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
-              PKG, "TableOutputDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
-              .getString( PKG, "TableOutputDialog.AvailableSchemas.Message", wConnection.getText() ) );
-          String d = dialog.open();
-          if ( d != null ) {
-            wSchema.setText( Const.NVL( d, "" ) );
-            setTableFieldCombo();
-          }
-
-        } else {
-          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-          mb.setMessage( BaseMessages.getString( PKG, "TableOutputDialog.NoSchema.Error" ) );
-          mb.setText( BaseMessages.getString( PKG, "TableOutputDialog.GetSchemas.Error" ) );
-          mb.open();
+    try {
+      TableOutputMeta info = new TableOutputMeta();
+      getInfo( info );
+      Trans trans = new Trans( transMeta, null );
+      trans.rowsets = new ArrayList<>();
+      TableOutput step = (TableOutput) info.getStep( stepMeta, info.getStepData(), 0, transMeta, trans );
+      step.setStepMetaInterface( info );
+      String[] schemas = step.getSchemaNames( wConnection.getText() );
+      if ( null != schemas && schemas.length > 0 ) {
+        EnterSelectionDialog dialog =
+          new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+            PKG, "TableOutputDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
+            .getString( PKG, "TableOutputDialog.AvailableSchemas.Message", wConnection.getText() ) );
+        String d = dialog.open();
+        if ( d != null ) {
+          wSchema.setText( Const.NVL( d, "" ) );
+          setTableFieldCombo();
         }
-      } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-          .getString( PKG, "TableOutputDialog.ErrorGettingSchemas" ), e );
-      } finally {
-        database.disconnect();
+      } else {
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+        mb.setMessage( BaseMessages.getString( PKG, "TableOutputDialog.NoSchema.Error" ) );
+        mb.setText( BaseMessages.getString( PKG, "TableOutputDialog.GetSchemas.Error" ) );
+        mb.open();
       }
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+        .getString( PKG, "TableOutputDialog.ErrorGettingSchemas" ), e );
     }
   }
 
