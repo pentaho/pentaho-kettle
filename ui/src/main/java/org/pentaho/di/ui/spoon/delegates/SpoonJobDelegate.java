@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,6 +61,7 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -530,7 +531,14 @@ public class SpoonJobDelegate extends SpoonDelegate {
     //
 
     final JobMeta jobMeta = new JobMeta();
-    jobMeta.setDatabases( databases );
+    DatabaseManagementInterface dbMgr = jobMeta.getDatabaseManagementInterface();
+    try {
+      for ( DatabaseMeta dbMeta : databases ) {
+        dbMgr.addDatabase( dbMeta );
+      }
+    } catch ( Exception e ) {
+      new ErrorDialog( spoon.getShell(), "Error", "An unexpected error occurred!", e );
+    }
     jobMeta.setFilename( null );
     jobMeta.setName( jobname );
 
@@ -776,9 +784,10 @@ public class SpoonJobDelegate extends SpoonDelegate {
     transMeta.addNote( ni );
   }
 
-  private void setTransMetaDatabase( DatabaseMeta sourceDbInfo, DatabaseMeta targetDbInfo, TransMeta transMeta ) {
-    transMeta.addDatabase( sourceDbInfo );
-    transMeta.addDatabase( targetDbInfo );
+  private void setTransMetaDatabase( DatabaseMeta sourceDbInfo, DatabaseMeta targetDbInfo, TransMeta transMeta )
+    throws KettleException {
+    transMeta.getDatabaseManagementInterface().addDatabase( sourceDbInfo );
+    transMeta.getDatabaseManagementInterface().addDatabase( targetDbInfo );
   }
 
   @VisibleForTesting

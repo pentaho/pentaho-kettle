@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
@@ -61,6 +62,7 @@ import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
@@ -78,6 +80,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
@@ -111,6 +114,7 @@ public class AbstractMetaTest {
   public static void setUpBeforeClass() throws Exception {
     PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
     PluginRegistry.init();
+    DefaultBowl.getInstance().setSharedObjectsIO( new MemorySharedObjectsIO() );
   }
 
   @Before
@@ -194,37 +198,63 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetDatabase() {
+  public void testDatabaseManagementInterface() throws Exception {
     assertEquals( 0, meta.nrDatabases() );
-    assertNull( meta.getDatabases() );
+    assertNotNull( meta.getDatabases() );
+    assertEquals( 0, meta.getDatabases().size() );
+    assertFalse( meta.haveConnectionsChanged() );
+    meta.clear();
+    assertTrue( meta.getDatabases().isEmpty() );
+    assertTrue( meta.getDatabaseManagementInterface().getDatabases().isEmpty() );
+    assertEquals( 0, meta.nrDatabases() );
+    assertFalse( meta.haveConnectionsChanged() );
+
+    DatabaseMeta db1 = new DatabaseMeta();
+    db1.setName( "db1" );
+    db1.setDisplayName( "db1" );
+    meta.getDatabaseManagementInterface().addDatabase( db1 );
+
+    assertEquals( 1, meta.getDatabases().size() );
+    assertEquals( 1, meta.getDatabaseManagementInterface().getDatabases().size() );
+    assertEquals( 1, meta.nrDatabases() );
+    assertTrue( meta.haveConnectionsChanged() );
+    assertEquals( db1, meta.getDatabaseManagementInterface().getDatabase( "db1" ) );
+    assertEquals( db1, meta.findDatabase( "db1" ) );
+  }
+
+  @Test
+  public void testGetSetDatabase() throws Exception {
+    assertEquals( 0, meta.nrDatabases() );
+    assertNotNull( meta.getDatabases() );
+    assertEquals( 0, meta.getDatabases().size() );
     assertFalse( meta.haveConnectionsChanged() );
     meta.clear();
     assertTrue( meta.getDatabases().isEmpty() );
     assertEquals( 0, meta.nrDatabases() );
     assertFalse( meta.haveConnectionsChanged() );
-    DatabaseMeta db1 = mock( DatabaseMeta.class );
-    when( db1.getName() ).thenReturn( "db1" );
-    when( db1.getDisplayName() ).thenReturn( "db1" );
-    meta.addDatabase( db1 );
+    DatabaseMeta db1 = new DatabaseMeta();
+    db1.setName( "db1" );
+    db1.setDisplayName( "db1" );
+    meta.getDatabaseManagementInterface().addDatabase( db1 );
     assertEquals( 1, meta.nrDatabases() );
     assertFalse( meta.getDatabases().isEmpty() );
     assertTrue( meta.haveConnectionsChanged() );
-    DatabaseMeta db2 = mock( DatabaseMeta.class );
-    when( db2.getName() ).thenReturn( "db2" );
-    when( db2.getDisplayName() ).thenReturn( "db2" );
-    meta.addDatabase( db2 );
+    DatabaseMeta db2 = new DatabaseMeta();
+    db2.setName( "db2" );
+    db2.setDisplayName( "db2" );
+    meta.getDatabaseManagementInterface().addDatabase( db2 );
     assertEquals( 2, meta.nrDatabases() );
     // Test replace
-    meta.addDatabase( db1, true );
+    meta.getDatabaseManagementInterface().addDatabase( db1 );
     assertEquals( 2, meta.nrDatabases() );
-    meta.addOrReplaceDatabase( db1 );
+    meta.getDatabaseManagementInterface().addDatabase( db1 );
     assertEquals( 2, meta.nrDatabases() );
     // Test duplicate
-    meta.addDatabase( db2, false );
+    meta.getDatabaseManagementInterface().addDatabase( db2 );
     assertEquals( 2, meta.nrDatabases() );
-    DatabaseMeta db3 = mock( DatabaseMeta.class );
-    when( db3.getName() ).thenReturn( "db3" );
-    meta.addDatabase( db3, false );
+    DatabaseMeta db3 = new DatabaseMeta();
+    db3.setName( "db3" );
+    meta.getDatabaseManagementInterface().addDatabase( db3 );
     assertEquals( 3, meta.nrDatabases() );
     assertEquals( db1, meta.getDatabase( 0 ) );
     assertEquals( 0, meta.indexOfDatabase( db1 ) );
@@ -232,48 +262,17 @@ public class AbstractMetaTest {
     assertEquals( 1, meta.indexOfDatabase( db2 ) );
     assertEquals( db3, meta.getDatabase( 2 ) );
     assertEquals( 2, meta.indexOfDatabase( db3 ) );
-    DatabaseMeta db4 = mock( DatabaseMeta.class );
-    meta.addDatabase( 3, db4 );
+    DatabaseMeta db4 = new DatabaseMeta();
+    db4.setName( "db4" );
+    meta.getDatabaseManagementInterface().addDatabase( db4 );
     assertEquals( 4, meta.nrDatabases() );
     assertEquals( db4, meta.getDatabase( 3 ) );
     assertEquals( 3, meta.indexOfDatabase( db4 ) );
-    meta.removeDatabase( 3 );
+    meta.getDatabaseManagementInterface().removeDatabase( db4 );
     assertEquals( 3, meta.nrDatabases() );
     assertTrue( meta.haveConnectionsChanged() );
     meta.clearChangedDatabases();
     assertFalse( meta.haveConnectionsChanged() );
-
-    List<DatabaseMeta> list = Arrays.asList( db2, db1 );
-    meta.setDatabases( list );
-    assertEquals( 2, meta.nrDatabases() );
-    assertEquals( "db1", meta.getDatabaseNames()[0] );
-    assertEquals( 0, meta.indexOfDatabase( db1 ) );
-    meta.removeDatabase( -1 );
-    assertEquals( 2, meta.nrDatabases() );
-    meta.removeDatabase( 2 );
-    assertEquals( 2, meta.nrDatabases() );
-    assertEquals( db1, meta.findDatabase( "db1" ) );
-    assertNull( meta.findDatabase( "" ) );
-  }
-
-  @Test( expected = KettlePluginException.class )
-  public void testGetSetImportMetaStore() throws Exception {
-    assertNull( meta.getMetaStore() );
-    meta.importFromMetaStore();
-    IMetaStore metastore = mock( IMetaStore.class );
-    meta.setMetaStore( metastore );
-    assertEquals( metastore, meta.getMetaStore() );
-    meta.importFromMetaStore();
-    IMetaStoreElementType elementType = mock( IMetaStoreElementType.class );
-    when( metastore.getElementTypeByName(
-      PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME ) ).thenReturn( elementType );
-    when( metastore.getElements( PentahoDefaults.NAMESPACE, elementType ) )
-      .thenReturn( new ArrayList<>() );
-    meta.importFromMetaStore();
-    IMetaStoreElement element = mock( IMetaStoreElement.class );
-    when( metastore.getElements( PentahoDefaults.NAMESPACE, elementType ) )
-      .thenReturn( Collections.singletonList( element ) );
-    meta.importFromMetaStore();
   }
 
   @Test
@@ -586,23 +585,6 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetSharedObjectsFile() {
-    assertNull( meta.getSharedObjectsFile() );
-    meta.setSharedObjectsFile( "mySharedObjects" );
-    assertEquals( "mySharedObjects", meta.getSharedObjectsFile() );
-  }
-
-  @Test
-  public void testGetSetSharedObjects() {
-    SharedObjects sharedObjects = mock( SharedObjects.class );
-    meta.setSharedObjects( sharedObjects );
-    assertEquals( sharedObjects, meta.getSharedObjects() );
-    meta.setSharedObjects( null );
-    AbstractMeta spyMeta = spy( meta );
-    assertNotNull( spyMeta.getSharedObjects() );
-  }
-
-  @Test
   public void testGetSetCreatedDate() {
     assertNull( meta.getCreatedDate() );
     Date now = Calendar.getInstance().getTime();
@@ -829,6 +811,11 @@ public class AbstractMetaTest {
     @Override
     public List<String> getUsedVariables() {
       return Collections.emptyList();
+    }
+
+    @Override
+    public void databasesUpdated( String name, Optional<DatabaseMeta> database ) {
+
     }
 
     @Override

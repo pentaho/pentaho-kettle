@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.ui.spoon;
 
-import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
@@ -40,17 +39,11 @@ import java.util.Map;
 public class DatabasesCollector {
   private DatabaseManagementInterface dbManager;
   private final Repository repository;
-  private AbstractMeta meta;
   private List<String> dbNames;
   private Map<String, DatabaseMeta> dbMetaMap;
 
   public DatabasesCollector( DatabaseManagementInterface dbManager, Repository repository ) {
-    this( dbManager, null, repository );
-  }
-
-  public DatabasesCollector( DatabaseManagementInterface dbManager, AbstractMeta meta, Repository repository ) {
     this.dbManager = dbManager;
-    this.meta = meta;
     this.repository = repository;
   }
 
@@ -58,15 +51,8 @@ public class DatabasesCollector {
     dbMetaMap = new HashMap<String, DatabaseMeta>();
     List<DatabaseMeta> dbMetaList;
 
-    // SharedObjects
     if ( dbManager != null ) {
       dbMetaList = dbManager.getDatabases();
-      addToMetaMap( dbMetaList );
-    }
-
-    // local databases
-    if ( meta != null ) {
-      dbMetaList = meta.getLocalDbMetas();
       addToMetaMap( dbMetaList );
     }
 

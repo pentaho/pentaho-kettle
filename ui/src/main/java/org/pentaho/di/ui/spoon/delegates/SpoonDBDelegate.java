@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -44,7 +45,6 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransHopMeta;
@@ -60,7 +60,6 @@ import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.SQLStatementsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.spoon.SharedObjectSyncUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
@@ -69,14 +68,9 @@ import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 public class SpoonDBDelegate extends SpoonDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
   private DatabaseDialog databaseDialog;
-  private SharedObjectSyncUtil sharedObjectSyncUtil;
 
   public SpoonDBDelegate( Spoon spoon ) {
     super( spoon );
-  }
-
-  public void setSharedObjectSyncUtil( SharedObjectSyncUtil sharedObjectSyncUtil ) {
-    this.sharedObjectSyncUtil = sharedObjectSyncUtil;
   }
 
   public void sqlConnection( DatabaseMeta databaseMeta ) {
@@ -85,43 +79,40 @@ public class SpoonDBDelegate extends SpoonDelegate {
     sql.open();
   }
 
-  public void editConnection( DatabaseMeta databaseMeta ) {
-    HasDatabasesInterface hasDatabasesInterface = spoon.getActiveHasDatabasesInterface();
-    if ( hasDatabasesInterface == null ) {
-      return; // program error, exit just to make sure.
-    }
-
+  public void editConnection( DatabaseManagementInterface dbManager, DatabaseMeta databaseMeta ) {
     String originalName = databaseMeta.getName();
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
-    getDatabaseDialog().setDatabases( hasDatabasesInterface.getDatabases() );
-    String newname = getDatabaseDialog().open();
-    if ( !Utils.isEmpty( newname ) ) { // null: CANCEL
-      databaseMeta.setName( originalName );
-
-      databaseMeta = getDatabaseDialog().getDatabaseMeta();
-      if ( !newname.equals( originalName )
-          && databaseMeta.findDatabase( hasDatabasesInterface.getDatabases(), newname ) != null ) {
-        databaseMeta.setName( newname.trim() );
-        DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
+    try {
+      getDatabaseDialog().setDatabases( dbManager.getDatabases() );
+      String newname = getDatabaseDialog().open();
+      if ( !Utils.isEmpty( newname ) ) { // null: CANCEL
         databaseMeta.setName( originalName );
-        databaseMeta.setDisplayName( originalName );
-        return;
-      }
-      databaseMeta.setName( newname.trim() );
-      databaseMeta.setDisplayName( newname.trim() );
-      saveConnection( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION );
-      if ( databaseMeta.isShared() ) {
-        sharedObjectSyncUtil.synchronizeConnections( databaseMeta, originalName );
-      }
 
-      saveConnection( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION );
-      if ( databaseMeta.isShared() ) {
-        sharedObjectSyncUtil.synchronizeConnections( databaseMeta, originalName );
-      }
+        databaseMeta = getDatabaseDialog().getDatabaseMeta();
+        if ( !newname.equals( originalName )
+            && databaseMeta.findDatabase( dbManager.getDatabases(), newname ) != null ) {
+          databaseMeta.setName( newname.trim() );
+          DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
+          databaseMeta.setName( originalName );
+          databaseMeta.setDisplayName( originalName );
+          return;
+        }
+        databaseMeta.setName( newname.trim() );
+        databaseMeta.setDisplayName( newname.trim() );
+        dbManager.addDatabase( databaseMeta );
 
-      refreshTree();
+        if ( !newname.equals( originalName ) ) {
+          spoon.refreshDbConnection( newname.trim() );
+        }
+        spoon.refreshDbConnection( originalName );
+        refreshTree();
+      }
+      spoon.setShellText();
+    } catch ( Exception e ) {
+      new ErrorDialog(
+        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnexpectedError.Title" ), BaseMessages
+          .getString( PKG, "Spoon.Dialog.UnexpectedError.Message" ), new KettleException( e.getMessage(), e ) );
     }
-    spoon.setShellText();
   }
 
   private DatabaseDialog getDatabaseDialog() {
@@ -133,27 +124,28 @@ public class SpoonDBDelegate extends SpoonDelegate {
   }
 
   public void dupeConnection( HasDatabasesInterface hasDatabasesInterface, DatabaseMeta databaseMeta ) {
-    String name = databaseMeta.getName();
-    int pos = hasDatabasesInterface.indexOfDatabase( databaseMeta );
-    if ( databaseMeta != null ) {
-      DatabaseMeta databaseMetaCopy = (DatabaseMeta) databaseMeta.clone();
-      String dupename = BaseMessages.getString( PKG, "Spoon.Various.DupeName" ) + name;
-      databaseMetaCopy.setName( dupename );
-
-      getDatabaseDialog().setDatabaseMeta( databaseMetaCopy );
-
-      String newname = getDatabaseDialog().open();
-      if ( newname != null ) { // null: CANCEL
-
-        databaseMetaCopy.verifyAndModifyDatabaseName( hasDatabasesInterface.getDatabases(), name );
-        hasDatabasesInterface.addDatabase( pos + 1, databaseMetaCopy );
-        spoon.addUndoNew(
-          (UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta) databaseMetaCopy.clone() },
-          new int[] { pos + 1 } );
-        saveConnection( databaseMetaCopy, Const.VERSION_COMMENT_EDIT_VERSION );
-        refreshTree();
-      }
-    }
+    // TODO BACKLOG-41332
+    //String name = databaseMeta.getName();
+    //int pos = hasDatabasesInterface.indexOfDatabase( databaseMeta );
+    //if ( databaseMeta != null ) {
+    //  DatabaseMeta databaseMetaCopy = (DatabaseMeta) databaseMeta.clone();
+    //  String dupename = BaseMessages.getString( PKG, "Spoon.Various.DupeName" ) + name;
+    //  databaseMetaCopy.setName( dupename );
+    //
+    //  getDatabaseDialog().setDatabaseMeta( databaseMetaCopy );
+    //
+    //  String newname = getDatabaseDialog().open();
+    //  if ( newname != null ) { // null: CANCEL
+    //
+    //    databaseMetaCopy.verifyAndModifyDatabaseName( hasDatabasesInterface.getDatabases(), name );
+    //    hasDatabasesInterface.addDatabase( pos + 1, databaseMetaCopy );
+    //    spoon.addUndoNew(
+    //      (UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta) databaseMetaCopy.clone() },
+    //      new int[] { pos + 1 } );
+    //    //saveConnection( databaseMetaCopy, Const.VERSION_COMMENT_EDIT_VERSION );
+    //    refreshTree();
+    //  }
+    //}
   }
 
   public void clipConnection( DatabaseMeta databaseMeta ) {
@@ -167,38 +159,23 @@ public class SpoonDBDelegate extends SpoonDelegate {
    * @param name
    *          The name of the database connection.
    */
-  public void delConnection( HasDatabasesInterface hasDatabasesInterface, DatabaseMeta db ) {
-    int pos = hasDatabasesInterface.indexOfDatabase( db );
-    boolean worked = false;
-
-    // delete from repository?
-    Repository rep = spoon.getRepository();
-    if ( rep != null ) {
-      if ( !rep.getSecurityProvider().isReadOnly() ) {
-        try {
-          rep.deleteDatabaseMeta( db.getName() );
-          worked = true;
-        } catch ( KettleException dbe ) {
-          new ErrorDialog( spoon.getShell(),
-            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingConnection.Title" ),
-            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName() ), dbe );
-        }
-      } else {
-        new ErrorDialog( spoon.getShell(),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingConnection.Title" ),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName() ),
-          new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyUser" ) ) );
-      }
+  public void delConnection( DatabaseManagementInterface dbMgr, DatabaseMeta db ) {
+    UndoInterface undoInterface = spoon.getActiveUndoInterface();
+    //TODO UNDO . No clue what the int should be.
+    //if ( undoInterface != null ) {
+    //  spoon.addUndoDelete(
+    //      undoInterface, new DatabaseMeta[] { (DatabaseMeta) db.clone() }, new int[] { pos } );
+    //}
+    try {
+      dbMgr.removeDatabase( db );
+    } catch ( Exception e ) {
+      new ErrorDialog(
+        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnexpectedError.Title" ), BaseMessages
+          .getString( PKG, "Spoon.Dialog.UnexpectedError.Message" ), new KettleException( e.getMessage(), e ) );
     }
+    DBCache.getInstance().clear( db.getName() ); // remove this from the cache as well.
 
-    if ( spoon.getRepository() == null || worked ) {
-      spoon.addUndoDelete(
-        (UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta) db.clone() },
-        new int[] { pos } );
-      hasDatabasesInterface.removeDatabase( pos );
-      DBCache.getInstance().clear( db.getName() ); // remove this from the cache as well.
-    }
-
+    spoon.refreshDbConnection( db.getName() );
     refreshTree();
     spoon.setShellText();
   }
@@ -300,8 +277,8 @@ public class SpoonDBDelegate extends SpoonDelegate {
       // Create a new transformation...
       //
       TransMeta meta = new TransMeta();
-      meta.addDatabase( sourceDBInfo );
-      meta.addDatabase( targetDBInfo );
+      meta.getDatabaseManagementInterface().addDatabase( sourceDBInfo );
+      meta.getDatabaseManagementInterface().addDatabase( targetDBInfo );
 
       //
       // Add a note
@@ -440,41 +417,6 @@ public class SpoonDBDelegate extends SpoonDelegate {
     return true;
   }
 
-  public void saveConnection( DatabaseMeta db, String versionComment ) {
-    // Also add to repository?
-    Repository rep = spoon.getRepository();
-
-    if ( rep != null ) {
-      if ( !rep.getSecurityProvider().isReadOnly() ) {
-        try {
-
-          if ( Utils.isEmpty( versionComment ) ) {
-            rep.insertLogEntry( "Saving database '" + db.getName() + "'" );
-          } else {
-            rep.insertLogEntry( "Save database : " + versionComment );
-          }
-          rep.save( db, versionComment, null );
-          spoon.getLog().logDetailed(
-            BaseMessages.getString( PKG, "Spoon.Log.SavedDatabaseConnection", db.getDatabaseName() ) );
-
-          db.setChanged( false );
-        } catch ( KettleException ke ) {
-          new ErrorDialog( spoon.getShell(),
-            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
-            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName() ), ke );
-        }
-      } else {
-        // This repository user is read-only!
-        //
-        new ErrorDialog(
-          spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnableSave.Title" ), BaseMessages
-            .getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName() ),
-          new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) ) );
-      }
-    }
-
-  }
-
   public void newConnection( ) {
     DatabaseMeta databaseMeta = new DatabaseMeta();
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
@@ -489,9 +431,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
 
         if ( databaseMeta.findDatabase( databaseManagementInterface.getDatabases(), con_name ) == null ) {
           databaseManagementInterface.addDatabase( databaseMeta );
-          if ( spoon.rep != null ) {
-            saveConnectionToRepository( databaseMeta );
-          }
+          spoon.refreshDbConnection( con_name );
           refreshTree();
         } else {
           DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
@@ -504,50 +444,32 @@ public class SpoonDBDelegate extends SpoonDelegate {
     }
   }
 
-  public void newConnection( HasDatabasesInterface hasDatabasesInterface ) {
-
-    DatabaseMeta databaseMeta = new DatabaseMeta();
-    if ( hasDatabasesInterface instanceof VariableSpace ) {
-      databaseMeta.shareVariablesWith( (VariableSpace) hasDatabasesInterface );
-    } else {
-      databaseMeta.initializeVariablesFrom( null );
-    }
+  public void newConnection( Optional<VariableSpace> varspace, DatabaseManagementInterface dbMgr ) {
+    final DatabaseMeta databaseMeta = new DatabaseMeta();
+    varspace.ifPresentOrElse( v -> databaseMeta.shareVariablesWith( v ),
+      () -> databaseMeta.initializeVariablesFrom( null ) );
 
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
     String con_name = getDatabaseDialog().open();
     if ( !Utils.isEmpty( con_name ) ) {
       con_name = con_name.trim();
-      databaseMeta.setName( con_name );
-      databaseMeta.setDisplayName( con_name );
-      databaseMeta = getDatabaseDialog().getDatabaseMeta();
+      DatabaseMeta newDatabaseMeta = getDatabaseDialog().getDatabaseMeta();
 
-      if ( databaseMeta.findDatabase( hasDatabasesInterface.getDatabases(), con_name ) == null ) {
-        hasDatabasesInterface.addDatabase( databaseMeta );
-        spoon.addUndoNew( (UndoInterface) hasDatabasesInterface, new DatabaseMeta[]{(DatabaseMeta) databaseMeta
-                .clone()}, new int[]{hasDatabasesInterface.indexOfDatabase( databaseMeta )} );
-        if ( spoon.rep != null ) {
-         saveConnectionToRepository( databaseMeta );
-        }
-        refreshTree();
-      } else {
-        DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
-      }
-    }
-  }
-
-  private void saveConnectionToRepository( DatabaseMeta databaseMeta ) {
-    if ( spoon.rep != null ) {
       try {
-        if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
-          // spoon.rep.getDatabaseID(  )
-          spoon.rep.save( databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+        if ( dbMgr.getDatabase( con_name ) == null ) {
+          dbMgr.addDatabase( newDatabaseMeta );
+          // TODO UNDO. No clue what the int should be
+          //spoon.addUndoNew( (UndoInterface) meta, new DatabaseMeta[]{(DatabaseMeta) newDatabaseMeta
+          //        .clone()}, new int[]{hasDatabasesInterface.indexOfDatabase( newDatabaseMeta )} );
+          spoon.refreshDbConnection( con_name );
+          refreshTree();
         } else {
-          throw new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
+          DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), newDatabaseMeta );
         }
-      } catch ( KettleException e ) {
+      } catch ( KettleException exception ) {
         new ErrorDialog( spoon.getShell(),
           BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), e );
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", newDatabaseMeta.getName() ), exception );
       }
     }
   }

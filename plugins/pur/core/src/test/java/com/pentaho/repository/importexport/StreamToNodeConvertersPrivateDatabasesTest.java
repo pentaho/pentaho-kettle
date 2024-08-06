@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -31,6 +32,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.Converter;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -89,6 +91,7 @@ public class StreamToNodeConvertersPrivateDatabasesTest {
   @BeforeClass
   public static void initKettle() throws Exception {
     KettleEnvironment.init();
+    DefaultBowl.getInstance().setSharedObjectsIO( new MemorySharedObjectsIO() );
   }
 
   private final Converter converter;
@@ -102,33 +105,9 @@ public class StreamToNodeConvertersPrivateDatabasesTest {
   }
 
   @Test
-  public void removesSharedDatabases() throws Exception {
-    List<DatabaseMeta> dbs =
-        new ArrayList<DatabaseMeta>( asList( createDb( "meta1" ), createDb( "private" ), createDb( "meta2" ) ) );
-    meta.setDatabases( dbs );
-    meta.setPrivateDatabases( Collections.singleton( "private" ) );
-    System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "N" );
-    InputStream stream = converter.convert( FILE_ID );
-    assertDatabaseNodes( stream, "private" );
-    System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "Y" );
-  }
-
-  @Test
-  public void removesAll_IfPrivateSetIsEmpty() throws Exception {
-    List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>( asList( createDb( "meta1" ), createDb( "meta2" ) ) );
-    meta.setDatabases( dbs );
-    meta.setPrivateDatabases( Collections.<String> emptySet() );
-    System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "N" );
-
-    InputStream stream = converter.convert( FILE_ID );
-    assertDatabaseNodes( stream );
-    System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "Y" );
-  }
-
-  @Test
   public void removesAll_IfPrivateSetIsEmptyOnlyUsed() throws Exception {
     List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>( asList( createDb( "meta1" ), createDb( "meta2" ) ) );
-    meta.setDatabases( dbs );
+    setDatabases( meta, dbs );
     meta.setPrivateDatabases( Collections.<String> emptySet() );
 
     InputStream stream = converter.convert( FILE_ID );
@@ -138,7 +117,7 @@ public class StreamToNodeConvertersPrivateDatabasesTest {
   @Test
   public void keepsAll_IfPrivateSetIsNullOnlyUsed() throws Exception {
     List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>( asList( createDb( "meta1" ), createDb( "meta2" ) ) );
-    meta.setDatabases( dbs );
+    setDatabases( meta, dbs );
     meta.setPrivateDatabases( null );
 
     System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "N" );
@@ -151,7 +130,7 @@ public class StreamToNodeConvertersPrivateDatabasesTest {
   @Test
   public void keepsAll_IfPrivateSetIsNullExportAll() throws Exception {
     List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>( asList( createDb( "meta1" ), createDb( "meta2" ) ) );
-    meta.setDatabases( dbs );
+    setDatabases( meta, dbs );
     meta.setPrivateDatabases( null );
 
     InputStream stream = converter.convert( FILE_ID );
@@ -193,5 +172,12 @@ public class StreamToNodeConvertersPrivateDatabasesTest {
     meta.setName( name );
     meta.getDatabaseInterface().setDatabaseName( name );
     return meta;
+  }
+
+  private void setDatabases( AbstractMeta meta, List<DatabaseMeta> databases ) throws Exception {
+    meta.getDatabaseManagementInterface().clear();
+    for ( DatabaseMeta db : databases ) {
+      meta.getDatabaseManagementInterface().addDatabase( db );
+    }
   }
 }

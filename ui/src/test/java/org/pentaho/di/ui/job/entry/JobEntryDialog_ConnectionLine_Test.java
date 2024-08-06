@@ -22,21 +22,23 @@
 
 package org.pentaho.di.ui.job.entry;
 
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.spoon.Spoon;
+
+import java.util.function.Supplier;
 import org.eclipse.swt.custom.CCombo;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.powermock.reflect.Whitebox;
-
-import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,6 +63,7 @@ public class JobEntryDialog_ConnectionLine_Test {
   @BeforeClass
   public static void initKettle() throws Exception {
     KettleEnvironment.init();
+    DefaultBowl.getInstance().setSharedObjectsIO( new MemorySharedObjectsIO() );
   }
 
 
@@ -76,7 +79,7 @@ public class JobEntryDialog_ConnectionLine_Test {
   @Test
   public void ignores_WhenConnectionNameIsUsed() throws Exception {
     JobMeta jobMeta = new JobMeta();
-    jobMeta.addDatabase( createDefaultDatabase() );
+    jobMeta.getDatabaseManagementInterface().addDatabase( createDefaultDatabase() );
 
     invokeAddConnectionListener( jobMeta, null );
 
@@ -103,7 +106,7 @@ public class JobEntryDialog_ConnectionLine_Test {
   @Test
   public void edits_WhenNotRenamed() throws Exception {
     JobMeta jobMeta = new JobMeta();
-    jobMeta.addDatabase( createDefaultDatabase() );
+    jobMeta.getDatabaseManagementInterface().addDatabase( createDefaultDatabase() );
 
     invokeEditConnectionListener( jobMeta, INITIAL_NAME );
 
@@ -113,7 +116,7 @@ public class JobEntryDialog_ConnectionLine_Test {
   @Test
   public void edits_WhenNewNameIsUnique() throws Exception {
     JobMeta jobMeta = new JobMeta();
-    jobMeta.addDatabase( createDefaultDatabase() );
+    jobMeta.getDatabaseManagementInterface().addDatabase( createDefaultDatabase() );
 
     invokeEditConnectionListener( jobMeta, INPUT_NAME );
 
@@ -123,7 +126,7 @@ public class JobEntryDialog_ConnectionLine_Test {
   @Test
   public void ignores_WhenNewNameIsUsed() throws Exception {
     JobMeta jobMeta = new JobMeta();
-    jobMeta.addDatabase( createDefaultDatabase() );
+    jobMeta.getDatabaseManagementInterface().addDatabase( createDefaultDatabase() );
 
     invokeEditConnectionListener( jobMeta, null );
 
@@ -209,7 +212,7 @@ public class JobEntryDialog_ConnectionLine_Test {
 
     JobMeta jobMeta = new JobMeta();
     DatabaseMeta db = createDefaultDatabase();
-    jobMeta.addDatabase( db );
+    jobMeta.getDatabaseManagementInterface().addDatabase( db );
 
     JobEntryDialog dialog = mock( JobEntryDialog.class );
     dialog.databaseDialog = databaseDialog;
@@ -231,8 +234,8 @@ public class JobEntryDialog_ConnectionLine_Test {
     db2.setName( INPUT_NAME );
 
     JobMeta jobMeta = new JobMeta();
-    jobMeta.addDatabase( db1 );
-    jobMeta.addDatabase( db2 );
+    jobMeta.getDatabaseManagementInterface().addDatabase( db1 );
+    jobMeta.getDatabaseManagementInterface().addDatabase( db2 );
 
     final String expectedResult = INPUT_NAME + "2";
 

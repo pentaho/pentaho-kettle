@@ -104,8 +104,12 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
 
   @Test
   public void noConnectionsExist() throws Exception {
-    DatabasesCollector dbCollector = new DatabasesCollector( prepareDbManager( null ), prepareMeta( null ), null );
+    DatabasesCollector dbCollector = new DatabasesCollector( prepareDbManager( null ), null );
     Assert.assertEquals( 0, dbCollector.getDatabaseNames().size() );
+
+    dbCollector = new DatabasesCollector( prepareMeta( null ).getDatabaseManagementInterface(), null );
+    Assert.assertEquals( 0, dbCollector.getDatabaseNames().size() );
+
     callRefreshWith( null, null );
     // one call - to create a parent tree node
     verifyNumberOfNodesCreated( 0 );
@@ -113,10 +117,14 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
 
   @Test
   public void severalConnectionsExist() throws Exception {
-    AbstractMeta meta = prepareMetaWithThreeDbs();
     DatabaseConnectionManager mgr = prepareDbManager( mockDatabaseMeta( "mysql" ), mockDatabaseMeta( "oracle" ) );
-    DatabasesCollector dbCollector = new DatabasesCollector( mgr, meta, null );
-    Assert.assertEquals( 5, dbCollector.getDatabaseNames().size() );
+    DatabasesCollector dbCollector = new DatabasesCollector( mgr, null );
+    Assert.assertEquals( 2, dbCollector.getDatabaseNames().size() );
+
+    AbstractMeta meta = prepareMetaWithThreeDbs();
+    dbCollector = new DatabasesCollector( meta.getDatabaseManagementInterface(), null );
+    Assert.assertEquals( 3, dbCollector.getDatabaseNames().size() );
+
     callRefreshWith( meta, null );
     verifyNumberOfNodesCreated( 5 );
   }
@@ -124,18 +132,21 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
   @Test
   public void onlyOneMatchesFiltering() throws Exception {
     AbstractMeta meta = prepareMetaWithThreeDbs();
-    DatabasesCollector dbCollector = new DatabasesCollector( prepareDbManager( null ), meta, null );
+    DatabasesCollector dbCollector = new DatabasesCollector( meta.getDatabaseManagementInterface(), null );
     Assert.assertEquals( 3, dbCollector.getDatabaseNames().size() );
     callRefreshWith( meta, "2" );
     verifyNumberOfNodesCreated( 1 );
   }
 
 
-  private static AbstractMeta prepareMetaWithThreeDbs() {
+  private static AbstractMeta prepareMetaWithThreeDbs() throws Exception {
     AbstractMeta meta = mock( AbstractMeta.class );
     List<DatabaseMeta> dbs =
             asList( mockDatabaseMeta( "1" ), mockDatabaseMeta( "2" ), mockDatabaseMeta( "3" ) );
-    when( meta.getLocalDbMetas() ).thenReturn( dbs );
+
+    DatabaseManagementInterface dbMgr = mock( DatabaseManagementInterface.class );
+    when( dbMgr.getDatabases() ).thenReturn( dbs );
+    when( meta.getDatabaseManagementInterface() ).thenReturn( dbMgr );
     return meta;
   }
 
@@ -155,14 +166,16 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
     return mockDbManager;
   }
 
-  private static AbstractMeta prepareMeta( DatabaseMeta... metas ) {
+  private static AbstractMeta prepareMeta( DatabaseMeta... metas ) throws Exception {
     if ( metas == null ) {
       metas = new DatabaseMeta[ 0 ];
     }
 
     AbstractMeta meta = mock( AbstractMeta.class );
     List<DatabaseMeta> dbs = asList( metas );
-    when( meta.getLocalDbMetas() ).thenReturn( dbs );
+    DatabaseManagementInterface dbMgr = mock( DatabaseManagementInterface.class );
+    when( dbMgr.getDatabases() ).thenReturn( dbs );
+    when( meta.getDatabaseManagementInterface() ).thenReturn( dbMgr );
     return meta;
   }
 }

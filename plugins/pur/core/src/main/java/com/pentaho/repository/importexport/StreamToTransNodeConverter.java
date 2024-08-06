@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class StreamToTransNodeConverter implements Converter {
           try {
             TransMeta transMeta = repository.loadTransformation( new StringObjectId( fileId.toString() ), null );
             if ( transMeta != null ) {
-              return new ByteArrayInputStream( filterPrivateDatabases( transMeta ).getXML().getBytes() );
+              return new ByteArrayInputStream( transMeta.getXML().getBytes() );
             }
           } catch ( KettleException e ) {
             logger.error( e );
@@ -111,22 +111,6 @@ public class StreamToTransNodeConverter implements Converter {
       logger.error( e );
     }
     return null;
-  }
-
-  @VisibleForTesting
-  TransMeta filterPrivateDatabases( TransMeta transMeta ) {
-    Set<String> privateDatabases = transMeta.getPrivateDatabases();
-    if ( privateDatabases != null ) {
-      // keep only private transformation databases
-      for ( Iterator<DatabaseMeta> it = transMeta.getDatabases().iterator(); it.hasNext(); ) {
-        DatabaseMeta databaseMeta = it.next();
-        String databaseName = databaseMeta.getName();
-        if ( !privateDatabases.contains( databaseName ) && !transMeta.isDatabaseConnectionUsed( databaseMeta ) ) {
-          it.remove();
-        }
-      }
-    }
-    return transMeta;
   }
 
   // package-local visibility for testing purposes

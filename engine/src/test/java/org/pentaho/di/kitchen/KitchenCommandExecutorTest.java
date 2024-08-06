@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.pentaho.di.base.CommandExecutorCodes;
@@ -35,6 +36,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
@@ -68,6 +70,11 @@ public class KitchenCommandExecutorTest {
   interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
   }
   
+  @BeforeClass
+  public static void initKettle() throws Exception {
+    KettleEnvironment.init();
+  }
+
   @Before
   public void setUp() throws Exception {
     KettleLogStore.init();

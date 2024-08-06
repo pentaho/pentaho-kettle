@@ -22,16 +22,6 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -45,17 +35,33 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TreeSelection;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
+
 public class SpoonTreeDelegate extends SpoonDelegate {
+  private static final Set<String> CONFIG_OBJECT_NAMES = Set.of( Spoon.STRING_CONNECTIONS, Spoon.STRING_PARTITIONS,
+                                                                 Spoon.STRING_SLAVES, Spoon.STRING_CLUSTERS );
+
   public SpoonTreeDelegate( Spoon spoon ) {
     super( spoon );
   }
@@ -105,39 +111,27 @@ public class SpoonTreeDelegate extends SpoonDelegate {
           case 3: // ------complete-----
             if ( path[0].equals( Spoon.STRING_CONFIGURATIONS ) ) {
 
-              // TODO BACKLOG-??? edit and delete for databases
-              // if ( path[1].equals( Spoon.STRING_CONNECTIONS ) ) {
-              //   String dbName = path[2];
-              //   DatabaseMeta databaseMeta = transMeta.findDatabase( dbName );
-              //   if ( databaseMeta != null ) {
-              //     dbName = databaseMeta.getName();
-              //   }
-              //
-              //   object = new TreeSelection( treeItem, dbName, databaseMeta );
-              // }
-              // if ( path[1].equals( Spoon.STRING_PARTITIONS ) ) {
-              //   object = new TreeSelection( treeItem, path[2], transMeta.findPartitionSchema( path[2] ) );
-              // }
-              // if ( path[1].equals( Spoon.STRING_SLAVES ) ) {
-              //   object = new TreeSelection( treeItem, path[2], transMeta.findSlaveServer( path[2] ) );
-              // }
-              // if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
-              //   object = new TreeSelection( treeItem, path[2], transMeta.findClusterSchema( path[2] ) );
-              // }
+
+              if ( CONFIG_OBJECT_NAMES.contains( path[1] ) ) {
+                String name = LeveledTreeNode.getName( treeItem );
+                LeveledTreeNode.LEVEL level = LeveledTreeNode.getLevel( treeItem );
+
+                object = new TreeSelection( treeItem, name, new SpoonTreeLeveledSelection( path[1], name, level ) );
+              }
               executeExtensionPoint( new SpoonTreeDelegateExtension( treeItem, null, path, 3, objects ) );
             }
             break;
 
           case 4:
-            if ( path[0].equals( Spoon.STRING_CONFIGURATIONS ) ) {
-
-              // TODO BACKLOG-??? edit and delete for clusters
-              //if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
-              //  ClusterSchema clusterSchema = transMeta.findClusterSchema( path[2] );
-              //  object =
-              //    new TreeSelection( treeItem, path[3], clusterSchema.findSlaveServer( path[3]), clusterSchema, transMeta );
-              //}
-            }
+            // TODO BACKLOG-40523
+            //if ( path[0].equals( Spoon.STRING_CONFIGURATIONS ) ) {
+            //
+            //  if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
+            //    ClusterSchema clusterSchema = transMeta.findClusterSchema( path[2] );
+            //    object =
+            //      new TreeSelection( treeItem, path[3], clusterSchema.findSlaveServer( path[3]), clusterSchema, transMeta );
+            //  }
+            //}
             break;
           default:
             break;
@@ -215,6 +209,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
     DragSource ddSource = new DragSource( tree, DND.DROP_MOVE );
     ddSource.setTransfer( ttypes );
     ddSource.addDragListener( new DragSourceListener() {
+      @Override
       public void dragStart( DragSourceEvent event ) {
         TreeSelection[] treeObjects = getTreeObjects( tree, selectionTree, coreObjectsTree );
         if ( treeObjects.length == 0 ) {
@@ -238,6 +233,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
         }
       }
 
+      @Override
       public void dragSetData( DragSourceEvent event ) {
         TreeSelection[] treeObjects = getTreeObjects( tree, selectionTree, coreObjectsTree );
         if ( treeObjects.length == 0 ) {
@@ -292,6 +288,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
         event.data = new DragAndDropContainer( type, data, id );
       }
 
+      @Override
       public void dragFinished( DragSourceEvent event ) {
       }
     } );

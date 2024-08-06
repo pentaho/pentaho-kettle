@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2023 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -179,18 +179,16 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
   // ~ Methods =========================================================================================================
   @SuppressWarnings( "unchecked" )
-  public SharedObjects loadSharedObjects( final RepositoryElementInterface element,
+  @Override
+  public void loadSharedObjects( final RepositoryElementInterface element,
       final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType )
     throws KettleException {
     JobMeta jobMeta = (JobMeta) element;
-    jobMeta.setSharedObjects( jobMeta.readSharedObjects() );
 
     // Repository objects take priority so let's overwrite them...
     //
     readDatabases( jobMeta, true, (List<DatabaseMeta>) sharedObjectsByType.get( RepositoryObjectType.DATABASE ) );
     readSlaves( jobMeta, true, (List<SlaveServer>) sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER ) );
-
-    return jobMeta.getSharedObjects();
   }
 
   public void saveSharedObjects( final RepositoryElementInterface element, final String versionComment )
@@ -255,8 +253,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       }
     }
     jobMeta.setPrivateDatabases( privateDatabases );
-
-    jobMeta.setSharedObjectsFile( getString( rootNode, PROP_SHARED_FILE ) );
 
     // Keep a unique list of job entries to facilitate in the loading.
     //
@@ -608,7 +604,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     rootNode.setProperty( PROP_USE_BATCH_ID, jobMeta.getJobLogTable().isBatchIdUsed() );
     rootNode.setProperty( PROP_PASS_BATCH_ID, jobMeta.isBatchIdPassed() );
     rootNode.setProperty( PROP_USE_LOGFIELD, jobMeta.getJobLogTable().isLogFieldUsed() );
-    rootNode.setProperty( PROP_SHARED_FILE, jobMeta.getSharedObjectsFile() );
 
     rootNode.setProperty( PROP_LOG_SIZE_LIMIT, jobMeta.getJobLogTable().getLogSizeLimit() );
 
@@ -632,12 +627,13 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
    * @param overWriteShared
    *          if an object with the same name exists, overwrite
    */
-  protected void readDatabases( JobMeta jobMeta, boolean overWriteShared, List<DatabaseMeta> databaseMetas ) {
+  protected void readDatabases( JobMeta jobMeta, boolean overWriteShared, List<DatabaseMeta> databaseMetas )
+    throws KettleException{
     for ( DatabaseMeta databaseMeta : databaseMetas ) {
       if ( overWriteShared || jobMeta.findDatabase( databaseMeta.getName() ) == null ) {
         if ( databaseMeta.getName() != null ) {
           databaseMeta.shareVariablesWith( jobMeta );
-          jobMeta.addOrReplaceDatabase( databaseMeta );
+          jobMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
           if ( !overWriteShared ) {
             databaseMeta.setChanged( false );
           }

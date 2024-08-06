@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,7 +66,6 @@ public class SharedObjectSyncUtil {
   public SharedObjectSyncUtil( Spoon spoon ) {
     this.spoonDelegates = spoon.delegates;
     this.spoon = spoon;
-    spoonDelegates.db.setSharedObjectSyncUtil( this );
     spoonDelegates.slaves.setSharedObjectSyncUtil( this );
     spoonDelegates.clusters.setSharedObjectSyncUtil( this );
     spoonDelegates.partitions.setSharedObjectSyncUtil( this );
@@ -164,13 +163,6 @@ public class SharedObjectSyncUtil {
   }
 
   public synchronized void reloadSharedObjects() {
-    synchronizeAll( false, meta -> {
-      try {
-        meta.setSharedObjects( meta.readSharedObjects() );
-      } catch ( KettleException e ) {
-        logError( e );
-      }
-    } );
   }
 
   private synchronized void synchronizeJobs( boolean includeActive, Consumer<JobMeta> synchronizeAction ) {

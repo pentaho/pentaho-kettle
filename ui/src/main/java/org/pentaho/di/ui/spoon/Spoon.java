@@ -209,6 +209,7 @@ import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -255,6 +256,7 @@ import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.OsHelper;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.core.widget.tree.TreeToolbar;
 import org.pentaho.di.ui.imp.ImportRulesDialog;
 import org.pentaho.di.ui.job.dialog.JobDialogPluginType;
@@ -276,6 +278,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.ManageUserUISup
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
+import org.pentaho.di.ui.spoon.delegates.SpoonTreeLeveledSelection;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
@@ -595,8 +598,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private DefaultToolTip toolTip;
 
-  public Map<String, SharedObjects> sharedObjectsFileMap;
-
   /**
    * We can use this to set a default filter path in the open and save dialogs
    */
@@ -802,8 +803,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     SpoonFactory.setSpoonInstance( this );
 
     props = PropsUI.getInstance();
-    sharedObjectsFileMap = new Hashtable<>();
-    // sharedObjectSyncUtil = new SharedObjectSyncUtil( delegates, sharedObjectsFileMap );
     setRepository( rep );
 
     Thread uiThread = Thread.currentThread();
@@ -2723,20 +2722,43 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     newStep( getActiveTransformation() );
   }
 
+  /**
+   * Update the named DB connection in all open files.
+   *
+   *
+   * @param name
+   */
+  public void refreshDbConnection( String name ) {
+    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
+      Object managedObject = entry.getObject().getManagedObject();
+      if ( managedObject instanceof AbstractMeta ) {
+        AbstractMeta meta = (AbstractMeta) managedObject;
+        meta.databaseUpdated( name );
+      }
+    }
+  }
+
   public void editConnection() {
 
     if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.MODIFY_DATABASE ) ) {
       return;
     }
-
-    final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-    delegates.db.editConnection( databaseMeta );
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+    try {
+      dbManager = getDbManager( leveledSelection.getLevel() );
+      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
+    }
+    delegates.db.editConnection( dbManager, databaseMeta );
   }
 
   public void dupeConnection() {
     final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-    final HasDatabasesInterface hasDatabasesInterface = (HasDatabasesInterface) selectionObjectParent;
-    delegates.db.dupeConnection( hasDatabasesInterface, databaseMeta );
+    final AbstractMeta abstractMeta = (AbstractMeta) selectionObjectParent;
+    delegates.db.dupeConnection( abstractMeta, databaseMeta );
   }
 
   public void clipConnection() {
@@ -2749,7 +2771,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
 
-    final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+    try {
+      dbManager = getDbManager( leveledSelection.getLevel() );
+      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
+    }
+
     MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
     mb.setMessage( BaseMessages.getString(
       PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Message", databaseMeta.getName() ) );
@@ -2760,8 +2791,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
 
-    final HasDatabasesInterface hasDatabasesInterface = (HasDatabasesInterface) selectionObjectParent;
-    delegates.db.delConnection( hasDatabasesInterface, databaseMeta );
+    delegates.db.delConnection( dbManager, databaseMeta );
   }
 
   public void sqlConnection() {
@@ -2997,31 +3027,45 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         spoonMenu = (XulMenupopup) menuMap.get( "job-inst" );
       } else if ( selection instanceof PluginInterface ) {
         spoonMenu = (XulMenupopup) menuMap.get( "step-plugin" );
-      } else if ( selection instanceof DatabaseMeta ) {
-        spoonMenu = (XulMenupopup) menuMap.get( "database-inst" );
-        // disable for now if the connection is an SAP ERP type of database...
-        //
-        XulMenuitem item =
-          (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-explore" );
-        if ( item != null ) {
-          final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
-          item.setDisabled( !databaseMeta.isExplorable() );
-        }
-        item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-clear-cache" );
-        if ( item != null ) {
-          final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-          item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.ClearDBCache" )
-            + databaseMeta.getName() ); // Clear
-        }
+      } else if ( selection instanceof SpoonTreeLeveledSelection ) {
+        SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selection;
+        if ( STRING_CONNECTIONS.equals( leveledSelection.getType() ) ) {
+          spoonMenu = (XulMenupopup) menuMap.get( "database-inst" );
 
-        item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-share" );
-        if ( item != null ) {
-          final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
-          if ( databaseMeta.isShared() ) {
-            item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.UnShare" ) );
-          } else {
-            item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.Share" ) );
+          DatabaseManagementInterface dbManager = null;
+          DatabaseMeta databaseMeta = null;
+          try {
+            dbManager = getDbManager( leveledSelection.getLevel() );
+            databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+          } catch ( Exception e ) {
+            new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
           }
+          // disable for now if the connection is an SAP ERP type of database...
+          XulMenuitem item =
+            (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-explore" );
+          if ( item != null ) {
+            item.setDisabled( !databaseMeta.isExplorable() );
+          }
+          item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-clear-cache" );
+          if ( item != null ) {
+            item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.ClearDBCache" )
+                           + databaseMeta.getName() ); // Clear
+          }
+
+          item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-share" );
+          if ( item != null ) {
+            if ( databaseMeta.isShared() ) {
+              item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.UnShare" ) );
+            } else {
+              item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.Share" ) );
+            }
+          }
+        } else if ( STRING_PARTITIONS.equals( leveledSelection.getType() ) ) {
+          spoonMenu = (XulMenupopup) menuMap.get( "partition-schema-inst" );
+        } else if ( STRING_CLUSTERS.equals( leveledSelection.getType() ) ) {
+          spoonMenu = (XulMenupopup) menuMap.get( "cluster-schema-inst" );
+        } else if ( STRING_SLAVES.equals( leveledSelection.getType() ) ) {
+          spoonMenu = (XulMenupopup) menuMap.get( "slave-server-inst" );
         }
       } else if ( selection instanceof StepMeta ) {
         spoonMenu = (XulMenupopup) menuMap.get( "step-inst" );
@@ -3029,12 +3073,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         spoonMenu = (XulMenupopup) menuMap.get( "job-entry-copy-inst" );
       } else if ( selection instanceof TransHopMeta ) {
         spoonMenu = (XulMenupopup) menuMap.get( "trans-hop-inst" );
-      } else if ( selection instanceof PartitionSchema ) {
-        spoonMenu = (XulMenupopup) menuMap.get( "partition-schema-inst" );
-      } else if ( selection instanceof ClusterSchema ) {
-        spoonMenu = (XulMenupopup) menuMap.get( "cluster-schema-inst" );
-      } else if ( selection instanceof SlaveServer ) {
-        spoonMenu = (XulMenupopup) menuMap.get( "slave-server-inst" );
       }
 
     }
@@ -3045,6 +3083,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     createPopUpMenuExtension();
+  }
+
+  private DatabaseManagementInterface getDbManager( LeveledTreeNode.LEVEL level ) throws KettleException {
+    if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
+      return managementBowl.getManager( DatabaseManagementInterface.class );
+    } else if ( level == LeveledTreeNode.LEVEL.GLOBAL ) {
+      return DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
+    } else if ( level == LeveledTreeNode.LEVEL.LOCAL ) {
+      AbstractMeta meta = getActiveAbstractMeta();
+      return meta != null ? meta.getDatabaseManagementInterface() : null;
+    } else {
+      // shouldn't happen.
+      return null;
+    }
   }
 
   /**
@@ -3115,9 +3167,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           }
         }
       }
-      if ( selection instanceof DatabaseMeta ) {
-        DatabaseMeta database = (DatabaseMeta) selection;
-        delegates.db.editConnection( database );
+      if ( selection instanceof SpoonTreeLeveledSelection ) {
+        SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selection;
+        if ( STRING_CONNECTIONS.equals( leveledSelection.getType() ) ) {
+          DatabaseManagementInterface dbManager = null;
+          DatabaseMeta databaseMeta = null;
+          try {
+            dbManager = getDbManager( leveledSelection.getLevel() );
+            databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+          } catch ( Exception e ) {
+            new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
+          }
+          delegates.db.editConnection( dbManager, databaseMeta );
+        }
+        // TODO: other shared object types should move in here in their respective stories
       }
       if ( selection instanceof StepMeta ) {
         StepMeta step = (StepMeta) selection;
@@ -3838,48 +3901,47 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // NOTE: for purposes such as DEVELOP - TEST - PRODUCTION
       // cycles.
 
-      // first clear the list of databases and slave servers
-      jobMeta.setDatabases( new ArrayList<DatabaseMeta>() );
-      jobMeta.setSlaveServers( new ArrayList<SlaveServer>() );
-
-      // Read them from the new repository.
       try {
-        SharedObjects sharedObjects =
-          repository != null ? repository.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects();
-        sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
+        // first clear the list of databases and slave servers
+        jobMeta.getDatabaseManagementInterface().clear();
+        jobMeta.setSlaveServers( new ArrayList<SlaveServer>() );
 
+        // Read them from the new repository.
+        if ( repository != null ) {
+          repository.readJobMetaSharedObjects( jobMeta );
+        }
+
+        // Then we need to re-match the databases at save time...
+        for ( DatabaseMeta oldDatabase : oldDatabases ) {
+          DatabaseMeta newDatabase = DatabaseMeta.findDatabase( jobMeta.getDatabases(), oldDatabase.getName() );
+
+          // If it exists, change the settings...
+          if ( newDatabase != null ) {
+            //
+            // A database connection with the same name exists in
+            // the new repository.
+            // Change the old connections to reflect the settings in
+            // the new repository
+            //
+            oldDatabase.setDatabaseInterface( newDatabase.getDatabaseInterface() );
+          } else {
+            if ( saveOldDatabases ) {
+              //
+              // The old database is not present in the new
+              // repository: simply add it to the list.
+              // When the job gets saved, it will be added
+              // to the repository.
+              //
+              jobMeta.getDatabaseManagementInterface().addDatabase( oldDatabase );
+            }
+          }
+        }
       } catch ( KettleException e ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages
           .getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTabName( jobMeta, true ) ),
           e
         );
-      }
-
-      // Then we need to re-match the databases at save time...
-      for ( DatabaseMeta oldDatabase : oldDatabases ) {
-        DatabaseMeta newDatabase = DatabaseMeta.findDatabase( jobMeta.getDatabases(), oldDatabase.getName() );
-
-        // If it exists, change the settings...
-        if ( newDatabase != null ) {
-          //
-          // A database connection with the same name exists in
-          // the new repository.
-          // Change the old connections to reflect the settings in
-          // the new repository
-          //
-          oldDatabase.setDatabaseInterface( newDatabase.getDatabaseInterface() );
-        } else {
-          if ( saveOldDatabases ) {
-            //
-            // The old database is not present in the new
-            // repository: simply add it to the list.
-            // When the job gets saved, it will be added
-            // to the repository.
-            //
-            jobMeta.addDatabase( oldDatabase );
-          }
-        }
       }
 
       if ( repository != null ) {
@@ -3921,50 +3983,50 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // NOTE: for purposes such as DEVELOP - TEST - PRODUCTION
       // cycles.
 
-      // first clear the list of databases, partition schemas, slave
-      // servers, clusters
-      transMeta.setDatabases( new ArrayList<DatabaseMeta>() );
-      transMeta.setPartitionSchemas( new ArrayList<PartitionSchema>() );
-      transMeta.setSlaveServers( new ArrayList<SlaveServer>() );
-      transMeta.setClusterSchemas( new ArrayList<ClusterSchema>() );
-
-      // Read them from the new repository.
       try {
-        SharedObjects sharedObjects =
-          repository != null ? repository.readTransSharedObjects( transMeta ) : transMeta.readSharedObjects();
-        sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
+        // first clear the list of databases, partition schemas, slave
+        // servers, clusters
+        transMeta.getDatabaseManagementInterface().clear();
+        transMeta.setPartitionSchemas( new ArrayList<PartitionSchema>() );
+        transMeta.setSlaveServers( new ArrayList<SlaveServer>() );
+        transMeta.setClusterSchemas( new ArrayList<ClusterSchema>() );
+
+        // Read them from the new repository.
+        if ( repository != null ) {
+          repository.readTransSharedObjects( transMeta );
+        }
+
+        // Then we need to re-match the databases at save time...
+        for ( DatabaseMeta oldDatabase : oldDatabases ) {
+          DatabaseMeta newDatabase = DatabaseMeta.findDatabase( transMeta.getDatabases(), oldDatabase.getName() );
+
+          // If it exists, change the settings...
+          if ( newDatabase != null ) {
+            //
+            // A database connection with the same name exists in
+            // the new repository.
+            // Change the old connections to reflect the settings in
+            // the new repository
+            //
+            oldDatabase.setDatabaseInterface( newDatabase.getDatabaseInterface() );
+          } else {
+            if ( saveOldDatabases ) {
+              //
+              // The old database is not present in the new
+              // repository: simply add it to the list.
+              // When the transformation gets saved, it will be added
+              // to the repository.
+              //
+              transMeta.getDatabaseManagementInterface().addDatabase( oldDatabase );
+            }
+          }
+        }
       } catch ( KettleException e ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ),
           BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTabName(
             transMeta, true ) ), e
         );
-      }
-
-      // Then we need to re-match the databases at save time...
-      for ( DatabaseMeta oldDatabase : oldDatabases ) {
-        DatabaseMeta newDatabase = DatabaseMeta.findDatabase( transMeta.getDatabases(), oldDatabase.getName() );
-
-        // If it exists, change the settings...
-        if ( newDatabase != null ) {
-          //
-          // A database connection with the same name exists in
-          // the new repository.
-          // Change the old connections to reflect the settings in
-          // the new repository
-          //
-          oldDatabase.setDatabaseInterface( newDatabase.getDatabaseInterface() );
-        } else {
-          if ( saveOldDatabases ) {
-            //
-            // The old database is not present in the new
-            // repository: simply add it to the list.
-            // When the transformation gets saved, it will be added
-            // to the repository.
-            //
-            transMeta.addDatabase( oldDatabase );
-          }
-        }
       }
 
       if ( repository != null ) {
@@ -5003,11 +5065,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     transMeta.setMetaStore( metaStoreSupplier.get() );
 
     try {
-      SharedObjects sharedObjects =
-        rep != null ? rep.readTransSharedObjects( transMeta ) : transMeta.readSharedObjects();
-      sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
-      if ( rep == null ) {
-        transMeta.setSharedObjects( sharedObjects );
+      if ( rep != null ) {
+        rep.readTransSharedObjects( transMeta );
       }
       transMeta.importFromMetaStore();
       transMeta.clearChanged();
@@ -5062,11 +5121,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       try {
         // TODO: MAKE LIKE TRANS
-        SharedObjects sharedObjects =
-          rep != null ? rep.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects();
-        sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
-        if ( rep == null ) {
-          jobMeta.setSharedObjects( sharedObjects );
+        if ( rep != null ) {
+          rep.readJobMetaSharedObjects( jobMeta );
         }
         jobMeta.importFromMetaStore();
       } catch ( Exception e ) {
@@ -5160,8 +5216,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // Load common database info from active repository...
     if ( rep != null ) {
       try {
-        SharedObjects sharedObjects = rep.readTransSharedObjects( transMeta );
-        sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
+        rep.readTransSharedObjects( transMeta );
       } catch ( Exception e ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "Spoon.Error.UnableToLoadSharedObjects.Title" ), BaseMessages
@@ -7745,7 +7800,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       TransMeta transMeta = new TransMeta( XMLHandler.getSubNode( doc, TransMeta.XML_TAG ), rep );
       setTransMetaVariables( transMeta );
       addTransGraph( transMeta ); // create a new tab
-      sharedObjectsFileMap.put( transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects() );
       refreshGraph();
       refreshTree();
     } catch ( KettleException e ) {
@@ -7848,15 +7902,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   public void createDatabaseWizard() {
-    HasDatabasesInterface hasDatabasesInterface = getActiveHasDatabasesInterface();
-    if ( hasDatabasesInterface == null ) {
+    AbstractMeta meta = getActiveTransformationOrJob();
+    // TODO BACKLOG-41332
+    if ( meta == null ) {
       return; // nowhere to put the new database
     }
 
     CreateDatabaseWizard cdw = new CreateDatabaseWizard();
-    DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard( shell, props, hasDatabasesInterface.getDatabases() );
+    DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard( shell, props, meta.getDatabases() );
     if ( newDBInfo != null ) { // finished
-      hasDatabasesInterface.addDatabase( newDBInfo );
+      try {
+        meta.getDatabaseManagementInterface().addDatabase( newDBInfo );
+      } catch ( KettleException e ) {
+        new ErrorDialog( shell, "Error creating Database Connection", "Unable to create connection", e );
+      }
       refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
       refreshGraph();
     }

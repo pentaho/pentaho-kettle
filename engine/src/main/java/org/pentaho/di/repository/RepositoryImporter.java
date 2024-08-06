@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -473,14 +473,13 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     return true;
   }
 
-  private void replaceSharedObjects( AbstractMeta abstractMeta ) {
+  private void replaceSharedObjects( AbstractMeta abstractMeta ) throws KettleException {
     for ( DatabaseMeta databaseMeta : getSharedObjects( DatabaseMeta.class ) ) {
       // Database...
-      int index = abstractMeta.indexOfDatabase( databaseMeta );
-      if ( index < 0 ) {
-        abstractMeta.addDatabase( databaseMeta );
+      DatabaseMeta imported = abstractMeta.getDatabaseManagementInterface().getDatabase( databaseMeta.getName() );
+      if ( imported == null ) {
+        abstractMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
       } else {
-        DatabaseMeta imported = abstractMeta.getDatabase( index );
         // Preserve the object id so we can update without having to look up the id
         imported.setObjectId( databaseMeta.getObjectId() );
         if ( equals( databaseMeta, imported )

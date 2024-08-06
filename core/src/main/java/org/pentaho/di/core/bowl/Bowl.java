@@ -76,7 +76,7 @@ public interface Bowl {
   Set<Bowl> getParentBowls();
 
   /**
-   * Get the SharedObjectIO instance that is responsible for reading/writing of
+   * Get the SharedObjectsIO instance that is responsible for reading/writing of
    *  Shared Objects
    * @return
    *

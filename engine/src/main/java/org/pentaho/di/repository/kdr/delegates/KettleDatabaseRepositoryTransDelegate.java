@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -173,7 +173,8 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       }
 
       int nrWorks =
-        2 + transMeta.nrDatabases() + transMeta.nrNotes() + transMeta.nrSteps() + transMeta.nrTransHops();
+        2 + transMeta.getDatabaseManagementInterface().getDatabases().size() + transMeta.nrNotes()
+          + transMeta.nrSteps() + transMeta.nrTransHops();
       if ( monitor != null ) {
         monitor.beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.SavingTransformationTask.Title" )
           + transMeta.getPathAndName(), nrWorks );
@@ -244,14 +245,13 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.SavingDatabaseConnections" ) );
       }
-      for ( int i = 0; i < transMeta.nrDatabases(); i++ ) {
+      for ( DatabaseMeta databaseMeta : transMeta.getDatabaseManagementInterface().getDatabases() ) {
         if ( monitor != null && monitor.isCanceled() ) {
           throw new KettleDatabaseException( BaseMessages.getString( PKG, "TransMeta.Log.UserCancelledTransSave" ) );
         }
 
         // if (monitor != null) monitor.subTask(BaseMessages.getString(PKG,
         // "TransMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + transMeta.nrDatabases());
-        DatabaseMeta databaseMeta = transMeta.getDatabase( i );
         // Save the database connection if we're overwriting objects or (it has changed and nothing was saved in the
         // repository)
         if ( overwriteAssociated || databaseMeta.hasChanged() || databaseMeta.getObjectId() == null ) {
@@ -496,13 +496,6 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
           if ( monitor != null ) {
             monitor.subTask( BaseMessages.getString(
               PKG, "TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title" ) );
-          }
-          try {
-            transMeta.setSharedObjects( readTransSharedObjects( transMeta ) );
-          } catch ( Exception e ) {
-            log.logError( BaseMessages
-              .getString( PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
-            log.logError( Const.getStackTracker( e ) );
           }
 
           if ( monitor != null ) {
@@ -956,7 +949,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                                                                                // transformation
         if ( check == null || overWriteShared ) { // We only add, never overwrite database connections.
           if ( databaseMeta.getName() != null ) {
-            transMeta.addOrReplaceDatabase( databaseMeta );
+            transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
             if ( !overWriteShared ) {
               databaseMeta.setChanged( false );
             }
@@ -1354,9 +1347,6 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     repository.connectionDelegate.insertTransAttribute(
       transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_USING_THREAD_PRIORITIES, 0, transMeta
         .isUsingThreadPriorityManagment() ? "Y" : "N" );
-    repository.connectionDelegate.insertTransAttribute(
-      transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_SHARED_FILE, 0, transMeta
-        .getSharedObjectsFile() );
 
     repository.connectionDelegate.insertTransAttribute(
       transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE, 0,
@@ -1480,20 +1470,13 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     return repository.connectionDelegate.getTransAttributeInteger( id_transformation, nr, code );
   }
 
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
-
-    transMeta.setSharedObjectsFile( getTransAttributeString( transMeta.getObjectId(), 0, "SHARED_FILE" ) );
-
-    transMeta.setSharedObjects( transMeta.readSharedObjects() );
-
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
     // Repository objects take priority so let's overwrite them...
     //
     readDatabases( transMeta, true );
     readPartitionSchemas( transMeta, true );
     readSlaves( transMeta, true );
     readClusters( transMeta, true );
-
-    return transMeta.getSharedObjects();
   }
 
   public synchronized void moveTransformation( String transname, ObjectId id_directory_from,

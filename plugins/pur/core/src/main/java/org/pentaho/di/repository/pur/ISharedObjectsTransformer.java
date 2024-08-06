@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 
 public interface ISharedObjectsTransformer extends ITransformer {
-  SharedObjects loadSharedObjects( final RepositoryElementInterface element,
+  void loadSharedObjects( final RepositoryElementInterface element,
       final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType )
     throws KettleException;
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,7 +38,9 @@ public interface HasDatabasesInterface {
   /**
    * @param databases
    *          The databases to set.
+   * @deprecated Writes should now go through DatabaseManagementInterface
    */
+  @Deprecated
   public void setDatabases( List<DatabaseMeta> databases );
 
   /**
@@ -46,7 +48,9 @@ public interface HasDatabasesInterface {
    *
    * @param databaseMeta
    *          The database connection information.
+   * @deprecated Writes should now go through DatabaseManagementInterface
    */
+  @Deprecated
   public void addDatabase( DatabaseMeta databaseMeta );
 
   /**
@@ -55,7 +59,9 @@ public interface HasDatabasesInterface {
    *
    * @param databaseMeta
    *          The database connection information.
+   * @deprecated Writes should now go through DatabaseManagementInterface
    */
+  @Deprecated
   public void addOrReplaceDatabase( DatabaseMeta databaseMeta );
 
   /**
@@ -65,7 +71,9 @@ public interface HasDatabasesInterface {
    *          The location
    * @param ci
    *          The database connection information.
+   * @deprecated Writes should now go through DatabaseManagementInterface
    */
+  @Deprecated
   public void addDatabase( int p, DatabaseMeta ci );
 
   /**
@@ -82,7 +90,9 @@ public interface HasDatabasesInterface {
    *
    * @param i
    *          The location
+   * @deprecated Writes should now go through DatabaseManagementInterface
    */
+  @Deprecated
   public void removeDatabase( int i );
 
   /**
