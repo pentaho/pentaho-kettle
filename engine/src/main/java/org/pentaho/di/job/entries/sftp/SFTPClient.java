@@ -163,31 +163,24 @@ public class SFTPClient {
 
   public void login( String password ) throws KettleJobException {
     this.password = password;
-    int maxConnectionAttempts = 62; // up to 6 seconds delay max
+    // up to a total of 6 seconds delay max per connection attempt
+    int maxConnectionAttempts = 62;
     int delayBetweenEachAttempts = 100; // milliseconds
 
     while ( true ) {
       try {
         if ( tryCreateNewConnection( ) ) {
           break;
-        } else {
-          System.err.println( " ---------------------- tryCreateNewConnection() is false ---------------------- " );
         }
 
         if ( --maxConnectionAttempts <= 0 ) {
-          System.out.println(
-            " ---------------------- JSchException max count met- Throw Error ---------------------- " );
           throw new KettleJobException( "Max connection attempts reached" );
         }
-
         Thread.sleep( delayBetweenEachAttempts );
-        // incrementing delay
+        // incrementing delay by 100 milliseconds
         delayBetweenEachAttempts += 100;
-        System.out.println(
-          " ---------------------- after thread sleep - retry is next ---------------------- " );
 
       } catch ( InterruptedException ex ) {
-        System.out.println( " ---------------------- InterruptedException Caught ---------------------- " );
         Thread.currentThread().interrupt();
         throw new KettleJobException( "Interrupted during a retry ", ex );
       } catch ( Exception e ) {
@@ -196,7 +189,7 @@ public class SFTPClient {
     }
   }
 
-  private boolean tryCreateNewConnection(  ) throws KettleJobException {
+  private boolean tryCreateNewConnection(  ) {
     try {
       session.setPassword( this.getPassword() );
       java.util.Properties config = new java.util.Properties();
