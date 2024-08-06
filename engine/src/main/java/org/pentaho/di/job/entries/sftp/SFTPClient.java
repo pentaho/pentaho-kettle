@@ -85,12 +85,9 @@ public class SFTPClient {
   /**
    * Init Helper Class with connection settings
    *
-   * @param serverIP
-   *          IP address of remote server
-   * @param serverPort
-   *          port of remote server
-   * @param userName
-   *          username of remote server
+   * @param serverIP   IP address of remote server
+   * @param serverPort port of remote server
+   * @param userName   username of remote server
    * @throws KettleJobException
    */
   public SFTPClient( InetAddress serverIP, int serverPort, String userName ) throws KettleJobException {
@@ -100,37 +97,29 @@ public class SFTPClient {
   /**
    * Init Helper Class with connection settings
    *
-   * @param serverIP
-   *          IP address of remote server
-   * @param serverPort
-   *          port of remote server
-   * @param userName
-   *          username of remote server
-   * @param privateKeyFilename
-   *          filename of private key
+   * @param serverIP           IP address of remote server
+   * @param serverPort         port of remote server
+   * @param userName           username of remote server
+   * @param privateKeyFilename filename of private key
    * @throws KettleJobException
    */
-  public SFTPClient( InetAddress serverIP, int serverPort, String userName, String privateKeyFilename ) throws KettleJobException {
+  public SFTPClient( InetAddress serverIP, int serverPort, String userName, String privateKeyFilename )
+    throws KettleJobException {
     this( serverIP, serverPort, userName, privateKeyFilename, null );
   }
 
   /**
    * Init Helper Class with connection settings
    *
-   * @param serverIP
-   *          IP address of remote server
-   * @param serverPort
-   *          port of remote server
-   * @param userName
-   *          username of remote server
-   * @param privateKeyFilename
-   *          filename of private key
-   * @param passPhrase
-   *          passphrase
+   * @param serverIP           IP address of remote server
+   * @param serverPort         port of remote server
+   * @param userName           username of remote server
+   * @param privateKeyFilename filename of private key
+   * @param passPhrase         passphrase
    * @throws KettleJobException
    */
   public SFTPClient( InetAddress serverIP, int serverPort, String userName, String privateKeyFilename,
-    String passPhrase ) throws KettleJobException {
+                     String passPhrase ) throws KettleJobException {
 
     if ( serverIP == null || serverPort <= 0 || userName == null || userName.equals( "" ) ) {
       throw new KettleJobException(
@@ -153,7 +142,7 @@ public class SFTPClient {
           this.passphrase = passPhrase;
           passPhraseBytes = getPrivateKeyPassPhrase().getBytes();
         } else {
-          passPhraseBytes = new byte[0];
+          passPhraseBytes = new byte[ 0 ];
         }
         jsch.addIdentity( getUserName(), getFileContent( prvkey ), null, passPhraseBytes );
       }
@@ -174,9 +163,35 @@ public class SFTPClient {
 
   public void login( String password ) throws KettleJobException {
     this.password = password;
+    // up to a total of 6 seconds delay max per connection attempt
+    int maxConnectionAttempts = 62;
+    int delayBetweenEachAttempts = 100; // milliseconds
 
-    session.setPassword( this.getPassword() );
+    while ( true ) {
+      try {
+        if ( tryCreateNewConnection( ) ) {
+          break;
+        }
+
+        if ( --maxConnectionAttempts <= 0 ) {
+          throw new KettleJobException( "Max connection attempts reached" );
+        }
+        Thread.sleep( delayBetweenEachAttempts );
+        // incrementing delay by 100 milliseconds
+        delayBetweenEachAttempts += 100;
+
+      } catch ( InterruptedException ex ) {
+        Thread.currentThread().interrupt();
+        throw new KettleJobException( "Interrupted during a retry ", ex );
+      } catch ( Exception e ) {
+        throw new KettleJobException( "An unexpected error has occurred ", e );
+      }
+    }
+  }
+
+  private boolean tryCreateNewConnection(  ) {
     try {
+      session.setPassword( this.getPassword() );
       java.util.Properties config = new java.util.Properties();
       config.put( "StrictHostKeyChecking", "no" );
       // set compression property
@@ -186,13 +201,24 @@ public class SFTPClient {
         config.put( COMPRESSION_S2C, compress );
         config.put( COMPRESSION_C2S, compress );
       }
+      config.put( "ConnectTimeout", "30000" );
+      config.put( "SocketTimeout", "30000" );
       session.setConfig( config );
-      session.connect();
+
+      if ( !session.isConnected() ) {
+        session.setTimeout( 30000 );
+        session.setServerAliveInterval( 15000 );
+        session.connect();
+      }
+
       Channel sftpChannel = session.openChannel( "sftp" );
       sftpChannel.connect();
       this.channel = (ChannelSftp) sftpChannel;
+
+      return true;
     } catch ( JSchException e ) {
-      throw new KettleJobException( e );
+      System.err.println( "Initial connection attempt failed: " + e.getMessage() );
+      return false;
     }
   }
 
@@ -206,24 +232,23 @@ public class SFTPClient {
   }
 
   /**
-   *
    * @return Files in current directory
    * @throws KettleJobException
    */
   public String[] dir() throws KettleJobException {
     try {
       Vector<ChannelSftp.LsEntry> entries = channel.ls( "." );
-      if (entries == null) {
+      if ( entries == null ) {
         return null;
       }
 
       List<String> files = entries.stream()
-          .filter( lse -> lse != null && !lse.getAttrs().isDir() )
-          .map( ChannelSftp.LsEntry::getFilename )
-          .collect( Collectors.toList() );
+        .filter( lse -> lse != null && !lse.getAttrs().isDir() )
+        .map( ChannelSftp.LsEntry::getFilename )
+        .collect( Collectors.toList() );
 
       // uses depend on being null when empty
-      return files.isEmpty() ? null : files.toArray( new String[files.size()] );
+      return files.isEmpty() ? null : files.toArray( new String[ files.size() ] );
 
     } catch ( SftpException e ) {
       throw new KettleJobException( e );
@@ -245,10 +270,10 @@ public class SFTPClient {
   }
 
   /**
-   * @deprecated use {@link #get(FileObject, String)}
    * @param localFilePath
    * @param remoteFile
    * @throws KettleJobException
+   * @deprecated use {@link #get(FileObject, String)}
    */
   @Deprecated
   public void get( String localFilePath, String remoteFile ) throws KettleJobException {
@@ -389,7 +414,8 @@ public class SFTPClient {
     return retval;
   }
 
-  public void setProxy( String host, String port, String user, String pass, String proxyType ) throws KettleJobException {
+  public void setProxy( String host, String port, String user, String pass, String proxyType )
+    throws KettleJobException {
 
     if ( Utils.isEmpty( host ) || Const.toInt( port, 0 ) == 0 ) {
       throw new KettleJobException( "Proxy server name must be set and server port must be greater than zero." );
