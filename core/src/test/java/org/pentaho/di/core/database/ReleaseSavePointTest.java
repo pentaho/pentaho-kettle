@@ -41,7 +41,6 @@ public class ReleaseSavePointTest {
     new AS400DatabaseMeta(),
     new DB2DatabaseMeta(),
     new DbaseDatabaseMeta(),
-    new DerbyDatabaseMeta(),
     new ExtenDBDatabaseMeta(),
     new FirebirdDatabaseMeta(),
     new GenericDatabaseMeta(),
