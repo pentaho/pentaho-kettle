@@ -456,7 +456,7 @@ public class SalesforceUpsert extends SalesforceStep {
                               Trans trans, Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     try {
-      Method actionMethod = SalesforceUpdate.class.getDeclaredMethod( fieldName + "Action" );
+      Method actionMethod = SalesforceUpsert.class.getDeclaredMethod( fieldName + "Action" );
       this.setStepMetaInterface( stepMetaInterface );
       response = (JSONObject) actionMethod.invoke( this );
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
