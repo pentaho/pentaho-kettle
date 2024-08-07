@@ -33,7 +33,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -1044,6 +1049,52 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     return response;
   }
 
+  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
+    JSONObject jsonObject = new JSONObject();
+    JSONArray textFileFields = new JSONArray();
+    ObjectMapper objectMapper = new ObjectMapper();
+    for ( TextFileFieldDTO textFileFieldDTO : getUpdatedTextFields() ) {
+      textFileFields.add( objectMapper.readTree( objectMapper.writeValueAsString( textFileFieldDTO ) ) );
+    }
+    jsonObject.put( "updatedData",textFileFields );
+    return jsonObject;
+  }
+
+  public List<TextFileFieldDTO> getUpdatedTextFields() {
+    TextFileOutputMeta tfoi = (TextFileOutputMeta) getStepMetaInterface();
+    List<TextFileFieldDTO> textFileFields = new ArrayList<>();
+
+    for ( TextFileField textFileField : tfoi.getOutputFields() ) {
+      TextFileFieldDTO updatedTextFileField = new TextFileFieldDTO();
+      updatedTextFileField.setName( textFileField.getName() );
+      updatedTextFileField.setType( textFileField.getTypeDesc() );
+
+      switch ( textFileField.getType() ) {
+        case ValueMetaInterface.TYPE_STRING:
+          updatedTextFileField.setFormat( StringUtils.EMPTY );
+          break;
+        case ValueMetaInterface.TYPE_INTEGER:
+          updatedTextFileField.setFormat( "0" );
+          break;
+        case ValueMetaInterface.TYPE_NUMBER:
+          updatedTextFileField.setFormat( "0.#####" );
+          break;
+        default:
+          break;
+      }
+      updatedTextFileField.setLength( StringUtils.EMPTY );
+      updatedTextFileField.setPrecision( StringUtils.EMPTY );
+      updatedTextFileField.setCurrency( textFileField.getCurrencySymbol() );
+      updatedTextFileField.setDecimal( textFileField.getDecimalSymbol() );
+      updatedTextFileField.setGroup( textFileField.getGroupingSymbol() );
+      updatedTextFileField.setTrimType( "both" );
+      updatedTextFileField.setNullid( textFileField.getNullString() );
+
+      textFileFields.add( updatedTextFileField );
+    }
+    return textFileFields;
+  }
+
   private JSONObject getFormatsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray array = new JSONArray();
@@ -1063,12 +1114,19 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     TextFileOutputMeta tfoi = (TextFileOutputMeta) getStepMetaInterface();
 
-    JSONArray files = new JSONArray();
+    JSONArray filteredFiles = new JSONArray();
     for ( String file : tfoi.getFiles( getTransMeta() ) ) {
-      files.add( file );
+      if ( Boolean.TRUE.equals( isRegex ) ) {
+        Matcher matcher = Pattern.compile( filter ).matcher( file );
+        if ( matcher.matches() ) {
+          filteredFiles.add( file );
+        }
+      } else if ( StringUtils.isBlank( filter ) || StringUtils.contains( file.toUpperCase(), filter.toUpperCase() ) ) {
+        filteredFiles.add( file );
+      }
     }
     try {
-      response.put( "files", files );
+      response.put( "files", filteredFiles );
     } catch ( Exception e ) {
       log.logError( e.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
