@@ -318,7 +318,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
         data.nrStepFields = data.outputRowMeta.size();
 
         if ( !meta.isFileField() ) {
-          data.files = meta.getFileList( this );
+          data.files = meta.getFileList( this.getTransMeta().getBowl(), this );
           data.filessize = data.files.nrOfFiles();
           handleMissingFiles();
         } else {
