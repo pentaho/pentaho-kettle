@@ -1450,6 +1450,13 @@ public class Const {
   }
 
   /**
+   * File used to prevent multiple instances of kettle from starting at the same time to avoid file
+   * system contention when building karaf sys/cache directories.
+   */
+  public static final String KARAF_BOOT_LOCK_FILE = "karaf.boot.lock";
+  public static final String KARAF_BOOT_LOCK_WAIT_TIME = "KARAF_BOOT_LOCK_WAIT_TIME";
+
+  /**
    * Determines whether failure to find the HDFS file system is a fatal error in Hadoop File Input step.
    * Default (legacy) behavior is false.
    */
