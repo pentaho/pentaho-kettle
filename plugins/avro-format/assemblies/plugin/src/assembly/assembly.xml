@@ -49,6 +49,7 @@
       </excludes>
       <includes>
         <include>org.apache.avro:avro</include>
+        <include>org.codehaus.jackson:jackson-mapper-asl</include>
         <include>org.codehaus.jackson:jackson-core-asl</include>
       </includes>
     </dependencySet>

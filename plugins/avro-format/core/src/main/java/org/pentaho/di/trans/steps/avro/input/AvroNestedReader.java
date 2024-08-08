@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.avro.input;
 
-import com.fasterxml.jackson.databind.node.NullNode;
 import org.pentaho.di.trans.steps.avro.AvroSpec;
 import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
 import org.apache.avro.Conversions;
@@ -36,6 +35,7 @@ import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.util.Utf8;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.codehaus.jackson.node.NullNode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -47,6 +47,7 @@ import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -659,10 +660,10 @@ public class AvroNestedReader {
         fieldS = defaultSchema.getField( part );
       }
 
-      if ( fieldS == null || fieldS.defaultVal() == null ) {
+      if ( fieldS == null || fieldS.defaultValue() == null ) {
         return null;
       }
-      field = fieldS.defaultVal();
+      field = fieldS.defaultValue();
     }
 
     Schema.Type fieldT = fieldS.schema().getType();
@@ -700,7 +701,7 @@ public class AvroNestedReader {
     }
 
     // what have we got?
-    if ( !( field instanceof NullNode ) ) {
+    if ( !( field instanceof NullNode) ) {
       if ( fieldT == Schema.Type.RECORD ) {
         if ( field instanceof GenericData.Record ) {
           return convertToKettleValue(avroInputField, (GenericData.Record) field, fieldSchema, defaultSchema,

@@ -19,6 +19,7 @@
     <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
     <commons-lang.version>2.6</commons-lang.version>
     <pdi.version>10.3.0.0-SNAPSHOT</pdi.version>
+    <org.apache.avro.version>1.8.0</org.apache.avro.version>
     <jface.version>3.22.0</jface.version>
   </properties>
 
@@ -36,6 +37,11 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>${codehaus-jackson.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId>
@@ -75,9 +81,10 @@
       </exclusions>
     </dependency>
 	<dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro</artifactId>
-      <version>${org.apache.avro.version}</version>
+		<groupId>org.apache.avro</groupId>
+		<artifactId>avro</artifactId>
+		<version>${org.apache.avro.version}</version>
+		<scope>compile</scope>
 	</dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
