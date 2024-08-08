@@ -23,8 +23,6 @@ public class InfobrightDatabaseMetaTest extends MySQLDatabaseMetaTest {
     InfobrightDatabaseMeta idm = new InfobrightDatabaseMeta();
     idm.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
     assertEquals( 5029, idm.getDefaultDatabasePort() );
-    idm.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
-    assertEquals( -1, idm.getDefaultDatabasePort() );
   }
 
 }

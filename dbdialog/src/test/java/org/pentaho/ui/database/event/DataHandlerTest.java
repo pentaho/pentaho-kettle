@@ -172,12 +172,11 @@ public class DataHandlerTest {
 
   @Test
   public void testLoadAccessDataWithSelectedItem() throws Exception {
-    when( accessBox.getSelectedItem() ).thenReturn( "ODBC" );
 
     DatabaseInterface dbInterface = mock( DatabaseInterface.class );
     DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
     when( dbInterface.getAccessTypeList() ).thenReturn(
-      new int[]{ DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC } );
+      new int[]{ DatabaseMeta.TYPE_ACCESS_NATIVE } );
     when( dbInterface.getDefaultDatabasePort() ).thenReturn( 5309 );
     when( connectionBox.getSelectedItem() ).thenReturn( "myDb" );
     DataHandler.connectionMap.put( "myDb", dbInterface );
