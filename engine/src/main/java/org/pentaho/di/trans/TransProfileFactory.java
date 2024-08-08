@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -74,7 +74,7 @@ public class TransProfileFactory {
     // Now start building the transformation...
     //
     TransMeta transMeta = new TransMeta( databaseMeta );
-    transMeta.addDatabase( databaseMeta );
+    transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
 
     // Create a step to read the content of the table
     // Read the data from the database table...

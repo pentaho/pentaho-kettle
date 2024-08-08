@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -747,7 +747,13 @@ public class BaseStepDialog extends Dialog {
         CreateDatabaseWizard cdw = new CreateDatabaseWizard();
         DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard( shell, props, transMeta.getDatabases() );
         if ( newDBInfo != null ) {
-          transMeta.addDatabase( newDBInfo );
+          try {
+            transMeta.getDatabaseManagementInterface().addDatabase( newDBInfo );
+          } catch ( KettleException ex ) {
+            new ErrorDialog( wbwConnection.getShell(),
+              BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogTitle" ),
+              BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogMessage" ), ex );
+          }
           reinitConnectionDropDown( wConnection, newDBInfo.getName() );
         }
       }
@@ -811,6 +817,7 @@ public class BaseStepDialog extends Dialog {
     DatabaseDialog cid = getDatabaseDialog( shell );
     cid.setDatabaseMeta( changing );
     cid.setModalDialog( true );
+    String origname = origin.getName();
 
     if ( cid.getDatabaseMeta() == null ) {
       return changing.getName();
@@ -825,7 +832,11 @@ public class BaseStepDialog extends Dialog {
         repeat = false;
       } else {
         name = name.trim();
-        DatabaseMeta same = transMeta.findDatabase( name );
+        DatabaseMeta same = null;
+        if ( !name.equals( origname ) ) {
+          // don't look for collisions unless they changed the name
+          same = transMeta.findDatabase( name );
+        }
         if ( same == null || same == origin ) {
           // OK was pressed and input is valid
           repeat = false;
@@ -1500,7 +1511,13 @@ public class BaseStepDialog extends Dialog {
       DatabaseMeta databaseMeta = new DatabaseMeta();
       String connectionName = showDbDialogUnlessCancelledOrValid( databaseMeta, null );
       if ( connectionName != null ) {
-        transMeta.addDatabase( databaseMeta );
+        try {
+          transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+        } catch ( KettleException ex ) {
+          new ErrorDialog( wConnection.getShell(),
+            BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogTitle" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogMessage" ), ex );
+        }
         reinitConnectionDropDown( wConnection, databaseMeta.getName() );
         spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
       }
@@ -1530,23 +1547,16 @@ public class BaseStepDialog extends Dialog {
         String connectionName = showDbDialogUnlessCancelledOrValid( clone, databaseMeta );
         if ( connectionName != null ) {
           // These changes won't update shared.xml
-          transMeta.removeDatabase( transMeta.indexOfDatabase( databaseMeta ) );
-          transMeta.addDatabase( clone );
+          try {
+            transMeta.getDatabaseManagementInterface().removeDatabase( databaseMeta );
+            transMeta.getDatabaseManagementInterface().addDatabase( clone );
+          } catch ( KettleException ex ) {
+            new ErrorDialog( wConnection.getShell(),
+              BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogTitle" ),
+              BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogMessage" ), ex );
+          }
           reinitConnectionDropDown( wConnection, connectionName );
         }
-      }
-    }
-
-    boolean replaceSharedConnection( DatabaseMeta dbConnection, DatabaseMeta newDbConnection ) {
-      try {
-        SharedObjects sharedObjects = transMeta.getSharedObjects();
-        sharedObjects.removeObject( dbConnection );
-        sharedObjects.storeObject( newDbConnection );
-        sharedObjects.saveToFile();
-        return true;
-      } catch ( Exception e ) {
-        showErrorDialog( e );
-        return false;
       }
     }
 

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public class StreamToJobNodeConverter implements Converter {
           try {
             JobMeta jobMeta = repository.loadJob( new StringObjectId( fileId.toString() ), null );
             if ( jobMeta != null ) {
-              return new ByteArrayInputStream( filterPrivateDatabases( jobMeta ).getXML().getBytes() );
+              return new ByteArrayInputStream( jobMeta.getXML().getBytes() );
             }
           } catch ( KettleException e ) {
             logger.error( e );
@@ -114,22 +114,6 @@ public class StreamToJobNodeConverter implements Converter {
       logger.error( e );
     }
     return is;
-  }
-
-  @VisibleForTesting
-  JobMeta filterPrivateDatabases( JobMeta jobMeta ) {
-    Set<String> privateDatabases = jobMeta.getPrivateDatabases();
-    if ( privateDatabases != null ) {
-      // keep only private transformation databases
-      for ( Iterator<DatabaseMeta> it = jobMeta.getDatabases().iterator(); it.hasNext(); ) {
-        DatabaseMeta databaseMeta = it.next();
-        String databaseName = databaseMeta.getName();
-        if ( !privateDatabases.contains( databaseName ) && !jobMeta.isDatabaseConnectionUsed( databaseMeta ) ) {
-          it.remove();
-        }
-      }
-    }
-    return jobMeta;
   }
 
   // package-local visibility for testing purposes
@@ -208,8 +192,8 @@ public class StreamToJobNodeConverter implements Converter {
     if ( updateMeta ) {
       DatabaseMeta dbMetaToReplace = jobMeta.getDatabase( indexToReplace );
       dbMetaToReplace.setObjectId( repo.getDatabaseID( dbMetaToReplace.getName() ) );
-      jobMeta.removeDatabase( indexToReplace );
-      jobMeta.addDatabase( dbMetaToReplace );
+      jobMeta.getDatabaseManagementInterface().removeDatabase( dbMetaToReplace );
+      jobMeta.getDatabaseManagementInterface().addDatabase( dbMetaToReplace );
     }
     // Store the slave servers...
     //

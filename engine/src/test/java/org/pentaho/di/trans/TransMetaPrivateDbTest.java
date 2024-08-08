@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,9 +49,8 @@ public class TransMetaPrivateDbTest extends PrivateDatabasesTestTemplate<TransMe
   }
 
   @Override
-  protected TransMeta fromXml( String xml, final SharedObjects fakeSharedObjects ) throws Exception {
+  protected TransMeta fromXml( String xml ) throws Exception {
     TransMeta meta = spy( new TransMeta() );
-    doAnswer( createInjectingAnswer( meta, fakeSharedObjects ) ).when( meta ).readSharedObjects();
 
     Document doc = XMLHandler.loadXMLFile( new ByteArrayInputStream( xml.getBytes() ), null, false, false );
     meta.loadXML( XMLHandler.getSubNode( doc, TransMeta.XML_TAG ), null, false );

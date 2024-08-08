@@ -80,39 +80,6 @@ public class EditConnectionListenerTest {
     doNothing().when( editConnectionListener ).showErrorDialog( any( Exception.class ) );
   }
 
-  @Test
-  public void replaceSharedConnection() throws IOException, KettleException {
-    dialog.transMeta.addDatabase( createDefaultDatabase( true ) );
-    SharedObjects sharedObjects = mock( SharedObjects.class );
-    doReturn( sharedObjects ).when( dialog.transMeta ).getSharedObjects();
-
-    editConnectionListener.widgetSelected( null );
-
-    verify( editConnectionListener, never() ).replaceSharedConnection( any( DatabaseMeta.class ), any( DatabaseMeta.class ) );
-
-  }
-
-  @Test
-  public void replaceSharedConnectionDoesNotExecuted_for_nonshared_connection() {
-    dialog.transMeta.addDatabase( createDefaultDatabase( false ) );
-    editConnectionListener.widgetSelected( null );
-
-    verify( editConnectionListener, never() ).replaceSharedConnection( any( DatabaseMeta.class ), any(
-        DatabaseMeta.class ) );
-  }
-
-  @Test
-  public void replaceSharedConnectionReturnsFalse_on_error() throws IOException, KettleException {
-    dialog.transMeta.addDatabase( createDefaultDatabase( false ) );
-    SharedObjects sharedObjects = mock( SharedObjects.class );
-    doThrow( KettleException.class ).when( sharedObjects ).saveToFile();
-
-    boolean actualResult = editConnectionListener.replaceSharedConnection( anyDbMeta(), anyDbMeta() );
-
-    assertFalse( actualResult );
-    verify( editConnectionListener ).showErrorDialog( any( Exception.class ) );
-  }
-
   private static class PropsSettingAnswer implements Answer<String> {
 
     private final String name;

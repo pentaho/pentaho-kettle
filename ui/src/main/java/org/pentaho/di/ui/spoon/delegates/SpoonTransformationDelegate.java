@@ -361,7 +361,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         // Delete the connection at correct location:
         for ( int i = transAction.getCurrent().length - 1; i >= 0; i-- ) {
           int idx = transAction.getCurrentIndex()[i];
-          transMeta.removeDatabase( idx );
+          // TODO UNDO
+          //transMeta.removeDatabase( idx );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
@@ -433,7 +434,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         for ( int i = 0; i < transAction.getCurrent().length; i++ ) {
           DatabaseMeta ci = (DatabaseMeta) transAction.getCurrent()[i];
           int idx = transAction.getCurrentIndex()[i];
-          transMeta.addDatabase( idx, ci );
+          // TODO UNDO
+          // transMeta.addDatabase( idx, ci );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
@@ -579,7 +581,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         for ( int i = 0; i < transAction.getCurrent().length; i++ ) {
           DatabaseMeta ci = (DatabaseMeta) transAction.getCurrent()[i];
           int idx = transAction.getCurrentIndex()[i];
-          transMeta.addDatabase( idx, ci );
+          // TODO UNDO
+          //transMeta.addDatabase( idx, ci );
           spoon.refreshTree();
           spoon.refreshGraph();
         }
@@ -624,7 +627,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         // re-remove the connection at correct location:
         for ( int i = transAction.getCurrent().length - 1; i >= 0; i-- ) {
           int idx = transAction.getCurrentIndex()[i];
-          transMeta.removeDatabase( idx );
+          // TODO UNDO
+          //transMeta.removeDatabase( idx );
         }
         spoon.refreshTree();
         spoon.refreshGraph();

@@ -91,6 +91,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    * @return Map<String, Node>
    * @throws KettleXMLException
    */
+  @Override
   public synchronized Map<String, Node> getSharedObjects( String type ) throws KettleXMLException {
     if ( !isInitialized ) {
       // Load the shared.xml file
@@ -166,7 +167,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    * retruns the location in user's home folder.
    * @return String
    */
-  private static String  getDefaultSharedObjectFileLocation() {
+  private static String getDefaultSharedObjectFileLocation() {
     // First fallback is the environment/kettle variable ${KETTLE_SHARED_OBJECTS}
     // This points to the file
     String filename = Variables.getADefaultVariableSpace().getVariable( Const.KETTLE_SHARED_OBJECTS );
@@ -177,27 +178,37 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
     }
     return filename;
   }
+
   /**
    * Save the name and the node for the given Shared Object Type in the file
    * @param type The SharedObject type
    * @param name The name of the SharedObject for a given type
    * @param node The xml node that containing the details of the SharedObject
-   * @throws IOException
    * @throws KettleException
    */
-  public void saveSharedObject( String type, String name, Node node ) throws IOException, KettleException {
+  @Override
+  public void saveSharedObject( String type, String name, Node node ) throws KettleException {
     // Get the map for the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
     // Add or Update the map entry for this name
     nodeMap.put( name, node );
 
-    FileObject fileObject = KettleVFS.getFileObject( sharedObjectFile );
-    Optional<String> backupFileName = createOrGetFileBackup( fileObject );
-    writeToFile( fileObject, backupFileName );
-    isInitialized = false;
+    saveToFile();
   }
 
-  protected void writeToFile( FileObject fileObject, Optional<String> backupFileName ) throws IOException, KettleException {
+  protected void saveToFile() throws KettleException {
+    try {
+      FileObject fileObject = KettleVFS.getFileObject( sharedObjectFile );
+      Optional<String> backupFileName = createOrGetFileBackup( fileObject );
+      writeToFile( fileObject, backupFileName );
+      isInitialized = false;
+    } catch ( IOException ex ) {
+      throw new KettleException( ex );
+    }
+  }
+
+  protected void writeToFile( FileObject fileObject, Optional<String> backupFileName )
+    throws IOException, KettleException {
     try ( OutputStream outputStream = KettleVFS.getOutputStream( fileObject, false );
          PrintStream out = new PrintStream( outputStream ) ) {
 
@@ -250,7 +261,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
     }
   }
 
-  private boolean copyFile( String src, String dest ) throws KettleFileException, IOException {
+  private boolean copyFile( String src, String dest ) throws IOException, KettleFileException {
     FileObject srcFile = KettleVFS.getFileObject( src );
     FileObject destFile = KettleVFS.getFileObject( dest );
     try ( InputStream in = KettleVFS.getInputStream( srcFile );
@@ -267,16 +278,43 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    * @return
    * @throws KettleXMLException
    */
-  public Node getSharedObject( String type, String name ) throws KettleXMLException {
+  @Override
+  public Node getSharedObject( String type, String name ) throws KettleException {
     // Get the Map using the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
     return nodeMap.get( name );
   }
 
-  public void delete( String type, String name ) throws KettleXMLException {
+  @Override
+  public void delete( String type, String name ) throws KettleException {
     // Get the nodeMap for the type
     Map<String, Node> nodeTypeMap = getNodesMapForType( type );
     Node removedNode = nodeTypeMap.remove( name );
+
+    saveToFile();
+  }
+
+  @Override
+  public void clear( String type ) throws KettleException {
+    switch ( SharedObjectType.valueOf( type.toUpperCase() ) ) {
+      case CONNECTION:
+        connectionsNodes.clear();
+        break;
+      case SLAVESERVER:
+        slaveServersNodes.clear();
+        break;
+      case PARTITIONSCHEMA:
+        partitionSchemaNodes.clear();
+        break;
+      case CLUSTERSCHEMA:
+        clusterSchemaNodes.clear();
+        break;
+      default:
+        // unsupported type
+        log.error( " Invalid Shared Object type " + type );
+        throw new KettleXMLException( "Invalid shared object type " + type );
+    }
+    saveToFile();
   }
 
   private Map<String, Node> getNodesMapForType( String type ) throws KettleXMLException {

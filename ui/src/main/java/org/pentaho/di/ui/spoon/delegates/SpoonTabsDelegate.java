@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -270,7 +270,6 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   private void addBrowserFunctions( Map<String, Runnable> functions, SpoonBrowser browser ) {
     if ( functions != null ) {
       for ( String functionName : functions.keySet() ) {
-        System.err.println( "Adding function: " + functionName );
         new BrowserFunction( browser.getBrowser(), functionName ) {
           public Object function( Object[] arguments ) {
             functions.get( functionName ).run();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -119,6 +119,7 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
     super.replaceMeta( logTable );
   }
 
+  @Override
   public void loadXML( Node jobnode, List<DatabaseMeta> databases, List<StepMeta> steps ) {
     Node node = XMLHandler.getSubNode( jobnode, XML_TAG );
     if ( node == null ) {

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018-2023 Hitachi Vantara.  All rights reserved.
+ * Copyright 2018-2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -237,8 +237,8 @@ public class PurRepositoryProxy implements Repository {
   }
 
   @Override
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
-    return getDelegate().readTransSharedObjects( transMeta );
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
+    getDelegate().readTransSharedObjects( transMeta );
   }
 
   @Override
@@ -267,8 +267,8 @@ public class PurRepositoryProxy implements Repository {
   }
 
   @Override
-  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
-    return getDelegate().readJobMetaSharedObjects( jobMeta );
+  public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
+    getDelegate().readJobMetaSharedObjects( jobMeta );
   }
 
   @Override

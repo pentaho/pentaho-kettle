@@ -18,6 +18,7 @@ package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.core.exception.KettleException;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -58,6 +59,12 @@ public abstract class BaseBowl implements Bowl {
 
   public void addParentBowl( Bowl parent ) {
     parentBowls.add( parent );
+  }
+
+  // use with caution. For testing only.
+  @VisibleForTesting
+  public synchronized void clearManagers() {
+    managerInstances.clear();
   }
 }
 

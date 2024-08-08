@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3545,29 +3545,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     TransDialog tid = new TransDialog( spoon.getShell(), SWT.NONE, transMeta, rep, currentTab );
     tid.setDirectoryChangeAllowed( allowDirectoryChange );
     TransMeta ti = tid.open();
-
-    // Load shared objects
-    //
-    if ( tid.isSharedObjectsFileChanged() ) {
-      try {
-        SharedObjects sharedObjects =
-          rep != null ? rep.readTransSharedObjects( transMeta ) : transMeta.readSharedObjects();
-        spoon.sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
-      } catch ( KettleException e ) {
-        // CHECKSTYLE:LineLength:OFF
-        new ErrorDialog( spoon.getShell(),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages.getString( PKG,
-          "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTabName( transMeta, true ) ), e );
-      }
-
-      // If we added properties, add them to the variables too, so that they appear in the CTRL-SPACE variable
-      // completion.
-      //
-      spoon.setParametersAsVariablesInUI( transMeta, transMeta );
-
-      spoon.refreshTree();
-      spoon.delegates.tabs.renameTabs(); // cheap operation, might as will do it anyway
-    }
 
     spoon.setShellText();
     return ti != null;

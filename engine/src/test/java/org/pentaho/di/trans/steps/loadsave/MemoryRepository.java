@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -272,9 +272,8 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
     // TODO Auto-generated method stub
-    return null;
   }
 
   @Override
@@ -310,9 +309,8 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
+  public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
     // TODO Auto-generated method stub
-    return null;
   }
 
   @Override

@@ -16,8 +16,11 @@
  */
 package com.pentaho.repository.importexport;
 
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -54,11 +57,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertTrue;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
 
 public class StreamToTransNodeConverterTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
+  }
+
+  @BeforeClass
+  public static void setupClass() {
+    DefaultBowl.getInstance().setSharedObjectsIO( new MemorySharedObjectsIO() );
   }
 
   @Test
@@ -113,62 +122,6 @@ public class StreamToTransNodeConverterTest {
     fail();
   }
 
-  @Test
-  public void filterPrivateDatabasesWithOnePrivateDatabaseTest() {
-    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
-    TransMeta transMeta = new TransMeta(  );
-    transMeta.setDatabases( getDummyDatabases() );
-    Set<String> privateDatabases = new HashSet<>(  );
-    privateDatabases.add( "database2" );
-    transMeta.setPrivateDatabases( privateDatabases );
-    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
-    assertEquals( 1, transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
-  }
-
-  @Test
-  public void filterPrivateDatabasesWithOnePrivateDatabaseAndOneInUseTest() {
-    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
-    TransMeta transMeta = spy( TransMeta.class );
-    transMeta.setDatabases( getDummyDatabases() );
-    Set<String> privateDatabases = new HashSet<>(  );
-    privateDatabases.add( "database2" );
-    transMeta.setPrivateDatabases( privateDatabases );
-    when( transMeta.isDatabaseConnectionUsed( getDummyDatabases().get( 0 ) ) ).thenReturn( true );
-    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
-    assertEquals( 2, transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
-  }
-
-  @Test
-  public void filterPrivateDatabasesWithOneInUseTest() {
-    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
-    TransMeta transMeta = spy( TransMeta.class );
-    transMeta.setDatabases( getDummyDatabases() );
-    transMeta.setPrivateDatabases( new HashSet<>(  ) );
-    when( transMeta.isDatabaseConnectionUsed( getDummyDatabases().get( 0 ) ) ).thenReturn( true );
-    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
-    assertEquals( 1, transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
-  }
-
-  @Test
-  public void filterPrivateDatabasesNoPrivateDatabaseTest() {
-    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
-    TransMeta transMeta = new TransMeta(  );
-    transMeta.setDatabases( getDummyDatabases() );
-    transMeta.setPrivateDatabases( new HashSet<>(  ) );
-    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
-    assertEquals( 0, transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
-  }
-
-  @Test
-  public void filterPrivateDatabasesNullPrivateDatabaseTest() {
-    IUnifiedRepository purMock = mock( IUnifiedRepository.class );
-    TransMeta transMeta = new TransMeta(  );
-    transMeta.setDatabases( getDummyDatabases() );
-    transMeta.setPrivateDatabases( null );
-    StreamToTransNodeConverter transConverter = new StreamToTransNodeConverter( purMock );
-    assertEquals( transMeta.getDatabases().size(), transConverter.filterPrivateDatabases( transMeta ).getDatabases().size() );
-  }
-
   private List<DatabaseMeta> getDummyDatabases() {
     List<DatabaseMeta> databases = new ArrayList<>(  );
     databases.add( new DatabaseMeta( "database1", "Oracle", "Native", "", "", "", "", "" ) );
@@ -177,4 +130,12 @@ public class StreamToTransNodeConverterTest {
     databases.add( new DatabaseMeta( "database4", "Oracle", "Native", "", "", "", "", "" ) );
     return databases;
   }
+
+  private void setDatabases( AbstractMeta meta, List<DatabaseMeta> databases ) throws Exception {
+    meta.getDatabaseManagementInterface().clear();
+    for ( DatabaseMeta db : databases ) {
+      meta.getDatabaseManagementInterface().addDatabase( db );
+    }
+  }
 }
+

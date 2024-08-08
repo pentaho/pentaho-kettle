@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -211,7 +211,7 @@ public interface Repository {
    */
   public TransMeta loadTransformation( ObjectId id_transformation, String versionLabel ) throws KettleException;
 
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException;
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException;
 
   /**
    * Move / rename a transformation
@@ -286,7 +286,7 @@ public interface Repository {
    */
   public JobMeta loadJob( ObjectId id_job, String versionLabel ) throws KettleException;
 
-  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException;
+  public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException;
 
   /**
    * Move / rename a job

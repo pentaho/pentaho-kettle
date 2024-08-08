@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -121,6 +121,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node node, List<DatabaseMeta> databases, List<StepMeta> steps ) {
     connectionName = XMLHandler.getTagValue( node, "connection" );
     schemaName = XMLHandler.getTagValue( node, "schema" );

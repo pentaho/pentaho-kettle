@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.DatabaseConnectionManager;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 
 import java.util.List;
 
@@ -77,20 +78,28 @@ public class DatabasesCollectorTest {
   @Test
   public void collectDatabasesRepIsNullTest() throws Exception {
     DatabaseConnectionManager mgr = prepareDbManager( mockDb( "mysql" ), mockDb( "oracle" ) );
-    AbstractMeta meta = prepareMeta( mockDb( "postgres" ) );
-    DatabasesCollector collector = new DatabasesCollector( mgr, meta, null );
+    DatabasesCollector collector = new DatabasesCollector( mgr, null );
     collector.collectDatabases();
-    assertEquals( collector.getDatabaseNames().size(), 3 );
+    assertEquals( collector.getDatabaseNames().size(), 2 );
+
+    AbstractMeta meta = prepareMeta( mockDb( "postgres" ) );
+    collector = new DatabasesCollector( meta.getDatabaseManagementInterface(), null );
+    collector.collectDatabases();
+    assertEquals( collector.getDatabaseNames().size(), 1 );
+
   }
 
-  private static AbstractMeta prepareMeta( DatabaseMeta... metas ) {
+  private static AbstractMeta prepareMeta( DatabaseMeta... metas ) throws Exception {
     if ( metas == null ) {
       metas = new DatabaseMeta[ 0 ];
     }
 
     AbstractMeta meta = mock( AbstractMeta.class );
     List<DatabaseMeta> dbs = asList( metas );
-    when( meta.getLocalDbMetas() ).thenReturn( dbs );
+
+    DatabaseManagementInterface dbMgr = mock( DatabaseManagementInterface.class );
+    when( dbMgr.getDatabases() ).thenReturn( dbs );
+    when( meta.getDatabaseManagementInterface() ).thenReturn( dbMgr );
     return meta;
   }
 

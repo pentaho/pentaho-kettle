@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -355,9 +355,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     }
   }
 
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
+  @Override
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
     try {
-      return transDelegate.readTransSharedObjects( transMeta );
+      transDelegate.readTransSharedObjects( transMeta );
     } finally {
       connectionDelegate.closeReadTransaction();
     }
@@ -403,9 +404,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     }
   }
 
-  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
+  @Override
+  public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
     try {
-      return jobDelegate.readSharedObjects( jobMeta );
+      jobDelegate.readSharedObjects( jobMeta );
     } finally {
       connectionDelegate.closeReadTransaction();
     }

@@ -97,7 +97,9 @@ import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
@@ -128,6 +130,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -572,7 +575,7 @@ public class TransMeta extends AbstractMeta
         transMeta.clear();
       } else {
         // Clear out the things we're replacing below
-        transMeta.databases = new ArrayList<>();
+        transMeta.localSharedObjects.clear();
         transMeta.steps = new ArrayList<>();
         transMeta.hops = new ArrayList<>();
         transMeta.notes = new ArrayList<>();
@@ -583,8 +586,11 @@ public class TransMeta extends AbstractMeta
         transMeta.namedParams = new NamedParamsDefault();
         transMeta.stepChangeListeners = new ArrayList<>();
       }
-      for ( DatabaseMeta db : databases ) {
-        transMeta.addDatabase( (DatabaseMeta) db.clone() );
+      // Copy the Nodes to avoid converting from/to XML.
+      String dbType = SharedObjectsIO.SharedObjectType.CONNECTION.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( dbType ).entrySet() ) {
+        // cloneNode is *probably* overkill
+        transMeta.localSharedObjects.saveSharedObject( dbType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
       for ( StepMeta step : steps ) {
         transMeta.addStep( (StepMeta) step.clone() );
@@ -2485,7 +2491,6 @@ public class TransMeta extends AbstractMeta
     retval.append( "    " ).append( XMLHandler.addTagValue( "feedback_shown", feedbackShown ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "feedback_size", feedbackSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "using_thread_priorities", usingThreadPriorityManagment ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "shared_objects_file", sharedObjectsFile ) );
 
     // Performance monitoring
     //
@@ -2564,8 +2569,7 @@ public class TransMeta extends AbstractMeta
 
     // The database connections...
     if ( includeDatabase ) {
-      for ( int i = 0; i < nrDatabases(); i++ ) {
-        DatabaseMeta dbMeta = getDatabase( i );
+      for ( DatabaseMeta dbMeta : localDbMgr.getDatabases() ) {
         //PDI-20078 - If props == null, it means transformation is running on the slave server. For the
         // method areOnlyUsedConnectionsSavedToXMLInServer to return false, the "STRING_ONLY_USED_DB_TO_XML"
         // needs to have "N" in the server startup script file
@@ -3014,7 +3018,11 @@ public class TransMeta extends AbstractMeta
         //
         try {
           sharedObjectsFile = XMLHandler.getTagValue( transnode, "info", "shared_objects_file" );
-          sharedObjects = rep != null ? rep.readTransSharedObjects( this ) : readSharedObjects();
+          if ( rep != null ) {
+            rep.readTransSharedObjects( this );
+          } else {
+            readSharedObjects();
+          }
         } catch ( Exception e ) {
           log
             .logError( BaseMessages.getString( PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
@@ -3042,27 +3050,12 @@ public class TransMeta extends AbstractMeta
 
           DatabaseMeta dbcon = new DatabaseMeta( nodecon );
           dbcon.shareVariablesWith( this );
-          if ( !dbcon.isShared() ) {
             privateTransformationDatabases.add( dbcon.getName() );
-            localDbMetas.put(dbcon.getName(), dbcon );
-          }
-
-          DatabaseMeta exist = findDatabase( dbcon.getName() );
-          if ( exist == null ) {
-            addDatabase( dbcon );
-          } else {
-            if ( !exist.isShared() ) { // otherwise, we just keep the shared connection.
-              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
-                  "TransMeta.Message.OverwriteConnectionYN", dbcon.getName() ), BaseMessages.getString( PKG,
-                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
-                int idx = indexOfDatabase( exist );
-                removeDatabase( idx );
-                addDatabase( idx, dbcon );
-              }
-            }
-          }
+          localDbMgr.addDatabase( dbcon );
         }
         setPrivateDatabases( privateTransformationDatabases );
+        // make a copy so we don't keep re-reading it for the calls to loadXML
+        List<DatabaseMeta> databases = getDatabases();
 
         // Read the notes...
         Node notepadsnode = XMLHandler.getSubNode( transnode, XML_TAG_NOTEPADS );
@@ -3086,7 +3079,7 @@ public class TransMeta extends AbstractMeta
             log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.LookingAtStep" ) + i );
           }
 
-          StepMeta stepMeta = new StepMeta( stepnode, databases, metaStore );
+          StepMeta stepMeta = new StepMeta( stepnode, getDatabases(), metaStore );
           stepMeta.setParentTransMeta( this ); // for tracing, retain hierarchy
 
           if ( stepMeta.isMissing() ) {
@@ -3270,7 +3263,7 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrDeps; i++ ) {
           Node depNode = XMLHandler.getSubNodeByNr( depsNode, TransDependency.XML_TAG, i );
 
-          TransDependency transDependency = new TransDependency( depNode, databases );
+          TransDependency transDependency = new TransDependency( depNode, getDatabases() );
           if ( transDependency.getDatabase() != null && transDependency.getFieldname() != null ) {
             addDependency( transDependency );
           }
@@ -5211,6 +5204,24 @@ public class TransMeta extends AbstractMeta
 
   }
 
+  @Override
+  protected void databasesUpdated( String name, Optional<DatabaseMeta> newDatabaseMeta ) {
+    // don't forget transformation-level databases.
+    if ( maxDateConnection != null && maxDateConnection.getName().equals( name ) ) {
+      updateFields( maxDateConnection, newDatabaseMeta );
+    }
+    for ( StepMeta step : getSteps() ) {
+      DatabaseMeta[] dbs = step.getStepMetaInterface().getUsedDatabaseConnections();
+      if ( dbs != null ) {
+        for ( DatabaseMeta db : dbs ) {
+          if ( db.getName().equals( name ) ) {
+            updateFields( db, newDatabaseMeta );
+          }
+        }
+      }
+    }
+  }
+
   /**
    * Gets a list of all the strings used in this transformation. The parameters indicate which collections to search and
    * which to exclude.
@@ -5246,40 +5257,43 @@ public class TransMeta extends AbstractMeta
 
     // Loop over all steps in the transformation and see what the used vars are...
     if ( searchDatabases ) {
-      for ( int i = 0; i < nrDatabases(); i++ ) {
-        DatabaseMeta meta = getDatabase( i );
-        stringList.add( new StringSearchResult( meta.getName(), meta, this,
-            BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
-        if ( meta.getHostname() != null ) {
-          stringList.add( new StringSearchResult( meta.getHostname(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
-        }
-        if ( meta.getDatabaseName() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseName" ) ) );
-        }
-        if ( meta.getUsername() != null ) {
-          stringList.add( new StringSearchResult( meta.getUsername(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
-        }
-        if ( meta.getPluginId() != null ) {
-          stringList.add( new StringSearchResult( meta.getPluginId(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
-        }
-        if ( meta.getDatabasePortNumberString() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
-        }
-        if ( meta.getServername() != null ) {
-          stringList.add( new StringSearchResult( meta.getServername(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
-        }
+      try {
+        for ( DatabaseMeta meta : localDbMgr.getDatabases() ) {
+          stringList.add( new StringSearchResult( meta.getName(), meta, this,
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
+          if ( meta.getHostname() != null ) {
+            stringList.add( new StringSearchResult( meta.getHostname(), meta, this,
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
+          }
+          if ( meta.getDatabaseName() != null ) {
+            stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this,
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseName" ) ) );
+          }
+          if ( meta.getUsername() != null ) {
+            stringList.add( new StringSearchResult( meta.getUsername(), meta, this,
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
+          }
+          if ( meta.getPluginId() != null ) {
+            stringList.add( new StringSearchResult( meta.getPluginId(), meta, this,
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
+          }
+          if ( meta.getDatabasePortNumberString() != null ) {
+            stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this,
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
+          }
+          if ( meta.getServername() != null ) {
+            stringList.add( new StringSearchResult( meta.getServername(), meta, this,
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
+          }
 
-          if ( meta.getPassword() != null ) {
-            stringList.add( new StringSearchResult( Strings.repeat("*", meta.getPassword().length()), meta, this,
-                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
+            if ( meta.getPassword() != null ) {
+              stringList.add( new StringSearchResult( Strings.repeat("*", meta.getPassword().length()), meta, this,
+                  BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
 
+          }
         }
+      } catch ( KettleException ex ) {
+        //log?
       }
     }
 
@@ -5580,14 +5594,6 @@ public class TransMeta extends AbstractMeta
       previous.replaceMeta( clusterSchema );
     }
     setChanged();
-  }
-
-  @Override protected List<SharedObjectInterface> getAllSharedObjects() {
-    List<SharedObjectInterface> shared = super.getAllSharedObjects();
-    shared.addAll( steps );
-    shared.addAll( partitionSchemas );
-    shared.addAll( clusterSchemas );
-    return shared;
   }
 
   /**
@@ -6398,7 +6404,6 @@ public class TransMeta extends AbstractMeta
         .append( this.isFeedbackShown() )
         .append( this.getFeedbackSize() )
         .append( this.isUsingThreadPriorityManagment() )
-        .append( this.getSharedObjectsFile() )
         .append( this.isCapturingStepPerformanceSnapShots() )
         .append( this.getStepPerformanceCapturingDelay() )
         .append( this.getStepPerformanceCapturingSizeLimit() )

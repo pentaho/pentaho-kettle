@@ -21,31 +21,37 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.ManagerFactory;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
- * This class uses the SharedObjectIO to retrieve and save shared objects. This is used by the UI.
+ * This class uses the SharedObjectsIO to retrieve and save shared objects. This is used by the UI.
+ * <p>
+ * This class caches the state of the underlying SharedObjectsIO, and does not re-read from the source. Only changes
+ * written through this interface will be reflected.
  */
 public class DatabaseConnectionManager implements DatabaseManagementInterface {
+  public  static final String DB_TYPE = SharedObjectsIO.SharedObjectType.CONNECTION.getName();
+
   private static Class<?> PKG = DatabaseConnectionManager.class; // for i18n purposes, needed by Translator2!!
   private SharedObjectsIO sharedObjectIO;
   private Map<String, DatabaseMeta> dbMetas = new HashMap<>();
+  private volatile boolean initialized = false;
 
   private Bowl bowl;
 
-  public static DatabaseConnectionManager getInstance( Bowl bowl ) throws KettleXMLException {
+  public static DatabaseConnectionManager getInstance( Bowl bowl ) throws KettleException {
     return new DatabaseConnectionManager( bowl );
   }
-  private DatabaseConnectionManager( Bowl bowl ) throws KettleXMLException {
+  private DatabaseConnectionManager( Bowl bowl ) throws KettleException {
     this.bowl = bowl;
     this.sharedObjectIO = bowl.getSharedObjectsIO();
   }
@@ -54,27 +60,46 @@ public class DatabaseConnectionManager implements DatabaseManagementInterface {
    * {@inheritDoc}
    *
    * @return List<DatabaseMeta> Returns a List of DatabaseMeta
-   * @throws KettleXMLException
+   * @throws KettleException
    */
   @Override
-  public List<DatabaseMeta> getDatabases() throws KettleXMLException {
-    Map<String, Node> nodeMap = sharedObjectIO.getSharedObjects( String.valueOf( SharedObjectsIO.SharedObjectType.CONNECTION ) );
-    populateDbMetaMap( nodeMap );
+  public List<DatabaseMeta> getDatabases() throws KettleException {
+    populateDbMetaMap();
 
     return new ArrayList<>( dbMetas.values() );
+  }
+
+  @Override
+  public DatabaseMeta getDatabase( String name ) throws KettleException {
+    populateDbMetaMap();
+    return dbMetas.get( name );
+  }
+
+  private void populateDbMetaMap() throws KettleException {
+    if ( !initialized ) {
+      synchronized( this ) {
+        if ( !initialized ) {
+          Map<String, Node> nodeMap = sharedObjectIO.getSharedObjects( DB_TYPE );
+          Map<String, DatabaseMeta> metaMap = new HashMap<>();
+          for ( String name : nodeMap.keySet() ) {
+            DatabaseMeta dbMeta = new DatabaseMeta( nodeMap.get( name ) );
+            if ( !metaMap.containsKey( name ) ) {
+              metaMap.put( name, dbMeta );
+            }
+          }
+          this.dbMetas = metaMap;
+        }
+      }
+      initialized = true;
+    }
 
   }
 
-  private void populateDbMetaMap( Map<String, Node> nodesMap ) throws KettleXMLException {
-    Map<String, DatabaseMeta> metaMap = new HashMap<>();
-    for ( String name : nodesMap.keySet() ) {
-      DatabaseMeta dbMeta = new DatabaseMeta( nodesMap.get( name ) );
-      if ( !metaMap.containsKey( name ) ) {
-        metaMap.put( name, dbMeta );
-      }
-    }
-    this.dbMetas = metaMap;
-
+  public static Node toNode( DatabaseMeta databaseMeta ) throws KettleException {
+    String xml = databaseMeta.getXML();
+    Document doc = XMLHandler.loadXMLString( xml );
+    Node node = XMLHandler.getSubNode( doc, DB_TYPE );
+    return node;
   }
 
   /**
@@ -82,28 +107,34 @@ public class DatabaseConnectionManager implements DatabaseManagementInterface {
    *
    * The new connection is added to xml file and also in the in memory map.
    * @param databaseMeta
-   * @return boolean
    * @throws KettleException
    */
   @Override
-  public synchronized boolean addDatabase( DatabaseMeta databaseMeta ) throws KettleException {
+  public synchronized void addDatabase( DatabaseMeta databaseMeta ) throws KettleException {
+    populateDbMetaMap();
     String connName = databaseMeta.getName();
-    boolean result;
-    try {
-      String type = String.valueOf( SharedObjectsIO.SharedObjectType.CONNECTION );
-      // Save the database connection in xml
-      this.sharedObjectIO.saveSharedObject( type, connName,
-        XMLHandler.getSubNode( XMLHandler.loadXMLString( databaseMeta.getXML() ), type ) );
+    // Save the database connection in xml
+    Node node = toNode( databaseMeta );
+    this.sharedObjectIO.saveSharedObject( DB_TYPE, connName, node );
 
-      // Add it to the map
-      dbMetas.put( connName, databaseMeta );
-      result = true;
-    } catch ( IOException exception ) {
-      result = false;
-      throw new KettleException(  BaseMessages.getString( PKG, "SharedOjects.SavingSharedOjects.Error" ), exception );
-    }
+    // Add it to the map
+    dbMetas.put( connName, databaseMeta );
+  }
 
-    return result;
+  @Override
+  public synchronized void removeDatabase( DatabaseMeta databaseMeta ) throws KettleException {
+    populateDbMetaMap();
+    String connName = databaseMeta.getName();
+
+    this.sharedObjectIO.delete( DB_TYPE, connName );
+
+    dbMetas.remove( connName );
+  }
+
+  @Override
+  public synchronized void clear() throws KettleException {
+    this.sharedObjectIO.clear( DB_TYPE );
+    dbMetas.clear();
   }
 
   /**

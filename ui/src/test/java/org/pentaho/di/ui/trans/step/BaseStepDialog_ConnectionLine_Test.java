@@ -22,6 +22,16 @@
 
 package org.pentaho.di.ui.trans.step;
 
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.spoon.Spoon;
+
+import java.util.function.Supplier;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.BeforeClass;
@@ -29,15 +39,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.powermock.reflect.Whitebox;
-
-import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,6 +65,7 @@ public class BaseStepDialog_ConnectionLine_Test {
   @BeforeClass
   public static void initKettle() throws Exception {
     KettleEnvironment.init();
+    DefaultBowl.getInstance().setSharedObjectsIO( new MemorySharedObjectsIO() );
   }
 
   @Test
@@ -77,7 +80,7 @@ public class BaseStepDialog_ConnectionLine_Test {
   @Test
   public void ignores_WhenConnectionNameIsUsed() throws Exception {
     TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( createDefaultDatabase() );
+    transMeta.getDatabaseManagementInterface().addDatabase( createDefaultDatabase() );
 
     invokeAddConnectionListener( transMeta, null );
 
@@ -104,7 +107,7 @@ public class BaseStepDialog_ConnectionLine_Test {
   @Test
   public void edits_WhenNotRenamed() throws Exception {
     TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( createDefaultDatabase() );
+    transMeta.getDatabaseManagementInterface().addDatabase( createDefaultDatabase() );
 
     invokeEditConnectionListener( transMeta, INITIAL_NAME );
 
@@ -114,7 +117,7 @@ public class BaseStepDialog_ConnectionLine_Test {
   @Test
   public void edits_WhenNewNameIsUnique() throws Exception {
     TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( createDefaultDatabase() );
+    transMeta.getDatabaseManagementInterface().addDatabase( createDefaultDatabase() );
 
     invokeEditConnectionListener( transMeta, INPUT_NAME );
 
@@ -124,7 +127,7 @@ public class BaseStepDialog_ConnectionLine_Test {
   @Test
   public void ignores_WhenNewNameIsUsed() throws Exception {
     TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( createDefaultDatabase() );
+    transMeta.getDatabaseManagementInterface().addDatabase( createDefaultDatabase() );
 
     invokeEditConnectionListener( transMeta, null );
 
@@ -212,7 +215,7 @@ public class BaseStepDialog_ConnectionLine_Test {
 
     TransMeta transMeta = new TransMeta();
     DatabaseMeta db = createDefaultDatabase();
-    transMeta.addDatabase( db );
+    transMeta.getDatabaseManagementInterface().addDatabase( db );
 
     BaseStepDialog dialog = mock( BaseStepDialog.class );
     dialog.databaseDialog = databaseDialog;
@@ -235,8 +238,8 @@ public class BaseStepDialog_ConnectionLine_Test {
     db2.setName( INPUT_NAME );
 
     TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( db1 );
-    transMeta.addDatabase( db2 );
+    transMeta.getDatabaseManagementInterface().addDatabase( db1 );
+    transMeta.getDatabaseManagementInterface().addDatabase( db2 );
 
     final String expectedResult = INPUT_NAME + "2";
 

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2023 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -581,7 +581,6 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       usingThreadPriorityManagement = rootNode.getProperty( PROP_USING_THREAD_PRIORITIES ).getBoolean();
     }
     transMeta.setUsingThreadPriorityManagment( usingThreadPriorityManagement );
-    transMeta.setSharedObjectsFile( getString( rootNode, PROP_SHARED_FILE ) );
     String transTypeCode = getString( rootNode, PROP_TRANSFORMATION_TYPE );
     transMeta.setTransformationType( TransformationType.getTransformationTypeByCode( transTypeCode ) );
 
@@ -832,7 +831,6 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     rootNode.setProperty( PROP_FEEDBACK_SHOWN, transMeta.isFeedbackShown() );
     rootNode.setProperty( PROP_FEEDBACK_SIZE, transMeta.getFeedbackSize() );
     rootNode.setProperty( PROP_USING_THREAD_PRIORITIES, transMeta.isUsingThreadPriorityManagment() );
-    rootNode.setProperty( PROP_SHARED_FILE, transMeta.getSharedObjectsFile() );
 
     rootNode.setProperty( PROP_CAPTURE_STEP_PERFORMANCE, transMeta.isCapturingStepPerformanceSnapShots() );
     rootNode.setProperty( PROP_STEP_PERFORMANCE_CAPTURING_DELAY, transMeta.getStepPerformanceCapturingDelay() );
@@ -857,11 +855,11 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
   }
 
   @SuppressWarnings( "unchecked" )
-  public SharedObjects loadSharedObjects( final RepositoryElementInterface element,
+  @Override
+  public void loadSharedObjects( final RepositoryElementInterface element,
       final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType )
     throws KettleException {
     TransMeta transMeta = (TransMeta) element;
-    transMeta.setSharedObjects( transMeta.readSharedObjects() );
 
     // Repository objects take priority so let's overwrite them...
     //
@@ -870,8 +868,6 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
         .get( RepositoryObjectType.PARTITION_SCHEMA ) );
     readSlaves( transMeta, true, (List<SlaveServer>) sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER ) );
     readClusters( transMeta, true, (List<ClusterSchema>) sharedObjectsByType.get( RepositoryObjectType.CLUSTER_SCHEMA ) );
-
-    return transMeta.getSharedObjects();
   }
 
   /**
@@ -883,12 +879,13 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
    *          if an object with the same name exists, overwrite
    * @throws KettleException
    */
-  protected void readDatabases( TransMeta transMeta, boolean overWriteShared, List<DatabaseMeta> databaseMetas ) {
+  protected void readDatabases( TransMeta transMeta, boolean overWriteShared, List<DatabaseMeta> databaseMetas )
+    throws KettleException {
     for ( DatabaseMeta databaseMeta : databaseMetas ) {
       if ( overWriteShared || transMeta.findDatabase( databaseMeta.getName() ) == null ) {
         if ( databaseMeta.getName() != null ) {
           databaseMeta.shareVariablesWith( transMeta );
-          transMeta.addOrReplaceDatabase( databaseMeta );
+          transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
           if ( !overWriteShared ) {
             databaseMeta.setChanged( false );
           }

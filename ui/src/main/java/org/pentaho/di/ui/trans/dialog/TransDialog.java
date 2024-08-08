@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.trans.dialog;
+
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -71,6 +72,7 @@ import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
@@ -90,6 +92,7 @@ import org.pentaho.di.ui.core.widget.FieldDisabledListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -914,7 +917,15 @@ public class TransDialog extends Dialog {
         getDatabaseDialog().setDatabaseMeta( databaseMeta );
 
         if ( getDatabaseDialog().open() != null ) {
-          transMeta.addDatabase( getDatabaseDialog().getDatabaseMeta() );
+          try {
+            DatabaseManagementInterface dbMgr =
+              Spoon.getInstance().getBowl().getManager( DatabaseManagementInterface.class );
+            dbMgr.addDatabase( getDatabaseDialog().getDatabaseMeta() );
+          } catch ( KettleException dbe ) {
+            new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "TransDialog.ErrorAddingDatabase.Title" ), BaseMessages
+                .getString( PKG, "TransDialog.ErrorAddingDatabase.Message" ), dbe );
+          }
           wLogconnection.add( getDatabaseDialog().getDatabaseMeta().getName() );
           wLogconnection.select( wLogconnection.getItemCount() - 1 );
         }
@@ -2173,7 +2184,6 @@ public class TransDialog extends Dialog {
     wUniqueConnections.setSelection( transMeta.isUsingUniqueConnections() );
     wShowFeedback.setSelection( transMeta.isFeedbackShown() );
     wFeedbackSize.setText( Integer.toString( transMeta.getFeedbackSize() ) );
-    wSharedObjectsFile.setText( Const.NVL( transMeta.getSharedObjectsFile(), "" ) );
     wManageThreads.setSelection( transMeta.isUsingThreadPriorityManagment() );
     wTransformationType.setText( transMeta.getTransformationType().getDescription() );
 
@@ -2311,7 +2321,6 @@ public class TransDialog extends Dialog {
 
     transMeta.setFeedbackShown( wShowFeedback.getSelection() );
     transMeta.setFeedbackSize( Const.toInt( wFeedbackSize.getText(), Const.ROWS_UPDATE ) );
-    transMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
     transMeta.setUsingThreadPriorityManagment( wManageThreads.getSelection() );
     transMeta.setTransformationType( TransformationType.values()[Const.indexOfString( wTransformationType
       .getText(), TransformationType.getTransformationTypesDescriptions() )] );

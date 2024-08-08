@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2010-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2010-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2031,13 +2031,13 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   @Override
-  public SharedObjects readJobMetaSharedObjects( final JobMeta jobMeta ) throws KettleException {
-    return jobDelegate.loadSharedObjects( jobMeta, loadAndCacheSharedObjects( true ) );
+  public void readJobMetaSharedObjects( final JobMeta jobMeta ) throws KettleException {
+    jobDelegate.loadSharedObjects( jobMeta, loadAndCacheSharedObjects( true ) );
   }
 
   @Override
-  public SharedObjects readTransSharedObjects( final TransMeta transMeta ) throws KettleException {
-    return transDelegate.loadSharedObjects( transMeta, loadAndCacheSharedObjects( true ) );
+  public void readTransSharedObjects( final TransMeta transMeta ) throws KettleException {
+    transDelegate.loadSharedObjects( transMeta, loadAndCacheSharedObjects( true ) );
   }
 
   @Override

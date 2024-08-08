@@ -85,7 +85,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
       }
       // Global
       DatabaseManagementInterface globalDbConnMgr = DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
-      DatabasesCollector collector = new DatabasesCollector( globalDbConnMgr, null, null );
+      DatabasesCollector collector = new DatabasesCollector( globalDbConnMgr, null );
       Set<String> globalDbNames = new HashSet<>();
       for ( String name : collector.getDatabaseNames() ) {
         if ( !filterMatch( name, filter ) ) {
@@ -99,7 +99,8 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
 
       // Local Db connection
       if ( meta.isPresent() ) {
-        collector = new DatabasesCollector( null, meta.get(), null );
+        DatabaseManagementInterface dbManager = meta.get().getDatabaseManagementInterface();
+        collector = new DatabasesCollector( dbManager,  null );
         for ( String name : collector.getDatabaseNames() ) {
           if ( !filterMatch( name, filter ) ) {
             continue;

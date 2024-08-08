@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,7 +42,6 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -116,172 +115,6 @@ public class SharedObjectSyncUtilTest {
   }
 
   @Test
-  public void synchronizeConnections() throws Exception {
-    final String databaseName = "SharedDB";
-    DatabaseMeta sharedDB0 = createDatabaseMeta( databaseName, true );
-    saveSharedObjects( SHARED_OBJECTS_FILE, sharedDB0 );
-
-
-    JobMeta job1 = createJobMeta();
-
-    spoonDelegates.jobs.addJob( job1 );
-    JobMeta job2 = createJobMeta();
-    spoonDelegates.jobs.addJob( job2 );
-
-    DatabaseMeta sharedDB2 = job2.getDatabase( 0 );
-    assertEquals( databaseName, sharedDB2.getName() );
-    DatabaseMeta sharedDB1 = job1.getDatabase( 0 );
-    assertEquals( databaseName, sharedDB1.getName() );
-    assertTrue( sharedDB1 != sharedDB2 );
-
-    assertThat( sharedDB1.getHostname(), equalTo( BEFORE_SYNC_VALUE ) );
-    sharedDB2.setHostname( AFTER_SYNC_VALUE );
-    sharedUtil.synchronizeConnections( sharedDB2, sharedDB2.getName() );
-
-    assertThat( sharedDB1.getHostname(), equalTo( AFTER_SYNC_VALUE ) );
-  }
-
-  @Test
-  public void synchronizeConnections_sync_shared_only() throws Exception {
-    final String databaseName = "DB";
-    DatabaseMeta sharedDB0 = createDatabaseMeta( databaseName, true );
-
-    saveSharedObjects( SHARED_OBJECTS_FILE, sharedDB0 );
-
-    JobMeta job1 = createJobMeta();
-    DatabaseMeta sharedDB1 = job1.getDatabase( 0 );
-
-    spoonDelegates.jobs.addJob( job1 );
-
-    DatabaseMeta unsharedDB2 = createDatabaseMeta( databaseName, false );
-    JobMeta job2 = createJobMeta();
-    spoonDelegates.jobs.addJob( job2 );
-    job2.removeDatabase( 0 );
-    job2.addDatabase( unsharedDB2 );
-
-    JobMeta job3 = createJobMeta();
-    DatabaseMeta sharedDB3 = job3.getDatabase( 0 );
-    spoonDelegates.jobs.addJob( job3 );
-    job3.addDatabase( sharedDB3 );
-
-    sharedDB3.setHostname( AFTER_SYNC_VALUE );
-    sharedUtil.synchronizeConnections( sharedDB3, sharedDB3.getName() );
-    assertThat( sharedDB1.getHostname(), equalTo( AFTER_SYNC_VALUE ) );
-    assertThat( unsharedDB2.getHostname(), equalTo( BEFORE_SYNC_VALUE ) );
-  }
-
-  @Test
-  public void synchronizeConnections_should_not_sync_unshared() throws Exception {
-    final String databaseName = "DB";
-    JobMeta job1 = createJobMeta();
-    DatabaseMeta sharedDB1 = createDatabaseMeta( databaseName, true );
-    job1.addDatabase( sharedDB1 );
-    spoonDelegates.jobs.addJob( job1 );
-    DatabaseMeta db2 = createDatabaseMeta( databaseName, false );
-    JobMeta job2 = createJobMeta();
-    spoonDelegates.jobs.addJob( job2 );
-    job2.addDatabase( db2 );
-
-    db2.setHostname( AFTER_SYNC_VALUE );
-    sharedUtil.synchronizeConnections( db2, db2.getName() );
-    assertThat( sharedDB1.getHostname(), equalTo( BEFORE_SYNC_VALUE ) );
-  }
-
-  @Test
-  public void synchronizeConnections_use_case_sensitive_name() throws Exception {
-    JobMeta job1 = createJobMeta();
-    DatabaseMeta sharedDB1 = createDatabaseMeta( "DB", true );
-    job1.addDatabase( sharedDB1 );
-    spoonDelegates.jobs.addJob( job1 );
-    DatabaseMeta sharedDB2 = createDatabaseMeta( "Db", true );
-    JobMeta job2 = createJobMeta();
-    spoonDelegates.jobs.addJob( job2 );
-    job2.addDatabase( sharedDB2 );
-
-    sharedDB2.setHostname( AFTER_SYNC_VALUE );
-    sharedUtil.synchronizeConnections( sharedDB2, sharedDB2.getName() );
-    assertThat( sharedDB1.getHostname(), equalTo( BEFORE_SYNC_VALUE ) );
-  }
-
-  @Test
-  public void synchronizeConnectionsRename() throws Exception {
-    final String databaseName = BEFORE_SYNC_VALUE;
-    DatabaseMeta sharedDB0 = createDatabaseMeta( databaseName, true );
-    saveSharedObjects( SHARED_OBJECTS_FILE, sharedDB0 );
-
-
-    JobMeta job1 = createJobMeta();
-    spoonDelegates.jobs.addJob( job1 );
-
-    JobMeta job2 = createJobMeta();
-    spoonDelegates.jobs.addJob( job2 );
-
-    DatabaseMeta sharedDB2 = job2.getDatabase( 0 );
-    assertEquals( databaseName, sharedDB2.getName() );
-    DatabaseMeta sharedDB1 = job1.getDatabase( 0 );
-    assertEquals( databaseName, sharedDB1.getName() );
-    assertTrue( sharedDB1 != sharedDB2 );
-
-    assertThat( sharedDB1.getName(), equalTo( BEFORE_SYNC_VALUE ) );
-    sharedDB2.setName( AFTER_SYNC_VALUE );
-    sharedUtil.synchronizeConnections( sharedDB2, BEFORE_SYNC_VALUE );
-
-    assertThat( sharedDB1.getName(), equalTo( AFTER_SYNC_VALUE ) );
-  }
-
-  @Test
-  public void synchronizeConnectionsRenameBackAndForth() throws Exception {
-    final String databaseName = "SharedDB";
-    DatabaseMeta sharedDB0 = createDatabaseMeta( databaseName, true );
-    saveSharedObjects( SHARED_OBJECTS_FILE, sharedDB0 );
-
-    TransMeta t1 = createTransMeta();
-    spoonDelegates.trans.addTransformation( t1 );
-
-    TransMeta t2 = createTransMeta();
-    spoonDelegates.trans.addTransformation( t2 );
-
-    final String name2 = "NAME 2";
-    DatabaseMeta sharedDB1 = t1.getDatabase( 0 );
-    sharedDB1.setName( name2 );
-    when( spoon.getActiveMeta() ).thenReturn( t1 );
-    sharedUtil.synchronizeConnections( sharedDB1, databaseName );
-
-    DatabaseMeta sharedDB2 = t2.getDatabase( 0 );
-    assertTrue( sharedDB2.getName().equals( name2 ) );
-    when( spoon.getActiveMeta() ).thenReturn( t2 );
-    sharedDB2.setName( "name3" );
-    sharedUtil.synchronizeConnections( sharedDB2, name2 );
-    assertTrue( sharedDB1.getName().equals( sharedDB2.getName() ) );
-  }
-
-  @Test
-  public void synchronizeSlaveServerRenameBackAndForth() throws Exception {
-    final String serverName = "SharedServer";
-    SlaveServer server0 = createSlaveServer( serverName, true );
-    saveSharedObjects( SHARED_OBJECTS_FILE, server0 );
-
-    JobMeta j1 = createJobMeta();
-    spoonDelegates.jobs.addJob( j1 );
-
-    JobMeta j2 = createJobMeta();
-    spoonDelegates.jobs.addJob( j2 );
-
-    final String name2 = "NAME 2";
-    when( spoon.getActiveMeta() ).thenReturn( j1 );
-    SlaveServer server1 = j1.getSlaveServers().get( 0 );
-    server1.setName( name2 );
-    sharedUtil.synchronizeSlaveServers( server1, serverName );
-
-    SlaveServer server2 = j2.getSlaveServers().get( 0 );
-    assertTrue( server2.getName().equals( name2 ) );
-    when( spoon.getActiveMeta() ).thenReturn( j2 );
-    server2.setName( "name3" );
-    sharedUtil.synchronizeSlaveServers( server2, name2 );
-    assertTrue( server1.getName().equals( server2.getName() ) );
-  }
-
-  @Test
   public void synchronizeSlaveServerRenameRepository() throws Exception {
     try {
       spoon.rep = repository;
@@ -291,7 +124,6 @@ public class SharedObjectSyncUtilTest {
 
       JobMeta job1 = createJobMeta();
       job1.setRepository( repository );
-      job1.setSharedObjects( createSharedObjects( SHARED_OBJECTS_FILE ) );
       SlaveServer server1 = createSlaveServer( serverName, false );
       server1.setObjectId( new StringObjectId( objectId ) );
       job1.addOrReplaceSlaveServer( server1 );
@@ -299,7 +131,6 @@ public class SharedObjectSyncUtilTest {
 
       JobMeta job2 = createJobMeta();
       job2.setRepository( repository );
-      job2.setSharedObjects( createSharedObjects( SHARED_OBJECTS_FILE ) );
       SlaveServer server2 = createSlaveServer( serverName, false );
       server2.setObjectId( new StringObjectId( objectId ) );
       spoonDelegates.jobs.addJob( job2 );
@@ -326,7 +157,6 @@ public class SharedObjectSyncUtilTest {
 
       TransMeta trans = createTransMeta();
       trans.setRepository( repository );
-      trans.setSharedObjects( createSharedObjects( SHARED_OBJECTS_FILE ) );
       SlaveServer server1 = createSlaveServer( serverName, false );
       server1.setObjectId( new StringObjectId( objectId ) );
       trans.addOrReplaceSlaveServer( server1 );
@@ -334,7 +164,6 @@ public class SharedObjectSyncUtilTest {
 
       JobMeta job = createJobMeta();
       job.setRepository( repository );
-      job.setSharedObjects( createSharedObjects( SHARED_OBJECTS_FILE ) );
       SlaveServer server3 = createSlaveServer( serverName, false );
       server3.setObjectId( new StringObjectId( objectId ) );
       job.addOrReplaceSlaveServer( server3 );
@@ -342,7 +171,6 @@ public class SharedObjectSyncUtilTest {
 
       TransMeta trans2 = createTransMeta();
       trans2.setRepository( repository );
-      trans2.setSharedObjects( createSharedObjects( SHARED_OBJECTS_FILE ) );
       SlaveServer server2 = createSlaveServer( serverName, false );
       server2.setObjectId( new StringObjectId( objectId ) );
       trans2.addOrReplaceSlaveServer( server2 );
@@ -372,7 +200,6 @@ public class SharedObjectSyncUtilTest {
 
       TransMeta trans1 = createTransMeta();
       trans1.setRepository( repository );
-      trans1.setSharedObjects( createSharedObjects( SHARED_OBJECTS_FILE ) );
       PartitionSchema part1 = createPartitionSchema( partitionName, false );
       part1.setObjectId( new StringObjectId( objectId ) );
       trans1.addOrReplacePartitionSchema( part1 );
@@ -380,7 +207,6 @@ public class SharedObjectSyncUtilTest {
 
       TransMeta trans2 = createTransMeta();
       trans2.setRepository( repository );
-      trans2.setSharedObjects( createSharedObjects( SHARED_OBJECTS_FILE ) );
       PartitionSchema part2 = createPartitionSchema( partitionName, false );
       part2.setObjectId( new StringObjectId( objectId ) );
       trans2.addOrReplacePartitionSchema( part2 );
@@ -396,33 +222,6 @@ public class SharedObjectSyncUtilTest {
     }
   }
 
-  @Test
-  public void synchronizeConnectionsOpenNew() throws Exception {
-    final String databaseName = "SharedDB";
-    DatabaseMeta sharedDB0 = createDatabaseMeta( databaseName, true );
-    saveSharedObjects( SHARED_OBJECTS_FILE, sharedDB0 );
-
-
-    JobMeta job1 = createJobMeta();
-    spoonDelegates.jobs.addJob( job1 );
-    DatabaseMeta sharedDB1 = job1.getDatabase( 0 );
-
-    JobMeta job2 = createJobMeta();
-    spoonDelegates.jobs.addJob( job2 );
-    DatabaseMeta sharedDB2 = job2.getDatabase( 0 );
-
-
-    assertThat( sharedDB1.getHostname(), equalTo( BEFORE_SYNC_VALUE ) );
-    sharedDB2.setHostname( AFTER_SYNC_VALUE );
-    sharedUtil.synchronizeConnections( sharedDB2, sharedDB2.getName() );
-
-    assertThat( sharedDB1.getHostname(), equalTo( AFTER_SYNC_VALUE ) );
-
-    JobMeta job3 = createJobMeta();
-    spoonDelegates.jobs.addJob( job3 );
-    DatabaseMeta sharedDB3 = job3.getDatabase( 0 );
-    assertThat( sharedDB3.getHostname(), equalTo( AFTER_SYNC_VALUE ) );
-  }
 
   @Test
   public void synchronizeSlaveServers() throws Exception {
@@ -499,32 +298,6 @@ public class SharedObjectSyncUtilTest {
     slaveServer2.setHostname( AFTER_SYNC_VALUE );
     sharedUtil.synchronizeSlaveServers( slaveServer2 );
     assertThat( slaveServer1.getHostname(), equalTo( BEFORE_SYNC_VALUE ) );
-  }
-
-  @Test
-  public void synchronizeSlaveServersRename() throws Exception {
-    final String originalName = "slave";
-    SlaveServer slaveServer = createSlaveServer( originalName, true );
-    saveSharedObjects( SHARED_OBJECTS_FILE, slaveServer );
-
-
-    JobMeta job1 = createJobMeta();
-    spoonDelegates.jobs.addJob( job1 );
-
-    JobMeta job2 = createJobMeta();
-    spoonDelegates.jobs.addJob( job2 );
-
-    SlaveServer server1 = job1.getSlaveServers().get( 0 );
-    SlaveServer server2 = job2.getSlaveServers().get( 0 );
-
-    assertTrue( server1 != server2 );
-    final String newName = "spartacus";
-    server1.setName( newName );
-    sharedUtil.synchronizeSlaveServers( server1, originalName );
-
-    assertEquals( 1, job1.getSlaveServerNames().length );
-    server2 = job2.getSlaveServers().get( 0 );
-    assertEquals( newName, server2.getName() );
   }
 
   @Test
@@ -763,8 +536,6 @@ public class SharedObjectSyncUtilTest {
     jobMeta.setName( UUID.randomUUID().toString() );
     jobMeta.setFilename( UUID.randomUUID().toString() );
     jobMeta.setRepositoryDirectory( mock( RepositoryDirectory.class ) );
-//    jobMeta.setSharedObjectsFile( SHARED_OBJECTS_FILE );
-    initSharedObjects( jobMeta, SHARED_OBJECTS_FILE );
     when( spoon.getActiveMeta() ).thenReturn( jobMeta );
     return jobMeta;
   }
@@ -777,14 +548,8 @@ public class SharedObjectSyncUtilTest {
     doCallRealMethod().when( repositoryDirectory ).setName( anyString() );
     doCallRealMethod().when( repositoryDirectory ).getName();
     transMeta.setRepositoryDirectory( repositoryDirectory );
-    initSharedObjects( transMeta, SHARED_OBJECTS_FILE );
     when( spoon.getActiveMeta() ).thenReturn( transMeta );
     return transMeta;
-  }
-
-  private static void initSharedObjects( AbstractMeta meta, String sharedObjectsFile ) throws KettleException {
-    meta.setSharedObjectsFile( sharedObjectsFile );
-    meta.setSharedObjects( meta.readSharedObjects() );
   }
 
   private static StepMeta createStepMeta( String name, boolean shared ) {
@@ -818,14 +583,6 @@ public class SharedObjectSyncUtilTest {
     clusterSchema.setDynamic( false );
     clusterSchema.setShared( shared );
     return clusterSchema;
-  }
-
-  private static DatabaseMeta createDatabaseMeta( String name, boolean shared ) {
-    DatabaseMeta database = new DatabaseMeta();
-    database.setName( name );
-    database.setShared( shared );
-    database.setHostname( BEFORE_SYNC_VALUE );
-    return database;
   }
 
   private SharedObjects saveSharedObjects( String location, SharedObjectInterface...objects ) throws Exception {

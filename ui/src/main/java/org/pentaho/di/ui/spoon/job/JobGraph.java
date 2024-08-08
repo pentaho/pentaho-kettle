@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3210,9 +3210,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     //
     if ( jd.isSharedObjectsFileChanged() ) {
       try {
-        SharedObjects sharedObjects =
-          rep != null ? rep.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects();
-        spoon.sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
+        if ( rep != null ) {
+          rep.readJobMetaSharedObjects( jobMeta );
+        }
       } catch ( Exception e ) {
         new ErrorDialog( spoon.getShell(),
           BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ),

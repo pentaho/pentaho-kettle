@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,17 @@ package org.pentaho.di.repository.pur;
 
 import com.google.common.collect.Iterables;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
@@ -63,6 +67,12 @@ public class DelegatesPrivateDatabasesTest {
   private final AbstractMeta meta;
   private final String privateDbsNodeName;
   private final String privateDbsPropertyName;
+
+  @BeforeClass
+  public static void setupClass() throws Exception {
+    KettleClientEnvironment.init();
+    DefaultBowl.getInstance().setSharedObjectsIO( new MemorySharedObjectsIO() );
+  }
 
   public DelegatesPrivateDatabasesTest( ITransformer delegate, AbstractMeta meta, String privateDbsNodeName,
       String privateDbsPropertyName ) {

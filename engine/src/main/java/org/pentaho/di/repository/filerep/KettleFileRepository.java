@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -1130,7 +1131,7 @@ public class KettleFileRepository extends AbstractRepository {
    *          if an object with the same name exists, overwrite
    * @throws KettleException
    */
-  public void readDatabases( HasDatabasesInterface transMeta, boolean overWriteShared ) throws KettleException {
+  public void readDatabases( AbstractMeta transMeta, boolean overWriteShared ) throws KettleException {
     try {
       ObjectId[] dbids = getDatabaseIDs( false );
       for ( int i = 0; i < dbids.length; i++ ) {
@@ -1143,7 +1144,7 @@ public class KettleFileRepository extends AbstractRepository {
                                                                                // transformation
         if ( check == null || overWriteShared ) { // We only add, never overwrite database connections.
           if ( databaseMeta.getName() != null ) {
-            transMeta.addOrReplaceDatabase( databaseMeta );
+            transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
             if ( !overWriteShared ) {
               databaseMeta.setChanged( false );
             }
@@ -1187,18 +1188,14 @@ public class KettleFileRepository extends AbstractRepository {
   }
 
   @Override
-  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
-
-    // First the normal shared objects...
-    //
-    SharedObjects sharedObjects = jobMeta.readSharedObjects();
+  public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
 
     // Then we read the databases etc...
     //
     for ( ObjectId id : getDatabaseIDs( false ) ) {
       DatabaseMeta databaseMeta = loadDatabaseMeta( id, null ); // Load last version
       databaseMeta.shareVariablesWith( jobMeta );
-      jobMeta.addOrReplaceDatabase( databaseMeta );
+      jobMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
     }
 
     for ( ObjectId id : getSlaveIDs( false ) ) {
@@ -1206,23 +1203,17 @@ public class KettleFileRepository extends AbstractRepository {
       slaveServer.shareVariablesWith( jobMeta );
       jobMeta.addOrReplaceSlaveServer( slaveServer );
     }
-
-    return sharedObjects;
   }
 
   @Override
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
-
-    // First the normal shared objects...
-    //
-    SharedObjects sharedObjects = transMeta.readSharedObjects();
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
 
     // Then we read the databases etc...
     //
     for ( ObjectId id : getDatabaseIDs( false ) ) {
       DatabaseMeta databaseMeta = loadDatabaseMeta( id, null ); // Load last version
       databaseMeta.shareVariablesWith( transMeta );
-      transMeta.addOrReplaceDatabase( databaseMeta );
+      transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
     }
 
     for ( ObjectId id : getSlaveIDs( false ) ) {
@@ -1241,8 +1232,6 @@ public class KettleFileRepository extends AbstractRepository {
       PartitionSchema partitionSchema = loadPartitionSchema( id, null ); // Load last version
       transMeta.addOrReplacePartitionSchema( partitionSchema );
     }
-
-    return sharedObjects;
   }
 
   private ObjectId renameObject( ObjectId id, RepositoryDirectoryInterface newDirectory, String newName,

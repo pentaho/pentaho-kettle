@@ -76,8 +76,13 @@ import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
+import org.pentaho.di.shared.DelegatingSharedObjectsIO;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
+import org.pentaho.di.shared.PassthroughDbConnectionManager;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
@@ -95,8 +100,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace,
   EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
@@ -144,8 +151,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    * The repository to reference in the one-off case that it is needed
    */
   protected Repository repository;
-
-  protected List<DatabaseMeta> databases;
 
   protected Set<NameChangedListener> nameChangedListeners = Collections.newSetFromMap( new ConcurrentHashMap<NameChangedListener, Boolean>() );
 
@@ -204,11 +209,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   protected String sharedObjectsFile;
 
-  /**
-   * The last loaded version of the shared objects
-   */
-  protected SharedObjects sharedObjects;
-
   protected final ChangedFlag changedFlag = new ChangedFlag();
 
   protected int max_undo;
@@ -252,8 +252,41 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    **/
   protected Set<String> privateDatabases;
 
-  /** Needed to display the local Database connections in configuration pane in UI*/
-  protected Map<String, DatabaseMeta> localDbMetas = new HashMap();
+  protected MemorySharedObjectsIO localSharedObjects = new MemorySharedObjectsIO();
+  // important, these need to be updated if the bowl is changed.
+  private SharedObjectsIO combinedSharedObjects =
+    new DelegatingSharedObjectsIO( bowl.getSharedObjectsIO(), localSharedObjects );
+  protected DatabaseManagementInterface readDbManager = new PassthroughDbConnectionManager( combinedSharedObjects );
+
+  private class MetaDatabaseManager extends PassthroughDbConnectionManager {
+    // TODO: repository logic should be in this local class. Caller should not need to know whether or not a
+    // repository is involved. See old SpoonDBDelegate for code.
+
+    MetaDatabaseManager( SharedObjectsIO sharedObjects ) {
+      super( sharedObjects );
+    }
+
+    @Override
+    public void addDatabase( DatabaseMeta databaseMeta ) throws KettleException {
+      super.addDatabase( databaseMeta );
+      changedDatabases = true;
+    }
+
+    @Override
+    public void removeDatabase( DatabaseMeta databaseMeta ) throws KettleException {
+      super.removeDatabase( databaseMeta );
+      changedDatabases = true;
+    }
+
+    @Override
+    public void clear() throws KettleException {
+      super.clear();
+      changedDatabases = true;
+    }
+
+  }
+
+  protected final DatabaseManagementInterface localDbMgr = new MetaDatabaseManager( localSharedObjects );
 
   @Override
   public ObjectId getObjectId() {
@@ -417,7 +450,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    *
    */
   public void setBowl( Bowl bowl ) {
-    this.bowl = bowl;
+    this.bowl = Objects.requireNonNull( bowl );
+    combinedSharedObjects = new DelegatingSharedObjectsIO( bowl.getSharedObjectsIO(), localSharedObjects );
+    readDbManager = new PassthroughDbConnectionManager( combinedSharedObjects );
   }
 
   /**
@@ -476,14 +511,18 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public DatabaseMeta findDatabase( String name ) {
-    for ( int i = 0; i < nrDatabases(); i++ ) {
-      DatabaseMeta ci = getDatabase( i );
-      if ( ( ci != null ) && ( ci.getName().equalsIgnoreCase( name ) )
-        || ( ci.getDisplayName().equalsIgnoreCase( name ) ) ) {
-        return ci;
+    try {
+      List<DatabaseMeta> databases = readDbManager.getDatabases();
+      for ( DatabaseMeta db : databases) {
+        if ( ( db != null ) && ( db.getName().equalsIgnoreCase( name ) )
+             || ( db.getDisplayName().equalsIgnoreCase( name ) ) ) {
+          return db;
+        }
       }
+      return null;
+    } catch ( KettleException ex ) {
+      return null;
     }
-    return null;
   }
 
   /*
@@ -493,7 +532,11 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public int nrDatabases() {
-    return ( databases == null ? 0 : databases.size() );
+    try {
+      return readDbManager.getDatabases().size();
+    } catch ( KettleException ex ) {
+      return 0;
+    }
   }
 
   /*
@@ -503,25 +546,32 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public DatabaseMeta getDatabase( int i ) {
-    return databases.get( i );
+    return getDatabases().get( i );
   }
 
   public void importFromMetaStore() throws MetaStoreException, KettlePluginException {
     // Read the databases...
     //
-    if ( metaStore != null ) {
-      IMetaStoreElementType databaseType =
-        metaStore.getElementTypeByName(
-          PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
-      if ( databaseType != null ) {
-        List<IMetaStoreElement> databaseElements = metaStore.getElements( PentahoDefaults.NAMESPACE, databaseType );
-        for ( IMetaStoreElement databaseElement : databaseElements ) {
-          addDatabase( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(
-            metaStore, databaseElement ), false );
+    try {
+      if ( metaStore != null ) {
+        IMetaStoreElementType databaseType =
+          metaStore.getElementTypeByName(
+            PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+        if ( databaseType != null ) {
+          List<IMetaStoreElement> databaseElements = metaStore.getElements( PentahoDefaults.NAMESPACE, databaseType );
+          for ( IMetaStoreElement databaseElement : databaseElements ) {
+            DatabaseMeta imported = DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(
+              metaStore, databaseElement );
+            if ( localDbMgr.getDatabase( imported.getName() ) == null ) {
+              localDbMgr.addDatabase( imported );
+            }
+          }
         }
-      }
 
-      // TODO: do the same for slaves, clusters, partition schemas
+        // TODO: do the same for slaves, clusters, partition schemas
+      }
+    } catch ( KettleException ex ) {
+      throw new KettlePluginException( ex );
     }
   }
 
@@ -1156,19 +1206,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public void addOrReplaceDatabase( DatabaseMeta databaseMeta ) {
-    addDatabase( databaseMeta, true );
-  }
-
-  protected void addDatabase( DatabaseMeta databaseMeta, boolean replace ) {
-    int index = databases.indexOf( databaseMeta );
-    if ( index < 0 ) {
-      addDatabase( databaseMeta );
-    } else if ( replace ) {
-      DatabaseMeta previous = getDatabase( index );
-      previous.replaceMeta( databaseMeta );
-      previous.setShared( databaseMeta.isShared() );
-    }
-    changedDatabases = true;
+    addDatabase( databaseMeta );
   }
 
   /*
@@ -1178,9 +1216,10 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public void addDatabase( DatabaseMeta ci ) {
-    databases.add( ci );
-    Collections.sort( databases, DatabaseMeta.comparator );
-    changedDatabases = true;
+    try {
+      localDbMgr.addDatabase( ci );
+    } catch ( KettleException ex ) {
+    }
   }
 
   /*
@@ -1190,8 +1229,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public void addDatabase( int p, DatabaseMeta ci ) {
-    databases.add( p, ci );
-    changedDatabases = true;
+    addDatabase( ci );
   }
 
   /**
@@ -1201,8 +1239,49 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public List<DatabaseMeta> getDatabases() {
-    return databases;
+    try {
+      List<DatabaseMeta> databases = readDbManager.getDatabases();
+      Collections.sort( databases, DatabaseMeta.comparator );
+      return databases;
+    } catch ( KettleException ex ) {
+      return null;
+    }
   }
+
+  /**
+   * Propagate a change to a database to all parts of the transformation or job. Update steps or entries that have their
+   * own copies of the database.
+   * <p/>
+   * This method should be used for any Create/Delete/Update operation at any level.
+   *
+   * @param name Name of the Database connection that has changed.
+   */
+  public void databaseUpdated( String name ) {
+    // NOTE that this does not need to update "changedDatabases" because that write would already have gone through
+    // localDbMgr.
+    try {
+      Optional<DatabaseMeta> newDb = Optional.ofNullable( readDbManager.getDatabase( name ) );
+      databasesUpdated( name, newDb );
+    } catch ( KettleException ex ) {
+    }
+  }
+
+  /**
+   * Propagate a change to a database to all parts of the transformation or job. Update steps or entries that have their
+   * own copies of the database.
+   * <p/>
+   *
+   *
+   * @param name The name of the updated database
+   * @param newDatabaseMeta the new DatabaseMeta, which could be empty if the database was deleted.
+   */
+  protected abstract void databasesUpdated( String name, Optional<DatabaseMeta> newDatabaseMeta ) throws KettleException;
+
+  // helper method for databasesUpdated()
+  protected void updateFields( DatabaseMeta existing, Optional<DatabaseMeta> newDb ) {
+    newDb.ifPresentOrElse( db -> existing.replaceMeta( db ), () -> existing.replaceMeta( new DatabaseMeta() ) );
+  }
+
 
   /**
    * Gets the database names.
@@ -1210,11 +1289,12 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    * @return the database names
    */
   public String[] getDatabaseNames() {
-    String[] names = new String[databases.size()];
-    for ( int i = 0; i < names.length; i++ ) {
-      names[i] = databases.get( i ).getName();
+    try {
+      List<DatabaseMeta> databases = readDbManager.getDatabases();
+      return databases.stream().map( DatabaseMeta::getName ).toArray( String[]::new );
+    } catch ( KettleException ex ) {
+      return null;
     }
-    return names;
   }
 
   /*
@@ -1224,6 +1304,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public int indexOfDatabase( DatabaseMeta di ) {
+    List<DatabaseMeta> databases = getDatabases();
     return databases.indexOf( di );
   }
 
@@ -1234,8 +1315,13 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public void setDatabases( List<DatabaseMeta> databases ) {
-    Collections.sort( databases, DatabaseMeta.comparator );
-    this.databases = databases;
+    try {
+      localDbMgr.clear();
+      for ( DatabaseMeta db : databases ) {
+        localDbMgr.addDatabase( db );
+      }
+    } catch ( KettleException ex ) {
+    }
   }
 
   /*
@@ -1249,12 +1335,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
       return true;
     }
 
-    for ( int i = 0; i < nrDatabases(); i++ ) {
-      DatabaseMeta ci = getDatabase( i );
-      if ( ci.hasChanged() ) {
-        return true;
-      }
-    }
     return false;
   }
 
@@ -1265,11 +1345,14 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public void removeDatabase( int i ) {
-    if ( i < 0 || i >= databases.size() ) {
-      return;
+    // note: getDatabase is operating on all databases, but remove is only working on Local.
+    try {
+      DatabaseMeta db = getDatabase( i );
+      if ( db != null ) {
+        localDbMgr.removeDatabase( db );
+      }
+    } catch ( KettleException ex ) {
     }
-    databases.remove( i );
-    changedDatabases = true;
   }
 
   /**
@@ -1277,10 +1360,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public void clearChangedDatabases() {
     changedDatabases = false;
-
-    for ( int i = 0; i < nrDatabases(); i++ ) {
-      getDatabase( i ).setChanged( false );
-    }
   }
 
   /**
@@ -1614,32 +1693,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   }
 
   /**
-   * Gets the shared objects.
-   *
-   * @return the sharedObjects
-   */
-  public SharedObjects getSharedObjects() {
-    if ( sharedObjects == null ) {
-      try {
-        String soFile = environmentSubstitute( sharedObjectsFile );
-        sharedObjects = new SharedObjects( soFile );
-      } catch ( KettleException e ) {
-        LogChannel.GENERAL.logDebug( e.getMessage(), e );
-      }
-    }
-    return sharedObjects;
-  }
-
-  /**
-   * Sets the shared objects.
-   *
-   * @param sharedObjects the sharedObjects to set
-   */
-  public void setSharedObjects( SharedObjects sharedObjects ) {
-    this.sharedObjects = sharedObjects;
-  }
-
-  /**
    * Read shared objects.
    *
    * @return the shared objects
@@ -1666,9 +1719,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   public boolean loadSharedObject( SharedObjectInterface object ) {
     if ( object instanceof DatabaseMeta ) {
-      DatabaseMeta databaseMeta = (DatabaseMeta) object;
-      databaseMeta.shareVariablesWith( this );
-      addOrReplaceDatabase( databaseMeta );
+      // no longer used
     } else if ( object instanceof SlaveServer ) {
       SlaveServer slaveServer = (SlaveServer) object;
       slaveServer.shareVariablesWith( this );
@@ -1770,7 +1821,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     setName( null );
     setFilename( null );
     notes = new ArrayList<NotePadMeta>();
-    databases = new ArrayList<DatabaseMeta>();
+    localSharedObjects.clear();
     slaveServers = new ArrayList<SlaveServer>();
     channelLogTable = ChannelLogTable.getDefault( this, this );
     attributesMap = new HashMap<String, Map<String, String>>();
@@ -1954,6 +2005,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     return false;
   }
 
+
   /**
    * Returns the set of databases available only for this meta or <b>null</b> if it was not initialized.
    * Note, that the internal collection is returned with no protection wrapper!
@@ -1973,31 +2025,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     this.privateDatabases = privateDatabases;
   }
 
-  @Override public void saveSharedObjects() throws KettleException {
-    try {
-      // Load all the shared objects...
-      String soFile = environmentSubstitute( sharedObjectsFile );
-      SharedObjects sharedObjects = new SharedObjects( soFile );
-      // in-memory shared objects are supposed to be in sync, discard those on file to allow edit/delete
-      sharedObjects.setObjectsMap( new Hashtable<>() );
-
-      for ( SharedObjectInterface sharedObject : getAllSharedObjects() ) {
-        if ( sharedObject.isShared() ) {
-          sharedObjects.storeObject( sharedObject );
-        }
-      }
-
-      sharedObjects.saveToFile();
-    } catch ( Exception e ) {
-      throw new KettleException( "Unable to save shared ojects", e );
-    }
-  }
-
-  protected List<SharedObjectInterface> getAllSharedObjects() {
-    List<SharedObjectInterface> shared = new ArrayList<>();
-    shared.addAll( databases );
-    shared.addAll( slaveServers );
-    return shared;
+  @Override
+  public void saveSharedObjects() throws KettleException {
+    // AbstractMeta is no longer responsible for storing shared objects. so this is a No-Op.
   }
 
   /**
@@ -2177,7 +2207,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     this.metaFileCache = metaFileCache;
   }
 
-  public List<DatabaseMeta> getLocalDbMetas() {
-    return new ArrayList<>( localDbMetas.values());
+  public DatabaseManagementInterface getDatabaseManagementInterface() {
+    return localDbMgr;
   }
 }
+
