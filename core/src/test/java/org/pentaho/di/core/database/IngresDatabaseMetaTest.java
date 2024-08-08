@@ -39,28 +39,22 @@ import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 public class IngresDatabaseMetaTest {
 
-  private IngresDatabaseMeta nativeMeta, odbcMeta;
+  private IngresDatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() {
     nativeMeta = new IngresDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new IngresDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( -1, nativeMeta.getDefaultDatabasePort() ); // pretty sure this is a bug - should be 21064 ( http://community.actian.com/wiki/Ingres_TCP_Ports )
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertTrue( nativeMeta.supportsAutoInc() );
     assertEquals( 0, nativeMeta.getNotFoundTK( true ) );
     assertEquals( 0, nativeMeta.getNotFoundTK( false ) );
-    assertEquals( "com.ingres.jdbc.IngresDriver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertEquals( "jdbc:ingres://FOO:BAR/WIBBLE", nativeMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
     assertEquals( "jdbc:ingres://FOO:II7/WIBBLE", nativeMeta.getURL( "FOO", "", "WIBBLE" ) );
 

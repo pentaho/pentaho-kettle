@@ -37,7 +37,7 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -53,33 +53,24 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      if ( Utils.isEmpty( getHostname() ) ) {
-        return "org.apache.derby.jdbc.EmbeddedDriver";
-      } else {
-        return "org.apache.derby.jdbc.ClientDriver";
-      }
+    if ( Utils.isEmpty( getHostname() ) ) {
+      return "org.apache.derby.jdbc.EmbeddedDriver";
     } else {
-      return "sun.jdbc.odbc.JdbcOdbcDriver"; // ODBC bridge
+      return "org.apache.derby.jdbc.ClientDriver";
     }
-
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      if ( !Utils.isEmpty( hostname ) ) {
-        String url = "jdbc:derby://" + hostname;
-        if ( !Utils.isEmpty( port ) ) {
-          url += ":" + port;
-        }
-        url += "/" + databaseName;
-        return url;
-      } else { // Simple format: jdbc:derby:<dbname>
-        return "jdbc:derby:" + databaseName;
+    if ( !Utils.isEmpty( hostname ) ) {
+      String url = "jdbc:derby://" + hostname;
+      if ( !Utils.isEmpty( port ) ) {
+        url += ":" + port;
       }
-    } else {
-      return "jdbc:odbc:" + databaseName;
+      url += "/" + databaseName;
+      return url;
+    } else { // Simple format: jdbc:derby:<dbname>
+      return "jdbc:derby:" + databaseName;
     }
   }
 

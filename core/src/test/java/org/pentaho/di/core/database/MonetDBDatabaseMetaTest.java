@@ -39,28 +39,23 @@ import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 public class MonetDBDatabaseMetaTest {
 
-  private MonetDBDatabaseMeta nativeMeta, odbcMeta;
+  private MonetDBDatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() {
     nativeMeta = new MonetDBDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new MonetDBDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( 50000, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertTrue( nativeMeta.supportsAutoInc() );
     assertEquals( 1, nativeMeta.getNotFoundTK( true ) );
     assertEquals( 0, nativeMeta.getNotFoundTK( false ) );
     assertEquals( "nl.cwi.monetdb.jdbc.MonetDriver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertEquals( "jdbc:monetdb://FOO:BAR/WIBBLE", nativeMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
     assertEquals( "jdbc:monetdb://FOO/WIBBLE", nativeMeta.getURL( "FOO", "", "WIBBLE" ) );
     assertFalse( nativeMeta.isFetchSizeSupported() );
@@ -117,10 +112,6 @@ public class MonetDBDatabaseMetaTest {
     int i = ( nativeMeta.supportsBooleanDataType() ? 1 : 0 );
     assertEquals( typeCk[i],
         nativeMeta.getFieldDefinition( new ValueMetaBoolean( "FOO" ), "", "", false, false, false ) );
-    odbcMeta.setSupportsBooleanDataType( !( odbcMeta.supportsBooleanDataType() ) );
-    assertEquals( typeCk[ i + 1 ],
-        odbcMeta.getFieldDefinition( new ValueMetaBoolean( "FOO" ), "", "", false, false, false ) );
-    odbcMeta.setSupportsBooleanDataType( !( odbcMeta.supportsBooleanDataType() ) );
 
     assertEquals( "SERIAL",
         nativeMeta.getFieldDefinition( new ValueMetaBigNumber( "FOO", 8, 0 ), "", "FOO", true, false, false ) );

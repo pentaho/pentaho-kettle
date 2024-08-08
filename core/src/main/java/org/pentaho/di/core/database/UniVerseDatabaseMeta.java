@@ -38,7 +38,7 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -54,21 +54,12 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      return "com.ibm.u2.jdbc.UniJDBCDriver";
-    } else {
-      return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
-    }
-
+    return "com.ibm.u2.jdbc.UniJDBCDriver";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      return "jdbc:ibm-u2://" + hostname + "/" + databaseName;
-    } else {
-      return "jdbc:odbc:" + databaseName;
-    }
+    return "jdbc:ibm-u2://" + hostname + "/" + databaseName;
   }
 
   /**

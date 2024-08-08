@@ -39,29 +39,24 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 public class ExtenDBDatabaseMetaTest {
-  private ExtenDBDatabaseMeta nativeMeta, odbcMeta;
+  private ExtenDBDatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() {
     nativeMeta = new ExtenDBDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new ExtenDBDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
 
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( 6453, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertTrue( nativeMeta.supportsAutoInc() );
     assertEquals( 0, nativeMeta.getNotFoundTK( true ) );
     assertEquals( 0, nativeMeta.getNotFoundTK( false ) );
     assertEquals( "com.extendb.connect.XDBDriver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertEquals( "jdbc:xdb://FOO:BAR/WIBBLE", nativeMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
     assertEquals( "jdbc:xdb://FOO:/WIBBLE", nativeMeta.getURL( "FOO", "", "WIBBLE" ) ); // Pretty sure this is a bug (colon after foo)
     assertArrayEquals( new String[] {
@@ -96,12 +91,6 @@ public class ExtenDBDatabaseMetaTest {
     // both supported and unsupported. Should return BOOLEAN if supported, or CHAR(1) if not.
     String[] typeCk = new String[] { "CHAR(1)", "BOOLEAN", "CHAR(1)" };
     int i = ( nativeMeta.supportsBooleanDataType() ? 1 : 0 );
-    assertEquals( typeCk[i],
-        nativeMeta.getFieldDefinition( new ValueMetaBoolean( "FOO" ), "", "", false, false, false ) );
-    odbcMeta.setSupportsBooleanDataType( !( odbcMeta.supportsBooleanDataType() ) );
-    assertEquals( typeCk[ i + 1 ],
-        odbcMeta.getFieldDefinition( new ValueMetaBoolean( "FOO" ), "", "", false, false, false ) );
-    odbcMeta.setSupportsBooleanDataType( !( odbcMeta.supportsBooleanDataType() ) );
 
     assertEquals( "BIGSERIAL",
         nativeMeta.getFieldDefinition( new ValueMetaNumber( "FOO", 10, 0 ), "FOO", "", false, false, false ) );

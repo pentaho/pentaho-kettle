@@ -38,14 +38,12 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
 public class NetezzaDatabaseMetaTest {
-  private NetezzaDatabaseMeta nativeMeta, odbcMeta;
+  private NetezzaDatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() {
     nativeMeta = new NetezzaDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta  = new NetezzaDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
 
   }
 
@@ -53,13 +51,10 @@ public class NetezzaDatabaseMetaTest {
   public void testSettings() throws Exception {
     assertEquals( "&", nativeMeta.getExtraOptionSeparator() );
     assertEquals( "?", nativeMeta.getExtraOptionIndicator() );
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( 5480, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertEquals( "org.netezza.Driver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertEquals( "jdbc:netezza://FOO:BAR/WIBBLE", nativeMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
     assertEquals( "jdbc:netezza://FOO:/WIBBLE", nativeMeta.getURL( "FOO", "", "WIBBLE" ) ); // I think this is a bug...
     assertEquals( "jdbc:netezza://FOO:null/WIBBLE", nativeMeta.getURL( "FOO", null, "WIBBLE" ) ); // I think this is a bug...
