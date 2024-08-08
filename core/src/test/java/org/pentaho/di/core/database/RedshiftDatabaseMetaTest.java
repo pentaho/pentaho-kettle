@@ -78,8 +78,6 @@ public class RedshiftDatabaseMetaTest {
   @Test
   public void testGetDriverClass() throws Exception {
     assertEquals( "com.amazon.redshift.jdbc.Driver", dbMeta.getDriverClass() );
-    dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", dbMeta.getDriverClass() );
   }
 
   @Test
@@ -87,8 +85,6 @@ public class RedshiftDatabaseMetaTest {
     assertEquals( "jdbc:redshift://:/", dbMeta.getURL( "", "", "" ) );
     assertEquals( "jdbc:redshift://rs.pentaho.com:4444/myDB",
       dbMeta.getURL( "rs.pentaho.com", "4444", "myDB" ) );
-    dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
-    assertEquals( "jdbc:odbc:myDB", dbMeta.getURL( null, "Not Null", "myDB" ) );
     dbMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
     dbMeta.addAttribute( JDBC_AUTH_METHOD, IAM_CREDENTIALS );
     dbMeta.addAttribute( IAM_ACCESS_KEY_ID, Encr.encryptPassword( "myid" ) );

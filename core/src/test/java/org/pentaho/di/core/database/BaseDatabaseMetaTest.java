@@ -50,14 +50,12 @@ import org.pentaho.di.repository.LongObjectId;
 
 public class BaseDatabaseMetaTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
-  BaseDatabaseMeta nativeMeta, odbcMeta, jndiMeta;
+  BaseDatabaseMeta nativeMeta, jndiMeta;
 
   @Before
   public void setupOnce() throws Exception {
     nativeMeta = new ConcreteBaseDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new ConcreteBaseDatabaseMeta();
-    nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     jndiMeta = new ConcreteBaseDatabaseMeta();
     KettleClientEnvironment.init();
   }
@@ -71,7 +69,7 @@ public class BaseDatabaseMetaTest {
 
   @Test
   public void testDefaultSettings() throws Exception {
-    // Note - this method should only use native or odbc.
+    // Note - this method should only use native.
     // The jndi meta is used for mutations of the meta, and it would
     // not be threadsafe in a multi-threaded testing environment
     // (each test run in its own thread).
@@ -208,16 +206,11 @@ public class BaseDatabaseMetaTest {
 
   @Test
   public void testDefaultSQLStatements() {
-    // Note - this method should use only native or odbc metas.
+    // Note - this method should use only native meta.
     // Use of the jndi meta here could create a race condition
     // when test cases are run by multiple threads
     String lineSep = System.getProperty( "line.separator" );
     String expected = "ALTER TABLE FOO DROP BAR" + lineSep;
-    assertEquals( expected, odbcMeta.getDropColumnStatement( "FOO", new ValueMetaString( "BAR" ), "", false, "", false ) );
-    assertEquals( "TRUNCATE TABLE FOO", odbcMeta.getTruncateTableStatement( "FOO" ) );
-    assertEquals( "SELECT * FROM FOO", odbcMeta.getSQLQueryFields( "FOO" ) );
-    assertEquals( "SELECT 1 FROM FOO", odbcMeta.getSQLTableExists( "FOO" ) );
-    assertEquals( "SELECT FOO FROM BAR", odbcMeta.getSQLColumnExists( "FOO", "BAR" ) );
     assertEquals( "insert into \"FOO\".\"BAR\"(KEYFIELD, VERSIONFIELD) values (0, 1)",
         nativeMeta.getSQLInsertAutoIncUnknownDimensionRow( "\"FOO\".\"BAR\"", "KEYFIELD", "VERSIONFIELD" ) );
     assertEquals( "select count(*) FROM FOO", nativeMeta.getSelectCountStatement( "FOO" ) );
@@ -229,7 +222,7 @@ public class BaseDatabaseMetaTest {
 
   @Test
   public void testGettersSetters() {
-    // Note - this method should *ONLY* use the jndi meta and not the odbc or native ones.
+    // Note - this method should *ONLY* use the jndi meta and not native one.
     // This is the only method in this test class that mutates the meta.
     jndiMeta.setUsername( "FOO" );
     assertEquals( "FOO", jndiMeta.getUsername() );
@@ -368,10 +361,6 @@ public class BaseDatabaseMetaTest {
       }
     } );
     Mockito.when(  db.getDatabaseMeta() ).thenReturn( dm );
-    assertTrue( odbcMeta.checkIndexExists( db, "", "FOO", new String[] { "ROW1COL2", "ROW2COL2" } ) );
-    assertFalse( odbcMeta.checkIndexExists( db, "", "FOO", new String[] { "ROW2COL2", "NOTTHERE" } ) );
-    assertFalse( odbcMeta.checkIndexExists( db, "", "FOO", new String[] { "NOTTHERE", "ROW1COL2" } ) );
-
   }
 
 }

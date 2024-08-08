@@ -36,7 +36,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -67,20 +67,12 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
-    } else {
-      return "com.intersys.jdbc.CacheDriver";
-    }
+    return "com.intersys.jdbc.CacheDriver";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "jdbc:odbc:" + databaseName;
-    } else {
-      return "jdbc:Cache://" + hostname + ":" + port + "/" + databaseName;
-    }
+    return "jdbc:Cache://" + hostname + ":" + port + "/" + databaseName;
   }
 
   /**

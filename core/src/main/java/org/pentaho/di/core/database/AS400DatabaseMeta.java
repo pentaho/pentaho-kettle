@@ -35,16 +35,12 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
-    } else {
-      return "com.ibm.as400.access.AS400JDBCDriver";
-    }
+    return "com.ibm.as400.access.AS400JDBCDriver";
   }
 
   /**
@@ -60,11 +56,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public String getURL( String hostname, String port, String database ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "jdbc:odbc:" + database;
-    } else {
-      return "jdbc:as400://" + hostname + "/" + database;
-    }
+    return "jdbc:as400://" + hostname + "/" + database;
   }
 
   /**

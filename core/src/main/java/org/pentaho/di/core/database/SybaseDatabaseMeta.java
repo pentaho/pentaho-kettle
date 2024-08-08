@@ -36,7 +36,7 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -60,21 +60,13 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
-    } else {
-      return "net.sourceforge.jtds.jdbc.Driver";
-    }
+    return "net.sourceforge.jtds.jdbc.Driver";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "jdbc:odbc:" + databaseName;
-    } else {
-      // jdbc:jtds:<server_type>://<server>[:<port>][/<database>][;<property>=<value>[;...]]
-      return "jdbc:jtds:sybase://" + hostname + ":" + port + "/" + databaseName;
-    }
+    // jdbc:jtds:<server_type>://<server>[:<port>][/<database>][;<property>=<value>[;...]]
+    return "jdbc:jtds:sybase://" + hostname + ":" + port + "/" + databaseName;
   }
 
   /**
