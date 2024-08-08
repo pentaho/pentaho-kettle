@@ -35,6 +35,9 @@ public class TransPreviewFactory {
     PluginRegistry registry = PluginRegistry.getInstance();
 
     TransMeta previewMeta = new TransMeta( parent );
+    if ( parent instanceof TransMeta ){
+      previewMeta.setBowl( ((TransMeta) parent).getBowl() );
+    }
     // The following operation resets the internal variables!
     //
     previewMeta.setName( parent == null ? "Preview transformation" : parent.toString() );

@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -688,15 +689,15 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     return filters;
   }
 
-  public String[] getFilePaths( VariableSpace space ) {
+  public String[] getFilePaths( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFilePathList(
-      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
+      bowl, space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
       buildFileTypeFiltersArray( fileName ) );
   }
 
-  public FileInputList getFileList( VariableSpace space ) {
+  public FileInputList getFileList( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFileList(
-      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
+      bowl, space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
       buildFileTypeFiltersArray( fileName ) );
   }
 
@@ -752,7 +753,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
       remarks.add( cr );
 
       // check specified file names
-      FileInputList fileList = getFileList( transMeta );
+      FileInputList fileList = getFileList( transMeta.getBowl(), transMeta );
       if ( fileList.nrOfFiles() == 0 ) {
         cr =
           new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
@@ -772,7 +773,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
 
-    String[] files = getFilePaths( transMeta );
+    String[] files = getFilePaths( transMeta.getBowl(), transMeta );
     if ( files != null ) {
       for ( int i = 0; i < files.length; i++ ) {
         reference.getEntries().add( new ResourceEntry( files[i], ResourceType.FILE ) );
