@@ -641,7 +641,7 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
     JSONObject response = new JSONObject();
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
     try {
-      SQLStatement sql = sql( queryParams.get( "stepName" ) );
+      SQLStatement sql = sql( queryParams.get( "stepName" ), queryParams.get( "connection" ) );
       if ( Objects.nonNull( sql ) ) {
         if ( !sql.hasError() ) {
           if ( sql.hasSQL() ) {
@@ -665,9 +665,10 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
     return response;
   }
 
-  public SQLStatement sql( String stepName ) throws KettleStepException {
+  public SQLStatement sql( String stepName, String connection ) throws KettleStepException {
 
     TableOutputMeta info = (TableOutputMeta) getStepMetaInterface();
+    info.setDatabaseMeta( getTransMeta().findDatabase( connection ) );
 
     RowMetaInterface prev = getTransMeta().getPrevStepFields( stepName );
     if ( info.isTableNameInField() && !info.isTableNameInTable() && info.getTableNameField().length() > 0 ) {
