@@ -1453,7 +1453,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       TableOutput step = (TableOutput) info.getStep( stepMeta, info.getStepData(), 0, transMeta, trans );
       step.setStepMetaInterface( info );
 
-      SQLStatement sql = step.sql( stepname );
+      SQLStatement sql = step.sql( stepname, wConnection.getText() );
 
       if ( Objects.nonNull(sql)) {
         if ( !sql.hasError() ) {
