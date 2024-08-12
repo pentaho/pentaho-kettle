@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.ui.workbench</artifactId>
-      <version>3.127.0</version>
+      <version>3.132.0</version>
       <exclusions>
         <exclusion>
           <artifactId>javax.annotation-api</artifactId>
