@@ -2609,7 +2609,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   @Override
   public String[] getFieldNames( final TextFileInputMeta meta ) {
-    return getFieldNames( (CsvInputAwareMeta) meta );
+    return getTextFileInput().getFieldNames( meta );
   }
 
   public static int guessPrecision( double d ) {
@@ -2738,24 +2738,32 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   // Get the first x lines
   private List<String> getFirst( int nrlines, boolean skipHeaders ) throws KettleException {
-    Trans trans = new Trans( transMeta, null );
-    trans.rowsets = new ArrayList<>();
-
-    getInfo( input, true );
-    TextFileInput step = (TextFileInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+    TextFileInput step = getTextFileInput();
     step.setStepMetaInterface( input );
     return step.getFirst( nrlines, skipHeaders );
   }
 
+  private TextFileInput getTextFileInput() {
+    Trans trans = new Trans( transMeta, null );
+    trans.rowsets = new ArrayList<>();
+    getInfo( input, true );
+    TextFileInput step = (TextFileInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+    return step;
+  }
+
   private void getFixed() {
     TextFileInputMeta info = new TextFileInputMeta();
+    Trans trans = new Trans( transMeta, null );
+    trans.rowsets = new ArrayList<>();
     getInfo( info, true );
 
     Shell sh = new Shell( shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
 
     try {
       List<String> rows = getFirst( 50, false );
-      fields = getFields( info, rows );
+      TextFileInput step = (TextFileInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+      step.setStepMetaInterface( input );
+      fields = step.getFields( info, rows );
 
       final TextFileImportWizardPage1 page1 = new TextFileImportWizardPage1( "1", props, rows, fields );
       page1.createControl( sh );
@@ -2814,71 +2822,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       new ErrorDialog( shell, BaseMessages.getString( PKG, "TextFileInputDialog.ErrorShowingFixedWizard.DialogTitle" ),
           BaseMessages.getString( PKG, "TextFileInputDialog.ErrorShowingFixedWizard.DialogMessage" ), e );
     }
-  }
-
-  private Vector<TextFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
-    Vector<TextFileInputFieldInterface> fields = new Vector<>();
-
-    int maxsize = 0;
-    for ( String row : rows ) {
-      int len = row.length();
-      if ( len > maxsize ) {
-        maxsize = len;
-      }
-    }
-
-    int prevEnd = 0;
-    int dummynr = 1;
-
-    for ( int i = 0; i < info.inputFields.length; i++ ) {
-      BaseFileField f = info.inputFields[i];
-
-      // See if positions are skipped, if this is the case, add dummy fields...
-      if ( f.getPosition() != prevEnd ) { // gap
-
-        BaseFileField field = new BaseFileField( "Dummy" + dummynr, prevEnd, f.getPosition() - prevEnd );
-        field.setIgnored( true ); // don't include in result by default.
-        fields.add( field );
-        dummynr++;
-      }
-
-      BaseFileField field = new BaseFileField( f.getName(), f.getPosition(), f.getLength() );
-      field.setType( f.getType() );
-      field.setIgnored( false );
-      field.setFormat( f.getFormat() );
-      field.setPrecision( f.getPrecision() );
-      field.setTrimType( f.getTrimType() );
-      field.setDecimalSymbol( f.getDecimalSymbol() );
-      field.setGroupSymbol( f.getGroupSymbol() );
-      field.setCurrencySymbol( f.getCurrencySymbol() );
-      field.setRepeated( f.isRepeated() );
-      field.setNullString( f.getNullString() );
-
-      fields.add( field );
-
-      prevEnd = field.getPosition() + field.getLength();
-    }
-
-    if ( info.inputFields.length == 0 ) {
-      BaseFileField field = new BaseFileField( "Field1", 0, maxsize );
-      fields.add( field );
-    } else {
-      // Take the last field and see if it reached until the maximum...
-      BaseFileField f = info.inputFields[info.inputFields.length - 1];
-
-      int pos = f.getPosition();
-      int len = f.getLength();
-      if ( pos + len < maxsize ) {
-        // If not, add an extra trailing field!
-        BaseFileField field = new BaseFileField( "Dummy" + dummynr, pos + len, maxsize - pos - len );
-        field.setIgnored( true ); // don't include in result by default.
-        fields.add( field );
-      }
-    }
-
-    Collections.sort( fields );
-
-    return fields;
   }
 
   /**

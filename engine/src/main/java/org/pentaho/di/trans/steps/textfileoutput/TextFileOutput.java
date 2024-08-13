@@ -1053,19 +1053,19 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     JSONObject jsonObject = new JSONObject();
     JSONArray textFileFields = new JSONArray();
     ObjectMapper objectMapper = new ObjectMapper();
-    for ( TextFileFieldDTO textFileFieldDTO : getUpdatedTextFields() ) {
-      textFileFields.add( objectMapper.readTree( objectMapper.writeValueAsString( textFileFieldDTO ) ) );
+    for ( TextFileOutputFieldDTO textFileOutputFieldDTO : getUpdatedTextFields() ) {
+      textFileFields.add( objectMapper.readTree( objectMapper.writeValueAsString(textFileOutputFieldDTO) ) );
     }
     jsonObject.put( "updatedData",textFileFields );
     return jsonObject;
   }
 
-  public List<TextFileFieldDTO> getUpdatedTextFields() {
+  public List<TextFileOutputFieldDTO> getUpdatedTextFields() {
     TextFileOutputMeta tfoi = (TextFileOutputMeta) getStepMetaInterface();
-    List<TextFileFieldDTO> textFileFields = new ArrayList<>();
+    List<TextFileOutputFieldDTO> textFileFields = new ArrayList<>();
 
     for ( TextFileField textFileField : tfoi.getOutputFields() ) {
-      TextFileFieldDTO updatedTextFileField = new TextFileFieldDTO();
+      TextFileOutputFieldDTO updatedTextFileField = new TextFileOutputFieldDTO();
       updatedTextFileField.setName( textFileField.getName() );
       updatedTextFileField.setType( textFileField.getTypeDesc() );
 
@@ -1088,7 +1088,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       updatedTextFileField.setDecimal( textFileField.getDecimalSymbol() );
       updatedTextFileField.setGroup( textFileField.getGroupingSymbol() );
       updatedTextFileField.setTrimType( "both" );
-      updatedTextFileField.setNullid( textFileField.getNullString() );
+      updatedTextFileField.setNullif( textFileField.getNullString() );
 
       textFileFields.add( updatedTextFileField );
     }
