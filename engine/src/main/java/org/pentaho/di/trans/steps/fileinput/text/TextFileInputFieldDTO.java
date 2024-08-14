@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*! ******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -19,21 +19,23 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package org.pentaho.di.trans.steps.fileinput.text;
 
-package org.pentaho.di.trans.steps.textfileoutput;
-
-public class TextFileFieldDTO {
+public class TextFileInputFieldDTO {
 
   private String name;
   private String type;
   private String format;
+  private String position;
   private String length;
   private String precision;
   private String currency;
   private String decimal;
   private String group;
   private String trimType;
-  private String nullid;
+  private String nullif;
+  private String ifnull;
+  private String repeat;
 
   public String getName() {
     return name;
@@ -57,6 +59,14 @@ public class TextFileFieldDTO {
 
   public void setFormat(String format) {
     this.format = format;
+  }
+
+  public String getPosition() {
+    return position;
+  }
+
+  public void setPosition(String position) {
+    this.position = position;
   }
 
   public String getLength() {
@@ -107,11 +117,28 @@ public class TextFileFieldDTO {
     this.trimType = trimType;
   }
 
-  public String getNullid() {
-    return nullid;
+  public String getNullif() {
+    return nullif;
   }
 
-  public void setNullid(String nullid) {
-    this.nullid = nullid;
+  public void setNullif(String nullif) {
+    this.nullif = nullif;
   }
+
+  public String getIfnull() {
+    return ifnull;
+  }
+
+  public void setIfnull(String ifnull) {
+    this.ifnull = ifnull;
+  }
+
+  public String getRepeat() {
+    return repeat;
+  }
+
+  public void setRepeat(String repeat) {
+    this.repeat = repeat;
+  }
+
 }
