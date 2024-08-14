@@ -25,15 +25,19 @@ package org.pentaho.di.trans.steps.tableoutput;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.PartitionDatabaseMeta;
+import org.pentaho.di.core.database.SqlScriptStatement;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -761,6 +765,129 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
       }
     }
     return new String[ 0 ];
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getExecAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    String connectionName = queryParams.get( "connection" );
+    String sqlScript = queryParams.get( "sqlScript" );
+    TableOutputSQLDTO outputSQLDTO = exec( connectionName, sqlScript );
+    if ( Objects.nonNull( outputSQLDTO.getBufferRowMeta() ) ) {
+      response = generateSQLResultsJSON( outputSQLDTO );
+    }
+    response.put( "isError", outputSQLDTO.isError() );
+    response.put( "message", outputSQLDTO.message );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  private TableOutputSQLDTO exec( String connectionName, String sqlScript ) {
+
+    DatabaseMeta ci = getTransMeta().findDatabase( connectionName );
+    TableOutputMeta info = (TableOutputMeta) getStepMetaInterface();
+    info.setDatabaseMeta( ci );
+    DatabaseMeta connection = ci;
+    if ( ci == null ) {
+      return null;
+    }
+    StringBuilder message = new StringBuilder();
+    TableOutputSQLDTO tableOutputSQLDTO = new TableOutputSQLDTO();
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Table Output Step", LoggingObjectType.STEP, null );
+    Database db = new Database( loggingObject, ci );
+    boolean first = true;
+    PartitionDatabaseMeta[] partitioningInformation = ci.getPartitioningInformation();
+    for ( int partitionNr = 0; first
+      || ( partitioningInformation != null && partitionNr < partitioningInformation.length ); partitionNr++ ) {
+      first = false;
+      String partitionId = null;
+      if ( partitioningInformation != null && partitioningInformation.length > 0 ) {
+        partitionId = partitioningInformation[ partitionNr ].getPartitionId();
+      }
+      try {
+        db.connect( partitionId );
+        List<SqlScriptStatement> statements = ci.getDatabaseInterface().getSqlScriptStatements( sqlScript + Const.CR );
+        int nrstats = 0;
+        for ( SqlScriptStatement sql : statements ) {
+          if ( sql.isQuery() ) {
+            // A Query
+            log.logDetailed( "launch SELECT statement: " + Const.CR + sql );
+            nrstats++;
+            tableOutputSQLDTO.setQuery( true );
+            try {
+              List<Object[]> rows = db.getRows( sql.getStatement(), 1000 );
+              RowMetaInterface rowMeta = db.getReturnRowMeta();
+              if ( rows.size() > 0 ) {
+                tableOutputSQLDTO.setBufferRowData( rows );
+                tableOutputSQLDTO.setBufferRowMeta( rowMeta );
+                return tableOutputSQLDTO;
+              }
+            } catch ( KettleDatabaseException dbe ) {
+              tableOutputSQLDTO.setMessage( "An error occured while executing the following sql : " + sql );
+            }
+          } else {
+            log.logDetailed( "launch DDL statement: " + Const.CR + sql );
+            // A DDL statement
+            nrstats++;
+            int startLogLine = KettleLogStore.getLastBufferLineNr();
+            try {
+              log.logDetailed( "Executing SQL: " + Const.CR + sql );
+              db.execStatement( sql.getStatement() );
+              // Clear the database cache, in case we're using one...
+              DBCache dbcache = getTransMeta().getDbCache();
+              if ( dbcache != null ) {
+                dbcache.clear( ci.getName() );
+              }
+            } catch ( Exception dbe ) {
+              tableOutputSQLDTO.setError( true );
+              tableOutputSQLDTO.setMessage( "Error while executing : " + sql );
+            } finally {
+              int endLogLine = KettleLogStore.getLastBufferLineNr();
+              sql.setLoggingText( KettleLogStore.getAppender().getLogBufferFromTo(
+                db.getLogChannelId(), true, startLogLine, endLogLine ).toString() );
+              sql.setComplete( true );
+            }
+          }
+        }
+      } catch ( KettleDatabaseException dbe ) {
+        tableOutputSQLDTO.setError( true );
+        tableOutputSQLDTO.setMessage(
+          "Unable to connect to the database\\!\\nPlease check the connection setting for " + connectionName );
+      } finally {
+        db.disconnect();
+      }
+    }
+    return tableOutputSQLDTO;
+  }
+
+
+  public JSONObject generateSQLResultsJSON( TableOutputSQLDTO metaData ) {
+    JSONArray columnInfoArray = new JSONArray();
+    for ( int i = 0; i < metaData.bufferRowMeta.size(); i++ ) {
+      String columnName = metaData.bufferRowMeta.getValueMeta( i ).getName();
+      columnInfoArray.add( columnName );
+    }
+    JSONArray rowsArray = new JSONArray();
+    for ( int i = 0; i < metaData.bufferRowData.size(); i++ ) {
+      Object[] row = metaData.bufferRowData.get( i );
+
+      JSONArray dataArray = new JSONArray();
+      int columnCount = Math.min( row.length, columnInfoArray.size() );
+      for ( int j = 0; j < columnCount; j++ ) {
+        Object data = row[ j ];
+        dataArray.add( data != null ? data.toString() : null );
+      }
+
+      JSONObject rowObject = new JSONObject();
+      rowObject.put( "data", dataArray );
+
+      rowsArray.add( rowObject );
+    }
+    JSONObject stepJSON = new JSONObject();
+    stepJSON.put( "columnInfo", columnInfoArray );
+    stepJSON.put( "rows", rowsArray );
+
+    return stepJSON;
   }
 
 
