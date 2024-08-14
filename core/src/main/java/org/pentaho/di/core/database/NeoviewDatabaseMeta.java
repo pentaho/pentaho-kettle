@@ -42,7 +42,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -103,30 +103,22 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
-    } else {
-      return "com.hp.t4jdbc.HPT4Driver";
-    }
+    return "com.hp.t4jdbc.HPT4Driver";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) throws KettleDatabaseException {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "jdbc:odbc:" + databaseName;
-    } else {
-      String appendix = "";
-      if ( !Utils.isEmpty( databaseName ) ) {
-        if ( databaseName.contains( "=" ) ) {
-          // some properties here like serverDataSource, catalog, schema etc. already given
-          appendix = ":" + databaseName;
-        } else {
-          // assume to set the schema
-          appendix = ":schema=" + databaseName;
-        }
+    String appendix = "";
+    if ( !Utils.isEmpty( databaseName ) ) {
+      if ( databaseName.contains( "=" ) ) {
+        // some properties here like serverDataSource, catalog, schema etc. already given
+        appendix = ":" + databaseName;
+      } else {
+        // assume to set the schema
+        appendix = ":schema=" + databaseName;
       }
-      return "jdbc:hpt4jdbc://" + hostname + ":" + port + "/" + appendix;
     }
+    return "jdbc:hpt4jdbc://" + hostname + ":" + port + "/" + appendix;
   }
 
   /**

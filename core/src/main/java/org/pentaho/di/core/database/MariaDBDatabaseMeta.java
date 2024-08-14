@@ -42,22 +42,14 @@ public class MariaDBDatabaseMeta extends MySQLDatabaseMeta {
   }
 
   @Override public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
-    } else {
-      return "org.mariadb.jdbc.Driver";
-    }
+    return "org.mariadb.jdbc.Driver";
   }
 
   @Override public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "jdbc:odbc:" + databaseName;
+    if ( Const.isEmpty( port ) ) {
+      return "jdbc:mariadb://" + hostname + "/" + databaseName;
     } else {
-      if ( Const.isEmpty( port ) ) {
-        return "jdbc:mariadb://" + hostname + "/" + databaseName;
-      } else {
-        return "jdbc:mariadb://" + hostname + ":" + port + "/" + databaseName;
-      }
+      return "jdbc:mariadb://" + hostname + ":" + port + "/" + databaseName;
     }
   }
 

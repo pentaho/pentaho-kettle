@@ -39,29 +39,22 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 public class PostgreSQLDatabaseMetaTest {
-  PostgreSQLDatabaseMeta nativeMeta, odbcMeta;
+  PostgreSQLDatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() {
     nativeMeta = new PostgreSQLDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new PostgreSQLDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
     assertEquals( "&", nativeMeta.getExtraOptionSeparator() );
     assertEquals( "?", nativeMeta.getExtraOptionIndicator() );
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( 5432, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertEquals( "org.postgresql.Driver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL( null, null, "FOO" ) );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL( "xxxxxx", "zzzzzzz", "FOO" ) );
 
     assertEquals( "jdbc:postgresql://FOO:BAR/WIBBLE", nativeMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
 
@@ -239,18 +232,8 @@ public class PostgreSQLDatabaseMetaTest {
         + "ALTER TABLE FOO RENAME BAR_KTL TO BAR;" + lineSep,
         nativeMeta.getModifyColumnStatement( "FOO", new ValueMetaString( "BAR" ), "", false, "", true ) );
 
-    odbcMeta.setSupportsBooleanDataType( true ); // some subclass of the MSSQL meta probably ...
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR BOOLEAN",
-        odbcMeta.getAddColumnStatement( "FOO", new ValueMetaBoolean( "BAR" ), "", false, "", false ) );
-    odbcMeta.setSupportsBooleanDataType( false );
-
     assertEquals( "ALTER TABLE FOO ADD COLUMN BAR SMALLINT",
         nativeMeta.getAddColumnStatement( "FOO", new ValueMetaInteger( "BAR", 4, 0 ), "", true, "", false ) );
-
-    odbcMeta.setUsername( "fOoUsEr" );
-    assertEquals( "select proname " + "from pg_proc, pg_user " + "where pg_user.usesysid = pg_proc.proowner "
-        + "and upper(pg_user.usename) = 'FOOUSER' order by proname",
-        odbcMeta.getSQLListOfProcedures() );
 
     assertEquals( "LOCK TABLE FOO , BAR IN ACCESS EXCLUSIVE MODE;" + lineSep,
         nativeMeta.getSQLLockTables( new String[] { "FOO", "BAR" } ) );

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -736,7 +736,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       LoggingBuffer loggingBuffer = KettleLogStore.getAppender();
       StringBuffer logTextBuffer = loggingBuffer.getBuffer( cloneJei.getLogChannel().getLogChannelId(),
         false, lastNr );
-      newResult.appendLogText( logTextBuffer.toString() );
+
+      // User can turn off logging using KETTLE_SKIP_JOB_LOGGING="Y" in kettle.properties
+      // Default is "N"
+      if ( "N".equalsIgnoreCase( System.getProperty( Const.KETTLE_SKIP_JOB_LOGGING,
+              Const.KETTLE_SKIP_JOB_LOGGING_DEFAULT ) ) ) {
+        newResult.appendLogText( logTextBuffer.toString() );
+      }
 
       // Save this result as well...
       //

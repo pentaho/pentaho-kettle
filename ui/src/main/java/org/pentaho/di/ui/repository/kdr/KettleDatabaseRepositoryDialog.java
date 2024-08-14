@@ -435,20 +435,6 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     getInfo( repositoryMeta );
 
     if ( repositoryMeta.getConnection() != null ) {
-      if ( repositoryMeta.getConnection().getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-        // Show a warning: using ODBC is not always the best choice ;-)
-        System.out.println( "Show ODBC warning..." );
-
-        MessageBox qmb = new MessageBox( shell, SWT.ICON_WARNING | SWT.YES | SWT.NO );
-        qmb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Message", Const.CR,
-            Const.CR ) );
-        qmb.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Title" ) );
-        int answer = qmb.open();
-        if ( answer != SWT.YES ) {
-          return; // Don't continue
-        }
-
-      }
 
       try {
         System.out.println( "Allocating repository..." );

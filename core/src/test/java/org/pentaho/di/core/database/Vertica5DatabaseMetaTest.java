@@ -41,11 +41,8 @@ public class Vertica5DatabaseMetaTest extends VerticaDatabaseMetaTest {
   public void testOverridesToVerticaDatabaseMeta() throws Exception {
     Vertica5DatabaseMeta nativeMeta = new Vertica5DatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    Vertica5DatabaseMeta odbcMeta = new Vertica5DatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
 
     assertEquals( "com.vertica.jdbc.Driver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
     assertFalse( nativeMeta.supportsTimeStampToDateConversion() );
 
     ResultSet resultSet = Mockito.mock( ResultSet.class );

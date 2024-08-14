@@ -51,29 +51,24 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class MySQLDatabaseMetaTest {
-  MySQLDatabaseMeta nativeMeta, odbcMeta;
+  MySQLDatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() throws Exception {
     nativeMeta = new MySQLDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new MySQLDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     Class.forName( Driver.class.getName() );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( 3306, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertTrue( nativeMeta.supportsAutoInc() );
     assertEquals( 1, nativeMeta.getNotFoundTK( true ) );
     assertEquals( 0, nativeMeta.getNotFoundTK( false ) );
     assertEquals( "com.mysql.cj.jdbc.Driver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertEquals( "jdbc:mysql://FOO:BAR/WIBBLE", nativeMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
     assertEquals( "jdbc:mysql://FOO/WIBBLE", nativeMeta.getURL( "FOO", "", "WIBBLE" ) );
     assertEquals( "&", nativeMeta.getExtraOptionSeparator() );
@@ -196,19 +191,8 @@ public class MySQLDatabaseMetaTest {
     assertEquals( "ALTER TABLE FOO MODIFY BAR TINYTEXT",
         nativeMeta.getModifyColumnStatement( "FOO", new ValueMetaString( "BAR" ), "", false, "", true ) );
 
-    odbcMeta.setSupportsBooleanDataType( true ); // some subclass of the MSSQL meta probably ...
-    assertEquals( "ALTER TABLE FOO ADD BAR BOOLEAN",
-        odbcMeta.getAddColumnStatement( "FOO", new ValueMetaBoolean( "BAR" ), "", false, "", false ) );
-    odbcMeta.setSupportsBooleanDataType( false );
-
     assertEquals( "ALTER TABLE FOO ADD BAR INT",
         nativeMeta.getAddColumnStatement( "FOO", new ValueMetaInteger( "BAR", 4, 0 ), "", true, "", false ) );
-
-    // do a boolean check
-    odbcMeta.setSupportsBooleanDataType( true );
-    assertEquals( "ALTER TABLE FOO ADD BAR BOOLEAN",
-        odbcMeta.getAddColumnStatement( "FOO", new ValueMetaBoolean( "BAR" ), "", false, "", false ) );
-    odbcMeta.setSupportsBooleanDataType( false );
 
     assertEquals( "ALTER TABLE FOO ADD BAR BIGINT NOT NULL PRIMARY KEY",
         nativeMeta.getAddColumnStatement( "FOO", new ValueMetaInteger( "BAR" ), "BAR", false, "", false ) );

@@ -39,7 +39,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -55,30 +55,19 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      return "com.teradata.jdbc.TeraDriver";
-    } else {
-      return "sun.jdbc.odbc.JdbcOdbcDriver"; // JDBC-ODBC bridge
-    }
-
+    return "com.teradata.jdbc.TeraDriver";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
+    String url = "jdbc:teradata://" + hostname;
 
-      String url = "jdbc:teradata://" + hostname;
+    // port is not appended here; instead it is appended via the DBS_PORT extra option
 
-      // port is not appended here; instead it is appended via the DBS_PORT extra option
-
-      if ( !StringUtils.isEmpty( databaseName ) ) {
-        url += "/DATABASE=" + databaseName;
-      }
-      return url;
-
-    } else {
-      return "jdbc:odbc:" + databaseName;
+    if ( !StringUtils.isEmpty( databaseName ) ) {
+      url += "/DATABASE=" + databaseName;
     }
+    return url;
   }
 
   /**

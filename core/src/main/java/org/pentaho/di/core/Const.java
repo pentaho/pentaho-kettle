@@ -1450,6 +1450,18 @@ public class Const {
   }
 
   /**
+   * File used to prevent multiple instances of kettle from starting at the same time to avoid file
+   * system contention when building karaf sys/cache directories.
+   */
+  public static final String KARAF_BOOT_LOCK_FILE = "karaf.boot.lock";
+  public static final String KARAF_BOOT_LOCK_WAIT_TIME = "KARAF_BOOT_LOCK_WAIT_TIME";
+  /**
+   * Flag to indicate whether to check for and set a boot lock file when starting karaf, or proceed without the lock.
+   * Default behavior is to not use a lock file and boot without checking or waiting.
+   */
+  public static final String KARAF_WAIT_FOR_BOOT_LOCK_FILE = "KARAF_WAIT_FOR_BOOT_LOCK_FILE";
+
+  /**
    * Determines whether failure to find the HDFS file system is a fatal error in Hadoop File Input step.
    * Default (legacy) behavior is false.
    */
@@ -1643,6 +1655,16 @@ public class Const {
    */
   public static final String KETTLE_USE_META_FILE_CACHE = "KETTLE_USE_META_FILE_CACHE";
   public static final String KETTLE_USE_META_FILE_CACHE_DEFAULT = "N";
+
+  /**
+   * If true, do not append real-time logging during Job execution. This prevents the logging from growing too large
+   * in memory, especially for long-running jobs or jobs with a large number of subjobs/subtrans
+   * However, if set to "Y", it would prevent users from seeing any log data visible in tools like the Pentaho Ops Mart,
+   * the kettle job status monitor, and other similar tools. It does not change anything regarding what data gets
+   * written out via log4j such as the tomcat catalina.out log, or pentaho.log, etc.
+   */
+  public static final String KETTLE_SKIP_JOB_LOGGING = "KETTLE_SKIP_JOB_LOGGING";
+  public static final String KETTLE_SKIP_JOB_LOGGING_DEFAULT = "N";
 
   /**
    * Value used to replace nulls in Python Executor Step Input Lines. Empty will mean no replacement will be done

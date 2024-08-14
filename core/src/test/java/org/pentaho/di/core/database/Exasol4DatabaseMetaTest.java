@@ -38,14 +38,12 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 public class Exasol4DatabaseMetaTest {
-  Exasol4DatabaseMeta nativeMeta, odbcMeta;
+  Exasol4DatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() {
     nativeMeta = new Exasol4DatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new Exasol4DatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC ); // according to the allowable types, this should be irrelevant
   }
 
   @Test
@@ -53,7 +51,6 @@ public class Exasol4DatabaseMetaTest {
     assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( 8563, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertFalse( nativeMeta.supportsAutoInc() );
     assertFalse( nativeMeta.needsToLockAllTables() );
     assertEquals( "com.exasol.jdbc.EXADriver", nativeMeta.getDriverClass() );

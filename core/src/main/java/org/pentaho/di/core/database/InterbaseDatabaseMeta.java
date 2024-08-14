@@ -36,7 +36,7 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -57,20 +57,12 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "sun.jdbc.odbc.JdbcOdbcDriver";
-    } else {
-      return "interbase.interclient.Driver";
-    }
+    return "interbase.interclient.Driver";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
-      return "jdbc:odbc:" + databaseName;
-    } else {
-      return "jdbc:interbase://" + hostname + ":" + port + "/" + databaseName;
-    }
+    return "jdbc:interbase://" + hostname + ":" + port + "/" + databaseName;
   }
 
   /**

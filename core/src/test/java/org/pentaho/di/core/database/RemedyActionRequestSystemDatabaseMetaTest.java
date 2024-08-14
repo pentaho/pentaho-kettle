@@ -28,18 +28,18 @@ import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.Test;
 
+@Deprecated
 public class RemedyActionRequestSystemDatabaseMetaTest {
   RemedyActionRequestSystemDatabaseMeta odbcMeta;
 
   @Before
   public void setupBefore() {
     odbcMeta = new RemedyActionRequestSystemDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_JNDI },
         odbcMeta.getAccessTypeList() );
     assertEquals( 1, odbcMeta.getNotFoundTK( true ) );
     assertEquals( 0, odbcMeta.getNotFoundTK( false ) );
