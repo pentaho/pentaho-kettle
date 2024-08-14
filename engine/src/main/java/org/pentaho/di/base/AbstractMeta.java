@@ -209,6 +209,11 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   protected String sharedObjectsFile;
 
+  /**
+   * The last loaded version of the shared objects
+   */
+  protected SharedObjects sharedObjects;
+
   protected final ChangedFlag changedFlag = new ChangedFlag();
 
   protected int max_undo;
@@ -1690,6 +1695,32 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public void setSharedObjectsFile( String sharedObjectsFile ) {
     this.sharedObjectsFile = sharedObjectsFile;
+  }
+
+  /**
+   * Gets the shared objects.
+   *
+   * @return the sharedObjects
+   */
+  public SharedObjects getSharedObjects() {
+    if ( sharedObjects == null ) {
+      try {
+        String soFile = environmentSubstitute( sharedObjectsFile );
+        sharedObjects = new SharedObjects( soFile );
+      } catch ( KettleException e ) {
+        LogChannel.GENERAL.logDebug( e.getMessage(), e );
+      }
+    }
+    return sharedObjects;
+  }
+
+  /**
+   * Sets the shared objects.
+   *
+   * @param sharedObjects the sharedObjects to set
+   */
+  public void setSharedObjects( SharedObjects sharedObjects ) {
+    this.sharedObjects = sharedObjects;
   }
 
   /**
