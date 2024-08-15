@@ -68,6 +68,14 @@ public interface DatabaseManagementInterface {
   void removeDatabase( DatabaseMeta databaseMeta ) throws KettleException;
 
   /**
+   * Remove the provided database
+   *
+   *
+   * @param databasename name of the database to remove
+   */
+  void removeDatabase( String databaseName ) throws KettleException;
+
+  /**
    * Removes all connections
    *
    */

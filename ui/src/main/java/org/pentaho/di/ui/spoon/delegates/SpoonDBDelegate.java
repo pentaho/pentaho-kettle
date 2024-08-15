@@ -102,6 +102,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
         dbManager.addDatabase( databaseMeta );
 
         if ( !newname.equals( originalName ) ) {
+          dbManager.removeDatabase( originalName );
           spoon.refreshDbConnection( newname.trim() );
         }
         spoon.refreshDbConnection( originalName );

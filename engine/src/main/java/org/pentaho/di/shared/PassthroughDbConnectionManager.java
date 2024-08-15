@@ -46,7 +46,12 @@ public class PassthroughDbConnectionManager implements DatabaseManagementInterfa
 
   @Override
   public void removeDatabase( DatabaseMeta databaseMeta ) throws KettleException {
-    sharedObjectsIO.delete( DatabaseConnectionManager.DB_TYPE, databaseMeta.getName() );
+    removeDatabase( databaseMeta.getName() );
+  }
+
+  @Override
+  public void removeDatabase( String databaseName ) throws KettleException {
+    sharedObjectsIO.delete( DatabaseConnectionManager.DB_TYPE, databaseName );
   }
 
   @Override

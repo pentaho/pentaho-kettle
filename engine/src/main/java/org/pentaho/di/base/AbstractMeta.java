@@ -279,6 +279,12 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     }
 
     @Override
+    public void removeDatabase( String databaseName ) throws KettleException {
+      super.removeDatabase( databaseName );
+      changedDatabases = true;
+    }
+
+    @Override
     public void clear() throws KettleException {
       super.clear();
       changedDatabases = true;

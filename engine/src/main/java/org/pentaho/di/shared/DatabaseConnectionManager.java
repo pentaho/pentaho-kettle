@@ -24,11 +24,13 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -42,18 +44,21 @@ public class DatabaseConnectionManager implements DatabaseManagementInterface {
   public  static final String DB_TYPE = SharedObjectsIO.SharedObjectType.CONNECTION.getName();
 
   private static Class<?> PKG = DatabaseConnectionManager.class; // for i18n purposes, needed by Translator2!!
-  private SharedObjectsIO sharedObjectIO;
+  private final SharedObjectsIO sharedObjectsIO;
   private Map<String, DatabaseMeta> dbMetas = new HashMap<>();
   private volatile boolean initialized = false;
-
-  private Bowl bowl;
 
   public static DatabaseConnectionManager getInstance( Bowl bowl ) throws KettleException {
     return new DatabaseConnectionManager( bowl );
   }
+
   private DatabaseConnectionManager( Bowl bowl ) throws KettleException {
-    this.bowl = bowl;
-    this.sharedObjectIO = bowl.getSharedObjectsIO();
+    this( bowl.getSharedObjectsIO() );
+  }
+
+  @VisibleForTesting
+  DatabaseConnectionManager( SharedObjectsIO sharedObjectsIO ) {
+    this.sharedObjectsIO = sharedObjectsIO;
   }
 
   /**
@@ -66,20 +71,22 @@ public class DatabaseConnectionManager implements DatabaseManagementInterface {
   public List<DatabaseMeta> getDatabases() throws KettleException {
     populateDbMetaMap();
 
-    return new ArrayList<>( dbMetas.values() );
+    // defensive copies
+    return dbMetas.values().stream().map( db -> (DatabaseMeta) db.clone() ).collect( Collectors.toList() );
   }
 
   @Override
   public DatabaseMeta getDatabase( String name ) throws KettleException {
     populateDbMetaMap();
-    return dbMetas.get( name );
+    DatabaseMeta db = dbMetas.get( name );
+    return db == null ? db : (DatabaseMeta) db.clone();
   }
 
   private void populateDbMetaMap() throws KettleException {
     if ( !initialized ) {
       synchronized( this ) {
         if ( !initialized ) {
-          Map<String, Node> nodeMap = sharedObjectIO.getSharedObjects( DB_TYPE );
+          Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( DB_TYPE );
           Map<String, DatabaseMeta> metaMap = new HashMap<>();
           for ( String name : nodeMap.keySet() ) {
             DatabaseMeta dbMeta = new DatabaseMeta( nodeMap.get( name ) );
@@ -115,25 +122,29 @@ public class DatabaseConnectionManager implements DatabaseManagementInterface {
     String connName = databaseMeta.getName();
     // Save the database connection in xml
     Node node = toNode( databaseMeta );
-    this.sharedObjectIO.saveSharedObject( DB_TYPE, connName, node );
+    this.sharedObjectsIO.saveSharedObject( DB_TYPE, connName, node );
 
     // Add it to the map
-    dbMetas.put( connName, databaseMeta );
+    dbMetas.put( connName, (DatabaseMeta) databaseMeta.clone() );
   }
 
   @Override
   public synchronized void removeDatabase( DatabaseMeta databaseMeta ) throws KettleException {
+    removeDatabase( databaseMeta.getName() );
+  }
+
+  @Override
+  public synchronized void removeDatabase( String databaseName ) throws KettleException {
     populateDbMetaMap();
-    String connName = databaseMeta.getName();
 
-    this.sharedObjectIO.delete( DB_TYPE, connName );
+    this.sharedObjectsIO.delete( DB_TYPE, databaseName );
 
-    dbMetas.remove( connName );
+    dbMetas.remove( databaseName );
   }
 
   @Override
   public synchronized void clear() throws KettleException {
-    this.sharedObjectIO.clear( DB_TYPE );
+    this.sharedObjectsIO.clear( DB_TYPE );
     dbMetas.clear();
   }
 

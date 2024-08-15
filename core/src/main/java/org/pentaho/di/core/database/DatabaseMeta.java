@@ -91,12 +91,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   private static final String DROP_TABLE_STATEMENT = "DROP TABLE IF EXISTS ";
 
   // Comparator for sorting databases alphabetically by name
-  public static final Comparator<DatabaseMeta> comparator = new Comparator<DatabaseMeta>() {
-    @Override
-    public int compare( DatabaseMeta dbm1, DatabaseMeta dbm2 ) {
-      return dbm1.getName().compareToIgnoreCase( dbm2.getName() );
-    }
-  };
+  public static final Comparator<DatabaseMeta> comparator = Comparator.comparing( DatabaseMeta::getName,
+                                                                                  String.CASE_INSENSITIVE_ORDER);
 
   private DatabaseInterface databaseInterface;
 
