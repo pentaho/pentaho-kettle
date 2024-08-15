@@ -817,7 +817,7 @@ public class BaseStepDialog extends Dialog {
     DatabaseDialog cid = getDatabaseDialog( shell );
     cid.setDatabaseMeta( changing );
     cid.setModalDialog( true );
-    String origname = origin.getName();
+    String origname = origin == null ? null : origin.getName();
 
     if ( cid.getDatabaseMeta() == null ) {
       return changing.getName();

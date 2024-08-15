@@ -283,7 +283,7 @@ public class JobEntryDialog extends Dialog {
     DatabaseDialog cid = getDatabaseDialog();
     cid.setDatabaseMeta( changing );
     cid.setModalDialog( true );
-    String origname = origin.getName();
+    String origname = origin == null ? null : origin.getName();
 
     String name = null;
     boolean repeat = true;
