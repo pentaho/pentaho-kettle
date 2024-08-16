@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -36,6 +35,7 @@ import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,6 +55,8 @@ public class JobEntryCopyFilesTest {
   private NamedClusterEmbedManager mockNamedClusterEmbedManager;
 
   private final String EMPTY = "";
+
+  private final String REGEX_URL_PASSWORD = ":[^:@/]+@";
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -151,22 +153,20 @@ public class JobEntryCopyFilesTest {
 
   @Test
   public void saveLoadWithPassword() throws Exception {
-    String[] srcPath = new String[] { "EMPTY_SOURCE_URL-0-hdfs://user321:321fake@foo.bar.com:8020/user/user321" };
-    String[] destPath = new String[] { "EMPTY_DEST_URL-0-hdfs://user123:fake123@foo.bar.com:8020/user/user123" };
+    String srcPath = "EMPTY_SOURCE_URL-0-hdfs://user321:321fake@foo.bar.com:8020/user/user321";
+    String destPath = "EMPTY_DEST_URL-0-hdfs://user123:fake123@foo.bar.com:8020/user/user123";
 
-    String srcPathScrubbedEncoded = "EMPTY_SOURCE_URL-0-hdfs://user321:&lt;password&gt;@foo.bar.com:8020/user/user321";
-    String destPathScrubbedEncoded = "EMPTY_DEST_URL-0-hdfs://user123:&lt;password&gt;@foo.bar.com:8020/user/user123";
+    // sanity check for password field in URL
+    assertTrue( containsPassword( srcPath ) );
+    assertTrue( containsPassword( destPath ) );
 
-    String srcPathScrubbed = "EMPTY_SOURCE_URL-0-hdfs://user321:<password>@foo.bar.com:8020/user/user321";
-    String destPathScrubbed = "EMPTY_DEST_URL-0-hdfs://user123:<password>@foo.bar.com:8020/user/user123";
-
-    entry.source_filefolder = srcPath;
-    entry.destination_filefolder = destPath;
+    entry.source_filefolder = new String[] { srcPath };
+    entry.destination_filefolder = new String[] { destPath };
     entry.wildcard = new String[] { EMPTY };
 
-    String xml = "<entry>" + entry.getXML() + "</entry>";
-    assertTrue( xml.contains( srcPathScrubbedEncoded ) );
-    assertTrue( xml.contains( destPathScrubbedEncoded ) );
+    String xml = "<entry>" + entry.getXML() + "</entry>"; // runs through all the loadURL and saveURL logic
+    assertTrue( xml.contains( srcPath ) );
+    assertTrue( xml.contains( destPath ) );
     JobEntryCopyFiles loadedentry = new JobEntryCopyFiles();
     InputStream is = new ByteArrayInputStream( xml.getBytes() );
     loadedentry.loadXML( XMLHandler.getSubNode(
@@ -179,8 +179,20 @@ public class JobEntryCopyFilesTest {
       null,
       null,
       null );
-    assertTrue( loadedentry.destination_filefolder[0].equals( destPathScrubbed ) );
-    assertTrue( loadedentry.source_filefolder[0].equals( srcPathScrubbed ) );
+    // NOTE: passwords should not be "scrubbed"
+    assertEquals( srcPath, loadedentry.source_filefolder[0] );
+    assertEquals( destPath, loadedentry.destination_filefolder[0] );
     verify( mockNamedClusterEmbedManager, times( 2 ) ).registerUrl( anyString() );
   }
+
+  /**
+   * determiens in a well-defined URL contains a password field delimited by the terminators:
+   * <code>:</code> and <code>@</code>.
+   * @param url
+   * @return true if password present, false otherwise
+   */
+  protected boolean containsPassword( String url ) {
+    return Pattern.compile( REGEX_URL_PASSWORD ).matcher( url ).find();
+  }
+
 }

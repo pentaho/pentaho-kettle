@@ -1645,6 +1645,16 @@ public class Const {
   public static final String KETTLE_USE_META_FILE_CACHE_DEFAULT = "N";
 
   /**
+   * If true, do not append real-time logging during Job execution. This prevents the logging from growing too large
+   * in memory, especially for long-running jobs or jobs with a large number of subjobs/subtrans
+   * However, if set to "Y", it would prevent users from seeing any log data visible in tools like the Pentaho Ops Mart,
+   * the kettle job status monitor, and other similar tools. It does not change anything regarding what data gets
+   * written out via log4j such as the tomcat catalina.out log, or pentaho.log, etc.
+   */
+  public static final String KETTLE_SKIP_JOB_LOGGING = "KETTLE_SKIP_JOB_LOGGING";
+  public static final String KETTLE_SKIP_JOB_LOGGING_DEFAULT = "N";
+
+  /**
    * Value used to replace nulls in Python Executor Step Input Lines. Empty will mean no replacement will be done
    */
   public static final String KETTLE_PYTHON_STEP_REPLACE_NULLS = "KETTLE_PYTHON_STEP_REPLACE_NULLS";
