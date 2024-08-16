@@ -2749,21 +2749,26 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       dbManager = getDbManager( leveledSelection.getLevel() );
       databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+      delegates.db.editConnection( dbManager, databaseMeta );
     } catch ( Exception e ) {
       new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
     }
-    delegates.db.editConnection( dbManager, databaseMeta );
   }
 
   public void dupeConnection() {
-    final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-    final AbstractMeta abstractMeta = (AbstractMeta) selectionObjectParent;
-    delegates.db.dupeConnection( abstractMeta, databaseMeta );
-  }
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+    try {
+      dbManager = getDbManager( leveledSelection.getLevel() );
+      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
 
-  public void clipConnection() {
-    final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-    delegates.db.clipConnection( databaseMeta );
+      getLog().logBasic( "Duplicating the connection " + leveledSelection.getName() );
+      delegates.db.dupeConnection( databaseMeta, dbManager );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
+    }
   }
 
   public void delConnection() {
@@ -2779,6 +2784,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
     } catch ( Exception e ) {
       new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
+      return;
     }
 
     MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
@@ -2795,8 +2801,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void sqlConnection() {
-    final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-    delegates.db.sqlConnection( databaseMeta );
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    DatabaseMeta databaseMeta = null;
+    try {
+      databaseMeta = getDatabaseMeta( leveledSelection );
+      delegates.db.sqlConnection( databaseMeta );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
+    }
   }
 
   public void clearDBCache( String id ) {
@@ -2804,8 +2817,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       delegates.db.clearDBCache( null );
     }
     if ( "database-inst-clear-cache".equals( id ) ) {
-      final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-      delegates.db.clearDBCache( databaseMeta );
+      SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+      DatabaseMeta databaseMeta = null;
+      try {
+        databaseMeta = getDatabaseMeta( leveledSelection );
+        delegates.db.clearDBCache( databaseMeta );
+      } catch ( Exception e ) {
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+          BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
+      }
     }
   }
 
@@ -2869,8 +2889,84 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void exploreDB() {
-    final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-    delegates.db.exploreDB( databaseMeta, true );
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+    try {
+      dbManager = getDbManager( leveledSelection.getLevel() );
+      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+      delegates.db.exploreDB( databaseMeta, dbManager, true );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
+    }
+  }
+
+  public void moveConnectionToGlobal() {
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+    try {
+      dbManager = getDbManager( leveledSelection.getLevel() );
+      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+
+      getLog().logBasic( "Moving the connection " + leveledSelection.getName() + " to global" );
+      delegates.db.moveToGlobal( databaseMeta, dbManager );
+
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+            BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
+    }
+  }
+
+  public void moveConnectionToProject() {
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+    try {
+      dbManager = getDbManager( leveledSelection.getLevel() );
+      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+
+      getLog().logBasic( "Moving the connection " + leveledSelection.getName() + " to project" );
+      delegates.db.moveToProject( databaseMeta, dbManager );
+
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
+    }
+  }
+
+  public void copyConnectionToGlobal() {
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+    try {
+      dbManager = getDbManager( leveledSelection.getLevel() );
+      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+
+      getLog().logBasic( "Copying the connection " + leveledSelection.getName() + " to Global" );
+      delegates.db.copyToGlobal( databaseMeta, dbManager );
+
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
+    }
+  }
+  public void copyConnectionToProject() {
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+    try {
+      dbManager = getDbManager( leveledSelection.getLevel() );
+      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+
+      getLog().logBasic( "Copying the connection " + leveledSelection.getName() + " to Project" );
+      delegates.db.copyToProject( databaseMeta, dbManager );
+
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
+    }
   }
 
   public void editStep() {
@@ -3031,35 +3127,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selection;
         if ( STRING_CONNECTIONS.equals( leveledSelection.getType() ) ) {
           spoonMenu = (XulMenupopup) menuMap.get( "database-inst" );
-
-          DatabaseManagementInterface dbManager = null;
-          DatabaseMeta databaseMeta = null;
-          try {
-            dbManager = getDbManager( leveledSelection.getLevel() );
-            databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
-          } catch ( Exception e ) {
-            new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
-          }
-          // disable for now if the connection is an SAP ERP type of database...
-          XulMenuitem item =
-            (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-explore" );
-          if ( item != null ) {
-            item.setDisabled( !databaseMeta.isExplorable() );
-          }
-          item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-clear-cache" );
-          if ( item != null ) {
-            item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.ClearDBCache" )
-                           + databaseMeta.getName() ); // Clear
-          }
-
-          item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-share" );
-          if ( item != null ) {
-            if ( databaseMeta.isShared() ) {
-              item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.UnShare" ) );
-            } else {
-              item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.Share" ) );
-            }
-          }
+          setDatabaseMenuItems( mainSpoonContainer, leveledSelection );
         } else if ( STRING_PARTITIONS.equals( leveledSelection.getType() ) ) {
           spoonMenu = (XulMenupopup) menuMap.get( "partition-schema-inst" );
         } else if ( STRING_CLUSTERS.equals( leveledSelection.getType() ) ) {
@@ -3085,6 +3153,106 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     createPopUpMenuExtension();
   }
 
+  private void setDatabaseMenuItems( XulDomContainer mainSpoonContainer, SpoonTreeLeveledSelection leveledSelection ) {
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+    try {
+      dbManager = getDbManager( leveledSelection.getLevel() );
+      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
+    }
+    // disable for now if the connection is an SAP ERP type of database...
+    XulMenuitem item =
+      (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-explore"  );
+    if ( item != null ) {
+      item.setDisabled( !databaseMeta.isExplorable() );
+    }
+    item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-clear-cache" );
+    if ( item != null ) {
+      item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.ClearDBCache" )
+        + databaseMeta.getName() ); // Clear
+    }
+
+    XulMenuitem moveProjectItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  "database-inst-move-project"  );
+    XulMenuitem moveGlobalItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  "database-inst-move-global"  );
+    if ( moveProjectItem != null && moveGlobalItem != null ) {
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
+        moveGlobalItem.setVisible( true );
+        moveProjectItem.setVisible( false );
+      }
+
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
+        if ( getBowl() != DefaultBowl.getInstance() ) {
+          moveProjectItem.setVisible( true );
+          moveGlobalItem.setVisible( false );
+        } else {
+          moveProjectItem.setVisible( false );
+          moveGlobalItem.setVisible( false );
+        }
+      }
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
+        if ( getBowl() == DefaultBowl.getInstance() ) {
+          moveGlobalItem.setVisible( true );
+          moveProjectItem.setVisible( false );
+        } else {
+          moveGlobalItem.setVisible( true );
+          moveProjectItem.setVisible( true );
+        }
+
+      }
+    }
+    // Copy
+    XulMenuitem copyGlobalItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  "database-inst-copy-global"  );
+    XulMenuitem copyProjectItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  "database-inst-copy-project"  );
+    if ( copyGlobalItem != null && copyProjectItem != null ) {
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
+        copyGlobalItem.setVisible( true );
+        copyProjectItem.setVisible( false );
+      }
+
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
+        if ( getBowl() != DefaultBowl.getInstance() ) {
+          copyProjectItem.setVisible( true );
+          copyGlobalItem.setVisible( false );
+        } else {
+          copyGlobalItem.setVisible( false );
+          copyProjectItem.setVisible( false );
+        }
+      }
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
+        if ( getBowl() == DefaultBowl.getInstance() ) {
+          copyGlobalItem.setVisible( true );
+          copyProjectItem.setVisible( false );
+        } else {
+          // If the connection is global, no need to show the menuitem
+          copyGlobalItem.setVisible( true );
+          copyProjectItem.setVisible( true );
+        }
+      }
+    }
+    // duplicate
+    XulMenuitem dupItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "database-inst-duplicate" );
+    if ( dupItem != null ) {
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
+        dupItem.setVisible( true );
+        dupItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.DuplicateInProject" ) );
+      }
+
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
+        if ( getBowl() != DefaultBowl.getInstance() ) {
+          dupItem.setVisible( true );
+          dupItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.DuplicateInGlobal" ) );
+        }
+      }
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
+       // If the connection is local, no need to show the menuitem
+        dupItem.setVisible( false );
+      }
+    }
+  }
+
   private DatabaseManagementInterface getDbManager( LeveledTreeNode.LEVEL level ) throws KettleException {
     if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
       return managementBowl.getManager( DatabaseManagementInterface.class );
@@ -3097,6 +3265,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // shouldn't happen.
       return null;
     }
+  }
+
+  private DatabaseMeta getDatabaseMeta( SpoonTreeLeveledSelection leveledSelection ) throws KettleException {
+    DatabaseManagementInterface dbManager = null;
+    DatabaseMeta databaseMeta = null;
+
+    dbManager = getDbManager( leveledSelection.getLevel() );
+    databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+
+    return databaseMeta;
+
   }
 
   /**
@@ -7902,23 +8081,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   public void createDatabaseWizard() {
-    AbstractMeta meta = getActiveTransformationOrJob();
-    // TODO BACKLOG-41332
-    if ( meta == null ) {
-      return; // nowhere to put the new database
-    }
-
-    CreateDatabaseWizard cdw = new CreateDatabaseWizard();
-    DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard( shell, props, meta.getDatabases() );
-    if ( newDBInfo != null ) { // finished
-      try {
-        meta.getDatabaseManagementInterface().addDatabase( newDBInfo );
-      } catch ( KettleException e ) {
-        new ErrorDialog( shell, "Error creating Database Connection", "Unable to create connection", e );
-      }
-      refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
-      refreshGraph();
-    }
+    delegates.db.createDatabaseWizard( );
+    refreshGraph();
   }
 
   public List<DatabaseMeta> getActiveDatabases() {
