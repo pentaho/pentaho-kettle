@@ -29,7 +29,7 @@ Pentaho Data Integration uses the Maven framework.
 
 #### Pre-requisites for building the project:
 * Maven, version 3+
-* Java JDK 11
+* Java JDK 17
 * This [settings.xml](https://raw.githubusercontent.com/pentaho/maven-parent-poms/master/maven-support-files/settings.xml) in your <user-home>/.m2 directory
 
 #### Building it
