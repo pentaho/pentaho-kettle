@@ -233,10 +233,12 @@
   </menupopup>
 
   <menupopup id="database-inst">
-    <menuitem id="database-inst-new" label="${Spoon.Menu.Popup.CONNECTIONS.New}" command="spoon.newConnection()" />
     <menuitem id="database-inst-edit" label="${Spoon.Menu.Popup.CONNECTIONS.Edit}" command="spoon.editConnection()" />
+    <menuitem id="database-inst-move-project" label="${Spoon.Menu.Popup.CONNECTIONS.MoveToProject}" command="spoon.moveConnectionToProject()" />
+    <menuitem id="database-inst-move-global" label="${Spoon.Menu.Popup.CONNECTIONS.MoveToGlobal}" command="spoon.moveConnectionToGlobal()" />
+    <menuitem id="database-inst-copy-project" label="${Spoon.Menu.Popup.CONNECTIONS.CopyToProject}" command="spoon.copyConnectionToProject()" />
+    <menuitem id="database-inst-copy-global" label="${Spoon.Menu.Popup.CONNECTIONS.CopyToGlobal}" command="spoon.copyConnectionToGlobal()" />
     <menuitem id="database-inst-duplicate" label="${Spoon.Menu.Popup.CONNECTIONS.Duplicate}" command="spoon.dupeConnection()" />
-    <menuitem id="database-inst-copy" label="${Spoon.Menu.Popup.CONNECTIONS.CopyToClipboard}" command="spoon.clipConnection()" />
     <menuitem id="database-inst-delete" label="${Spoon.Menu.Popup.CONNECTIONS.Delete}" command="spoon.delConnection()" />
     <menuseparator />
     <menuitem id="database-inst-sql-edit" label="${Spoon.Menu.Popup.CONNECTIONS.SQLEditor}" command="spoon.sqlConnection()" />
