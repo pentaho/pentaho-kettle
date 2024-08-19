@@ -37,25 +37,20 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
+@Deprecated
 public class DbaseDatabaseMetaTest {
-  private DbaseDatabaseMeta nativeMeta, odbcMeta;
+  private DbaseDatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() {
     nativeMeta = new DbaseDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new DbaseDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_ODBC },
-        nativeMeta.getAccessTypeList() );
     assertEquals( 1, nativeMeta.getNotFoundTK( true ) );
     assertEquals( 0, nativeMeta.getNotFoundTK( false ) );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertFalse( nativeMeta.isFetchSizeSupported() );
     assertEquals( "\"BAR\"", nativeMeta.getSchemaTableCombination( "FOO", "BAR" ) );
     assertFalse( nativeMeta.supportsTransactions() );

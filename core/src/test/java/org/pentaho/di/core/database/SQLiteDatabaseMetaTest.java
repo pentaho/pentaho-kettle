@@ -39,28 +39,23 @@ import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 public class SQLiteDatabaseMetaTest {
 
-  private SQLiteDatabaseMeta nativeMeta, odbcMeta;
+  private SQLiteDatabaseMeta nativeMeta;
 
   @Before
   public void setupBefore() {
     nativeMeta = new SQLiteDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new SQLiteDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( -1, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertTrue( nativeMeta.supportsAutoInc() );
     assertEquals( 1, nativeMeta.getNotFoundTK( true ) );
     assertEquals( 0, nativeMeta.getNotFoundTK( false ) );
     assertEquals( "org.sqlite.JDBC", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertEquals( "jdbc:sqlite:WIBBLE", nativeMeta.getURL( "IGNORED", "IGNORED", "WIBBLE" ) );
     assertFalse( nativeMeta.isFetchSizeSupported() );
     assertFalse( nativeMeta.supportsBitmapIndex() );

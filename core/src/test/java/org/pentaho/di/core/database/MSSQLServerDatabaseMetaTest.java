@@ -48,35 +48,25 @@ import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 public class MSSQLServerDatabaseMetaTest {
-  MSSQLServerDatabaseMeta nativeMeta, odbcMeta;
+  MSSQLServerDatabaseMeta nativeMeta;
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   @Before
   public void setupOnce() throws Exception {
     nativeMeta = new MSSQLServerDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta = new MSSQLServerDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
     assertFalse( nativeMeta.supportsCatalogs() );
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI },
+    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI },
         nativeMeta.getAccessTypeList() );
     assertEquals( 1433, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertEquals( "net.sourceforge.jtds.jdbc.Driver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
 
     assertEquals( "jdbc:jtds:sqlserver://FOO/WIBBLE", nativeMeta.getURL( "FOO", "", "WIBBLE" ) );
     assertEquals( "jdbc:jtds:sqlserver://FOO:BAR/WIBBLE", nativeMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
-
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL( null, null, "FOO" ) );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL( "xxxxxx", "zzzzzzz", "FOO" ) );
-
-    odbcMeta.setUsingDoubleDecimalAsSchemaTableSeparator( true );
-    assertEquals( "FOO..BAR", odbcMeta.getSchemaTableCombination( "FOO", "BAR" ) );
 
     assertEquals( "FOO.BAR", nativeMeta.getSchemaTableCombination( "FOO", "BAR" ) );
     assertFalse( nativeMeta.supportsBitmapIndex() );
@@ -159,11 +149,6 @@ public class MSSQLServerDatabaseMetaTest {
 
     assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR VARCHAR(100)",
         nativeMeta.getModifyColumnStatement( "FOO", new ValueMetaString( "BAR" ), "", false, "", true ) );
-
-    odbcMeta.setSupportsBooleanDataType( true ); // some subclass of the MSSQL meta probably ...
-    assertEquals( "ALTER TABLE FOO ADD BAR BIT",
-        odbcMeta.getAddColumnStatement( "FOO", new ValueMetaBoolean( "BAR" ), "", false, "", false ) );
-    odbcMeta.setSupportsBooleanDataType( false );
 
     assertEquals( "select o.name from sysobjects o, sysusers u where  xtype in ( 'FN', 'P' ) and o.uid = u.uid order by o.name",
         nativeMeta.getSQLListOfProcedures( "FOO" ) );

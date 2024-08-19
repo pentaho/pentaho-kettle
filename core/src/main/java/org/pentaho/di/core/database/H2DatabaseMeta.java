@@ -37,7 +37,7 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -50,12 +50,7 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      return "org.h2.Driver";
-    } else {
-      return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
-    }
-
+    return "org.h2.Driver";
   }
 
   @Override
@@ -68,19 +63,15 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      // If the database is an in-memory DB or if there is no valid port and hostname, go embedded
-      //
-      if ( ( databaseName != null && databaseName.startsWith( "mem:" ) )
-        || ( ( Utils.isEmpty( port ) || "-1".equals( port ) ) && Utils.isEmpty( hostname ) ) ) {
-        return "jdbc:h2:" + databaseName;
-      } else {
-        // Connect over TCP/IP
-        //
-        return "jdbc:h2:tcp://" + hostname + ":" + port + "/" + databaseName;
-      }
+    // If the database is an in-memory DB or if there is no valid port and hostname, go embedded
+    //
+    if ( ( databaseName != null && databaseName.startsWith( "mem:" ) )
+      || ( ( Utils.isEmpty( port ) || "-1".equals( port ) ) && Utils.isEmpty( hostname ) ) ) {
+      return "jdbc:h2:" + databaseName;
     } else {
-      return "jdbc:odbc:" + databaseName;
+      // Connect over TCP/IP
+      //
+      return "jdbc:h2:tcp://" + hostname + ":" + port + "/" + databaseName;
     }
   }
 

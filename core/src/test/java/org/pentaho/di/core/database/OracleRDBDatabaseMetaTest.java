@@ -34,15 +34,13 @@ import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 public class OracleRDBDatabaseMetaTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
-  private OracleRDBDatabaseMeta nativeMeta, odbcMeta, jndiMeta;
+  private OracleRDBDatabaseMeta nativeMeta, jndiMeta;
 
   @Before
   public void setupOnce() throws Exception {
     nativeMeta = new OracleRDBDatabaseMeta();
-    odbcMeta = new OracleRDBDatabaseMeta();
     jndiMeta = new OracleRDBDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     jndiMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
     KettleClientEnvironment.init();
   }
@@ -54,11 +52,8 @@ public class OracleRDBDatabaseMetaTest {
     // according to the features of the DB as we know them
 
     assertEquals( -1, nativeMeta.getDefaultDatabasePort() );
-    assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertFalse( nativeMeta.supportsAutoInc() );
     assertEquals( "oracle.rdb.jdbc.rdbThin.Driver", nativeMeta.getDriverClass() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
-    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL( null, null, "FOO" ) );
     assertEquals( "jdbc:rdbThin://FOO:1024/BAR", nativeMeta.getURL( "FOO", "1024", "BAR" ) );
     assertEquals( "jdbc:rdbThin://FOO:11/:BAR", nativeMeta.getURL( "FOO", "11", ":BAR" ) );
     assertEquals( "jdbc:rdbThin://BAR:65534//FOO", nativeMeta.getURL( "BAR", "65534", "/FOO" ) );

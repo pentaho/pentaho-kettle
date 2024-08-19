@@ -46,7 +46,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -74,24 +74,15 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String getDriverClass() {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      return "nl.cwi.monetdb.jdbc.MonetDriver";
-    } else {
-      return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
-    }
-
+    return "nl.cwi.monetdb.jdbc.MonetDriver";
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      if ( Utils.isEmpty( port ) ) {
-        return "jdbc:monetdb://" + hostname + "/" + databaseName;
-      } else {
-        return "jdbc:monetdb://" + hostname + ":" + port + "/" + databaseName;
-      }
+    if ( Utils.isEmpty( port ) ) {
+      return "jdbc:monetdb://" + hostname + "/" + databaseName;
     } else {
-      return "jdbc:odbc:" + databaseName;
+      return "jdbc:monetdb://" + hostname + ":" + port + "/" + databaseName;
     }
   }
 

@@ -282,9 +282,6 @@ public class CreateDatabaseWizardPage1 extends WizardPage {
       case DatabaseMeta.TYPE_ACCESS_OCI:
         nextPage = wiz.getPage( "oci" ); // OCI
         break;
-      case DatabaseMeta.TYPE_ACCESS_ODBC:
-        nextPage = wiz.getPage( "odbc" ); // ODBC
-        break;
       case DatabaseMeta.TYPE_ACCESS_PLUGIN:
         nextPage = wiz.getPage( databaseMeta.getPluginId() ); // e.g. SAPR3
         break;

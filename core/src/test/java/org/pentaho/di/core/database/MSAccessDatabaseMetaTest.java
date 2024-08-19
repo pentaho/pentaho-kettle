@@ -45,18 +45,18 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
+@Deprecated
 public class MSAccessDatabaseMetaTest {
   private MSAccessDatabaseMeta odbcMeta;
 
   @Before
   public void setupBefore() {
     odbcMeta = new MSAccessDatabaseMeta();
-    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
   }
 
   @Test
   public void testSettings() throws Exception {
-    assertArrayEquals( new int[] { DatabaseMeta.TYPE_ACCESS_ODBC },
+    assertArrayEquals( new int[] {},
         odbcMeta.getAccessTypeList() );
     assertEquals( -1, odbcMeta.getDefaultDatabasePort() );
     assertTrue( odbcMeta.supportsAutoInc() );

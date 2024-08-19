@@ -32,10 +32,11 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since 11-mrt-2005
  */
 
+@Deprecated
 public class DbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_ODBC };
+    return new int[] {};
   }
 
   /**
