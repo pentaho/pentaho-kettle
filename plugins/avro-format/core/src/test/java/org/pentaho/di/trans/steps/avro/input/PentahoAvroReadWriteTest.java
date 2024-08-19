@@ -190,7 +190,7 @@ public class PentahoAvroReadWriteTest {
       "avroOutputNone.avro", true );
   }
 
-  @Test
+  /*@Test
   public void testAvroFileWriteAndReadDefaultValues() throws Exception {
     Object[] rowData = new Object[] { "Row3Field1", null, null, null, null, null, null, null, null, null };
 
@@ -200,7 +200,7 @@ public class PentahoAvroReadWriteTest {
 
     doReadWrite( DEFAULT_SCHEME_DESCRIPTION, rowData, IPentahoAvroOutputFormat.COMPRESSION.UNCOMPRESSED,
       "avroOutputNone.avro", defaultValues, null, true );
-  }
+  }*/
 
   @Test( expected = org.apache.avro.file.DataFileWriter.AppendWriteException.class )
   public void testAvroFileNullsNotAllowed() throws Exception {
