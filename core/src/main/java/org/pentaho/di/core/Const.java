@@ -1455,11 +1455,6 @@ public class Const {
    */
   public static final String KARAF_BOOT_LOCK_FILE = "karaf.boot.lock";
   public static final String KARAF_BOOT_LOCK_WAIT_TIME = "KARAF_BOOT_LOCK_WAIT_TIME";
-  /**
-   * Flag to indicate whether to check for and set a boot lock file when starting karaf, or proceed without the lock.
-   * Default behavior is to not use a lock file and boot without checking or waiting.
-   */
-  public static final String KARAF_WAIT_FOR_BOOT_LOCK_FILE = "KARAF_WAIT_FOR_BOOT_LOCK_FILE";
 
   /**
    * Determines whether failure to find the HDFS file system is a fatal error in Hadoop File Input step.
