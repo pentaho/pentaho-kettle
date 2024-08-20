@@ -36,7 +36,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -57,12 +57,20 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public String getDriverClass() {
-    return "jdbc.gupta.sqlbase.SqlbaseDriver";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      return "jdbc.gupta.sqlbase.SqlbaseDriver";
+    }
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    return "jdbc:sqlbase://" + hostname + ":" + port + "/" + databaseName;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + databaseName;
+    } else {
+      return "jdbc:sqlbase://" + hostname + ":" + port + "/" + databaseName;
+    }
   }
 
   /**

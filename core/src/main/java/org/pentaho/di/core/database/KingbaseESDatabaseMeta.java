@@ -51,7 +51,7 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE };
+    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC };
   }
 
   @Override
@@ -64,12 +64,20 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 
   @Override
   public String getDriverClass() {
-    return "com.kingbase.Driver";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      return "com.kingbase.Driver";
+    }
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    return "jdbc:kingbase://" + hostname + ":" + port + "/" + databaseName;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + getDatabaseName();
+    } else {
+      return "jdbc:kingbase://" + hostname + ":" + port + "/" + databaseName;
+    }
   }
 
   /**

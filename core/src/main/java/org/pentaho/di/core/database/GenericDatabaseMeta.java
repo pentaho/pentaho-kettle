@@ -54,7 +54,7 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -70,12 +70,23 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String getDriverClass() {
-    return getAttributes().getProperty( ATRRIBUTE_CUSTOM_DRIVER_CLASS, "" );
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
+      String driverClass = getAttributes().getProperty( ATRRIBUTE_CUSTOM_DRIVER_CLASS, "" );
+      return driverClass;
+    } else {
+      return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
+    }
+
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    return getAttributes().getProperty( ATRRIBUTE_CUSTOM_URL, "" );
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
+      String url = getAttributes().getProperty( ATRRIBUTE_CUSTOM_URL, "" );
+      return url;
+    } else {
+      return "jdbc:odbc:" + databaseName;
+    }
   }
 
   /**

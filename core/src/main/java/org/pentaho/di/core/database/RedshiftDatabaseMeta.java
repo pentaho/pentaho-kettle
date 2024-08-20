@@ -63,15 +63,23 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
 
   @Override
   public String getDriverClass() {
-    return "com.amazon.redshift.jdbc.Driver";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      return "com.amazon.redshift.jdbc.Driver";
+    }
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( Arrays.asList( PROFILE_CREDENTIALS, IAM_CREDENTIALS ).contains( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
-      return "jdbc:redshift:iam://" + hostname + ":" + port + "/" + databaseName;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + databaseName;
     } else {
-      return "jdbc:redshift://" + hostname + ":" + port + "/" + databaseName;
+      if ( Arrays.asList( PROFILE_CREDENTIALS, IAM_CREDENTIALS ).contains( getAttribute( JDBC_AUTH_METHOD, "" ) ) ) {
+        return "jdbc:redshift:iam://" + hostname + ":" + port + "/" + databaseName;
+      } else {
+        return "jdbc:redshift://" + hostname + ":" + port + "/" + databaseName;
+      }
     }
   }
 

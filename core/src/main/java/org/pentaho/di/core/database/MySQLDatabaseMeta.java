@@ -62,7 +62,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   }
 
   @Override public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override public int getDefaultDatabasePort() {
@@ -115,7 +115,13 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   * org.gjt.mm.mysql.Driver to com.mysql.cj.jdbc.Driver
   * */
   @Override public String getDriverClass() {
-    return determineDriverClass();
+    String driver = null;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      driver = "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      driver = determineDriverClass();
+    }
+    return driver;
   }
 
   private static String determineDriverClass() {
@@ -131,10 +137,14 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   }
 
   @Override public String getURL( String hostname, String port, String databaseName ) {
-    if ( Utils.isEmpty( port ) ) {
-      return "jdbc:mysql://" + hostname + "/" + databaseName;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + databaseName;
     } else {
-      return "jdbc:mysql://" + hostname + ":" + port + "/" + databaseName;
+      if ( Utils.isEmpty( port ) ) {
+        return "jdbc:mysql://" + hostname + "/" + databaseName;
+      } else {
+        return "jdbc:mysql://" + hostname + ":" + port + "/" + databaseName;
+      }
     }
   }
 

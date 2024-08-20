@@ -443,7 +443,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connect to the database using ODBC.
-   * @deprecated
    */
   public static final int TYPE_ACCESS_ODBC = 1;
 
@@ -465,13 +464,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   /**
    * Short description of the access type, used in XML and the repository.
    */
-  public static final String[] dbAccessTypeCode = { "Native", "ODBC (deprecated)", "OCI", "Plugin", "JNDI", ",", };
+  public static final String[] dbAccessTypeCode = { "Native", "ODBC", "OCI", "Plugin", "JNDI", ",", };
 
   /**
    * Longer description for user interactions.
    */
   public static final String[] dbAccessTypeDesc = {
-    "Native (JDBC)", "ODBC (deprecated)", "OCI", "Plugin specific access method", "JNDI", "Custom", };
+    "Native (JDBC)", "ODBC", "OCI", "Plugin specific access method", "JNDI", "Custom", };
 
   /**
    * Use this length in a String value to indicate that you want to use a CLOB in stead of a normal text field.
@@ -759,6 +758,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * Return the type of database access. One of
    * <p>
    * TYPE_ACCESS_NATIVE
+   * <p>
+   * TYPE_ACCESS_ODBC
    * <p>
    * TYPE_ACCESS_OCI
    * <p>

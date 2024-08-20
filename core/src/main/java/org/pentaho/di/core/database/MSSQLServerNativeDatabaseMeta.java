@@ -30,31 +30,39 @@ public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta {
 
   @Override
   public String getDriverClass() {
-    return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    }
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    String useIntegratedSecurity = "false";
-    Object value = getAttributes().get( ATTRIBUTE_USE_INTEGRATED_SECURITY );
-    if ( value != null && value instanceof String ) {
-      useIntegratedSecurity = (String) value;
-      // Check if the String can be parsed into a boolean
-      try {
-        Boolean.parseBoolean( useIntegratedSecurity );
-      } catch ( IllegalArgumentException e ) {
-        useIntegratedSecurity = "false";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + databaseName;
+    } else {
+      String useIntegratedSecurity = "false";
+      Object value = getAttributes().get( ATTRIBUTE_USE_INTEGRATED_SECURITY );
+      if ( value != null && value instanceof String ) {
+        useIntegratedSecurity = (String) value;
+        // Check if the String can be parsed into a boolean
+        try {
+          Boolean.parseBoolean( useIntegratedSecurity );
+        } catch ( IllegalArgumentException e ) {
+          useIntegratedSecurity = "false";
+        }
       }
+
+      String url = "jdbc:sqlserver://" + hostname;
+
+      if ( !Utils.isEmpty( port ) && Const.toInt( port, -1 ) > 0 ) {
+        url += ":" + port;
+      }
+      url += ";databaseName=" + databaseName + ";integratedSecurity=" + useIntegratedSecurity;
+
+      return url;
     }
-
-    String url = "jdbc:sqlserver://" + hostname;
-
-    if ( !Utils.isEmpty( port ) && Const.toInt( port, -1 ) > 0 ) {
-      url += ":" + port;
-    }
-    url += ";databaseName=" + databaseName + ";integratedSecurity=" + useIntegratedSecurity;
-
-    return url;
   }
 
   @Override

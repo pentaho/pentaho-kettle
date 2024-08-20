@@ -53,7 +53,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -66,12 +66,20 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   @Override
   public String getDriverClass() {
-    return "org.postgresql.Driver";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      return "org.postgresql.Driver";
+    }
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    return "jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + databaseName;
+    } else {
+      return "jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName;
+    }
   }
 
   /**

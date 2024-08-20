@@ -44,7 +44,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -60,12 +60,20 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getDriverClass() {
-    return "com.extendb.connect.XDBDriver";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      return "com.extendb.connect.XDBDriver";
+    }
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    return "jdbc:xdb://" + hostname + ":" + port + "/" + databaseName;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + databaseName;
+    } else {
+      return "jdbc:xdb://" + hostname + ":" + port + "/" + databaseName;
+    }
   }
 
   /**

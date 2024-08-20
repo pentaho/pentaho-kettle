@@ -71,6 +71,8 @@ public class CreateDatabaseWizard {
 
     final CreateDatabaseWizardPageOCI pageoci = new CreateDatabaseWizardPageOCI( "oci", props, newDBInfo );
 
+    final CreateDatabaseWizardPageODBC pageodbc = new CreateDatabaseWizardPageODBC( "odbc", props, newDBInfo );
+
     final CreateDatabaseWizardPageOracle pageoracle =
       new CreateDatabaseWizardPageOracle( "oracle", props, newDBInfo );
 
@@ -112,6 +114,7 @@ public class CreateDatabaseWizard {
 
     wizard.addPage( page1 );
     wizard.addPage( pageoci );
+    wizard.addPage( pageodbc );
     wizard.addPage( pagejdbc );
     wizard.addPage( pageoracle );
     wizard.addPage( pageifx );

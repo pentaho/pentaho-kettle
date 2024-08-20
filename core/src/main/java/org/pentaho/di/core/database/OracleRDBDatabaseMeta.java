@@ -37,7 +37,7 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -84,12 +84,21 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 
   @Override
   public String getDriverClass() {
-    return "oracle.rdb.jdbc.rdbThin.Driver";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      return "oracle.rdb.jdbc.rdbThin.Driver";
+    }
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) throws KettleDatabaseException {
-    return "jdbc:rdbThin://" + hostname + ":" + port + "/" + databaseName;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + databaseName;
+    } else {
+      return "jdbc:rdbThin://" + hostname + ":" + port + "/" + databaseName;
+    }
+
   }
 
   /**

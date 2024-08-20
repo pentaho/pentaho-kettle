@@ -227,6 +227,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   @Override public void create() {
     if ( repositoryMeta.getConnection() != null ) {
+      if ( repositoryMeta.getConnection().getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+        // This will change in a future story
+        log.logDebug( "ODBC type is not advised for repository use" );
+      }
 
       try {
         if ( !getDatabaseMeta().getDatabaseInterface().supportsRepository() ) {

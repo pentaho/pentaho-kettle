@@ -41,9 +41,13 @@ public class VectorWiseDatabaseMetaTest {
 
   @Test
   public void testIngresOverrides() throws Exception {
-    VectorWiseDatabaseMeta nativeMeta;
+    VectorWiseDatabaseMeta nativeMeta, odbcMeta;
     nativeMeta = new VectorWiseDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
+    odbcMeta = new VectorWiseDatabaseMeta();
+    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
+    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
+    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL(  "IGNORED", "IGNORED", "FOO" ) );
     assertEquals( "jdbc:ingres://FOO:VW7/WIBBLE", nativeMeta.getURL( "FOO", "VW7", "WIBBLE" ) );
     assertEquals( "jdbc:ingres://FOO:VW7/WIBBLE", nativeMeta.getURL( "FOO", "", "WIBBLE" ) ); // Empty bit
     assertEquals( "jdbc:ingres://FOO:VW7/WIBBLE", nativeMeta.getURL( "FOO", "-1", "WIBBLE" ) ); // Empty bit
@@ -72,9 +76,11 @@ public class VectorWiseDatabaseMetaTest {
 
   @Test
   public void testGetFieldDefinition() {
-    VectorWiseDatabaseMeta nativeMeta;
+    VectorWiseDatabaseMeta nativeMeta, odbcMeta;
     nativeMeta = new VectorWiseDatabaseMeta();
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
+    odbcMeta = new VectorWiseDatabaseMeta();
+    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     assertEquals( "FOO TIMESTAMP",
         nativeMeta.getFieldDefinition( new ValueMetaDate( "FOO" ), "", "", false, true, false ) );
     assertEquals( "TIMESTAMP",

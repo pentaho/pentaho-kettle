@@ -36,7 +36,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -49,17 +49,25 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 
   @Override
   public String getDriverClass() {
-    return "org.hsqldb.jdbcDriver";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      return "org.hsqldb.jdbcDriver";
+    }
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    if ( ( Utils.isEmpty( port ) || "-1".equals( port ) ) && Utils.isEmpty( hostname ) ) {
-      // When no port is specified, or port is 0 support local/memory
-      // HSQLDB databases.
-      return "jdbc:hsqldb:" + databaseName;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + databaseName;
     } else {
-      return "jdbc:hsqldb:hsql://" + hostname + ":" + port + "/" + databaseName;
+      if ( ( Utils.isEmpty( port ) || "-1".equals( port ) ) && Utils.isEmpty( hostname ) ) {
+        // When no port is specified, or port is 0 support local/memory
+        // HSQLDB databases.
+        return "jdbc:hsqldb:" + databaseName;
+      } else {
+        return "jdbc:hsqldb:hsql://" + hostname + ":" + port + "/" + databaseName;
+      }
     }
   }
 

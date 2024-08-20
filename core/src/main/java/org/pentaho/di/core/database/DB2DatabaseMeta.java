@@ -36,7 +36,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
-      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -54,12 +54,20 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 
   @Override
   public String getDriverClass() {
-    return "com.ibm.db2.jcc.DB2Driver";
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "sun.jdbc.odbc.JdbcOdbcDriver";
+    } else {
+      return "com.ibm.db2.jcc.DB2Driver";
+    }
   }
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    return "jdbc:db2://" + hostname + ":" + port + "/" + databaseName;
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+      return "jdbc:odbc:" + databaseName;
+    } else {
+      return "jdbc:db2://" + hostname + ":" + port + "/" + databaseName;
+    }
   }
 
   /**
