@@ -18,7 +18,12 @@
   <database-type id="DBASE">
     <description>dBase III, IV or 5</description>
     <classname>org.pentaho.di.core.database.DbaseDatabaseMeta</classname>
-  </database-type>
+  </database-type>                                                       
+
+  <database-type id="DERBY">
+    <description>Apache Derby</description>
+    <classname>org.pentaho.di.core.database.DerbyDatabaseMeta</classname>
+  </database-type>                                                       
 
   <database-type id="EXASOL4">
     <description>Exasol 4</description>

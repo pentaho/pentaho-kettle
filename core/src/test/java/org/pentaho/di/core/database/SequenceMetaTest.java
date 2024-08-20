@@ -55,6 +55,7 @@ public class SequenceMetaTest {
     DatabaseInterface[] doNotSupport = new DatabaseInterface[] {
       new CacheDatabaseMeta(),
       new DbaseDatabaseMeta(),
+      new DerbyDatabaseMeta(),
       new Exasol4DatabaseMeta(),
       new ExtenDBDatabaseMeta(),
       new ExtenDBDatabaseMeta(),
@@ -220,6 +221,10 @@ public class SequenceMetaTest {
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new DbaseDatabaseMeta();
+    assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
+    assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+
+    databaseInterface = new DerbyDatabaseMeta();
     assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
