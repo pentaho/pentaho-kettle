@@ -69,6 +69,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -748,13 +749,16 @@ public class BaseStepDialog extends Dialog {
         DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard( shell, props, transMeta.getDatabases() );
         if ( newDBInfo != null ) {
           try {
-            transMeta.getDatabaseManagementInterface().addDatabase( newDBInfo );
+            DatabaseManagementInterface dbMgr =
+                    spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
+            dbMgr.addDatabase( newDBInfo );
           } catch ( KettleException ex ) {
             new ErrorDialog( wbwConnection.getShell(),
               BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogTitle" ),
               BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogMessage" ), ex );
           }
           reinitConnectionDropDown( wConnection, newDBInfo.getName() );
+          spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
         }
       }
     } );
@@ -817,7 +821,7 @@ public class BaseStepDialog extends Dialog {
     DatabaseDialog cid = getDatabaseDialog( shell );
     cid.setDatabaseMeta( changing );
     cid.setModalDialog( true );
-    String origname = origin.getName();
+    String origname = origin == null ? null : origin.getName();
 
     if ( cid.getDatabaseMeta() == null ) {
       return changing.getName();
@@ -1512,7 +1516,9 @@ public class BaseStepDialog extends Dialog {
       String connectionName = showDbDialogUnlessCancelledOrValid( databaseMeta, null );
       if ( connectionName != null ) {
         try {
-          transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+          DatabaseManagementInterface dbMgr =
+                  spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
+          dbMgr.addDatabase( databaseMeta );
         } catch ( KettleException ex ) {
           new ErrorDialog( wConnection.getShell(),
             BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogTitle" ),

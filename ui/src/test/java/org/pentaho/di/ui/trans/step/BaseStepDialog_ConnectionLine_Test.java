@@ -33,7 +33,6 @@ import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.function.Supplier;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.widgets.Shell;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -96,6 +95,7 @@ public class BaseStepDialog_ConnectionLine_Test {
     Spoon mockSpoon = mock( Spoon.class );
     Whitebox.setInternalState( dialog, "spoonSupplier", mockSupplier );
     when( mockSupplier.get() ).thenReturn( mockSpoon );
+    when( mockSpoon.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     dialog.transMeta = transMeta;
     dialog.new AddConnectionListener( mock( CCombo.class ) ).widgetSelected( null );
     if ( answeredName != null ) {

@@ -48,6 +48,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 
+
 /**
  * @author Andrey Khayrutdinov
  */
@@ -95,6 +96,7 @@ public class JobEntryDialog_ConnectionLine_Test {
     Spoon mockSpoon = mock( Spoon.class );
     Whitebox.setInternalState( dialog, "spoonSupplier", mockSupplier );
     when( mockSupplier.get() ).thenReturn( mockSpoon );
+    when( mockSpoon.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     dialog.jobMeta = jobMeta;
     dialog.new AddConnectionListener( mock( CCombo.class ) ).widgetSelected( null );
     if ( answeredName != null ) {

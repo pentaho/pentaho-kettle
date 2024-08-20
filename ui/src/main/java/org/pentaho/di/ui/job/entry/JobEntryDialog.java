@@ -45,6 +45,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -214,13 +215,16 @@ public class JobEntryDialog extends Dialog {
         DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard( shell, props, jobMeta.getDatabases() );
         if ( newDBInfo != null ) {
           try {
-            jobMeta.getDatabaseManagementInterface().addDatabase( newDBInfo );
+            DatabaseManagementInterface dbMgr =
+                    spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
+            dbMgr.addDatabase( newDBInfo );
           } catch ( KettleException exception ) {
             new ErrorDialog( spoonSupplier.get().getShell(),
               BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
               BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", newDBInfo.getName() ), exception );
           }
           reinitConnectionDropDown( wConnection, newDBInfo.getName() );
+          spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
         }
       }
     } );
@@ -283,7 +287,7 @@ public class JobEntryDialog extends Dialog {
     DatabaseDialog cid = getDatabaseDialog();
     cid.setDatabaseMeta( changing );
     cid.setModalDialog( true );
-    String origname = origin.getName();
+    String origname = origin == null ? null : origin.getName();
 
     String name = null;
     boolean repeat = true;
@@ -373,7 +377,9 @@ public class JobEntryDialog extends Dialog {
       String connectionName = showDbDialogUnlessCancelledOrValid( databaseMeta, null );
       if ( connectionName != null ) {
         try {
-          jobMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+          DatabaseManagementInterface dbMgr =
+                  spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
+          dbMgr.addDatabase( databaseMeta );
         } catch ( KettleException exception ) {
           new ErrorDialog( spoonSupplier.get().getShell(),
             BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
