@@ -20,23 +20,22 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.Ignore;
 import org.pentaho.di.repository.pur.PurRepositoryRestService;
 import org.pentaho.di.repository.pur.WebServiceManager;
 import org.pentaho.platform.plugin.services.importexport.InitializationException;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-
 /**
  * This class is an integrated test, not a unit test. Assuming there is a running pdi/merges server on localhost, this
  * class will test rest service connectivity. The first test will see if the generated code from Wadl2java can run a web
  * service. The second test will test if our WebServiceManager can do the same.
- * 
+ *
  * @author tkafalas
- * 
+ *
  */
 @Ignore
 public class Wadl2JavaRestConnectivetyCheck {
@@ -62,9 +61,10 @@ public class Wadl2JavaRestConnectivetyCheck {
     String username = "admin";
     String password = "password";
 
-    ClientConfig clientConfig = new DefaultClientConfig();
-    client = Client.create( clientConfig );
-    client.addFilter( new HTTPBasicAuthFilter( username, password ) );
+    ClientConfig clientConfig = new ClientConfig();
+    client = ClientBuilder.newClient( clientConfig );
+    HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(username, password);
+    client.register(feature);
 
     URI baseUri = null;
     try {
@@ -86,7 +86,7 @@ public class Wadl2JavaRestConnectivetyCheck {
 
   /**
    * Test web service connectivity using the the WebServiceManager
-   * 
+   *
    * @throws InitializationException
    */
   private void initRestService2() throws InitializationException {

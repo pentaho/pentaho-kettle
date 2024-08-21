@@ -127,7 +127,7 @@ public class CustomLocalServerReceiver implements VerificationCodeReceiver {
     }
 
     public void handle( String target, HttpServletRequest request, HttpServletResponse response, int dispatch )
-        throws IOException, ServletException {
+            throws IOException, ServletException {
       if ( target.contains( "/Callback" ) ) {
 
         CustomLocalServerReceiver.this.error = request.getParameter( "error" );
@@ -135,7 +135,7 @@ public class CustomLocalServerReceiver implements VerificationCodeReceiver {
           CustomLocalServerReceiver.this.code = request.getParameter( "code" );
         }
         if ( CustomLocalServerReceiver.this.url != null && CustomLocalServerReceiver.this.error != null
-            && CustomLocalServerReceiver.this.error.equals( "access_denied" ) ) {
+                && CustomLocalServerReceiver.this.error.equals( "access_denied" ) ) {
           response.sendRedirect( CustomLocalServerReceiver.this.url );
         } else {
           super.handle( target, request, response, dispatch );

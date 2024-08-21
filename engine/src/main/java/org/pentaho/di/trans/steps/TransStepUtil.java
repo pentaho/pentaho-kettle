@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.trans.Trans;
 

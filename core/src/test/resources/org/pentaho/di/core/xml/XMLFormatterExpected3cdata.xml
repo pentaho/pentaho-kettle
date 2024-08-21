@@ -6,7 +6,7 @@
     <properties>
       <property>
         <name>hidden</name>
-        <value><![CDATA[true]]></value>
+        <value>true</value>
       </property>
     </properties>
   </annotation>

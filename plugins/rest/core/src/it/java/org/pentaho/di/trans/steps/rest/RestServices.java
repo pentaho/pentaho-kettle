@@ -23,11 +23,11 @@
 package org.pentaho.di.trans.steps.rest;
 
 import com.sun.net.httpserver.HttpServer;
-import com.sun.jersey.api.container.httpserver.HttpServerFactory;
+import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import java.io.IOException;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 /**
  * User: Dzmitry Stsiapanau Date: 11/29/13 Time: 3:36 PM
@@ -43,7 +43,7 @@ public class RestServices {
 
   public static void main( String[] args ) throws IOException {
     String param = args.length > 0 ? args[0] : RestIT.HTTP_LOCALHOST_9998;
-    HttpServer server = HttpServerFactory.create( param );
+    HttpServer server = JdkHttpServerFactory.create( param );
     server.start();
 
     System.out.println( "Server running" );
