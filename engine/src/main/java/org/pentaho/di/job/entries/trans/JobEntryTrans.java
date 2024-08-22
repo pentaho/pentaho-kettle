@@ -746,7 +746,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
     while ( ( first && !execPerRow )
-      || ( execPerRow && !rows.isEmpty() && iteration <= rows.size() && result.getNrErrors() == 0 )
+      || ( execPerRow && !rows.isEmpty() && iteration < rows.size() && result.getNrErrors() == 0 )
       || ( execPerRow && rows.isEmpty() && iteration <= rows.size() && shouldConsiderOldBehaviourForEveryInputRow() )
       && !parentJob.isStopped() ) {
       // Clear the result rows of the result
