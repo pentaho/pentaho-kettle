@@ -28,16 +28,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.definition.KnowledgePackage;
-import org.drools.io.Resource;
-import org.drools.io.ResourceFactory;
-import org.drools.runtime.ObjectFilter;
-import org.drools.runtime.StatefulKnowledgeSession;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.ObjectFilter;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.io.ResourceFactory;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -47,7 +47,7 @@ import org.pentaho.di.trans.steps.rules.Rules.Column;
 
 /**
  * This Transformation Step allows a user to execute a rule set against an individual rule or a collection of rules.
- *
+ * <p>
  * Additional columns can be added to the output from the rules and these (of course) can be used for routing if
  * desired.
  *
@@ -56,17 +56,15 @@ import org.pentaho.di.trans.steps.rules.Rules.Column;
  */
 
 public class RulesExecutorData extends BaseStepData implements StepDataInterface {
-  private static Class<?> PKG = RulesExecutor.class; // for i18n purposes
+  private static final Class<?> PKG = RulesExecutor.class; // for i18n purposes
 
   private RowMetaInterface outputRowMeta;
 
-  private KnowledgeBuilder kbuilder;
-
-  private KnowledgeBase kbase;
+  private KieBase kieBase;
 
   private Column[] columnList;
 
-  private Map<String, Column> resultMap = new HashMap<String, Column>();
+  private final Map<String, Column> resultMap = new HashMap<>();
 
   private String ruleString;
 
@@ -103,13 +101,14 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
     ClassLoader loader = getClass().getClassLoader();
     Thread.currentThread().setContextClassLoader( loader );
 
-    Resource ruleSet = null;
+    KieServices kieServices = KieServices.Factory.get();
+    Resource ruleSet;
     if ( ruleString != null ) {
       ruleSet = ResourceFactory.newReaderResource( new StringReader( ruleString ) );
     } else {
       ruleSet = ResourceFactory.newFileResource( ruleFilePath );
     }
-    kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+    KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
     kbuilder.add( ruleSet, ResourceType.DRL );
 
     if ( kbuilder.hasErrors() ) {
@@ -117,11 +116,8 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
       throw new RuntimeException( BaseMessages.getString( PKG, "RulesData.Error.CompileDRL" ) );
     }
 
-    Collection<KnowledgePackage> pkgs = kbuilder.getKnowledgePackages();
-
-    kbase = KnowledgeBaseFactory.newKnowledgeBase();
-    // Cache the knowledge base as its creation is intensive
-    kbase.addKnowledgePackages( pkgs );
+    KieContainer kieContainer = kieServices.newKieContainer( kieServices.getRepository().getDefaultReleaseId() );
+    kieBase = kieContainer.getKieBase();
 
     // reset classloader back to original
     Thread.currentThread().setContextClassLoader( orig );
@@ -159,44 +155,42 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
   }
 
   public void execute() {
-    StatefulKnowledgeSession session = initNewKnowledgeSession();
+    KieSession kieSession = initNewKnowledgeSession();
 
-    Collection<Object> oList = fetchColumns( session );
+    Collection<Object> oList = fetchColumns( kieSession );
     for ( Object o : oList ) {
       resultMap.put( ( (Column) o ).getName(), (Column) o );
     }
 
-    session.dispose();
+    kieSession.dispose();
   }
 
-  protected StatefulKnowledgeSession initNewKnowledgeSession() {
-    StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
-    for ( int i = 0; i < columnList.length; i++ ) {
-      session.insert( columnList[i] );
+  protected KieSession initNewKnowledgeSession() {
+    KieSession kieSession = kieBase.newKieSession();
+    for ( Column column : columnList ) {
+      kieSession.insert( column );
     }
 
-    session.fireAllRules();
-    return session;
+    kieSession.fireAllRules();
+    return kieSession;
   }
 
-  protected Collection<Object> fetchColumns( StatefulKnowledgeSession session ) {
-    Collection<Object> oList = session.getObjects( new ObjectFilter() {
+  protected Collection<Object> fetchColumns( KieSession kieSession ) {
+    Collection<?> oList = kieSession.getObjects( new ObjectFilter() {
+
       @Override
       public boolean accept( Object o ) {
-        if ( o instanceof Column && !( (Column) o ).isExternalSource() ) {
-          return true;
-        }
-        return false;
+        return o instanceof Rules.Row && !( (Rules.Row) o ).isExternalSource();
       }
     } );
-    return oList;
+
+    return (Collection<Object>) oList;
   }
 
   /**
    *
    * @param columnName
    *          Column.payload associated with the result, or null if not found
-   * @return
    */
   public Object fetchResult( String columnName ) {
     return resultMap.get( columnName );
