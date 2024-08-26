@@ -5334,6 +5334,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       setDesignMode();
       refreshTree( jobMeta );
       loadPerspective( MainSpoonPerspective.ID );
+
+      try {
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobCreateNew.id, jobMeta );
+      } catch ( KettleException e ) {
+        log.logError( "Failed to call extension point", e );
+      }
     } catch ( Exception e ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "Spoon.Exception.ErrorCreatingNewJob.Title" ), BaseMessages
