@@ -132,6 +132,7 @@ public enum KettleExtensionPoint {
       "After an object has been deleted from the repository" ),
 
    TransformationCreateNew( "TransformationCreateNew", "Create a New Empty Transformation in Spoon" ),
+   JobCreateNew( "JobCreateNew", "Create a New Empty Job in Spoon" ),
    TransSharedObjectsLoaded( "TransSharedObjectsLoaded", "After the shared objects are loaded in Transformations." ),
    JobSharedObjectsLoaded( "JobSharedObjectsLoaded", "After the shared objects are loaded in Job." );
 
