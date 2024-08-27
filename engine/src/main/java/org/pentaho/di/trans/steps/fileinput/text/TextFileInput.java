@@ -709,22 +709,22 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
                     tfii.inputFiles.includeSubFolderBoolean() );
 
     JSONArray filteredFiles = new JSONArray();
-    for ( String file : files ) {
-      if ( Boolean.TRUE.valueOf( isRegex ) ) {
-        Matcher matcher = Pattern.compile( filter ).matcher( file );
-        if ( matcher.matches() ) {
+
+    if ( files == null || files.length == 0 ) {
+      response.put( "message", BaseMessages.getString( PKG, "TextFileInputDialog.NoFilesFound.DialogMessage" ) );
+    } else {
+      for ( String file : files ) {
+        if ( Boolean.TRUE.valueOf( isRegex ) ) {
+          Matcher matcher = Pattern.compile( filter ).matcher( file );
+          if ( matcher.matches() ) {
+            filteredFiles.add( file );
+          }
+        } else if ( StringUtils.isBlank( filter ) || StringUtils.contains( file.toUpperCase(), filter.toUpperCase() ) ) {
           filteredFiles.add( file );
         }
-      } else if ( StringUtils.isBlank( filter ) || StringUtils.contains( file.toUpperCase(), filter.toUpperCase() ) ) {
-        filteredFiles.add( file );
       }
     }
-    try {
-      response.put( "files", filteredFiles );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
+    response.put( "files", filteredFiles );
     return response;
   }
 
