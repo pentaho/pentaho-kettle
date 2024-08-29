@@ -13,11 +13,6 @@
   <database-type id="DB2">
     <description>IBM DB2</description>
     <classname>org.pentaho.di.core.database.DB2DatabaseMeta</classname>
-  </database-type>                                                     
-
-  <database-type id="DBASE">
-    <description>dBase III, IV or 5</description>
-    <classname>org.pentaho.di.core.database.DbaseDatabaseMeta</classname>
   </database-type>
 
   <database-type id="EXASOL4">
@@ -108,12 +103,7 @@
   <database-type id="MONETDB">
     <description>MonetDB</description>
     <classname>org.pentaho.di.core.database.MonetDBDatabaseMeta</classname>
-  </database-type>                                                         
-
-  <database-type id="MSACCESS">
-    <description>MS Access</description>
-    <classname>org.pentaho.di.core.database.MSAccessDatabaseMeta</classname>
-  </database-type>                                                          
+  </database-type>
 
   <database-type id="MSSQLNATIVE">
     <description>MS SQL Server (Native)</description>
