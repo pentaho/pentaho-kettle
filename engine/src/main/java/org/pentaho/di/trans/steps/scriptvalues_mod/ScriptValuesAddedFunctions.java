@@ -1851,9 +1851,15 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
   static void setRootScopeVariable( Trans trans, String variableName, String variableValue ) {
     trans.setVariable( variableName, variableValue );
 
+    VariableSpace currentSpace = trans;
     VariableSpace parentSpace = trans.getParentVariableSpace();
-    while ( parentSpace != null ) {
+
+    // Due to changes operated under BACKLOG-36347 and PDI-19604,
+    // a Transformation can be, itself, its parent VariableScope.
+    // We have to make this validation in order to avoid an infinite loop
+    while ( currentSpace != parentSpace && parentSpace != null ) {
       parentSpace.setVariable( variableName, variableValue );
+      currentSpace = parentSpace;
       parentSpace = parentSpace.getParentVariableSpace();
     }
   }
