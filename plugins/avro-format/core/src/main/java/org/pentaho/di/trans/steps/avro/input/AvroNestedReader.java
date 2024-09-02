@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -660,10 +660,10 @@ public class AvroNestedReader {
         fieldS = defaultSchema.getField( part );
       }
 
-      if ( fieldS == null || fieldS.defaultValue() == null ) {
+      if ( fieldS == null || fieldS.defaultVal() == null ) {
         return null;
       }
-      field = fieldS.defaultValue();
+      field = fieldS.defaultVal();
     }
 
     Schema.Type fieldT = fieldS.schema().getType();
