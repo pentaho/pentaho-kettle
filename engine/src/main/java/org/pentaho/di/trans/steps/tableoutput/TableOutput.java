@@ -890,6 +890,54 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
     return stepJSON;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getTableFieldAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    String connectionName = queryParams.get( "connection" );
+    String schema = queryParams.get( "schema" );
+    String table = queryParams.get( "table" );
+    String[] columns = getTableFields( connectionName, schema, table );
+    JSONArray columnsList = new JSONArray();
+    for ( String column : columns ) {
+      columnsList.add( column );
+    }
+    response.put( "columns", columnsList );
+    response.put( "actionStatus", StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  private String[] getTableFields( String connection, String schema, String table ) {
+    DatabaseMeta databaseMeta = getTransMeta().findDatabase( connection );
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Table Output Step", LoggingObjectType.STEP, null );
+    Database db = new Database( loggingObject, databaseMeta );
+    try {
+      db.connect();
+      RowMetaInterface r =
+        db.getTableFieldsMeta( schema, table );
+      if ( null != r ) {
+        String[] fieldNames = r.getFieldNames();
+        if ( null != fieldNames ) {
+          return fieldNames;
+        }
+      }
+    } catch ( Exception e ) {
+      // ignore any errors here. drop downs will not be
+      // filled, but no problem for the user
+    } finally {
+      try {
+        if ( db != null ) {
+          db.disconnect();
+        }
+      } catch ( Exception ignored ) {
+        // ignore any errors here. Nothing we can do if
+        // connection fails to close properly
+        db = null;
+      }
+    }
+    return null;
+  }
+
 
   /**
    * Allows subclasses of TableOuput to get hold of the step meta
