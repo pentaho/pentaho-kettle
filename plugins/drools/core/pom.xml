@@ -63,22 +63,17 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-ruleunits-engine</artifactId>
       <version>${drools.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-reteoo</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.drools</groupId>-->
-<!--      <artifactId>kie-api</artifactId>-->
-<!--      <version>${drools.version}</version>-->
-<!--      <exclusions>-->
-<!--        <exclusion>-->
-<!--          <groupId>org.slf4j</groupId>-->
-<!--          <artifactId>slf4j-api</artifactId>-->
-<!--        </exclusion>-->
-<!--        <exclusion>-->
-<!--          <groupId>org.drools</groupId>-->
-<!--          <artifactId>drools-reteoo</artifactId>-->
-<!--        </exclusion>-->
-<!--      </exclusions>-->
-<!--    </dependency>-->
 
     <dependency>
       <groupId>org.mvel</groupId>
