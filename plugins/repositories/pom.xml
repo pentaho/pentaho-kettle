@@ -19,7 +19,6 @@
     <pdi.version>10.2.0.0-SNAPSHOT</pdi.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
     <require-css.version>0.1.8</require-css.version>
-    <dojo.version>1.9.2</dojo.version>
   </properties>
 
   <modules>
