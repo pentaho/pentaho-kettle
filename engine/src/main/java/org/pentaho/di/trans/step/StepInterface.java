@@ -52,13 +52,13 @@ import org.pentaho.metastore.api.IMetaStore;
 
 public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
-  public static String ACTION_STATUS = "actionStatus";
-  public static String SUCCESS_RESPONSE = "Action successful";
-  public static String FAILURE_RESPONSE = "Action failed";
-  public static String FAILURE_METHOD_NOT_RESPONSE = "Action failed with method not found";
-  public static String STATUS = "Status";
-  public static int SUCCESS_STATUS = 1;
-  public static int FAILURE_STATUS = 0;
+  String ACTION_STATUS = "actionStatus";
+  String SUCCESS_RESPONSE = "Action successful";
+  String FAILURE_RESPONSE = "Action failed";
+  String FAILURE_METHOD_NOT_RESPONSE = "Action failed with method not found";
+  String STATUS = "Status";
+  int SUCCESS_STATUS = 1;
+  int FAILURE_STATUS = 0;
 
   /**
    * @return the transformation that is executing this step
