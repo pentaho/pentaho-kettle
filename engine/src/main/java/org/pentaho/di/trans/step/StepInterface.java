@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,10 +52,14 @@ import org.pentaho.metastore.api.IMetaStore;
 
 public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
-  public static String ACTION_STATUS = "Action status";
+  public static String ACTION_STATUS = "actionStatus";
   public static String SUCCESS_RESPONSE = "Action successful";
   public static String FAILURE_RESPONSE = "Action failed";
   public static String FAILURE_METHOD_NOT_RESPONSE = "Action failed with method not found";
+  public static String STATUS = "Status";
+  public static int SUCCESS_STATUS = 1;
+  public static int FAILURE_STATUS = 0;
+
   /**
    * @return the transformation that is executing this step
    */
