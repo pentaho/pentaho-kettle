@@ -165,14 +165,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public static final int TYPE_DATABASE_AS400 = 3;
 
   /**
-   * Connection to an Microsoft Access database
-   *
-   * @deprecated
-   */
-  @Deprecated
-  public static final int TYPE_DATABASE_ACCESS = 4;
-
-  /**
    * Connection to a Microsoft SQL Server database
    *
    * @deprecated
@@ -227,14 +219,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   @Deprecated
   public static final int TYPE_DATABASE_GUPTA = 11;
-
-  /**
-   * Connection to a DBase III/IV/V database through JDBC
-   *
-   * @deprecated
-   */
-  @Deprecated
-  public static final int TYPE_DATABASE_DBASE = 12;
 
   /**
    * Connection to a FireBird database
