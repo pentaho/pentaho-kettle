@@ -34,6 +34,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -285,7 +286,7 @@ public class MessagesSourceCrawler {
       return;
     }
 
-    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    TransformerFactory transformerFactory = XMLParserFactoryProducer.createSecureTransformerFactory();
     Transformer transformer = transformerFactory.newTransformer();
     transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, YES );
     transformer.setOutputProperty( OutputKeys.INDENT, YES );
