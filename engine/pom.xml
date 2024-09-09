@@ -645,6 +645,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <version>${fasterxml-jackson-databind.non-osgi.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
