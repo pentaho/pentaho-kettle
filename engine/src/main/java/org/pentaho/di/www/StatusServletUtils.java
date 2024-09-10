@@ -24,7 +24,7 @@ package org.pentaho.di.www;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.ui.xul.util.XmlParserFactoryProducer;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
