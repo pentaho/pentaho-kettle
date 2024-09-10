@@ -365,7 +365,7 @@ public class TableInputMeta extends BaseDatabaseStepMeta implements StepMetaInte
 
       String sRowMeta = rep.getStepAttributeString( id_step, RowMeta.XML_META_TAG );
       if ( sRowMeta != null ) {
-        Node node = XmlParserFactoryProducer.createSecureDocBuilderFactory()
+        Node node = XMLParserFactoryProducer.createSecureDocBuilderFactory()
           .newDocumentBuilder()
           .parse( new ByteArrayInputStream( sRowMeta.getBytes() ) )
           .getDocumentElement();

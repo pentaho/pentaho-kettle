@@ -128,7 +128,7 @@ class StatusServletUtils {
 
   private static String buildThemeName( File f )
     throws ParserConfigurationException, SAXException, IOException {
-    DocumentBuilderFactory dbFactory = XmlParserFactoryProducer.createSecureDocBuilderFactory();
+    DocumentBuilderFactory dbFactory = XMLParserFactoryProducer.createSecureDocBuilderFactory();
     DocumentBuilder db = dbFactory.newDocumentBuilder();
     Document doc = db.parse( f );
     return doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
