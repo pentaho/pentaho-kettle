@@ -492,6 +492,10 @@ public class SpoonDBDelegate extends SpoonDelegate {
     }
 
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
+    if ( getDatabaseDialog().getDatabaseMeta() == null ) {
+      return;
+    }
+
     String con_name = getDatabaseDialog().open();
     if ( !Utils.isEmpty( con_name ) ) {
       con_name = con_name.trim();
