@@ -24,7 +24,7 @@ package org.pentaho.di.www;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.ui.xul.util.XmlParserFactoryProducer;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -128,7 +128,7 @@ class StatusServletUtils {
 
   private static String buildThemeName( File f )
     throws ParserConfigurationException, SAXException, IOException {
-    DocumentBuilderFactory dbFactory = XmlParserFactoryProducer.createSecureDocBuilderFactory();
+    DocumentBuilderFactory dbFactory = XMLParserFactoryProducer.createSecureDocBuilderFactory();
     DocumentBuilder db = dbFactory.newDocumentBuilder();
     Document doc = db.parse( f );
     return doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
