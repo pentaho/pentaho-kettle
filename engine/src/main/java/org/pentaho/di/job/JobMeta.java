@@ -40,6 +40,8 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.attributes.AttributesUtil;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
@@ -103,6 +105,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -715,9 +718,22 @@ public class JobMeta extends AbstractMeta
    * @param fname the fname
    * @param rep   the rep
    * @throws KettleXMLException the kettle xml exception
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public JobMeta( String fname, Repository rep ) throws KettleXMLException {
-    this( null, fname, rep, null );
+    this( DefaultBowl.getInstance(), fname, rep );
+  }
+
+  /**
+   * Instantiates a new job meta.
+   * @param bowl For file access to the provided file.
+   * @param fname the fname
+   * @param rep   the rep
+   * @throws KettleXMLException the kettle xml exception
+   */
+  public JobMeta( Bowl bowl, String fname, Repository rep ) throws KettleXMLException {
+    this( bowl, null, fname, rep, null );
   }
 
   /**
@@ -727,9 +743,24 @@ public class JobMeta extends AbstractMeta
    * @param rep      the rep
    * @param prompter the prompter
    * @throws KettleXMLException the kettle xml exception
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public JobMeta( String fname, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
-    this( null, fname, rep, prompter );
+    this( DefaultBowl.getInstance(), fname, rep, prompter );
+  }
+
+  /**
+   * Instantiates a new job meta.
+   *
+   * @param bowl For file access to the provided file.
+   * @param fname    the fname
+   * @param rep      the rep
+   * @param prompter the prompter
+   * @throws KettleXMLException the kettle xml exception
+   */
+  public JobMeta( Bowl bowl, String fname, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
+    this( bowl, null, fname, rep, prompter );
   }
 
   /**
@@ -738,11 +769,25 @@ public class JobMeta extends AbstractMeta
    * @param fname The filename to load as a job
    * @param rep   The repository to bind againt, null if there is no repository available.
    * @throws KettleXMLException
+   * @deprecated use the version with the Bowl
    */
   @Deprecated
   public JobMeta( VariableSpace parentSpace, String fname, Repository rep, OverwritePrompter prompter )
       throws KettleXMLException {
-    this( parentSpace, fname, rep, null, prompter );
+    this( DefaultBowl.getInstance(), parentSpace, fname, rep, prompter );
+  }
+
+  /**
+   * Load the job from the XML file specified.
+   *
+   * @param bowl For file access to the provided file.
+   * @param fname The filename to load as a job
+   * @param rep   The repository to bind againt, null if there is no repository available.
+   * @throws KettleXMLException
+   */
+  public JobMeta( Bowl bowl, VariableSpace parentSpace, String fname, Repository rep, OverwritePrompter prompter )
+      throws KettleXMLException {
+    this( bowl, parentSpace, fname, rep, null, prompter );
   }
 
   /**
@@ -751,14 +796,30 @@ public class JobMeta extends AbstractMeta
    * @param fname The filename to load as a job
    * @param rep   The repository to bind againt, null if there is no repository available.
    * @throws KettleXMLException
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public JobMeta( VariableSpace parentSpace, String fname, Repository rep, IMetaStore metaStore,
+      OverwritePrompter prompter ) throws KettleXMLException {
+    this( DefaultBowl.getInstance(), parentSpace, fname, rep, metaStore, prompter );
+  }
+
+  /**
+   * Load the job from the XML file specified.
+   *
+   * @param bowl For file access to the provided file.
+   * @param fname The filename to load as a job
+   * @param rep   The repository to bind againt, null if there is no repository available.
+   * @throws KettleXMLException
+   */
+  public JobMeta( Bowl bowl, VariableSpace parentSpace, String fname, Repository rep, IMetaStore metaStore,
       OverwritePrompter prompter ) throws KettleXMLException {
     this.initializeVariablesFrom( parentSpace );
     this.metaStore = metaStore;
+    this.bowl = Objects.requireNonNull( bowl );
     try {
       // OK, try to load using the VFS stuff...
-      Document doc = XMLHandler.loadXMLFile( KettleVFS.getFileObject( fname, this ) );
+      Document doc = XMLHandler.loadXMLFile( KettleVFS.getInstance( bowl ).getFileObject( fname, this ) );
       if ( doc != null ) {
         // The jobnode
         Node jobnode = XMLHandler.getSubNode( doc, XML_TAG );
@@ -2424,7 +2485,7 @@ public class JobMeta extends AbstractMeta
     if ( filename != null ) {
       // we have a filename that's defined.
       try {
-        FileObject fileObject = KettleVFS.getFileObject( filename, var );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( filename, var );
         FileName fileName = fileObject.getName();
 
         // The filename of the job
@@ -2525,7 +2586,8 @@ public class JobMeta extends AbstractMeta
     return resourceReferences;
   }
 
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  @Override
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     String resourceName = null;
     try {
@@ -2546,7 +2608,7 @@ public class JobMeta extends AbstractMeta
       } else {
         // Assume file
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( getFilename() ), space );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( space.environmentSubstitute( getFilename() ), space );
         originalPath = fileObject.getParent().getName().getPath();
         baseName = fileObject.getName().getBaseName();
         fullname = fileObject.getName().getPath();

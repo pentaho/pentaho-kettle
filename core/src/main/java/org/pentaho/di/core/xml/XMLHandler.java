@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.owasp.encoder.Encode;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -526,10 +528,23 @@ public class XMLHandler {
    *
    * @param filename The filename to load into a document
    * @return the Document if all went well, null if an error occurred!
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public static Document loadXMLFile( String filename ) throws KettleXMLException {
+    return loadXMLFile( DefaultBowl.getInstance(), filename );
+  }
+
+  /**
+   * Load a file into an XML document
+   *
+   * @param bowl Context for the file load.
+   * @param filename The filename to load into a document
+   * @return the Document if all went well, null if an error occurred!
+   */
+  public static Document loadXMLFile( Bowl bowl, String filename ) throws KettleXMLException {
     try {
-      return loadXMLFile( KettleVFS.getFileObject( filename ) );
+      return loadXMLFile( KettleVFS.getInstance( bowl ).getFileObject( filename ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( e );
     }

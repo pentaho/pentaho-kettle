@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ExtensionDataInterface;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.attributes.AttributesUtil;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -921,7 +922,13 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @throws KettleException
    *           in case something goes wrong during the export
    */
+  @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+    return null;
+  }
+
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     return null;
   }
@@ -1414,7 +1421,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @throws KettleException
    */
   @Deprecated
-  public Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException {
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, VariableSpace space )
+    throws KettleException {
     return null;
   }
 
@@ -1432,7 +1440,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+    throws KettleException {
     return null;
   }
 

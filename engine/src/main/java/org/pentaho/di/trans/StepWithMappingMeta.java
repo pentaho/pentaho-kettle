@@ -25,6 +25,8 @@ package org.pentaho.di.trans;
 import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
@@ -71,12 +73,25 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
   protected String directoryPath;
   protected ObjectId transObjectId;
 
+  @Deprecated
   public static TransMeta loadMappingMeta( StepWithMappingMeta mappingMeta, Repository rep,
+                                           IMetaStore metaStore, VariableSpace space ) throws KettleException {
+    return loadMappingMeta( DefaultBowl.getInstance(), mappingMeta, rep, metaStore, space );
+  }
+
+  public static TransMeta loadMappingMeta( Bowl bowl, StepWithMappingMeta mappingMeta, Repository rep,
                                            IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return loadMappingMeta( mappingMeta, rep, metaStore, space, true );
   }
 
-  public static TransMeta loadMappingMeta( StepWithMappingMeta executorMeta, Repository rep, IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
+  @Deprecated
+  public static TransMeta loadMappingMeta( StepWithMappingMeta executorMeta, Repository rep,
+    IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
+    return loadMappingMeta( DefaultBowl.getInstance(), executorMeta, rep, metaStore, space, share );
+  }
+
+  public static TransMeta loadMappingMeta( Bowl bowl, StepWithMappingMeta executorMeta, Repository rep,
+    IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
     // Note - was a synchronized static method, but as no static variables are manipulated, this is entirely unnecessary
 
     IMetaFileLoader<TransMeta> metaFileLoader = new MetaFileLoaderImpl<>( executorMeta, executorMeta.getSpecificationMethod() );

@@ -47,6 +47,8 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.attributes.AttributesUtil;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -2059,7 +2061,7 @@ public class TransMeta extends AbstractMeta
     RowMetaInterface[] clonedInfo = cloneRowMetaInterfaces( inform );
     compatibleGetStepFields( stepint, row, name, clonedInfo, nextStep, this );
     if ( !isSomethingDifferentInRow( before, row ) ) {
-      stepint.getFields( before, name, clonedInfo, nextStep, this, repository, metaStore );
+      stepint.getFields( bowl, before, name, clonedInfo, nextStep, this, repository, metaStore );
       // pass the clone object to prevent from spoiling data by other steps
       row = before;
     }
@@ -2071,7 +2073,7 @@ public class TransMeta extends AbstractMeta
   private void compatibleGetStepFields( StepMetaInterface stepint, RowMetaInterface row, String name,
       RowMetaInterface[] inform, StepMeta nextStep, VariableSpace space ) throws KettleStepException {
 
-    stepint.getFields( row, name, inform, nextStep, space );
+    stepint.getFields( bowl, row, name, inform, nextStep, space );
 
   }
 
@@ -2640,9 +2642,29 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname ) throws KettleXMLException, KettleMissingPluginsException {
-    this( fname, true );
+    this( DefaultBowl.getInstance(), fname );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation. No default connections are loaded since no
+   * repository is available at this time. Since the filename is set, internal variables are being set that relate to
+   * this.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname ) throws KettleXMLException, KettleMissingPluginsException {
+    this( bowl, fname, true );
   }
 
   /**
@@ -2658,10 +2680,33 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, VariableSpace parentVariableSpace ) throws KettleXMLException,
     KettleMissingPluginsException {
-    this( fname, null, true, parentVariableSpace );
+    this( DefaultBowl.getInstance(), fname, null, true, parentVariableSpace );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation. No default connections are loaded since no
+   * repository is available at this time. Since the filename is set, variables are set in the specified variable space
+   * that relate to this.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param parentVariableSpace
+   *          the parent variable space
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, VariableSpace parentVariableSpace ) throws KettleXMLException,
+    KettleMissingPluginsException {
+    this( bowl, fname, null, true, parentVariableSpace );
   }
 
   /**
@@ -2676,10 +2721,32 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, boolean setInternalVariables ) throws KettleXMLException,
     KettleMissingPluginsException {
-    this( fname, null, setInternalVariables );
+    this( DefaultBowl.getInstance(), fname, null, setInternalVariables );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation. No default connections are loaded since no
+   * repository is available at this time.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, boolean setInternalVariables ) throws KettleXMLException,
+    KettleMissingPluginsException {
+    this( bowl, fname, null, setInternalVariables );
   }
 
   /**
@@ -2693,9 +2760,29 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, Repository rep ) throws KettleXMLException, KettleMissingPluginsException {
-    this( fname, rep, true );
+    this( DefaultBowl.getInstance(), fname, rep, true );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, Repository rep ) throws KettleXMLException, KettleMissingPluginsException {
+    this( bowl, fname, rep, true );
   }
 
   /**
@@ -2711,10 +2798,33 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException,
     KettleMissingPluginsException {
-    this( fname, rep, setInternalVariables, null );
+    this( DefaultBowl.getInstance(), fname, rep, setInternalVariables, null );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException,
+    KettleMissingPluginsException {
+    this( bowl, fname, rep, setInternalVariables, null );
   }
 
   /**
@@ -2732,9 +2842,35 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
-  public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException {
-    this( fname, rep, setInternalVariables, parentVariableSpace, null );
+  @Deprecated
+  public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace )
+      throws KettleXMLException, KettleMissingPluginsException {
+    this( DefaultBowl.getInstance(), fname, rep, setInternalVariables, parentVariableSpace, null );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @param parentVariableSpace
+   *          the parent variable space to use during TransMeta construction
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, Repository rep, boolean setInternalVariables,
+      VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException {
+    this( bowl, fname, rep, setInternalVariables, parentVariableSpace, null );
   }
 
   /**
@@ -2754,10 +2890,38 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace,
       OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
-    this( fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
+    this( DefaultBowl.getInstance(), fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @param parentVariableSpace
+   *          the parent variable space to use during TransMeta construction
+   * @param prompter
+   *          the changed/replace listener or null if there is none
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, Repository rep, boolean setInternalVariables,
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
+    this( bowl, fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
   /**
@@ -2779,8 +2943,38 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
+                    VariableSpace parentVariableSpace, OverwritePrompter prompter )
+    throws KettleXMLException, KettleMissingPluginsException {
+    this( DefaultBowl.getInstance(), fname, metaStore, rep, setInternalVariables, parentVariableSpace, prompter );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param metaStore
+   *          the metadata store to reference (or null if there is none)
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @param parentVariableSpace
+   *          the parent variable space to use during TransMeta construction
+   * @param prompter
+   *          the changed/replace listener or null if there is none
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
                     VariableSpace parentVariableSpace, OverwritePrompter prompter )
     throws KettleXMLException, KettleMissingPluginsException {
     // if fname is not provided, there's not much we can do, throw an exception
@@ -2797,7 +2991,7 @@ public class TransMeta extends AbstractMeta
         parentVariableSpace = new Variables();
       }
 
-      final FileObject transFile = KettleVFS.getFileObject( fname, parentVariableSpace );
+      final FileObject transFile = KettleVFS.getInstance( bowl ).getFileObject( fname, parentVariableSpace );
       if ( !transFile.exists() ) {
         throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.InvalidXMLPath", fname ) );
       }
@@ -5719,7 +5913,7 @@ public class TransMeta extends AbstractMeta
     //
     if ( !Utils.isEmpty( filename ) ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( filename, var );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( filename, var );
         FileName fileName = fileObject.getName();
 
         // The filename of the transformation
@@ -5855,7 +6049,7 @@ public class TransMeta extends AbstractMeta
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
 
     try {
@@ -5877,7 +6071,8 @@ public class TransMeta extends AbstractMeta
       } else {
         // Assume file
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( getFilename() ), space );
+        FileObject fileObject = KettleVFS.getInstance( bowl )
+          .getFileObject( space.environmentSubstitute( getFilename() ), space );
         originalPath = fileObject.getParent().getURL().toString();
         baseName = fileObject.getName().getBaseName();
         fullname = fileObject.getURL().toString();
@@ -5903,7 +6098,7 @@ public class TransMeta extends AbstractMeta
         // loop over steps, databases will be exported to XML anyway.
         //
         for ( StepMeta stepMeta : transMeta.getSteps() ) {
-          stepMeta.exportResources( space, definitions, resourceNamingInterface, repository, metaStore );
+          stepMeta.exportResources( bowl, space, definitions, resourceNamingInterface, repository, metaStore );
         }
 
         // Change the filename, calling this sets internal variables

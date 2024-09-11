@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.trans.step;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
@@ -163,6 +165,10 @@ import org.w3c.dom.Node;
  */
 
 public interface StepMetaInterface {
+  // This interface has old and new methods. The old methods are deprecated and do not take a Bowl. The new methods
+  // take a Bowl as an argument. The old methods need to be "default" implementations to allow new code to not
+  // implement them. The new methods need to be "default" implementations to allow old code to continue to work.
+  // Sub Classes must implement one or the other of each pair or hit StackOverflowErrors.
   /**
    * Set default values
    */
@@ -183,11 +189,37 @@ public interface StepMetaInterface {
    *          the space The variable space to use to replace variables
    * @throws KettleStepException
    *           the kettle step exception
+   * @deprecated use {@link #getFields(Bowl, RowMetaInterface, String, RowMetaInterface[], StepMeta, VariableSpace,
+   *             Repository, IMetaStore)}
+   */
+  @Deprecated
+  default void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+    VariableSpace space ) throws KettleStepException {
+    getFields( DefaultBowl.getInstance(), inputRowMeta, name, info, nextStep, space );
+  }
+
+  /**
+   * Gets the fields.
+   *
+   * @param inputRowMeta
+   *          the input row meta that is modified in this method to reflect the output row metadata of the step
+   * @param name
+   *          Name of the step to use as input for the origin field in the values
+   * @param info
+   *          Fields used as extra lookup information
+   * @param nextStep
+   *          the next step that is targeted
+   * @param space
+   *          the space The variable space to use to replace variables
+   * @throws KettleStepException
+   *           the kettle step exception
    * @deprecated use {@link #getFields(RowMetaInterface, String, RowMetaInterface[], StepMeta, VariableSpace, Repository, IMetaStore)}
    */
   @Deprecated
-  void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space ) throws KettleStepException;
+  default void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
+    StepMeta nextStep, VariableSpace space ) throws KettleStepException {
+    getFields( inputRowMeta, name, info, nextStep, space );
+  }
 
   /**
    * Gets the fields.
@@ -208,9 +240,40 @@ public interface StepMetaInterface {
    *          the MetaStore to use to load additional external data or metadata impacting the output fields
    * @throws KettleStepException
    *           the kettle step exception
+   * @deprecated use the version with the Bowl
    */
-  void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException;
+  @Deprecated
+  default void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    getFields( DefaultBowl.getInstance(), inputRowMeta, name, info, nextStep, space, repository, metaStore );
+  }
+
+  /**
+   * Gets the fields.
+   *
+   * @param bowl
+   *          For file access
+   * @param inputRowMeta
+   *          the input row meta that is modified in this method to reflect the output row metadata of the step
+   * @param name
+   *          Name of the step to use as input for the origin field in the values
+   * @param info
+   *          Fields used as extra lookup information
+   * @param nextStep
+   *          the next step that is targeted
+   * @param space
+   *          the space The variable space to use to replace variables
+   * @param repository
+   *          the repository to use to load Kettle metadata objects impacting the output fields
+   * @param metaStore
+   *          the MetaStore to use to load additional external data or metadata impacting the output fields
+   * @throws KettleStepException
+   *           the kettle step exception
+   */
+  default void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
+    StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    getFields( inputRowMeta, name, info, nextStep, space, repository, metaStore );
+  }
 
   /**
    * Get the XML that represents the values in this step
@@ -577,11 +640,51 @@ public interface StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    *
    * @return the filename of the exported resource
+   * @deprecated use {@link #exportResources(Bowl, VariableSpace, Map, ResourceNamingInterface, Repository, IMetaStore)}
+   */
+  @Deprecated
+  default String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+      ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException {
+    return exportResources( DefaultBowl.getInstance(), space, definitions, resourceNamingInterface, repository );
+  }
+
+  /**
+   * @param space
+   *          the variable space to use
+   * @param definitions
+   * @param resourceNamingInterface
+   * @param repository
+   *          The repository to optionally load other resources from (to be converted to XML)
+   *
+   * @return the filename of the exported resource
    * @deprecated use {@link #exportResources(VariableSpace, Map, ResourceNamingInterface, Repository, IMetaStore)}
    */
   @Deprecated
-  String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException;
+  default String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
+      ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException {
+    return exportResources( space, definitions, resourceNamingInterface, repository );
+  }
+
+  /**
+   * @param space
+   *          the variable space to use
+   * @param definitions
+   * @param resourceNamingInterface
+   * @param repository
+   *          The repository to optionally load other resources from (to be converted to XML)
+   * @param metaStore
+   *          the metaStore in which non-kettle metadata could reside.
+   *
+   * @return the filename of the exported resource
+   * @deprecated use the version with the Bowl
+   */
+  @Deprecated
+  default String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+      throws KettleException {
+    return exportResources( DefaultBowl.getInstance(), space, definitions, resourceNamingInterface, repository,
+      metaStore );
+  }
 
   /**
    * @param space
@@ -595,8 +698,11 @@ public interface StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
-  String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException;
+  default String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
+      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+      throws KettleException {
+    return exportResources( space, definitions, resourceNamingInterface, repository, metaStore );
+  }
 
   /**
    * @return The StepMeta object to which this metadata class belongs. With this, we can see to which transformation
@@ -711,8 +817,32 @@ public interface StepMetaInterface {
    *          the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
+   * @deprecated use the version with the Bowl
    */
-  Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
+  @Deprecated
+  default Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+      throws KettleException {
+    return loadReferencedObject( DefaultBowl.getInstance(), index, rep, metaStore, space );
+  }
+
+  /**
+   * Load the referenced object
+   *
+   * @param index
+   *          the referenced object index to load (in case there are multiple references)
+   * @param rep
+   *          the repository
+   * @param metaStore
+   *          the MetaStore to use
+   * @param space
+   *          the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  default Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+      throws KettleException {
+    return loadReferencedObject( index, rep, metaStore, space );
+  }
 
   /**
    * Action remove hop exiting this step
@@ -764,8 +894,27 @@ public interface StepMetaInterface {
    * @param space VariableSpace
    * @return the associated TransMeta object, or null if not found (or not implemented)
    * @throws KettleException should something go wrong
+   * @deprecated use the version with the Bowl.
    */
-  default TransMeta fetchTransMeta( StepMetaInterface stepMeta, Repository rep, IMetaStore metastore, VariableSpace space ) throws KettleException {
+  @Deprecated
+  default TransMeta fetchTransMeta( StepMetaInterface stepMeta, Repository rep, IMetaStore metastore,
+    VariableSpace space ) throws KettleException {
     return null; // default
   }
+
+  /**
+   * Allows for someone to fetch the related TransMeta object. Returns null if not found (or not implemented)
+   * @param bowl context for file operations
+   * @param stepMeta StepMetaInterface object
+   * @param rep Repository object
+   * @param metastore metastore object
+   * @param space VariableSpace
+   * @return the associated TransMeta object, or null if not found (or not implemented)
+   * @throws KettleException should something go wrong
+   */
+  default TransMeta fetchTransMeta( Bowl bowl, StepMetaInterface stepMeta, Repository rep, IMetaStore metastore,
+    VariableSpace space ) throws KettleException {
+    return null; // default
+  }
+
 }
