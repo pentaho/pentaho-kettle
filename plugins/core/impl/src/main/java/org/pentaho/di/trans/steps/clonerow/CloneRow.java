@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,7 +68,8 @@ public class CloneRow extends BaseStep implements StepInterface {
       first = false;
       data.outputRowMeta = getInputRowMeta().clone();
       data.NrPrevFields = getInputRowMeta().size();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
       data.addInfosToRow = ( meta.isAddCloneFlag() || meta.isAddCloneNum() );
 
       if ( meta.isAddCloneFlag() ) {

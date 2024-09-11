@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -103,7 +103,8 @@ public class ExecSQLRow extends BaseDatabaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // Check is SQL field is provided
       if ( Utils.isEmpty( meta.getSqlFieldName() ) ) {
@@ -134,7 +135,7 @@ public class ExecSQLRow extends BaseDatabaseStep implements StepInterface {
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "ExecSQLRow.Log.ExecutingSQLFromFile", sql ) );
         }
-        data.result = data.db.execStatementsFromFile( sql, meta.IsSendOneStatement() );
+        data.result = data.db.execStatementsFromFile( getTransMeta().getBowl(), sql, meta.IsSendOneStatement() );
       } else {
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "ExecSQLRow.Log.ExecutingSQLScript" ) + Const.CR + sql );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.ldapinput;
 import java.util.Collection;
 import java.util.Map;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
@@ -39,9 +40,9 @@ public class LdapSslProtocol extends LdapProtocol {
 
   private final String trustStorePassword;
 
-  public LdapSslProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
+  public LdapSslProtocol( Bowl bowl, LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
     Collection<String> binaryAttributes ) {
-    super( log, variableSpace, meta, binaryAttributes );
+    super( bowl, log, variableSpace, meta, binaryAttributes );
     String trustStorePath = null;
     String trustStorePassword = null;
     boolean trustAllCertificates = false;
@@ -73,7 +74,8 @@ public class LdapSslProtocol extends LdapProtocol {
   }
 
   @Override
-  protected void setupEnvironment( Map<String, String> env, String username, String password ) throws KettleException {
+  protected void setupEnvironment( Map<String, String> env, String username, String password )
+    throws KettleException {
     super.setupEnvironment( env, username, password );
     configureSslEnvironment( env );
     configureSocketFactory( trustAllCertificates, trustStorePath, trustStorePassword );
@@ -84,7 +86,7 @@ public class LdapSslProtocol extends LdapProtocol {
     if ( trustAllCertificates ) {
       CustomSocketFactory.configure();
     } else {
-      CustomSocketFactory.configure( trustStorePath, trustStorePassword );
+      CustomSocketFactory.configure( bowl, trustStorePath, trustStorePassword );
     }
   }
 }

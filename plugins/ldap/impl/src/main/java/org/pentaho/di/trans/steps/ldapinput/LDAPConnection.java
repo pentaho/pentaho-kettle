@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import javax.naming.ldap.PagedResultsControl;
 import javax.naming.ldap.PagedResultsResponseControl;
 import javax.naming.ldap.SortControl;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
@@ -101,10 +102,10 @@ public class LDAPConnection {
   /**
    * Construct a new LDAP Connection
    */
-  public LDAPConnection( LogChannelInterface logInterface, VariableSpace variableSpace, LdapMeta meta,
+  public LDAPConnection( Bowl bowl, LogChannelInterface logInterface, VariableSpace variableSpace, LdapMeta meta,
     Collection<String> binaryAttributes ) throws KettleException {
     this.log = logInterface;
-    protocol = new LdapProtocolFactory( logInterface ).createLdapProtocol( variableSpace, meta, binaryAttributes );
+    protocol = new LdapProtocolFactory( logInterface ).createLdapProtocol( bowl, variableSpace, meta, binaryAttributes );
     this.sortingAttributes = new ArrayList<String>();
   }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -148,7 +149,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 
       String realFilename = getRealFilename();
       try {
-        FileObject file = KettleVFS.getFileObject( realFilename, this );
+        FileObject file = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilename, this );
         if ( file.exists() && file.isReadable() ) {
           logDetailed( BaseMessages.getString( PKG, "JobEntryFileExists.File_Exists", realFilename ) );
           result.setResult( true );
@@ -185,7 +186,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
@@ -209,7 +210,8 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
    * @throws KettleException
    *           in case something goes wrong during the export
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  @Override
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
@@ -220,7 +222,8 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
         // From : ${FOLDER}/../foo/bar.csv
         // To : /home/matt/test/files/foo/bar.csv
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( filename ), space );
+        FileObject fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFileObject( space.environmentSubstitute( filename ), space );
 
         // If the file doesn't exist, forget about this effort too!
         //

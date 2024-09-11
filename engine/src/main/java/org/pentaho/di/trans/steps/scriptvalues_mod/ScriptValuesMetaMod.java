@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,10 +38,12 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
@@ -394,7 +396,8 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     optimizationLevel = OPTIMIZATION_LEVEL_DEFAULT;
   }
 
-  public void getFields( RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
       for ( int i = 0; i < fieldname.length; i++ ) {
@@ -973,7 +976,9 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     try {
       Properties sysprops = System.getProperties();
       String strActPath = sysprops.getProperty( "user.dir" );
-      Document dom = XMLHandler.loadXMLFile( strActPath + "/plugins/steps/ScriptValues_mod/plugin.xml" );
+      // user directory should always be local. Use DefaultBowl
+      Document dom = XMLHandler.loadXMLFile( DefaultBowl.getInstance(),
+                                             strActPath + "/plugins/steps/ScriptValues_mod/plugin.xml" );
       Node stepnode = dom.getDocumentElement();
       Node libraries = XMLHandler.getSubNode( stepnode, "js_libraries" );
       int nbOfLibs = XMLHandler.countNodes( libraries, "js_lib" );

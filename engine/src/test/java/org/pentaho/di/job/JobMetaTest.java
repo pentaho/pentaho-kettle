@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
@@ -216,8 +217,8 @@ public class JobMetaTest {
     };
     jobMeta.setRepositoryDirectory( directoryJob );
     jobMeta.setName( JOB_META_NAME );
-    jobMeta.exportResources( null, new HashMap<String, ResourceDefinition>( 4 ), mock( ResourceNamingInterface.class ),
-        null, null );
+    jobMeta.exportResources( DefaultBowl.getInstance(), null, new HashMap<String, ResourceDefinition>( 4 ),
+      mock( ResourceNamingInterface.class ), null, null );
 
     // assert
     verify( jobMetaSpy ).setRepositoryDirectory( directoryJob );

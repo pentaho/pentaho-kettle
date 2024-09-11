@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.avro.input;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 
@@ -86,4 +87,6 @@ public interface IPentahoAvroInputFormat extends IPentahoInputFormat {
   void setSchemaFieldName( String schemaFieldName );
 
   void setUseFieldAsInputStream( boolean useFieldAsInputStream );
+
+  void setBowl( Bowl bowl );
 }

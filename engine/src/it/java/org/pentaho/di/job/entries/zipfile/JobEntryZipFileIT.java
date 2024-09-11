@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -71,7 +71,7 @@ public class JobEntryZipFileIT {
               entry.processRowFile(new Job(), result, zipPath, null, null, tempFile.getAbsolutePath(), null, false));
       boolean isTrue = true;
 
-      FileObject zip = KettleVFS.getFileObject(zipPath);
+      FileObject zip = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject(zipPath);
       assertTrue("Zip archive should be created", zip.exists());
 
       ByteArrayOutputStream os = new ByteArrayOutputStream();

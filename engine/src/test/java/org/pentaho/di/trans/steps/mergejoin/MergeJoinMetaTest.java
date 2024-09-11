@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016 - 2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.mergejoin;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -131,7 +132,7 @@ public class MergeJoinMetaTest {
 
     StepMeta stepMeta = new StepMeta( "Merge", meta );
 
-    meta.getFields( outputRowMeta, "Merge Join",
+    meta.getFields( DefaultBowl.getInstance(), outputRowMeta, "Merge Join",
       new RowMetaInterface[]{ inputRow1, inputRow2 }, stepMeta, new Variables(), null, null );
 
     assertNotNull( outputRowMeta );

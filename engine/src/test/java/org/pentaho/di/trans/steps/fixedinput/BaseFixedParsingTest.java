@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.fixedinput;
 
 import org.junit.Before;
 import org.junit.Ignore;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.Variables;
@@ -63,7 +64,8 @@ public class BaseFixedParsingTest extends BaseParsingTest<FixedInputMeta, FixedI
    */
   protected void setFields( FixedFileInputField... fields ) throws Exception {
     meta.setFieldDefinition( fields );
-    meta.getFields( data.outputRowMeta, meta.getName(), null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), data.outputRowMeta, meta.getName(), null, null, new Variables(), null,
+      null );
     data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
   }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.io.OutputStreamWriter;
 import junit.framework.TestCase;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 
 public class VfsCoreTest extends TestCase {
@@ -40,7 +41,7 @@ public class VfsCoreTest extends TestCase {
     // Write a text
     //
     FileObject tempFile = KettleVFS.createTempFile( "prefix", "suffix", tmpDir );
-    OutputStream outputStream = KettleVFS.getOutputStream( tempFile, false );
+    OutputStream outputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getOutputStream( tempFile, false );
     OutputStreamWriter writer = new OutputStreamWriter( outputStream );
     writer.write( content );
     writer.close();

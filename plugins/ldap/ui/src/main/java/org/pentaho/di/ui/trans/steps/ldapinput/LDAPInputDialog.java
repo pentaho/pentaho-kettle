@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1233,7 +1233,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
       getInfo( meta );
 
       // Defined a LDAP connection
-      connection = new LDAPConnection( log, transMeta, meta, null );
+      connection = new LDAPConnection( transMeta.getBowl(), log, transMeta, meta, null );
 
       // connect...
       if ( wusingAuthentication.getSelection() ) {
@@ -1274,7 +1274,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
       wFields.removeAll();
 
       // Defined a LDAP connection
-      connection = new LDAPConnection( log, transMeta, meta, null );
+      connection = new LDAPConnection( transMeta.getBowl(), log, transMeta, meta, null );
 
       // connect ...
       if ( meta.UseAuthentication() ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -435,7 +435,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
       }
 
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields(
+      meta.getFields( getTransMeta().getBowl(),
         data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this, repository,
         metaStore );
 

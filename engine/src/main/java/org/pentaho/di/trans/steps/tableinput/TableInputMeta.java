@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.tableinput;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -208,7 +209,8 @@ public class TableInputMeta extends BaseDatabaseStepMeta implements StepMetaInte
     return new Database( loggingObject, databaseMeta );
   }
 
-  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( databaseMeta == null ) {
       return; // TODO: throw an exception here
@@ -545,7 +547,8 @@ public class TableInputMeta extends BaseDatabaseStepMeta implements StepMetaInte
     // Find the lookupfields...
     RowMetaInterface out = new RowMeta();
     // TODO: this builds, but does it work in all cases.
-    getFields( out, stepMeta.getName(), new RowMetaInterface[] { info }, null, transMeta, repository, metaStore );
+    getFields( transMeta.getBowl(), out, stepMeta.getName(), new RowMetaInterface[] { info }, null, transMeta,
+      repository, metaStore );
 
     if ( out != null ) {
       for ( int i = 0; i < out.size(); i++ ) {

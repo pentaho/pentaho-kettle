@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -42,6 +42,7 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.KettleAuthenticationException;
@@ -364,7 +365,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
 
       // Without a repository it's a filename --> file:///foo/bar/trans.ktr
       //
-      TransMeta transMeta = new TransMeta( trans );
+      // Repository doesn't need bowl-specific VFS. Use DefaultBowl.
+      TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), trans );
       return transMeta;
 
     } else {

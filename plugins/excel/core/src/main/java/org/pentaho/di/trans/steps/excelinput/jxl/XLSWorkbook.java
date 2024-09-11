@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.excelinput.jxl;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.spreadsheet.KSheet;
@@ -45,7 +46,7 @@ public class XLSWorkbook implements KWorkbook {
   private String encoding;
   private InputStream inputStream;
 
-  public XLSWorkbook( String filename, String encoding ) throws KettleException {
+  public XLSWorkbook( Bowl bowl, String filename, String encoding ) throws KettleException {
     this.filename = filename;
     this.encoding = encoding;
 
@@ -54,7 +55,7 @@ public class XLSWorkbook implements KWorkbook {
       ws.setEncoding( encoding );
     }
     try {
-      inputStream = KettleVFS.getInputStream( filename );
+      inputStream = KettleVFS.getInstance( bowl ).getInputStream( filename );
       workbook = Workbook.getWorkbook( inputStream, ws );
     } catch ( Exception e ) {
       throw new KettleException( e );

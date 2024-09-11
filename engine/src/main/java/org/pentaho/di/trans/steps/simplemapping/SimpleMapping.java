@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -245,7 +245,8 @@ public class SimpleMapping extends BaseStep implements StepInterface {
         //
         meta.setRepository( getTransMeta().getRepository() );
         simpleMappingData.mappingTransMeta =
-            SimpleMappingMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this, meta.getMappingParameters().isInheritingAllVariables() );
+            SimpleMappingMeta.loadMappingMeta( getTransMeta().getBowl(), meta, meta.getRepository(),
+              meta.getMetaStore(), this, meta.getMappingParameters().isInheritingAllVariables() );
         if ( simpleMappingData.mappingTransMeta != null ) { // Do we have a mapping at all?
 
           // OK, now prepare the execution of the mapping.

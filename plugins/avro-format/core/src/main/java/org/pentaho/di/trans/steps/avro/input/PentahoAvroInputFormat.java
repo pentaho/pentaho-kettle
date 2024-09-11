@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumReader;
 import org.apache.commons.vfs2.FileExtensionSelector;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Utils;
@@ -57,6 +58,7 @@ public class PentahoAvroInputFormat implements IPentahoAvroInputFormat {
   private Object[] incomingFields = null;
   private boolean isDatum;
   private String schemaFieldName;
+  private Bowl bowl;
 
   private RowMetaInterface incomingRowMeta;
   private RowMetaInterface outputRowMeta;
@@ -74,9 +76,8 @@ public class PentahoAvroInputFormat implements IPentahoAvroInputFormat {
     Schema avroSchema = readAvroSchema();
     int dataFieldIndex = useFieldAsInputStream ? determineStringFieldIndex( inputStreamFieldName ) : -1;
 
-    return new AvroNestedRecordReader( nestedDfs, avroSchema, getFields(), variableSpace, incomingRowMeta,
-      incomingFields,
-      outputRowMeta, fileName, isDataBinaryEncoded, dataFieldIndex, isDatum );
+    return new AvroNestedRecordReader( bowl, nestedDfs, avroSchema, getFields(), variableSpace, incomingRowMeta,
+      incomingFields, outputRowMeta, fileName, isDataBinaryEncoded, dataFieldIndex, isDatum );
 
   }
 
@@ -86,7 +87,8 @@ public class PentahoAvroInputFormat implements IPentahoAvroInputFormat {
       return new Schema.Parser().parse( ( (String) incomingFields[ determineStringFieldIndex( schemaFieldName ) ] ) );
     } else {
       if ( schemaFileName != null && schemaFileName.length() > 0 ) {
-        return new Schema.Parser().parse( KettleVFS.getInputStream( schemaFileName, variableSpace ) );
+        return new Schema.Parser().parse( KettleVFS.getInstance( bowl )
+                                          .getInputStream( schemaFileName, variableSpace ) );
       } else if ( ( fileName != null && fileName.length() > 0 ) || ( useFieldAsInputStream && inputStream != null ) ) {
         Schema schema;
         DataFileStream<GenericRecord> dataFileStream = createDataFileStream();
@@ -160,6 +162,11 @@ public class PentahoAvroInputFormat implements IPentahoAvroInputFormat {
     //do nothing 
   }
 
+  @Override
+  public void setBowl( Bowl bowl ) {
+    this.bowl = bowl;
+  }
+
   private DataFileStream<GenericRecord> createDataFileStream() throws Exception {
     DatumReader<GenericRecord> datumReader;
     if ( useFieldAsInputStream ) {
@@ -168,12 +175,13 @@ public class PentahoAvroInputFormat implements IPentahoAvroInputFormat {
       return new DataFileStream<GenericRecord>( inputStream, datumReader );
     }
     if ( schemaFileName != null && schemaFileName.length() > 0 ) {
-      Schema schema = new Schema.Parser().parse( KettleVFS.getInputStream( schemaFileName, variableSpace ) );
+      Schema schema = new Schema.Parser().parse( KettleVFS.getInstance( bowl )
+                                                 .getInputStream( schemaFileName, variableSpace ) );
       datumReader = new GenericDatumReader<GenericRecord>( schema );
     } else {
       datumReader = new GenericDatumReader<GenericRecord>();
     }
-    FileObject fileObject = KettleVFS.getFileObject( fileName, variableSpace );
+    FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( fileName, variableSpace );
     if ( fileObject.isFile() ) {
       this.inputStream = fileObject.getContent().getInputStream();
       return new DataFileStream<>( inputStream, datumReader );
@@ -195,12 +203,13 @@ public class PentahoAvroInputFormat implements IPentahoAvroInputFormat {
       return new DataFileStream<Object>( inputStream, datumReader );
     }
     if ( schemaFileName != null && schemaFileName.length() > 0 ) {
-      Schema schema = new Schema.Parser().parse( KettleVFS.getInputStream( schemaFileName, variableSpace ) );
+      Schema schema = new Schema.Parser().parse( KettleVFS.getInstance( bowl )
+                                                 .getInputStream( schemaFileName, variableSpace ) );
       datumReader = new GenericDatumReader<Object>( schema );
     } else {
       datumReader = new GenericDatumReader<Object>();
     }
-    FileObject fileObject = KettleVFS.getFileObject( fileName, variableSpace );
+    FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( fileName, variableSpace );
     if ( fileObject.isFile() ) {
       this.inputStream = fileObject.getContent().getInputStream();
       return new DataFileStream<>( inputStream, datumReader );

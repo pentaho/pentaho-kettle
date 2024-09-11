@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -235,7 +235,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
       String realFilename = environmentSubstitute( filename );
       if ( !Utils.isEmpty( realFilename ) ) {
-        try ( InputStream is = KettleVFS.getInputStream( realFilename );
+        try ( InputStream is = KettleVFS.getInstance( parentJobMeta.getBowl() ).getInputStream( realFilename );
             // for UTF8 properties files
             InputStreamReader isr = new InputStreamReader( is, "UTF-8" );
             BufferedReader reader = new BufferedReader( isr );
@@ -457,7 +457,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "variableName", remarks,
+    boolean res = JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "variableName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res == false ) {
@@ -469,7 +469,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < variableName.length; i++ ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "variableName[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "variableName[" + i + "]", remarks, ctx );
     }
   }
 

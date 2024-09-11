@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -281,7 +281,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         parentJobMeta.getNamedClusterEmbedManager()
           .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
       }
-      filefolder = KettleVFS.getFileObject( realFilefoldername, this );
+      filefolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilefoldername, this );
       if ( filefolder.exists() ) {
         // the file or folder exists
 
@@ -293,8 +293,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
           }
           ResultFile resultFile =
             new ResultFile(
-              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filefolder.toString(), this ), parentJob
-                .getJobname(), toString() );
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                .getFileObject( filefolder.toString(), this ), parentJob.getJobname(), toString() );
           result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
         } else {
           FileObject[] list = filefolder.findFiles( new TextFileSelector( filefolder.toString(), realwildcard ) );
@@ -307,8 +307,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
             }
             ResultFile resultFile =
               new ResultFile(
-                ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( list[i].toString(), this ), parentJob
-                  .getJobname(), toString() );
+                ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                  .getFileObject( list[i].toString(), this ), parentJob.getJobname(), toString() );
             result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
           }
         }
@@ -442,7 +442,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks,
+    boolean res = JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res == false ) {
@@ -454,7 +454,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < arguments.length; i++ ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 

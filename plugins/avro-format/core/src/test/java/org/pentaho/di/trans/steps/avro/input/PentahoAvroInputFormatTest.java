@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.avro.input;
 
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.apache.avro.Schema;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +47,7 @@ public class PentahoAvroInputFormatTest {
   @Before
   public void setUp() throws Exception {
     format = new PentahoAvroInputFormat( );
+    format.setBowl( DefaultBowl.getInstance() );
   }
 
   @Test

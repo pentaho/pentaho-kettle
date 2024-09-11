@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
@@ -181,9 +182,9 @@ public class JobEntryDosToUnix_ConversionIdempotency_Test {
       IOUtils.write( content.getBytes(), os );
     }
 
-    entry.convert( KettleVFS.getFileObject( tmpFilePath ), toUnix );
+    entry.convert( KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( tmpFilePath ), toUnix );
 
-    String converted = KettleVFS.getTextFileContent( tmpFilePath, "UTF-8" );
+    String converted = KettleVFS.getInstance( DefaultBowl.getInstance() ).getTextFileContent( tmpFilePath, "UTF-8" );
     assertEquals( expected, converted );
   }
 }

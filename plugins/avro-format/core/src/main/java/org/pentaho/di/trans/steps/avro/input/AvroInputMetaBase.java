@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,7 @@
 
 package org.pentaho.di.trans.steps.avro.input;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.pentaho.di.trans.steps.avro.AvroSpec;
-import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.trans.steps.avro.AvroTypeConverter;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -36,9 +33,9 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.AliasedFileObject;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -49,12 +46,18 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.avro.AvroSpec;
+import org.pentaho.di.trans.steps.avro.AvroSpec;
+import org.pentaho.di.trans.steps.avro.AvroTypeConverter;
 import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
-import org.w3c.dom.Node;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.vfs2.FileObject;
+import org.w3c.dom.Node;
 
 public abstract class AvroInputMetaBase extends BaseStepMeta implements StepMetaInterface, ResolvableResource {
 
@@ -407,7 +410,7 @@ public abstract class AvroInputMetaBase extends BaseStepMeta implements StepMeta
   }
 
   @Override
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws
     KettleStepException {
     try {
@@ -439,11 +442,12 @@ public abstract class AvroInputMetaBase extends BaseStepMeta implements StepMeta
 
 
   @Override
-  public void resolve() {
+  public void resolve( Bowl bowl ) {
     if ( dataLocation != null && !dataLocation.isEmpty() ) {
       try {
         String realFileName = getParentStepMeta().getParentTransMeta().environmentSubstitute( dataLocation );
-        FileObject fileObject = KettleVFS.getFileObject( realFileName );
+        FileObject fileObject = KettleVFS.getInstance( bowl )
+          .getFileObject( realFileName );
         if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
           dataLocation = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
         }
@@ -455,7 +459,8 @@ public abstract class AvroInputMetaBase extends BaseStepMeta implements StepMeta
     if ( schemaLocation != null && !schemaLocation.isEmpty() ) {
       try {
         String realSchemaFilename = getParentStepMeta().getParentTransMeta().environmentSubstitute( schemaLocation );
-        FileObject fileObject = KettleVFS.getFileObject( realSchemaFilename );
+        FileObject fileObject = KettleVFS.getInstance( bowl )
+          .getFileObject( realSchemaFilename );
         if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
           schemaLocation = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
         }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -155,7 +155,7 @@ public class TextFileOutputSplittingIT {
   }
 
   private static FileObject getFolder() throws FileSystemException, KettleFileException {
-    return KettleVFS.getFileObject( OUTPUT_DIR );
+    return KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( OUTPUT_DIR );
   }
 
   private static void assertSplitFileIsCorrect( FileObject file, String expectedName, String... expectedLines )

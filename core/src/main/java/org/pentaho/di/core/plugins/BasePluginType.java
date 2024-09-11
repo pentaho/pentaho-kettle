@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.Utils;
@@ -432,7 +433,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
     List<FileObject> list = new ArrayList<>();
     try {
-      FileObject folderObject = KettleVFS.getFileObject( folder );
+      FileObject folderObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( folder );
       FileObject[] files = folderObject.findFiles( new FileSelector() {
 
         @Override

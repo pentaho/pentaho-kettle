@@ -134,7 +134,7 @@ public class AvroInputDialog extends BaseAvroStepDialog {
     List<? extends IAvroInputField> defaultFields;
     try {
       defaultFields = AvroInput
-        .getLeafFields( schemaFileName, avroFileName, transMeta );
+        .getLeafFields( transMeta.getBowl(), schemaFileName, avroFileName, transMeta );
       if ( defaultFields != null ) {
         wInputFields.clearAll();
         for ( IAvroInputField field : defaultFields ) {

@@ -153,7 +153,7 @@ public class TextFileInputCSVImportProgressDialogTest {
     reader = new InputStreamReader( new ByteArrayInputStream( fileContent.getBytes( StandardCharsets.UTF_8 ) ) );
     //meta
     when( meta.getInputFields() ).thenReturn( inputFileFields );
-    doCallRealMethod().when( meta ).getFields( any(), any(), any(), any(), any(), any(), any() );
+    doCallRealMethod().when( meta ).getFields( any(), any(), any(), any(), any(), any(), any(), any() );
     setInternalState( meta, "inputFields",  inputFileFields );
     when( meta.hasHeader() ).thenReturn( true );
     when( meta.getNrHeaderLines() ).thenReturn( 1 );

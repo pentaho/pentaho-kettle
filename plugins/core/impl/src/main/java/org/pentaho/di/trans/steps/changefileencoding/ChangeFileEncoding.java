@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -140,7 +140,7 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
           meta.getTargetFilenameField() ) );
       }
 
-      data.sourceFile = KettleVFS.getFileObject( sourceFilename );
+      data.sourceFile = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( sourceFilename );
 
       // Check if source file exists
       if ( !data.sourceFile.exists() ) {
@@ -236,7 +236,8 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       if ( meta.addTargetResultFilenames() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename ),
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL,
+                KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( targetFilename ),
                 getTransMeta().getName(), getStepname() );
         resultFile.setComment( BaseMessages.getString( PKG, "ChangeFileEncoding.Log.FileAddedResult" ) );
         addResultFile( resultFile );

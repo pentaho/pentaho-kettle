@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -112,7 +112,8 @@ public class TeraFast extends AbstractStep implements StepInterface {
     final StringBuilder builder = new StringBuilder();
     try {
       final FileObject fileObject =
-        KettleVFS.getFileObject( environmentSubstitute( this.meta.getFastloadPath().getValue() ) );
+        KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( environmentSubstitute( this.meta.getFastloadPath().getValue() ) );
       final String fastloadExec = KettleVFS.getFilename( fileObject );
       builder.append( fastloadExec );
     } catch ( Exception e ) {
@@ -122,7 +123,8 @@ public class TeraFast extends AbstractStep implements StepInterface {
     if ( StringUtils.isNotBlank( this.meta.getLogFile().getValue() ) ) {
       try {
         FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( this.meta.getLogFile().getValue() ) );
+          KettleVFS.getInstance( getTransMeta().getBowl() )
+            .getFileObject( environmentSubstitute( this.meta.getLogFile().getValue() ) );
         builder.append( " -e " );
         builder.append( "\"" + KettleVFS.getFilename( fileObject ) + "\"" );
       } catch ( Exception e ) {
@@ -465,7 +467,8 @@ public class TeraFast extends AbstractStep implements StepInterface {
    *           ...
    */
   private String resolveFileName( final String fileName ) throws KettleException {
-    final FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( fileName ) );
+    final FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+      .getFileObject( environmentSubstitute( fileName ) );
     return KettleVFS.getFilename( fileObject );
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -201,7 +201,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
         createParentFolder( realFilename );
 
         // Create / open file for writing
-        os = KettleVFS.getOutputStream( realFilename, this, isAppendFile() );
+        os = KettleVFS.getInstance( parentJobMeta.getBowl() ).getOutputStream( realFilename, this, isAppendFile() );
 
         if ( Utils.isEmpty( encoding ) ) {
           if ( isDebug() ) {
@@ -248,7 +248,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
   private void createParentFolder( String realFilename ) throws KettleException {
     FileObject parent = null;
     try {
-      parent = KettleVFS.getFileObject( realFilename, this ).getParent();
+      parent = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilename, this ).getParent();
       if ( !parent.exists() ) {
         if ( isCreateParentFolder() ) {
           if ( isDetailed() ) {
@@ -312,7 +312,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

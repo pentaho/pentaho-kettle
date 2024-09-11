@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 public class ImageUtil {
@@ -139,7 +140,7 @@ public class ImageUtil {
   public static Image getImage( Display display, String location ) {
     // TODO: find other instances of getImage (plugin, steps) and transition them to new model through an laf manager
     try {
-      InputStream is = KettleVFS.getInputStream( location );
+      InputStream is = KettleVFS.getInstance( DefaultBowl.getInstance() ).getInputStream( location );
       Image im = new Image( display, is );
       is.close();
       return im;

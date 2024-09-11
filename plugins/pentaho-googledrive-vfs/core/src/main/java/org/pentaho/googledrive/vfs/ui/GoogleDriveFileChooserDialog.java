@@ -1,5 +1,5 @@
 /*!
-* Copyright (C) 2010-2017 by Hitachi Vantara : http://www.pentaho.com
+* Copyright (C) 2010-2024 by Hitachi Vantara : http://www.pentaho.com
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package org.pentaho.googledrive.vfs.ui;
 
 import org.apache.commons.vfs2.*;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -49,7 +51,7 @@ public class GoogleDriveFileChooserDialog extends CustomVfsUiPanel {
 
   public FileObject resolveFile( String fileUri ) throws FileSystemException {
     try {
-      return KettleVFS.getFileObject( fileUri, getVariableSpace(), getFileSystemOptions() );
+      return KettleVFS.getInstance( getBowl() ).getFileObject( fileUri, getVariableSpace(), getFileSystemOptions() );
     } catch ( KettleFileException e ) {
       throw new FileSystemException( e );
     }
@@ -69,4 +71,15 @@ public class GoogleDriveFileChooserDialog extends CustomVfsUiPanel {
       return new Variables();
     }
   }
+
+  private Bowl getBowl() {
+    if ( Spoon.getInstance().getActiveTransformation() != null ) {
+      return Spoon.getInstance().getActiveTransformation().getBowl();
+    } else if ( Spoon.getInstance().getActiveJob() != null ) {
+      return Spoon.getInstance().getActiveJob().getBowl();
+    } else {
+      return DefaultBowl.getInstance();
+    }
+  }
 }
+

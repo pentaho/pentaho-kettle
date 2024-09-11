@@ -33,6 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -123,7 +124,8 @@ public class LoadFileInputTest {
 
     stepMetaInterface = spy( new LoadFileInputMeta() );
     stepInputFiles = new FileInputList();
-    Mockito.doReturn( stepInputFiles ).when( stepMetaInterface ).getFiles( any( VariableSpace.class ) );
+    Mockito.doReturn( stepInputFiles ).when( stepMetaInterface )
+      .getFiles( any( Bowl.class), any( VariableSpace.class ) );
     String stepId = PluginRegistry.getInstance().getPluginId( StepPluginType.class, stepMetaInterface );
     StepMeta stepMeta = new StepMeta( stepId, "Load File Input", stepMetaInterface );
     transMeta.addStep( stepMeta );

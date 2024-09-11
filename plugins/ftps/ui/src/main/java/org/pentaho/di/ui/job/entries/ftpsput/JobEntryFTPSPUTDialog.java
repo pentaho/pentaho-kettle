@@ -873,7 +873,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
 
       if ( connection == null ) { // Create ftp client to host:port ...
         connection =
-          new FTPSConnection(
+          new FTPSConnection( jobMeta.getBowl(),
             FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername, realPort,
             realUsername, realPassword );
 

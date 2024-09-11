@@ -239,7 +239,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     if ( isFailIfFileNotExists() ) {
       FileExistsValidator.putFailIfDoesNotExist( ctx, true );
     }
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks, ctx );
   }
 
   public static void main( String[] args ) {

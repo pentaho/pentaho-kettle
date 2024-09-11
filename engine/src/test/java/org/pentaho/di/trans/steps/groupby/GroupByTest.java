@@ -29,6 +29,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -147,7 +148,7 @@ public class GroupByTest  {
       GroupByMeta.TYPE_GROUP_CONCAT_COMMA,
       GroupByMeta.TYPE_GROUP_CONCAT_STRING } );
 
-    meta.getFields( outputFields, "Group By Step", null, null,
+    meta.getFields( DefaultBowl.getInstance(), outputFields, "Group By Step", null, null,
       null, null, null );
 
     assertEquals( outputFields.getValueMetaList().size(), 9 );

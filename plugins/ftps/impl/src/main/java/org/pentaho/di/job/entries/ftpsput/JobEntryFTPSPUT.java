@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -502,7 +502,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       // Create FTPS client to host:port ...
       int realPort = Const.toInt( environmentSubstitute( realServerPort ), 0 );
       // Define a new connection
-      connection = new FTPSConnection( getConnectionType(), realServerName, realPort, realUsername, realPassword );
+      connection = new FTPSConnection( parentJobMeta.getBowl(), getConnectionType(), realServerName, realPort,
+                                       realUsername, realPassword );
 
       this.buildFTPSConnection( connection );
 
@@ -633,16 +634,16 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate(
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(),
       this, "localDirectory", remarks, AndValidator.putValidators(
           JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "userName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "password", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "serverPort", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverPort", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 

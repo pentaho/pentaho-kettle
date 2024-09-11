@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.SwtUniversalImageBitmap;
@@ -274,7 +275,7 @@ public class SwtSvgImageUtil {
    */
   private static SwtUniversalImage loadFromSimpleVFS( Display display, String location ) {
     try {
-      InputStream s = KettleVFS.getInputStream( location );
+      InputStream s = KettleVFS.getInstance( DefaultBowl.getInstance() ).getInputStream( location );
       if ( s == null ) {
         return null;
       }

@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -246,7 +247,8 @@ public class JmsProducerTest {
 
   @Test
   public void jmsContextClosedOnStop() throws Exception {
-    TransMeta transMeta = new TransMeta( getClass().getResource( "/jms-generate-produce.ktr" ).getPath() );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "/jms-generate-produce.ktr" ).getPath() );
     Trans trans = new Trans( transMeta );
     trans.prepareExecution( new String[] {} );
 

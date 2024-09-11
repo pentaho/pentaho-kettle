@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.attributes.AttributesUtil;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginLoaderException;
@@ -981,13 +982,13 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   @Override
   @SuppressWarnings( "deprecation" )
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
         throws KettleException {
 
     // Compatibility with previous release...
     //
-    String resources = stepMetaInterface.exportResources( space, definitions, resourceNamingInterface, repository );
+    String resources = stepMetaInterface.exportResources( bowl, space, definitions, resourceNamingInterface, repository );
     if ( resources != null ) {
       return resources;
     }
@@ -996,7 +997,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     // These can in turn add anything to the map in terms of resources, etc.
     // Even reference files, etc. For now it's just XML probably...
     //
-    return stepMetaInterface.exportResources( space, definitions, resourceNamingInterface, repository, metaStore );
+    return stepMetaInterface.exportResources( bowl, space, definitions, resourceNamingInterface, repository, metaStore );
   }
 
   /**

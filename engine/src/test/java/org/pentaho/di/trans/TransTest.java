@@ -31,6 +31,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
@@ -180,7 +181,7 @@ public class TransTest {
         nullable( ProgressMonitorListener.class ), anyBoolean(), nullable( String.class ) ) ).thenReturn( meta );
     when( rep.findDirectory( anyString() ) ).thenReturn( repInt );
 
-    Trans trans = new Trans( meta, rep, "junit", "junitDir", "fileName" );
+    Trans trans = new Trans( DefaultBowl.getInstance(), meta, rep, "junit", "junitDir", "fileName" );
     assertEquals( "Log channel General assigned", LogChannel.GENERAL.getLogChannelId(), trans.log
       .getLogChannelId() );
   }
@@ -235,13 +236,14 @@ public class TransTest {
     when( meta.listVariables() ).thenReturn( new String[] {} );
     when( meta.listParameters() ).thenReturn( new String[] { testParam } );
     when( meta.getParameterValue( testParam ) ).thenReturn( testParamValue );
-    FileObject ktr = KettleVFS.createTempFile( "parameters", ".ktr", KettleVFS.TEMP_DIR );
+    FileObject ktr = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .createTempFile( "parameters", ".ktr", KettleVFS.TEMP_DIR );
     try ( OutputStream outputStream = ktr.getContent().getOutputStream() ) {
       InputStream inputStream = new ByteArrayInputStream( "<transformation></transformation>".getBytes() );
       IOUtils.copy( inputStream, outputStream );
     }
 
-    Trans trans = new Trans( meta, null, null, null, ktr.getURL().toURI().toString() );
+    Trans trans = new Trans( DefaultBowl.getInstance(), meta, null, null, null, ktr.getURL().toURI().toString() );
 
     assertEquals( testParamValue, trans.getParameterValue( testParam ) );
   }

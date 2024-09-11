@@ -19,6 +19,7 @@ package org.pentaho.di.shared;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Test;
 import org.junit.BeforeClass;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -55,7 +56,7 @@ public class VfsSharedObjectsIOTest {
   @Test
   public void testGetSharedObjects()  throws Exception {
     // Prepare the test shared.xml
-    FileObject projectDirectory = KettleVFS.getFileObject( ROOT_FILE_PATH );
+    FileObject projectDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( ROOT_FILE_PATH );
     projectDirectory.createFolder();
 
     FileObject sharedFile = projectDirectory.resolveFile( SHARED_FILE );
@@ -88,7 +89,7 @@ public class VfsSharedObjectsIOTest {
 
   @Test
   public void testSaveSharedObject() throws Exception {
-    FileObject projectDirectory = KettleVFS.getFileObject( ROOT_FILE_PATH );
+    FileObject projectDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( ROOT_FILE_PATH );
     projectDirectory.createFolder();
 
     SharedObjectsIO sharedObjectsIO = new VfsSharedObjectsIO( ROOT_FILE_PATH );

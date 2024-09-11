@@ -342,7 +342,8 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
       saved = spoonInstance.saveXMLFile( newSubTransMeta, false );
       if ( saved ) {
         try {
-          path = getRelativePath( KettleVFS.getFileObject( newSubTransMeta.getFilename() ).toString() );
+          path = getRelativePath( KettleVFS.getInstance( transMeta.getBowl() )
+                                  .getFileObject( newSubTransMeta.getFilename() ).toString() );
         } catch ( KettleFileException e ) {
           new ErrorDialog( shell, BaseMessages.getString( PKG, "BaseStreamingDialog.File.Save.Fail.Title" ),
             BaseMessages.getString(
@@ -593,7 +594,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   private TransMeta getMappingMeta() throws KettleException {
     BaseStreamStepMeta baseMeta = (BaseStreamStepMeta) meta.clone();
     updateMeta( baseMeta );
-    return  loadMappingMeta( baseMeta, getRepository(), getMetaStore(), transMeta );
+    return  loadMappingMeta( transMeta.getBowl(), baseMeta, getRepository(), getMetaStore(), transMeta );
   }
 
   private Image getImage() {
@@ -671,8 +672,8 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   protected String getRelativePath( String filePath ) {
     String parentFolder = null;
     try {
-      parentFolder =
-        KettleVFS.getFileObject( transMeta.environmentSubstitute( transMeta.getFilename() ) ).getParent().toString();
+      parentFolder = KettleVFS.getInstance( transMeta.getBowl() )
+        .getFileObject( transMeta.environmentSubstitute( transMeta.getFilename() ) ).getParent().toString();
     } catch ( Exception e ) {
       // Take no action
     }

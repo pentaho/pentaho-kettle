@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -186,7 +186,7 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     int nrfields = meta.getInputFields().length;
 
     RowMetaInterface outputRowMeta = new RowMeta();
-    meta.getFields( outputRowMeta, null, null, null, transMeta, null, null );
+    meta.getFields( transMeta.getBowl(), outputRowMeta, null, null, null, transMeta, null, null );
 
     // Remove the storage meta-data (don't go for lazy conversion during scan)
     for ( ValueMetaInterface valueMeta : outputRowMeta.getValueMetaList() ) {
@@ -307,7 +307,7 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
         debug = "convert line #" + linenr + " to row";
       }
       RowMetaInterface rowMeta = new RowMeta();
-      meta.getFields( rowMeta, "stepname", null, null, transMeta, null, null );
+      meta.getFields( transMeta.getBowl(), rowMeta, "stepname", null, null, transMeta, null, null );
       // Remove the storage meta-data (don't go for lazy conversion during scan)
       for ( ValueMetaInterface valueMeta : rowMeta.getValueMetaList() ) {
         valueMeta.setStorageMetadata( null );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.core.vfs;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.vfs.ui.VfsResolver;
 
@@ -32,10 +33,17 @@ import org.pentaho.vfs.ui.VfsResolver;
  */
 public class KettleVfsDelegatingResolver implements VfsResolver {
 
+  private Bowl bowl;
+
+  public KettleVfsDelegatingResolver( Bowl bowl ) {
+    this.bowl = bowl;
+  }
+
+
   @Override
   public FileObject resolveFile( String vfsUrl ) {
     try {
-      return KettleVFS.getFileObject( vfsUrl );
+      return KettleVFS.getInstance( bowl ).getFileObject( vfsUrl );
     } catch ( KettleFileException e ) {
       throw new RuntimeException( e );
     }
@@ -44,7 +52,7 @@ public class KettleVfsDelegatingResolver implements VfsResolver {
   @Override
   public FileObject resolveFile( String vfsUrl, FileSystemOptions fsOptions ) {
     try {
-      return KettleVFS.getFileObject( vfsUrl, fsOptions );
+      return KettleVFS.getInstance( bowl ).getFileObject( vfsUrl, fsOptions );
     } catch ( KettleFileException e ) {
       throw new RuntimeException( e );
     }

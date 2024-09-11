@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -278,7 +280,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void getFields( RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldname.length; i++ ) {
       if ( !Utils.isEmpty( fieldname[i] ) ) {
@@ -809,7 +812,9 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       Properties sysprops = System.getProperties();
       String strActPath = sysprops.getProperty( "user.dir" );
-      Document dom = XMLHandler.loadXMLFile( strActPath + "/plugins/steps/ScriptValues_mod/plugin.xml" );
+      // user directory should always be local. Use DefaultBowl
+      Document dom = XMLHandler.loadXMLFile( DefaultBowl.getInstance(),
+                                             strActPath + "/plugins/steps/ScriptValues_mod/plugin.xml" );
       Node stepnode = dom.getDocumentElement();
       Node libraries = XMLHandler.getSubNode( stepnode, "js_libraries" );
       int nbOfLibs = XMLHandler.countNodes( libraries, "js_lib" );

@@ -28,6 +28,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -77,6 +79,8 @@ public class ExcelInputStepAnalyzerTest extends ClonableStepAnalyzerTest {
   public void setUp() throws Exception {
     lenient().when( mockNamespace.getParentNamespace() ).thenReturn( mockNamespace );
     descriptor = new MetaverseComponentDescriptor( "test", DictionaryConst.NODE_TYPE_TRANS_STEP, mockNamespace );
+    lenient().when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    lenient().when( excelInput.getTransMeta() ).thenReturn( transMeta );
     analyzer = spy( new ExcelInputStepAnalyzer() );
     analyzer.setDescriptor( descriptor );
     analyzer.setObjectFactory( MetaverseTestUtils.getMetaverseObjectFactory() );
@@ -155,10 +159,10 @@ public class ExcelInputStepAnalyzerTest extends ClonableStepAnalyzerTest {
     lenient().when( meta.getFileName() ).thenReturn( null );
     when( meta.isAcceptingFilenames() ).thenReturn( false );
     String[] filePaths = { "/path/to/file1", "/another/path/to/file2" };
-    when( meta.getFilePaths( Mockito.any( VariableSpace.class ) ) ).thenReturn( filePaths );
+    when( meta.getFilePaths( Mockito.any( Bowl.class), Mockito.any( VariableSpace.class ) ) ).thenReturn( filePaths );
 
     assertFalse( consumer.isDataDriven( meta ) );
-    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( meta );
+    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta );
     assertEquals( 2, resources.size() );
   }
 
@@ -167,7 +171,7 @@ public class ExcelInputStepAnalyzerTest extends ClonableStepAnalyzerTest {
     when( meta.isAcceptingFilenames() ).thenReturn( true );
 
     assertTrue( consumer.isDataDriven( meta ) );
-    assertTrue( consumer.getResourcesFromMeta( meta ).isEmpty() );
+    assertTrue( consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta ).isEmpty() );
     when( rmi.getString( Mockito.any( Object[].class ), Mockito.any(), Mockito.any() ) )
       .thenReturn( "/path/to/row/file" );
     when( excelInput.getStepMetaInterface() ).thenReturn( meta );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -183,13 +183,13 @@ public class CubeOutput extends BaseStep implements StepInterface {
         // Add this to the result file names...
         ResultFile resultFile =
           new ResultFile(
-            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ), getTransMeta()
-              .getName(), getStepname() );
+            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( filename, getTransMeta() ), getTransMeta().getName(), getStepname() );
         resultFile.setComment( "This file was created with a cube file output step" );
         addResultFile( resultFile );
       }
 
-      data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), false );
+      data.fos = KettleVFS.getInstance( getTransMeta().getBowl() ).getOutputStream( filename, getTransMeta(), false );
       data.zip = new GZIPOutputStream( data.fos );
       data.dos = new DataOutputStream( data.zip );
     } catch ( Exception e ) {

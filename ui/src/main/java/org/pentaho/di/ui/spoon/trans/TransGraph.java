@@ -4495,7 +4495,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       } else {
         StepMetaInterface meta = stepMeta.getStepMetaInterface();
         if ( !Utils.isEmpty( meta.getReferencedObjectDescriptions() ) ) {
-          referencedMeta = meta.loadReferencedObject( index, spoon.rep, spoon.getMetaStore(), transMeta );
+          referencedMeta = meta.loadReferencedObject( transMeta.getBowl(), index, spoon.rep, spoon.getMetaStore(),
+            transMeta );
         }
       }
       if ( referencedMeta == null ) {
@@ -5064,7 +5065,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   private Trans createLegacyTrans() {
     try {
-      return new Trans( transMeta, spoon.rep, transMeta.getName(),
+      return new Trans( transMeta.getBowl(), transMeta, spoon.rep, transMeta.getName(),
         transMeta.getRepositoryDirectory().getPath(),
         transMeta.getFilename(), transMeta);
     } catch ( KettleException e ) {

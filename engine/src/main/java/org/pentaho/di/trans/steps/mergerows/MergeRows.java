@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -144,11 +144,11 @@ public class MergeRows extends BaseStep implements StepInterface {
     if ( data.outputRowMeta == null ) {
       data.outputRowMeta = new RowMeta();
       if ( data.one != null ) {
-        meta.getFields(
+        meta.getFields( getTransMeta().getBowl(),
           data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.oneRowSet.getRowMeta() }, null, this,
           repository, metaStore );
       } else {
-        meta.getFields(
+        meta.getFields( getTransMeta().getBowl(),
           data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.twoRowSet.getRowMeta() }, null, this,
           repository, metaStore );
       }

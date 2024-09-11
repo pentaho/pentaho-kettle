@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -122,20 +123,20 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   }
 
   @Deprecated
-  public void getFieldsModifyInput( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-                                    VariableSpace space ) throws KettleStepException {
-    getFieldsModifyInput( row, name, info, nextStep, space, null, null );
+  public void getFieldsModifyInput( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info,
+                                    StepMeta nextStep, VariableSpace space ) throws KettleStepException {
+    getFieldsModifyInput( bowl, row, name, info, nextStep, space, null, null );
   }
 
-  public void getFieldsModifyInput( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-                                    VariableSpace space, Repository repository, IMetaStore metaStore )
+  public void getFieldsModifyInput( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info,
+                                    StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore )
     throws KettleStepException {
     // the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
-    super.getFields( row, name, info, nextStep, space, repository, metaStore );
+    super.getFields( bowl, row, name, info, nextStep, space, repository, metaStore );
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // do not call the super class from TextFileOutputMeta since it modifies the source meta data
     // see getFieldsModifyInput() instead
@@ -326,7 +327,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
    * @return Always <code>null</code>
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
                                  ResourceNamingInterface resourceNamingInterface, Repository repository,
                                  IMetaStore metaStore )
     throws KettleException {

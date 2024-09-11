@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.base.MetaFileLoaderImpl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -116,7 +117,7 @@ public class StepWithMappingMetaTest {
     } ).when( rep ).loadTransformation( anyString(), nullable( RepositoryDirectoryInterface.class ),
       nullable( ProgressMonitorListener.class ), anyBoolean(), nullable( String.class ) );
 
-    StepWithMappingMeta.loadMappingMeta( mappingMetaMock, rep, null, variables, true );
+    StepWithMappingMeta.loadMappingMeta( DefaultBowl.getInstance(), mappingMetaMock, rep, null, variables, true );
   }
 
   @Test
@@ -139,12 +140,13 @@ public class StepWithMappingMetaTest {
     } );
     String testName = "test";
     try ( MockedConstruction<MetaFileLoaderImpl> mockedConstruction =
-            mockConstruction( MetaFileLoaderImpl.class, ( m,c ) -> when( m.getMetaForStep( any(), any(), any() ) ).thenReturn( transMeta ) ) ) {
+            mockConstruction( MetaFileLoaderImpl.class, ( m,c ) -> when( m.getMetaForStep( any(), any(), any(), any() ) )
+                              .thenReturn( transMeta ) ) ) {
 
-      when( transMeta.exportResources( any(), any(), nullable( ResourceNamingInterface.class ),
+      when( transMeta.exportResources( any(), any(), any(), nullable( ResourceNamingInterface.class ),
         nullable( Repository.class ), nullable( IMetaStore.class ) ) ).thenReturn( testName );
 
-      stepWithMappingMeta.exportResources( null, null, null, null, null );
+      stepWithMappingMeta.exportResources( null, null, null, null, null, null );
       verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
       verify( stepWithMappingMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     }
@@ -189,7 +191,8 @@ public class StepWithMappingMetaTest {
     child.setVariable( paramOverwrite, childValue );
     Mockito.doReturn( child ).when( rep ).loadTransformation( anyString(), any(), any(), anyBoolean(), any() );
 
-    TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( mappingMetaMock, rep, null, variables, true );
+    TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( DefaultBowl.getInstance(), mappingMetaMock, rep, null,
+      variables, true );
 
     Assert.assertNotNull( transMeta );
 
@@ -226,7 +229,8 @@ public class StepWithMappingMetaTest {
     when( mappingMetaMock.getParentStepMeta() ).thenReturn( stepMeta );
 
     //we will try to load the subtras which was linked at the step metas
-    TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( mappingMetaMock, null, null, variables, true );
+    TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( DefaultBowl.getInstance(), mappingMetaMock, null, null,
+      variables, true );
 
     StringBuilder expected = new StringBuilder( parentFolder.toUri().toString() );
     /**
@@ -371,7 +375,8 @@ public class StepWithMappingMetaTest {
     Mockito.doReturn( new TransMeta() ).when( rep )
       .loadTransformation( anyString(), any(), any(), anyBoolean(), any() );
 
-    TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( mappingMetaMock, rep, null, parent, true );
+    TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( DefaultBowl.getInstance(), mappingMetaMock, rep, null,
+      parent, true );
 
     Assert.assertNotNull( transMeta );
     Mockito.verify( rep, Mockito.times( 1 ) ).findDirectory( Mockito.eq( transDirectory ) );

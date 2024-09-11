@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -220,7 +220,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "tablename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

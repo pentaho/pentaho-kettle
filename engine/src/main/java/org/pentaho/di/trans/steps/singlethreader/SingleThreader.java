@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -260,7 +260,8 @@ public class SingleThreader extends BaseStep implements StepInterface {
         // Pass the repository down to the metadata object...
         //
         meta.setRepository( getTransMeta().getRepository() );
-        singleThreaderData.mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta( meta, meta.getRepository(), this, meta.isPassingAllParameters() );
+        singleThreaderData.mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta( getTransMeta().getBowl(),
+          meta, meta.getRepository(), this, meta.isPassingAllParameters() );
         if ( singleThreaderData.mappingTransMeta != null ) { // Do we have a mapping at all?
 
           // Validate the inject and retrieve step names

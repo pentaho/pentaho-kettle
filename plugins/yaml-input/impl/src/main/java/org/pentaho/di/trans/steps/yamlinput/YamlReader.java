@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
@@ -76,8 +77,9 @@ public class YamlReader {
   private boolean useMap;
 
   private Yaml yaml;
+  private Bowl bowl;
 
-  public YamlReader() {
+  public YamlReader( Bowl bowl ) {
     this.filename = null;
     this.string = null;
     this.file = null;
@@ -85,6 +87,7 @@ public class YamlReader {
     this.useMap = true;
     this.dataList = null;
     this.yaml = new Yaml();
+    this.bowl = bowl;
   }
 
   public void loadFile( FileObject file ) throws Exception {
@@ -95,7 +98,7 @@ public class YamlReader {
 
   public void loadFile( String filename ) throws Exception {
     this.filename = filename;
-    this.file = KettleVFS.getFileObject( filename );
+    this.file = KettleVFS.getInstance( bowl ).getFileObject( filename );
 
     InputStream is = null;
     try {

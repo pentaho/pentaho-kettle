@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -647,7 +647,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
       String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
       FileObject file = null;
       try {
-        file = KettleVFS.getFileObject( filename );
+        file = KettleVFS.getInstance( jobMeta.getBowl() ).getFileObject( filename );
         // Set file extension ..
         wLogext.setText( file.getName().getExtension() );
         // Set filename without extension ...

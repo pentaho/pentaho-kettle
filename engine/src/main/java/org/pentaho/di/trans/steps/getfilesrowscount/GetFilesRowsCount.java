@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -220,7 +220,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
 
           data.inputRowMeta = getInputRowMeta();
           data.outputRowMeta = data.inputRowMeta.clone();
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+          meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+            metaStore );
 
           // Get total previous fields
           data.totalpreviousfields = data.inputRowMeta.size();
@@ -251,7 +252,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
             .setOutputFilenameField(), filename ) );
         }
 
-        data.file = KettleVFS.getFileObject( filename, getTransMeta() );
+        data.file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( filename, getTransMeta() );
 
         // Init Row number
         if ( meta.isFileField() ) {
@@ -347,7 +348,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
       }
 
       if ( !meta.isFileField() ) {
-        data.files = meta.getFiles( this );
+        data.files = meta.getFiles( getTransMeta().getBowl(), this );
         if ( data.files == null || data.files.nrOfFiles() == 0 ) {
           logError( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.NoFiles" ) );
           return false;
@@ -355,9 +356,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
         try {
           // Create the output row meta-data
           data.outputRowMeta = new RowMeta();
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                        // metadata
-                                                                                                        // populated
+          meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+            metaStore ); // get the metadata populated
 
         } catch ( Exception e ) {
           logError( "Error initializing step: " + e.toString() );

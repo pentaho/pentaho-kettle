@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.metainject;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
@@ -58,8 +59,9 @@ public class RepositoryExporterExtension implements ExtensionPointInterface {
       if ( metaInjectMeta.getSpecificationMethod() == ObjectLocationSpecificationMethod.FILENAME ) {
         try {
           TransMeta meta =
-              MetaInjectMeta.loadTransformationMeta( metaInjectMeta, fileRep, fileRep.metaStore, transMeta );
-          FileObject fileObject = KettleVFS.getFileObject( meta.getFilename() );
+              MetaInjectMeta.loadTransformationMeta( transMeta.getBowl(), metaInjectMeta, fileRep, fileRep.metaStore,
+                transMeta );
+          FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( meta.getFilename() );
           metaInjectMeta.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
           metaInjectMeta.setFileName( null );
           metaInjectMeta.setTransName( meta.getName() );

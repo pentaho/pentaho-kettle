@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -564,7 +564,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
           if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals( meta.getLoadMethod() ) ) {
             execute( meta, false );
           }
-          output.open( this, sqlldrProcess );
+          output.open( getTransMeta().getBowl(), this, sqlldrProcess );
         }
         output.writeLine( getInputRowMeta(), r );
       }
@@ -686,6 +686,6 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
   @VisibleForTesting
   FileObject getFileObject( String vfsFilename, VariableSpace space ) throws KettleFileException {
-    return KettleVFS.getFileObject( environmentSubstitute( vfsFilename ), space );
+    return KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( environmentSubstitute( vfsFilename ), space );
   }
 }

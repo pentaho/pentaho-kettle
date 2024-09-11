@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLParserFactoryProducer;
@@ -101,11 +102,11 @@ public class LoopNodesImportProgressDialog {
     }
   }
 
-  public String[] open() {
+  public String[] open( Bowl bowl ) {
     IRunnableWithProgress op = new IRunnableWithProgress() {
       public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException {
         try {
-          Xpaths = doScan( monitor );
+          Xpaths = doScan( bowl, monitor );
         } catch ( Exception e ) {
           e.printStackTrace();
           throw new InvocationTargetException( e, BaseMessages.getString( PKG,
@@ -131,7 +132,7 @@ public class LoopNodesImportProgressDialog {
   }
 
   @SuppressWarnings( "unchecked" )
-  private String[] doScan( IProgressMonitor monitor ) throws Exception {
+  private String[] doScan( Bowl bowl, IProgressMonitor monitor ) throws Exception {
     monitor.beginTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ScanningFile",
         filename ), 1 );
 
@@ -158,7 +159,7 @@ public class LoopNodesImportProgressDialog {
     try {
       Document document = null;
       if ( !Utils.isEmpty( filename ) ) {
-        is = KettleVFS.getInputStream( filename );
+        is = KettleVFS.getInstance( bowl ).getInputStream( filename );
         document = reader.read( is, encoding );
       } else {
         if ( !Utils.isEmpty( xml ) ) {

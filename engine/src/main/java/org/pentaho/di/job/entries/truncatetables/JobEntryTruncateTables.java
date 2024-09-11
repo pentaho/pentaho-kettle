@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -338,7 +338,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks,
+    boolean res = JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res == false ) {
@@ -351,7 +351,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
         JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < arguments.length; i++ ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 

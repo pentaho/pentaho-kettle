@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -92,7 +92,8 @@ public class XBaseInput extends BaseStep implements StepInterface {
           }
           try {
             String filename = fileRowMeta.getString( fileRowData, idx );
-            data.files.addFile( KettleVFS.getFileObject( filename, getTransMeta() ) );
+            data.files.addFile( KettleVFS.getInstance( getTransMeta().getBowl() )
+                                .getFileObject( filename, getTransMeta() ) );
           } catch ( Exception e ) {
             throw new KettleException( e );
           }
@@ -163,7 +164,7 @@ public class XBaseInput extends BaseStep implements StepInterface {
     data = (XBaseInputData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      data.files = meta.getTextFileList( this );
+      data.files = meta.getTextFileList( getTransMeta().getBowl(), this );
       data.fileNr = 0;
 
       if ( data.files.nrOfFiles() == 0 && !meta.isAcceptingFilenames() ) {

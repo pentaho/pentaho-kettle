@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,7 +76,8 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
         data.previousRowMeta = getInputRowMeta().clone();
         data.NrPrevFields = data.previousRowMeta.size();
         data.outputRowMeta = data.previousRowMeta;
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
 
         // Check is stream data field is provided
         if ( Utils.isEmpty( meta.getStreamField() ) ) {
@@ -181,7 +182,7 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
 
       try {
         // initiate a new GPG encryptor
-        data.gpg = new GPG( environmentSubstitute( meta.getGPGLocation() ), log );
+        data.gpg = new GPG( getTransMeta().getBowl(), environmentSubstitute( meta.getGPGLocation() ), log );
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "PGPDecryptStream.Init.Error" ), e );
         return false;

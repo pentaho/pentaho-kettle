@@ -865,7 +865,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     Connection conn = null;
     try {
       conn =
-        SSHData.OpenConnection(
+        SSHData.OpenConnection( transMeta.getBowl(),
           servername, nrPort, username, password, wUseKey.getSelection(), keyFilename, passphrase, timeOut,
           transMeta, proxyhost, proxyport, proxyusername, proxypassword );
       testOK = true;

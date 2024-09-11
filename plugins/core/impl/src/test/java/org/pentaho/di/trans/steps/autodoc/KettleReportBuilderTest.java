@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@ package org.pentaho.di.trans.steps.autodoc;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.libraries.base.util.ObjectUtilities;
@@ -56,7 +57,8 @@ public class KettleReportBuilderTest {
     AutoDocOptionsInterface options = mock( AutoDocOptionsInterface.class );
     when( options.isIncludingImage() ).thenReturn( Boolean.TRUE );
 
-    KettleReportBuilder builder = new KettleReportBuilder( log, Collections.<ReportSubjectLocation>emptyList(), "", options );
+    KettleReportBuilder builder = new KettleReportBuilder( DefaultBowl.getInstance(), log,
+      Collections.<ReportSubjectLocation>emptyList(), "", options );
     builder.createReport();
 
     assertNotNull( builder.getReport() );

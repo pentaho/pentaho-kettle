@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -159,13 +160,13 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     addfilenameresult = false;
   }
 
-  @Override public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
                                    VariableSpace space, Repository repository,
                                    IMetaStore metaStore ) throws KettleStepException {
     GZIPInputStream fis = null;
     DataInputStream dis = null;
     try {
-      InputStream is = KettleVFS.getInputStream( space.environmentSubstitute( filename ), space );
+      InputStream is = KettleVFS.getInstance( bowl ).getInputStream( space.environmentSubstitute( filename ), space );
       fis = new GZIPInputStream( is );
       dis = new DataInputStream( fis );
 
@@ -270,7 +271,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
-  @Override public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  @Override public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
                                            ResourceNamingInterface resourceNamingInterface, Repository repository,
                                            IMetaStore metaStore ) throws KettleException {
     try {
@@ -280,7 +281,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
       // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.data
       // To : /home/matt/test/files/foo/bar.data
       //
-      FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( filename ), space );
+      FileObject fileObject = KettleVFS.getInstance( bowl )
+        .getFileObject( space.environmentSubstitute( filename ), space );
 
       // If the file doesn't exist, forget about this effort too!
       //

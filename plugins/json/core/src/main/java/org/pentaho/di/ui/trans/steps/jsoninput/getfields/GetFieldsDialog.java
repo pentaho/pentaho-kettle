@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2021 Hitachi Vantara. All rights reserved.
+ * Copyright 2018-2024 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -57,15 +58,18 @@ import java.util.Objects;
 public class GetFieldsDialog extends Dialog {
 
   private static final Class<?> PKG = GetFieldsDialog.class;
+  private Bowl bowl;
   private List<String> paths = new ArrayList<>();
   protected Button ok;
   protected Button cancel;
   protected Button clearSelection;
   private PropsUI props;
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
-  public GetFieldsDialog( Shell parent ) {
+
+  public GetFieldsDialog( Shell parent, Bowl bowl ) {
     super( parent, SWT.NONE );
     this.props = PropsUI.getInstance();
+    this.bowl = bowl;
   }
 
   public void open( String filename, List<String> paths, TableView wFields ) {
@@ -120,7 +124,7 @@ public class GetFieldsDialog extends Dialog {
       props.setLook( tree );
       tree.setLayoutData( new FormDataBuilder().top( labelSelectFields, Const.MARGIN ).left( 0, 0 ).right( 100, 0 ).bottom( 100, -85 ).result() );
 
-      JsonSampler jsonSampler = new JsonSampler();
+      JsonSampler jsonSampler = new JsonSampler( bowl );
       jsonSampler.sample( filename, tree );
 
       clearSelection = new Button( shell, SWT.PUSH );

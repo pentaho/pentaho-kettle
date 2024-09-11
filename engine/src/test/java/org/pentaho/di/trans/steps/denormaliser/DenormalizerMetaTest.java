@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -199,7 +200,7 @@ public class DenormalizerMetaTest implements InitializerInterface<StepMetaInterf
     meta.setGroupField( new String[] { PERSON } );
     meta.setDenormaliserTargetField( new DenormaliserTargetField[] { targetField2018, targetField2019 } );
 
-    meta.getFields( inputRow, "Denormaliser", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), inputRow, "Denormaliser", null, null, new Variables(), null, null );
 
     Assert.assertEquals( 3, inputRow.size() );
 

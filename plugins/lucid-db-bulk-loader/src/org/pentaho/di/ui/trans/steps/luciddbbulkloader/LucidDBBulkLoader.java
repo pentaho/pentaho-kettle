@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,7 +85,8 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface {
       // 1) Set up the FIFO folder, create the directory and path to it...
       //
       String fifoVfsDirectory = environmentSubstitute( meta.getFifoDirectory() );
-      FileObject directory = KettleVFS.getFileObject( fifoVfsDirectory, getTransMeta() );
+      FileObject directory = KettleVFS.getInstance( getTransMeta().getBowl() )
+        .getFileObject( fifoVfsDirectory, getTransMeta() );
       directory.createFolder();
       String fifoDirectory = KettleVFS.getFilename( directory );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,7 +66,7 @@ public class ExcelInputStepAnalyzer extends ExternalResourceStepAnalyzer<ExcelIn
 
   @Override
   public IMetaverseNode createResourceNode( IExternalResourceInfo resource ) throws MetaverseException {
-    return createFileNode( resource.getName(), descriptor );
+    return createFileNode( parentTransMeta.getBowl(), resource.getName(), descriptor );
   }
 
   @Override

@@ -27,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
@@ -228,10 +229,11 @@ public class JobEntryTransTest {
 
     doReturn( transMeta ).when( jobEntryTrans ).getTransMeta( any( Repository.class ),
             any( VariableSpace.class ) );
-    when( transMeta.exportResources( any( TransMeta.class ), any( Map.class ), any( ResourceNamingInterface.class ),
-            any( Repository.class ), any( IMetaStore.class ) ) ).thenReturn( testName );
+    when( transMeta.exportResources( any( Bowl.class ), any( TransMeta.class ), any( Map.class ),
+            any( ResourceNamingInterface.class ), any( Repository.class ), any( IMetaStore.class ) ) )
+              .thenReturn( testName );
 
-    jobEntryTrans.exportResources( null, null, null, null, null );
+    jobEntryTrans.exportResources( null, null, null, null, null, null );
 
     verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( jobEntryTrans ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );

@@ -22,6 +22,7 @@
 package org.pentaho.di.base;
 
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
@@ -148,29 +149,32 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
     useCache = "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_USE_META_FILE_CACHE, Const.KETTLE_USE_META_FILE_CACHE_DEFAULT ) );
   }
 
-  public T getMetaForEntry( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
+  @Override
+  public T getMetaForEntry( Bowl bowl, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     try {
       T theMeta = null;
       if ( jobEntryBase.getParentJob() != null ) {
         metaFileCache = jobEntryBase.getParentJobMeta().getMetaFileCache(); //Get the cache from the parent or create it
       }
       CurrentDirectoryResolver r = new CurrentDirectoryResolver();
-      VariableSpace tmpSpace = r.resolveCurrentDirectory(
-        specificationMethod, space, rep, jobEntryBase.getParentJob(), filename );
+      VariableSpace tmpSpace = r.resolveCurrentDirectory( bowl, specificationMethod, space, rep,
+        jobEntryBase.getParentJob(), filename );
 
       final String[] idContainer = new String[ 1 ]; //unigue portion of cache key passed though argument
       switch ( specificationMethod ) {
         case FILENAME:
           String realFilename = tmpSpace.environmentSubstitute( filename );
           try {
-            theMeta = attemptLoadMeta( realFilename, rep, metaStore, tmpSpace, null, idContainer );
+            theMeta = attemptLoadMeta( bowl, realFilename, rep, metaStore, tmpSpace, null, idContainer );
           } catch ( KettleException e ) {
             // try to load from repository, this trans may have been developed locally and later uploaded to the
             // repository
             if ( rep == null ) {
               theMeta = isTransMeta()
-                      ? (T) new TransMeta( realFilename, metaStore, null, true, jobEntryBase.getParentVariableSpace(), null )
-                      : (T) new JobMeta( jobEntryBase.getParentVariableSpace(), realFilename, rep, metaStore, null );
+                      ? (T) new TransMeta( bowl, realFilename, metaStore, null, true,
+                                           jobEntryBase.getParentVariableSpace(), null )
+                      : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), realFilename, rep, metaStore,
+                                         null );
             } else {
               theMeta = getMetaFromRepository( rep, r, realFilename, tmpSpace );
             }
@@ -197,9 +201,10 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             if ( theMeta == null ) {
               if ( isTransMeta() ) {
                 theMeta =
-                  (T) new TransMeta( metaPath, metaStore, null, true, jobEntryBase.getParentVariableSpace(), null );
+                  (T) new TransMeta( bowl, metaPath, metaStore, null, true, jobEntryBase.getParentVariableSpace(),
+                                     null );
               } else {
-                theMeta = (T) new JobMeta( tmpSpace, metaPath, rep, metaStore, null );
+                theMeta = (T) new JobMeta( bowl, tmpSpace, metaPath, rep, metaStore, null );
               }
               idContainer[ 0 ] = metaPath;
             }
@@ -208,7 +213,8 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             if ( theMeta == null ) {
               if ( isTransMeta() ) {
                 theMeta = rep == null
-                  ? (T) new TransMeta( metaPath, metaStore, null, true, jobEntryBase.getParentVariableSpace(), null )
+                  ? (T) new TransMeta( bowl, metaPath, metaStore, null, true, jobEntryBase.getParentVariableSpace(),
+                                       null )
                   : getMetaFromRepository( rep, r, metaPath, tmpSpace );
               } else {
                 theMeta = getMetaFromRepository( rep, r, metaPath, tmpSpace );
@@ -279,8 +285,8 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
     }
   }
 
-  private T attemptLoadMeta( String realFilename, Repository rep, IMetaStore metaStore, VariableSpace jobSpace,
-                             VariableSpace transSpace, String[] idContainer )
+  private T attemptLoadMeta( Bowl bowl, String realFilename, Repository rep, IMetaStore metaStore,
+                             VariableSpace jobSpace, VariableSpace transSpace, String[] idContainer )
     throws KettleException {
     T theMeta = null;
     //try to get from the cache first
@@ -288,8 +294,8 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
 
     if ( theMeta == null ) {
       theMeta = isTransMeta()
-        ? (T) new TransMeta( realFilename, metaStore, null, true, transSpace, null )
-        : (T) new JobMeta( jobSpace, realFilename, rep, metaStore, null );
+        ? (T) new TransMeta( bowl, realFilename, metaStore, null, true, transSpace, null )
+        : (T) new JobMeta( bowl, jobSpace, realFilename, rep, metaStore, null );
       idContainer[ 0 ] = realFilename;  //only pass back the id used in the cache, if a cache entry should be created
     }
     return theMeta;
@@ -349,7 +355,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
   }
 
   @Override
-  public T getMetaForStep( Repository rep, IMetaStore metaStore, VariableSpace space )
+  public T getMetaForStep( Bowl bowl, Repository rep, IMetaStore metaStore, VariableSpace space )
     throws KettleException {
     // Note - was a synchronized static method, but as no static variables are manipulated, this is entirely unnecessary
 
@@ -365,11 +371,11 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       // send restricted parentVariables with several important options
       // Otherwise we destroy child variables and the option "Inherit all variables from the transformation" is enabled
       // always.
-      tmpSpace = r.resolveCurrentDirectory( specificationMethod, getVarSpaceOnlyWithRequiredParentVars( space ),
-        rep, baseStepMeta.getParentStepMeta(), filename );
+      tmpSpace = r.resolveCurrentDirectory( bowl, specificationMethod, getVarSpaceOnlyWithRequiredParentVars( space ),
+                                            rep, baseStepMeta.getParentStepMeta(), filename );
     } else {
       tmpSpace =
-        r.resolveCurrentDirectory( specificationMethod, space, rep, baseStepMeta.getParentStepMeta(), filename );
+        r.resolveCurrentDirectory( bowl, specificationMethod, space, rep, baseStepMeta.getParentStepMeta(), filename );
     }
     final String[] idContainer = new String[ 1 ]; //unigue portion of cache key passed though argument
 
@@ -390,7 +396,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
               theMeta = getMetaFromRepository2( realFilename, rep, r, idContainer );
             }
             if ( theMeta == null ) {
-              theMeta = attemptLoadMeta( realFilename, rep, metaStore, null, tmpSpace, idContainer );
+              theMeta = attemptLoadMeta( bowl, realFilename, rep, metaStore, null, tmpSpace, idContainer );
               LogChannel.GENERAL.logDetailed( "Loading " + friendlyMetaType + " from repository",
                 friendlyMetaType + " was loaded from XML file [" + realFilename + "]" );
             }
@@ -453,13 +459,13 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
           } else {
             // rep is null, let's try loading by filename
             try {
-              theMeta = attemptLoadMeta( cacheKey, rep, metaStore, null, tmpSpace, idContainer );
+              theMeta = attemptLoadMeta( bowl, cacheKey, rep, metaStore, null, tmpSpace, idContainer );
             } catch ( KettleException ke ) {
               try {
                 // add .ktr extension and try again
                 String extension = isTransMeta() ? Const.STRING_TRANS_DEFAULT_EXT : Const.STRING_JOB_DEFAULT_EXT;
                 theMeta =
-                  attemptLoadMeta( cacheKey + "." + extension, rep, metaStore, null,
+                  attemptLoadMeta( bowl, cacheKey + "." + extension, rep, metaStore, null,
                     tmpSpace, idContainer );
                 if ( idContainer[ 0 ] != null ) {
                   //It successfully read in the meta but we don't want to cache it with the extension so we override

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -122,7 +122,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
     writeRowToFile( getInputRowMeta(), r );
 
     data.outputRowMeta = getInputRowMeta().clone();
-    meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+    meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                    metaStore );
     putRow( data.outputRowMeta, r ); // in case we want it to go further...
 
     if ( checkFeedback( getLinesOutput() ) ) {
@@ -307,7 +308,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
         data.writer.writeCharacters( EOL );
       } else {
 
-        FileObject file = KettleVFS.getFileObject( buildFilename( true ), getTransMeta() );
+        FileObject file = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( buildFilename( true ), getTransMeta() );
 
         if ( meta.isAddToResultFiles() ) {
           // Add this to the result file names...
@@ -318,7 +320,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
         }
 
         if ( meta.isZipped() ) {
-          OutputStream fos = KettleVFS.getOutputStream( file, false );
+          OutputStream fos = KettleVFS.getInstance( getTransMeta().getBowl() ).getOutputStream( file, false );
           data.zip = new ZipOutputStream( fos );
           File entry = new File( buildFilename( false ) );
           ZipEntry zipentry = new ZipEntry( entry.getName() );
@@ -326,7 +328,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
           data.zip.putNextEntry( zipentry );
           outputStream = data.zip;
         } else {
-          outputStream = KettleVFS.getOutputStream( file, false );
+          outputStream = KettleVFS.getInstance( getTransMeta().getBowl() ).getOutputStream( file, false );
         }
         if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
           logBasic( "Opening output stream in encoding: " + meta.getEncoding() );

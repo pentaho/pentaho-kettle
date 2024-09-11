@@ -39,6 +39,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -271,7 +272,8 @@ public class KettleFileRepository extends AbstractRepository {
 
   // package-local visibility for testing purposes
   FileObject getFileObject( RepositoryElementInterface element ) throws KettleFileException {
-    return KettleVFS.getFileObject( calcFilename( element.getRepositoryDirectory(), element.getName(), element
+    return KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( calcFilename( element.getRepositoryDirectory(), element.getName(), element
       .getRepositoryElementType().getExtension() ) );
   }
 
@@ -279,8 +281,8 @@ public class KettleFileRepository extends AbstractRepository {
   public boolean exists( final String name, final RepositoryDirectoryInterface repositoryDirectory,
     final RepositoryObjectType objectType ) throws KettleException {
     try {
-      FileObject fileObject =
-        KettleVFS.getFileObject( calcFilename( repositoryDirectory, name, objectType.getExtension() ) );
+      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() )
+          .getFileObject( calcFilename( repositoryDirectory, name, objectType.getExtension() ) );
       return fileObject.exists();
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -326,7 +328,7 @@ public class KettleFileRepository extends AbstractRepository {
 
       String xml = ( (XMLInterface) repositoryElement ).getXML();
 
-      OutputStream os = KettleVFS.getOutputStream( fileObject, false );
+      OutputStream os = KettleVFS.getInstance( DefaultBowl.getInstance() ).getOutputStream( fileObject, false );
       os.write( xml.getBytes( Const.XML_ENCODING ) );
       os.close();
 
@@ -370,7 +372,7 @@ public class KettleFileRepository extends AbstractRepository {
       newFolder += "/" + directoryPath;
     }
 
-    FileObject parent = KettleVFS.getFileObject( newFolder );
+    FileObject parent = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( newFolder );
     try {
       parent.createFolder();
     } catch ( FileSystemException e ) {
@@ -392,7 +394,7 @@ public class KettleFileRepository extends AbstractRepository {
       String filename = calcDirectoryName( dir );
       ObjectId objectId = new StringObjectId( calcRelativeElementDirectory( dir ) );
 
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( filename );
       fileObject.createFolder(); // also create parents
 
       dir.setObjectId( objectId );
@@ -453,7 +455,7 @@ public class KettleFileRepository extends AbstractRepository {
   public void deleteRootObject( String name, String extension ) throws KettleException {
     try {
       String filename = calcDirectoryName( null ) + name + extension;
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( filename );
       fileObject.delete();
     } catch ( Exception e ) {
       throw new KettleException( "Unable to delete database with name ["
@@ -463,7 +465,7 @@ public class KettleFileRepository extends AbstractRepository {
 
   public void deleteFile( String filename ) throws KettleException {
     try {
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( filename );
       fileObject.delete();
     } catch ( Exception e ) {
       throw new KettleException( "Unable to delete file with name [" + filename + "]", e );
@@ -511,7 +513,7 @@ public class KettleFileRepository extends AbstractRepository {
   private ObjectId getObjectId( RepositoryDirectoryInterface repositoryDirectory, String name, String extension ) throws KettleException {
     try {
       String filename = calcFilename( repositoryDirectory, name, extension );
-      if ( !KettleVFS.getFileObject( filename ).exists() ) {
+      if ( !KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( filename ).exists() ) {
         return null;
       }
 
@@ -583,7 +585,7 @@ public class KettleFileRepository extends AbstractRepository {
       RepositoryDirectoryInterface directory = tree.findDirectory( id_directory );
 
       String folderName = calcDirectoryName( directory );
-      FileObject folder = KettleVFS.getFileObject( folderName );
+      FileObject folder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( folderName );
 
       for ( FileObject child : folder.getChildren() ) {
         if ( child.getType().equals( FileType.FILE ) ) {
@@ -665,7 +667,7 @@ public class KettleFileRepository extends AbstractRepository {
       List<ObjectId> list = new ArrayList<ObjectId>();
 
       String folderName = repositoryMeta.getBaseDirectory();
-      FileObject folder = KettleVFS.getFileObject( folderName );
+      FileObject folder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( folderName );
 
       for ( FileObject child : folder.getChildren() ) {
         if ( child.getType().equals( FileType.FILE ) ) {
@@ -775,7 +777,7 @@ public class KettleFileRepository extends AbstractRepository {
       RepositoryDirectoryInterface directory = tree.findDirectory( id_directory );
 
       String folderName = calcDirectoryName( directory );
-      FileObject folder = KettleVFS.getFileObject( folderName );
+      FileObject folder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( folderName );
 
       for ( FileObject child : folder.getChildren() ) {
         if ( child.getType().equals( FileType.FILE ) ) {
@@ -839,7 +841,7 @@ public class KettleFileRepository extends AbstractRepository {
   public ObjectId insertLogEntry( String description ) throws KettleException {
     String logfile = calcDirectoryName( null ) + LOG_FILE;
     try {
-      OutputStream outputStream = KettleVFS.getOutputStream( logfile, true );
+      OutputStream outputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getOutputStream( logfile, true );
       outputStream.write( description.getBytes() );
       outputStream.write( Const.CR.getBytes() );
       outputStream.close();
@@ -904,7 +906,7 @@ public class KettleFileRepository extends AbstractRepository {
       // The object ID is the base name of the file in the Base directory folder
       //
       String filename = calcDirectoryName( null ) + id.getId();
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( filename );
       Document document = XMLHandler.loadXMLFile( fileObject );
       Node node = XMLHandler.getSubNode( document, tag );
 
@@ -948,7 +950,7 @@ public class KettleFileRepository extends AbstractRepository {
     // This is a standard load of a transformation serialized in XML...
     //
     String filename = calcDirectoryName( repdir ) + jobname + EXT_JOB;
-    JobMeta jobMeta = new JobMeta( filename, this );
+    JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), filename, this );
     jobMeta.setFilename( null );
     jobMeta.setName( jobname );
     jobMeta.setObjectId( new StringObjectId( calcObjectId( repdir, jobname, EXT_JOB ) ) );
@@ -982,7 +984,7 @@ public class KettleFileRepository extends AbstractRepository {
   public RepositoryDirectoryInterface loadRepositoryDirectoryTree( RepositoryDirectoryInterface dir ) throws KettleException {
     try {
       String folderName = calcDirectoryName( dir );
-      FileObject folder = KettleVFS.getFileObject( folderName );
+      FileObject folder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( folderName );
 
       for ( FileObject child : folder.getChildren() ) {
         if ( child.getType().equals( FileType.FOLDER ) ) {
@@ -1025,7 +1027,7 @@ public class KettleFileRepository extends AbstractRepository {
       RepositoryDirectoryInterface directory = tree.findDirectory( idDirectory );
 
       String folderName = calcDirectoryName( directory );
-      FileObject folder = KettleVFS.getFileObject( folderName );
+      FileObject folder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( folderName );
 
       for ( FileObject child : folder.getChildren() ) {
         if ( child.getType().equals( FileType.FILE ) ) {
@@ -1062,7 +1064,7 @@ public class KettleFileRepository extends AbstractRepository {
       RepositoryDirectoryInterface directory = tree.findDirectory( id_directory );
 
       String folderName = calcDirectoryName( directory );
-      FileObject folder = KettleVFS.getFileObject( folderName );
+      FileObject folder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( folderName );
 
       for ( FileObject child : folder.getChildren() ) {
         if ( child.getType().equals( FileType.FILE ) ) {
@@ -1109,7 +1111,7 @@ public class KettleFileRepository extends AbstractRepository {
     // This is a standard load of a transformation serialized in XML...
     //
     String filename = calcDirectoryName( repdir ) + transname + ".ktr";
-    TransMeta transMeta = new TransMeta( filename, this, setInternalVariables );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), filename, this, setInternalVariables );
     transMeta.setRepository( this );
     transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
     transMeta.setFilename( null );
@@ -1239,7 +1241,8 @@ public class KettleFileRepository extends AbstractRepository {
     try {
       // In case of a root object, the ID is the same as the relative filename...
       //
-      FileObject fileObject = KettleVFS.getFileObject( calcDirectoryName( null ) + id.getId() );
+      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() )
+        .getFileObject( calcDirectoryName( null ) + id.getId() );
 
       // Same name, different folder?
       if ( Utils.isEmpty( newName ) ) {
@@ -1249,7 +1252,7 @@ public class KettleFileRepository extends AbstractRepository {
       //
       String newFilename = calcDirectoryName( newDirectory ) + newName + extension;
 
-      FileObject newObject = KettleVFS.getFileObject( newFilename );
+      FileObject newObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( newFilename );
       fileObject.moveTo( newObject );
 
       return new StringObjectId( calcObjectId( newDirectory, newName, extension ) );
@@ -1297,19 +1300,20 @@ public class KettleFileRepository extends AbstractRepository {
         // If newName is null, keep the current name
         newName = ( newName != null ) ? newName : dir.getName();
 
-        FileObject folder = KettleVFS.getFileObject( dir.getPath() );
+        FileObject folder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( dir.getPath() );
 
         String newFolderName = null;
 
         if ( newParentDir != null ) {
-          FileObject newParentFolder = KettleVFS.getFileObject( newParentDir.getPath() );
+          FileObject newParentFolder = KettleVFS.getInstance( DefaultBowl.getInstance() )
+            .getFileObject( newParentDir.getPath() );
 
           newFolderName = newParentFolder.toString() + "/" + newName;
         } else {
           newFolderName = folder.getParent().toString() + "/" + newName;
         }
 
-        FileObject newFolder = KettleVFS.getFileObject( newFolderName );
+        FileObject newFolder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( newFolderName );
         folder.moveTo( newFolder );
 
         return new StringObjectId( dir.getObjectId() );
@@ -1498,7 +1502,7 @@ public class KettleFileRepository extends AbstractRepository {
       } else {
         filename += objectId.getId();
       }
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( filename );
       if ( !fileObject.exists() ) {
         return null;
       }
@@ -1509,7 +1513,8 @@ public class KettleFileRepository extends AbstractRepository {
       }
 
       String filePath = fileObject.getParent().getName().getPath();
-      final FileObject baseDirObject = KettleVFS.getFileObject( repositoryMeta.getBaseDirectory() );
+      final FileObject baseDirObject = KettleVFS.getInstance( DefaultBowl.getInstance() )
+        .getFileObject( repositoryMeta.getBaseDirectory() );
       final int baseDirObjectPathLength = baseDirObject.getName().getPath().length();
       final String dirPath =
         baseDirObjectPathLength <= filePath.length() ? filePath.substring( baseDirObjectPathLength ) : "/";

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,7 +70,8 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
       data.previousMeta = getInputRowMeta().clone();
       data.nextIndexField = data.previousMeta.size();
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       if ( meta.getFieldName() == null || meta.getFieldName().length > 0 ) {
         data.fieldnr = meta.getFieldName().length;

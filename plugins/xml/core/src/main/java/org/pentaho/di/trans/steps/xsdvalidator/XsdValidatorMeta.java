@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.util.Utils;
@@ -244,7 +245,8 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     allowExternalEntities = Boolean.valueOf( System.getProperties().getProperty( Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION, Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT ) );
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !Utils.isEmpty( resultFieldname ) ) {
       if ( outputStringField ) {
@@ -435,7 +437,8 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
    * 
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  @Override
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
@@ -448,7 +451,8 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
       // To : /home/matt/test/files/foo/bar.xsd
       //
       if ( !Utils.isEmpty( xsdFilename ) ) {
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( xsdFilename ), space );
+        FileObject fileObject = KettleVFS.getInstance( bowl )
+          .getFileObject( space.environmentSubstitute( xsdFilename ), space );
         xsdFilename = resourceNamingInterface.nameResource( fileObject, space, true );
         return xsdFilename;
       }

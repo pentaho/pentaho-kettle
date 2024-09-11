@@ -894,7 +894,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
         try {
           YamlInputMeta tfii = new YamlInputMeta();
           getInfo( tfii );
-          FileInputList fileInputList = tfii.getFiles( transMeta );
+          FileInputList fileInputList = tfii.getFiles( transMeta.getBowl(), transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
@@ -1043,12 +1043,12 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
       YamlInputMeta meta = new YamlInputMeta();
       getInfo( meta );
 
-      FileInputList inputList = meta.getFiles( transMeta );
+      FileInputList inputList = meta.getFiles( transMeta.getBowl(), transMeta );
 
       if ( inputList.getFiles().size() > 0 ) {
         wFields.removeAll();
 
-        yaml = new YamlReader();
+        yaml = new YamlReader( transMeta.getBowl() );
         yaml.loadFile( inputList.getFile( 0 ) );
         RowMeta row = yaml.getFields();
 

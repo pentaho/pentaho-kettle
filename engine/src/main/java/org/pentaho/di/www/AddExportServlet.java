@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,10 +23,12 @@
 package org.pentaho.di.www;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -197,8 +199,10 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
     OutputStream outputStream = null;
 
     try {
-      FileObject tempFile = KettleVFS.createTempFile( "export", ".zip", System.getProperty( "java.io.tmpdir" ) );
-      outputStream = KettleVFS.getOutputStream( tempFile, false );
+      IKettleVFS vfs = KettleVFS.getInstance( DefaultBowl.getInstance() );
+
+      FileObject tempFile = vfs.createTempFile( "export", ".zip", System.getProperty( "java.io.tmpdir" ) );
+      outputStream = vfs.getOutputStream( tempFile, false );
 
       // Pass the input directly to a temporary file
       //
@@ -229,13 +233,13 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
         if ( isJob ) {
           // Open the job from inside the ZIP archive
           //
-          KettleVFS.getFileObject( fileUrl );
+          vfs.getFileObject( fileUrl );
 
-          JobMeta jobMeta = new JobMeta( fileUrl, null ); // never with a repository
+          JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), fileUrl, null ); // never with a repository
           // Also read the execution configuration information
           //
           String configUrl = "zip:" + archiveUrl + "!" + Job.CONFIGURATION_IN_EXPORT_FILENAME;
-          Document configDoc = XMLHandler.loadXMLFile( configUrl );
+          Document configDoc = XMLHandler.loadXMLFile( DefaultBowl.getInstance(), configUrl );
           JobExecutionConfiguration jobExecutionConfiguration =
             new JobExecutionConfiguration( XMLHandler.getSubNode( configDoc, JobExecutionConfiguration.XML_TAG ) );
 
@@ -273,11 +277,11 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
         } else {
           // Open the transformation from inside the ZIP archive
           //
-          TransMeta transMeta = new TransMeta( fileUrl );
+          TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), fileUrl );
           // Also read the execution configuration information
           //
           String configUrl = "zip:" + archiveUrl + "!" + Trans.CONFIGURATION_IN_EXPORT_FILENAME;
-          Document configDoc = XMLHandler.loadXMLFile( configUrl );
+          Document configDoc = XMLHandler.loadXMLFile( DefaultBowl.getInstance(), configUrl );
           TransExecutionConfiguration executionConfiguration =
             new TransExecutionConfiguration( XMLHandler.getSubNode(
               configDoc, TransExecutionConfiguration.XML_TAG ) );

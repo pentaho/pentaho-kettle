@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,13 +72,15 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
       data.inputRowMeta = getInputRowMeta();
       data.outputRowMeta = data.inputRowMeta.clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
       // otherwise trim(), padding etc. will not work
       data.inputRowMetaModified = getInputRowMeta().clone();
       meta
-        .getFieldsModifyInput( data.inputRowMetaModified, getStepname(), null, null, this, repository, metaStore );
+        .getFieldsModifyInput( getTransMeta().getBowl(), data.inputRowMetaModified, getStepname(), null, null,
+           this, repository, metaStore );
 
       data.posTargetField = data.outputRowMeta.indexOfValue( meta.getTargetFieldName() );
       if ( data.posTargetField < 0 ) {

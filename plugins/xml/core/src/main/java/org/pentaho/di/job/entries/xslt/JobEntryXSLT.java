@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -424,9 +425,10 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
     FileObject outputfile = null;
 
     try {
-      xmlfile = KettleVFS.getFileObject( xmlfilename, this );
-      xslfile = KettleVFS.getFileObject( xslfilename, this );
-      outputfile = KettleVFS.getFileObject( outputfilename, this );
+      IKettleVFS vfs = KettleVFS.getInstance( parentJobMeta.getBowl() );
+      xmlfile = vfs.getFileObject( xmlfilename, this );
+      xslfile = vfs.getFileObject( xslfilename, this );
+      outputfile = vfs.getFileObject( outputfilename, this );
 
       if ( xmlfile.exists() && xslfile.exists() ) {
         if ( outputfile.exists() && iffileexists == 2 ) {
@@ -511,7 +513,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
             // Prepare the input and output files
             Source source = new StreamSource( xmlInputStream );
-            os = KettleVFS.getOutputStream( outputfile, false );
+            os = vfs.getOutputStream( outputfile, false );
             StreamResult resultat = new StreamResult( os );
 
             // Apply the xsl file to the source file and write the result to the output file
@@ -520,7 +522,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
             if ( isAddFileToResult() ) {
               // Add output filename to output files
               ResultFile resultFile =
-                  new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( outputfilename, this ),
+                  new ResultFile( ResultFile.FILE_TYPE_GENERAL, vfs.getFileObject( outputfilename, this ),
                       parentJob.getJobname(), toString() );
               result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             }
@@ -639,10 +641,10 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notBlankValidator(), fileExistsValidator() );
-    andValidator().validate( this, "xmlFilename", remarks, ctx );
-    andValidator().validate( this, "xslFilename", remarks, ctx );
+    andValidator().validate( jobMeta.getBowl(), this, "xmlFilename", remarks, ctx );
+    andValidator().validate( jobMeta.getBowl(), this, "xslFilename", remarks, ctx );
 
-    andValidator().validate( this, "outputFilename", remarks, putValidators( notBlankValidator() ) );
+    andValidator().validate( jobMeta.getBowl(), this, "outputFilename", remarks, putValidators( notBlankValidator() ) );
   }
 
   /**

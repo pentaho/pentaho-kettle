@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.GCInterface;
@@ -73,22 +74,23 @@ public class TransformationInformation {
     this.map = new HashMap<ReportSubjectLocation, TransformationInformationValues>();
   }
 
-  public BufferedImage getImage( ReportSubjectLocation location ) throws KettleException {
-    return getValues( location ).image;
+  public BufferedImage getImage( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
+    return getValues( bowl, location ).image;
   }
 
-  public TransMeta getTransMeta( ReportSubjectLocation location ) throws KettleException {
-    return getValues( location ).transMeta;
+  public TransMeta getTransMeta( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
+    return getValues( bowl, location ).transMeta;
   }
 
-  public List<AreaOwner> getImageAreaList( ReportSubjectLocation location ) throws KettleException {
-    return getValues( location ).areaOwners;
+  public List<AreaOwner> getImageAreaList( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
+    return getValues( bowl, location ).areaOwners;
   }
 
-  private TransformationInformationValues getValues( ReportSubjectLocation location ) throws KettleException {
+  private TransformationInformationValues getValues( Bowl bowl, ReportSubjectLocation location )
+      throws KettleException {
     TransformationInformationValues values = map.get( location );
     if ( values == null ) {
-      values = loadValues( location );
+      values = loadValues( bowl, location );
 
       // Dump the other values, keep things nice & tidy.
       //
@@ -98,21 +100,22 @@ public class TransformationInformation {
     return values;
   }
 
-  private TransMeta loadTransformation( ReportSubjectLocation location ) throws KettleException {
+  private TransMeta loadTransformation( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
     TransMeta transMeta;
     if ( !Utils.isEmpty( location.getFilename() ) ) {
-      transMeta = new TransMeta( location.getFilename() );
+      transMeta = new TransMeta( bowl, location.getFilename() );
     } else {
       transMeta = repository.loadTransformation( location.getName(), location.getDirectory(), null, true, null );
     }
     return transMeta;
   }
 
-  private TransformationInformationValues loadValues( ReportSubjectLocation location ) throws KettleException {
+  private TransformationInformationValues loadValues( Bowl bowl, ReportSubjectLocation location )
+      throws KettleException {
 
     // Load the transformation
     //
-    TransMeta transMeta = loadTransformation( location );
+    TransMeta transMeta = loadTransformation( bowl, location );
 
     Point min = transMeta.getMinimum();
     Point area = transMeta.getMaximum();
@@ -156,12 +159,12 @@ public class TransformationInformation {
     return values;
   }
 
-  public void drawImage( final Graphics2D g2d, final Rectangle2D rectangle2d, ReportSubjectLocation location,
+  public void drawImage( Bowl bowl, final Graphics2D g2d, final Rectangle2D rectangle2d, ReportSubjectLocation location,
     boolean pixelateImages ) throws KettleException {
 
     // Load the transformation
     //
-    TransMeta transMeta = loadTransformation( location );
+    TransMeta transMeta = loadTransformation( bowl, location );
 
     Point min = transMeta.getMinimum();
     Point area = transMeta.getMaximum();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -315,7 +315,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
     if ( !Utils.isEmpty( meta.getSqlPath() ) ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getSqlPath() ), getTransMeta() );
+        FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( environmentSubstitute( meta.getSqlPath() ), getTransMeta() );
         String sqlexec = Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) );
         sb.append( sqlexec );
         // sql @tc-dwh-test.timocom.net,tcp_ip,VW[ingres,pwd]::dwh

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,6 +53,7 @@ import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -140,6 +141,7 @@ public class JobEntryHTTPTest {
     JobEntryHTTP basicHttpJobEntry = new JobEntryHTTP();
     basicHttpJobEntry.setTargetFilename( tempTargetFile.getAbsolutePath() );
     basicHttpJobEntry.setAddFilenameToResult( false );
+    basicHttpJobEntry.setParentJobMeta( new JobMeta() );
 
     // Test valid URL
     basicHttpJobEntry.setUrl( validURL );
@@ -168,6 +170,7 @@ public class JobEntryHTTPTest {
     JobEntryHTTP basicHttpJobEntry = new JobEntryHTTP();
     basicHttpJobEntry.setTargetFilename( tempTargetFile.getAbsolutePath() );
     basicHttpJobEntry.setAddFilenameToResult( false );
+    basicHttpJobEntry.setParentJobMeta( new JobMeta() );
 
     // Test no user or password when required
     basicHttpJobEntry.setUrl( passwordURL );
@@ -206,6 +209,7 @@ public class JobEntryHTTPTest {
     JobEntryHTTP basicHttpJobEntry = new JobEntryHTTP();
     basicHttpJobEntry.setTargetFilename( tempTargetFile.getAbsolutePath() );
     basicHttpJobEntry.setAddFilenameToResult( false );
+    basicHttpJobEntry.setParentJobMeta( new JobMeta() );
 
     // Test URL without proxy
     basicHttpJobEntry.setUrl( proxyTestURL );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -250,7 +250,8 @@ public class AccessInput extends BaseStep implements StepInterface {
 
           data.inputRowMeta = getInputRowMeta();
           data.outputRowMeta = data.inputRowMeta.clone();
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+          meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                          metaStore );
 
           // Get total previous fields
           data.totalpreviousfields = data.inputRowMeta.size();
@@ -293,7 +294,7 @@ public class AccessInput extends BaseStep implements StepInterface {
             .getDynamicFilenameField(), filename ) );
         }
 
-        data.file = KettleVFS.getFileObject( filename, getTransMeta() );
+        data.file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( filename, getTransMeta() );
         // Check if file exists!
       }
       // Add additional fields?
@@ -410,15 +411,14 @@ public class AccessInput extends BaseStep implements StepInterface {
       }
       data.isTableSystem = ( data.tableName.startsWith( AccessInputMeta.PREFIX_SYSTEM ) );
       if ( !meta.isFileField() ) {
-        data.files = meta.getFiles( this );
+        data.files = meta.getFiles( getTransMeta().getBowl(), this );
         try {
           handleMissingFiles();
 
           // Create the output row meta-data
           data.outputRowMeta = new RowMeta();
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                        // metadata
-                                                                                                        // populated
+          meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                          metaStore );
 
           // Create convert meta-data objects that will contain Date & Number formatters
           // For String to <type> conversions, we allocate a conversion meta data row as well...

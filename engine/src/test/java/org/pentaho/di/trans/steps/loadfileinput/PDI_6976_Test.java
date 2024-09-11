@@ -25,6 +25,8 @@ package org.pentaho.di.trans.steps.loadfileinput;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -58,7 +60,7 @@ public class PDI_6976_Test {
     FileInputList fileInputList = mock( FileInputList.class );
     List<FileObject> files = when( mock( List.class ).size() ).thenReturn( 1 ).getMock();
     doReturn( files ).when( fileInputList ).getFiles();
-    doReturn( fileInputList ).when( spy ).getFiles( any( VariableSpace.class ) );
+    doReturn( fileInputList ).when( spy ).getFiles( any( Bowl.class), any( VariableSpace.class ) );
 
     @SuppressWarnings( "unchecked" )
     List<CheckResultInterface> validationResults = mock( List.class );
@@ -73,7 +75,9 @@ public class PDI_6976_Test {
       return null;
     } ).when( validationResults ).add( any( CheckResultInterface.class ) );
 
-    spy.check( validationResults, mock( TransMeta.class ), mock( StepMeta.class ), mock( RowMetaInterface.class ),
+    TransMeta mockTransMeta = mock( TransMeta.class );
+    when( mockTransMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    spy.check( validationResults, mockTransMeta, mock( StepMeta.class ), mock( RowMetaInterface.class ),
       new String[] {}, new String[] { "File content", "File size" }, mock( RowMetaInterface.class ),
       mock( VariableSpace.class ), mock( Repository.class ), mock( IMetaStore.class ) );
   }

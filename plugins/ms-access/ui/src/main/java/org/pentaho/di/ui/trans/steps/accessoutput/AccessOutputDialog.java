@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -473,7 +473,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
     // New class: SelectTableDialog
     try {
       String realFilename = transMeta.environmentSubstitute( meta.getFilename() );
-      FileObject fileObject = KettleVFS.getFileObject( realFilename, transMeta );
+      FileObject fileObject = KettleVFS.getInstance( transMeta.getBowl() ).getFileObject( realFilename, transMeta );
       File file = FileUtils.toFile( fileObject.getURL() );
 
       if ( !file.exists() || !file.isFile() ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -548,7 +548,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     String realWildcard = environmentSubstitute( wildcard );
 
     try {
-      sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername );
+      sourcefilefolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realSourceFilefoldername );
 
       if ( sourcefilefolder.exists() ) {
         if ( isDetailed() ) {

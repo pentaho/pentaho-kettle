@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,7 +49,7 @@ public class JobEntryCheckDbConnectionsIT {
   @After
   public void cleanup() {
     try {
-      FileObject dbFile = KettleVFS.getFileObject( H2_DATABASE + ".h2.db" );
+      FileObject dbFile = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( H2_DATABASE + ".h2.db" );
       if ( dbFile.exists() ) {
         System.out.println( "deleting file" );
         dbFile.delete();

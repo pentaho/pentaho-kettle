@@ -47,6 +47,8 @@ import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.base.IMetaFileCache;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.Utils;
@@ -1450,7 +1452,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     boolean hasFilename = jobMeta != null && !Utils.isEmpty( jobMeta.getFilename() );
     if ( hasFilename ) { // we have a finename that's defined.
       try {
-        FileObject fileObject = KettleVFS.getFileObject( jobMeta.getFilename(), this );
+        FileObject fileObject = KettleVFS.getInstance( getBowl() ).getFileObject( jobMeta.getFilename(), this );
         FileName fileName = fileObject.getName();
 
         // The filename of the transformation
@@ -1496,6 +1498,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
 
+  }
+
+  private Bowl getBowl() {
+    if ( jobMeta != null ) {
+      return jobMeta.getBowl();
+    }
+    return DefaultBowl.getInstance();
   }
 
   protected void setInternalEntryCurrentDirectory( boolean hasFilename, boolean hasRepoDir  ) {
@@ -1704,12 +1713,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if ( executionConfiguration.isPassingExport() ) {
         // First export the job... slaveServer.getVariable("MASTER_HOST")
         //
-        FileObject tempFile =
-            KettleVFS.createTempFile( "jobExport", ".zip", System.getProperty( "java.io.tmpdir" ), jobMeta );
+        FileObject tempFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
+            .createTempFile( "jobExport", ".zip", System.getProperty( "java.io.tmpdir" ), jobMeta );
 
         TopLevelResource topLevelResource =
-            ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), jobMeta, jobMeta, repository,
-                metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
+            ResourceUtil.serializeResourceExportInterface( jobMeta.getBowl(), tempFile.getName().toString(),
+                jobMeta, jobMeta, repository, metaStore, executionConfiguration.getXML(),
+                CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
         String result =

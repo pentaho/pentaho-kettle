@@ -315,7 +315,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
         try {
           JsonInputMeta tfii = new JsonInputMeta();
           getInfo( tfii );
-          FileInputList fileInputList = tfii.getFiles( transMeta );
+          FileInputList fileInputList = tfii.getFiles( transMeta.getBowl(), transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
@@ -1456,7 +1456,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
           paths.add( item.getText( 2 ) );
         }
 
-        GetFieldsDialog getFieldsDialog = new GetFieldsDialog( shell );
+        GetFieldsDialog getFieldsDialog = new GetFieldsDialog( shell, transMeta.getBowl() );
         getFieldsDialog.open( filename, paths, wFields );
 
       }

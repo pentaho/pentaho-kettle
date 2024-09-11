@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -123,10 +124,10 @@ public class SymmetricCrypto {
     }
   }
 
-  public void setSecretKeyFromFile( String filename ) throws CryptoKeyException {
+  public void setSecretKeyFromFile( Bowl bowl, String filename ) throws CryptoKeyException {
     FileObject file = null;
     try {
-      file = KettleVFS.getFileObject( filename );
+      file = KettleVFS.getInstance( bowl ).getFileObject( filename );
       if ( !file.exists() ) {
         throw new CryptoException( BaseMessages.getString( PKG, "SymmetricCrypto.CanNotFindFile", file.getName() ) );
       }

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.FileUtil;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -1680,10 +1681,10 @@ public class ScriptAddedFunctions {
   }
 
   // Loading additional JS Files inside the JavaScriptCode
-  public static void LoadScriptFile( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static void LoadScriptFile( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
     for ( int i = 0; i < ArgList.length; i++ ) { // don't worry about "undefined" arguments
-      checkAndLoadJSFile( actualContext, actualObject, (String) ArgList[i] );
+      checkAndLoadJSFile( bowl, actualContext, actualObject, (String) ArgList[i] );
     }
   }
 
@@ -1722,10 +1723,10 @@ public class ScriptAddedFunctions {
   }
 
   // Evaluates the given ScriptFile
-  private static void checkAndLoadJSFile( ScriptEngine actualContext, Bindings eval_scope, String fileName ) {
+  private static void checkAndLoadJSFile( Bowl bowl, ScriptEngine actualContext, Bindings eval_scope, String fileName ) {
     Reader inStream = null;
     try {
-      inStream = new InputStreamReader( KettleVFS.getInputStream( fileName ) );
+      inStream = new InputStreamReader( KettleVFS.getInstance( bowl ).getInputStream( fileName ) );
       actualContext.eval( inStream, eval_scope );
     } catch ( KettleFileException Signal ) {
       /*
@@ -1951,7 +1952,7 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static void deleteFile( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static void deleteFile( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
 
     try {
@@ -1962,7 +1963,7 @@ public class ScriptAddedFunctions {
         FileObject fileObject = null;
 
         try {
-          fileObject = KettleVFS.getFileObject( (String) ArgList[0] );
+          fileObject = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           if ( fileObject.exists() ) {
             if ( fileObject.getType() == FileType.FILE ) {
               if ( !fileObject.delete() ) {
@@ -1993,7 +1994,7 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static void createFolder( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static void createFolder( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
 
     try {
@@ -2001,7 +2002,7 @@ public class ScriptAddedFunctions {
         FileObject fileObject = null;
 
         try {
-          fileObject = KettleVFS.getFileObject( (String) ArgList[0] );
+          fileObject = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           if ( !fileObject.exists() ) {
             fileObject.createFolder();
           } else {
@@ -2027,7 +2028,7 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static void copyFile( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static void copyFile( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
 
     try {
@@ -2038,9 +2039,9 @@ public class ScriptAddedFunctions {
 
         try {
           // Source file to copy
-          fileSource = KettleVFS.getFileObject( (String) ArgList[0] );
+          fileSource = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           // Destination filename
-          fileDestination = KettleVFS.getFileObject( (String) ArgList[1] );
+          fileDestination = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[1] );
           if ( fileSource.exists() ) {
             // Source file exists...
             if ( fileSource.getType() == FileType.FILE ) {
@@ -2086,7 +2087,7 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static double getFileSize( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static double getFileSize( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
     try {
       if ( ArgList.length == 1 && !isNull( ArgList[0] ) && !isUndefined( ArgList[0] ) ) {
@@ -2097,7 +2098,7 @@ public class ScriptAddedFunctions {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( (String) ArgList[0] );
+          file = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           long filesize = 0;
           if ( file.exists() ) {
             if ( file.getType().equals( FileType.FILE ) ) {
@@ -2129,7 +2130,7 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static boolean isFile( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static boolean isFile( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
     try {
       if ( ArgList.length == 1 && !isNull( ArgList[0] ) && !isUndefined( ArgList[0] ) ) {
@@ -2140,7 +2141,7 @@ public class ScriptAddedFunctions {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( (String) ArgList[0] );
+          file = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           boolean isafile = false;
           if ( file.exists() ) {
             if ( file.getType().equals( FileType.FILE ) ) {
@@ -2172,7 +2173,7 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static boolean isFolder( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static boolean isFolder( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
     try {
       if ( ArgList.length == 1 && !isNull( ArgList[0] ) && !isUndefined( ArgList[0] ) ) {
@@ -2183,7 +2184,7 @@ public class ScriptAddedFunctions {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( (String) ArgList[0] );
+          file = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           boolean isafolder = false;
           if ( file.exists() ) {
             if ( file.getType().equals( FileType.FOLDER ) ) {
@@ -2215,7 +2216,7 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static String getShortFilename( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static String getShortFilename( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
     try {
       if ( ArgList.length == 1 && !isNull( ArgList[0] ) && !isUndefined( ArgList[0] ) ) {
@@ -2226,7 +2227,7 @@ public class ScriptAddedFunctions {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( (String) ArgList[0] );
+          file = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           String Filename = null;
           if ( file.exists() ) {
             Filename = file.getName().getBaseName();
@@ -2256,7 +2257,7 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static String getFileExtension( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static String getFileExtension( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
     try {
       if ( ArgList.length == 1 && !isNull( ArgList[0] ) && !isUndefined( ArgList[0] ) ) {
@@ -2267,7 +2268,7 @@ public class ScriptAddedFunctions {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( (String) ArgList[0] );
+          file = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           String Extension = null;
           if ( file.exists() ) {
             Extension = file.getName().getExtension();
@@ -2297,7 +2298,8 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static String getParentFoldername( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static String getParentFoldername( Bowl bowl, ScriptEngine actualContext, Bindings actualObject,
+                                            Object[] ArgList,
     Object FunctionContext ) {
     try {
       if ( ArgList.length == 1 && !isNull( ArgList[0] ) && !isUndefined( ArgList[0] ) ) {
@@ -2308,7 +2310,7 @@ public class ScriptAddedFunctions {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( (String) ArgList[0] );
+          file = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           String foldername = null;
           if ( file.exists() ) {
             foldername = KettleVFS.getFilename( file.getParent() );
@@ -2338,7 +2340,8 @@ public class ScriptAddedFunctions {
     }
   }
 
-  public static String getLastModifiedTime( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static String getLastModifiedTime( Bowl bowl, ScriptEngine actualContext, Bindings actualObject,
+                                            Object[] ArgList,
     Object FunctionContext ) {
     try {
       if ( ArgList.length == 2 && !isNull( ArgList[0] ) && !isUndefined( ArgList[0] ) ) {
@@ -2349,7 +2352,7 @@ public class ScriptAddedFunctions {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( (String) ArgList[0] );
+          file = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           String dateformat = (String) ArgList[1];
           if ( isNull( dateformat ) ) {
             dateformat = "yyyy-MM-dd";
@@ -2470,7 +2473,7 @@ public class ScriptAddedFunctions {
   }
 
 
-  public static void moveFile( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
+  public static void moveFile( Bowl bowl, ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
 
     try {
@@ -2481,9 +2484,9 @@ public class ScriptAddedFunctions {
 
         try {
           // Source file to move
-          fileSource = KettleVFS.getFileObject( (String) ArgList[0] );
+          fileSource = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[0] );
           // Destination filename
-          fileDestination = KettleVFS.getFileObject( (String) ArgList[1] );
+          fileDestination = KettleVFS.getInstance( bowl ).getFileObject( (String) ArgList[1] );
           if ( fileSource.exists() ) {
             // Source file exists...
             if ( fileSource.getType() == FileType.FILE ) {

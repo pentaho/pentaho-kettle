@@ -29,6 +29,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -77,6 +79,7 @@ public class TextFileInputTextCSVImportProgressDialogTest {
     shell = mock( Shell.class );
     meta = mock( TextFileInputMeta.class );
     transMeta = mock( TransMeta.class );
+    when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     monitor = mock( IProgressMonitor.class );
     content = mock( TextFileInputMeta.Content.class );
     baseFileInputFiles =  mock( BaseFileInputFiles.class );
@@ -183,12 +186,12 @@ public class TextFileInputTextCSVImportProgressDialogTest {
     setInternalState( baseFileInputFiles, "excludeFileMask", new String[]{} );
     setInternalState( baseFileInputFiles, "fileRequired", new String[]{} );
     when( baseFileInputFiles.includeSubFolderBoolean() ).thenReturn( new boolean[] {} );
-    when( FileInputList.createFilePathList( any( VariableSpace.class ),
+    when( FileInputList.createFilePathList( any( Bowl.class), any( VariableSpace.class ),
       any( String[].class ), any( String[].class ), any( String[].class ), any( String[].class ),
       any( boolean[].class ) ) ).thenReturn( new String[]{""} );
     //meta
     when( meta.getInputFields() ).thenReturn( baseFileFields );
-    doCallRealMethod().when( meta ).getFields( any(), any(), any(), any(), any(), any(), any() );
+    doCallRealMethod().when( meta ).getFields( any(), any(), any(), any(), any(), any(), any(), any() );
     setInternalState( meta, "inputFields",  baseFileFields );
     setInternalState( meta, "content",  content );
     when( meta.clone() ).thenReturn( meta );

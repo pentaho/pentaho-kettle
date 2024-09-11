@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
@@ -114,14 +115,14 @@ public class AvroInputMetaTest {
 
   @Test
   public void testGetFields_clearPreviousFileds() throws KettleStepException {
-    meta.getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, origin, info, nextStep, space, repository, metaStore );
     verify( rowMeta ).clear();
   }
 
   @Test
   public void testGetFields_originShouldBeSetedToRowMeta() throws KettleStepException {
     meta.setInputFields( Arrays.asList( field ) );
-    meta.getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, origin, info, nextStep, space, repository, metaStore );
     ArgumentCaptor<ValueMetaInterface> argument = ArgumentCaptor.forClass( ValueMetaInterface.class );
     verify( rowMeta ).addValueMeta( argument.capture() );
     assertEquals( origin, argument.getValue().getOrigin() );
@@ -130,7 +131,7 @@ public class AvroInputMetaTest {
   @Test
   public void testGetFields_theNameWasUpdatedByVariables() throws KettleStepException {
     meta.setInputFields( Arrays.asList( field ) );
-    meta.getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, origin, info, nextStep, space, repository, metaStore );
     verify( space ).environmentSubstitute( nullable( String.class) );
   }
 
@@ -141,7 +142,7 @@ public class AvroInputMetaTest {
     RowMetaInterface forMerge = mock( RowMetaInterface.class );
     RowMetaInterface[]  rmi = new RowMetaInterface[] { forMerge };
     meta.setInputFields( Arrays.asList( field ) );
-    meta.getFields( rowMeta, origin, rmi, nextStep, space, repository, metaStore );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, origin, rmi, nextStep, space, repository, metaStore );
     verify( rowMeta ).mergeRowMeta( eq( forMerge ), eq( origin ) );
   }
 
@@ -150,7 +151,7 @@ public class AvroInputMetaTest {
     meta.passingThruFields = true;
 
     meta.setInputFields( Arrays.asList( field ) );
-    meta.getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, origin, info, nextStep, space, repository, metaStore );
     verify( rowMeta, never() ).mergeRowMeta( any( RowMetaInterface.class ), anyString() );
   }
 
@@ -160,6 +161,6 @@ public class AvroInputMetaTest {
     when( fld.getPentahoType() ).thenReturn( Integer.MIN_VALUE ); // invalid type
 
     meta.setInputFields( Arrays.asList( fld ) );
-    meta.getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, origin, info, nextStep, space, repository, metaStore );
   }
 }

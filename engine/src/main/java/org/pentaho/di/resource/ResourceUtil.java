@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -60,11 +61,11 @@ public class ResourceUtil {
    * @throws KettleException
    *           in case anything goes wrong during serialization
    */
-  public static final TopLevelResource serializeResourceExportInterface( String zipFilename,
+  public static final TopLevelResource serializeResourceExportInterface( Bowl bowl, String zipFilename,
     ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository,
     IMetaStore metaStore ) throws KettleException {
-    return serializeResourceExportInterface(
-      zipFilename, resourceExportInterface, space, repository, metaStore, null, null );
+    return serializeResourceExportInterface( bowl, zipFilename, resourceExportInterface, space, repository,
+                                             metaStore, null, null );
   }
 
   /**
@@ -87,7 +88,7 @@ public class ResourceUtil {
    * @throws KettleException
    *           in case anything goes wrong during serialization
    */
-  public static final TopLevelResource serializeResourceExportInterface( String zipFilename,
+  public static final TopLevelResource serializeResourceExportInterface( Bowl bowl, String zipFilename,
     ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository,
     IMetaStore metaStore, String injectXML, String injectFilename ) throws KettleException {
 
@@ -106,17 +107,17 @@ public class ResourceUtil {
       ResourceNamingInterface namingInterface = new SequenceResourceNaming();
 
       String topLevelResource =
-        resourceExportInterface.exportResources( space, definitions, namingInterface, repository, metaStore );
+        resourceExportInterface.exportResources( bowl, space, definitions, namingInterface, repository, metaStore );
 
       if ( topLevelResource != null && !definitions.isEmpty() ) {
 
         // Create the ZIP file...
         //
-        FileObject fileObject = KettleVFS.getFileObject( zipFilename, space );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( zipFilename, space );
 
         // Store the XML in the definitions in a ZIP file...
         //
-        out = new ZipOutputStream( KettleVFS.getOutputStream( fileObject, false ) );
+        out = new ZipOutputStream( KettleVFS.getInstance( bowl ).getOutputStream( fileObject, false ) );
 
         for ( Map.Entry<String, ResourceDefinition> entry : definitions.entrySet() ) {
           String filename = entry.getKey();

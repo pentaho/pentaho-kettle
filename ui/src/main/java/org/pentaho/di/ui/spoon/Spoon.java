@@ -1089,7 +1089,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public VfsFileChooserDialog getVfsFileChooserDialog( FileObject rootFile, FileObject initialFile ) {
     if ( vfsFileChooserDialog == null ) {
-      vfsFileChooserDialog = new VfsFileChooserDialog( shell, new KettleVfsDelegatingResolver(), rootFile, initialFile );
+      vfsFileChooserDialog = new VfsFileChooserDialog( shell, new KettleVfsDelegatingResolver( executionBowl ),
+                                                       rootFile, initialFile );
     }
     vfsFileChooserDialog.setRootFile( rootFile );
     vfsFileChooserDialog.setInitialFile( initialFile );
@@ -1823,7 +1824,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           } else if ( event.location.contains( "samples/transformations" )
             || event.location.contains( "samples/jobs" ) || event.location.contains( "samples/mapping" ) ) {
             try {
-              FileObject fileObject = KettleVFS.getFileObject( event.location );
+              FileObject fileObject = KettleVFS.getInstance( executionBowl )
+                .getFileObject( event.location );
               if ( fileObject.exists() ) {
                 if ( event.location.endsWith( ".ktr" ) || event.location.endsWith( ".kjb" ) ) {
                   openFile( event.location, false );
@@ -4616,7 +4618,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // See if the file already exists...
         int id = SWT.YES;
         try {
-          FileObject f = KettleVFS.getFileObject( filename );
+          FileObject f = KettleVFS.getInstance( executionBowl ).getFileObject( filename );
           if ( f.exists() ) {
             MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
             mb.setMessage( BaseMessages.getString( PKG, "ExportCmdLineShFiles.FileExistsReplace", filename ) );
@@ -5984,7 +5986,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         lastFileOpened = zipFilename;
         lastFileOpenedConnection = null;
         lastFileOpenedProvider = fileDialogOperation.getProvider();
-        FileObject zipFileObject = KettleVFS.getFileObject(zipFilename);
+        FileObject zipFileObject = KettleVFS.getInstance( executionBowl ).getFileObject(zipFilename);
         if (zipFileObject.exists()) {
           MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL);
           box.setMessage(BaseMessages.getString(PKG, "Spoon.ExportResourceZipFileExists.Message", zipFilename));
@@ -6000,7 +6002,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if (!Utils.isEmpty(zipFilename)) {
           // Export the resources linked to the currently loaded file...
           TopLevelResource topLevelResource =
-                  ResourceUtil.serializeResourceExportInterface(
+                  ResourceUtil.serializeResourceExportInterface( executionBowl,
                           zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStoreSupplier.get() );
           String message =
                   ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(), resourceExportInterface);
@@ -6050,7 +6052,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( dialog.open() != null ) {
           lastDirOpened = dialog.getFilterPath();
           zipFilename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
-          FileObject zipFileObject = KettleVFS.getFileObject( zipFilename );
+          FileObject zipFileObject = KettleVFS.getInstance( executionBowl ).getFileObject( zipFilename );
           if ( zipFileObject.exists() ) {
             MessageBox box = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL );
             box
@@ -6073,7 +6075,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Export the resources linked to the currently loaded file...
       //
       TopLevelResource topLevelResource =
-        ResourceUtil.serializeResourceExportInterface(
+        ResourceUtil.serializeResourceExportInterface( executionBowl,
           zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStoreSupplier.get() );
       String message =
         ResourceUtil.getExplanation( zipFilename, topLevelResource.getResourceName(), resourceExportInterface );

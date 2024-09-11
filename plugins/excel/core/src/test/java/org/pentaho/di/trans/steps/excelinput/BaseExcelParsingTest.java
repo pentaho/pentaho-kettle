@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.excelinput;
 
 import org.junit.Before;
 import org.junit.Ignore;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.steps.file.BaseFileField;
@@ -68,7 +69,8 @@ public class BaseExcelParsingTest extends BaseParsingTest<ExcelInputMeta, ExcelI
    */
   protected void setFields( ExcelInputField... fields ) throws Exception {
     meta.setField( fields );
-    meta.getFields( data.outputRowMeta, meta.getName(), null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), data.outputRowMeta, meta.getName(), null, null, new Variables(), null,
+      null );
   }
 
   /**

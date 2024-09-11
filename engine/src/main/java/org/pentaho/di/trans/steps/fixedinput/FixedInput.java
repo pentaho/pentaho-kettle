@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,7 +73,8 @@ public class FixedInput extends BaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // The conversion logic for when the lazy conversion is turned of is simple:
       // Pretend it's a lazy conversion object anyway and get the native type during conversion.
@@ -256,7 +257,8 @@ public class FixedInput extends BaseStep implements StepInterface {
           return false;
         }
 
-        FileObject fileObject = KettleVFS.getFileObject( data.filename, getTransMeta() );
+        FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( data.filename, getTransMeta() );
         try {
           data.fis = getFileInputStream( fileObject.getURL() );
           data.fc = data.fis.getChannel();

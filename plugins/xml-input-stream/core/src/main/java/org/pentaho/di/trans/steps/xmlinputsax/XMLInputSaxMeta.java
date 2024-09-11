@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -396,7 +397,8 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
     rowLimit = 0L;
   }
 
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < inputFields.length; i++ ) {
       XMLInputSaxField field = inputFields[i];
@@ -540,20 +542,20 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public String[] getFilePaths( VariableSpace space ) {
+  public String[] getFilePaths( Bowl bowl, VariableSpace space ) {
     String[] fileRequired = new String[fileName.length];
     for ( int i = 0; i < fileRequired.length; i++ ) {
       fileRequired[i] = "N";
     }
-    return FileInputList.createFilePathList( space, fileName, fileMask, new String[] { null }, fileRequired );
+    return FileInputList.createFilePathList( bowl, space, fileName, fileMask, new String[] { null }, fileRequired );
   }
 
-  public FileInputList getTextFileList( VariableSpace space ) {
+  public FileInputList getTextFileList( Bowl bowl, VariableSpace space ) {
     String[] fileRequired = new String[fileName.length];
     for ( int i = 0; i < fileRequired.length; i++ ) {
       fileRequired[i] = "N";
     }
-    return FileInputList.createFileList( space, fileName, fileMask, new String[] { null }, fileRequired );
+    return FileInputList.createFileList( bowl, space, fileName, fileMask, new String[] { null }, fileRequired );
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
@@ -574,7 +576,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
       remarks.add( cr );
     }
 
-    String[] files = getFilePaths( transMeta );
+    String[] files = getFilePaths( transMeta.getBowl(), transMeta );
     if ( files == null || files.length == 0 ) {
       cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "No files can be found to read.", stepMeta );
       remarks.add( cr );
@@ -708,7 +710,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
 
-    String[] textFiles = getFilePaths( transMeta );
+    String[] textFiles = getFilePaths( transMeta.getBowl(), transMeta );
     if ( textFiles != null ) {
       for ( int i = 0; i < textFiles.length; i++ ) {
         reference.getEntries().add( new ResourceEntry( textFiles[i], ResourceType.FILE ) );
@@ -734,14 +736,16 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  @Override
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
       //
       for ( int i = 0; i < fileName.length; i++ ) {
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
+        FileObject fileObject = KettleVFS.getInstance( bowl )
+          .getFileObject( space.environmentSubstitute( fileName[i] ), space );
         fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
       }
       return null;

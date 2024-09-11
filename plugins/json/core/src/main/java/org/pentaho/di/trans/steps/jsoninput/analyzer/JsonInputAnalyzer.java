@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,7 +85,7 @@ public class JsonInputAnalyzer extends ExternalResourceStepAnalyzer<JsonInputMet
 
   @Override
   public IMetaverseNode createResourceNode( final IExternalResourceInfo resource ) throws MetaverseException {
-    return createFileNode( resource.getName(), descriptor, DictionaryConst.NODE_TYPE_FILE );
+    return createFileNode( parentTransMeta.getBowl(), resource.getName(), descriptor, DictionaryConst.NODE_TYPE_FILE );
   }
 
   @Override

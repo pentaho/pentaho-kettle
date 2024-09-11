@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -357,7 +357,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     executorJobMeta.clearChanged();
   }
   private void loadFileJob( String fname ) throws KettleException {
-    executorJobMeta = new JobMeta( transMeta.environmentSubstitute( fname ), repository );
+    executorJobMeta = new JobMeta( transMeta.getBowl(), transMeta.environmentSubstitute( fname ), repository );
     executorJobMeta.clearChanged();
   }
 

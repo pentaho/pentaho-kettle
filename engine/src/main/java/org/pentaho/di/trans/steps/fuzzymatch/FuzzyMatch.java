@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -175,8 +175,8 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
 
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields(
-        data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this, repository,
-        metaStore );
+        getTransMeta().getBowl(), data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null,
+        this, repository, metaStore );
 
       // Check lookup field
       data.indexOfMainField = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getMainStreamField() ) );

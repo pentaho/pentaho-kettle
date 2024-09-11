@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -200,7 +200,8 @@ public class AccessOutput extends BaseStep implements StepInterface {
     if ( log.isBasic() ) {
       logBasic( BaseMessages.getString( PKG, "AccessOutput.log.WritingToFile", realFilename ) );
     }
-    FileObject fileObject = KettleVFS.getFileObject( realFilename, getTransMeta() );
+    FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+      .getFileObject( realFilename, getTransMeta() );
     File file = FileUtils.toFile( fileObject.getURL() );
 
     // First open or create the access file

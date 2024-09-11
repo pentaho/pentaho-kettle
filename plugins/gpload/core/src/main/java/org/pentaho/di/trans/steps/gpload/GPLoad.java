@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.di.trans.steps.gpload;
@@ -457,7 +457,7 @@ public class GPLoad extends BaseStep implements StepInterface {
       throw new KettleException( exceptionMessage );
     }
 
-    FileObject fileObject = KettleVFS.getFileObject( pathToFile, getTransMeta() );
+    FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( pathToFile, getTransMeta() );
     try {
       // we either check the existence of the file
       if ( checkExistenceOfFile ) {
@@ -684,7 +684,8 @@ public class GPLoad extends BaseStep implements StepInterface {
       if ( GPLoadMeta.METHOD_AUTO_END.equals( method ) ) {
         if ( meta.getControlFile() != null ) {
           try {
-            fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
+            fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
@@ -697,7 +698,8 @@ public class GPLoad extends BaseStep implements StepInterface {
         // In concurrent mode the data is written to the control file.
         if ( meta.getDataFile() != null ) {
           try {
-            fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getDataFile() ), getTransMeta() );
+            fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( environmentSubstitute( meta.getDataFile() ), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {

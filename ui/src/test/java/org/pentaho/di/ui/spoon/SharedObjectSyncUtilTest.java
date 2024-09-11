@@ -41,6 +41,7 @@ import static org.mockito.Mockito.*;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -108,7 +109,8 @@ public class SharedObjectSyncUtilTest {
 
   @After
   public void tearDown() throws Exception {
-    FileObject sharedObjectsFile = KettleVFS.getFileObject( SHARED_OBJECTS_FILE );
+    FileObject sharedObjectsFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( SHARED_OBJECTS_FILE );
     if ( sharedObjectsFile.exists() ) {
       sharedObjectsFile.delete();
     }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import org.apache.poi.util.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -124,7 +125,7 @@ public class XsdValidatorIntTest {
   private FileObject loadRamFile( String filename ) throws Exception {
     String targetUrl = RAMDIR + "/" + filename;
     try ( InputStream source = getFileInputStream( filename ) ) {
-      FileObject fileObject = KettleVFS.getFileObject( targetUrl );
+      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( targetUrl );
       try ( OutputStream targetStream = fileObject.getContent().getOutputStream() ) {
         IOUtils.copy( source, targetStream );
       }
@@ -135,8 +136,8 @@ public class XsdValidatorIntTest {
   private void testVfsFileTypes( String dataFilename, String schemaFilename, boolean expected ) throws Exception {
     assertNotNull( dataFilename );
     assertNotNull( schemaFilename );
-    assertTrue( KettleVFS.getFileObject( dataFilename ).exists() );
-    assertTrue( KettleVFS.getFileObject( schemaFilename ).exists() );
+    assertTrue( KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( dataFilename ).exists() );
+    assertTrue( KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( schemaFilename ).exists() );
 
     RowMetaInterface inputRowMeta = new RowMeta();
     inputRowMeta.addValueMeta( new ValueMetaString( "DataFile" ) );

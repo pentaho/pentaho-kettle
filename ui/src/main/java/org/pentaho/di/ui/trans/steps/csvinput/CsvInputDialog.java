@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -897,7 +897,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     try {
       String filename = transMeta.environmentSubstitute( meta.getFilename() );
 
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getInstance( transMeta.getBowl() ).getFileObject( filename );
       if ( !( fileObject instanceof LocalFile ) ) {
         // We can only use NIO on local files at the moment, so that's what we
         // limit ourselves to.
@@ -926,7 +926,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     try {
       final String filename = transMeta.environmentSubstitute( meta.getFilename() );
 
-      final FileObject fileObject = KettleVFS.getFileObject( filename );
+      final FileObject fileObject = KettleVFS.getInstance( transMeta.getBowl() ).getFileObject( filename );
       if ( !( fileObject instanceof LocalFile ) ) {
         // We can only use NIO on local files at the moment, so that's what we
         // limit ourselves to.
@@ -1034,7 +1034,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
       try {
 
-        meta.getFields( rowMeta, stepname, null, null, transMeta, repository, metaStore );
+        meta.getFields( transMeta.getBowl(), rowMeta, stepname, null, null, transMeta, repository, metaStore );
 
         TransMeta previewTransMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, meta, stepname );
         final Trans trans = new Trans( previewTransMeta );

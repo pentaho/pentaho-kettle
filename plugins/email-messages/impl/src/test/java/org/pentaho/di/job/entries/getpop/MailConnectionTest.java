@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -112,14 +113,14 @@ public class MailConnectionTest {
     // Should now have six files in the tmp folder...
     // with extensions: {tempdir}/pdi17713-0.junk, {tempdir}/pdi17713-1.junk, and {tempdir}/pdi17713-2.junk
     // without extensions: {tempdir}/pdi17713-0, {tempdir}/pdi17713-1, and {tempdir}/pdi17713-2
-    String validTargetTestRtn = MailConnection.findValidTarget( tmpFileLocation, aBaseFile );
+    String validTargetTestRtn = MailConnection.findValidTarget( DefaultBowl.getInstance(), tmpFileLocation, aBaseFile );
     // Tests that if the base file doesn't already exist (like IMG00003.png), it will use that one
 
     Assert.assertTrue( "Original file name should be tried first.", validTargetTestRtn.endsWith( aBaseFile ) );
 
     // Make sure that the target file already exists so it has to try to find the next available one
     makeAFile( tmpFileLocation + aBaseFile );
-    validTargetTestRtn = MailConnection.findValidTarget( tmpFileLocation, aBaseFile );
+    validTargetTestRtn = MailConnection.findValidTarget( DefaultBowl.getInstance(), tmpFileLocation, aBaseFile );
     // Tests that next available file has a "-3" because 0, 1, and 2 are taken
     Assert.assertTrue( "File extension test failed - expected pdi17713-3.junk as file name", validTargetTestRtn.endsWith( "pdi17713-3.junk" ) );
 
@@ -128,24 +129,24 @@ public class MailConnectionTest {
     //**********************************
 
     aBaseFile = "pdi17713-";
-    validTargetTestRtn = MailConnection.findValidTarget( tmpFileLocation, aBaseFile );
+    validTargetTestRtn = MailConnection.findValidTarget( DefaultBowl.getInstance(), tmpFileLocation, aBaseFile );
     // Makes sure that it will still use the base file, even with no file extension
     Assert.assertTrue( "Original file name should be tried first.", validTargetTestRtn.endsWith( aBaseFile ) );
     makeAFile( tmpFileLocation + aBaseFile );
     // Make sure that the target file already exists so it has to try to find the next available one
-    validTargetTestRtn = MailConnection.findValidTarget( tmpFileLocation, aBaseFile );
+    validTargetTestRtn = MailConnection.findValidTarget( DefaultBowl.getInstance(), tmpFileLocation, aBaseFile );
     // Tests that next available file has a "-3" because 0, 1, and 2 are taken, even without a file extension
     Assert.assertTrue( "File without extension test failed - expected pdi17713-3.junk as file name", validTargetTestRtn.endsWith( "pdi17713-3" ) );
 
     try {
-      validTargetTestRtn = MailConnection.findValidTarget( null, "wibble" );
+      validTargetTestRtn = MailConnection.findValidTarget( DefaultBowl.getInstance(), null, "wibble" );
       Assert.fail( "Expected an IllegalArgumentException with a null parameter for folderName to findValidTarget" );
     } catch ( IllegalArgumentException expected ) {
       // Expect this exception
     }
 
     try {
-      validTargetTestRtn = MailConnection.findValidTarget( "wibble", null );
+      validTargetTestRtn = MailConnection.findValidTarget( DefaultBowl.getInstance(), "wibble", null );
       Assert.fail( "Expected an IllegalArgumentException with a null parameter for fileName to findValidTarget" );
     } catch ( IllegalArgumentException expected ) {
       // Expect this exception
@@ -184,7 +185,8 @@ public class MailConnectionTest {
     boolean cCreated = false;
 
     public Mconn( LogChannelInterface log ) throws KettleException, MessagingException {
-      super( log, MailConnectionMeta.PROTOCOL_IMAP, "junit", 0, "junit", "junit", false, false, "junit" );
+      super( DefaultBowl.getInstance(), log, MailConnectionMeta.PROTOCOL_IMAP, "junit", 0, "junit", "junit", false,
+             false, "junit" );
 
       store = Mockito.mock( Store.class );
 

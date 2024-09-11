@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -254,9 +254,9 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "maximumTimeout", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "maximumTimeout", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.longValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "scaleTime", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "scaleTime", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 

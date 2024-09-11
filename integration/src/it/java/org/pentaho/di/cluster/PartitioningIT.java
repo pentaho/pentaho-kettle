@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,7 +66,8 @@ public class PartitioningIT extends BaseCluster {
 
         // Remove the output file : we don't want to leave too much clutter around
         //
-        FileObject file = KettleVFS.getFileObject( transMeta.environmentSubstitute( filename ) );
+        FileObject file = KettleVFS.getInstance( DefaultBowl.getInstance() )
+          .getFileObject( transMeta.environmentSubstitute( filename ) );
         file.delete();
       }
 
@@ -117,7 +118,8 @@ public class PartitioningIT extends BaseCluster {
 
         // Remove the output file : we don't want to leave too much clutter around
         //
-        FileObject file = KettleVFS.getFileObject( transMeta.environmentSubstitute( filename ) );
+        FileObject file = KettleVFS.getInstance( DefaultBowl.getInstance() )
+          .getFileObject( transMeta.environmentSubstitute( filename ) );
         file.delete();
       }
 

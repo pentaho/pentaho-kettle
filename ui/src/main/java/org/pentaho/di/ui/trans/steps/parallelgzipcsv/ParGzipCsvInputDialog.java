@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -754,7 +754,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 
       String filename = transMeta.environmentSubstitute( meta.getFilename() );
 
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getInstance( transMeta.getBowl() ).getFileObject( filename );
       if ( !( fileObject instanceof LocalFile ) ) {
         // We can only use NIO on local files at the moment, so that's what we limit ourselves to.
         //

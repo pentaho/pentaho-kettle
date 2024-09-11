@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -378,7 +378,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
         // As such, we're going to verify that it's a local file...
         // We're also going to convert VFS FileObject to File
         //
-        fileObject = KettleVFS.getFileObject( vfsFilename, this );
+        fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( vfsFilename, this );
         if ( !( fileObject instanceof LocalFile ) ) {
           // MSSQL BUKL INSERT can only use local files, so that's what we limit ourselves to.
           //
@@ -567,8 +567,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                     // Add filename to output files
                     ResultFile resultFile =
                       new ResultFile(
-                        ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ), parentJob
-                          .getJobname(), toString() );
+                        ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                          .getFileObject( realFilename, this ), parentJob.getJobname(), toString() );
                     result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                   }
 
@@ -830,9 +830,10 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(),
         JobEntryValidatorUtils.fileExistsValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "filename", remarks, ctx );
 
-    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "tablename", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
 }

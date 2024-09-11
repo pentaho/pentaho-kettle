@@ -17,23 +17,17 @@
 
 package org.pentaho.di.shared;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +38,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Provide methods to retrieve and save the shared objects defined in shared.xml that is stored in file system.
@@ -113,7 +116,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
 
     try {
       // Get the FileObject
-      FileObject file = KettleVFS.getFileObject( pathToSharedObjectFile );
+      FileObject file = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( pathToSharedObjectFile );
 
       // If we have a shared file, load the content, otherwise, just keep this one empty
       if ( file.exists() ) {
@@ -198,7 +201,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
 
   protected void saveToFile() throws KettleException {
     try {
-      FileObject fileObject = KettleVFS.getFileObject( sharedObjectFile );
+      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( sharedObjectFile );
       Optional<String> backupFileName = createOrGetFileBackup( fileObject );
       writeToFile( fileObject, backupFileName );
       isInitialized = false;
@@ -209,7 +212,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
 
   protected void writeToFile( FileObject fileObject, Optional<String> backupFileName )
     throws IOException, KettleException {
-    try ( OutputStream outputStream = KettleVFS.getOutputStream( fileObject, false );
+    try ( OutputStream outputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getOutputStream( fileObject, false );
          PrintStream out = new PrintStream( outputStream ) ) {
 
       out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
@@ -253,7 +256,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   }
 
   private boolean getBackupFileFromFileSystem( String backupFileName ) throws KettleException {
-    FileObject fileObject = KettleVFS.getFileObject( backupFileName );
+    FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( backupFileName );
     try {
       return fileObject.exists();
     } catch ( FileSystemException e ) {
@@ -262,10 +265,11 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   }
 
   private boolean copyFile( String src, String dest ) throws IOException, KettleFileException {
-    FileObject srcFile = KettleVFS.getFileObject( src );
-    FileObject destFile = KettleVFS.getFileObject( dest );
+    IKettleVFS vfs = KettleVFS.getInstance( DefaultBowl.getInstance() );
+    FileObject srcFile = vfs.getFileObject( src );
+    FileObject destFile = vfs.getFileObject( dest );
     try ( InputStream in = KettleVFS.getInputStream( srcFile );
-         OutputStream out = KettleVFS.getOutputStream( destFile, false ) ) {
+         OutputStream out = vfs.getOutputStream( destFile, false ) ) {
       IOUtils.copy( in, out );
     }
     return true;

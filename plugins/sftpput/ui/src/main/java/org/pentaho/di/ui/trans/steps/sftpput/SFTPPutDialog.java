@@ -1131,7 +1131,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
   SFTPClient createSFTPClient() throws UnknownHostException, KettleJobException {
     // Create sftp client to host ...
     sftpclient =
-      new SFTPClient(
+      new SFTPClient( transMeta.getBowl(),
         InetAddress.getByName(
           transMeta.environmentSubstitute( wServerName.getText() ) ),
         Const.toInt( transMeta.environmentSubstitute( wServerPort.getText() ), 22 ),

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,7 +73,8 @@ public class SapInput extends BaseStep implements StepInterface {
       // Determine the output row metadata of this step
       //
       data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                      metaStore );
 
       // Pre-calculate the indexes of the parameters for performance reasons...
       //

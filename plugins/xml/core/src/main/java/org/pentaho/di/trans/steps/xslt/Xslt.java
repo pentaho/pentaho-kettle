@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -81,7 +81,8 @@ public class Xslt extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                      metaStore );
 
       // Check if The result field is given
       if ( Utils.isEmpty( meta.getResultfieldname() ) ) {
@@ -138,7 +139,7 @@ public class Xslt extends BaseStep implements StepInterface {
         data.xslfilename = environmentSubstitute( meta.getXslFilename() );
         FileObject file = null;
         try {
-          file = KettleVFS.getFileObject( data.xslfilename );
+          file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( data.xslfilename );
           if ( !file.exists() ) {
             logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLFileNotExists", data.xslfilename ) );
             throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXSLFileNotExists",
@@ -224,7 +225,7 @@ public class Xslt extends BaseStep implements StepInterface {
       }
 
       // Get the template from the cache
-      Transformer transformer = data.getTemplate( data.xslfilename, data.xslIsAfile );
+      Transformer transformer = data.getTemplate( getTransMeta().getBowl(), data.xslfilename, data.xslIsAfile );
 
       // Do we need to set output properties?
       if ( data.setOutputProperties ) {

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -1783,7 +1784,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
   private static void checkAndLoadJSFile( Context actualContext, Scriptable eval_scope, String fileName ) {
     Reader inStream = null;
     try {
-      inStream = new InputStreamReader( KettleVFS.getInputStream( fileName ) );
+      inStream = new InputStreamReader( KettleVFS.getInstance( getBowl( eval_scope ) ).getInputStream( fileName ) );
       actualContext.evaluateReader( eval_scope, inStream, fileName, 1, null );
     } catch ( FileNotFoundException Signal ) {
       Context.reportError( "Unable to open file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
@@ -1811,6 +1812,12 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         // Ignore
       }
     }
+  }
+
+  private static Bowl getBowl( Scriptable scope ) {
+    Object scmO = scope.get( "_step_", scope );
+    ScriptValuesMod scm = (ScriptValuesMod) Context.jsToJava( scmO, ScriptValuesMod.class );
+    return scm.getTransMeta().getBowl();
   }
 
   public static void setVariable( Context actualContext, Scriptable actualObject, Object[] arguments,
@@ -2038,7 +2045,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         FileObject fileObject = null;
 
         try {
-          fileObject = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          fileObject = KettleVFS.getInstance( getBowl( actualObject ) ).getFileObject( Context.toString( ArgList[0] ) );
           if ( fileObject.exists() ) {
             if ( fileObject.getType() == FileType.FILE ) {
               if ( !fileObject.delete() ) {
@@ -2077,7 +2084,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         FileObject fileObject = null;
 
         try {
-          fileObject = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          fileObject = KettleVFS.getInstance( getBowl( actualObject ) ).getFileObject( Context.toString( ArgList[0] ) );
           if ( !fileObject.exists() ) {
             fileObject.createFolder();
           } else {
@@ -2114,9 +2121,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
         try {
           // Source file to copy
-          fileSource = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          Bowl bowl = getBowl( actualObject );
+          fileSource = KettleVFS.getInstance( bowl ).getFileObject( Context.toString( ArgList[0] ) );
           // Destination filename
-          fileDestination = KettleVFS.getFileObject( Context.toString( ArgList[1] ) );
+          fileDestination = KettleVFS.getInstance( bowl ).getFileObject( Context.toString( ArgList[1] ) );
           if ( fileSource.exists() ) {
             // Source file exists...
             if ( fileSource.getType() == FileType.FILE ) {
@@ -2173,7 +2181,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          file = KettleVFS.getInstance( getBowl( actualObject ) ).getFileObject( Context.toString( ArgList[0] ) );
           long filesize = 0;
           if ( file.exists() ) {
             if ( file.getType().equals( FileType.FILE ) ) {
@@ -2216,7 +2224,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          file = KettleVFS.getInstance( getBowl( actualObject ) ).getFileObject( Context.toString( ArgList[0] ) );
           boolean isafile = false;
           if ( file.exists() ) {
             if ( file.getType().equals( FileType.FILE ) ) {
@@ -2259,7 +2267,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          file = KettleVFS.getInstance( getBowl( actualObject ) ).getFileObject( Context.toString( ArgList[0] ) );
           boolean isafolder = false;
           if ( file.exists() ) {
             if ( file.getType().equals( FileType.FOLDER ) ) {
@@ -2302,7 +2310,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          file = KettleVFS.getInstance( getBowl( actualObject ) ).getFileObject( Context.toString( ArgList[0] ) );
           String Filename = null;
           if ( file.exists() ) {
             Filename = file.getName().getBaseName().toString();
@@ -2343,7 +2351,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          file = KettleVFS.getInstance( getBowl( actualObject ) ).getFileObject( Context.toString( ArgList[0] ) );
           String Extension = null;
           if ( file.exists() ) {
             Extension = file.getName().getExtension().toString();
@@ -2384,7 +2392,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          file = KettleVFS.getInstance( getBowl( actualObject ) ).getFileObject( Context.toString( ArgList[0] ) );
           String foldername = null;
           if ( file.exists() ) {
             foldername = KettleVFS.getFilename( file.getParent() );
@@ -2426,7 +2434,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
         try {
           // Source file
-          file = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          file = KettleVFS.getInstance( getBowl( actualObject ) ).getFileObject( Context.toString( ArgList[0] ) );
           String dateformat = Context.toString( ArgList[1] );
           if ( isNull( dateformat ) ) {
             dateformat = "yyyy-MM-dd";
@@ -2559,9 +2567,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
         try {
           // Source file to move
-          fileSource = KettleVFS.getFileObject( Context.toString( ArgList[0] ) );
+          Bowl bowl = getBowl( actualObject );
+          fileSource = KettleVFS.getInstance( bowl ).getFileObject( Context.toString( ArgList[0] ) );
           // Destination filename
-          fileDestination = KettleVFS.getFileObject( Context.toString( ArgList[1] ) );
+          fileDestination = KettleVFS.getInstance( bowl ).getFileObject( Context.toString( ArgList[1] ) );
           if ( fileSource.exists() ) {
             // Source file exists...
             if ( fileSource.getType() == FileType.FILE ) {
@@ -2791,7 +2800,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
               return Context.getUndefinedValue();
             }
             // Returns file content
-            oRC = new String( LoadFileInput.getFileBinaryContent( Context.toString( ArgList[0] ) ) );
+            oRC = new String( LoadFileInput.getFileBinaryContent( getBowl( actualObject ),
+                                                                  Context.toString( ArgList[0] ) ) );
           } catch ( Exception e ) {
             throw Context
               .reportRuntimeError( "The function call loadFileContent throw an error : " + e.toString() );
@@ -2809,7 +2819,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
               encoding = Context.toString( ArgList[1] );
             }
             // Returns file content
-            oRC = new String( LoadFileInput.getFileBinaryContent( Context.toString( ArgList[0] ) ), encoding );
+            oRC = new String( LoadFileInput.getFileBinaryContent( getBowl( actualObject ),
+                                                                  Context.toString( ArgList[0] ) ), encoding );
           } catch ( Exception e ) {
             throw Context
               .reportRuntimeError( "The function call loadFileContent throw an error : " + e.toString() );

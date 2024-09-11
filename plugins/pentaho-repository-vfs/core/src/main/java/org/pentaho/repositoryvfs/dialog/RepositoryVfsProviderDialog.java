@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.repositoryvfs.dialog;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -57,7 +58,8 @@ public class RepositoryVfsProviderDialog extends CustomVfsUiPanel {
 
   public FileObject resolveFile( String fileUri ) throws FileSystemException {
     try {
-      return KettleVFS.getFileObject( fileUri, getVariableSpace(), getFileSystemOptions() );
+      return KettleVFS.getInstance( DefaultBowl.getInstance() )
+        .getFileObject( fileUri, getVariableSpace(), getFileSystemOptions() );
     } catch ( KettleFileException e ) {
       throw new FileSystemException( e );
     }

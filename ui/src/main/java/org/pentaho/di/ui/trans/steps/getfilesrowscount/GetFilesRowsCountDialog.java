@@ -819,7 +819,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
         try {
           GetFilesRowsCountMeta tfii = new GetFilesRowsCountMeta();
           getInfo( tfii );
-          FileInputList fileInputList = tfii.getFiles( transMeta );
+          FileInputList fileInputList = tfii.getFiles( transMeta.getBowl(), transMeta );
           String[] files = fileInputList.getFileStrings();
 
           if ( files.length > 0 ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.utils.TestUtils;
 
 public class JobEntryGetPOPTest {
@@ -67,6 +68,7 @@ public class JobEntryGetPOPTest {
 
     Mockito.when( parentJob.getLogLevel() ).thenReturn( LogLevel.BASIC );
     entry.setParentJob( parentJob );
+    entry.setParentJobMeta( new JobMeta() );
     entry.setSaveMessage( true );
 
     Mockito.when( message.getMessageNumber() ).thenReturn( 1 );

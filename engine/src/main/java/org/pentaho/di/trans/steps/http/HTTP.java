@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -301,7 +301,8 @@ public class HTTP extends BaseStep implements StepInterface {
     if ( first ) {
       data.outputRowMeta = getInputRowMeta().clone();
       data.inputRowMeta = getInputRowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       if ( meta.isUrlInField() ) {
         if ( Utils.isEmpty( meta.getUrlField() ) ) {

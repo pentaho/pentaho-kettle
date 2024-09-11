@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertNotNull;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.layout.output.ReportProcessor;
@@ -71,7 +72,8 @@ public class ReportExportTaskTest {
     when( swingGuiContext.getLocale() ).thenReturn( Locale.US );
     when( swingGuiContext.getStatusListener() ).thenReturn( mock( StatusListener.class ) );
 
-    Runnable exportTask = new ReportExportTask( masterReport, swingGuiContext, targetPath, createParentFolder ) {
+    Runnable exportTask = new ReportExportTask( DefaultBowl.getInstance(), masterReport, swingGuiContext, targetPath,
+      createParentFolder ) {
       protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
         return null;
       }
@@ -87,7 +89,8 @@ public class ReportExportTaskTest {
     when( swingGuiContext.getLocale() ).thenReturn( Locale.US );
     when( swingGuiContext.getStatusListener() ).thenReturn( mock( StatusListener.class ) );
 
-    Runnable exportTask = new ReportExportTask( masterReport, swingGuiContext, targetPath, createParentFolder ) {
+    Runnable exportTask = new ReportExportTask( DefaultBowl.getInstance(), masterReport, swingGuiContext, targetPath,
+      createParentFolder ) {
       protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
         PdfOutputProcessor outputProcessor =
           new PdfOutputProcessor( masterReport.getConfiguration(), fout, masterReport.getResourceManager() );
@@ -108,7 +111,8 @@ public class ReportExportTaskTest {
     when( swingGuiContext.getLocale() ).thenReturn( Locale.UK );
     when( swingGuiContext.getStatusListener() ).thenReturn( mock( StatusListener.class ) );
 
-    Runnable exportTask = new ReportExportTask( masterReport, swingGuiContext, targetPath, createParentFolder ) {
+    Runnable exportTask = new ReportExportTask( DefaultBowl.getInstance(), masterReport, swingGuiContext, targetPath,
+      createParentFolder ) {
       protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
         PdfOutputProcessor outputProcessor =
           new PdfOutputProcessor( masterReport.getConfiguration(), fout, masterReport.getResourceManager() );

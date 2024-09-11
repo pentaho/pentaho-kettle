@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import javax.naming.NamingException;
 import javax.naming.ldap.InitialLdapContext;
 
 import com.google.common.base.Joiner;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
@@ -60,12 +61,15 @@ public class LdapProtocol {
 
   private final Set<String> binaryAttributes;
 
+  protected Bowl bowl;
+
   public InitialLdapContext getCtx() {
     return ctx;
   }
 
-  public LdapProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
+  public LdapProtocol( Bowl bowl, LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
                        Collection<String> binaryAttributes ) {
+    this.bowl = bowl;
     this.log = log;
     hostname = variableSpace.environmentSubstitute( meta.getHost() );
     port = Const.toInt( variableSpace.environmentSubstitute( meta.getPort() ), LDAPConnection.DEFAULT_PORT );
@@ -92,7 +96,8 @@ public class LdapProtocol {
     return "LDAP";
   }
 
-  protected void setupEnvironment( Map<String, String> env, String username, String password ) throws KettleException {
+  protected void setupEnvironment( Map<String, String> env, String username, String password )
+    throws KettleException {
     env.put( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory" );
     env.put( "java.naming.ldap.derefAliases", derefAliases );
     env.put( Context.REFERRAL, referral );

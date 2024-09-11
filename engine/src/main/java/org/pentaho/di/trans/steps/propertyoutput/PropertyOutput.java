@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,7 +73,8 @@ public class PropertyOutput extends BaseStep implements StepInterface {
       first = false;
       data.inputRowMeta = getInputRowMeta();
       data.outputRowMeta = data.inputRowMeta.clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // Let's take the index of Key field ...
       data.indexOfKeyField = data.inputRowMeta.indexOfValue( meta.getKeyField() );
@@ -176,7 +177,8 @@ public class PropertyOutput extends BaseStep implements StepInterface {
   }
 
   private void openNewFile() throws KettleException {
-    try ( FileObject newFile = KettleVFS.getFileObject( data.filename, getTransMeta() ) ) {
+    try ( FileObject newFile = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( data.filename, getTransMeta() ) ) {
       data.pro = new Properties();
       data.KeySet.clear();
 
@@ -230,7 +232,8 @@ public class PropertyOutput extends BaseStep implements StepInterface {
       return true;
     }
     boolean retval = false;
-    try ( OutputStream propsFile = KettleVFS.getOutputStream( data.file, false ) ) {
+    try ( OutputStream propsFile = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getOutputStream( data.file, false ) ) {
       data.pro.store( propsFile, environmentSubstitute( meta.getComment() ) );
 
       if ( meta.isAddToResult() ) {

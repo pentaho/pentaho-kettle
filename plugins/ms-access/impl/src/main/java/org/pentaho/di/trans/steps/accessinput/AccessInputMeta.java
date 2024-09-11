@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -851,7 +852,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     int i;
@@ -1101,9 +1102,9 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public FileInputList getFiles( VariableSpace space ) {
+  public FileInputList getFiles( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFileList(
-      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
+      bowl, space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
@@ -1134,7 +1135,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
       remarks.add( cr );
     }
 
-    FileInputList fileInputList = getFiles( transMeta );
+    FileInputList fileInputList = getFiles( transMeta.getBowl(), transMeta );
     // String files[] = getFiles();
     if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
       cr =
@@ -1209,8 +1210,10 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  @Override
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -1218,7 +1221,8 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
       // Replace the filename ONLY (folder or filename)
       //
       for ( int i = 0; i < fileName.length; i++ ) {
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
+        FileObject fileObject = KettleVFS.getInstance( bowl )
+          .getFileObject( space.environmentSubstitute( fileName[i] ), space );
         fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
       }
       return null;

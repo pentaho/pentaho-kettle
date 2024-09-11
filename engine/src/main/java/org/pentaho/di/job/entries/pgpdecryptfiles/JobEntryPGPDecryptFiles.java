@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -401,7 +402,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
         }
         FileObject folder = null;
         try {
-          folder = KettleVFS.getFileObject( MoveToFolder );
+          folder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( MoveToFolder );
           if ( !folder.exists() ) {
             if ( isDetailed() ) {
               logDetailed( BaseMessages
@@ -432,7 +433,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
         }
       }
 
-      gpg = new GPG( environmentSubstitute( gpglocation ), log );
+      gpg = new GPG( parentJobMeta.getBowl(), environmentSubstitute( gpglocation ), log );
 
       if ( arg_from_previous ) {
         if ( isDetailed() ) {
@@ -580,11 +581,12 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
     String realWildcard = environmentSubstitute( wildcard );
 
     try {
+      IKettleVFS vfs = KettleVFS.getInstance( parentJobMeta.getBowl() );
 
-      sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername );
-      destinationfilefolder = KettleVFS.getFileObject( realDestinationFilefoldername );
+      sourcefilefolder = vfs.getFileObject( realSourceFilefoldername );
+      destinationfilefolder = vfs.getFileObject( realDestinationFilefoldername );
       if ( !Utils.isEmpty( MoveToFolder ) ) {
-        movetofolderfolder = KettleVFS.getFileObject( MoveToFolder );
+        movetofolderfolder = vfs.getFileObject( MoveToFolder );
       }
 
       if ( sourcefilefolder.exists() ) {
@@ -624,7 +626,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
               String destinationfilenamefull =
                 destinationfilefolder.toString() + Const.FILE_SEPARATOR + shortfilename;
-              FileObject destinationfile = KettleVFS.getFileObject( destinationfilenamefull );
+              FileObject destinationfile = vfs.getFileObject( destinationfilenamefull );
 
               entrystatus =
                 DecryptFile(
@@ -634,7 +636,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
             } else if ( sourcefilefolder.getType().equals( FileType.FILE ) && destination_is_a_file ) {
               // Source is a file, destination is a file
 
-              FileObject destinationfile = KettleVFS.getFileObject( realDestinationFilefoldername );
+              FileObject destinationfile = vfs.getFileObject( realDestinationFilefoldername );
 
               // return destination short filename
               String shortfilename = destinationfile.getName().getBaseName();
@@ -649,7 +651,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
               String destinationfilenamefull =
                 destinationfilefolder.getParent().toString() + Const.FILE_SEPARATOR + shortfilename;
-              destinationfile = KettleVFS.getFileObject( destinationfilenamefull );
+              destinationfile = vfs.getFileObject( destinationfilenamefull );
 
               entrystatus =
                 DecryptFile(
@@ -815,7 +817,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
           String movetofilenamefull =
             destinationfilename.getParent().toString() + Const.FILE_SEPARATOR + short_filename;
-          destinationfile = KettleVFS.getFileObject( movetofilenamefull );
+          destinationfile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( movetofilenamefull );
 
           gpg.decryptFile( sourcefilename, passPharse, destinationfile );
 
@@ -847,7 +849,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
           }
 
           String movetofilenamefull = movetofolderfolder.toString() + Const.FILE_SEPARATOR + short_filename;
-          destinationfile = KettleVFS.getFileObject( movetofilenamefull );
+          destinationfile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( movetofilenamefull );
           if ( !destinationfile.exists() ) {
             sourcefilename.moveTo( destinationfile );
             if ( isDetailed() ) {
@@ -883,7 +885,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
               String destinationfilenamefull =
                 movetofolderfolder.toString() + Const.FILE_SEPARATOR + short_filename;
-              destinationfile = KettleVFS.getFileObject( destinationfilenamefull );
+              destinationfile = KettleVFS.getInstance( parentJobMeta.getBowl() )
+                .getFileObject( destinationfilenamefull );
 
               sourcefilename.moveTo( destinationfile );
               if ( isDetailed() ) {
@@ -958,7 +961,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
         // Built destination filename
         file_name =
-          KettleVFS.getFileObject( realDestinationFilefoldername
+          KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realDestinationFilefoldername
             + Const.FILE_SEPARATOR + short_filename_from_basefolder );
 
         if ( !Currentfile.getParent().toString().equals( sourcefilefolder.toString() ) ) {
@@ -1031,7 +1034,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
   private void addFileToResultFilenames( String fileaddentry, Result result, Job parentJob ) {
     try {
       ResultFile resultFile =
-        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileaddentry ), parentJob
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                        .getFileObject( fileaddentry ), parentJob
           .getJobname(), toString() );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
@@ -1370,7 +1374,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+    boolean res = JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "arguments",
+      remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res == false ) {
       return;
@@ -1381,7 +1386,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < source_filefolder.length; i++ ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "arguments[" + i + "]",
+                                                      remarks, ctx );
     }
   }
 

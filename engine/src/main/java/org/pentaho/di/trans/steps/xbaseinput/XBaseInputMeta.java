@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -346,10 +347,10 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
-    FileInputList fileList = getTextFileList( space );
+    FileInputList fileList = getTextFileList( bowl, space );
     if ( fileList.nrOfFiles() == 0 ) {
       throw new KettleStepException( BaseMessages
         .getString( PKG, "XBaseInputMeta.Exception.NoFilesFoundToProcess" ) );
@@ -501,14 +502,14 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     return new XBaseInputData();
   }
 
-  public String[] getFilePaths( VariableSpace space ) {
+  public String[] getFilePaths( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFilePathList(
-      space, new String[] { dbfFileName }, new String[] { null }, new String[] { null }, new String[] { "N" } );
+      bowl, space, new String[] { dbfFileName }, new String[] { null }, new String[] { null }, new String[] { "N" } );
   }
 
-  public FileInputList getTextFileList( VariableSpace space ) {
-    return FileInputList.createFileList(
-      space, new String[] { dbfFileName }, new String[] { null }, new String[] { null }, new String[] { "N" } );
+  public FileInputList getTextFileList( Bowl bowl, VariableSpace space ) {
+    return FileInputList.createFileList( bowl, space, new String[] { dbfFileName }, new String[] { null },
+      new String[] { null }, new String[] { "N" } );
   }
 
   @Override
@@ -549,7 +550,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
@@ -560,7 +561,8 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.dbf
         // To : /home/matt/test/files/foo/bar.dbf
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( dbfFileName ), space );
+        FileObject fileObject = KettleVFS.getInstance( bowl )
+          .getFileObject( space.environmentSubstitute( dbfFileName ), space );
 
         // If the file doesn't exist, forget about this effort too!
         //

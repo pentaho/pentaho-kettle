@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,9 +70,8 @@ public class LDAPInput extends BaseStep implements StepInterface {
 
         // Create the output row meta-data
         data.outputRowMeta = new RowMeta();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                      // metadata
-                                                                                                      // populated
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                        metaStore );
 
         // Create convert meta-data objects that will contain Date & Number formatters
         //
@@ -159,8 +158,8 @@ public class LDAPInput extends BaseStep implements StepInterface {
       // Create the output row meta-data
       data.nrIncomingFields = getInputRowMeta().size();
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the metadata
-                                                                                                    // populated
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                      metaStore );
 
       // Create convert meta-data objects that will contain Date & Number formatters
       //
@@ -358,7 +357,7 @@ public class LDAPInput extends BaseStep implements StepInterface {
     }
 
     // Define new LDAP connection
-    data.connection = new LDAPConnection( log, this, meta, data.attributesBinary );
+    data.connection = new LDAPConnection( getTransMeta().getBowl(), log, this, meta, data.attributesBinary );
 
     for ( int i = 0; i < data.attrReturned.length; i++ ) {
       LDAPInputField field = meta.getInputFields()[i];

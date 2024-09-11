@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.googleanalytics;
+
+import org.pentaho.di.core.bowl.DefaultBowl;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,6 +67,6 @@ public class GoogleAnalyticsApiFacadeTest {
 
   @Test
   public void exceptionIsThrowsForNonExistingFiles() throws Exception {
-    GoogleAnalyticsApiFacade.createFor( "application-name", "account", path );
+    GoogleAnalyticsApiFacade.createFor( DefaultBowl.getInstance(), "application-name", "account", path );
   }
 }

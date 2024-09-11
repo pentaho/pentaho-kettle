@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.validator.util.ValidatorUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -46,7 +47,7 @@ public class FileExistsValidator extends AbstractFileValidator {
   private static final String KEY_FAIL_IF_DOES_NOT_EXIST =
     "org.pentaho.di.job.entries.createfile.failIfDoesNotExist";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName,
+  public boolean validate( Bowl bowl, CheckResultSourceInterface source, String propertyName,
     List<CheckResultInterface> remarks, ValidatorContext context ) {
 
     String filename = ValidatorUtils.getValueAsString( source, propertyName );
@@ -60,7 +61,7 @@ public class FileExistsValidator extends AbstractFileValidator {
     String realFileName = variableSpace.environmentSubstitute( filename );
     FileObject fileObject = null;
     try {
-      fileObject = KettleVFS.getFileObject( realFileName, variableSpace );
+      fileObject = KettleVFS.getInstance( bowl ).getFileObject( realFileName, variableSpace );
       if ( fileObject == null || ( fileObject != null && !fileObject.exists() && failIfDoesNotExist ) ) {
         JobEntryValidatorUtils.addFailureRemark(
           source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils.getLevelOnFail(

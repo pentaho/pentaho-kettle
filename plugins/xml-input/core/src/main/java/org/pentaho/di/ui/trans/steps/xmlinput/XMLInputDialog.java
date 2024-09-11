@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -786,7 +786,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         try {
           XMLInputMeta tfii = new XMLInputMeta();
           getInfo( tfii );
-          FileInputList fileInputList = tfii.getFiles( transMeta );
+          FileInputList fileInputList = tfii.getFiles( transMeta.getBowl(), transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
@@ -1137,7 +1137,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
       // Keep the list of positions
       List<XMLInputFieldPosition> path = new ArrayList<XMLInputFieldPosition>(); // ArrayList of XMLInputFieldPosition
 
-      FileInputList inputList = meta.getFiles( transMeta );
+      FileInputList inputList = meta.getFiles( transMeta.getBowl(), transMeta );
 
       for ( int f = 0; f < inputList.getFiles().size() && !finished; f++ ) {
         // Open the file...

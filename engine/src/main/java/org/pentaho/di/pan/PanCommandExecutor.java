@@ -28,6 +28,8 @@ import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -150,8 +152,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         // Try to load the transformation from file, even if it failed to load from the repository
         // You could implement some fail-over mechanism this way.
         if ( trans == null ) {
-          trans = loadTransFromFilesystem( params.getLocalInitialDir(), params.getLocalFile(), params.getLocalJarFile(),
-            params.getBase64Zip() );
+          trans = loadTransFromFilesystem( DefaultBowl.getInstance(), params.getLocalInitialDir(),
+            params.getLocalFile(), params.getLocalJarFile(), params.getBase64Zip() );
         }
 
       }
@@ -358,8 +360,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     return trans; // return transformation loaded from the repo
   }
 
-  public Trans loadTransFromFilesystem( String initialDir, String filename, String jarFilename, Serializable base64Zip )
-    throws Exception {
+  public Trans loadTransFromFilesystem( Bowl bowl, String initialDir, String filename, String jarFilename,
+    Serializable base64Zip ) throws Exception {
 
     Trans trans = null;
 
@@ -380,7 +382,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       }
 
       logDebug( "Pan.Log.LoadingTransXML", "" + filepath );
-      TransMeta transMeta = new TransMeta( filepath );
+      TransMeta transMeta = new TransMeta( bowl, filepath );
       trans = new Trans( transMeta );
     }
 

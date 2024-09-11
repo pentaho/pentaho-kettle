@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -75,7 +75,8 @@ public class WebServiceAvailable extends BaseStep implements StepInterface {
       data.previousRowMeta = getInputRowMeta().clone();
       data.NrPrevFields = data.previousRowMeta.size();
       data.outputRowMeta = data.previousRowMeta;
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // Check is URL field is provided
       if ( Utils.isEmpty( meta.getURLField() ) ) {

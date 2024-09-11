@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -76,7 +77,7 @@ public class ReplaceStringMetaTest {
     VariableSpace space = mock( VariableSpace.class );
     Repository repository = mock( Repository.class );
     IMetaStore metaStore = mock( IMetaStore.class );
-    meta.getFields( inputRowMeta, "test", null, nextStep, space, repository, metaStore );
+    meta.getFields( DefaultBowl.getInstance(), inputRowMeta, "test", null, nextStep, space, repository, metaStore );
 
     ArgumentCaptor<ValueMetaInterface> argument = ArgumentCaptor.forClass( ValueMetaInterface.class );
     verify( inputRowMeta ).addValueMeta( argument.capture() );

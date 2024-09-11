@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -117,6 +117,7 @@ public class AvroOutput extends BaseStep implements StepInterface {
     }
     TransMeta parentTransMeta = meta.getParentStepMeta().getParentTransMeta();
     data.output = new PentahoAvroOutputFormat();
+    data.output.setBowl( getTransMeta().getBowl() );
     data.output
       .setOutputFile( parentTransMeta.environmentSubstitute( meta.constructOutputFilename( meta.getFilename() ) ),
         meta.isOverrideOutput() );

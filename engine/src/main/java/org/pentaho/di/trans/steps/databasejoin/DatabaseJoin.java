@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,7 +61,7 @@ public class DatabaseJoin extends BaseDatabaseStep implements StepInterface {
         first = false;
         prepareSQL( meta, data );
         data.outputRowMeta = rowMeta.clone();
-        meta.getFields(
+        meta.getFields( getTransMeta().getBowl(),
             data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
             repository, metaStore );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 
@@ -40,7 +41,7 @@ public class NotNullValidator implements JobEntryValidator {
 
   private static final String VALIDATOR_NAME = "notNull";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName,
+  public boolean validate( Bowl bowl, CheckResultSourceInterface source, String propertyName,
     List<CheckResultInterface> remarks, ValidatorContext context ) {
     Object value = null;
     try {
