@@ -1024,8 +1024,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
         if ( parsePosition.getIndex() < string.length() ) {
           throw new KettleValueException( toString()
-              + " : couldn't convert String to number : non-numeric character found at position "
-              + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
+              + " : couldn't convert String to number with " + ( ( getFormatMask() == null ) ? "empty format" : "format [" + getFormatMask() + "]" ) +  ": unexpected character found at position "
+              + ( parsePosition.getErrorIndex() + 1 ) + " for value [" + string + "]" );
         }
 
       }
