@@ -12,10 +12,10 @@
 
 package org.pentaho.di.www;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -101,24 +101,24 @@ public class CarteTest {
 
   @Test
   public void callStopCarteRestService() throws Exception {
-    WebResource status = mock( WebResource.class );
-    doReturn( "<serverstatus>" ).when( status ).get( String.class );
+    WebTarget status = mock( WebTarget.class );
+    doReturn( "<serverstatus>" ).when( status.request() ).get();
 
-    WebResource stop = mock( WebResource.class );
-    doReturn( "Shutting Down" ).when( stop ).get( String.class );
+    WebTarget stop = mock( WebTarget.class );
+    doReturn( "Shutting Down" ).when( stop.request() ).get();
 
     Client client = mock( Client.class );
-    doCallRealMethod().when( client ).addFilter( any( HTTPBasicAuthFilter.class ) );
-    doCallRealMethod().when( client ).getHeadHandler();
-    doReturn( status ).when( client ).resource( "http://localhost:8080/kettle/status/?xml=Y" );
-    doReturn( stop ).when( client ).resource( "http://localhost:8080/kettle/stopCarte" );
+    HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( "admin", "password" );
+    doReturn( client ).when( client ).register( feature );
+    doReturn( status ).when( client ).target( "http://localhost:8080/kettle/status/?xml=Y" );
+    doReturn( stop ).when( client ).target( "http://localhost:8080/kettle/stopCarte" );
 
-    when( Client.create( any( ClientConfig.class ) ) ).thenReturn( client );
+    when( ClientBuilder.newClient() ).thenReturn( client );
 
     Carte.callStopCarteRestService( "localhost", "8080", "admin", "Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde", false, null );
 
     // the expected value is: "Basic <base64 encoded username:password>"
     assertEquals( "Basic " + new String( Base64.getEncoder().encode( "admin:password".getBytes( "utf-8" ) ) ),
-      InternalState.getInternalState( client.getHeadHandler(), "authentication" ) );
+      InternalState.getInternalState( client.getConfiguration(), "authentication" ) );
   }
 }
