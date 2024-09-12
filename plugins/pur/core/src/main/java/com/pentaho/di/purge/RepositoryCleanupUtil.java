@@ -22,7 +22,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
@@ -35,14 +37,13 @@ import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurity
 import org.pentaho.platform.util.RepositoryPathEncoder;
 
 import com.pentaho.di.messages.Messages;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.multipart.FormDataMultiPart;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 
 /**
  * Command line utility for purging files, file revisions, or shared objects. Passes through to purge services.
@@ -121,11 +122,11 @@ public class RepositoryCleanupUtil {
       String serviceURL = createPurgeServiceURL();
       form = createParametersForm();
 
-      WebResource resource = client.resource( serviceURL );
-      ClientResponse response = resource.type( MediaType.MULTIPART_FORM_DATA ).post( ClientResponse.class, form );
+      WebTarget target = client.target( serviceURL );
+      Response response = target.request( MediaType.MULTIPART_FORM_DATA ).post( Entity.entity(form, MediaType.MULTIPART_FORM_DATA_TYPE ) );
 
       if ( response != null && response.getStatus() == 200 ) {
-        String resultLog = response.getEntity( String.class );
+        String resultLog = response.getEntity().toString();
         String logName = writeLog( resultLog );
         writeOut( Messages.getInstance().getString( "REPOSITORY_CLEANUP_UTIL.INFO_0001.OP_SUCCESS", logName ), false );
       } else {
@@ -142,7 +143,7 @@ public class RepositoryCleanupUtil {
       }
     } finally {
       if ( client != null ) {
-        client.destroy();
+        client.notify();
       }
 
       if ( form != null ) {
@@ -353,14 +354,15 @@ public class RepositoryCleanupUtil {
     KettleClientEnvironment.init();
 
     if ( client == null ) {
-      ClientConfig clientConfig = new DefaultClientConfig();
-      clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
-      client = Client.create( clientConfig );
-      client.addFilter( new HTTPBasicAuthFilter( username, Encr.decryptPasswordOptionallyEncrypted( password ) ) );
+      ClientConfig clientConfig = new ClientConfig();
+      clientConfig.property( ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE );
+      client = ClientBuilder.newClient( clientConfig );
+      HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( username, Encr.decryptPasswordOptionallyEncrypted( password ) );
+      client.register( feature );
     }
 
-    WebResource resource = client.resource( url + AUTHENTICATION + AdministerSecurityAction.NAME );
-    String response = resource.get( String.class );
+    WebTarget target = client.target( url + AUTHENTICATION + AdministerSecurityAction.NAME );
+    String response = target.request( MediaType.TEXT_PLAIN ).get( String.class );
 
     if ( !response.equals( "true" ) ) {
       throw new Exception( Messages.getInstance().getString( "REPOSITORY_CLEANUP_UTIL.ERROR_0012.ACCESS_DENIED" ) );
@@ -395,25 +397,25 @@ public class RepositoryCleanupUtil {
   private FormDataMultiPart createParametersForm() {
     FormDataMultiPart form = new FormDataMultiPart();
     if ( verCount != -1 && !purgeRev ) {
-      form.field( VER_COUNT, Integer.toString( verCount ), MediaType.MULTIPART_FORM_DATA_TYPE );
+      form.field( VER_COUNT, Integer.toString( verCount ) );
     }
     if ( delFrom != null && !purgeRev ) {
-      form.field( DEL_DATE, delFrom, MediaType.MULTIPART_FORM_DATA_TYPE );
+      form.field( DEL_DATE, delFrom );
     }
     if ( fileFilter != null ) {
-      form.field( FILE_FILTER, fileFilter, MediaType.MULTIPART_FORM_DATA_TYPE );
+      form.field( FILE_FILTER, fileFilter );
     }
     if ( logLevel != null ) {
-      form.field( LOG_LEVEL, logLevel, MediaType.MULTIPART_FORM_DATA_TYPE );
+      form.field( LOG_LEVEL, logLevel );
     }
     if ( purgeFiles ) {
-      form.field( PURGE_FILES, Boolean.toString( purgeFiles ), MediaType.MULTIPART_FORM_DATA_TYPE );
+      form.field( PURGE_FILES, Boolean.toString( purgeFiles ) );
     }
     if ( purgeRev ) {
-      form.field( PURGE_REV, Boolean.toString( purgeRev ), MediaType.MULTIPART_FORM_DATA_TYPE );
+      form.field( PURGE_REV, Boolean.toString( purgeRev ) );
     }
     if ( purgeShared ) {
-      form.field( PURGE_SHARED, Boolean.toString( purgeShared ), MediaType.MULTIPART_FORM_DATA_TYPE );
+      form.field( PURGE_SHARED, Boolean.toString( purgeShared ) );
     }
     return form;
   }

@@ -13,7 +13,7 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import com.sun.jersey.api.container.httpserver.HttpServerFactory;
+import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.After;
 import org.junit.Assume;
@@ -39,6 +39,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,7 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -150,7 +151,7 @@ public class RestIT {
       stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     verify( stepMockHelper.trans, never() ).stopAll();
-    server = HttpServerFactory.create( HTTP_LOCALHOST_9998 );
+    server = JdkHttpServerFactory.createHttpServer( new URI( HTTP_LOCALHOST_9998 ), null );
     server.start();
   }
 
