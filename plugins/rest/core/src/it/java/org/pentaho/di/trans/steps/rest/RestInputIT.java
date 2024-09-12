@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,7 +49,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
-import com.sun.jersey.spi.container.servlet.ServletContainer;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 /**
  * Regression test case for PDI-13072
@@ -68,7 +68,7 @@ public class RestInputIT {
     tester.setContextPath( "/context" );
     tester.setResourceBase( RestInputIT.class.getResource( "/" ).getFile() );
     final ServletHolder servletHolder = tester.addServlet( ServletContainer.class, "/*" );
-    servletHolder.setInitParameter( "com.sun.jersey.config.property.classpath", "/" );
+    servletHolder.setInitParameter( "javax.ws.rs.Application", "org.glassfish.jersey.server.ResourceConfig" );
     servletHolder.setInitParameter( "jersey.config.server.provider.classnames", SimpleRestService.class.getName() );
     tester.start();
   }
