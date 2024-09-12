@@ -21,10 +21,10 @@ import org.pentaho.di.repository.pur.PurRepositoryRestService;
 import org.pentaho.di.repository.pur.WebServiceManager;
 import org.pentaho.platform.plugin.services.importexport.InitializationException;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 /**
  * This class is an integrated test, not a unit test. Assuming there is a running pdi/merges server on localhost, this
@@ -58,9 +58,10 @@ public class Wadl2JavaRestConnectivetyCheck {
     String username = "admin";
     String password = "password";
 
-    ClientConfig clientConfig = new DefaultClientConfig();
-    client = Client.create( clientConfig );
-    client.addFilter( new HTTPBasicAuthFilter( username, password ) );
+    ClientConfig clientConfig = new ClientConfig();
+    client = ClientBuilder.newClient( clientConfig );
+    HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( username, password );
+    client.register( feature );
 
     URI baseUri = null;
     try {
