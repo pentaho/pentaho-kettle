@@ -62,8 +62,8 @@
     <wstx-asl.version>3.2.4</wstx-asl.version>
     <jsch.version>0.2.9</jsch.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
-    <kettle-jetty.version>9.4.52.v20230823</kettle-jetty.version>
-    <kettle-jetty-server.version>9.4.52.v20230823</kettle-jetty-server.version>
+    <kettle-jetty.version>9.4.54.v20240208</kettle-jetty.version>
+    <kettle-jetty-server.version>9.4.54.v20240208</kettle-jetty-server.version>
 
     <!-- Test dependencies -->
     <mockito.version>5.10.0</mockito.version>
