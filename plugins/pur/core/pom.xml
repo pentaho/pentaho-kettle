@@ -30,7 +30,9 @@
     <webservices-rt.version>2.3.1</webservices-rt.version>
     <servlet-api.version>2.5</servlet-api.version>
     <encoder.version>1.2</encoder.version>
-    <jersey-multipart.version>1.19.1</jersey-multipart.version>
+    <jersey-media-multipart.version>2.44</jersey-media-multipart.version>
+    <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
+    <jersey2.version>2.44</jersey2.version>
     <enunciate-core-annotations.version>1.28</enunciate-core-annotations.version>
     <wadl-core.version>1.1.6</wadl-core.version>
     <wadl-ant.version>1.1.6</wadl-ant.version>
@@ -163,6 +165,26 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>${javax.ws.rs-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>${jersey2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
+      <version>${jersey2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <version>${jersey2.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -214,9 +236,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-multipart</artifactId>
-      <version>${jersey-multipart.version}</version>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-multipart</artifactId>
+      <version>${jersey-media-multipart.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>

@@ -42,7 +42,7 @@
         <blueprints-core.version>2.6.0</blueprints-core.version>
         <commons-configuration.version>1.9</commons-configuration.version>
         <flexjson.version>2.1</flexjson.version>
-        <jersey-multipart.version>1.19.1</jersey-multipart.version>
+        <jersey-media-multipart.version>2.44</jersey-media-multipart.version>
         <mimepull.version>1.9.3</mimepull.version>
         <jsr311-api.version>1.1.1</jsr311-api.version>
         <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
@@ -415,9 +415,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-multipart</artifactId>
-            <version>${jersey-multipart.version}</version>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>${jersey-media-multipart.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
