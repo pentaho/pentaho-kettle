@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.pentaho.di.ui.repository.pur.services.IPurgeService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.util.RepositoryPathEncoder;
 
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * Created by tkafalas 7/14/14.

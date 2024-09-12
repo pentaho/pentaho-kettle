@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
  */
 package org.pentaho.di.repository.pur;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.json.JSONException;
@@ -99,11 +100,11 @@ public class UserRoleDelegate implements java.io.Serializable {
   private void initManaged( PurRepositoryMeta repositoryMeta, IUser userInfo ) throws JSONException {
     String baseUrl = repositoryMeta.getRepositoryLocation().getUrl();
     String webService = baseUrl + ( baseUrl.endsWith( "/" ) ? "" : "/" ) + "api/system/authentication-provider";
-    HTTPBasicAuthFilter authFilter = new HTTPBasicAuthFilter( userInfo.getLogin(), userInfo.getPassword() );
-    Client client = new Client();
-    client.addFilter( authFilter );
+    HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic( userInfo.getLogin(), userInfo.getPassword() );
+    Client client = ClientBuilder.newClient();
+    client.register( authFeature );
 
-    WebResource.Builder resource = client.resource( webService ).accept( MediaType.APPLICATION_JSON_TYPE );
+    WebTarget target = ( WebTarget ) client.target( webService ).request().accept( MediaType.APPLICATION_JSON_TYPE );
     /**
      * if set, _trust_user_ needs to be considered. See other places in pur-plugin's:
      *
@@ -111,9 +112,9 @@ public class UserRoleDelegate implements java.io.Serializable {
      * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
      */
     if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
-      resource = resource.header( TRUST_USER, userInfo.getLogin() );
+      target = ( WebTarget ) target.request().header( TRUST_USER, userInfo.getLogin() );
     }
-    String response = resource.get( String.class );
+    String response = target.request( MediaType.TEXT_PLAIN ).get( String.class );
     String provider = new JSONObject( response ).getString( "authenticationType" );
     managed = "jackrabbit".equals( provider );
   }
