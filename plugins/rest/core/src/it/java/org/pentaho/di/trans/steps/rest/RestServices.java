@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,8 +23,10 @@
 package org.pentaho.di.trans.steps.rest;
 
 import com.sun.net.httpserver.HttpServer;
-import com.sun.jersey.api.container.httpserver.HttpServerFactory;
+import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -41,9 +43,9 @@ public class RestServices {
   public void getNoContentAnswer( String someStr ) {
   }
 
-  public static void main( String[] args ) throws IOException {
+  public static void main( String[] args ) throws IOException, URISyntaxException {
     String param = args.length > 0 ? args[0] : RestIT.HTTP_LOCALHOST_9998;
-    HttpServer server = HttpServerFactory.create( param );
+    HttpServer server = JdkHttpServerFactory.createHttpServer( new URI( param ), null );
     server.start();
 
     System.out.println( "Server running" );

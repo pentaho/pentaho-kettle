@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,11 @@ import org.pentaho.platform.security.userroledao.ws.IUserRoleWebService;
 
 import com.pentaho.di.services.PentahoDiPlugin;
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import javax.ws.rs.client.Client;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import javax.ws.rs.client.ClientBuilder;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
 /**
@@ -161,9 +162,11 @@ public class WebServiceManager implements ServiceManager {
 
               @Override
               public Object call() throws Exception {
-                ClientConfig clientConfig = new DefaultClientConfig();
-                Client client = Client.create( clientConfig );
-                client.addFilter( new HTTPBasicAuthFilter( username, password ) );
+                ClientConfig clientConfig = new ClientConfig();
+                clientConfig.property( ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE );
+                Client client = ClientBuilder.newClient( clientConfig );
+                HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( username, password );
+                client.register( feature );
 
                 Class<?>[] parameterTypes = new Class<?>[] { Client.class, URI.class };
                 String factoryClassName = webServiceSpecification.getServiceClass().getName();
