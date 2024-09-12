@@ -34,7 +34,7 @@ import org.pentaho.di.ui.repository.pur.services.IPurgeService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.util.RepositoryPathEncoder;
 
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * Created by tkafalas 7/14/14.

@@ -55,13 +55,10 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.client.urlconnection.HTTPSProperties;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 public class Carte {
   private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
@@ -352,26 +349,28 @@ public class Carte {
     try {
       KettleClientEnvironment.init();
 
-      ClientConfig clientConfig = new DefaultClientConfig();
-      clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
+      Client client = null;
       if ( sslMode ) {
-        addSSLToClientConfig( sslConfig,clientConfig, hostname, port );
+        client = createClientWithSSLConfig( sslConfig, hostname, port );
+      } else {
+        client = ClientBuilder.newClient();
       }
-      Client client = Client.create( clientConfig );
 
-      client.addFilter( new HTTPBasicAuthFilter( username, Encr.decryptPasswordOptionallyEncrypted( password ) ) );
+      client.register( HttpAuthenticationFeature.basic( username, Encr.decryptPasswordOptionallyEncrypted( password ) ) );
 
+      // check if the user can access the carte server. Don't really need this call but may want to check it's output at
+      // some point
       String contextURL = HttpUtil.constructUrl( new Variables(), hostname, port, "kettle", "", sslMode );
-      WebResource resource = client.resource( contextURL + "/status/?xml=Y" );
-      String response = resource.get( String.class );
+      WebTarget target = client.target( contextURL + "/status/?xml=Y" );
+      String response = target.request().get( String.class );
       if ( response == null || !response.contains( "<serverstatus>" ) ) {
         throw new Carte.CarteCommandException( BaseMessages.getString( PKG, NO_SERVER_FOUND_ERROR, hostname, ""
             + port ) );
       }
 
       // This is the call that matters
-      resource = client.resource( contextURL + "/stopCarte" );
-      response = resource.get( String.class );
+      target = client.target( contextURL + "/stopCarte" );
+      response = target.request().get( String.class );
       if ( response == null || !response.contains( "Shutting Down" ) ) {
         throw new Carte.CarteCommandException( BaseMessages.getString( PKG, "Carte.Error.NoShutdown", hostname, ""
             + port ) );
@@ -382,7 +381,7 @@ public class Carte {
     }
   }
 
-  private static void addSSLToClientConfig ( SslConfiguration sslConfig, ClientConfig clientConfig, String hostname, String port  )
+  private static Client createClientWithSSLConfig( SslConfiguration sslConfig, String hostname, String port  )
     throws CarteCommandException {
     HostnameVerifier hostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
     SSLContext sslContext;
@@ -393,7 +392,7 @@ public class Carte {
       throw new Carte.CarteCommandException( BaseMessages.getString( PKG, NO_SERVER_FOUND_ERROR, hostname, "" + port ), e );
     }
 
-    clientConfig.getProperties().put( HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties( hostnameVerifier, sslContext ) );
+    return ClientBuilder.newBuilder().sslContext( sslContext ).hostnameVerifier( hostnameVerifier ).build();
   }
 
   private static SSLContext getSSLContext( String keyStore, String keyStorePassword ) throws IOException, GeneralSecurityException {
