@@ -3241,10 +3241,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-        if ( getBowl() != DefaultBowl.getInstance() ) {
-          dupItem.setVisible( true );
-          dupItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.DuplicateInGlobal" ) );
-        }
+        dupItem.setVisible( true );
+        dupItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.DuplicateInGlobal" ) );
       }
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
        // If the connection is local, no need to show the menuitem
