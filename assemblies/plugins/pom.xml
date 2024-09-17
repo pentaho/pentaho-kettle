@@ -20,7 +20,7 @@
     <big-data-plugin.version>10.3.0.0-SNAPSHOT</big-data-plugin.version>
     <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
     <kettle-shapefilereader-plugin.version>${project.version}</kettle-shapefilereader-plugin.version>
-    <kettle-drools5-plugin.version>${project.version}</kettle-drools5-plugin.version>
+    <kettle-drools8-plugin.version>${project.version}</kettle-drools8-plugin.version>
     <kettle-gpload-plugin.version>${project.version}</kettle-gpload-plugin.version>
     <kettle-hl7-plugin.version>${project.version}</kettle-hl7-plugin.version>
     <mail-job-plugin.version>${project.version}</mail-job-plugin.version>
@@ -156,8 +156,8 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>kettle-drools5-plugin</artifactId>
-      <version>${kettle-drools5-plugin.version}</version>
+      <artifactId>kettle-drools8-plugin</artifactId>
+      <version>${kettle-drools8-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
