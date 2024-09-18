@@ -31,7 +31,7 @@
     <servlet-api.version>2.5</servlet-api.version>
     <encoder.version>1.2</encoder.version>
     <jersey-media-multipart.version>2.44</jersey-media-multipart.version>
-    <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
+    <javax.ws.rs-api.version>2.1</javax.ws.rs-api.version>
     <jersey2.version>2.44</jersey2.version>
     <enunciate-core-annotations.version>1.28</enunciate-core-annotations.version>
     <wadl-core.version>1.1.6</wadl-core.version>
