@@ -19,7 +19,6 @@
     <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
     <commons-lang.version>2.6</commons-lang.version>
     <pdi.version>10.2.0.0-SNAPSHOT</pdi.version>
-    <org.apache.avro.version>1.8.0</org.apache.avro.version>
     <jface.version>3.22.0</jface.version>
   </properties>
 

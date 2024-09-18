@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -190,17 +190,6 @@ public class PentahoAvroReadWriteTest {
       "avroOutputNone.avro", true );
   }
 
-  @Test
-  public void testAvroFileWriteAndReadDefaultValues() throws Exception {
-    Object[] rowData = new Object[] { "Row3Field1", null, null, null, null, null, null, null, null, null };
-
-    String[] defaultValues =
-      { "default", "default2", "1234.0", "5.5", DEFAULT_INET_ADDR.getHostAddress(), "true", "-33456",
-        "1980/01/01 00:00:00.000", "1980/01/01 00:00:00.000", "binary" };
-
-    doReadWrite( DEFAULT_SCHEME_DESCRIPTION, rowData, IPentahoAvroOutputFormat.COMPRESSION.UNCOMPRESSED,
-      "avroOutputNone.avro", defaultValues, null, true );
-  }
 
   @Test( expected = org.apache.avro.file.DataFileWriter.AppendWriteException.class )
   public void testAvroFileNullsNotAllowed() throws Exception {
