@@ -90,8 +90,12 @@ public class SpoonDBDelegate extends SpoonDelegate {
       return; // program error, exit just to make sure.
     }
 
-    String originalName = databaseMeta.getName();
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
+    if ( getDatabaseDialog().getDatabaseMeta() == null ) {
+      return;
+    }
+
+    String originalName = databaseMeta.getName();
     getDatabaseDialog().setDatabases( hasDatabasesInterface.getDatabases() );
     String newname = getDatabaseDialog().open();
     if ( !Utils.isEmpty( newname ) ) { // null: CANCEL
@@ -140,6 +144,9 @@ public class SpoonDBDelegate extends SpoonDelegate {
       databaseMetaCopy.setName( dupename );
 
       getDatabaseDialog().setDatabaseMeta( databaseMetaCopy );
+      if ( getDatabaseDialog().getDatabaseMeta() == null ) {
+        return;
+      }
 
       String newname = getDatabaseDialog().open();
       if ( newname != null ) { // null: CANCEL
@@ -492,6 +499,10 @@ public class SpoonDBDelegate extends SpoonDelegate {
     }
 
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
+    if ( getDatabaseDialog().getDatabaseMeta() == null ) {
+      return;
+    }
+
     String con_name = getDatabaseDialog().open();
     if ( !Utils.isEmpty( con_name ) ) {
       con_name = con_name.trim();
