@@ -25,6 +25,7 @@ package org.pentaho.di.job.entry;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
@@ -144,6 +145,12 @@ import org.w3c.dom.Node;
  */
 
 public interface JobEntryInterface {
+
+  String ACTION_STATUS = "actionStatus";
+  String SUCCESS_RESPONSE = "Action successful";
+  String FAILURE_RESPONSE = "Action failed";
+  String FAILURE_METHOD_NOT_RESPONSE = "Action failed with method not found";
+  String STATUS = "Status";
 
   /**
    * Execute the job entry. The previous result and number of rows are provided to the method for the purpose of
@@ -746,4 +753,10 @@ public interface JobEntryInterface {
     throw new UnsupportedOperationException( "Attemped access of getJobMet not supported by JobEntryInterface implementation" );
   }
 
+  default JSONObject doAction( String fieldName, JobEntryInterface jobEntryInterface, JobMeta jobMeta,
+                               Job job, Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( ACTION_STATUS, FAILURE_METHOD_NOT_RESPONSE );
+    return response;
+  }
 }
