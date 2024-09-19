@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.salesforceinput;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -496,10 +498,17 @@ public class SalesforceInput extends SalesforceStep {
       String jsonString = objectMapper.writeValueAsString( fieldsResponse );
       response.put( "fieldsResponse", objectMapper.readTree( jsonString ) );
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      response.put( StepInterface.STATUS, StepInterface.SUCCESS_STATUS );
     } catch ( Exception e ) {
       response.put( "errorMsg", BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage" ) );
-      response.put( "details", e.getStackTrace() );
+      StringBuilder details = new StringBuilder();
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter( sw );
+      e.printStackTrace( pw );
+      details.append( sw.getBuffer() );
+      response.put( "details", details.toString() );
       log.logError( e.getMessage() );
+      response.put( StepInterface.STATUS, StepInterface.FAILURE_STATUS );
     }
     return response;
   }
