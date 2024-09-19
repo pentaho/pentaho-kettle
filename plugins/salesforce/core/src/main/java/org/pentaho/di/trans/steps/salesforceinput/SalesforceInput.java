@@ -574,7 +574,9 @@ public class SalesforceInput extends SalesforceStep {
       }
     } else {
       FieldDTO fieldDTO = addField( fieldname, fieldNames, (String) field.getValue() );
-      fieldDTOList.add( fieldDTO );
+      if ( Objects.nonNull( fieldDTO ) ) {
+        fieldDTOList.add( fieldDTO );
+      }
     }
     return fieldDTOList;
 
