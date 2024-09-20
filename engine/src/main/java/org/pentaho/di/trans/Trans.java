@@ -1383,7 +1383,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           synchronized ( Trans.this ) {
             nrOfFinishedSteps++;
 
-            if ( nrOfFinishedSteps >= steps.size() ) {
+            // This check for isFinished() is a hack to prevent the transformation from finishing more than once.
+            // This only happens running a transformation with an Abort transformation step on a Carte server EE.
+            // Check PDI-20172 for more information.
+            if ( !isFinished() && nrOfFinishedSteps >= steps.size() ) {
               // Set the finished flag
               //
               setFinished( true );
