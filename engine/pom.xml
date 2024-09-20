@@ -526,17 +526,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.konloch</groupId>
-      <artifactId>safeyaml</artifactId>
-      <version>${safeyaml.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
       <version>${snmp4j.version}</version>
