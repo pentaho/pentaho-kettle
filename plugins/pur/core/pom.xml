@@ -237,11 +237,6 @@
       <artifactId>gwt-servlet</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.konloch</groupId>
-      <artifactId>safeyaml</artifactId>
-      <version>${safeyaml.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
     </dependency>
