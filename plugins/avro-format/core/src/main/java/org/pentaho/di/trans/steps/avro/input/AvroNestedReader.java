@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.avro.input;
 
+import com.fasterxml.jackson.databind.node.NullNode;
 import org.pentaho.di.trans.steps.avro.AvroSpec;
 import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
 import org.apache.avro.Conversions;
@@ -35,7 +36,6 @@ import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.util.Utf8;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.codehaus.jackson.node.NullNode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -47,7 +47,6 @@ import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
 
 import java.io.IOException;
 import java.io.InputStream;
