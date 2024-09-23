@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -467,14 +467,15 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 
             if ( fileName != null && !fileName.equals( "" ) ) {
               try {
-                initialFile = KettleVFS.getFileObject( fileName );
+                initialFile = KettleVFS.getInstance( jobMeta.getBowl() ).getFileObject( fileName );
               } catch ( KettleException ex ) {
-                initialFile = KettleVFS.getFileObject( "" );
+                initialFile = KettleVFS.getInstance( jobMeta.getBowl() ).getFileObject( "" );
               }
-              defaultInitialFile = KettleVFS.getFileObject( "file:///c:/" );
+              defaultInitialFile = KettleVFS.getInstance( jobMeta.getBowl() ).getFileObject( "file:///c:/" );
               rootFile = initialFile.getFileSystem().getRoot();
             } else {
-              defaultInitialFile = KettleVFS.getFileObject( Spoon.getInstance().getLastFileOpened() );
+              defaultInitialFile = KettleVFS.getInstance( jobMeta.getBowl() )
+                .getFileObject( Spoon.getInstance().getLastFileOpened() );
             }
           }
 

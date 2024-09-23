@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowSet;
@@ -110,13 +111,14 @@ public class TextFileInputDialogTest {
   @Test
   public void testMinimalWidth_PDI_14253() throws Exception {
     final String virtualFile = "ram://pdi-14253.txt";
-    KettleVFS.getFileObject( virtualFile ).createFile();
+    KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFile ).createFile();
 
     final String content = "r1c1,  r1c2\nr2c1  ,  r2c2  ";
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     bos.write( content.getBytes() );
 
-    OutputStream os = KettleVFS.getFileObject( virtualFile ).getContent().getOutputStream();
+    OutputStream os = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( virtualFile ).getContent().getOutputStream();
     IOUtils.copy( new ByteArrayInputStream( bos.toByteArray() ), os );
     os.close();
 
@@ -135,7 +137,8 @@ public class TextFileInputDialogTest {
 
     TextFileInputData data = new TextFileInputData();
     data.files = new FileInputList();
-    data.files.addFile( KettleVFS.getFileObject( virtualFile ) );
+    data.files.addFile( KettleVFS.getInstance( DefaultBowl.getInstance() )
+                        .getFileObject( virtualFile ) );
 
     data.outputRowMeta = new RowMeta();
     data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
@@ -168,7 +171,7 @@ public class TextFileInputDialogTest {
     Object[] row2 = output.getRowImmediate();
     assertRow( row2, "r2c1", "r2c2" );
 
-    KettleVFS.getFileObject( virtualFile ).delete();
+    KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFile ).delete();
 
   }
 

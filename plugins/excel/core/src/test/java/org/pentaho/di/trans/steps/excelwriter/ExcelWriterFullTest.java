@@ -44,6 +44,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -188,7 +189,7 @@ public class ExcelWriterFullTest {
     final String sheetName = "TicketData";
 
     // set up: add data validation constraint in a new template
-    try ( InputStream in = KettleVFS.getInputStream( origTemplate.toString() );
+    try ( InputStream in = KettleVFS.getInstance( DefaultBowl.getInstance() ).getInputStream( origTemplate.toString() );
         XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
 
       XSSFSheet sheet = wb.getSheet( sheetName );
@@ -199,7 +200,8 @@ public class ExcelWriterFullTest {
       DataValidation lenValidation = validationHelper.createValidation( constr, rangeList );
       sheet.addValidationData( lenValidation );
 
-      try ( OutputStream out = KettleVFS.getOutputStream( template.toString(), false ) ) {
+      try ( OutputStream out = KettleVFS.getInstance( DefaultBowl.getInstance() )
+              .getOutputStream( template.toString(), false ) ) {
         wb.write( out );
       }
     }
@@ -229,7 +231,8 @@ public class ExcelWriterFullTest {
       runStep( meta, inputs, 4 );
 
       // check validation got extended to last row
-      try ( InputStream in = KettleVFS.getInputStream( outFile + ".xlsx" ); XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
+      try ( InputStream in = KettleVFS.getInstance( DefaultBowl.getInstance() ).getInputStream( outFile + ".xlsx" );
+            XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
         wb.setActiveSheet( 0 );
         XSSFFormulaEvaluator evaluatorProvider = new XSSFFormulaEvaluator( wb );
         DataValidationEvaluator evaluator = new DataValidationEvaluator( wb, evaluatorProvider );
@@ -306,7 +309,9 @@ public class ExcelWriterFullTest {
             new ValueMetaInteger( "int3" ) ), row( "a", null, 1L ), row( "b", "not null", null ), row( "c", null, 3L ) );
       runStep( meta, inputs, 3 );
 
-      try ( InputStream in = KettleVFS.getInputStream( outFile + ".xlsx" ); XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
+      try ( InputStream in = KettleVFS.getInstance( DefaultBowl.getInstance() )
+              .getInputStream( outFile + ".xlsx" );
+            XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
         XSSFSheet sheet1 = wb.getSheetAt( 0 );
         assertEquals( CellType.BLANK, getCell( sheet1, "B1" ).getCellType() );
         assertEquals( CellType.BLANK, getCell( sheet1, "C2" ).getCellType() );
@@ -342,7 +347,9 @@ public class ExcelWriterFullTest {
             new ValueMetaInteger( "int3" ) ), row( "a", null, 1L ), row( "b", "not null", null ), row( "c", null, 3L ) );
       runStep( meta, inputs, 3 );
 
-      try ( InputStream in = KettleVFS.getInputStream( outFile + ".xlsx" ); XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
+      try ( InputStream in = KettleVFS.getInstance( DefaultBowl.getInstance() )
+              .getInputStream( outFile + ".xlsx" );
+            XSSFWorkbook wb = new XSSFWorkbook( in ) ) {
         XSSFSheet sheet1 = wb.getSheetAt( 0 );
         Cell b1 = getCell( sheet1, "B1" );
         assertEquals( CellType.STRING, b1.getCellType() );

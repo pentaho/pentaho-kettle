@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.job.JobMeta;
 
@@ -52,7 +53,8 @@ public class ResourceExportIT extends TestCase {
 
     // We get back the top-level filename: it's the starting point...
     //
-    String topLevelFilename = jobMeta.exportResources( jobMeta, definitions, resourceNaming, null, null );
+    String topLevelFilename = jobMeta.exportResources( DefaultBowl.getInstance(), jobMeta, definitions, resourceNaming,
+      null, null );
 
     System.out.println( "Top level filename = " + topLevelFilename );
 

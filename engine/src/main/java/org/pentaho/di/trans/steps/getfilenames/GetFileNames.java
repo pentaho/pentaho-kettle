@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -98,7 +98,8 @@ public class GetFileNames extends BaseStep implements StepInterface {
 
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
 
         // Get total previous fields
         data.totalpreviousfields = data.inputRowMeta.size();
@@ -175,7 +176,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
           boolean[] includesubfolders = { meta.isDynamicIncludeSubFolders() };
           // Get files list
           data.files =
-            meta.getDynamicFileList(
+            meta.getDynamicFileList( getTransMeta().getBowl(),
               this, filesname, filesmask, excludefilesmask, filesrequired, includesubfolders );
           data.filessize = data.files.nrOfFiles();
           data.filenr = 0;
@@ -312,9 +313,8 @@ public class GetFileNames extends BaseStep implements StepInterface {
       try {
         // Create the output row meta-data
         data.outputRowMeta = new RowMeta();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                      // metadata
-                                                                                                      // populated
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore ); // get the metadata populated
         data.nrStepFields = data.outputRowMeta.size();
 
         if ( !meta.isFileField() ) {

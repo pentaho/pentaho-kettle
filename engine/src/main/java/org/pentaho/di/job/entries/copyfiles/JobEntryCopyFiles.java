@@ -56,6 +56,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -360,6 +361,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
         .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
     }
 
+    IKettleVFS vfs = KettleVFS.getInstance( parentJobMeta.getBowl() );
     try {
       // Get source and destination files, also wildcard
       String[] vsourcefilefolder = preprocessfilefilder( source_filefolder );
@@ -376,7 +378,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
               + "" ) );
         }
       }
-
       if ( arg_from_previous && rows != null ) { // Copy the input row to the (command line) arguments
         for ( int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++ ) {
           resultRow = rows.get( iteration );
@@ -389,8 +390,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           if ( !Utils.isEmpty( vsourcefilefolder_previous ) && !Utils.isEmpty( vdestinationfilefolder_previous ) ) {
             if ( isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow",
-                KettleVFS.getFriendlyURI( environmentSubstitute( vsourcefilefolder_previous ), variables ),
-                KettleVFS.getFriendlyURI( environmentSubstitute( vdestinationfilefolder_previous ), variables ),
+                vfs.getFriendlyURI( environmentSubstitute( vsourcefilefolder_previous ), variables ),
+                vfs.getFriendlyURI( environmentSubstitute( vdestinationfilefolder_previous ), variables ),
                 environmentSubstitute( vwildcard_previous ) ) );
             }
 
@@ -402,8 +403,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           } else {
             if ( isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.IgnoringRow",
-                KettleVFS.getFriendlyURI( environmentSubstitute( vsourcefilefolder[ iteration ] ), variables ),
-                KettleVFS.getFriendlyURI( environmentSubstitute( vdestinationfilefolder[ iteration ] ), variables ),
+                vfs.getFriendlyURI( environmentSubstitute( vsourcefilefolder[ iteration ] ), variables ),
+                vfs.getFriendlyURI( environmentSubstitute( vdestinationfilefolder[ iteration ] ), variables ),
                 vwildcard[ iteration ] ) );
             }
           }
@@ -416,8 +417,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
             if ( isBasic() ) {
               logBasic( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow",
-                KettleVFS.getFriendlyURI( environmentSubstitute( vsourcefilefolder[ i ] ), variables ),
-                KettleVFS.getFriendlyURI( environmentSubstitute( vdestinationfilefolder[ i ] ), variables ),
+                vfs.getFriendlyURI( environmentSubstitute( vsourcefilefolder[ i ] ), variables ),
+                vfs.getFriendlyURI( environmentSubstitute( vdestinationfilefolder[ i ] ), variables ),
                 environmentSubstitute( vwildcard[ i ] ) ) );
             }
 
@@ -428,8 +429,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           } else {
             if ( isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.IgnoringRow",
-                KettleVFS.getFriendlyURI( environmentSubstitute( vsourcefilefolder[ i ] ), variables ),
-                KettleVFS.getFriendlyURI( environmentSubstitute( vdestinationfilefolder[ i ] ), variables ), vwildcard[ i ] ) );
+                vfs.getFriendlyURI( environmentSubstitute( vsourcefilefolder[ i ] ), variables ),
+                vfs.getFriendlyURI( environmentSubstitute( vdestinationfilefolder[ i ] ), variables ), vwildcard[ i ] ) );
             }
           }
         }
@@ -467,8 +468,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     String realWildcard = environmentSubstitute( wildcard );
 
     try {
-      sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername, this );
-      destinationfilefolder = KettleVFS.getFileObject( realDestinationFilefoldername, this );
+      IKettleVFS vfs = KettleVFS.getInstance( parentJobMeta.getBowl() );
+
+      sourcefilefolder = vfs.getFileObject( realSourceFilefoldername, this );
+      destinationfilefolder = vfs.getFileObject( realDestinationFilefoldername, this );
 
       if ( sourcefilefolder.exists() ) {
 
@@ -483,8 +486,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
             // WARNING !!! CAN NOT COPY FOLDER TO FILE !!!
 
             logError( BaseMessages.getString(
-              PKG, "JobCopyFiles.Log.CanNotCopyFolderToFile", KettleVFS.getFriendlyURI( realSourceFilefoldername, variables ),
-              KettleVFS.getFriendlyURI( realDestinationFilefoldername, variables ) ) );
+              PKG, "JobCopyFiles.Log.CanNotCopyFolderToFile", vfs.getFriendlyURI( realSourceFilefoldername, variables ),
+              vfs.getFriendlyURI( realDestinationFilefoldername, variables ) ) );
 
             NbrFail++;
 
@@ -543,7 +546,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
                 // Unable to retrieve file through existing connection; Get the file through a new VFS connection
                 if ( removeFile == null ) {
-                  removeFile = KettleVFS.getFileObject( fileremoventry, this );
+                  removeFile = vfs.getFileObject( fileremoventry, this );
                 }
 
                 // Remove ONLY Files
@@ -553,11 +556,11 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
                   if ( !deletefile ) {
                     logError( "      "
                       + BaseMessages.getString(
-                      PKG, "JobCopyFiles.Error.Exception.CanRemoveFileFolder", KettleVFS.getFriendlyURI( fileremoventry, variables ) ) );
+                      PKG, "JobCopyFiles.Error.Exception.CanRemoveFileFolder", vfs.getFriendlyURI( fileremoventry, variables ) ) );
                   } else {
                     if ( isDetailed() ) {
                       logDetailed( "      "
-                        + BaseMessages.getString( PKG, "JobCopyFiles.Log.FileFolderRemoved", KettleVFS.getFriendlyURI( fileremoventry, variables ) ) );
+                        + BaseMessages.getString( PKG, "JobCopyFiles.Log.FileFolderRemoved", vfs.getFriendlyURI( fileremoventry, variables ) ) );
                     }
                   }
                 }
@@ -583,7 +586,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
                 // Unable to retrieve file through existing connection; Get the file through a new VFS connection
                 if ( addFile == null ) {
-                  addFile = KettleVFS.getFileObject( fileaddentry, this );
+                  addFile = vfs.getFileObject( fileaddentry, this );
                 }
 
                 // Add ONLY Files
@@ -595,7 +598,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
                     logDetailed( " ------ " );
                     logDetailed( "      "
                       + BaseMessages
-                      .getString( PKG, "JobCopyFiles.Log.FileAddedToResultFilesName", KettleVFS.getFriendlyURI( fileaddentry, variables ) ) );
+                      .getString( PKG, "JobCopyFiles.Log.FileAddedToResultFilesName", vfs.getFriendlyURI( fileaddentry, variables ) ) );
                   }
                 }
               }
@@ -605,10 +608,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
         } else {
           // Destination Folder or Parent folder is missing
           logError( BaseMessages.getString(
-            PKG, "JobCopyFiles.Error.DestinationFolderNotFound", KettleVFS.getFriendlyURI( realDestinationFilefoldername, variables ) ) );
+            PKG, "JobCopyFiles.Error.DestinationFolderNotFound", vfs.getFriendlyURI( realDestinationFilefoldername, variables ) ) );
         }
       } else {
-        logError( BaseMessages.getString( PKG, "JobCopyFiles.Error.SourceFileNotExists", KettleVFS.getFriendlyURI( realSourceFilefoldername, variables ) ) );
+        logError( BaseMessages.getString( PKG, "JobCopyFiles.Error.SourceFileNotExists", vfs.getFriendlyURI( realSourceFilefoldername, variables ) ) );
 
       }
     } catch ( FileSystemException fse ) {
@@ -621,8 +624,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       }
     } catch ( Exception e ) {
       logError( BaseMessages.getString(
-        PKG, "JobCopyFiles.Error.Exception.CopyProcess", KettleVFS.getFriendlyURI( realSourceFilefoldername, variables ),
-        KettleVFS.getFriendlyURI( realDestinationFilefoldername, variables ), e.getMessage() ), e );
+        PKG, "JobCopyFiles.Error.Exception.CopyProcess", KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFriendlyURI( realSourceFilefoldername, variables ),
+        KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFriendlyURI( realDestinationFilefoldername, variables ), e.getMessage() ), e );
     } finally {
       if ( sourcefilefolder != null ) {
         try {
@@ -805,7 +810,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           // Built destination filename
           if ( destinationFolderObject == null ) {
             // Resolve the destination folder
-            destinationFolderObject = KettleVFS.getFileObject( destinationFolder, JobEntryCopyFiles.this );
+            destinationFolderObject = KettleVFS.getInstance( parentJobMeta.getBowl() )
+              .getFileObject( destinationFolder, JobEntryCopyFiles.this );
           }
 
           String fullName = info.getFile().toString();
@@ -910,7 +916,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
               }
             } else {
               // file...Check if exists
-              file_name = KettleVFS.getFileObject( destinationFolder + Const.FILE_SEPARATOR + short_filename, variables );
+              file_name = KettleVFS.getInstance( parentJobMeta.getBowl() )
+                .getFileObject( destinationFolder + Const.FILE_SEPARATOR + short_filename, variables );
 
               if ( GetFileWildcard( short_filename ) ) {
                 if ( ( file_name == null ) || ( !file_name.exists() ) ) {
@@ -1017,22 +1024,23 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       String fil_name = null;
 
       try {
+        IKettleVFS vfs = KettleVFS.getInstance( parentJobMeta.getBowl() );
         if ( info.getFile().getType() == FileType.FILE ) {
           if ( info.getFile().getName().getBaseName().equals( filename )
             && ( info.getFile().getParent().toString().equals( foldername ) ) ) {
             // check if the file exists
             fil_name = destfolder + Const.FILE_SEPARATOR + filename;
 
-            if ( KettleVFS.getFileObject( fil_name, JobEntryCopyFiles.this ).exists() ) {
+            if ( vfs.getFileObject( fil_name, JobEntryCopyFiles.this ).exists() ) {
               if ( isDetailed() ) {
-                logDetailed( "      " + BaseMessages.getString( PKG, "JobCopyFiles.Log.FileExists", KettleVFS.getFriendlyURI( fil_name, variables ) ) );
+                logDetailed( "      " + BaseMessages.getString( PKG, "JobCopyFiles.Log.FileExists", vfs.getFriendlyURI( fil_name, variables ) ) );
               }
 
               if ( overwrite_files ) {
                 if ( isDetailed() ) {
                   logDetailed( "      "
                     + BaseMessages.getString(
-                    PKG, "JobCopyFiles.Log.FileOverwrite", KettleVFS.getFriendlyURI( info.getFile() ), KettleVFS.getFriendlyURI( fil_name, variables ) ) );
+                    PKG, "JobCopyFiles.Log.FileOverwrite", KettleVFS.getFriendlyURI( info.getFile() ), vfs.getFriendlyURI( fil_name, variables ) ) );
                 }
 
                 resultat = true;
@@ -1041,7 +1049,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
               if ( isDetailed() ) {
                 logDetailed( "      "
                   + BaseMessages.getString(
-                  PKG, "JobCopyFiles.Log.FileCopied", KettleVFS.getFriendlyURI( info.getFile() ), KettleVFS.getFriendlyURI( fil_name, variables ) ) );
+                  PKG, "JobCopyFiles.Log.FileCopied", KettleVFS.getFriendlyURI( info.getFile() ), vfs.getFriendlyURI( fil_name, variables ) ) );
               }
 
               resultat = true;
@@ -1057,12 +1065,13 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
           if ( resultat && add_result_filesname ) {
             // add this folder/file to result files name
-            list_add_result.add( KettleVFS.getFileObject( fil_name, JobEntryCopyFiles.this ).toString() );
+            list_add_result.add( vfs.getFileObject( fil_name, JobEntryCopyFiles.this ).toString() );
           }
         }
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "JobCopyFiles.Error.Exception.CopyProcess", KettleVFS.getFriendlyURI( info
-          .getFile() ), KettleVFS.getFriendlyURI( fil_name, variables ), e.getMessage() ) );
+          .getFile() ), KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFriendlyURI( fil_name, variables ), e.getMessage() ) );
 
         resultat = false;
       }
@@ -1141,7 +1150,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+    boolean res = JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( !res ) {
       return;
@@ -1152,7 +1162,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < source_filefolder.length; i++ ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 

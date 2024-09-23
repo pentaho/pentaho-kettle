@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
@@ -122,7 +123,7 @@ public class PDI5436Test {
     doReturn( mock( DatabaseMeta.class ) ).when( stepMeta ).getDatabaseMeta();
     doReturn( new String[] { "=" } ).when( stepMeta ).getKeyCondition();
 
-    doCallRealMethod().when( stepMeta ).getFields( any( RowMetaInterface.class ), anyString(),
+    doCallRealMethod().when( stepMeta ).getFields( any( Bowl.class ), any( RowMetaInterface.class ), anyString(),
       nullable( RowMetaInterface[].class ), nullable( StepMeta.class ), any( VariableSpace.class ), nullable( Repository.class ),
       nullable( IMetaStore.class ) );
     doReturn( new String[] { "value" } ).when( stepMeta ).getReturnValueNewName();

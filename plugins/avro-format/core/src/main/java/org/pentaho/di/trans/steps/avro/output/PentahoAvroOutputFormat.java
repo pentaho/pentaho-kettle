@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumWriter;
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -59,6 +60,7 @@ public class PentahoAvroOutputFormat implements IPentahoAvroOutputFormat {
   private String docValue;
   private String schemaFilename;
   private Schema schema = null;
+  private Bowl bowl;
   ObjectNode schemaObjectNode = null;
   private VariableSpace variableSpace;
 
@@ -75,7 +77,8 @@ public class PentahoAvroOutputFormat implements IPentahoAvroOutputFormat {
     DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<GenericRecord>( schema );
     DataFileWriter<GenericRecord> dataFileWriter = new DataFileWriter<GenericRecord>( datumWriter );
     dataFileWriter.setCodec( codecFactory );
-    dataFileWriter.create( schema, KettleVFS.getOutputStream( outputFilename, variableSpace, false ) );
+    dataFileWriter.create( schema, KettleVFS.getInstance( bowl )
+                           .getOutputStream( outputFilename, variableSpace, false ) );
     return new PentahoAvroRecordWriter( dataFileWriter, schema, fields );
   }
 
@@ -110,7 +113,7 @@ public class PentahoAvroOutputFormat implements IPentahoAvroOutputFormat {
 
 
   @Override public void setOutputFile( String file, boolean override ) throws Exception {
-    if ( !override && KettleVFS.fileExists( file, variableSpace ) ) {
+    if ( !override && KettleVFS.getInstance( bowl ).fileExists( file, variableSpace ) ) {
       throw new FileAlreadyExistsException( file );
     }
 
@@ -233,7 +236,8 @@ public class PentahoAvroOutputFormat implements IPentahoAvroOutputFormat {
     if ( schemaObjectNode != null && schemaFilename != null ) {
       ObjectMapper mapper = new ObjectMapper();
       ObjectWriter writer = mapper.writer( new DefaultPrettyPrinter() );
-      writer.writeValue( KettleVFS.getOutputStream( schemaFilename, variableSpace, false ), schemaObjectNode );
+      writer.writeValue( KettleVFS.getInstance( bowl )
+                         .getOutputStream( schemaFilename, variableSpace, false ), schemaObjectNode );
     }
   }
 
@@ -242,4 +246,9 @@ public class PentahoAvroOutputFormat implements IPentahoAvroOutputFormat {
     this.variableSpace = variableSpace;
   }
 
+  @Override
+  public void setBowl( Bowl bowl ) {
+    this.bowl = bowl;
+  }
 }
+

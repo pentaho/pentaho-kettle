@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.hitachivantara.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.hitachivantara.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
@@ -175,7 +176,7 @@ public class Translator2 {
       crawler = new MessagesSourceCrawler( log, rootDirectories, singleMessagesFile, xmlFolders );
       crawler.setScanPhrases( scanPhrases );
       crawler.setFilesToAvoid( filesToAvoid );
-      crawler.crawl();
+      crawler.crawl( DefaultBowl.getInstance() );
 
       store = new TranslationsStore( log, localeList, referenceLocale, crawler.getSourcePackageOccurrences() );
       store.read( rootDirectories );
@@ -269,7 +270,7 @@ public class Translator2 {
     filesToAvoid = new ArrayList<>();
     xmlFolders = new ArrayList<>();
 
-    FileObject file = KettleVFS.getFileObject( configFile );
+    FileObject file = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( configFile );
     if ( file.exists() ) {
       try {
         Document doc = XMLHandler.loadXMLFile( file );

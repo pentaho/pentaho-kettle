@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.awt.print.Paper;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.reporting.engine.classic.core.AttributeNames;
@@ -76,8 +77,11 @@ public class KettleReportBuilder {
 
   private LoggingObjectInterface parentObject;
 
-  public KettleReportBuilder( LoggingObjectInterface parentObject, List<ReportSubjectLocation> locations,
+  private Bowl bowl;
+
+  public KettleReportBuilder( Bowl bowl, LoggingObjectInterface parentObject, List<ReportSubjectLocation> locations,
     String targetFilename, AutoDocOptionsInterface options ) {
+    this.bowl = bowl;
     this.parentObject = parentObject;
     this.filenames = locations;
     this.targetFilename = targetFilename;
@@ -134,7 +138,7 @@ public class KettleReportBuilder {
 
     // Define where which transformation and step to read from, explain it to the reporting engine
     //
-    KettleFileTableModel transMetaTableModel = new KettleFileTableModel( parentObject, filenames );
+    KettleFileTableModel transMetaTableModel = new KettleFileTableModel( bowl, parentObject, filenames );
 
     TableDataFactory dataFactory = new TableDataFactory( "default", transMetaTableModel );
 

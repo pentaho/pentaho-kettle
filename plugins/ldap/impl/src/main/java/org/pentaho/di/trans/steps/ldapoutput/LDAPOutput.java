@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -306,7 +306,7 @@ public class LDAPOutput extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       try {
         // Define new LDAP connection
-        data.connection = new LDAPConnection( log, this, meta, null );
+        data.connection = new LDAPConnection( getTransMeta().getBowl(), log, this, meta, null );
 
         // connect
         if ( meta.UseAuthentication() ) {

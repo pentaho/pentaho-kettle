@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -257,7 +257,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     boolean result = false;
     try {
       // Get parent folder
-      parentfolder = KettleVFS.getFileObject( filename, this ).getParent();
+      parentfolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( filename, this ).getParent();
 
       if ( !parentfolder.exists() ) {
         if ( log.isDetailed() ) {
@@ -310,7 +310,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     String localSourceFilename = realSourceDirectoryOrFile;
 
     try {
-      originFile = KettleVFS.getFileObject( realSourceDirectoryOrFile, this );
+      originFile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realSourceDirectoryOrFile, this );
       localSourceFilename = KettleVFS.getFilename( originFile );
       orginExist = originFile.exists();
     } catch ( Exception e ) {
@@ -330,7 +330,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 
       FileObject fileObject = null;
       try {
-        fileObject = KettleVFS.getFileObject( localrealZipfilename, this );
+        fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( localrealZipfilename, this );
         localrealZipfilename = KettleVFS.getFilename( fileObject );
         // Check if Zip File exists
         if ( fileObject.exists() ) {
@@ -368,7 +368,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           // Let's see if we deal with file or folder
           FileObject[] fileList;
 
-          FileObject sourceFileOrFolder = KettleVFS.getFileObject( localSourceFilename, this );
+          FileObject sourceFileOrFolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( localSourceFilename, this );
           boolean isSourceDirectory = sourceFileOrFolder.getType().equals( FileType.FOLDER );
           final Pattern pattern;
           final Pattern patternExclude;
@@ -458,7 +458,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 
             // Prepare Zip File
             buffer = new byte[18024];
-            dest = KettleVFS.getOutputStream( localrealZipfilename, this, false );
+            dest = KettleVFS.getInstance( parentJobMeta.getBowl() ).getOutputStream( localrealZipfilename, this, false );
             buff = new BufferedOutputStreamWithCloseDetection( dest );
             out = new ZipOutputStream( buff );
 
@@ -547,7 +547,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                 targetFilename = localSourceFilename;
               }
 
-              FileObject file = KettleVFS.getFileObject( targetFilename, this );
+              FileObject file = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( targetFilename, this );
               boolean isTargetDirectory = file.exists() && file.getType().equals( FileType.FOLDER );
 
               if ( getIt && !getItexclude && !isTargetDirectory && !fileSet.contains( targetFilename ) ) {
@@ -616,7 +616,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                   // Delete, Move File
                   FileObject fileObjectd = zippedFiles[i];
                   if ( !isSourceDirectory ) {
-                    fileObjectd = KettleVFS.getFileObject( localSourceFilename, this );
+                    fileObjectd = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( localSourceFilename, this );
                   }
 
                   // Here we can move, delete files
@@ -742,7 +742,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       if ( depth == 0 ) {
         return filename;
       }
-      FileObject fileObject = KettleVFS.getFileObject( filename, this );
+      FileObject fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( filename, this );
       FileObject folder = fileObject.getParent();
       String baseName = fileObject.getName().getBaseName();
       if ( depth == 1 ) {
@@ -764,7 +764,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 
   private File getFile( final String filename ) {
     try {
-      String uri = KettleVFS.getFileObject( environmentSubstitute( filename ), this ).getName().getPath();
+      String uri = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( environmentSubstitute( filename ), this ).getName().getPath();
       return new File( uri );
     } catch ( KettleFileException ex ) {
       logError( "Error in Fetching URI for File: " + filename, ex );
@@ -810,7 +810,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       } else {
         FileObject moveToDirectory = null;
         try {
-          moveToDirectory = KettleVFS.getFileObject( realMovetodirectory, this );
+          moveToDirectory = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realMovetodirectory, this );
           if ( moveToDirectory.exists() ) {
             if ( moveToDirectory.getType() == FileType.FOLDER ) {
               if ( log.isDetailed() ) {
@@ -1062,14 +1062,14 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       // execute method fails if the file already exists; we should too
       FileDoesNotExistValidator.putFailIfExists( ctx1, true );
     }
-    JobEntryValidatorUtils.andValidator().validate( this, "zipFilename", remarks, ctx1 );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "zipFilename", remarks, ctx1 );
 
     if ( 2 == afterZip ) {
       // setting says to move
-      JobEntryValidatorUtils.andValidator().validate( this, "moveToDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "moveToDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
 
-    JobEntryValidatorUtils.andValidator().validate( this, "sourceDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "sourceDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
   }
 
@@ -1148,7 +1148,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     try {
       String fullName = fileObjectd.getName().getPath();
       String basePath = sourceFileOrFolder.getName().getPath();
-      fileObjectSource = KettleVFS.getFileObject( fullName ).getParent();
+      fileObjectSource = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( fullName ).getParent();
       if ( isSourceDirectory ) {
         if ( fullName.startsWith( basePath ) ) {
           //to find out the folder structure from defined source
@@ -1157,7 +1157,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           relativeName = fullName;
         }
         fileObjectm =
-                KettleVFS.getFileObject( realMovetodirectory
+                KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realMovetodirectory
                         + Const.FILE_SEPARATOR + relativeName, this );
         if ( !fileObjectm.getParent().exists() ) {
           //if at all there is a parent folder structure we need to create, we create one
@@ -1171,7 +1171,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         }
       } else {
         fileObjectm =
-                KettleVFS.getFileObject( realMovetodirectory
+                KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realMovetodirectory
                         + Const.FILE_SEPARATOR + fileObjectd.getName().getBaseName(), this );
         fileObjectd.moveTo( fileObjectm );
       }

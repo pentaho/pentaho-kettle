@@ -38,6 +38,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -110,7 +111,7 @@ public class TableInputMetaTest {
 
     VariableSpace space = mock( VariableSpace.class );
     RowMetaInterface rowMetaInterface = new RowMeta();
-    meta.getFields( rowMetaInterface, "TABLE_INPUT_META", null, null, space, null, null );
+    meta.getFields( DefaultBowl.getInstance(), rowMetaInterface, "TABLE_INPUT_META", null, null, space, null, null );
 
     verify( mockDB).getQueryFields( any(), anyBoolean() ) ;
   }

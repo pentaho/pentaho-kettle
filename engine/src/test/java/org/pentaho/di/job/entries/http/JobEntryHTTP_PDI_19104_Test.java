@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2021-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.io.File;
@@ -76,6 +77,7 @@ public class JobEntryHTTP_PDI_19104_Test {
 
     JobEntryHTTP http = new JobEntryHTTP();
     http.setParentJob( new Job() );
+    http.setParentJobMeta( new JobMeta() );
     http.setRunForEveryRow( true );
     http.setAddFilenameToResult( false );
     http.execute( previousResult, 0 );

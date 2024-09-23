@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.dynamicsqlrow;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -218,7 +219,8 @@ public class DynamicSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaI
     queryonlyonchange = false;
   }
 
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( databaseMeta == null ) {
@@ -407,7 +409,8 @@ public class DynamicSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaI
     IMetaStore metaStore ) throws KettleStepException {
 
     RowMetaInterface out = prev.clone();
-    getFields( out, stepMeta.getName(), new RowMetaInterface[] { info, }, null, transMeta, repository, metaStore );
+    getFields( transMeta.getBowl(), out, stepMeta.getName(), new RowMetaInterface[] { info, }, null, transMeta,
+      repository, metaStore );
     if ( out != null ) {
       for ( int i = 0; i < out.size(); i++ ) {
         ValueMetaInterface outvalue = out.getValueMeta( i );

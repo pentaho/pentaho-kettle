@@ -33,6 +33,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
@@ -89,6 +90,7 @@ public class BaseStreamStepMetaTest {
   @Mock private LogChannelInterface logChannel;
   @Mock private RowMetaInterface rowMeta;
   @Mock private RowMetaInterface prevRowMeta;
+  @Mock private StepMeta stepMeta;
   @Mock private StepMeta subTransStepMeta;
   @Mock private StepMeta nextStepMeta;
   @Mock private StepMetaInterface stepMetaInterface;
@@ -111,12 +113,15 @@ public class BaseStreamStepMetaTest {
   public void setUp() throws Exception {
     meta = new StuffStreamMeta();
     KettleLogStore.setLogChannelInterfaceFactory( logChannelFactory );
-    when( mappingMetaRetriever.get( any(), any(), any(), any() ) ).thenReturn( subTransMeta );
+    when( mappingMetaRetriever.get( any(), any(), any(), any(), any() ) ).thenReturn( subTransMeta );
 
     when( subTransMeta.getPrevStepFields( anyString() ) ).thenReturn( prevRowMeta );
     when( subTransMeta.getSteps() ).thenReturn( singletonList( subTransStepMeta ) );
     when( subTransStepMeta.getStepMetaInterface() ).thenReturn( stepMetaInterface );
     when( subTransStepMeta.getName() ).thenReturn( "SubStepName" );
+    when( stepMeta.getParentTransMeta() ).thenReturn( transMeta );
+    when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+
     meta.mappingMetaRetriever = mappingMetaRetriever;
   }
 
@@ -157,7 +162,7 @@ public class BaseStreamStepMetaTest {
     meta.setBatchDuration( "0" );
     meta.setBatchSize( "0" );
     ArrayList<CheckResultInterface> remarks = new ArrayList<>();
-    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    meta.check( remarks, transMeta, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 1, remarks.size() );
     assertEquals(
       "The \"Number of records\" and \"Duration\" fields can’t both be set to 0. Please set a value of 1 or higher "
@@ -171,7 +176,7 @@ public class BaseStreamStepMetaTest {
     meta.setBatchDuration( "blah" );
     meta.setBatchSize( "blah" );
     meta.setPrefetchCount( "blahblah" );
-    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    meta.check( remarks, transMeta, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 3, remarks.size() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
     assertEquals( "The \"Duration\" field is using a non-numeric value. Please set a numeric value.",
@@ -189,7 +194,7 @@ public class BaseStreamStepMetaTest {
     List<CheckResultInterface> remarks = new ArrayList<>();
     meta.setBatchSize( "2" );
     meta.setPrefetchCount( "1" );
-    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    meta.check( remarks, transMeta, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 1, remarks.size() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
     assertEquals( "The \"Message prefetch limit\" must be equal to or greater than the \"Number of records\". 1 is not equal to or greater than 2",
@@ -201,7 +206,7 @@ public class BaseStreamStepMetaTest {
     List<CheckResultInterface> remarks = new ArrayList<>();
     meta.setBatchSize( "1" );
     meta.setPrefetchCount( "1" );
-    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    meta.check( remarks, transMeta, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 0, remarks.size() );
   }
 
@@ -209,7 +214,7 @@ public class BaseStreamStepMetaTest {
   public void testCheckPrefetchZero() {
     List<CheckResultInterface> remarks = new ArrayList<>();
     meta.setPrefetchCount( "0" );
-    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    meta.check( remarks, transMeta, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 2, remarks.size() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
     assertEquals( "The \"Message prefetch limit\" must be greater than 0. 0 is not greater than 0",
@@ -224,7 +229,7 @@ public class BaseStreamStepMetaTest {
   public void testCheckPrefetchNull() {
     List<CheckResultInterface> remarks = new ArrayList<>();
     meta.setPrefetchCount( null );
-    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    meta.check( remarks, transMeta, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 1, remarks.size() );
     assertEquals( CheckResultInterface.TYPE_RESULT_ERROR, remarks.get( 0 ).getType() );
     assertEquals( "The \"Message prefetch limit\" field is using a non-numeric value. Please set a numeric value.",
@@ -238,7 +243,7 @@ public class BaseStreamStepMetaTest {
     space.setVariable( "something", "1000" );
     meta.setBatchSize( "${something}" );
     meta.setBatchDuration( "0" );
-    meta.check( remarks, null, null, null, null, null, null, space, null, null );
+    meta.check( remarks, transMeta, null, null, null, null, null, space, null, null );
     assertEquals( 0, remarks.size() );
   }
 
@@ -250,7 +255,7 @@ public class BaseStreamStepMetaTest {
     meta.setBatchSize( "10" );
     meta.setBatchDuration( "10" );
     meta.setSubStep( "MissingStep" );
-    meta.check( remarks, null, null, null, null, null, null, space, null, null );
+    meta.check( remarks, transMeta, null, null, null, null, null, space, null, null );
     assertEquals( 1, remarks.size() );
     assertEquals( "Unable to complete \"null\".  Cannot return fields from \"MissingStep\" because it does not exist in the sub-transformation.", remarks.get( 0 ).getText() );
   }
@@ -262,7 +267,7 @@ public class BaseStreamStepMetaTest {
     space.setVariable( "something", "0" );
     meta.setBatchSize( "${something}" );
     meta.setBatchDuration( "${something}" );
-    meta.check( remarks, null, null, null, null, null, null, space, null, null );
+    meta.check( remarks, transMeta, null, null, null, null, null, space, null, null );
     assertEquals( 1, remarks.size() );
     assertEquals( "The \"Number of records\" and \"Duration\" fields can’t both be set to 0. Please set a value of 1 "
       + "or higher for one of the fields.", remarks.get( 0 ).getText() );
@@ -339,10 +344,12 @@ public class BaseStreamStepMetaTest {
   @Test
   public void testLoadReferencedObject() {
     BaseStreamStepMeta meta = new StuffStreamMeta();
+    meta.setParentStepMeta( stepMeta );
     meta.setFileName( getClass().getResource( "/org/pentaho/di/trans/subtrans-executor-sub.ktr" ).getPath() );
     meta.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     try {
-      TransMeta subTrans = (TransMeta) meta.loadReferencedObject( 0, null, null, new Variables() );
+      TransMeta subTrans = (TransMeta) meta.loadReferencedObject( DefaultBowl.getInstance(), 0, null, null,
+        new Variables() );
       assertEquals( "subtrans-executor-sub", subTrans.getName() );
     } catch ( KettleException e ) {
       fail();
@@ -359,12 +366,12 @@ public class BaseStreamStepMetaTest {
     when( subTransStepMeta.getName() ).thenReturn( "realSubStepName" );
 
     meta.mappingMetaRetriever = mappingMetaRetriever;
-    meta.getFields( rowMeta, "origin", null, nextStepMeta, space, repo, null );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, "origin", null, nextStepMeta, space, repo, null );
 
     verify( space ).environmentSubstitute( "${parameter}" );
     verify( subTransMeta ).getPrevStepFields( "realSubStepName" );
     verify( stepMetaInterface )
-      .getFields( rowMeta, "origin", null, nextStepMeta, space, repo, null );
+      .getFields( DefaultBowl.getInstance(), rowMeta, "origin", null, nextStepMeta, space, repo, null );
   }
 
   @Test

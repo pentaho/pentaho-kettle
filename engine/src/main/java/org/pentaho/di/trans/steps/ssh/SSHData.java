@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
@@ -70,7 +71,7 @@ public class SSHData extends BaseStepData implements StepDataInterface {
     this.stdTypeField = null;
   }
 
-  public static Connection OpenConnection( String serveur, int port, String username, String password,
+  public static Connection OpenConnection( Bowl bowl, String serveur, int port, String username, String password,
       boolean useKey, String keyFilename, String passPhrase, int timeOut, VariableSpace space, String proxyhost,
       int proxyport, String proxyusername, String proxypassword ) throws KettleException {
     Connection conn = null;
@@ -82,7 +83,7 @@ public class SSHData extends BaseStepData implements StepDataInterface {
         if ( Utils.isEmpty( keyFilename ) ) {
           throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyFileMissing" ) );
         }
-        FileObject keyFileObject = KettleVFS.getFileObject( keyFilename );
+        FileObject keyFileObject = KettleVFS.getInstance( bowl ).getFileObject( keyFilename );
 
         if ( !keyFileObject.exists() ) {
           throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );

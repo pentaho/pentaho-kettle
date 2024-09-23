@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -373,7 +373,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
 
 
   private void loadFileTrans( String fname ) throws KettleException {
-    mappingTransMeta = new TransMeta( transMeta.environmentSubstitute( fname ) );
+    mappingTransMeta = new TransMeta( transMeta.getBowl(), transMeta.environmentSubstitute( fname ) );
     mappingTransMeta.clearChanged();
   }
 

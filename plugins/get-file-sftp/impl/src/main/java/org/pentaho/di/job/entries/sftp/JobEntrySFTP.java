@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -589,7 +589,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
           result.setNrErrors( 1 );
           return result;
         }
-        if ( !KettleVFS.fileExists( realKeyFilename ) ) {
+        if ( !KettleVFS.getInstance( parentJobMeta.getBowl() ).fileExists( realKeyFilename ) ) {
           // Error.. can not reach keyfile
           logError( BaseMessages.getString( PKG, "JobSFTP.Error.KeyFileNotFound", realKeyFilename ) );
           result.setNrErrors( 1 );
@@ -599,7 +599,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       }
 
       if ( !Utils.isEmpty( realTargetDirectory ) ) {
-        TargetFolder = KettleVFS.getFileObject( realTargetDirectory, this );
+        TargetFolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realTargetDirectory, this );
         boolean TargetFolderExists = TargetFolder.exists();
         if ( TargetFolderExists ) {
           if ( log.isDetailed() ) {
@@ -628,7 +628,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       // Create sftp client to host ...
       sftpclient =
-        new SFTPClient(
+        new SFTPClient( parentJobMeta.getBowl(),
           InetAddress.getByName( realServerName ), Const.toInt( realServerPort, DEFAULT_PORT ), realUsername,
           realKeyFilename, realPassPhrase );
       if ( log.isDetailed() ) {
@@ -709,9 +709,9 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
             logDebug( BaseMessages.getString( PKG, "JobSFTP.Log.GettingFiles", filelist[i], realTargetDirectory ) );
           }
 
-          FileObject targetFile = KettleVFS.getFileObject(
+          FileObject targetFile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject(
             realTargetDirectory + Const.FILE_SEPARATOR + filelist[i], this );
-          sftpclient.get( targetFile, filelist[i] );
+          sftpclient.get( parentJobMeta.getBowl(), targetFile, filelist[i] );
           filesRetrieved++;
 
           if ( isaddresult ) {
@@ -794,16 +794,21 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverName", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
     ValidatorContext ctx = new ValidatorContext();
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
-    AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "targetDirectory", remarks, ctx );
+    AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(),
+      JobEntryValidatorUtils.fileExistsValidator() );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "targetDirectory", remarks, ctx );
 
-    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "serverPort", remarks, AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "userName", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "password", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverPort", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
   public static void main( String[] args ) {

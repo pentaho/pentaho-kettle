@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -92,6 +93,7 @@ public class JobEntryHTTP_PDI208_Test {
 
     JobEntryHTTP http = new JobEntryHTTP();
     http.setParentJob( new Job() );
+    http.setParentJobMeta( new JobMeta() );
     http.setRunForEveryRow( true );
     http.setAddFilenameToResult( false );
     http.execute( previousResult, 0 );
@@ -118,6 +120,7 @@ public class JobEntryHTTP_PDI208_Test {
 
     JobEntryHTTP http = new JobEntryHTTP();
     http.setParentJob( new Job() );
+    http.setParentJobMeta( new JobMeta() );
     http.setRunForEveryRow( true );
     http.setAddFilenameToResult( false );
     http.setUrlFieldname( "MyURL" );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.mapping;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -391,7 +392,8 @@ public class MappingMeta extends StepWithMappingMeta implements StepMetaInterfac
     allowingMultipleOutputs = false;
   }
 
-  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // First load some interesting data...
 
@@ -399,7 +401,7 @@ public class MappingMeta extends StepWithMappingMeta implements StepMetaInterfac
     //
     TransMeta mappingTransMeta = null;
     try {
-      mappingTransMeta = loadMappingMeta( this, repository, metaStore, space );
+      mappingTransMeta = loadMappingMeta( bowl, this, repository, metaStore, space );
     } catch ( KettleException e ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "MappingMeta.Exception.UnableToLoadMappingTransformation" ), e );
@@ -607,9 +609,9 @@ public class MappingMeta extends StepWithMappingMeta implements StepMetaInterfac
 
 
   @Deprecated
-  public static final synchronized TransMeta loadMappingMeta( MappingMeta mappingMeta, Repository rep,
+  public static final synchronized TransMeta loadMappingMeta( Bowl bowl, MappingMeta mappingMeta, Repository rep,
                                                               VariableSpace space ) throws KettleException {
-    return loadMappingMeta( mappingMeta, rep, null, space );
+    return loadMappingMeta( bowl, mappingMeta, rep, null, space );
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
@@ -898,8 +900,9 @@ public class MappingMeta extends StepWithMappingMeta implements StepMetaInterfac
   }
 
   @Deprecated
-  public Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException {
-    return loadReferencedObject( index, rep, null, space );
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, VariableSpace space )
+    throws KettleException {
+    return loadReferencedObject( bowl, index, rep, null, space );
   }
 
   /**
@@ -916,8 +919,9 @@ public class MappingMeta extends StepWithMappingMeta implements StepMetaInterfac
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
-    return loadMappingMeta( this, rep, metaStore, space );
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+    throws KettleException {
+    return loadMappingMeta( bowl, this, rep, metaStore, space );
   }
 
   public IMetaStore getMetaStore() {

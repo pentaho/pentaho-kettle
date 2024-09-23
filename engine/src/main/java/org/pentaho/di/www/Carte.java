@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.encryption.Encr;
@@ -197,7 +198,7 @@ public class Carte {
         throw new Carte.CarteCommandException( BaseMessages.getString( PKG, "Carte.Error.illegalStop" ) );
       }
       usingConfigFile = true;
-      FileObject file = KettleVFS.getFileObject( arguments[0] );
+      FileObject file = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( arguments[0] );
       Document document = XMLHandler.loadXMLFile( file );
       setKettleEnvironment(); // Must stand up server now to allow decryption of password
       Node configNode = XMLHandler.getSubNode( document, SlaveServerConfig.XML_TAG );

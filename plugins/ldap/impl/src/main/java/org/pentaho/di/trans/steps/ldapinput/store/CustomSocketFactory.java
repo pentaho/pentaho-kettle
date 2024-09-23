@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.ldapinput.store;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
@@ -86,7 +87,7 @@ public class CustomSocketFactory extends SSLSocketFactory {
   /**
    * Configures this SSLSocketFactory so that it uses the given keystore as its truststore.
    */
-  public static synchronized void configure( String path, String password ) throws KettleException {
+  public static synchronized void configure( Bowl bowl, String path, String password ) throws KettleException {
 
     // Get the appropriate key-store based on the file path...
     //
@@ -103,7 +104,7 @@ public class CustomSocketFactory extends SSLSocketFactory {
         PKG, "KettleTrustManager.Exception.CouldNotCreateCertStore" ), e );
     }
 
-    trustManagers = new KettleTrustManager[] { new KettleTrustManager( keyStore, path, password ) };
+    trustManagers = new KettleTrustManager[] { new KettleTrustManager( bowl, keyStore, path, password ) };
     configured.set( true );
   }
 

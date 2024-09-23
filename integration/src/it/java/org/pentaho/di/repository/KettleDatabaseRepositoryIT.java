@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -182,7 +182,7 @@ public class KettleDatabaseRepositoryIT extends TestCase {
   }
 
   protected void verifyJobSamples( RepositoryDirectoryInterface samplesDirectory ) throws Exception {
-    FileObject jobSamplesFolder = KettleVFS.getFileObject( "samples/jobs/" );
+    FileObject jobSamplesFolder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( "samples/jobs/" );
     FileObject[] files = jobSamplesFolder.findFiles( new FileSelector() {
 
       @Override

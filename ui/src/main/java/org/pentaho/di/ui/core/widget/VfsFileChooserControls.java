@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -82,14 +82,15 @@ public class VfsFileChooserControls extends Composite {
 
   protected FileObject getInitialFile( String filePath ) throws KettleFileException {
     FileObject initialFile = null;
+    Spoon spoon = Spoon.getInstance();
     if ( filePath != null && !filePath.isEmpty() ) {
       String fileName = space.environmentSubstitute( filePath );
       if ( fileName != null && !fileName.isEmpty() ) {
-        initialFile = KettleVFS.getFileObject( fileName );
+        initialFile = KettleVFS.getInstance( spoon.getExecutionBowl() ).getFileObject( fileName );
       }
     }
     if ( initialFile == null ) {
-      initialFile = KettleVFS.getFileObject( Spoon.getInstance().getLastFileOpened() );
+      initialFile = KettleVFS.getInstance( spoon.getExecutionBowl() ).getFileObject( spoon.getLastFileOpened() );
     }
     return initialFile;
   }

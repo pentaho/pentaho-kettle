@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -870,7 +871,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
    *
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  @Override
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
@@ -879,7 +881,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.data
       // To : /home/matt/test/files/foo/bar.data
       //
-      FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName ), space );
+      FileObject fileObject = KettleVFS.getInstance( bowl )
+        .getFileObject( space.environmentSubstitute( fileName ), space );
 
       // If the file doesn't exist, forget about this effort too!
       //

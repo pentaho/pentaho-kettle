@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.avro.input;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
@@ -160,11 +161,13 @@ public class AvroInput extends BaseStep {
     data.input = null;
   }
 
-  public static List<? extends IAvroInputField> getLeafFields(String schemaPath, String dataPath, VariableSpace variableSpace ) throws Exception {
+  public static List<? extends IAvroInputField> getLeafFields( Bowl bowl, String schemaPath, String dataPath,
+      VariableSpace variableSpace ) throws Exception {
     IPentahoAvroInputFormat in = new PentahoAvroInputFormat();
     in.setVariableSpace( variableSpace );
     in.setInputSchemaFile( schemaPath );
     in.setInputFile( dataPath );
+    in.setBowl( bowl );
     return in.getLeafFields();
   }
 
@@ -193,9 +196,10 @@ public class AvroInput extends BaseStep {
     }
 
     data.input = new PentahoAvroInputFormat();
-    meta.getFields( outRowMeta, getStepname(), null, null, this, null, null );
+    meta.getFields( getTransMeta().getBowl(), outRowMeta, getStepname(), null, null, this, null, null );
     data.input.setIncomingRowMeta( getInputRowMeta() );
     data.input.setOutputRowMeta( outRowMeta );
+    data.input.setBowl( getTransMeta().getBowl() );
     Boolean isDatum = false;
     Boolean useFieldAsSchema = false;
     String inputSchemaFileName = null;
@@ -274,7 +278,7 @@ public class AvroInput extends BaseStep {
     try {
       if ( !data.input.isUseFieldAsInputStream() ) {
         List<? extends IAvroInputField> rawAvroFields = AvroInput
-          .getLeafFields( schemaFileName, avroFileName, this.getTransMeta() );
+          .getLeafFields( getTransMeta().getBowl(), schemaFileName, avroFileName, this.getTransMeta() );
         Map<String, String> hackedFieldNames = new HashMap<>();
         int pointer;
         String fieldName;

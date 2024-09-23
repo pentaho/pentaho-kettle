@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -81,7 +81,8 @@ public class CheckSum extends BaseStep implements StepInterface {
       RowMetaInterface inputRowMeta = getInputRowMeta();
       data.outputRowMeta = inputRowMeta.clone();
       data.nrInfields = data.outputRowMeta.size();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       if ( meta.getFieldSeparatorString() != null && !meta.getFieldSeparatorString().isEmpty() ) {
         data.fieldSeparatorStringBytes = meta.getFieldSeparatorString().getBytes( StandardCharsets.UTF_8 );

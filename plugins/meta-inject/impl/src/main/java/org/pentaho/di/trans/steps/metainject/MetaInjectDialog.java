@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -727,7 +727,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     injectTransMeta.clearChanged();
   }
   private void loadFileTrans( String fname ) throws KettleException {
-    injectTransMeta = new TransMeta( transMeta.environmentSubstitute( fname ) );
+    injectTransMeta = new TransMeta( transMeta.getBowl(), transMeta.environmentSubstitute( fname ) );
     injectTransMeta.clearChanged();
   }
 

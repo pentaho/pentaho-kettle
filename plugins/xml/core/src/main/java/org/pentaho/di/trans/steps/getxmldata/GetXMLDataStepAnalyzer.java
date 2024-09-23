@@ -1,7 +1,7 @@
 /*
  * ******************************************************************************
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -158,7 +158,7 @@ public class GetXMLDataStepAnalyzer extends ExternalResourceStepAnalyzer<GetXMLD
 
   @Override
   public IMetaverseNode createResourceNode( IExternalResourceInfo resource ) throws MetaverseException {
-    return createFileNode( resource.getName(), descriptor );
+    return createFileNode( parentTransMeta.getBowl(), resource.getName(), descriptor );
   }
 
   @Override

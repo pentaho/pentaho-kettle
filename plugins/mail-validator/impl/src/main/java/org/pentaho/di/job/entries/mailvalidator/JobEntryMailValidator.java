@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -289,13 +289,13 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
 
-    JobEntryValidatorUtils.andValidator().validate( this, "emailAddress", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "emailAddress", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "emailSender", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "emailSender", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.emailValidator() ) );
 
     if ( isSMTPCheck() ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "defaultSMTP", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "defaultSMTP", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
   }

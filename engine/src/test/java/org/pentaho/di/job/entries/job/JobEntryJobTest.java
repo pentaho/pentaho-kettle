@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,6 +52,8 @@ import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -119,8 +121,9 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
-                any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ),
+                nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
       JobEntryJob jej = getJej();
       jej.loadXML( getNode( jej ), databases, servers, null, store );
@@ -140,11 +143,12 @@ public class JobEntryJobTest {
             mockConstruction( JobMeta.class,
               ( mock, context ) -> {
                 if ( context.getCount() > 1 ) {
-                  assertEquals( context.arguments().get( 0 ), space );
-                  assertEquals( context.arguments().get( 1 ), null );
+                  assertEquals( context.arguments().get( 0 ), DefaultBowl.getInstance() );
+                  assertEquals( context.arguments().get( 1 ), space );
                   assertEquals( context.arguments().get( 2 ), null );
-                  assertEquals( context.arguments().get( 3 ), store );
-                  assertEquals( context.arguments().get( 4 ), null );
+                  assertEquals( context.arguments().get( 3 ), null );
+                  assertEquals( context.arguments().get( 4 ), store );
+                  assertEquals( context.arguments().get( 5 ), null );
                 } else {
                   assertEquals( 0, context.arguments().size() );
                 }
@@ -153,7 +157,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
                 nullable( String.class ) );
             } ) ) {
@@ -178,11 +183,12 @@ public class JobEntryJobTest {
             mockConstruction( JobMeta.class,
               ( mock, context ) -> {
                 if ( context.getCount() > 1 ) {
-                  assertEquals( context.arguments().get( 0 ), space );
-                  assertEquals( context.arguments().get( 1 ), null );
+                  assertEquals( context.arguments().get( 0 ), DefaultBowl.getInstance() );
+                  assertEquals( context.arguments().get( 1 ), space );
                   assertEquals( context.arguments().get( 2 ), null );
-                  assertEquals( context.arguments().get( 3 ), store );
-                  assertEquals( context.arguments().get( 4 ), null );
+                  assertEquals( context.arguments().get( 3 ), null );
+                  assertEquals( context.arguments().get( 4 ), store );
+                  assertEquals( context.arguments().get( 5 ), null );
                 } else {
                   assertEquals( 0, context.arguments().size() );
                 }
@@ -191,7 +197,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
       JobEntryJob jej = getJej();
@@ -215,11 +222,12 @@ public class JobEntryJobTest {
             mockConstruction( JobMeta.class,
               ( mock, context ) -> {
                 if ( context.getCount() > 1 ) {
-                  assertEquals( context.arguments().get( 0 ), space );
-                  assertEquals( context.arguments().get( 1 ), JOB_ENTRY_FILE_PATH );
-                  assertEquals( context.arguments().get( 2 ), null );
-                  assertEquals( context.arguments().get( 3 ), store );
-                  assertEquals( context.arguments().get( 4 ), null );
+                  assertEquals( context.arguments().get( 0 ), DefaultBowl.getInstance() );
+                  assertEquals( context.arguments().get( 1 ), space );
+                  assertEquals( context.arguments().get( 2 ), JOB_ENTRY_FILE_PATH );
+                  assertEquals( context.arguments().get( 3 ), null );
+                  assertEquals( context.arguments().get( 4 ), store );
+                  assertEquals( context.arguments().get( 5 ), null );
                 } else {
                   assertEquals( 0, context.arguments().size() );
                 }
@@ -228,7 +236,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
       JobEntryJob jej = getJej();
@@ -252,7 +261,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), any( Repository.class ), any( Job.class ), anyString() );
             } ) ) {
       JobEntryJob jej = getJej();
@@ -274,7 +284,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), any( Repository.class ), any( Job.class ), anyString() );
             } ) ) {
       JobEntryJob jej = getJej();
@@ -300,7 +311,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
                 nullable( String.class ) );
             } ) ) {
@@ -327,11 +339,12 @@ public class JobEntryJobTest {
             mockConstruction( JobMeta.class,
               ( mock, context ) -> {
                 if ( context.getCount() > 1 ) {
-                  assertEquals( context.arguments().get( 0 ), space );
-                  assertEquals( context.arguments().get( 1 ), JOB_ENTRY_FILE_PATH );
-                  assertEquals( context.arguments().get( 2 ), repository );
-                  assertEquals( context.arguments().get( 3 ), store );
-                  assertEquals( context.arguments().get( 4 ), null );
+                  assertEquals( context.arguments().get( 0 ), DefaultBowl.getInstance() );
+                  assertEquals( context.arguments().get( 1 ), space );
+                  assertEquals( context.arguments().get( 2 ), JOB_ENTRY_FILE_PATH );
+                  assertEquals( context.arguments().get( 3 ), repository );
+                  assertEquals( context.arguments().get( 4 ), store );
+                  assertEquals( context.arguments().get( 5 ), null );
                 } else {
                   assertEquals( 0, context.arguments().size() );
                 }
@@ -340,7 +353,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
       JobEntryJob jej = getJej();
@@ -365,7 +379,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), any( Repository.class ), any( Job.class ), anyString() );
             } ) ) {
       JobEntryJob jej = getJej();
@@ -390,7 +405,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
                 nullable( String.class ) );
             } ) ) {
@@ -416,11 +432,12 @@ public class JobEntryJobTest {
             mockConstruction( JobMeta.class,
               ( mock, context ) -> {
                 if ( context.getCount() > 1 ) {
-                  assertEquals( context.arguments().get( 0 ), space );
-                  assertEquals( context.arguments().get( 1 ), JOB_ENTRY_FILE_PATH );
-                  assertEquals( context.arguments().get( 2 ), repository );
-                  assertEquals( context.arguments().get( 3 ), store );
-                  assertEquals( context.arguments().get( 4 ), null );
+                  assertEquals( context.arguments().get( 0 ), DefaultBowl.getInstance() );
+                  assertEquals( context.arguments().get( 1 ), space );
+                  assertEquals( context.arguments().get( 2 ), JOB_ENTRY_FILE_PATH );
+                  assertEquals( context.arguments().get( 3 ), repository );
+                  assertEquals( context.arguments().get( 4 ), store );
+                  assertEquals( context.arguments().get( 5 ), null );
                 } else {
                   assertEquals( 0, context.arguments().size() );
                 }
@@ -429,7 +446,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
       JobEntryJob jej = getJej();
@@ -452,7 +470,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), any( Repository.class ), any( Job.class ), anyString() );
             } ) ) {
       JobEntryJob jej = getJej();
@@ -474,7 +493,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), any( Repository.class ), any( Job.class ), anyString() );
             } ) ) {
       Repository myrepo = mock( Repository.class );
@@ -505,7 +525,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
                 nullable( String.class ) );
             } ) ) {
@@ -539,11 +560,12 @@ public class JobEntryJobTest {
             mockConstruction( JobMeta.class,
               ( mock, context ) -> {
                 if ( context.getCount() > 1 ) {
-                  assertEquals( context.arguments().get( 0 ), space );
-                  assertEquals( context.arguments().get( 1 ), JOB_ENTRY_FILE_PATH );
-                  assertEquals( context.arguments().get( 2 ), myrepo );
-                  assertEquals( context.arguments().get( 3 ), store );
-                  assertEquals( context.arguments().get( 4 ), null );
+                  assertEquals( context.arguments().get( 0 ), DefaultBowl.getInstance() );
+                  assertEquals( context.arguments().get( 1 ), space );
+                  assertEquals( context.arguments().get( 2 ), JOB_ENTRY_FILE_PATH );
+                  assertEquals( context.arguments().get( 3 ), myrepo );
+                  assertEquals( context.arguments().get( 4 ), store );
+                  assertEquals( context.arguments().get( 5 ), null );
                 } else {
                   assertEquals( 0, context.arguments().size() );
                 }
@@ -552,7 +574,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
 
@@ -581,11 +604,12 @@ public class JobEntryJobTest {
             mockConstruction( JobMeta.class,
               ( mock, context ) -> {
                 if ( context.getCount() > 1 ) {
-                  assertEquals( context.arguments().get( 0 ), space );
-                  assertEquals( context.arguments().get( 1 ), "hdfs://server/path/job.kjb" );
-                  assertEquals( context.arguments().get( 2 ), myrepo );
-                  assertEquals( context.arguments().get( 3 ), store );
-                  assertEquals( context.arguments().get( 4 ), null );
+                  assertEquals( context.arguments().get( 0 ), DefaultBowl.getInstance() );
+                  assertEquals( context.arguments().get( 1 ), space );
+                  assertEquals( context.arguments().get( 2 ), "hdfs://server/path/job.kjb" );
+                  assertEquals( context.arguments().get( 3 ), myrepo );
+                  assertEquals( context.arguments().get( 4 ), store );
+                  assertEquals( context.arguments().get( 5 ), null );
                 } else {
                   assertEquals( 0, context.arguments().size() );
                 }
@@ -594,7 +618,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
                 nullable( String.class ) );
             } ) ) {
@@ -624,7 +649,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
                 nullable( String.class ) );
             } ) ) {
@@ -657,7 +683,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
                 nullable( String.class ) );
             } ) ) {
@@ -690,7 +717,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), any( Repository.class ), any( Job.class ), anyString() );
             } ) ) {
       Repository myrepo = mock( Repository.class );
@@ -719,7 +747,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
                 nullable( String.class ) );
             } ) ) {
@@ -751,11 +780,12 @@ public class JobEntryJobTest {
             mockConstruction( JobMeta.class,
               ( mock, context ) -> {
                 if ( context.getCount() > 1 ) {
-                  assertEquals( context.arguments().get( 0 ), space );
-                  assertEquals( context.arguments().get( 1 ), JOB_ENTRY_FILE_PATH );
-                  assertEquals( context.arguments().get( 2 ), myrepo );
-                  assertEquals( context.arguments().get( 3 ), store );
-                  assertEquals( context.arguments().get( 4 ), null );
+                  assertEquals( context.arguments().get( 0 ), DefaultBowl.getInstance() );
+                  assertEquals( context.arguments().get( 1 ), space );
+                  assertEquals( context.arguments().get( 2 ), JOB_ENTRY_FILE_PATH );
+                  assertEquals( context.arguments().get( 3 ), myrepo );
+                  assertEquals( context.arguments().get( 4 ), store );
+                  assertEquals( context.arguments().get( 5 ), null );
                 } else {
                   assertEquals( 0, context.arguments().size() );
                 }
@@ -764,7 +794,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
       doReturn( null ).when( myrepo ).getJobEntryAttributeString( any( ObjectId.class ), anyString() );
@@ -792,7 +823,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
       JobMeta meta = mock( JobMeta.class );
@@ -812,7 +844,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
       JobMeta meta = mock( JobMeta.class );
@@ -821,11 +854,11 @@ public class JobEntryJobTest {
 
       doReturn( meta ).when( jej ).getJobMeta(
         nullable( Repository.class ), nullable( IMetaStore.class ), nullable( VariableSpace.class ) );
-      doReturn( JOB_ENTRY_JOB_NAME ).when( meta ).exportResources(
+      doReturn( JOB_ENTRY_JOB_NAME ).when( meta ).exportResources( nullable( Bowl.class ),
         nullable( JobMeta.class ), nullable( Map.class ), nullable( ResourceNamingInterface.class ),
         nullable( Repository.class ), nullable( IMetaStore.class ) );
 
-      jej.exportResources( null, null, null, null, null );
+      jej.exportResources( null, null, null, null, null, null );
 
       verify( meta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + JOB_ENTRY_JOB_NAME );
       verify( jej ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
@@ -839,7 +872,8 @@ public class JobEntryJobTest {
             CurrentDirectoryResolver.class, ( mock, context ) ->
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
-              doReturn( space ).when( mock ).resolveCurrentDirectory( any( ObjectLocationSpecificationMethod.class ),
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
+                any( ObjectLocationSpecificationMethod.class ),
                 any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
             } ) ) {
       Repository myrepo = mock( Repository.class );
@@ -865,6 +899,7 @@ public class JobEntryJobTest {
     JobEntryJob jej = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
     jej.setParentJobMeta( new JobMeta() );
     when( jej.getParentJobMeta().getNamedClusterEmbedManager() ).thenReturn( namedClusterEmbedManager );
+    when( jej.getParentJobMeta().getBowl() ).thenReturn( DefaultBowl.getInstance() );
     return jej;
   }
 }

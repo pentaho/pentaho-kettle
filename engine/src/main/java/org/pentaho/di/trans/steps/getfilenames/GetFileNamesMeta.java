@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -441,7 +441,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // the filename
@@ -701,10 +701,10 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
       buildFileTypeFiltersArray( fileName ) );
   }
 
-  public FileInputList getDynamicFileList( VariableSpace space, String[] filename, String[] filemask,
+  public FileInputList getDynamicFileList( Bowl bowl, VariableSpace space, String[] filename, String[] filemask,
     String[] excludefilemask, String[] filerequired, boolean[] includesubfolders ) {
     return FileInputList.createFileList(
-      space, filename, filemask, excludefilemask, filerequired, includesubfolders,
+      bowl, space, filename, filemask, excludefilemask, filerequired, includesubfolders,
       buildFileTypeFiltersArray( filename ) );
   }
 
@@ -806,7 +806,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
@@ -818,7 +818,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
         // Replace the filename ONLY (folder or filename)
         //
         for ( int i = 0; i < fileName.length; i++ ) {
-          FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
+          FileObject fileObject = KettleVFS.getInstance( bowl )
+            .getFileObject( space.environmentSubstitute( fileName[i] ), space );
           fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
         }
       }

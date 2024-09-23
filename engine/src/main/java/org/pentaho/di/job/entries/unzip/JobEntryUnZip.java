@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -372,7 +372,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       boolean exitjobentry = false;
 
       // Target folder
-      targetdir = KettleVFS.getFileObject( realTargetdirectory, this );
+      targetdir = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realTargetdirectory, this );
 
       if ( !targetdir.exists() ) {
         if ( createfolder ) {
@@ -403,7 +403,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
           log.logError(  BaseMessages.getString( PKG, "JobUnZip.MoveToDirectoryEmpty.Label" ) );
           exitjobentry = true;
         } else {
-          movetodir = KettleVFS.getFileObject( realMovetodirectory, this );
+          movetodir = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realMovetodirectory, this );
           if ( !( movetodir.exists() ) || !( movetodir.getType() == FileType.FOLDER ) ) {
             if ( createMoveToDirectory ) {
               movetodir.createFolder();
@@ -441,7 +441,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
             realFilenameSource = resultRow.getString( 0, null );
             realWildcardSource = resultRow.getString( 1, null );
 
-            fileObject = KettleVFS.getFileObject( realFilenameSource, this );
+            fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilenameSource, this );
             if ( fileObject.exists() ) {
               processOneFile(
                 result, parentJob, fileObject, realTargetdirectory, realWildcard, realWildcardExclude,
@@ -453,7 +453,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
           }
         }
       } else {
-        fileObject = KettleVFS.getFileObject( realFilenameSource, this );
+        fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilenameSource, this );
         if ( !fileObject.exists() ) {
           log.logError(  BaseMessages.getString( PKG, "JobUnZip.ZipFile.NotExists.Label", realFilenameSource ) );
           return result;
@@ -605,7 +605,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
         }
 
         String foldername = realTargetdirectory + "/" + shortSourceFilename.substring( 0, lastindexOfDot );
-        FileObject rootfolder = KettleVFS.getFileObject( foldername, this );
+        FileObject rootfolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( foldername, this );
         if ( !rootfolder.exists() ) {
           try {
             rootfolder.createFolder();
@@ -623,7 +623,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       // Try to read the entries from the VFS object...
       //
       String zipFilename = "zip:" + sourceFileObject.getName().getFriendlyURI();
-      FileObject zipFile = KettleVFS.getFileObject( zipFilename, this );
+      FileObject zipFile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( zipFilename, this );
       FileObject[] items = zipFile.findFiles( new AllFileSelector() {
         public boolean traverseDescendents( FileSelectInfo info ) {
           return true;
@@ -672,7 +672,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
             // get real destination filename
             //
             String newFileName = unzipToFolder + Const.FILE_SEPARATOR + getTargetFilename( item );
-            newFileObject = KettleVFS.getFileObject( newFileName, this );
+            newFileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( newFileName, this );
 
             if ( item.getType().equals( FileType.FOLDER ) ) {
               // Directory
@@ -741,7 +741,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 
                 try {
                   is = KettleVFS.getInputStream( item );
-                  os = KettleVFS.getOutputStream( newFileObject, false );
+                  os = KettleVFS.getInstance( parentJobMeta.getBowl() ).getOutputStream( newFileObject, false );
 
                   if ( is != null ) {
                     byte[] buff = new byte[2048];
@@ -832,7 +832,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       // Move File
       try {
         String destinationFilename = movetodir + Const.FILE_SEPARATOR + sourceFileObject.getName().getBaseName();
-        destFile = KettleVFS.getFileObject( destinationFilename, this );
+        destFile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( destinationFilename, this );
 
         sourceFileObject.moveTo( destFile );
 
@@ -861,7 +861,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     if ( addfiletoresult ) {
       // Add file to result files name
       ResultFile resultFile =
-        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( newfile, this ), parentJob
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                        .getFileObject( newfile, this ), parentJob
           .getJobname(), toString() );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
     }
@@ -1307,15 +1308,15 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     AndValidator.putValidators( ctx1, JobEntryValidatorUtils.notBlankValidator(),
         JobEntryValidatorUtils.fileDoesNotExistValidator() );
 
-    JobEntryValidatorUtils.andValidator().validate( this, "zipFilename", remarks, ctx1 );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "zipFilename", remarks, ctx1 );
 
     if ( 2 == afterunzip ) {
       // setting says to move
-      JobEntryValidatorUtils.andValidator().validate( this, "moveToDirectory", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "moveToDirectory", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
 
-    JobEntryValidatorUtils.andValidator().validate( this, "sourceDirectory", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "sourceDirectory", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
   }

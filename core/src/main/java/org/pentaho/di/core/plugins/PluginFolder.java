@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.EnvUtil;
@@ -122,7 +123,7 @@ public class PluginFolder implements PluginFolderInterface {
     try {
       // Find all the jar files in this folder...
       //
-      FileObject folderObject = KettleVFS.getFileObject( this.getFolder() );
+      FileObject folderObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( this.getFolder() );
 
       return folderObject.findFiles( new FileSelector() {
         @Override

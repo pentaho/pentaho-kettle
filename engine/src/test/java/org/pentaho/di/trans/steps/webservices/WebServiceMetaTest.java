@@ -29,6 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -265,7 +266,8 @@ public class WebServiceMetaTest {
     field3.setWsName( "field3WS" );
     field3.setXsdType( "string" );
     webServiceMeta.setFieldsOut( Arrays.asList( field1, field2, field3 ) );
-    webServiceMeta.getFields( rmi, "idk", new RowMetaInterface[]{ rmi2 }, nextStep, new Variables(), rep, metastore );
+    webServiceMeta.getFields( DefaultBowl.getInstance(), rmi, "idk", new RowMetaInterface[]{ rmi2 }, nextStep,
+      new Variables(), rep, metastore );
     verify( rmi ).addValueMeta( argThat( matchValueMetaString( "field1" ) ) );
     verify( rmi ).addValueMeta( argThat( matchValueMetaString( "field2" ) ) );
     verify( rmi ).addValueMeta( argThat( matchValueMetaString( "field3" ) ) );

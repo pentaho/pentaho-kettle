@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -133,7 +133,8 @@ public class Denormaliser extends BaseStep implements StepInterface {
     this.minNullIsValued = ValueMetaBase.convertStringToBoolean( val );
     data.inputRowMeta = getInputRowMeta();
     data.outputRowMeta = data.inputRowMeta.clone();
-    meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+    meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+      metaStore );
 
     data.keyFieldNr = data.inputRowMeta.indexOfValue( meta.getKeyField() );
     if ( data.keyFieldNr < 0 ) {

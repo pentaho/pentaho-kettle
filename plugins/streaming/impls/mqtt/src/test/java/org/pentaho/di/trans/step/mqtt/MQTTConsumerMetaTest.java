@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -245,7 +245,8 @@ public class MQTTConsumerMetaTest {
   @Test
   public void testCheckDefaults() {
     List<CheckResultInterface> remarks = new ArrayList<>();
-    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    TransMeta transMeta = mock( TransMeta.class );
+    meta.check( remarks, transMeta, null, null, null, null, null, new Variables(), null, null );
 
     assertEquals( 0, remarks.size() );
   }
@@ -259,7 +260,8 @@ public class MQTTConsumerMetaTest {
     meta.setCleanSession( "asdf" );
     meta.setAutomaticReconnect( "adsf" );
     meta.setMqttVersion( "9" );
-    meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
+    TransMeta transMeta = mock( TransMeta.class );
+    meta.check( remarks, transMeta, null, null, null, null, null, new Variables(), null, null );
 
     assertEquals( 6, remarks.size() );
     assertEquals( BaseMessages

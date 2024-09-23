@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -928,7 +929,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     prunePath = "";
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     int i;
     for ( i = 0; i < inputFields.length; i++ ) {
@@ -1163,8 +1165,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public FileInputList getFiles( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
+  public FileInputList getFiles( Bowl bowl, VariableSpace space ) {
+    return FileInputList.createFileList( bowl, space, fileName, fileMask, excludeFileMask, fileRequired,
         includeSubFolderBoolean() );
   }
 
@@ -1222,7 +1224,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
         remarks.add( cr );
       }
     } else {
-      FileInputList fileInputList = getFiles( transMeta );
+      FileInputList fileInputList = getFiles( transMeta.getBowl(), transMeta );
       // String files[] = getFiles();
       if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
         cr =
@@ -1268,7 +1270,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
    * 
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  @Override
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
@@ -1279,7 +1282,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       List<String> newFilenames = new ArrayList<String>();
 
       if ( !isInFields() ) {
-        FileInputList fileList = getFiles( space );
+        FileInputList fileList = getFiles( bowl, space );
         if ( fileList.getFiles().size() > 0 ) {
           for ( FileObject fileObject : fileList.getFiles() ) {
             // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.xml

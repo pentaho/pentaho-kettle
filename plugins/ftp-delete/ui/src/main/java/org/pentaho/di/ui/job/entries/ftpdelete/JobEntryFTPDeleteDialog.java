@@ -1250,7 +1250,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
         // Create ftp client to host:port ...
         ftpsclient =
-          new FTPSConnection(
+          new FTPSConnection( jobMeta.getBowl(),
             FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername, port,
             realUsername, realPassword );
 
@@ -1301,7 +1301,8 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       if ( sftpclient == null ) {
         // Create sftp client to host ...
         sftpclient =
-          new SFTPClient( InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ), Const
+          new SFTPClient( jobMeta.getBowl(),
+            InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ), Const
             .toInt( jobMeta.environmentSubstitute( wPort.getText() ), 22 ), jobMeta
             .environmentSubstitute( wUserName.getText() ) );
 

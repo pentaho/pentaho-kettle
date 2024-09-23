@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -86,7 +86,8 @@ public class FilesToResult extends BaseStep implements StepInterface {
 
     try {
       ResultFile resultFile =
-        new ResultFile( meta.getFileType(), KettleVFS.getFileObject( filename, getTransMeta() ), getTrans()
+        new ResultFile( meta.getFileType(), KettleVFS.getInstance( getTransMeta().getBowl() )
+                        .getFileObject( filename, getTransMeta() ), getTrans()
           .getName(), getStepname() );
 
       // Add all rows to rows buffer...
@@ -97,7 +98,8 @@ public class FilesToResult extends BaseStep implements StepInterface {
 
     // Copy to any possible next steps...
     data.outputRowMeta = getInputRowMeta().clone();
-    meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+    meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+      metaStore );
     putRow( data.outputRowMeta, r ); // copy row to possible alternate
     // rowset(s).
 

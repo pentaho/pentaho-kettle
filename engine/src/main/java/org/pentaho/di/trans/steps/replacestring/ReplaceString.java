@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -166,7 +166,8 @@ public class ReplaceString extends BaseStep implements StepInterface {
       // What's the format of the output row?
       data.outputRowMeta = getInputRowMeta().clone();
       data.inputFieldsNr = data.outputRowMeta.size();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       data.numFields = meta.getFieldInStream().length;
       data.inStreamNrs = new int[data.numFields];

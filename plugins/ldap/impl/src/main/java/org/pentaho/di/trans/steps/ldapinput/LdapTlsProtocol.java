@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import javax.naming.NamingException;
 import javax.naming.ldap.StartTlsRequest;
 import javax.naming.ldap.StartTlsResponse;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -38,9 +39,9 @@ import org.pentaho.di.trans.steps.ldapinput.store.CustomSocketFactory;
 public class LdapTlsProtocol extends LdapSslProtocol {
   private StartTlsResponse startTlsResponse;
 
-  public LdapTlsProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
+  public LdapTlsProtocol( Bowl bowl, LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
     Collection<String> binaryAttributes ) {
-    super( log, variableSpace, meta, binaryAttributes );
+    super( bowl, log, variableSpace, meta, binaryAttributes );
   }
 
   @Override

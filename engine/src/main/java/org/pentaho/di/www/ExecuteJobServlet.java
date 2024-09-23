@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.parameters.UnknownParamException;
-import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -44,6 +44,7 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobAdapter;
@@ -335,7 +336,8 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
 
       // Without a repository it's a filename --> file:///foo/bar/job.kjb
       //
-      JobMeta jobMeta = new JobMeta( job, repository );
+      // Repository doesn't need bowl-specific VFS. Use DefaultBowl.
+      JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), job, repository );
       return jobMeta;
 
     } else {

@@ -28,6 +28,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -303,7 +304,8 @@ public class XMLOutputTest {
   }
 
   public Document parseXml( String filePath ) throws Exception {
-    String xml = IOUtils.toString( KettleVFS.getInputStream( filePath ), StandardCharsets.UTF_8 );
+    String xml = IOUtils.toString( KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getInputStream( filePath ), StandardCharsets.UTF_8 );
     return XMLHandler.loadXMLString( xml );
   }
 

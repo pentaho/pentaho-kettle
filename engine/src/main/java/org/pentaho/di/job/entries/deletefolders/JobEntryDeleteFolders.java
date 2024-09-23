@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -324,7 +324,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     FileObject filefolder = null;
 
     try {
-      filefolder = KettleVFS.getFileObject( foldername, this );
+      filefolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( foldername, this );
 
       if ( filefolder.exists() ) {
         // the file or folder exists
@@ -388,7 +388,8 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+    boolean res = JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( !res ) {
       return;
@@ -399,7 +400,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < arguments.length; i++ ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 

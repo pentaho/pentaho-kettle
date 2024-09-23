@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -648,7 +649,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       try {
         logChannelFileWriter =
           new LogChannelFileWriter(
-            this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename ), setAppendLogfile );
+            this.getLogChannelId(), KettleVFS.getInstance( parentJobMeta.getBowl() )
+              .getFileObject( realLogFilename ), setAppendLogfile );
         logChannelFileWriter.startLogging();
       } catch ( KettleException e ) {
         logError( "Unable to open file appender for file [" + getLogFilename() + "] : " + e.toString() );
@@ -1137,7 +1139,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
               FileObject logfile = logChannelFileWriter.getLogFile();
               OutputStream logFileOutputStream = null;
               try {
-                logFileOutputStream = KettleVFS.getOutputStream( logfile, setAppendLogfile );
+                logFileOutputStream = KettleVFS.getInstance( parentJobMeta.getBowl() )
+                  .getOutputStream( logfile, setAppendLogfile );
                 logFileOutputStream.write( logFromCarte.getBytes() );
                 logFileOutputStream.flush();
               } catch ( Exception e ) {
@@ -1257,7 +1260,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     boolean resultat = true;
     try {
       // Get parent folder
-      parentfolder = KettleVFS.getFileObject( filename, this ).getParent();
+      parentfolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( filename, this ).getParent();
       if ( !parentfolder.exists() ) {
         if ( createParentFolder ) {
           if ( log.isDebug() ) {
@@ -1426,7 +1429,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public JobMeta getJobMeta( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     try {
       IMetaFileLoader<JobMeta> metaFileLoader = new MetaFileLoaderImpl<>( this, specificationMethod );
-      JobMeta jobMeta = metaFileLoader.getMetaForEntry( rep, metaStore, space );
+      JobMeta jobMeta = metaFileLoader.getMetaForEntry( parentJobMeta.getBowl(), rep, metaStore, space );
 
       if ( jobMeta != null ) {
         jobMeta.setRepository( rep );
@@ -1488,7 +1491,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    *           in case something goes wrong during the export
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     // Try to load the transformation from repository or file.
     // Modify this recursively too...
@@ -1505,7 +1508,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     // recursively)
     //
     String proposedNewFilename =
-      jobMeta.exportResources( jobMeta, definitions, namingInterface, repository, metaStore );
+      jobMeta.exportResources( bowl, jobMeta, definitions, namingInterface, repository, metaStore );
 
     // To get a relative path to it, we inject
     // ${Internal.Entry.Current.Directory}
@@ -1536,19 +1539,19 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
     if ( setLogfile ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "logfile", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "logfile", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
 
     if ( null != directory ) {
       // if from repo
-      JobEntryValidatorUtils.andValidator().validate( this, "directory", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "directory", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
-      JobEntryValidatorUtils.andValidator().validate( this, "jobName", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "jobName", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     } else {
       // else from xml file
-      JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
   }
@@ -1719,7 +1722,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    * @throws KettleException
    */
   @Override
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+    throws KettleException {
     return getJobMeta( rep, metaStore, space );
   }
 

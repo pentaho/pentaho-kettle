@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2023-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,8 @@ import org.ftp4che.io.SocketProvider;
 import org.ftp4che.reply.Reply;
 import org.ftp4che.util.ftpfile.FTPFileFactory;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.entries.ftpsget.ftp4che.SecureDataFTPConnection;
@@ -55,7 +57,7 @@ public class FTPSConnectionTest {
   @Test
   public void testEnforceProtP() throws Exception {
     FTPSTestConnection connection = spy(
-        new FTPSTestConnection(
+        new FTPSTestConnection( DefaultBowl.getInstance(),
           FTPSConnection.CONNECTION_TYPE_FTP_IMPLICIT_TLS_WITH_CRYPTED,
           "the.perfect.host", 2010, "warwickw", "julia", null ) );
     connection.replies.put( "PWD", new Reply( Arrays.asList( "257 \"/la\" is current directory" ) ) );
@@ -67,11 +69,12 @@ public class FTPSConnectionTest {
 
   @Test
   public void testEnforceProtPOnPut() throws Exception {
-    FileObject file = KettleVFS.createTempFile( "FTPSConnectionTest_testEnforceProtPOnPut", KettleVFS.Suffix.TMP);
+    FileObject file = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .createTempFile( "FTPSConnectionTest_testEnforceProtPOnPut", KettleVFS.Suffix.TMP);
     file.createFile();
     try {
       FTPSTestConnection connection = spy(
-        new FTPSTestConnection(
+        new FTPSTestConnection( DefaultBowl.getInstance(),
           FTPSConnection.CONNECTION_TYPE_FTP_IMPLICIT_TLS_WITH_CRYPTED,
           "the.perfect.host", 2010, "warwickw", "julia", null ) );
       connection.replies.put( "PWD", new Reply( Arrays.asList( "257 \"/la\" is current directory" ) ) );
@@ -89,9 +92,9 @@ public class FTPSConnectionTest {
     public SocketProvider connectionSocketProvider;
     public Map<String, Reply> replies = new HashMap<>();
 
-    public FTPSTestConnection( int connectionType, String hostname, int port, String username, String password,
-        VariableSpace nameSpace ) {
-      super( connectionType, hostname, port, username, password, nameSpace );
+    public FTPSTestConnection( Bowl bowl, int connectionType, String hostname, int port, String username,
+        String password, VariableSpace nameSpace ) {
+      super( bowl, connectionType, hostname, port, username, password, nameSpace );
     }
 
     @Override

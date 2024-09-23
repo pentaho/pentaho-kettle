@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -105,7 +106,7 @@ public class RegisterPackageServlet extends BaseJobServlet {
             getConfigNode( zipBaseUrl, Job.CONFIGURATION_IN_EXPORT_FILENAME, JobExecutionConfiguration.XML_TAG );
         JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration( node );
 
-        JobMeta jobMeta = new JobMeta( fileUrl, jobExecutionConfiguration.getRepository() );
+        JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), fileUrl, jobExecutionConfiguration.getRepository() );
         JobConfiguration jobConfiguration = new JobConfiguration( jobMeta, jobExecutionConfiguration );
 
         Job job = createJob( jobConfiguration );
@@ -116,7 +117,8 @@ public class RegisterPackageServlet extends BaseJobServlet {
                 TransExecutionConfiguration.XML_TAG );
         TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration( node );
 
-        TransMeta transMeta = new TransMeta( fileUrl, transExecutionConfiguration.getRepository() );
+        TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), fileUrl,
+            transExecutionConfiguration.getRepository() );
         TransConfiguration transConfiguration = new TransConfiguration( transMeta, transExecutionConfiguration );
 
         Trans trans = createTrans( transConfiguration );
@@ -184,7 +186,7 @@ public class RegisterPackageServlet extends BaseJobServlet {
    */
   protected Node getConfigNode( String archiveUrl, String fileName, String xmlTag ) throws KettleXMLException {
     String configUrl = concat( archiveUrl, fileName );
-    Document configDoc = XMLHandler.loadXMLFile( configUrl );
+    Document configDoc = XMLHandler.loadXMLFile( DefaultBowl.getInstance(), configUrl );
     return XMLHandler.getSubNode( configDoc, xmlTag );
   }
 
@@ -242,12 +244,14 @@ public class RegisterPackageServlet extends BaseJobServlet {
   protected String copyRequestToDirectory( InputStream inputStream, String directory ) throws KettleException {
     String copiedFilePath;
     try {
-      FileObject foDirectory = KettleVFS.getFileObject( directory );
+      FileObject foDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( directory );
       if ( !foDirectory.exists() ) {
         foDirectory.createFolder();
       }
-      FileObject tempZipFile = KettleVFS.createTempFile( "export", ".zip", directory );
-      OutputStream outputStream = KettleVFS.getOutputStream( tempZipFile, false );
+      FileObject tempZipFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
+        .createTempFile( "export", ".zip", directory );
+      OutputStream outputStream = KettleVFS.getInstance( DefaultBowl.getInstance() )
+        .getOutputStream( tempZipFile, false );
       copyAndClose( inputStream, outputStream );
       copiedFilePath = tempZipFile.getName().getPath();
     } catch ( IOException ioe ) {

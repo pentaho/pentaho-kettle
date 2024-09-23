@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+* Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -119,7 +120,7 @@ public class GetVariableMetaTest implements InitializerInterface<GetVariableMeta
     meta.setFieldDefinitions( new FieldDefinition[]{ field } );
 
     RowMetaInterface rowMeta = new RowMeta();
-    meta.getFields( rowMeta, "stepName", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, "stepName", null, null, new Variables(), null, null );
 
     assertNotNull( rowMeta );
     assertEquals( 1, rowMeta.size() );

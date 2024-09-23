@@ -39,6 +39,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
@@ -88,7 +89,7 @@ public class NullIfTest {
     NullIfMeta processRowMeta = smh.processRowsStepMetaInterface;
     Field[] fields = createArrayWithOneField( "nullable-field", "nullable-value" );
     doReturn( fields ).when( processRowMeta ).getFields();
-    doCallRealMethod().when( processRowMeta ).getFields( any( RowMetaInterface.class ), anyString(),
+    doCallRealMethod().when( processRowMeta ).getFields( any( Bowl.class ), any( RowMetaInterface.class ), anyString(),
         any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
         any( IMetaStore.class ) );
 
@@ -163,7 +164,7 @@ public class NullIfTest {
     fields[2] = createArrayWithOneField( "value3", "20150606" )[0];
     fields[3] = createArrayWithOneField( "value4", "2015/06/06 00:00:00.000" )[0];
     doReturn( fields ).when( processRowMeta ).getFields();
-    doCallRealMethod().when( processRowMeta ).getFields( any( RowMetaInterface.class ), anyString(),
+    doCallRealMethod().when( processRowMeta ).getFields( any( Bowl.class ), any( RowMetaInterface.class ), anyString(),
         any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
         any( IMetaStore.class ) );
 

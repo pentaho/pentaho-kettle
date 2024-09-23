@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.be.ibridge.kettle.dummy;
 import org.eclipse.swt.widgets.*;
 import org.pentaho.di.core.*;
 import org.pentaho.di.core.annotations.*;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.*;
 import org.pentaho.di.core.exception.*;
 import org.pentaho.di.core.row.*;
@@ -86,7 +87,8 @@ public class DummyPluginMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space ) {
+  public void getFields( Bowl bowl, RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space ) {
     if ( value != null ) {
       ValueMetaInterface v = value.getValueMeta();
       v.setOrigin( origin );

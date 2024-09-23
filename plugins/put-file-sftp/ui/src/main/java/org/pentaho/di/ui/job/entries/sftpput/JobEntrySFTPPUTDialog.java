@@ -1077,7 +1077,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     try {
       if ( sftpclient == null ) {
         // Create sftp client to host ...
-        sftpclient = new SFTPClient(
+        sftpclient = new SFTPClient( jobMeta.getBowl(),
           InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ),
           Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 22 ),
           jobMeta.environmentSubstitute( wUserName.getText() ),

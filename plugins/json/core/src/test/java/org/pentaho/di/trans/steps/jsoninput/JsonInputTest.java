@@ -39,6 +39,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -905,8 +906,10 @@ public class JsonInputTest {
 
     final String input1 = getBasicTestJson();
     final String input2 = "{ \"store\": { \"book\": [ { \"price\": 9.99 } ] } }";
-    try ( FileObject fileObj1 = KettleVFS.getFileObject( BASE_RAM_DIR + "test1.json" );
-          FileObject fileObj2 = KettleVFS.getFileObject( BASE_RAM_DIR + "test2.json" ) ) {
+    try ( FileObject fileObj1 = KettleVFS.getInstance( DefaultBowl.getInstance() )
+            .getFileObject( BASE_RAM_DIR + "test1.json" );
+          FileObject fileObj2 = KettleVFS.getInstance( DefaultBowl.getInstance() )
+            .getFileObject( BASE_RAM_DIR + "test2.json" ) ) {
       try ( OutputStream out = fileObj1.getContent().getOutputStream() ) {
         out.write( input1.getBytes() );
       }
@@ -971,7 +974,8 @@ public class JsonInputTest {
     helper.redirectLog( err, LogLevel.ERROR );
 
     final String input = getBasicTestJson();
-    try ( FileObject fileObj = KettleVFS.getFileObject( BASE_RAM_DIR + "test.zip" ) ) {
+    try ( FileObject fileObj = KettleVFS.getInstance( DefaultBowl.getInstance() )
+            .getFileObject( BASE_RAM_DIR + "test.zip" ) ) {
       fileObj.createFile();
       try ( OutputStream out = fileObj.getContent().getOutputStream() ) {
         try ( ZipOutputStream zipOut = new ZipOutputStream( out ) ) {
@@ -1015,8 +1019,10 @@ public class JsonInputTest {
     final String input2 = "{ \"store\": { \"bicycle\": { \"color\": \"blue\" } } }";
     final String path1 = BASE_RAM_DIR + "test1.json";
     final String path2 = BASE_RAM_DIR + "test2.js";
-    try ( FileObject fileObj1 = KettleVFS.getFileObject( path1 );
-          FileObject fileObj2 = KettleVFS.getFileObject( path2 ) ) {
+    try ( FileObject fileObj1 = KettleVFS.getInstance( DefaultBowl.getInstance() )
+            .getFileObject( path1 );
+          FileObject fileObj2 = KettleVFS.getInstance( DefaultBowl.getInstance() )
+            .getFileObject( path2 ) ) {
       try ( OutputStream out = fileObj1.getContent().getOutputStream() ) {
         out.write( input1.getBytes() );
       }
@@ -1077,7 +1083,8 @@ public class JsonInputTest {
   public void testZeroSizeFile() throws Exception {
     ByteArrayOutputStream log = new ByteArrayOutputStream();
     helper.redirectLog( log, LogLevel.BASIC );
-    try ( FileObject fileObj = KettleVFS.getFileObject( BASE_RAM_DIR + "test.json" );
+    try ( FileObject fileObj = KettleVFS.getInstance( DefaultBowl.getInstance() )
+            .getFileObject( BASE_RAM_DIR + "test.json" );
           LocaleChange enUs = new LocaleChange( Locale.US ); ) {
       fileObj.createFile();
       JsonInputField price = new JsonInputField();
@@ -1245,7 +1252,7 @@ public class JsonInputTest {
   }
 
   private void deleteFiles() throws FileSystemException, KettleFileException {
-    try ( FileObject baseDir = KettleVFS.getFileObject( BASE_RAM_DIR ) ) {
+    try ( FileObject baseDir = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( BASE_RAM_DIR ) ) {
       baseDir.deleteAll();
     }
   }

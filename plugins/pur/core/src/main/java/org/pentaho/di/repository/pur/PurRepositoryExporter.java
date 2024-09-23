@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -84,7 +85,8 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
     OutputStream os = null;
     OutputStreamWriter writer = null;
     try {
-      os = new BufferedOutputStream( KettleVFS.getOutputStream( xmlFilename, false ) );
+      os = new BufferedOutputStream( KettleVFS.getInstance( DefaultBowl.getInstance() )
+        .getOutputStream( xmlFilename, false ) );
       writer = new OutputStreamWriter( os, Const.XML_ENCODING );
       if ( monitor != null ) {
         monitor.beginTask( "Exporting the repository to XML...", 3 ); //$NON-NLS-1$

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -122,7 +122,7 @@ public class StringOperationsMetaTest implements InitializerInterface<StepMetaIn
     rowMetaInterface.addValueMeta( valueMeta );
 
     VariableSpace space = mock( VariableSpace.class );
-    meta.getFields( rowMetaInterface, "STRING_OPERATIONS", null, null, space, null, null );
+    meta.getFields( null, rowMetaInterface, "STRING_OPERATIONS", null, null, space, null, null );
     RowMetaInterface expectedRowMeta = new RowMeta();
     expectedRowMeta.addValueMeta( new ValueMetaString( "field1" ) );
     assertEquals( expectedRowMeta.toString(), rowMetaInterface.toString() );

@@ -1755,7 +1755,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       String realproxyuser = jobMeta.environmentSubstitute( wProxyUsername.getText() );
       try {
         mailConn =
-          new MailConnection(
+          new MailConnection( jobMeta.getBowl(),
             LogChannel.UI, MailConnectionMeta.getProtocolFromString(
               wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser,
             realpass, wUseSSL.getSelection(), wUseProxy.getSelection(), realproxyuser );

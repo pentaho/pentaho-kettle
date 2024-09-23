@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileNotFoundException;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
@@ -210,324 +211,343 @@ public class ValueDataUtilTest {
   @Test
   public void checksumTest() {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    String checksum = ValueDataUtil.createChecksum( new ValueMetaString(), path, "MD5" );
+    String checksum = ValueDataUtil.createChecksum( DefaultBowl.getInstance(), new ValueMetaString(), path, "MD5" );
     assertEquals( "098f6bcd4621d373cade4e832627b4f6", checksum );
   }
 
   @Test
   public void checksumMissingFileTest() {
     String nonExistingFile = "nonExistingFile";
-    String checksum = ValueDataUtil.createChecksum( new ValueMetaString(), nonExistingFile, "MD5" );
+    String checksum = ValueDataUtil.createChecksum( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingFile,
+      "MD5" );
     assertNull( checksum );
   }
 
   @Test
   public void checksumNullPathTest() {
     String nonExistingFile = "nonExistingFile";
-    String checksum = ValueDataUtil.createChecksum( new ValueMetaString(), nonExistingFile, "MD5" );
+    String checksum = ValueDataUtil.createChecksum( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingFile,
+      "MD5" );
     assertNull( checksum );
   }
 
   @Test
   public void checksumWithFailIfNoFileTest() throws Exception {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    String checksum = ValueDataUtil.createChecksum( new ValueMetaString(), path, "MD5", true );
+    String checksum = ValueDataUtil.createChecksum( DefaultBowl.getInstance(), new ValueMetaString(), path, "MD5",
+      true );
     assertEquals( "098f6bcd4621d373cade4e832627b4f6", checksum );
   }
 
   @Test
   public void checksumWithoutFailIfNoFileTest() throws Exception {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    String checksum = ValueDataUtil.createChecksum( new ValueMetaString(), path, "MD5", false );
+    String checksum = ValueDataUtil.createChecksum( DefaultBowl.getInstance(), new ValueMetaString(), path, "MD5",
+      false );
     assertEquals( "098f6bcd4621d373cade4e832627b4f6", checksum );
   }
 
   @Test
   public void checksumNoFailIfNoFileTest() throws KettleFileNotFoundException {
     String nonExistingFile = "nonExistingFile";
-    String checksum = ValueDataUtil.createChecksum( new ValueMetaString(), nonExistingFile, "MD5", false );
+    String checksum = ValueDataUtil.createChecksum( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingFile,
+      "MD5", false );
     assertNull( checksum );
   }
 
   @Test( expected = KettleFileNotFoundException.class )
   public void checksumFailIfNoFileTest() throws KettleFileNotFoundException {
     String nonExistingPath = "nonExistingPath";
-    ValueDataUtil.createChecksum( new ValueMetaString(), nonExistingPath, "MD5", true );
+    ValueDataUtil.createChecksum( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath, "MD5", true );
   }
 
   @Test
   public void checksumNullPathNoFailTest() throws KettleFileNotFoundException {
-    assertNull( ValueDataUtil.createChecksum( new ValueMetaString(), null, "MD5", false ) );
+    assertNull( ValueDataUtil.createChecksum( DefaultBowl.getInstance(), new ValueMetaString(), null, "MD5", false ) );
   }
 
   @Test
   public void checksumNullPathFailTest() throws KettleFileNotFoundException {
-    assertNull( ValueDataUtil.createChecksum( new ValueMetaString(), null, "MD5", true ) );
+    assertNull( ValueDataUtil.createChecksum( DefaultBowl.getInstance(), new ValueMetaString(), null, "MD5", true ) );
   }
 
   @Test
   public void checksumCRC32Test() {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    long checksum = ValueDataUtil.ChecksumCRC32( new ValueMetaString(), path );
+    long checksum = ValueDataUtil.ChecksumCRC32( DefaultBowl.getInstance(), new ValueMetaString(), path );
     assertEquals( 3632233996l, checksum );
   }
 
   @Test
   public void checksumCRC32MissingFileTest() {
     String nonExistingFile = "nonExistingFile";
-    long checksum = ValueDataUtil.ChecksumCRC32( new ValueMetaString(), nonExistingFile );
+    long checksum = ValueDataUtil.ChecksumCRC32( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingFile );
     assertEquals( 0, checksum );
   }
 
   @Test
   public void checksumCRC32NullPathTest() throws Exception {
     String nonExistingFile = "nonExistingFile";
-    long checksum = ValueDataUtil.ChecksumCRC32( new ValueMetaString(), nonExistingFile );
+    long checksum = ValueDataUtil.ChecksumCRC32( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingFile );
     assertEquals( 0, checksum );
   }
 
   @Test
   public void checksumCRC32WithoutFailIfNoFileTest() throws Exception {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    long checksum = ValueDataUtil.checksumCRC32( new ValueMetaString(), path, false );
+    long checksum = ValueDataUtil.checksumCRC32( DefaultBowl.getInstance(), new ValueMetaString(), path, false );
     assertEquals( 3632233996l, checksum );
   }
 
   @Test
   public void checksumCRC32NoFailIfNoFileTest() throws KettleFileNotFoundException {
     String nonExistingPath = "nonExistingPath";
-    long checksum = ValueDataUtil.checksumCRC32( new ValueMetaString(), nonExistingPath, false );
+    long checksum = ValueDataUtil.checksumCRC32( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath,
+      false );
     assertEquals( 0, checksum );
   }
 
   @Test( expected = KettleFileNotFoundException.class )
   public void checksumCRC32FailIfNoFileTest() throws KettleFileNotFoundException {
     String nonExistingPath = "nonExistingPath";
-    ValueDataUtil.checksumCRC32( new ValueMetaString(), nonExistingPath, true );
+    ValueDataUtil.checksumCRC32( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath, true );
   }
 
   @Test
   public void checksumCRC32NullPathNoFailTest() throws KettleFileNotFoundException {
-    long checksum = ValueDataUtil.checksumCRC32( new ValueMetaString(), null, false );
+    long checksum = ValueDataUtil.checksumCRC32( DefaultBowl.getInstance(), new ValueMetaString(), null, false );
     assertEquals( 0, checksum );
   }
 
   @Test
   public void checksumCRC32NullPathFailTest() throws KettleFileNotFoundException {
-    long checksum = ValueDataUtil.checksumCRC32( new ValueMetaString(), null, true );
+    long checksum = ValueDataUtil.checksumCRC32( DefaultBowl.getInstance(), new ValueMetaString(), null, true );
     assertEquals( 0, checksum );
   }
 
   @Test
   public void checksumAdlerTest() {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    long checksum = ValueDataUtil.ChecksumAdler32( new ValueMetaString(), path );
+    long checksum = ValueDataUtil.ChecksumAdler32( DefaultBowl.getInstance(), new ValueMetaString(), path );
     assertEquals( 73204161L, checksum );
   }
 
   @Test
   public void checksumAdlerMissingFileTest() {
     String nonExistingFile = "nonExistingFile";
-    long checksum = ValueDataUtil.ChecksumAdler32( new ValueMetaString(), nonExistingFile );
+    long checksum = ValueDataUtil.ChecksumAdler32( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingFile );
     assertEquals( 0, checksum );
   }
 
   @Test
   public void checksumAdlerNullPathTest() {
     String nonExistingFile = "nonExistingFile";
-    long checksum = ValueDataUtil.ChecksumAdler32( new ValueMetaString(), nonExistingFile );
+    long checksum = ValueDataUtil.ChecksumAdler32( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingFile );
     assertEquals( 0, checksum );
   }
 
   @Test
   public void checksumAdlerWithFailIfNoFileTest() throws Exception {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    long checksum = ValueDataUtil.checksumAdler32( new ValueMetaString(), path, true );
+    long checksum = ValueDataUtil.checksumAdler32( DefaultBowl.getInstance(), new ValueMetaString(), path, true );
     assertEquals( 73204161L, checksum );
   }
 
   @Test
   public void checksumAdlerWithoutFailIfNoFileTest() throws Exception {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    long checksum = ValueDataUtil.checksumAdler32( new ValueMetaString(), path, false );
+    long checksum = ValueDataUtil.checksumAdler32( DefaultBowl.getInstance(), new ValueMetaString(), path, false );
     assertEquals( 73204161L, checksum );
   }
 
   @Test
   public void checksumAdlerNoFailIfNoFileTest() throws KettleFileNotFoundException {
     String nonExistingPath = "nonExistingPath";
-    long checksum = ValueDataUtil.checksumAdler32( new ValueMetaString(), nonExistingPath, false );
+    long checksum = ValueDataUtil.checksumAdler32( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath,
+      false );
     assertEquals( 0, checksum );
   }
 
   @Test( expected = KettleFileNotFoundException.class )
   public void checksumAdlerFailIfNoFileTest() throws KettleFileNotFoundException {
     String nonExistingPath = "nonExistingPath";
-    ValueDataUtil.checksumAdler32( new ValueMetaString(), nonExistingPath, true );
+    ValueDataUtil.checksumAdler32( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath, true );
   }
 
   @Test
   public void checksumAdlerNullPathNoFailTest() throws KettleFileNotFoundException {
-    long checksum = ValueDataUtil.checksumAdler32( new ValueMetaString(), null, false );
+    long checksum = ValueDataUtil.checksumAdler32( DefaultBowl.getInstance(), new ValueMetaString(), null, false );
     assertEquals( 0, checksum );
   }
 
   @Test
   public void checksumAdlerNullPathFailTest() throws KettleFileNotFoundException {
-    long checksum = ValueDataUtil.checksumAdler32( new ValueMetaString(), null, true );
+    long checksum = ValueDataUtil.checksumAdler32( DefaultBowl.getInstance(), new ValueMetaString(), null, true );
     assertEquals( 0, checksum );
   }
 
   @Test
   public void xmlFileWellFormedTest() {
     String xmlFilePath = getClass().getResource( "xml-sample.xml" ).getPath();
-    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), xmlFilePath );
+    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(),
+      xmlFilePath );
     assertTrue( wellFormed );
   }
 
   @Test
   public void xmlFileBadlyFormedTest() {
     String invalidXmlFilePath = getClass().getResource( "invalid-xml-sample.xml" ).getPath();
-    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), invalidXmlFilePath );
+    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(),
+      invalidXmlFilePath );
     assertFalse( wellFormed );
   }
 
   @Test
   public void xmlFileWellFormedWithFailIfNoFileTest() throws KettleFileNotFoundException {
     String xmlFilePath = getClass().getResource( "xml-sample.xml" ).getPath();
-    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), xmlFilePath, true );
+    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(),
+      xmlFilePath, true );
     assertTrue( wellFormed );
   }
 
   @Test
   public void xmlFileWellFormedWithoutFailIfNoFileTest() throws KettleFileNotFoundException {
     String xmlFilePath = getClass().getResource( "xml-sample.xml" ).getPath();
-    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), xmlFilePath, false );
+    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(),
+      xmlFilePath, false );
     assertTrue( wellFormed );
   }
 
   @Test
   public void xmlFileBadlyFormedWithFailIfNoFileTest() throws KettleFileNotFoundException {
     String invalidXmlFilePath = getClass().getResource( "invalid-xml-sample.xml" ).getPath();
-    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), invalidXmlFilePath, true );
+    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(),
+      invalidXmlFilePath, true );
     assertFalse( wellFormed );
   }
 
   @Test
   public void xmlFileBadlyFormedWithNoFailIfNoFileTest() throws KettleFileNotFoundException {
     String invalidXmlFilePath = getClass().getResource( "invalid-xml-sample.xml" ).getPath();
-    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), invalidXmlFilePath, false );
+    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(),
+      invalidXmlFilePath, false );
     assertFalse( wellFormed );
   }
 
   @Test
   public void xmlFileWellFormedNoFailIfNoFileTest() throws KettleFileNotFoundException {
     String nonExistingPath = "nonExistingPath";
-    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), nonExistingPath, false );
+    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(),
+      nonExistingPath, false );
     assertFalse( wellFormed );
   }
 
   @Test( expected = KettleFileNotFoundException.class )
   public void xmlFileWellFormedFailIfNoFileTest() throws KettleFileNotFoundException {
     String nonExistingPath = "nonExistingPath";
-    ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), nonExistingPath, true );
+    ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath, true );
   }
 
   @Test
   public void xmlFileWellFormedNullPathNoFailTest() throws KettleFileNotFoundException {
-    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), null, false );
+    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(), null,
+      false );
     assertFalse( wellFormed );
   }
 
   @Test
   public void xmlFileWellFormedNullPathFailTest() throws KettleFileNotFoundException {
-    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( new ValueMetaString(), null, true );
+    boolean wellFormed = ValueDataUtil.isXMLFileWellFormed( DefaultBowl.getInstance(), new ValueMetaString(), null,
+      true );
     assertFalse( wellFormed );
   }
 
   @Test
   public void loadFileContentInBinary() throws Exception {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    byte[] content = ValueDataUtil.loadFileContentInBinary( new ValueMetaString(), path, true );
+    byte[] content = ValueDataUtil.loadFileContentInBinary( DefaultBowl.getInstance(), new ValueMetaString(), path,
+      true );
     assertTrue( Arrays.equals( "test".getBytes(), content ) );
   }
 
   @Test
   public void loadFileContentInBinaryNoFailIfNoFileTest() throws Exception {
     String nonExistingPath = "nonExistingPath";
-    assertNull( ValueDataUtil.loadFileContentInBinary( new ValueMetaString(), nonExistingPath, false ) );
+    assertNull( ValueDataUtil.loadFileContentInBinary( DefaultBowl.getInstance(), new ValueMetaString(),
+      nonExistingPath, false ) );
   }
 
   @Test( expected = KettleFileNotFoundException.class )
   public void loadFileContentInBinaryFailIfNoFileTest() throws KettleFileNotFoundException, KettleValueException {
     String nonExistingPath = "nonExistingPath";
-    ValueDataUtil.loadFileContentInBinary( new ValueMetaString(), nonExistingPath, true );
+    ValueDataUtil.loadFileContentInBinary( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath, true );
   }
 
   @Test
   public void loadFileContentInBinaryNullPathNoFailTest() throws Exception {
-    assertNull( ValueDataUtil.loadFileContentInBinary( new ValueMetaString(), null, false ) );
+    assertNull( ValueDataUtil.loadFileContentInBinary( DefaultBowl.getInstance(), new ValueMetaString(), null, false ) );
   }
 
   @Test
   public void loadFileContentInBinaryNullPathFailTest() throws KettleFileNotFoundException, KettleValueException {
-    assertNull( ValueDataUtil.loadFileContentInBinary( new ValueMetaString(), null, true ) );
+    assertNull( ValueDataUtil.loadFileContentInBinary( DefaultBowl.getInstance(), new ValueMetaString(), null, true ) );
   }
 
   @Test
   public void getFileEncodingTest() throws Exception {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    String encoding = ValueDataUtil.getFileEncoding( new ValueMetaString(), path );
+    String encoding = ValueDataUtil.getFileEncoding( DefaultBowl.getInstance(), new ValueMetaString(), path );
     assertEquals( "US-ASCII", encoding );
   }
 
   @Test( expected = KettleValueException.class )
   public void getFileEncodingMissingFileTest() throws KettleValueException {
     String nonExistingPath = "nonExistingPath";
-    ValueDataUtil.getFileEncoding( new ValueMetaString(), nonExistingPath );
+    ValueDataUtil.getFileEncoding( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath );
   }
 
   @Test
   public void getFileEncodingNullPathTest() throws Exception {
-    assertNull( ValueDataUtil.getFileEncoding( new ValueMetaString(), null ) );
+    assertNull( ValueDataUtil.getFileEncoding( DefaultBowl.getInstance(), new ValueMetaString(), null ) );
   }
 
   @Test
   public void getFileEncodingWithFailIfNoFileTest() throws Exception {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    String encoding = ValueDataUtil.getFileEncoding( new ValueMetaString(), path, true );
+    String encoding = ValueDataUtil.getFileEncoding( DefaultBowl.getInstance(), new ValueMetaString(), path, true );
     assertEquals( "US-ASCII", encoding );
   }
 
   @Test
   public void getFileEncodingWithoutFailIfNoFileTest() throws Exception {
     String path = getClass().getResource( "txt-sample.txt" ).getPath();
-    String encoding = ValueDataUtil.getFileEncoding( new ValueMetaString(), path, false );
+    String encoding = ValueDataUtil.getFileEncoding( DefaultBowl.getInstance(), new ValueMetaString(), path, false );
     assertEquals( "US-ASCII", encoding );
   }
 
   @Test
   public void getFileEncodingNoFailIfNoFileTest() throws Exception {
     String nonExistingPath = "nonExistingPath";
-    String encoding = ValueDataUtil.getFileEncoding( new ValueMetaString(), nonExistingPath, false );
+    String encoding = ValueDataUtil.getFileEncoding( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath,
+      false );
     assertNull( encoding );
   }
 
   @Test( expected = KettleFileNotFoundException.class )
   public void getFileEncodingFailIfNoFileTest() throws KettleFileNotFoundException, KettleValueException {
     String nonExistingPath = "nonExistingPath";
-    ValueDataUtil.getFileEncoding( new ValueMetaString(), nonExistingPath, true );
+    ValueDataUtil.getFileEncoding( DefaultBowl.getInstance(), new ValueMetaString(), nonExistingPath, true );
   }
 
   @Test
   public void getFileEncodingNullPathNoFailTest() throws Exception {
-    String encoding = ValueDataUtil.getFileEncoding( new ValueMetaString(), null, false );
+    String encoding = ValueDataUtil.getFileEncoding( DefaultBowl.getInstance(), new ValueMetaString(), null, false );
     assertNull( encoding );
   }
 
   @Test
   public void getFileEncodingNullPathFailTest() throws KettleFileNotFoundException, KettleValueException {
-    String encoding = ValueDataUtil.getFileEncoding( new ValueMetaString(), null, true );
+    String encoding = ValueDataUtil.getFileEncoding( DefaultBowl.getInstance(), new ValueMetaString(), null, true );
     assertNull( encoding );
   }
 

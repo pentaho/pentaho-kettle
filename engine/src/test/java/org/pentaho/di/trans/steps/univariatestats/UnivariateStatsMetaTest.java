@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -175,7 +176,7 @@ public class UnivariateStatsMetaTest {
       valueMetaInterfaces.add( (ValueMetaInterface) invocation.getArguments()[0] );
       return null;
     } ).when( mockRowMetaInterface ).addValueMeta( any( ValueMetaInterface.class ) );
-    meta.getFields( mockRowMetaInterface, null, null, null, null, null, null );
+    meta.getFields( DefaultBowl.getInstance(), mockRowMetaInterface, null, null, null, null, null, null );
     Map<String, Integer> valueMetas = new HashMap<>();
     for ( ValueMetaInterface vmi : valueMetaInterfaces ) {
       valueMetas.put( vmi.getName(), vmi.getType() );

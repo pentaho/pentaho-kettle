@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -152,7 +152,8 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
       String realFoldername = getRealFoldername();
       FileObject folderObject = null;
       try {
-        folderObject = KettleVFS.getFileObject( realFoldername, this );
+        folderObject = KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFileObject( realFoldername, this );
 
         if ( folderObject.exists() ) {
           boolean isFolder = false;
@@ -228,7 +229,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     ValidatorContext ctx = new ValidatorContext();
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileDoesNotExistValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks, ctx );
   }
 
 }

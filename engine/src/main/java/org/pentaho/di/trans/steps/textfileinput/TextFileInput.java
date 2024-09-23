@@ -893,7 +893,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
           }
           String fileValue = prevInfoFields.getString( fileRow, idx );
           try {
-            FileObject fileObject = KettleVFS.getFileObject( fileValue, getTransMeta() );
+            FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( fileValue, getTransMeta() );
             data.getFiles().addFile( fileObject );
             if ( meta.isPassingThruFields() ) {
               data.passThruFields.put( fileObject, fileRow );
@@ -916,7 +917,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
       }
 
       // // get the metadata populated. Simple and easy.
-      meta.getFields( data.outputRowMeta, getStepname(), infoStep, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), infoStep, null, this, repository,
+        metaStore );
       // Create convert meta-data objects that will contain Date & Number formatters
       //
       data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );

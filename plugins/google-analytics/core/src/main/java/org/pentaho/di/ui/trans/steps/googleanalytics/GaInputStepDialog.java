@@ -1598,6 +1598,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     try {
       getInfo( getInput() );
       return GoogleAnalyticsApiFacade.createFor(
+          transMeta.getBowl(),
           transMeta.environmentSubstitute( wGaAppName.getText() ),
           transMeta.environmentSubstitute( wOauthAccount.getText() ),
           transMeta.environmentSubstitute( keyFilename.getText() )

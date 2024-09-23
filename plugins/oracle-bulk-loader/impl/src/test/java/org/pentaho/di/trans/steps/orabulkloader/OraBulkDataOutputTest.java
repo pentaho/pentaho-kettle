@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -80,10 +81,10 @@ public class OraBulkDataOutputTest {
 
       doReturn( dataFileVfsPath ).when( oraBulkLoaderMeta ).getDataFile();
       doReturn( tempFilePath ).when( space ).environmentSubstitute( dataFileVfsPath );
-      doReturn( tempFileObject ).when( oraBulkDataOutput ).getFileObject( tempFilePath, space );
+      doReturn( tempFileObject ).when( oraBulkDataOutput ).getFileObject( DefaultBowl.getInstance(), tempFilePath, space );
       doReturn( tempFilePath ).when( oraBulkDataOutput ).getFilename( tempFileObject );
 
-      oraBulkDataOutput.open( space, sqlldrProcess );
+      oraBulkDataOutput.open( DefaultBowl.getInstance(), space, sqlldrProcess );
       oraBulkDataOutput.close();
 
     } catch ( Exception ex ) {
@@ -98,7 +99,7 @@ public class OraBulkDataOutputTest {
     // OraBulkDataOutput.open() is difficult to mock
     when( oraBulkLoaderMeta.getDataFile() ).thenAnswer( i -> { throw new IOException(); } );
     try {
-      oraBulkDataOutput.open( space, sqlldrProcess );
+      oraBulkDataOutput.open( DefaultBowl.getInstance(), space, sqlldrProcess );
       fail( "An IOException was supposed to be thrown, failing test" );
     } catch ( KettleException kex ) {
       assertTrue( kex.getMessage().contains( "IO exception occured:" ) );

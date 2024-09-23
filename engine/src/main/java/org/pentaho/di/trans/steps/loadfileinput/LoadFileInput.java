@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
@@ -93,7 +94,8 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
           data.inputRowMeta = getInputRowMeta();
           data.outputRowMeta = data.inputRowMeta.clone();
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+          meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+            metaStore );
 
           // Create convert meta-data objects that will contain Date & Number formatters
           // All non binary content is handled as a String. It would be converted to the target type after the processing.
@@ -133,7 +135,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
         try {
           // Source is a file.
-          data.file = KettleVFS.getFileObject( Fieldvalue );
+          data.file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( Fieldvalue );
         } catch ( Exception e ) {
           throw new KettleException( e );
         }
@@ -248,7 +250,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
   void getFileContent() throws KettleException {
     try {
-      data.filecontent = getFileBinaryContent( data.file.toString() );
+      data.filecontent = getFileBinaryContent( getTransMeta().getBowl(), data.file.toString() );
     } catch ( java.lang.OutOfMemoryError o ) {
       logError( "There is no enaugh memory to load the content of the file [" + data.file.getName() + "]" );
       throw new KettleException( o );
@@ -265,12 +267,12 @@ public class LoadFileInput extends BaseStep implements StepInterface {
    * @return The content of the file as a byte[]
    * @throws KettleException
    */
-  public static byte[] getFileBinaryContent( String vfsFilename ) throws KettleException {
+  public static byte[] getFileBinaryContent( Bowl bowl, String vfsFilename ) throws KettleException {
     InputStream inputStream = null;
 
     byte[] retval = null;
     try {
-      inputStream = KettleVFS.getInputStream( vfsFilename );
+      inputStream = KettleVFS.getInstance( bowl ).getInputStream( vfsFilename );
       retval = IOUtils.toByteArray( new BufferedInputStream( inputStream ) );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -469,13 +471,12 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       if ( !meta.getIsInFields() ) {
         try {
-          data.files = meta.getFiles( this );
+          data.files = meta.getFiles( getTransMeta().getBowl(), this );
           handleMissingFiles();
           // Create the output row meta-data
           data.outputRowMeta = new RowMeta();
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                        // metadata
-                                                                                                        // populated
+          meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+            metaStore );
 
           // Create convert meta-data objects that will contain Date & Number formatters
           // All non binary content is handled as a String. It would be converted to the target type after the processing.

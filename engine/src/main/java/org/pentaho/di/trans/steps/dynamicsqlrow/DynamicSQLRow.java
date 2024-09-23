@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.dynamicsqlrow;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -58,8 +59,8 @@ public class DynamicSQLRow extends BaseDatabaseStep implements StepInterface {
       first = false;
       data.outputRowMeta = rowMeta.clone();
       meta.getFields(
-        data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
-        repository, metaStore );
+        getTransMeta().getBowl(), data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), },
+        null, this, repository, metaStore );
 
       loadFromBuffer = false;
     }

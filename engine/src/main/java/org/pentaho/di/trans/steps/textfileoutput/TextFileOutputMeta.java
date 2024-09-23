@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -1093,7 +1094,7 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
@@ -1104,7 +1105,8 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
       if ( !fileNameInField ) {
 
         if ( !Utils.isEmpty( fileName ) ) {
-          FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName ), space );
+          FileObject fileObject = KettleVFS.getInstance( bowl )
+            .getFileObject( space.environmentSubstitute( fileName ), space );
           fileName = resourceNamingInterface.nameResource( fileObject, space, true );
         }
       }

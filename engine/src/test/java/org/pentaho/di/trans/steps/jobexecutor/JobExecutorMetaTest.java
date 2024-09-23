@@ -27,6 +27,8 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
@@ -119,12 +121,13 @@ public class JobExecutorMetaTest {
 
     String testName = "test";
 
-    doReturn( jobMeta ).when( jobExecutorMeta ).loadJobMetaProxy( any( JobExecutorMeta.class ),
-            nullable( Repository.class ), nullable( VariableSpace.class ) );
-    when( jobMeta.exportResources( any( JobMeta.class ), nullable( Map.class ), nullable( ResourceNamingInterface.class ),
-      nullable( Repository.class ), nullable( IMetaStore.class ) ) ).thenReturn( testName );
+    doReturn( jobMeta ).when( jobExecutorMeta ).loadJobMetaProxy( nullable( Bowl.class ),
+            nullable( JobExecutorMeta.class ), nullable( Repository.class ), nullable( VariableSpace.class ) );
+    when( jobMeta.exportResources( any( Bowl.class ), any( JobMeta.class ), nullable( Map.class ),
+      nullable( ResourceNamingInterface.class ), nullable( Repository.class ), nullable( IMetaStore.class ) ) )
+      .thenReturn( testName );
 
-    jobExecutorMeta.exportResources( null, null, null, null, null );
+    jobExecutorMeta.exportResources( DefaultBowl.getInstance(), null, null, null, null, null );
 
     verify( jobMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( jobExecutorMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
@@ -161,13 +164,13 @@ public class JobExecutorMetaTest {
     JobMeta jobMeta;
 
     jobExecutorMeta.getParameters().setInheritingAllVariables( false );
-    jobMeta = JobExecutorMeta.loadJobMeta( jobExecutorMeta, repository, parentSpace );
+    jobMeta = JobExecutorMeta.loadJobMeta( DefaultBowl.getInstance(), jobExecutorMeta, repository, parentSpace );
     assertNull( jobMeta.getVariable( param1 ) );
     Assert.assertEquals( parentValue2, jobMeta.getVariable( param2 ) );
     Assert.assertEquals( childValue3, jobMeta.getVariable( param3 ) );
 
     jobExecutorMeta.getParameters().setInheritingAllVariables( true );
-    jobMeta = JobExecutorMeta.loadJobMeta( jobExecutorMeta, repository, parentSpace );
+    jobMeta = JobExecutorMeta.loadJobMeta( DefaultBowl.getInstance(), jobExecutorMeta, repository, parentSpace );
     Assert.assertEquals( parentValue1, jobMeta.getVariable( param1 ) );
     Assert.assertEquals( parentValue2, jobMeta.getVariable( param2 ) );
     Assert.assertEquals( childValue3, jobMeta.getVariable( param3 ) );

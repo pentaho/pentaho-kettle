@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,10 +26,12 @@ import org.apache.avro.file.DataFileStream;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 import java.io.IOException;
@@ -52,7 +54,7 @@ public class AvroNestedRecordReader implements IPentahoInputFormat.IPentahoRecor
   private boolean isDatum;
   private int nextCallCounter = 0;
 
-  public AvroNestedRecordReader( DataFileStream<Object> nativeAvroRecordReader,
+  public AvroNestedRecordReader( Bowl bowl, DataFileStream<Object> nativeAvroRecordReader,
                                  Schema avroSchema, List<? extends IAvroInputField> fields, VariableSpace avroInputStep,
                                  RowMetaInterface incomingRowMeta, Object[] incomingFields,
                                  RowMetaInterface outputRowMeta,
@@ -75,6 +77,7 @@ public class AvroNestedRecordReader implements IPentahoInputFormat.IPentahoRecor
     avroNestedReader.m_jsonEncoded = !isDataBinaryEncoded;
     avroNestedReader.m_decodingFromField = fieldIndexForDataStream >= 0 ? true : false;
     avroNestedReader.m_fieldToDecodeIndex = fieldIndexForDataStream;
+    avroNestedReader.m_bowl = bowl;
 
     try {
       if ( nativeAvroRecordReader != null ) { // Is Avro File
@@ -82,9 +85,10 @@ public class AvroNestedRecordReader implements IPentahoInputFormat.IPentahoRecor
       } else {
 
         if ( avroSchema != null ) {
+          IKettleVFS vfs = KettleVFS.getInstance( bowl );
           avroNestedReader.m_datumReader = new GenericDatumReader<Object>( avroSchema );
           if ( fileName != null ) {
-            FileObject fileObject = KettleVFS.getFileObject( fileName );
+            FileObject fileObject = vfs.getFileObject( fileName );
             if ( avroNestedReader.m_jsonEncoded ) {
               avroNestedReader.m_decoder =
                 DecoderFactory.get().jsonDecoder( avroSchema, KettleVFS.getInputStream( fileObject ) );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.streaming.common;
 
 import com.google.common.base.Strings;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -85,7 +86,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   MappingMetaRetriever mappingMetaRetriever = TransExecutorMeta::loadMappingMeta;
 
   @FunctionalInterface interface MappingMetaRetriever {
-    TransMeta get( StepWithMappingMeta mappingMeta, Repository rep, IMetaStore metaStore, VariableSpace space )
+    TransMeta get( Bowl bowl, StepWithMappingMeta mappingMeta, Repository rep, IMetaStore metaStore, VariableSpace space )
       throws KettleException;
   }
 
@@ -205,7 +206,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     }
 
     try {
-      TransMeta subMeta = mappingMetaRetriever.get( this, repository, metaStore, space );
+      TransMeta subMeta = mappingMetaRetriever.get( transMeta.getBowl(), this, repository, metaStore, space );
       if ( !StringUtil.isEmpty( getSubStep() ) ) {
         String realSubStepName = space.environmentSubstitute( getSubStep() );
 
@@ -252,18 +253,18 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     return new boolean[] { !Utils.isEmpty( transformationPath ) };
   }
 
-  @Override public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
-    return loadMappingMeta( this, rep, metaStore, space );
+  @Override public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore,
+    VariableSpace space ) throws KettleException {
+    return loadMappingMeta( bowl, this, rep, metaStore, space );
   }
 
   public abstract RowMeta getRowMeta( String origin, VariableSpace space ) throws KettleStepException;
 
-  @Override public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-                                   VariableSpace space, Repository repository, IMetaStore metaStore )
+  @Override public void getFields( Bowl bowl, RowMetaInterface rowMeta, String origin, RowMetaInterface[] info,
+    StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore )
     throws KettleStepException {
     try {
-      TransMeta transMeta = mappingMetaRetriever.get( this, repository, metaStore, space );
+      TransMeta transMeta = mappingMetaRetriever.get( bowl, this, repository, metaStore, space );
       if ( !StringUtil.isEmpty( getSubStep() ) ) {
         String realSubStepName = space.environmentSubstitute( getSubStep() );
         if ( transMeta.getSteps().stream().anyMatch( stepMeta -> stepMeta.getName().equals( realSubStepName ) ) ) {
@@ -274,7 +275,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
             {
               try {
                 stepMeta.getStepMetaInterface()
-                  .getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
+                  .getFields( bowl, rowMeta, origin, info, nextStep, space, repository, metaStore );
               } catch ( KettleStepException e ) {
                 throw new RuntimeException( e );
               }

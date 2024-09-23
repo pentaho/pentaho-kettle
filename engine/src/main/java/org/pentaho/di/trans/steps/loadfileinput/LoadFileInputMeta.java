@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -767,7 +768,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     DynamicFilenameField = null;
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !getIsInFields() ) {
       r.clear();
@@ -992,8 +994,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public FileInputList getFiles( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
+  public FileInputList getFiles( Bowl bowl, VariableSpace space ) {
+    return FileInputList.createFileList( bowl, space, fileName, fileMask, excludeFileMask, fileRequired,
         includeSubFolderBoolean() );
   }
 
@@ -1037,7 +1039,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
         remarks.add( cr );
       }
     } else {
-      FileInputList fileInputList = getFiles( transMeta );
+      FileInputList fileInputList = getFiles( transMeta.getBowl(), transMeta );
 
       if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
         cr =
@@ -1065,7 +1067,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    *
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  @Override
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
@@ -1073,7 +1076,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       //
       if ( !fileinfield ) {
         for ( int i = 0; i < fileName.length; i++ ) {
-          FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
+          FileObject fileObject = KettleVFS.getInstance( parentStepMeta.getParentTransMeta().getBowl() )
+            .getFileObject( space.environmentSubstitute( fileName[i] ), space );
           fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
         }
       }

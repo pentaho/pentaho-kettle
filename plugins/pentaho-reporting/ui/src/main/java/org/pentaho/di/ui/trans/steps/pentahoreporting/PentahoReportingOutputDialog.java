@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -525,7 +525,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
       // Load the master report...
       //
-      MasterReport report = PentahoReportingOutput.loadMasterReport( sourceFilename );
+      MasterReport report = PentahoReportingOutput.loadMasterReport( transMeta.getBowl(), sourceFilename );
 
       // Extract the definitions...
       //

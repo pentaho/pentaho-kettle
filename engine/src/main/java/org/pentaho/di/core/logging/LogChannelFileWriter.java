@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -76,7 +77,7 @@ public class LogChannelFileWriter {
     finished = new AtomicBoolean( false );
 
     try {
-      logFileOutputStream = KettleVFS.getOutputStream( logFile, appending );
+      logFileOutputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getOutputStream( logFile, appending );
     } catch ( IOException e ) {
       throw new KettleException( "There was an error while trying to open file '" + logFile + "' for writing", e );
     }

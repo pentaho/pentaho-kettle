@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -138,11 +138,12 @@ public class SortRows extends BaseStep implements StepInterface {
 
     try {
       FileObject fileObject =
-          KettleVFS.createTempFile( meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ),
-              getTransMeta() );
+          KettleVFS.getInstance( getTransMeta().getBowl() )
+            .createTempFile( meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ), getTransMeta() );
 
       data.files.add( fileObject ); // Remember the files!
-      OutputStream outputStream = KettleVFS.getOutputStream( fileObject, false );
+      OutputStream outputStream = KettleVFS.getInstance( getTransMeta().getBowl() )
+        .getOutputStream( fileObject, false );
       if ( data.compressFiles ) {
         gzos = new GZIPOutputStream( new BufferedOutputStream( outputStream ) );
         dos = new DataOutputStream( gzos );
@@ -417,7 +418,8 @@ public class SortRows extends BaseStep implements StepInterface {
 
       // Metadata
       data.outputRowMeta = inputRowMeta.clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
       data.comparator = new RowTemapFileComparator( data.outputRowMeta, data.fieldnrs );
 
       for ( int i = 0; i < fieldNames.length; i++ ) {

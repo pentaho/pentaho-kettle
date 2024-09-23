@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -88,7 +88,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                      metaStore );
 
       // Check if XML stream is given
       if ( meta.getXMLStream() != null ) {
@@ -119,7 +120,7 @@ public class XsdValidator extends BaseStep implements StepInterface {
             // Is XSD file exists ?
             FileObject xsdfile = null;
             try {
-              xsdfile = KettleVFS.getFileObject( environmentSubstitute( meta.getXSDFilename() ), getTransMeta() );
+              xsdfile = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( environmentSubstitute( meta.getXSDFilename() ), getTransMeta() );
               if ( !xsdfile.exists() ) {
                 logError( BaseMessages.getString( PKG, "XsdValidator.Log.Error.XSDFileNotExists" ) );
                 throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.XSDFileNotExists" ) );
@@ -191,7 +192,7 @@ public class XsdValidator extends BaseStep implements StepInterface {
 
         SchemaFactory factoryXSDValidator = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
 
-        xsdfile = KettleVFS.getFileObject( xsdfilename, getTransMeta() );
+        xsdfile = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( xsdfilename, getTransMeta() );
 
         // Get XML stream
         Source sourceXML = new StreamSource( new StringReader( XMLFieldvalue ) );
@@ -200,7 +201,7 @@ public class XsdValidator extends BaseStep implements StepInterface {
 
           // We deal with XML file
           // Get XML File
-          FileObject xmlfileValidator = KettleVFS.getFileObject( XMLFieldvalue );
+          FileObject xmlfileValidator = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( XMLFieldvalue );
           if ( xmlfileValidator == null || !xmlfileValidator.exists() ) {
             logError( BaseMessages.getString( PKG, "XsdValidator.Log.Error.XMLfileMissing", XMLFieldvalue ) );
             throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.XMLfileMissing",

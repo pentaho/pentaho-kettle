@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
@@ -5025,7 +5026,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * @throws KettleDatabaseException in case anything goes wrong.
    * @sendSinglestatement send one statement
    */
-  public Result execStatementsFromFile( String filename, boolean sendSinglestatement ) throws KettleException {
+  public Result execStatementsFromFile( Bowl bowl,  String filename, boolean sendSinglestatement )
+    throws KettleException {
     FileObject sqlFile = null;
     InputStream is = null;
     InputStreamReader bis = null;
@@ -5033,7 +5035,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       if ( Utils.isEmpty( filename ) ) {
         throw new KettleException( "Filename is missing!" );
       }
-      sqlFile = KettleVFS.getFileObject( filename );
+      sqlFile = KettleVFS.getInstance( bowl ).getFileObject( filename );
       if ( !sqlFile.exists() ) {
         throw new KettleException( "We can not find file [" + filename + "]!" );
       }

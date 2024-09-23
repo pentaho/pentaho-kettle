@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -80,7 +80,8 @@ public class FileExists extends BaseStep implements StepInterface {
         data.previousRowMeta = getInputRowMeta().clone();
         data.NrPrevFields = data.previousRowMeta.size();
         data.outputRowMeta = data.previousRowMeta;
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
 
         // Check is tablename field is provided
         if ( Utils.isEmpty( meta.getDynamicFilenameField() ) ) {
@@ -108,7 +109,7 @@ public class FileExists extends BaseStep implements StepInterface {
       // get filename
       String filename = data.previousRowMeta.getString( r, data.indexOfFileename );
       if ( !Utils.isEmpty( filename ) ) {
-        data.file = KettleVFS.getFileObject( filename, getTransMeta() );
+        data.file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( filename, getTransMeta() );
 
         // Check if file
         fileexists = data.file.exists();

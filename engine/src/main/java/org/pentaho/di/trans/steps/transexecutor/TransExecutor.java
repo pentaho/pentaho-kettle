@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -535,7 +535,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
   @VisibleForTesting
   TransMeta loadExecutorTransMeta() throws KettleException {
-    return TransExecutorMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this, meta.getParameters().isInheritingAllVariables() );
+    return TransExecutorMeta.loadMappingMeta( getTransMeta().getBowl(), meta, meta.getRepository(),
+      meta.getMetaStore(), this, meta.getParameters().isInheritingAllVariables() );
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {

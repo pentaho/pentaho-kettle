@@ -33,6 +33,7 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -53,16 +54,16 @@ public class PoiWorkbook implements KWorkbook {
   private POIFSFileSystem npoifs;
   private OPCPackage opcpkg;
 
-  public PoiWorkbook( String filename, String encoding ) throws KettleException {
-    this( filename, encoding, null );
+  public PoiWorkbook( Bowl bowl, String filename, String encoding ) throws KettleException {
+    this( bowl, filename, encoding, null );
   }
 
-  public PoiWorkbook( String filename, String encoding, String password ) throws KettleException {
+  public PoiWorkbook( Bowl bowl, String filename, String encoding, String password ) throws KettleException {
     this.filename = filename;
     this.encoding = encoding;
     this.log = KettleLogStore.getLogChannelInterfaceFactory().create( this );
     try {
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( filename );
       if ( fileObject instanceof LocalFile ) {
         // This supposedly shaves off a little bit of memory usage by allowing POI to randomly access data in the file
         //
@@ -80,7 +81,7 @@ public class PoiWorkbook implements KWorkbook {
           }
         }
       } else {
-        internalIS = KettleVFS.getInputStream( filename );
+        internalIS = KettleVFS.getInstance( bowl ).getInputStream( filename );
         workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create( internalIS, password );
       }
     } catch ( EncryptedDocumentException e ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -265,7 +265,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
     String realFileFolderName = environmentSubstitute( filename );
     String realWildcard = environmentSubstitute( wildcard );
 
-    try ( FileObject fileFolder = KettleVFS.getFileObject( realFileFolderName ) ) {
+    try ( FileObject fileFolder = KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFileObject( realFileFolderName ) ) {
       FileObject[] files = new FileObject[] { fileFolder };
       if ( fileFolder.exists() ) {
         // the file or folder exists
@@ -306,7 +307,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
     for ( int i = 0; i < files.length && !oneFileLocked; i++ ) {
       FileObject file = files[i];
       String filename = KettleVFS.getFilename( file );
-      LockFile locked = new LockFile( filename );
+      LockFile locked = new LockFile( parentJobMeta.getBowl(), filename );
       if ( locked.isLocked() ) {
         oneFileLocked = true;
         logError( BaseMessages.getString( PKG, "JobCheckFilesLocked.Log.FileLocked", filename ) );
@@ -430,7 +431,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks,
+    boolean res = JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res ) {
@@ -440,7 +441,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
         JobEntryValidatorUtils.fileExistsValidator() );
 
       for ( int i = 0; i < arguments.length; i++ ) {
-        JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+        JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments[" + i + "]", remarks, ctx );
       }
     }
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -827,7 +828,7 @@ public class JsonInputMeta extends
   }
 
   @Override
-  public void getFields( RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( inFields && removeSourceField && !Utils.isEmpty( valueField ) ) {
@@ -1003,9 +1004,10 @@ public class JsonInputMeta extends
     }
   }
 
-  public FileInputList getFiles( VariableSpace space ) {
+  public FileInputList getFiles( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFileList(
-      space, getFileName(), getFileMask(), getExcludeFileMask(), getFileRequired(), inputFiles.includeSubFolderBoolean() );
+      bowl, space, getFileName(), getFileMask(), getExcludeFileMask(), getFileRequired(),
+      inputFiles.includeSubFolderBoolean() );
   }
 
   @Override
@@ -1049,7 +1051,7 @@ public class JsonInputMeta extends
         remarks.add( cr );
       }
     } else {
-      FileInputList fileInputList = getFiles( transMeta );
+      FileInputList fileInputList = getFiles( transMeta.getBowl(), transMeta );
       // String files[] = getFiles();
       if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
         cr =
@@ -1099,7 +1101,7 @@ public class JsonInputMeta extends
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
@@ -1109,7 +1111,7 @@ public class JsonInputMeta extends
       List<String> newFilenames = new ArrayList<String>();
 
       if ( !isInFields() ) {
-        FileInputList fileList = getFiles( space );
+        FileInputList fileList = getFiles( bowl, space );
         if ( fileList.getFiles().size() > 0 ) {
           for ( FileObject fileObject : fileList.getFiles() ) {
             // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.xml

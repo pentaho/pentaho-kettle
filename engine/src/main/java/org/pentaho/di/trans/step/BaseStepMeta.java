@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.step;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.KettleAttribute;
@@ -214,8 +215,8 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @deprecated use {@link #getFields(RowMetaInterface, String, RowMetaInterface[], StepMeta, VariableSpace, Repository, IMetaStore)}
    */
   @Deprecated
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-                         VariableSpace space ) throws KettleStepException {
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
+                         StepMeta nextStep, VariableSpace space ) throws KettleStepException {
     // Default: no values are added to the row in the step
   }
 
@@ -232,8 +233,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @param metaStore    the MetaStore to use to load additional external data or metadata impacting the output fields
    * @throws KettleStepException the kettle step exception
    */
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
+                         StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore )
+    throws KettleStepException {
     // Default: no values are added to the row in the step
   }
 
@@ -434,13 +436,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @deprecated use {@link #exportResources(VariableSpace, Map, ResourceNamingInterface, Repository, IMetaStore)}
    */
   @Deprecated
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
                                  ResourceNamingInterface resourceNamingInterface, Repository repository )
     throws KettleException {
     return null;
   }
 
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
                                  ResourceNamingInterface resourceNamingInterface, Repository repository,
                                  IMetaStore metaStore ) throws KettleException {
     return null;
@@ -1055,12 +1057,12 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @deprecated use {@link #loadReferencedObject(int, Repository, IMetaStore, VariableSpace)}
    */
   @Deprecated
-  public Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException {
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, VariableSpace space ) throws KettleException {
     // Provided for v4 API compatibility
     return null;
   }
 
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
     throws KettleException {
     // Provided for v4 API compatibility
     return null;

@@ -2521,7 +2521,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   protected void loadReferencedObject( JobEntryCopy jobEntryCopy, int index ) {
     try {
       Object referencedMeta =
-          jobEntryCopy.getEntry().loadReferencedObject( index, spoon.rep, spoon.getMetaStore(), jobMeta );
+          jobEntryCopy.getEntry().loadReferencedObject( jobMeta.getBowl(), index, spoon.rep, spoon.getMetaStore(),
+            jobMeta );
       if ( referencedMeta == null ) {
         // Compatible re-try for older plugins.
         referencedMeta =
@@ -2588,7 +2589,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   @SuppressWarnings( "deprecation" )
   private Object compatibleJobEntryLoadReferencedObject( JobEntryInterface entry, int index, Repository rep,
     JobMeta jobMeta2 ) throws KettleException {
-    return entry.loadReferencedObject( index, spoon.rep, jobMeta );
+    return entry.loadReferencedObject( jobMeta.getBowl(), index, spoon.rep, jobMeta );
   }
 
   protected void openTransformation( JobEntryTrans entry, JobEntryCopy jobEntryCopy ) {
@@ -2608,8 +2609,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
           // Open the file or create a new one!
           //
-          if ( KettleVFS.fileExists( exactFilename ) ) {
-            launchTransMeta = new TransMeta( exactFilename );
+          if ( KettleVFS.getInstance( jobMeta.getBowl() ).fileExists( exactFilename ) ) {
+            launchTransMeta = new TransMeta( jobMeta.getBowl(), exactFilename );
           } else {
             launchTransMeta = new TransMeta();
           }
@@ -2638,7 +2639,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
           boolean exists = spoon.rep.getTransformationID( exactTransname, repositoryDirectoryInterface ) != null;
           if ( !exists ) {
-            launchTransMeta = new TransMeta( null, exactTransname );
+            launchTransMeta = new TransMeta( (String)null, exactTransname );
           } else {
             launchTransMeta =
               spoon.rep.loadTransformation( exactTransname, spoon.rep.findDirectory( jobMeta
@@ -2711,8 +2712,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
           // Open the file or create a new one!
           //
-          if ( KettleVFS.fileExists( exactFilename ) ) {
-            launchJobMeta = new JobMeta( jobMeta, exactFilename, spoon.rep, spoon.getMetaStore(), null );
+          if ( KettleVFS.getInstance( jobMeta.getBowl() ).fileExists( exactFilename ) ) {
+            launchJobMeta = new JobMeta( jobMeta.getBowl(), jobMeta, exactFilename, spoon.rep, spoon.getMetaStore(),
+              null );
           } else {
             launchJobMeta = new JobMeta();
           }
@@ -3498,7 +3500,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             if ( spoon.rep != null ) {
               runJobMeta = spoon.rep.loadJob( jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null );
             } else {
-              runJobMeta = new JobMeta( null, jobMeta.getFilename(), null, jobMeta.getMetaStore(), null );
+              runJobMeta = new JobMeta( jobMeta.getBowl(), null, jobMeta.getFilename(), null, jobMeta.getMetaStore(),
+                null );
             }
 
             String spoonObjectId = UUID.randomUUID().toString();

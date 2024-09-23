@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,8 @@ import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -215,16 +217,16 @@ public class MessagesSourceCrawler {
     }
   }
 
-  public void crawl() throws Exception {
+  public void crawl( Bowl bowl ) throws Exception {
     crawlSourceDirectories();
     // Also search for keys in the XUL files...
-    crawlXmlFolders();
+    crawlXmlFolders( bowl );
   }
 
   public void crawlSourceDirectories() throws Exception {
 
     for ( final String sourceDirectory : sourceDirectories ) {
-      FileObject folder = KettleVFS.getFileObject( sourceDirectory );
+      FileObject folder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( sourceDirectory );
       FileObject[] javaFiles = folder.findFiles( new FileSelector() {
         @Override
         public boolean traverseDescendents( FileSelectInfo info ) throws Exception {
@@ -248,7 +250,7 @@ public class MessagesSourceCrawler {
     }
   }
 
-  protected void crawlXmlFolders() throws Exception {
+  protected void crawlXmlFolders( Bowl bowl ) throws Exception {
 
     for ( SourceCrawlerXMLFolder xmlFolder : xmlFolders ) {
       String[] xmlDirs = { xmlFolder.getFolder() };
@@ -257,7 +259,7 @@ public class MessagesSourceCrawler {
       boolean[] xmlSubdirs = { true }; // search sub-folders too
 
       FileInputList xulFileInputList =
-        FileInputList.createFileList( new Variables(), xmlDirs, xmlMasks, xmlReq, xmlSubdirs );
+        FileInputList.createFileList( bowl, new Variables(), xmlDirs, xmlMasks, xmlReq, xmlSubdirs );
       for ( FileObject fileObject : xulFileInputList.getFiles() ) {
         try {
           Document doc = XMLHandler.loadXMLFile( fileObject );

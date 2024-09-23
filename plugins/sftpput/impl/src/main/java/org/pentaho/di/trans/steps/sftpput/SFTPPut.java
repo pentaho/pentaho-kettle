@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -101,7 +101,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
             logError( BaseMessages.getString( PKG, "SFTPPut.Error.KeyFileMissing" ) );
             return false;
           }
-          if ( !KettleVFS.fileExists( realKeyFilename ) ) {
+          if ( !KettleVFS.getInstance( getTransMeta().getBowl() ).fileExists( realKeyFilename ) ) {
             // Error.. can not reach keyfile
             logError( BaseMessages.getString( PKG, "SFTPPut.Error.KeyFileNotFound", realKeyFilename ) );
             return false;
@@ -180,7 +180,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
       } else {
         // source data is a file
         // let's check file
-        file = KettleVFS.getFileObject( sourceData );
+        file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( sourceData );
 
         if ( !file.exists() ) {
           // We can not find file
@@ -203,7 +203,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
               PKG, "SFTPPut.Error.MoveToDestinationFolderIsEmpty" ) );
           }
 
-          destinationFolder = KettleVFS.getFileObject( realDestationFolder );
+          destinationFolder = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( realDestationFolder );
 
           if ( !destinationFolder.exists() ) {
             // We can not find folder
@@ -336,7 +336,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
   SFTPClient createSftpClient( String realServerName, String realServerPort, String realUsername,
                                String realKeyFilename, String realPassPhrase )
     throws KettleJobException, UnknownHostException {
-    return new SFTPClient(
+    return new SFTPClient( getTransMeta().getBowl(),
       InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
       realKeyFilename, realPassPhrase );
   }
@@ -358,7 +358,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
           FileObject destination = null;
           try {
             destination =
-              KettleVFS.getFileObject( destinationFolder.getName().getBaseName()
+              KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( destinationFolder.getName().getBaseName()
                 + Const.FILE_SEPARATOR + file.getName().getBaseName(), this );
             file.moveTo( destination );
             if ( isDetailed() ) {

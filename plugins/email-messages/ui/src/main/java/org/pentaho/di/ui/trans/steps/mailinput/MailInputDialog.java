@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1707,7 +1707,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
       try {
         mailConn =
-          new MailConnection(
+          new MailConnection( transMeta.getBowl(),
             LogChannel.UI, MailConnectionMeta.getProtocolFromString(
               wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser,
             realpass, wUseSSL.getSelection(), wUseProxy.getSelection(), realProxyUsername );

@@ -1393,7 +1393,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         RssOutputMeta tfoi = new RssOutputMeta();
         getInfo( tfoi );
         try {
-          String[] files = tfoi.getFiles( transMeta );
+          String[] files = tfoi.getFiles( transMeta.getBowl(), transMeta );
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
               BaseMessages.getString( PKG, "RssOutputDialog.SelectOutputFiles.DialogTitle" ),

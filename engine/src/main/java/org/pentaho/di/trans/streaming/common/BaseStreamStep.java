@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -79,8 +79,8 @@ public class BaseStreamStep extends BaseStep {
 
     try {
       TransMeta transMeta = TransExecutorMeta
-        .loadMappingMeta( variablizedStepMeta, getTransMeta().getRepository(), getTransMeta().getMetaStore(),
-          getParentVariableSpace() );
+        .loadMappingMeta( getTransMeta().getBowl(), variablizedStepMeta, getTransMeta().getRepository(),
+           getTransMeta().getMetaStore(), getParentVariableSpace() );
       variablizedStepMeta = (BaseStreamStepMeta) variablizedStepMeta.withVariables( this );
       subtransExecutor = new SubtransExecutor( getStepname(),
         getTrans(), transMeta, true,

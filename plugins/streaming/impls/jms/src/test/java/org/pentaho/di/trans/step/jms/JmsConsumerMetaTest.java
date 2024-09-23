@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@ package org.pentaho.di.trans.step.jms;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
@@ -56,7 +57,7 @@ public class JmsConsumerMetaTest {
   @Test
   public void withVariablesGetsNewObjectFromRegistry() throws KettleXMLException, KettleMissingPluginsException {
     String path = getClass().getResource( "/jms-consumer.ktr" ).getPath();
-    TransMeta transMeta = new TransMeta( path, new Variables() );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), path, new Variables() );
     StepMeta step = transMeta.getStep( 0 );
     JmsConsumerMeta jmsMeta = (JmsConsumerMeta) step.getStepMetaInterface();
     assertEquals( "${testOne}", jmsMeta.jmsDelegate.amqUrl );

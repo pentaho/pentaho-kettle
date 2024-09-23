@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import java.io.OutputStreamWriter;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
@@ -113,7 +114,7 @@ public class GPG {
    *          LogChannelInterface
    * @throws KettleException
    */
-  public GPG( String gpgFilename, LogChannelInterface logInterface ) throws KettleException {
+  public GPG( Bowl bowl, String gpgFilename, LogChannelInterface logInterface ) throws KettleException {
     this.log = logInterface;
     this.gpgexe = gpgFilename;
     // Let's check GPG filename
@@ -124,7 +125,7 @@ public class GPG {
     // We have a filename, we need to check
     FileObject file = null;
     try {
-      file = KettleVFS.getFileObject( getGpgExeFile() );
+      file = KettleVFS.getInstance( bowl ).getFileObject( getGpgExeFile() );
 
       if ( !file.exists() ) {
         throw new KettleException( BaseMessages.getString( PKG, "GPG.GPGFilenameNotFound" ) );

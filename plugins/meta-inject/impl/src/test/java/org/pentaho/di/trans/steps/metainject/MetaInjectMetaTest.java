@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.metainject;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -146,15 +147,18 @@ public class MetaInjectMetaTest {
     MetaInjectMeta injectMetaSpy = spy( metaInjectMeta );
     TransMeta transMeta = mock( TransMeta.class );
     Map<String, ResourceDefinition> definitions = Collections.<String, ResourceDefinition>emptyMap();
-    doReturn( TEST_FILE_NAME ).when( transMeta ).exportResources( transMeta, definitions, resourceNamingInterface,
-        repository, metaStore );
-    doReturn( transMeta ).when( injectMetaSpy ).loadTransformationMeta( repository, variableSpace );
+    doReturn( TEST_FILE_NAME ).when( transMeta ).exportResources( DefaultBowl.getInstance(), transMeta, definitions,
+        resourceNamingInterface, repository, metaStore );
+    doReturn( transMeta ).when( injectMetaSpy ).loadTransformationMeta( DefaultBowl.getInstance(), repository,
+        variableSpace );
 
     String actualExportedFileName =
-        injectMetaSpy.exportResources( variableSpace, definitions, resourceNamingInterface, repository, metaStore );
+        injectMetaSpy.exportResources( DefaultBowl.getInstance(), variableSpace, definitions, resourceNamingInterface,
+          repository, metaStore );
     assertEquals( TEST_FILE_NAME, actualExportedFileName );
     assertEquals( EXPORTED_FILE_NAME, injectMetaSpy.getFileName() );
-    verify( transMeta ).exportResources( transMeta, definitions, resourceNamingInterface, repository, metaStore );
+    verify( transMeta ).exportResources( DefaultBowl.getInstance(), transMeta, definitions, resourceNamingInterface,
+         repository, metaStore );
   }
 
   @Test
@@ -191,6 +195,11 @@ public class MetaInjectMetaTest {
     MetaInjectMeta metaInjectMetaMock = mock( MetaInjectMeta.class );
     when( metaInjectMetaMock.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
     when( metaInjectMetaMock.getFileName() ).thenReturn( "${" + variablePath + "}/" + fileName );
+    StepMeta parentStepMeta = mock( StepMeta.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    when( transMeta.getRepositoryDirectory() ).thenReturn( null );
+    when( parentStepMeta.getParentTransMeta() ).thenReturn( transMeta );
+    when( metaInjectMetaMock.getParentStepMeta() ).thenReturn( parentStepMeta );
 
     // mock repo and answers
     Repository rep = mock( Repository.class );
@@ -198,19 +207,20 @@ public class MetaInjectMetaTest {
     doAnswer( invocation -> {
       String originalArgument = (String) ( invocation.getArguments() )[ 0 ];
       // be sure that the variable was replaced by real path
-      assertEquals( originalArgument, virtualDir );
+      assertEquals( virtualDir, originalArgument );
       return null;
     } ).when( rep ).findDirectory( anyString() );
 
     doAnswer( invocation -> {
       String originalArgument = (String) ( invocation.getArguments() )[ 0 ];
       // be sure that transformation name was resolved correctly
-      assertEquals( originalArgument, fileName );
+      assertEquals( fileName, originalArgument );
       return mock( TransMeta.class );
     } ).when( rep ).loadTransformation( anyString(), nullable( RepositoryDirectoryInterface.class ),
       nullable( ProgressMonitorListener.class ), anyBoolean(), nullable( String.class ) );
 
-    assertNotNull( MetaInjectMeta.loadTransformationMeta( metaInjectMetaMock, rep, null, variables ) );
+    assertNotNull( MetaInjectMeta.loadTransformationMeta( DefaultBowl.getInstance(), metaInjectMetaMock, rep, null,
+        variables ) );
   }
 
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2022-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.avro.output;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.trans.steps.avro.AvroTypeConverter;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -305,11 +306,11 @@ public abstract class AvroOutputMetaBase extends BaseStepMeta implements StepMet
   }
 
   @Override
-  public void resolve() {
+  public void resolve( Bowl bowl ) {
     if ( filename != null && !filename.isEmpty() ) {
       try {
         String realFileName = getParentStepMeta().getParentTransMeta().environmentSubstitute( filename );
-        FileObject fileObject = KettleVFS.getFileObject( realFileName );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( realFileName );
         if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
           filename = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
         }
@@ -321,7 +322,7 @@ public abstract class AvroOutputMetaBase extends BaseStepMeta implements StepMet
     if ( schemaFilename != null && !schemaFilename.isEmpty() ) {
       try {
         String realSchemaFilename = getParentStepMeta().getParentTransMeta().environmentSubstitute( schemaFilename );
-        FileObject fileObject = KettleVFS.getFileObject( realSchemaFilename );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( realSchemaFilename );
         if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
           schemaFilename = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
         }

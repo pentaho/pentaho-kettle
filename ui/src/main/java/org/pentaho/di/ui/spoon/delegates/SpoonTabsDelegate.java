@@ -409,9 +409,9 @@ public class SpoonTabsDelegate extends SpoonDelegate {
       if ( entry != null && !entry.getTabItem().isDisposed() ) {
         if ( trans.getFilename() != null && entry.getFilename() != null ) {
           // If the entry has a file name it is the same as trans iff. they originated from the same files
-          FileObject entryFile = KettleVFS.getFileObject( entry.getFilename() );
+          FileObject entryFile = KettleVFS.getInstance( trans.getBowl() ).getFileObject( entry.getFilename() );
           if ( transFile == null ) {
-            transFile = KettleVFS.getFileObject( trans.getFilename() );
+            transFile = KettleVFS.getInstance( trans.getBowl() ).getFileObject( trans.getFilename() );
           }
           if ( entryFile.equals( transFile ) ) {
             return entry;

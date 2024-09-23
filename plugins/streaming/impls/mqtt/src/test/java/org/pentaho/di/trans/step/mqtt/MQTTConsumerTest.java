@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2019-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -58,7 +59,8 @@ public class MQTTConsumerTest {
 
   @Before
   public void setup() throws Exception {
-    TransMeta transMeta = new TransMeta( getClass().getResource( "/ConsumeRows.ktr" ).getPath() );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "/ConsumeRows.ktr" ).getPath() );
     trans = new Trans( transMeta );
     trans.setVariable( "mqttServer", "127.0.0.1:1883" );
     trans.setVariable( "topic", "TestWinning" );

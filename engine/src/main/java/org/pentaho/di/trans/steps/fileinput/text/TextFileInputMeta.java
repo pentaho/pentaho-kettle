@@ -537,7 +537,7 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !inputFiles.passingThruFields ) {
       // all incoming fields are not transmitted !
@@ -673,9 +673,9 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
 
   @Override
   @Deprecated
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space ) throws KettleStepException {
-    getFields( inputRowMeta, name, info, nextStep, space, null, null );
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
+      StepMeta nextStep, VariableSpace space ) throws KettleStepException {
+    getFields( bowl, inputRowMeta, name, info, nextStep, space, null, null );
   }
 
   @Override
@@ -1241,7 +1241,7 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
         throws KettleException {
     try {
@@ -1259,7 +1259,7 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
             continue;
           }
 
-          FileObject fileObject = getFileObject( space.environmentSubstitute( fileName ), space );
+          FileObject fileObject = getFileObject( bowl, space.environmentSubstitute( fileName ), space );
 
           inputFiles.fileName[i] =
               resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( inputFiles.fileMask[i] ) );
@@ -1362,8 +1362,9 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
   /**
    * For testing
    */
-  FileObject getFileObject( String vfsFileName, VariableSpace variableSpace ) throws KettleFileException {
-    return KettleVFS.getFileObject( variableSpace.environmentSubstitute( vfsFileName ), variableSpace );
+  FileObject getFileObject( Bowl bowl, String vfsFileName, VariableSpace variableSpace ) throws KettleFileException {
+    return KettleVFS.getInstance( bowl )
+      .getFileObject( variableSpace.environmentSubstitute( vfsFileName ), variableSpace );
   }
 
   @Override

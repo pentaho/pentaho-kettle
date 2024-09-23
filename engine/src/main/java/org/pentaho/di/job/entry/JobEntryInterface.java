@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.SQLStatement;
@@ -710,7 +711,7 @@ public interface JobEntryInterface {
    * @deprecated use {@link #loadReferencedObject(int, Repository, IMetaStore, VariableSpace)}
    */
   @Deprecated
-  Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException;
+  Object loadReferencedObject( Bowl bowl, int index, Repository rep, VariableSpace space ) throws KettleException;
 
   /**
    * Load the referenced object
@@ -726,7 +727,8 @@ public interface JobEntryInterface {
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
+  Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+    throws KettleException;
 
   /**
    * At save and run time, the system will attempt to set the jobMeta so that it can be accessed by the jobEntries

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -356,7 +356,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void loadFileTrans( String fname ) throws KettleException {
-    executorTransMeta = new TransMeta( transMeta.environmentSubstitute( fname ), repository );
+    executorTransMeta = new TransMeta( transMeta.getBowl(), transMeta.environmentSubstitute( fname ), repository );
     executorTransMeta.clearChanged();
   }
 

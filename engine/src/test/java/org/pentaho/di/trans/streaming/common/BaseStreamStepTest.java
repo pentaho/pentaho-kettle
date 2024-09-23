@@ -90,6 +90,10 @@ public class BaseStreamStepTest {
     transMeta.addStep( stepMeta );
     Trans trans = new Trans( transMeta );
 
+    stepMeta.setParentTransMeta( transMeta );
+    when( parentStepMeta.getParentTransMeta() ).thenReturn( transMeta );
+    when( meta.getParentStepMeta() ).thenReturn( stepMeta );
+
     baseStreamStep = new BaseStreamStep( stepMeta, stepData, 1, transMeta, trans );
     baseStreamStep.source = streamSource;
     baseStreamStep.window = streamWindow;

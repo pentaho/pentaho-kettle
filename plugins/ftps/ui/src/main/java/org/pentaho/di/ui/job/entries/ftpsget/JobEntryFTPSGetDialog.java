@@ -1268,7 +1268,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
         String realPassword = Utils.resolvePassword( jobMeta, wPassword.getText() );
 
         connection =
-          new FTPSConnection(
+          new FTPSConnection( jobMeta.getBowl(),
             FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername, port,
             realUsername, realPassword );
 

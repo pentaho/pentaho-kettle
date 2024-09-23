@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,7 +72,8 @@ public class SSH extends BaseStep implements StepInterface {
         first = false;
         data.outputRowMeta = getInputRowMeta().clone();
         data.nrInputFields = data.outputRowMeta.size();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
         data.nrOutputFields = data.outputRowMeta.size();
 
         // Check if commands field is provided
@@ -98,7 +99,8 @@ public class SSH extends BaseStep implements StepInterface {
           first = false;
           data.outputRowMeta = new RowMeta();
           data.nrInputFields = 0;
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+          meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+            metaStore );
           data.nrOutputFields = data.outputRowMeta.size();
           data.commands = environmentSubstitute( meta.getCommand() );
         }
@@ -240,8 +242,8 @@ public class SSH extends BaseStep implements StepInterface {
         // Open connection
         data.conn =
           SSHData.OpenConnection(
-            servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename, passphrase, timeOut,
-            this, proxyhost, proxyport, proxyusername, proxypassword );
+            getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
+            passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword );
 
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionOpened" ) );

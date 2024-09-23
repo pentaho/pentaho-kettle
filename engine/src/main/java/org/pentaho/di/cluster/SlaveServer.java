@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.message.BasicHeader;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.encryption.Encr;
@@ -679,7 +680,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
    */
   public String sendExport( String filename, String type, String load ) throws Exception {
     // Request content will be retrieved directly from the input stream
-    try ( InputStream is = KettleVFS.getInputStream( KettleVFS.getFileObject( filename ) ) ) {
+    try ( InputStream is = KettleVFS.getInputStream( KettleVFS.getInstance( DefaultBowl.getInstance() )
+                                                     .getFileObject( filename ) ) ) {
       // Execute request
       HttpPost method = buildSendExportMethod( type, load, is );
       try {

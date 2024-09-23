@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -106,12 +107,14 @@ public class ActiveMQProviderTest {
 
   @Test public void testFullCircle() throws KettleException, InterruptedException, TimeoutException,
     ExecutionException {
-    TransMeta consumerMeta = new TransMeta( getClass().getResource( "/amq-consumer.ktr" ).getPath() );
+    TransMeta consumerMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "/amq-consumer.ktr" ).getPath() );
     Trans consumerTrans = new Trans( consumerMeta );
     consumerTrans.prepareExecution( new String[] {} );
     consumerTrans.startThreads();
 
-    TransMeta producerMeta = new TransMeta( getClass().getResource( "/amq-producer.ktr" ).getPath() );
+    TransMeta producerMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "/amq-producer.ktr" ).getPath() );
     Trans producerTrans = new Trans( producerMeta );
     producerTrans.prepareExecution( new String[] {} );
     producerTrans.startThreads();

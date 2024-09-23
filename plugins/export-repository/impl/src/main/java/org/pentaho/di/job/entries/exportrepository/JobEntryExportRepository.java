@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -471,7 +471,8 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
     limitErr = Const.toInt( environmentSubstitute( getNrLimit() ), 10 );
 
     try {
-      file = KettleVFS.getFileObject( realoutfilename, this );
+      file = KettleVFS.getInstance( parentJobMeta.getBowl() )
+        .getFileObject( realoutfilename, this );
       if ( file.exists() ) {
         if ( export_type.equals( Export_All )
           || export_type.equals( Export_Jobs ) || export_type.equals( Export_Trans )
@@ -490,7 +491,8 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
             String parentFolder = KettleVFS.getFilename( file.getParent() );
             String shortFilename = file.getName().getBaseName();
             shortFilename = buildUniqueFilename( shortFilename );
-            file = KettleVFS.getFileObject( parentFolder + Const.FILE_SEPARATOR + shortFilename, this );
+            file = KettleVFS.getInstance( parentJobMeta.getBowl() )
+              .getFileObject( parentFolder + Const.FILE_SEPARATOR + shortFilename, this );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobExportRepository.Log.NewFilename", file.toString() ) );
             }
@@ -696,14 +698,16 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
           String foldername = realoutfilename;
           if ( newfolder ) {
             foldername = realoutfilename + Const.FILE_SEPARATOR + filename;
-            this.file = KettleVFS.getFileObject( foldername, this );
+            this.file = KettleVFS.getInstance( parentJobMeta.getBowl() )
+              .getFileObject( foldername, this );
             if ( !this.file.exists() ) {
               this.file.createFolder();
             }
           }
 
           filename = foldername + Const.FILE_SEPARATOR + buildFilename( filename ) + ".xml";
-          this.file = KettleVFS.getFileObject( filename, this );
+          this.file = KettleVFS.getInstance( parentJobMeta.getBowl() )
+            .getFileObject( filename, this );
 
           if ( this.file.exists() ) {
             if ( iffileexists.equals( If_FileExists_Skip ) ) {
@@ -787,7 +791,8 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
   private void addFileToResultFilenames( String fileaddentry, LogChannelInterface log, Result result, Job parentJob ) {
     try {
       ResultFile resultFile =
-        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileaddentry, this ), parentJob
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                        .getFileObject( fileaddentry, this ), parentJob
           .getJobname(), toString() );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
       if ( log.isDebug() ) {
@@ -807,18 +812,18 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "repositoryname", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "repositoryname", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
     ValidatorContext ctx = new ValidatorContext();
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(),
         JobEntryValidatorUtils.fileExistsValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "targetfilename", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "targetfilename", remarks, ctx );
 
-    JobEntryValidatorUtils.andValidator().validate( this, "username", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "username", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "password", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
   }
 }

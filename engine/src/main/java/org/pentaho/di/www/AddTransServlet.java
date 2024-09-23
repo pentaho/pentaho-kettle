@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import org.apache.xerces.dom.DeferredTextImpl;
 import org.owasp.encoder.Encode;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -305,7 +306,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       FileUtil.createParentFolder( AddTransServlet.class, realLogFilename, transExecutionConfiguration
         .isCreateParentFolder(), trans.getLogChannel(), trans );
       logChannelFileWriter =
-        new LogChannelFileWriter( servletLoggingObject.getLogChannelId(), KettleVFS
+        new LogChannelFileWriter( servletLoggingObject.getLogChannelId(), KettleVFS.getInstance( DefaultBowl.getInstance() )
           .getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
       logChannelFileWriter.startLogging();
 

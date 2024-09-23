@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.regexeval;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -404,8 +405,10 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     allocate( 0 );
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] infos, StepMeta nextSteps,
-    VariableSpace space, Repository repositorys, IMetaStore metaStores ) throws KettleStepException {
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] infos,
+    StepMeta nextSteps, VariableSpace space, Repository repositorys, IMetaStore metaStores )
+    throws KettleStepException {
     try {
       if ( !Utils.isEmpty( resultfieldname ) ) {
         if ( replacefields ) {

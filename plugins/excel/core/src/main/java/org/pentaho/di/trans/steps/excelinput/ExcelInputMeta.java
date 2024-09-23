@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,6 +70,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 /**
  * Meta data for the Excel step.
  */
@@ -912,7 +913,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < field.length; i++ ) {
       int type = field[ i ].getType();
@@ -1356,16 +1357,16 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     return type_trim_desc[ i ];
   }
 
-  public String[] getFilePaths( VariableSpace space ) {
+  public String[] getFilePaths( Bowl bowl, VariableSpace space ) {
     normilizeAllocation();
     return FileInputList.createFilePathList(
-      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
+      bowl, space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
-  public FileInputList getFileList( VariableSpace space ) {
+  public FileInputList getFileList( Bowl bowl, VariableSpace space ) {
     normilizeAllocation();
     return FileInputList.createFileList(
-      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
+      bowl, space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
@@ -1420,7 +1421,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       remarks.add( cr );
     }
 
-    FileInputList fileList = getFileList( transMeta );
+    FileInputList fileList = getFileList( transMeta.getBowl(), transMeta );
     if ( fileList.nrOfFiles() == 0 ) {
       if ( !isAcceptingFilenames() ) {
         cr =
@@ -1655,7 +1656,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
                                  ResourceNamingInterface resourceNamingInterface, Repository repository,
                                  IMetaStore metaStore ) throws KettleException {
     try {
@@ -1669,7 +1670,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
         // Replace the filename ONLY (folder or filename)
         //
         for ( int i = 0; i < fileName.length; i++ ) {
-          FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[ i ] ), space );
+          FileObject fileObject = KettleVFS.getInstance( bowl )
+            .getFileObject( space.environmentSubstitute( fileName[ i ] ), space );
           fileName[ i ] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[ i ] ) );
         }
       }

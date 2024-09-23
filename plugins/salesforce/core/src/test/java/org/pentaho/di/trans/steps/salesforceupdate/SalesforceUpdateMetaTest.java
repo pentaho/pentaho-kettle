@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -96,12 +97,12 @@ public class SalesforceUpdateMetaTest {
     SalesforceUpdateMeta meta = new SalesforceUpdateMeta();
     meta.setDefault();
     RowMetaInterface r = new RowMeta();
-    meta.getFields( r, "thisStep", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), r, "thisStep", null, null, new Variables(), null, null );
     assertEquals( 0, r.size() );
 
     r.clear();
     r.addValueMeta( new ValueMetaString( "testString" ) );
-    meta.getFields( r, "thisStep", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), r, "thisStep", null, null, new Variables(), null, null );
     assertEquals( 1, r.size() );
     assertEquals( ValueMetaInterface.TYPE_STRING, r.getValueMeta( 0 ).getType() );
     assertEquals( "testString", r.getValueMeta( 0 ).getName() );

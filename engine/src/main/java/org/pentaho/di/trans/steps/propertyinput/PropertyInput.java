@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,7 +68,7 @@ public class PropertyInput extends BaseStep implements StepInterface {
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     if ( first && !meta.isFileField() ) {
-      data.files = meta.getFiles( this );
+      data.files = meta.getFiles( getTransMeta().getBowl(), this );
       if ( data.files == null || data.files.nrOfFiles() == 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "PropertyInput.Log.NoFiles" ) );
       }
@@ -77,8 +77,8 @@ public class PropertyInput extends BaseStep implements StepInterface {
 
       // Create the output row meta-data
       data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the metadata
-                                                                                                    // populated
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore ); // get the metadata populated
 
       // Create convert meta-data objects that will contain Date & Number formatters
       //
@@ -351,7 +351,8 @@ public class PropertyInput extends BaseStep implements StepInterface {
 
           data.inputRowMeta = getInputRowMeta();
           data.outputRowMeta = data.inputRowMeta.clone();
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+          meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+            metaStore );
 
           // Get total previous fields
           data.totalpreviousfields = data.inputRowMeta.size();
@@ -384,7 +385,7 @@ public class PropertyInput extends BaseStep implements StepInterface {
             .getDynamicFilenameField(), filename ) );
         }
 
-        data.file = KettleVFS.getFileObject( filename, getTransMeta() );
+        data.file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( filename, getTransMeta() );
         // Check if file exists!
       }
 

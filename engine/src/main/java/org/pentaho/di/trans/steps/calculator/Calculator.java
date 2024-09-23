@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -82,7 +82,8 @@ public class Calculator extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       data.setOutputRowMeta( getInputRowMeta().clone() );
-      meta.getFields( data.getOutputRowMeta(), getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.getOutputRowMeta(), getStepname(), null, null, this, repository,
+        metaStore );
 
       // get all metadata, including source rows and temporary fields.
       data.setCalcRowMeta( meta.getAllFields( getInputRowMeta() ) );
@@ -399,19 +400,23 @@ public class Calculator extends BaseStep implements StepInterface {
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_CRC32: // CRC32
-            calcData[index] = ValueDataUtil.checksumCRC32( metaA, dataA, meta.isFailIfNoFile() );
+            calcData[index] = ValueDataUtil.checksumCRC32( getTransMeta().getBowl(), metaA, dataA,
+                                                           meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_ADLER32: // ADLER32
-            calcData[index] = ValueDataUtil.checksumAdler32( metaA, dataA, meta.isFailIfNoFile() );
+            calcData[index] = ValueDataUtil.checksumAdler32( getTransMeta().getBowl(), metaA, dataA,
+                                                             meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_MD5: // MD5
-            calcData[index] = ValueDataUtil.createChecksum( metaA, dataA, "MD5", meta.isFailIfNoFile() );
+            calcData[index] = ValueDataUtil.createChecksum( getTransMeta().getBowl(), metaA, dataA, "MD5",
+                                                            meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_SHA1: // SHA-1
-            calcData[index] = ValueDataUtil.createChecksum( metaA, dataA, "SHA-1", meta.isFailIfNoFile() );
+            calcData[index] = ValueDataUtil.createChecksum( getTransMeta().getBowl(), metaA, dataA, "SHA-1",
+                                                            meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE: // LEVENSHTEIN DISTANCE
@@ -491,7 +496,8 @@ public class Calculator extends BaseStep implements StepInterface {
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_LOAD_FILE_CONTENT_BINARY: // LOAD CONTENT OF A FILE A IN A BLOB
-            calcData[index] = ValueDataUtil.loadFileContentInBinary( metaA, dataA, meta.isFailIfNoFile() );
+            calcData[index] = ValueDataUtil.loadFileContentInBinary( getTransMeta().getBowl(), metaA, dataA,
+                                                                     meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_ADD_TIME_TO_DATE: // Add time B to a date A
@@ -531,7 +537,8 @@ public class Calculator extends BaseStep implements StepInterface {
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_CHECK_XML_FILE_WELL_FORMED: // Check if file A is well formed
-            calcData[index] = ValueDataUtil.isXMLFileWellFormed( metaA, dataA, meta.isFailIfNoFile() );
+            calcData[index] = ValueDataUtil.isXMLFileWellFormed( getTransMeta().getBowl(), metaA, dataA,
+                                                                 meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_CHECK_XML_WELL_FORMED: // Check if xml A is well formed
@@ -539,7 +546,8 @@ public class Calculator extends BaseStep implements StepInterface {
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_GET_FILE_ENCODING: // Get file encoding from a file A
-            calcData[index] = ValueDataUtil.getFileEncoding( metaA, dataA, meta.isFailIfNoFile() );
+            calcData[index] = ValueDataUtil.getFileEncoding( getTransMeta().getBowl(), metaA, dataA,
+                                                             meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN: // DAMERAULEVENSHTEIN DISTANCE

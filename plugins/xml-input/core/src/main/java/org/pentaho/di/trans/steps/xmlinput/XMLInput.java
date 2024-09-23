@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,7 +68,8 @@ public class XMLInput extends BaseStep implements StepInterface {
 
       first = false;
       data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                      metaStore );
 
       // For String to <type> conversions, we allocate a conversion meta data row as well...
       //
@@ -316,7 +317,7 @@ public class XMLInput extends BaseStep implements StepInterface {
     data = (XMLInputData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      data.files = meta.getFiles( this ).getFiles();
+      data.files = meta.getFiles( getTransMeta().getBowl(), this ).getFiles();
       if ( data.files == null || data.files.size() == 0 ) {
         logError( BaseMessages.getString( PKG, "XMLInput.Log.NoFiles" ) );
         return false;

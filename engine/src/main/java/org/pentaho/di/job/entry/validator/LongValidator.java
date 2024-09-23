@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.commons.validator.GenericTypeValidator;
 import org.apache.commons.validator.GenericValidator;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 
@@ -41,7 +42,7 @@ public class LongValidator implements JobEntryValidator {
     return VALIDATOR_NAME;
   }
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName,
+  public boolean validate( Bowl bowl, CheckResultSourceInterface source, String propertyName,
     List<CheckResultInterface> remarks, ValidatorContext context ) {
     Object result = null;
     String value = null;

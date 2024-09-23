@@ -147,7 +147,7 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
       try {
         // Attempt to set up initial conditions, if fails browse will fallback to default path.
         initialFilePath = resolveFile( meta, getText() );
-        initialFile = KettleVFS.getFileObject( initialFilePath );
+        initialFile = KettleVFS.getInstance( options.getBowl() ).getFileObject( initialFilePath );
 
         // In cases where filePath is empty set it to the default path returned by kettleVFS.
         if ( Utils.isEmpty( initialFilePath ) && initialFile != null ) {
@@ -403,7 +403,8 @@ public abstract class SelectionAdapterFileDialog<T> extends SelectionAdapter {
       // If no match, attempt to compare to kettleVFS object
       if ( Utils.isEmpty( parentFolder ) ) {
         try {
-          FileObject parentFileObj = KettleVFS.getFileObject( currentFile ).getParent();
+          FileObject parentFileObj = KettleVFS.getInstance( options.getBowl() )
+            .getFileObject( currentFile ).getParent();
 
           // Non-local files should include the schema i.e. pvfs://
           parentFolder = ( parentFileObj instanceof LocalFile ) ? parentFileObj.getName().getPath()

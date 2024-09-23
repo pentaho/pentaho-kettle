@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -999,7 +999,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         try {
           AccessInputMeta tfii = new AccessInputMeta();
           getInfo( tfii );
-          FileInputList fileInputList = tfii.getFiles( transMeta );
+          FileInputList fileInputList = tfii.getFiles( transMeta.getBowl(), transMeta );
           String[] files = fileInputList.getFileStrings();
 
           if ( files.length > 0 ) {
@@ -1121,7 +1121,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         return;
       }
 
-      FileInputList inputList = meta.getFiles( transMeta );
+      FileInputList inputList = meta.getFiles( transMeta.getBowl(), transMeta );
 
       if ( inputList.getFiles().size() > 0 ) {
         // Open the file (only first file)...
@@ -1518,7 +1518,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
       AccessInputMeta meta = new AccessInputMeta();
       getInfo( meta );
 
-      FileInputList fileInputList = meta.getFiles( transMeta );
+      FileInputList fileInputList = meta.getFiles( transMeta.getBowl(), transMeta );
 
       if ( fileInputList.nrOfFiles() > 0 ) {
 

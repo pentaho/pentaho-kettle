@@ -26,6 +26,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -425,7 +426,8 @@ public class XMLOutputMetaTest {
     IMetaStore metastore = mock( IMetaStore.class );
     ValueMetaInterface vmi = mock( ValueMetaInterface.class );
     when( row.searchValueMeta( "aField" ) ).thenReturn( vmi );
-    xmlOutputMeta.getFields( row, "", new RowMetaInterface[] { rmi }, nextStep, new Variables(), repo, metastore );
+    xmlOutputMeta.getFields( DefaultBowl.getInstance(), row, "", new RowMetaInterface[] { rmi }, nextStep,
+      new Variables(), repo, metastore );
     verify( vmi ).setLength( 10, 3 );
   }
 
@@ -492,11 +494,17 @@ public class XMLOutputMetaTest {
   public void testExportResources() throws Exception {
     XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
     xmlOutputMeta.setDefault();
+
+    StepMeta stepMeta = mock( StepMeta.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    when( stepMeta.getParentTransMeta() ).thenReturn( transMeta );
+    when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    xmlOutputMeta.setParentStepMeta( stepMeta );
     ResourceNamingInterface resourceNamingInterface = mock( ResourceNamingInterface.class );
     Variables space = new Variables();
     when( resourceNamingInterface.nameResource( any( FileObject.class ), eq( space ), eq( true ) ) ).thenReturn(
         "exportFile" );
-    xmlOutputMeta.exportResources( space, null, resourceNamingInterface, null, null );
+    xmlOutputMeta.exportResources( DefaultBowl.getInstance(), space, null, resourceNamingInterface, null, null );
     assertEquals( "exportFile", xmlOutputMeta.getFileName() );
   }
 

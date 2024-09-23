@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.GCInterface;
@@ -73,42 +74,42 @@ public class JobInformation {
     this.map = new HashMap<ReportSubjectLocation, JobInformationValues>();
   }
 
-  public BufferedImage getImage( ReportSubjectLocation location ) throws KettleException {
-    return getValues( location ).image;
+  public BufferedImage getImage( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
+    return getValues( bowl, location ).image;
   }
 
-  public JobMeta getJobMeta( ReportSubjectLocation location ) throws KettleException {
-    return getValues( location ).jobMeta;
+  public JobMeta getJobMeta( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
+    return getValues( bowl, location ).jobMeta;
   }
 
-  public List<AreaOwner> getImageAreaList( ReportSubjectLocation location ) throws KettleException {
-    return getValues( location ).areaOwners;
+  public List<AreaOwner> getImageAreaList( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
+    return getValues( bowl, location ).areaOwners;
   }
 
-  private JobInformationValues getValues( ReportSubjectLocation location ) throws KettleException {
+  private JobInformationValues getValues( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
     JobInformationValues values = map.get( location );
     if ( values == null ) {
-      values = loadValues( location );
+      values = loadValues( bowl, location );
       map.put( location, values );
     }
     return values;
   }
 
-  private JobMeta loadJob( ReportSubjectLocation location ) throws KettleException {
+  private JobMeta loadJob( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
     JobMeta jobMeta;
     if ( !Utils.isEmpty( location.getFilename() ) ) {
-      jobMeta = new JobMeta( location.getFilename(), repository );
+      jobMeta = new JobMeta( bowl, location.getFilename(), repository );
     } else {
       jobMeta = repository.loadJob( location.getName(), location.getDirectory(), null, null );
     }
     return jobMeta;
   }
 
-  private JobInformationValues loadValues( ReportSubjectLocation location ) throws KettleException {
+  private JobInformationValues loadValues( Bowl bowl, ReportSubjectLocation location ) throws KettleException {
 
     // Load the job
     //
-    JobMeta jobMeta = loadJob( location );
+    JobMeta jobMeta = loadJob( bowl, location );
 
     Point min = jobMeta.getMinimum();
     Point area = jobMeta.getMaximum();
@@ -150,12 +151,12 @@ public class JobInformation {
     return values;
   }
 
-  public void drawImage( final Graphics2D g2d, final Rectangle2D rectangle2d, ReportSubjectLocation location,
+  public void drawImage( Bowl bowl, final Graphics2D g2d, final Rectangle2D rectangle2d, ReportSubjectLocation location,
     boolean pixelateImages ) throws KettleException {
 
     // Load the job
     //
-    JobMeta jobMeta = loadJob( location );
+    JobMeta jobMeta = loadJob( bowl, location );
 
     Point min = jobMeta.getMinimum();
     Point area = jobMeta.getMaximum();

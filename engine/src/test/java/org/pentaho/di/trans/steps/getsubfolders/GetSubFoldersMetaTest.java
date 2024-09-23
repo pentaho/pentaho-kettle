@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -54,7 +55,7 @@ public class GetSubFoldersMetaTest {
     String stepName = UUID.randomUUID().toString();
 
     RowMeta rowMeta = new RowMeta();
-    stepMeta.getFields( rowMeta, stepName, null, null, new Variables(), null, null );
+    stepMeta.getFields( DefaultBowl.getInstance(), rowMeta, stepName, null, null, new Variables(), null, null );
 
     assertFalse( stepMeta.includeRowNumber() );
     assertEquals( 10, rowMeta.size() );
@@ -71,7 +72,7 @@ public class GetSubFoldersMetaTest {
 
     stepMeta.setIncludeRowNumber( true );
     rowMeta = new RowMeta();
-    stepMeta.getFields( rowMeta, stepName, null, null, new Variables(), null, null );
+    stepMeta.getFields( DefaultBowl.getInstance(), rowMeta, stepName, null, null, new Variables(), null, null );
     assertTrue( stepMeta.includeRowNumber() );
     assertEquals( 11, rowMeta.size() );
     assertEquals( "folderName", rowMeta.getValueMeta( 0 ).getName() );
@@ -88,7 +89,7 @@ public class GetSubFoldersMetaTest {
 
     stepMeta.setRowNumberField( "MyRowNumber" );
     rowMeta = new RowMeta();
-    stepMeta.getFields( rowMeta, stepName, null, null, new Variables(), null, null );
+    stepMeta.getFields( DefaultBowl.getInstance(), rowMeta, stepName, null, null, new Variables(), null, null );
     assertEquals( "MyRowNumber", stepMeta.getRowNumberField() );
     assertEquals( 11, rowMeta.size() );
     assertEquals( "MyRowNumber", rowMeta.getValueMeta( 10 ).getName() );

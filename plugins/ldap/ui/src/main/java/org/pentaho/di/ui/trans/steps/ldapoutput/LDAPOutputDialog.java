@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1183,7 +1183,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
       getInfo( meta );
 
       // Defined a LDAP connection
-      connection = new LDAPConnection( log, transMeta, meta, null );
+      connection = new LDAPConnection( transMeta.getBowl(), log, transMeta, meta, null );
       // connect...
       if ( wusingAuthentication.getSelection() ) {
         connection.connect( transMeta.environmentSubstitute( meta.getUserName() ), Encr
@@ -1473,7 +1473,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
       LDAPOutputMeta meta = new LDAPOutputMeta();
       getInfo( meta );
       // Defined a LDAP connection
-      connection = new LDAPConnection( log, transMeta, meta, null );
+      connection = new LDAPConnection( transMeta.getBowl(), log, transMeta, meta, null );
       // connect ...
       if ( wusingAuthentication.getSelection() ) {
         String username = transMeta.environmentSubstitute( wUserName.getText() );

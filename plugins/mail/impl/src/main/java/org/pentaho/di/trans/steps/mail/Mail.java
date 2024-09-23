@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -217,7 +217,8 @@ public class Mail extends BaseStep implements StepInterface {
         for ( int i = 0; i < meta.getEmbeddedImages().length; i++ ) {
           String imageFile = environmentSubstitute( meta.getEmbeddedImages()[i] );
           String contentID = environmentSubstitute( meta.getContentIds()[i] );
-          image = KettleVFS.getFileObject( imageFile );
+          image = KettleVFS.getInstance( getTransMeta().getBowl() )
+            .getFileObject( imageFile );
 
           if ( image.exists() && image.getType() == FileType.FILE ) {
             // Create part for the image
@@ -813,7 +814,8 @@ public class Mail extends BaseStep implements StepInterface {
       }
 
       if ( !Utils.isEmpty( realSourceFileFoldername ) ) {
-        sourcefile = KettleVFS.getFileObject( realSourceFileFoldername, getTransMeta() );
+        sourcefile = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( realSourceFileFoldername, getTransMeta() );
         if ( sourcefile.exists() ) {
           long FileSize = 0;
           FileObject[] list = null;
@@ -835,7 +837,8 @@ public class Mail extends BaseStep implements StepInterface {
 
             for ( int i = 0; i < list.length; i++ ) {
 
-              file = KettleVFS.getFileObject( KettleVFS.getFilename( list[i] ), getTransMeta() );
+              file = KettleVFS.getInstance( getTransMeta().getBowl() )
+                .getFileObject( KettleVFS.getFilename( list[i] ), getTransMeta() );
 
               if ( zipFiles ) {
 
@@ -875,7 +878,8 @@ public class Mail extends BaseStep implements StepInterface {
 
                 for ( int i = 0; i < list.length; i++ ) {
 
-                  file = KettleVFS.getFileObject( KettleVFS.getFilename( list[i] ), getTransMeta() );
+                  file = KettleVFS.getInstance( getTransMeta().getBowl() )
+                    .getFileObject( KettleVFS.getFilename( list[i] ), getTransMeta() );
 
                   ZipEntry zipEntry = new ZipEntry( file.getName().getBaseName() );
                   zipOutputStream.putNextEntry( zipEntry );
@@ -893,7 +897,8 @@ public class Mail extends BaseStep implements StepInterface {
 
               }
               if ( data.zipFileLimit > 0 && FileSize > data.zipFileLimit || data.zipFileLimit == 0 ) {
-                file = KettleVFS.getFileObject( masterZipfile.getAbsolutePath(), getTransMeta() );
+                file = KettleVFS.getInstance( getTransMeta().getBowl() )
+                  .getFileObject( masterZipfile.getAbsolutePath(), getTransMeta() );
                 addAttachedFilePart( file );
               }
             }

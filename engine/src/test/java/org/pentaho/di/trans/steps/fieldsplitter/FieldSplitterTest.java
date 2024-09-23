@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
@@ -95,7 +96,7 @@ public class FieldSplitterTest {
   private FieldSplitterMeta mockProcessRowMeta() throws KettleStepException {
     FieldSplitterMeta processRowMeta = smh.processRowsStepMetaInterface;
     doReturn( "field to split" ).when( processRowMeta ).getSplitField();
-    doCallRealMethod().when( processRowMeta ).getFields( any( RowMetaInterface.class ), anyString(),
+    doCallRealMethod().when( processRowMeta ).getFields( any( Bowl.class ), any( RowMetaInterface.class ), anyString(),
         nullable( RowMetaInterface[].class ), nullable( StepMeta.class ), any( VariableSpace.class ), nullable( Repository.class ),
       nullable( IMetaStore.class ) );
     doReturn( new String[] { "a", "b" } ).when( processRowMeta ).getFieldName();

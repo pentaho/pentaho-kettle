@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -319,7 +319,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getPsqlpath() != null ) {
       try {
         FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( meta.getPsqlpath() ), getTransMeta() );
+          KettleVFS.getInstance( getTransMeta().getBowl() )
+            .getFileObject( environmentSubstitute( meta.getPsqlpath() ), getTransMeta() );
         String psqlexec = KettleVFS.getFilename( fileObject );
         sb.append( enclosure ).append( psqlexec ).append( enclosure );
       } catch ( Exception ex ) {
@@ -332,7 +333,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getControlFile() != null ) {
       try {
         FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
+          KettleVFS.getInstance( getTransMeta().getBowl() )
+            .getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
 
         sb.append( " -n -f " );
         sb.append( enclosure ).append( KettleVFS.getFilename( fileObject ) ).append( enclosure );
@@ -346,7 +348,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getLogFile() != null ) {
       try {
         FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( meta.getLogFile() ), getTransMeta() );
+          KettleVFS.getInstance( getTransMeta().getBowl() )
+            .getFileObject( environmentSubstitute( meta.getLogFile() ), getTransMeta() );
 
         sb.append( " -o " );
         sb.append( enclosure ).append( KettleVFS.getFilename( fileObject ) ).append( enclosure );
@@ -542,7 +545,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
 
         if ( meta.getControlFile() != null ) {
           try {
-            fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
+            fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
@@ -556,7 +560,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
         // In concurrent mode the data is written to the control file.
         if ( meta.getDataFile() != null ) {
           try {
-            fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getDataFile() ), getTransMeta() );
+            fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( environmentSubstitute( meta.getDataFile() ), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {

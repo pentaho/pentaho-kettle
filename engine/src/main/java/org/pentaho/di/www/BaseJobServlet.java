@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@ package org.pentaho.di.www;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelFileWriter;
@@ -137,7 +138,8 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
             .isCreateParentFolder(), trans.getLogChannel(), trans );
         final LogChannelFileWriter logChannelFileWriter =
             new LogChannelFileWriter( servletLoggingObject.getLogChannelId(),
-                KettleVFS.getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
+                KettleVFS.getInstance( DefaultBowl.getInstance() )
+                                      .getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
         logChannelFileWriter.startLogging();
 
         trans.addTransListener( new TransAdapter() {

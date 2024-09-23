@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.ldapinput;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 
@@ -45,7 +46,7 @@ public class LdapProtocolFactoryTest {
     Mockito.doReturn( host ).when( meta ).getHost();
     Mockito.doReturn( host ).when( variableSpace ).environmentSubstitute( host );
 
-    ldapProtocolFactory.createLdapProtocol( variableSpace, meta, Collections.emptyList() );
+    ldapProtocolFactory.createLdapProtocol( DefaultBowl.getInstance(), variableSpace, meta, Collections.emptyList() );
     Mockito.verify( variableSpace, Mockito.times( 1 ) ).environmentSubstitute( ldapVariable );
 
   }
