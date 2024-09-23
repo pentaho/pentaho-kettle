@@ -199,7 +199,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     try {
       // Set the command line arguments on the job ...
       job.setArguments( arguments );
-      job.initializeVariablesFrom( null );
+      job.initializeVariablesFrom( job.getJobMeta().getBowl().getADefaultVariableSpace() );
       job.setLogLevel( getLog().getLogLevel() );
       job.getJobMeta().setInternalKettleVariables( job );
       job.setRepository( repository );
