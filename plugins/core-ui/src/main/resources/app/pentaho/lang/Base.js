@@ -1,14 +1,3 @@
-/*! ******************************************************************************
- *
- * Pentaho
- *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
- *
- * Use of this software is governed by the Business Source License included
- * in the LICENSE.TXT file.
- *
- * Change Date: 2028-08-13
- ******************************************************************************/
 /*!
  * Based on Generic.js 1.1a (c) 2006-2010, Dean Edwards
  * Updated to pass JSHint and converted into a module by Kenneth Powers
