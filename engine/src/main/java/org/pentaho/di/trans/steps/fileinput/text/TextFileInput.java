@@ -239,6 +239,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     int nrfields = fieldNames.length;
 
     RowMetaInterface outputRowMeta = new RowMeta();
+    tfii.setFields( fieldNames );
     tfii.getFields( outputRowMeta, null, null, null, transMeta, null, null );
 
     // Remove the storage meta-data (don't go for lazy conversion during scan)

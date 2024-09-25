@@ -536,6 +536,15 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
     content.rowLimit = 0L;
   }
 
+  public void setFields( String[] fieldNames ) {
+    inputFields = new BaseFileField[ fieldNames.length ];
+    for ( int i = 0; i < fieldNames.length; i++ ) {
+      BaseFileField field = new BaseFileField();
+      field.setName( fieldNames[ i ] );
+      inputFields[i] = field;
+    }
+  }
+
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
