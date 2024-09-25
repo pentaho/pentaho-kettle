@@ -1732,29 +1732,29 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     JSONObject response = new JSONObject();
     try {
       Method actionMethod = JobEntryTrans.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setRepository( job.getRep() );
       response = (JSONObject) actionMethod.invoke( this, queryParams );
       response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_METHOD_NOT_RESPONSE );
-      response.put( "errorDetails", ExceptionUtils.getRootCauseMessage( e ) );
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
+      log.logError( ex.getMessage() );
+      if ( ex.getCause() instanceof KettleException ) {
+        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_RESPONSE );
+      } else {
+        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_METHOD_NOT_RESPONSE );
+      }
+      response.put( JobEntryInterface.ERROR_DETAILS, ExceptionUtils.getRootCauseMessage( ex ) );
     }
     return response;
   }
 
-  private JSONObject parametersAction( Map<String, String> queryParams ) {
+  private JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
-    try {
-      TransMeta inputTransMeta = this.getTransMeta( rep, metaStore, this.parentJobMeta );
-      String[] parametersList = inputTransMeta.listParameters();
+    TransMeta inputTransMeta = this.getTransMeta( this.rep, this.metaStore, this.parentJobMeta );
+    String[] parametersList = inputTransMeta.listParameters();
 
-      JSONArray parameters = new JSONArray();
-      parameters.addAll( Arrays.asList( parametersList ) );
-      response.put( "parameters", parameters );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_RESPONSE );
-    }
+    JSONArray parameters = new JSONArray();
+    parameters.addAll( Arrays.asList( parametersList ) );
+    response.put( "parameters", parameters );
     return response;
   }
 }
