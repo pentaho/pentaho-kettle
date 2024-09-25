@@ -120,17 +120,23 @@ public class ConnectionManager {
   // public APIs that have a metastore as an argument bypass these in-memory structures
   private synchronized void initialize() {
     if ( !initialized ) {
-      List<ConnectionProvider<? extends ConnectionDetails>> providers = getProviders();
-      for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
-        List<String> names = loadNames( provider );
-        if ( names != null && !names.isEmpty() ) {
-          namesByConnectionProvider.put( provider.getName(), names );
-          for ( String name : names ) {
-            detailsByName.put( name, getConnectionDetails( metaStoreSupplier.get(), name ) );
+      try {
+        List<ConnectionProvider<? extends ConnectionDetails>> providers = getProviders();
+        for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
+          MetaStoreFactory<? extends ConnectionDetails> factory =
+            getMetaStoreFactory( metaStoreSupplier.get(), provider.getClassType() );
+          List<String> names = new ArrayList<>();
+          for ( ConnectionDetails details : factory.getElements() ) {
+            String name = details.getName();
+            names.add( name );
+            detailsByName.put( name, details );
           }
+          namesByConnectionProvider.put( provider.getName(), names );
         }
+        initialized = true;
+      } catch ( MetaStoreException ex ) {
+        logger.error( "Error in initialize", ex );
       }
-      initialized = true;
     }
   }
 
