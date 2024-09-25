@@ -1695,7 +1695,7 @@ public class Const {
   /**
    Value to Configure if we want to disable/grayed out internal variables, and remove from the new/edit schedule.
    */
-  public static final String HIDE_INTERNAL_VARIABLES = "HIDE_INTERNAL_VARIABLES";
+  public static final String HIDE_INTERNAL_VARIABLES = "PENTAHO_SCHEDULER_HIDE_INTERNAL_VARIABLES";
   public static final String HIDE_INTERNAL_VARIABLES_DEFAULT = "Y";
 
   /**
