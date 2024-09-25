@@ -147,6 +147,7 @@ import org.w3c.dom.Node;
 public interface JobEntryInterface {
 
   String ACTION_STATUS = "actionStatus";
+  String ERROR_DETAILS = "errorDetails";
   String SUCCESS_RESPONSE = "Action successful";
   String FAILURE_RESPONSE = "Action failed";
   String FAILURE_METHOD_NOT_RESPONSE = "Action failed with method not found";
