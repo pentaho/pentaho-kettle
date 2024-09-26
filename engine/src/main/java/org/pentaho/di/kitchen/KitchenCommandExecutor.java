@@ -27,8 +27,6 @@ import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -150,7 +148,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         if ( job == null ) {
 
           // Try to load the job from file, even if it failed to load from the repository
-          job = loadJobFromFilesystem( DefaultBowl.getInstance(), params.getLocalInitialDir(), params.getLocalFile(),
+          job = loadJobFromFilesystem( params.getLocalInitialDir(), params.getLocalFile(),
             params.getBase64Zip() );
         }
 
@@ -182,7 +180,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       try {
         // Export the resources linked to the currently loaded file...
         TopLevelResource topLevelResource =
-          ResourceUtil.serializeResourceExportInterface( job.getJobMeta().getBowl(), params.getExportRepo(),
+          ResourceUtil.serializeResourceExportInterface( getBowl(), params.getExportRepo(),
             job.getJobMeta(), job, repository, getMetaStore() );
         String launchFile = topLevelResource.getResourceName();
         String message = ResourceUtil.getExplanation( params.getExportRepo(), launchFile, job.getJobMeta() );
@@ -202,7 +200,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     try {
       // Set the command line arguments on the job ...
       job.setArguments( arguments );
-      job.initializeVariablesFrom( job.getJobMeta().getBowl().getADefaultVariableSpace() );
+      job.initializeVariablesFrom( getBowl().getADefaultVariableSpace() );
       job.setLogLevel( getLog().getLogLevel() );
       job.getJobMeta().setInternalKettleVariables( job );
       job.setRepository( repository );
@@ -332,7 +330,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     return new Job( repository, jobMeta );
   }
 
-  public Job loadJobFromFilesystem( Bowl bowl, String initialDir, String filename, Serializable base64Zip )
+  public Job loadJobFromFilesystem( String initialDir, String filename, Serializable base64Zip )
       throws Exception {
 
     if ( Utils.isEmpty( filename ) ) {
@@ -354,7 +352,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       fileName = initialDir + fileName;
     }
 
-    JobMeta jobMeta = new JobMeta( bowl, fileName, null, null );
+    JobMeta jobMeta = new JobMeta( getBowl(), fileName, null, null );
     return new Job( null, jobMeta );
   }
 

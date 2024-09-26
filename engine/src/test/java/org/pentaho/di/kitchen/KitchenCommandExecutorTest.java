@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -84,8 +83,8 @@ public class KitchenCommandExecutorTest {
     result = mock( Result.class );
     logChannelInterface = mock( LogChannelInterface.class );
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
-    doCallRealMethod().when( mockedKitchenCommandExecutor ).loadJobFromFilesystem( any( Bowl.class ), anyString(),
-      anyString(), any() );
+    when( mockedKitchenCommandExecutor.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    doCallRealMethod().when( mockedKitchenCommandExecutor ).loadJobFromFilesystem( anyString(), anyString(), any() );
     doCallRealMethod().when( mockedKitchenCommandExecutor ).loadJobFromRepository( any(), anyString(), anyString() );
     doCallRealMethod().when( mockedKitchenCommandExecutor ).decodeBase64ToZipFile( any(), anyBoolean() );
     doCallRealMethod().when( mockedKitchenCommandExecutor ).decodeBase64ToZipFile( any(), anyString() );
@@ -104,7 +103,7 @@ public class KitchenCommandExecutorTest {
     String fileName = "hello-world.kjb";
     File zipFile = new File( getClass().getResource( "testKjbArchive.zip" ).toURI() );
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
-    Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( DefaultBowl.getInstance(), "", fileName, base64Zip );
+    Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( "", fileName, base64Zip );
     assertNotNull( job );
   }
 
@@ -178,7 +177,7 @@ public class KitchenCommandExecutorTest {
     when( params.getLocalJarFile() ).thenReturn( "" );
     when( params.getBase64Zip() ).thenReturn( "" );
     try {
-      job = mockedKitchenCommandExecutor.loadJobFromFilesystem( DefaultBowl.getInstance(), "", fullPath, "" );
+      job = mockedKitchenCommandExecutor.loadJobFromFilesystem( "", fullPath, "" );
     } catch ( KettleXMLException e ) {
       kettleXMLExceptionThrown = true;
     }
