@@ -32,11 +32,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 public class RulesExecutorDataTest {
 
