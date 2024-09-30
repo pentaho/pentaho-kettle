@@ -344,20 +344,21 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testAddOrReplaceSlaveServer() {
+  public void testAddOrReplaceSlaveServer() throws Exception {
     // meta.addOrReplaceSlaveServer() right now will fail with an NPE
-    assertNull( meta.getSlaveServers() );
+    assertEquals( 0, meta.getSlaveServers().size() );
     List<SlaveServer> slaveServers = new ArrayList<>();
     meta.setSlaveServers( slaveServers );
     assertNotNull( meta.getSlaveServers() );
-    SlaveServer slaveServer = mock( SlaveServer.class );
+    SlaveServer slaveServer = new SlaveServer();
+    slaveServer.setName("ss1");
     meta.addOrReplaceSlaveServer( slaveServer );
     assertFalse( meta.getSlaveServers().isEmpty() );
-    meta.addOrReplaceSlaveServer( slaveServer );
     assertEquals( 1, meta.getSlaveServerNames().length );
     assertNull( meta.findSlaveServer( null ) );
     assertNull( meta.findSlaveServer( "" ) );
-    when( slaveServer.getName() ).thenReturn( "ss1" );
+
+    assertEquals( slaveServer, meta.getSlaveServerManagementInterface().get( "ss1" ) );
     assertEquals( slaveServer, meta.findSlaveServer( "ss1" ) );
   }
 

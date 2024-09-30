@@ -24,6 +24,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
@@ -54,6 +55,7 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import java.sql.DatabaseMetaData;
@@ -80,7 +82,7 @@ import java.util.concurrent.Future;
  * @since 18-05-2003
  *
  */
-public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface,
+public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface<DatabaseMeta>,
   VariableSpace, RepositoryElementInterface {
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
 
@@ -3141,5 +3143,16 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public void setNamedCluster( String namedCluster ) {
     databaseInterface.setNamedCluster( namedCluster );
+  }
+
+  @Override
+  public DatabaseMeta makeClone() {
+    return (DatabaseMeta) clone();
+  }
+
+  @Override
+  public Node toNode() throws KettleException {
+    Document doc = XMLHandler.loadXMLString( getXML() );
+    return XMLHandler.getSubNode( doc, XML_TAG );
   }
 }

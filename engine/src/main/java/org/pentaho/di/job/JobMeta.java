@@ -92,6 +92,7 @@ import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
@@ -417,7 +418,7 @@ public class JobMeta extends AbstractMeta
         jobMeta.jobhops = new ArrayList<JobHopMeta>();
         jobMeta.notes = new ArrayList<NotePadMeta>();
         jobMeta.initializeLocalDatabases();
-        jobMeta.slaveServers = new ArrayList<SlaveServer>();
+        //jobMeta.slaveServers = new ArrayList<SlaveServer>();
         jobMeta.namedParams = new NamedParamsDefault();
       }
 
@@ -436,8 +437,11 @@ public class JobMeta extends AbstractMeta
         // cloneNode is *probably* overkill
         jobMeta.localSharedObjects.saveSharedObject( dbType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
-      for ( SlaveServer slave : slaveServers ) {
-        jobMeta.getSlaveServers().add( (SlaveServer) slave.clone() );
+      //SlaveServers
+      String slaveServerType = SharedObjectsIO.SharedObjectType.SLAVESERVER.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( slaveServerType ).entrySet() ) {
+        // cloneNode is *probably* overkill
+        jobMeta.localSharedObjects.saveSharedObject( slaveServerType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
       for ( String key : listParameters() ) {
         jobMeta.addParameterDefinition( key, getParameterDefault( key ), getParameterDescription( key ) );
@@ -661,9 +665,13 @@ public class JobMeta extends AbstractMeta
     // The slave servers...
     //
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
-    for ( int i = 0; i < slaveServers.size(); i++ ) {
-      SlaveServer slaveServer = slaveServers.get( i );
-      retval.append( slaveServer.getXML() );
+    try {
+      for ( SharedObjectInterface slaveServer : localSharedObjectsMgr.getAll() ) {
+        retval.append(slaveServer.getXML());
+      }
+
+    } catch (KettleException exception) {
+      LogChannel.GENERAL.logError( BaseMessages.getString( PKG, "JobMeta.Log.UnableToReadSlaveServersFromXML" ), exception );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
 
@@ -1108,23 +1116,7 @@ public class JobMeta extends AbstractMeta
         Node slaveServerNode = XMLHandler.getSubNodeByNr( slaveServersNode, SlaveServer.XML_TAG, i );
         SlaveServer slaveServer = new SlaveServer( slaveServerNode );
         slaveServer.shareVariablesWith( this );
-
-        // Check if the object exists and if it's a shared object.
-        // If so, then we will keep the shared version, not this one.
-        // The stored XML is only for backup purposes.
-        SlaveServer check = findSlaveServer( slaveServer.getName() );
-        if ( check != null ) {
-          if ( !check.isShared() ) {
-            // we don't overwrite shared objects.
-            if ( shouldOverwrite( prompter, props, BaseMessages
-                    .getString( PKG, "JobMeta.Dialog.SlaveServerExistsOverWrite.Message", slaveServer.getName() ),
-                BaseMessages.getString( PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ) ) ) {
-              addOrReplaceSlaveServer( slaveServer );
-            }
-          }
-        } else {
-          slaveServers.add( slaveServer );
-        }
+        localSharedObjectsMgr.add( slaveServer );
       }
 
       /*
@@ -1167,7 +1159,7 @@ public class JobMeta extends AbstractMeta
         Node entrynode = XMLHandler.getSubNodeByNr( entriesnode, "entry", i );
         // System.out.println("Reading entry:\n"+entrynode);
 
-        JobEntryCopy je = new JobEntryCopy( entrynode, getDatabases(), slaveServers, rep, metaStore );
+        JobEntryCopy je = new JobEntryCopy( entrynode, getDatabases(), getSlaveServers(), rep, metaStore );
 
         if ( je.isSpecial() && je.isMissing() ) {
           addMissingEntry( (MissingEntry) je.getEntry() );
