@@ -666,8 +666,35 @@ public interface JobEntryInterface {
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
+   * @deprecated Use the version with the Bowl
    */
+  @Deprecated
   String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException;
+
+  /**
+   * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
+   * resource naming interface allows the object to name appropriately without worrying about those parts of the
+   * implementation specific details.
+   *
+   * @param Bowl
+   *          Context for file operations
+   * @param space
+   *          The variable space to resolve (environment) variables with.
+   * @param definitions
+   *          The map containing the filenames and content
+   * @param namingInterface
+   *          The resource naming interface allows the object to be named appropriately
+   * @param repository
+   *          The repository to load resources from
+   * @param metaStore
+   *          the metaStore to load external metadata from
+   *
+   * @return The filename for this object. (also contained in the definitions map)
+   * @throws KettleException
+   *           in case something goes wrong during the export
+   */
+  String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException;
 
   /**

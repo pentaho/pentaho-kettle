@@ -260,8 +260,17 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected MemorySharedObjectsIO localSharedObjects = new MemorySharedObjectsIO();
   // important, these need to be updated if the bowl is changed.
   private SharedObjectsIO combinedSharedObjects =
-    new DelegatingSharedObjectsIO( bowl.getSharedObjectsIO(), localSharedObjects );
+      new DelegatingSharedObjectsIO( bowl.getSharedObjectsIO(), localSharedObjects );
   protected DatabaseManagementInterface readDbManager = new PassthroughDbConnectionManager( combinedSharedObjects );
+
+  protected void initializeLocalDatabases() {
+    // NOTE: this has to assign new objects, not just clear existing ones, because it is used in clone(), and
+    // updating the original objects will update the source of the clone.
+    localSharedObjects = new MemorySharedObjectsIO();
+    combinedSharedObjects =
+      new DelegatingSharedObjectsIO( bowl.getSharedObjectsIO(), localSharedObjects );
+    readDbManager = new PassthroughDbConnectionManager( combinedSharedObjects );
+  }
 
   private class MetaDatabaseManager extends PassthroughDbConnectionManager {
     // TODO: repository logic should be in this local class. Caller should not need to know whether or not a
