@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,19 @@
 
 package org.pentaho.di.job.entries.getpop;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.Consts;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.pentaho.di.core.annotations.JobEntry;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
@@ -30,8 +42,10 @@ import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import javax.mail.Flags.Flag;
@@ -63,6 +77,8 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.platform.api.email.IEmailAuthenticationResponse;
+import org.pentaho.platform.plugin.services.email.EmailAuthenticationResponse;
 import org.w3c.dom.Node;
 
 /**
@@ -96,6 +112,21 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   private String servername;
   private String username;
   private String password;
+  public static String AUTENTICATION_OAUTH = "OAUTH";
+  public static  String AUTENTICATION_BASIC = "Basic";
+  public static String GRANTTYPE_CLIENTCREDENTIALS="client_credentials";
+  public static String GRANTTYPE_AUTHORIZATION_CODE="authorization_code";
+  public static String GRANTTYPE_REFRESH_TOKEN="refresh_token";
+  private String clientId;
+  private String secretKey;
+  private String scope;
+  private String tokenUrl;
+  private String authorization_code;
+  private String redirectUri;
+  private String refresh_token;
+  private String grant_type;
+  private String usingAuthentication;
+  private IEmailAuthenticationResponse token;
   private boolean usessl;
   private String sslport;
   private boolean useproxy;
@@ -245,6 +276,17 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     retval.append( "      " ).append( XMLHandler.addTagValue( "includesubfolders", includesubfolders ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "useproxy", useproxy ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyusername", proxyusername ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "use_auth", usingAuthentication ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "use_grantType", grant_type) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_clientId", clientId ) );
+    retval.append( "      " ).append(
+            XMLHandler
+                    .addTagValue( "auth_secretKey",  secretKey)  );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_scope", scope ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_tokenUrl", tokenUrl ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_authorizationCode", authorization_code ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "redirectURI", redirectUri ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshToken", refresh_token) );
     return retval.toString();
   }
 
@@ -321,6 +363,15 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       includesubfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "includesubfolders" ) );
       useproxy = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "useproxy" ) );
       proxyusername = XMLHandler.getTagValue( entrynode, "proxyusername" );
+      setUsingAuthentication( XMLHandler.getTagValue( entrynode, "use_auth" ) );
+      setClientId( XMLHandler.getTagValue( entrynode, "auth_clientId" ) );
+      setSecretKey( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "auth_secretKey" ) ) );
+      setScope( XMLHandler.getTagValue( entrynode, "auth_scope" ) );
+      setTokenUrl( XMLHandler.getTagValue( entrynode, "auth_tokenUrl" ) );
+      setAuthorization_code( XMLHandler.getTagValue( entrynode, "auth_authorizationCode" ) );
+      setRedirectUri( XMLHandler.getTagValue( entrynode, "redirectURI" ) );
+      setRefresh_token( XMLHandler.getTagValue( entrynode, "refreshToken" ) );
+      setGrant_type( XMLHandler.getTagValue( entrynode, "use_grantType" ) );
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( "Unable to load job entry of type 'get pop' from XML node", xe );
     }
@@ -341,6 +392,16 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       username = rep.getJobEntryAttributeString( id_jobentry, "username" );
       password =
         Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
+      grant_type = rep.getJobEntryAttributeString( id_jobentry, "use_grantType" );
+      usingAuthentication = rep.getJobEntryAttributeString( id_jobentry, "use_auth" );
+      clientId = rep.getJobEntryAttributeString( id_jobentry, "auth_clientId" );
+      secretKey =
+              Encr.decryptPasswordOptionallyEncrypted(  rep.getJobEntryAttributeString( id_jobentry, "auth_secretKey" ) ) ;
+      scope = rep.getJobEntryAttributeString( id_jobentry, "auth_scope" );
+      tokenUrl = rep.getJobEntryAttributeString( id_jobentry, "auth_tokenUrl" );
+      authorization_code = rep.getJobEntryAttributeString( id_jobentry, "auth_authorizationCode" );
+      redirectUri= rep.getJobEntryAttributeString( id_jobentry, "redirectURI" );
+      refresh_token = rep.getJobEntryAttributeString( id_jobentry, "refreshToken" );
       usessl = rep.getJobEntryAttributeBoolean( id_jobentry, "usessl" );
       sslport = rep.getJobEntryAttributeString( id_jobentry, "sslport" ); // backward compatible.
       outputdirectory = rep.getJobEntryAttributeString( id_jobentry, "outputdirectory" );
@@ -429,6 +490,16 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "delete", delete );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "protocol", protocol );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "use_auth", usingAuthentication );
+      rep.saveJobEntryAttribute( id_job,getObjectId(),"use_grantType",grant_type );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_clientId", clientId );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_secretKey", Encr
+              .encryptPasswordIfNotUsingVariables( secretKey ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_scope", scope );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_tokenUrl", tokenUrl );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_authorizationCode", authorization_code );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "redirectURI",  redirectUri );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "refreshToken", refresh_token );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "savemessage", savemessage );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "saveattachment", saveattachment );
       rep.saveJobEntryAttribute(
@@ -473,6 +544,97 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   public String getPort() {
     return sslport;
   }
+
+  /**
+   * @return Returns the usingAuthentication.
+   */
+  public String isUsingAuthentication() {
+    return usingAuthentication;
+  }
+
+  /**
+   * @param usingAuthentication
+   *          The usingAuthentication to set.
+   */
+  public void setUsingAuthentication( String usingAuthentication ) {
+    this.usingAuthentication = usingAuthentication;
+  }
+
+  public void setClientId( String clientId ) {
+    this.clientId = clientId;
+  }
+
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setSecretKey( String secretKey ) {
+    this.secretKey = secretKey;
+  }
+
+  public String getSecretKey() {
+    return secretKey;
+  }
+
+  public void setScope(String scope)
+  {
+    this.scope=scope;
+  }
+
+  public String getScope()
+  {
+    return scope;
+  }
+
+  public void setTokenUrl(String tokenUrl)
+  {
+    this.tokenUrl=tokenUrl;
+  }
+
+  public String getTokenUrl()
+  {
+
+    return tokenUrl;
+  }
+
+  public void setAuthorization_code(String authorization_code)
+  {
+    this.authorization_code=authorization_code;
+  }
+
+  public String getAuthorization_code()
+  {
+    return authorization_code;
+  }
+
+  public void setRedirectUri(String redirectUri)
+  {
+    this.redirectUri=redirectUri;
+  }
+
+  public String getRedirectUri()
+  {
+    return redirectUri;
+  }
+
+  public void setRefresh_token(String refresh_token)
+  {
+    this.refresh_token=refresh_token;
+  }
+
+  public String getRefresh_token()
+  {
+    return refresh_token;
+  }
+
+  public void setGrant_type( String grant_type ) {
+    this.grant_type = grant_type;
+  }
+
+  public String getGrant_type() {
+    return grant_type;
+  }
+
 
   public String getRealPort() {
     return environmentSubstitute( getPort() );
@@ -851,6 +1013,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public Result execute( Result previousResult, int nr ) throws KettleException {
     Result result = previousResult;
+    Properties props = new Properties();
     result.setResult( false );
 
     //FileObject fileObject = null;
@@ -884,6 +1047,25 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         moveafter = true;
       }
 
+      if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
+        props.put( "mail." + protocol + ".auth", "true" );
+
+        /*
+         * authenticator = new Authenticator() { protected PasswordAuthentication getPasswordAuthentication() { return new
+         * PasswordAuthentication( StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")),
+         * StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, "")) ); } };
+         */
+      }
+
+     else if( usingAuthentication.equals(JobEntryGetPOP.AUTENTICATION_OAUTH ) ) {
+        token = getOauthToken( tokenUrl );
+        props.put( "mail."+protocol+".auth.xoauth2.disable", "false" );
+        props.put( "mail."+protocol+".auth.mechanisms", "XOAUTH2" );
+        props.put( "mail.transport.protocol", "smtp" );
+        props.put( "mail."+protocol+".auth.login.disable", "true" );
+        props.put( "mail."+protocol+".auth.plain.disable", "true" );
+        props.setProperty( "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
+      }
       // check search terms
       // Received Date
       switch ( getConditionOnReceivedDate() ) {
@@ -1311,6 +1493,40 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
     JobEntryValidatorUtils.andValidator().validate( this, "SSLPort", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
+  }
+
+  IEmailAuthenticationResponse getOauthToken( String tokenUrl ) {
+    try ( CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient() ) {
+      this.tokenUrl=tokenUrl;
+      HttpPost httpPost = new HttpPost( tokenUrl );
+      List<NameValuePair> form = new ArrayList<>();
+      form.add( new BasicNameValuePair( "scope", scope ) );
+      form.add( new BasicNameValuePair( "client_id", clientId ) );
+      form.add( new BasicNameValuePair( "client_secret", secretKey ) );
+      form.add(new BasicNameValuePair( "grant_type", grant_type ) );
+      if ( grant_type.equals( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN ) ) {
+        form.add( new BasicNameValuePair( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN, refresh_token ) );
+      }
+      if ( grant_type.equals( JobEntryGetPOP.GRANTTYPE_AUTHORIZATION_CODE ) ) {
+        form.add( new BasicNameValuePair( "code", authorization_code ) );
+        form.add( new BasicNameValuePair( "redirect_uri", redirectUri ) );
+      }
+      UrlEncodedFormEntity entity = new UrlEncodedFormEntity( form, Consts.UTF_8 );
+      httpPost.setEntity( entity );
+      try ( CloseableHttpResponse response = client.execute( httpPost ) ) {
+        if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
+          throw new HttpException( "Unable to get authorization token " + response.getStatusLine().toString() );
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue( EntityUtils.toString( response.getEntity() ), EmailAuthenticationResponse.class );
+      } catch ( HttpException e ) {
+        throw new RuntimeException( e );
+      } catch ( IOException e ) {
+        throw new RuntimeException( e );
+      }
+    } catch ( IOException e ) {
+      throw new RuntimeException( e );
+    }
   }
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
