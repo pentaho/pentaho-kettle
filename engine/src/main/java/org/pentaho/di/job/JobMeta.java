@@ -416,7 +416,7 @@ public class JobMeta extends AbstractMeta
         jobMeta.jobcopies = new ArrayList<JobEntryCopy>();
         jobMeta.jobhops = new ArrayList<JobHopMeta>();
         jobMeta.notes = new ArrayList<NotePadMeta>();
-        jobMeta.localSharedObjects.clear();
+        jobMeta.initializeLocalDatabases();
         jobMeta.slaveServers = new ArrayList<SlaveServer>();
         jobMeta.namedParams = new NamedParamsDefault();
       }
@@ -2608,7 +2608,8 @@ public class JobMeta extends AbstractMeta
       } else {
         // Assume file
         //
-        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( space.environmentSubstitute( getFilename() ), space );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).
+          getFileObject( space.environmentSubstitute( getFilename() ), space );
         originalPath = fileObject.getParent().getName().getPath();
         baseName = fileObject.getName().getBaseName();
         fullname = fileObject.getName().getPath();
@@ -2636,8 +2637,9 @@ public class JobMeta extends AbstractMeta
         // loop over steps, databases will be exported to XML anyway.
         //
         for ( JobEntryCopy jobEntry : jobMeta.jobcopies ) {
-          compatibleJobEntryExportResources( jobEntry.getEntry(), jobMeta, definitions, namingInterface, repository );
-          jobEntry.getEntry().exportResources( jobMeta, definitions, namingInterface, repository, metaStore );
+          compatibleJobEntryExportResources( jobEntry.getEntry(), jobMeta, definitions, namingInterface, repository,
+                                             metaStore );
+          jobEntry.getEntry().exportResources( bowl, jobMeta, definitions, namingInterface, repository, metaStore );
         }
 
         // Set a number of parameters for all the data files referenced so far...
@@ -2676,11 +2678,13 @@ public class JobMeta extends AbstractMeta
     return resourceName;
   }
 
+  // calls deprecated APIs for old JobEntries that haven't updated
   @SuppressWarnings( "deprecation" )
   private void compatibleJobEntryExportResources( JobEntryInterface entry, JobMeta jobMeta,
-      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository2 )
-      throws KettleException {
-    entry.exportResources( jobMeta, definitions, namingInterface, repository );
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository2,
+      IMetaStore metaStore ) throws KettleException {
+    entry.exportResources( jobMeta, definitions, namingInterface, repository2 );
+    entry.exportResources( jobMeta, definitions, namingInterface, repository2, metaStore );
   }
 
   /**

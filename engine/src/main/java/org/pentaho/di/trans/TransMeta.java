@@ -577,7 +577,7 @@ public class TransMeta extends AbstractMeta
         transMeta.clear();
       } else {
         // Clear out the things we're replacing below
-        transMeta.localSharedObjects.clear();
+        transMeta.initializeLocalDatabases();
         transMeta.steps = new ArrayList<>();
         transMeta.hops = new ArrayList<>();
         transMeta.notes = new ArrayList<>();
