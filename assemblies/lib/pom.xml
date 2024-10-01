@@ -236,10 +236,16 @@
       <version>${platform.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>*</groupId> <!-- not all dependencies should be excluded, snakeyaml is needed forr KarafBoot.java -->
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!-- dependency for "pentaho:pentaho-platform-extensions" -->
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${snakeyaml.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>

@@ -85,6 +85,22 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   protected Object[] callRest( Object[] rowData ) throws KettleException {
+
+    Client client = null;
+    try {
+      client = getClient( rowData );
+      WebTarget webResource = buildRequest( client, rowData );
+      return invokeRequest( webResource, rowData );
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CanNotReadURL", data.realUrl ), e );
+    } finally {
+      if ( client != null ) {
+        client.close();
+      }
+    }
+  }
+
+  protected Client getClient( Object[] rowData ) throws KettleException {
     // get dynamic url ?
     if ( meta.isUrlInField() ) {
       data.realUrl = data.inputRowMeta.getString( rowData, data.indexOfUrlField );
@@ -96,195 +112,196 @@ public class Rest extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.MethodMissing" ) );
       }
     }
-    WebTarget webResource = null;
     Client client = null;
+    if ( isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", data.realUrl ) );
+    }
+    //      // Register a custom StringMessageBodyWriter to solve PDI-17423
+    ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+    clientBuilder
+      .withConfig( data.config )
+      .property( HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true );
+    if ( meta.isIgnoreSsl() || !Utils.isEmpty( data.trustStoreFile ) ) {
+      clientBuilder.sslContext( data.sslContext );
+      clientBuilder.hostnameVerifier( ( s1, s2 ) -> true );
+    }
+    client = clientBuilder.build();
+    if ( data.basicAuthentication != null ) {
+      client.register( data.basicAuthentication );
+    }
+    return client;
+  }
+
+  protected WebTarget buildRequest( Client client, Object[] rowData ) throws KettleException {
+    WebTarget webResource = null;
+    // create a WebResource object, which encapsulates a web resource for the client
+    webResource = client.target( data.realUrl );
+
+    if ( data.useMatrixParams ) {
+      // Add matrix parameters
+      UriBuilder builder = webResource.getUriBuilder();
+      for ( int i = 0; i < data.nrMatrixParams; i++ ) {
+        String value = data.inputRowMeta.getString( rowData, data.indexOfMatrixParamFields[ i ] );
+        if ( isDebug() ) {
+          logDebug(
+              BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[ i ], value ) );
+        }
+        builder = builder.matrixParam( data.matrixParamNames[ i ],
+                                       UriComponent.encode( value, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED ) );
+      }
+      webResource = client.target( builder.build() );
+    }
+
+    if ( data.useParams ) {
+      // Add query parameters
+      for ( int i = 0; i < data.nrParams; i++ ) {
+        String value = data.inputRowMeta.getString( rowData, data.indexOfParamFields[ i ] );
+        if ( isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[ i ], value ) );
+        }
+        webResource = webResource.queryParam( data.paramNames[ i ],
+          UriComponent.encode( value, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED ) );
+      }
+    }
+    if ( isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", webResource.getUri() ) );
+    }
+    return webResource;
+  }
+
+  private Object[] invokeRequest( WebTarget webResource, Object[] rowData ) throws KettleException {
     Object[] newRow = null;
     if ( rowData != null ) {
       newRow = rowData.clone();
     }
-    try {
-      if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", data.realUrl ) );
-      }
-      //      // Register a custom StringMessageBodyWriter to solve PDI-17423
-      ClientBuilder clientBuilder = ClientBuilder.newBuilder();
-      clientBuilder
-        .withConfig( data.config )
-        .property( HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true );
-      if ( meta.isIgnoreSsl() || !Utils.isEmpty( data.trustStoreFile ) ) {
-        clientBuilder.sslContext( data.sslContext );
-        clientBuilder.hostnameVerifier( ( s1, s2 ) -> true );
-      }
-      client = clientBuilder.build();
-      if ( data.basicAuthentication != null ) {
-        client.register( data.basicAuthentication );
-      }
-      // create a WebResource object, which encapsulates a web resource for the client
-      webResource = client.target( data.realUrl );
 
-      // used for calculating the responseTime
-      long startTime = System.currentTimeMillis();
+    // used for calculating the responseTime
+    long startTime = System.currentTimeMillis();
 
-      if ( data.useMatrixParams ) {
-        // Add matrix parameters
-        UriBuilder builder = webResource.getUriBuilder();
-        for ( int i = 0; i < data.nrMatrixParams; i++ ) {
-          String value = data.inputRowMeta.getString( rowData, data.indexOfMatrixParamFields[ i ] );
-          if ( isDebug() ) {
-            logDebug(
-              BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[ i ], value ) );
-          }
-          builder = builder.matrixParam( data.matrixParamNames[ i ],
-            UriComponent.encode( value, UriComponent.Type.QUERY_PARAM ) );
+    Invocation.Builder invocationBuilder = webResource.request();
+
+    String contentType = null; // media type override, if not null
+    if ( data.useHeaders ) {
+      // Add headers
+      for ( int i = 0; i < data.nrheader; i++ ) {
+        String value = data.inputRowMeta.getString( rowData, data.indexOfHeaderFields[ i ] );
+
+        // unsure if an already set header will be returned to builder
+        invocationBuilder.header( data.headerNames[ i ], value );
+        if ( "Content-Type".equals( data.headerNames[ i ] ) ) {
+          contentType = value;
         }
-        webResource = client.target( builder.build() );
-      }
-
-      if ( data.useParams ) {
-        // Add query parameters
-        for ( int i = 0; i < data.nrParams; i++ ) {
-          String value = data.inputRowMeta.getString( rowData, data.indexOfParamFields[ i ] );
-          if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[ i ], value ) );
-          }
-          webResource = webResource.queryParam( data.paramNames[ i ],  UriComponent.encode( value, UriComponent.Type.QUERY_PARAM ) );
-        }
-      }
-      if ( isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", webResource.getUri() ) );
-      }
-      Invocation.Builder invocationBuilder = webResource.request();
-      String contentType = null; // media type override, if not null
-      if ( data.useHeaders ) {
-        // Add headers
-        for ( int i = 0; i < data.nrheader; i++ ) {
-          String value = data.inputRowMeta.getString( rowData, data.indexOfHeaderFields[ i ] );
-
-          // unsure if an already set header will be returned to builder
-          invocationBuilder.header( data.headerNames[ i ], value );
-          if ( "Content-Type".equals( data.headerNames[ i ] ) ) {
-            contentType = value;
-          }
-          if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "Rest.Log.HeaderValue", data.headerNames[ i ], value ) );
-          }
-        }
-      }
-
-      Response response;
-      String entityString = "";
-      if ( data.useBody ) {
-        // Set Http request entity
-        entityString = Const.NVL( data.inputRowMeta.getString( rowData, data.indexOfBodyField ), "" );
         if ( isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "Rest.Log.BodyValue", entityString ) );
+          logDebug( BaseMessages.getString( PKG, "Rest.Log.HeaderValue", data.headerNames[ i ], value ) );
         }
       }
-      try {
-        if ( data.method.equals( RestMeta.HTTP_METHOD_GET ) ) {
-          response = invocationBuilder.get( Response.class );
-        } else if ( data.method.equals( RestMeta.HTTP_METHOD_POST ) ) {
-          if ( null != contentType ) {
-            response = invocationBuilder.post( Entity.entity( entityString, contentType ) );
-          } else {
-            //            response = builder.type( data.mediaType ).post( ClientResponse.class, entityString );
-            response = invocationBuilder.post( Entity.entity( entityString, data.mediaType ) );
-          }
-        } else if ( data.method.equals( RestMeta.HTTP_METHOD_PUT ) ) {
-          if ( null != contentType ) {
-            response = invocationBuilder.put( Entity.entity( entityString, contentType ) );
-          } else {
-            response = invocationBuilder.put( Entity.entity( entityString, data.mediaType ) );
-          }
-        } else if ( data.method.equals( RestMeta.HTTP_METHOD_DELETE ) ) {
-          response = invocationBuilder.delete();
-        } else if ( data.method.equals( RestMeta.HTTP_METHOD_HEAD ) ) {
-          response = invocationBuilder.head();
-        } else if ( data.method.equals( RestMeta.HTTP_METHOD_OPTIONS ) ) {
-          response = invocationBuilder.options();
-        } else if ( data.method.equals( RestMeta.HTTP_METHOD_PATCH ) ) {
-          if ( null != contentType ) {
-            response =
-              invocationBuilder.method(
-                RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, contentType ) );
-          } else {
-            response =
-              invocationBuilder.method(
-                RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, data.mediaType ) );
-          }
-        } else {
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
-        }
-      } catch ( Exception e ) {
-        throw new KettleException( "Request could not be processed", e );
-      }
-      // Get response time
-      long responseTime = System.currentTimeMillis() - startTime;
-      if ( isDetailed() ) {
-        logDetailed(
-          BaseMessages.getString( PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
-      }
+    }
 
-      // Get status
-      int status = response.getStatus();
-      // Display status code
+    Response response;
+    String entityString = "";
+    if ( data.useBody ) {
+      // Set Http request entity
+      entityString = Const.NVL( data.inputRowMeta.getString( rowData, data.indexOfBodyField ), "" );
       if ( isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "Rest.Log.ResponseCode", "" + status ) );
+        logDebug( BaseMessages.getString( PKG, "Rest.Log.BodyValue", entityString ) );
       }
-
-      // Get Response
-      String body;
-      String headerString = null;
-      try {
-        body = response.readEntity( String.class );
-      } catch ( Exception ex ) {
-        body = "";
-      }
-      // get Header
-      MultivaluedMap<String, Object> headers = searchForHeaders( response );
-      JSONObject json = new JSONObject();
-      for ( java.util.Map.Entry<String, List<Object>> entry : headers.entrySet() ) {
-        String name = entry.getKey();
-        List<Object> value = entry.getValue();
-        if ( value.size() > 1 ) {
-          json.put( name, value );
+    }
+    boolean debug = true;
+    try {
+      if ( data.method.equals( RestMeta.HTTP_METHOD_GET ) ) {
+        response = invocationBuilder.get( Response.class );
+      } else if ( data.method.equals( RestMeta.HTTP_METHOD_POST ) ) {
+        if ( null != contentType ) {
+          response = invocationBuilder.post( Entity.entity( entityString, contentType ) );
         } else {
-          json.put( name, value.get( 0 ) );
+          //            response = builder.type( data.mediaType ).post( ClientResponse.class, entityString );
+          response = invocationBuilder.post( Entity.entity( entityString, data.mediaType ) );
         }
-      }
-      headerString = json.toJSONString();
-      // for output
-      int returnFieldsOffset = data.inputRowMeta.size();
-      // add response to output
-      if ( !Utils.isEmpty( data.resultFieldName ) ) {
-        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, body );
-        returnFieldsOffset++;
-      }
-
-      // add status to output
-      if ( !Utils.isEmpty( data.resultCodeFieldName ) ) {
-        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( status ) );
-        returnFieldsOffset++;
-      }
-
-      // add response time to output
-      if ( !Utils.isEmpty( data.resultResponseFieldName ) ) {
-        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
-        returnFieldsOffset++;
-      }
-      // add response header to output
-      if ( !Utils.isEmpty( data.resultHeaderFieldName ) ) {
-        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString );
+      } else if ( data.method.equals( RestMeta.HTTP_METHOD_PUT ) ) {
+        if ( null != contentType ) {
+          response = invocationBuilder.put( Entity.entity( entityString, contentType ) );
+        } else {
+          response = invocationBuilder.put( Entity.entity( entityString, data.mediaType ) );
+        }
+      } else if ( data.method.equals( RestMeta.HTTP_METHOD_DELETE ) ) {
+        response = invocationBuilder.delete();
+      } else if ( data.method.equals( RestMeta.HTTP_METHOD_HEAD ) ) {
+        response = invocationBuilder.head();
+      } else if ( data.method.equals( RestMeta.HTTP_METHOD_OPTIONS ) ) {
+        response = invocationBuilder.options();
+      } else if ( data.method.equals( RestMeta.HTTP_METHOD_PATCH ) ) {
+        if ( null != contentType ) {
+          response =
+            invocationBuilder.method(
+                RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, contentType ) );
+        } else {
+          response =
+            invocationBuilder.method(
+                RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, data.mediaType ) );
+        }
+      } else {
+        throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CanNotReadURL", data.realUrl ), e );
-    } finally {
-      if ( webResource != null ) {
-        webResource = null;
+      throw new KettleException( "Request could not be processed", e );
+    }
+    // Get response time
+    long responseTime = System.currentTimeMillis() - startTime;
+    if ( isDetailed() ) {
+      logDetailed(
+          BaseMessages.getString( PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
+    }
+
+    // Get status
+    int status = response.getStatus();
+    // Display status code
+    if ( isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "Rest.Log.ResponseCode", "" + status ) );
+    }
+
+    // Get Response
+    String body;
+    String headerString = null;
+    try {
+      body = response.readEntity( String.class );
+    } catch ( Exception ex ) {
+      body = "";
+    }
+    // get Header
+    MultivaluedMap<String, Object> headers = searchForHeaders( response );
+    JSONObject json = new JSONObject();
+    for ( java.util.Map.Entry<String, List<Object>> entry : headers.entrySet() ) {
+      String name = entry.getKey();
+      List<Object> value = entry.getValue();
+      if ( value.size() > 1 ) {
+        json.put( name, value );
+      } else {
+        json.put( name, value.get( 0 ) );
       }
-      if ( client != null ) {
-        client.close();
-      }
+    }
+    headerString = json.toJSONString();
+    // for output
+    int returnFieldsOffset = data.inputRowMeta.size();
+    // add response to output
+    if ( !Utils.isEmpty( data.resultFieldName ) ) {
+      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, body );
+      returnFieldsOffset++;
+    }
+
+    // add status to output
+    if ( !Utils.isEmpty( data.resultCodeFieldName ) ) {
+      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( status ) );
+      returnFieldsOffset++;
+    }
+
+    // add response time to output
+    if ( !Utils.isEmpty( data.resultResponseFieldName ) ) {
+      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
+      returnFieldsOffset++;
+    }
+    // add response header to output
+    if ( !Utils.isEmpty( data.resultHeaderFieldName ) ) {
+      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString );
     }
     return newRow;
   }

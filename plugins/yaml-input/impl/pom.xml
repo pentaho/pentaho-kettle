@@ -25,9 +25,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.healthmarketscience.jackcess</groupId>
-      <artifactId>jackcess</artifactId>
-      <scope>compile</scope>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${snakeyaml.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
