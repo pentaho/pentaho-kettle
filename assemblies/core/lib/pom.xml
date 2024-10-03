@@ -625,7 +625,7 @@
               <!--Still needed even for a no-osgi build because of PentahoSystem dependency -->
               <dependency>
                 <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
+                <artifactId>osgi.core</artifactId>
                 <scope>compile</scope>
                 <exclusions>
                     <exclusion>
