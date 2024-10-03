@@ -49,10 +49,12 @@
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
     <tyrus-standalone-client.version>1.13.1</tyrus-standalone-client.version>
     <databricks.version>4.0.0</databricks.version>
+<!--    <javax.servlet-api.version>4.0.1</javax.servlet-api.version>-->
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <jface.version>3.22.0</jface.version>
     <pentaho-metadata.version>10.3.0.0-SNAPSHOT</pentaho-metadata.version>
     <google-http-client.version>1.42.3</google-http-client.version>
+    <pax-swissbox-core.version>1.8.2</pax-swissbox-core.version>
   </properties>
 
   <dependencies>
@@ -456,6 +458,12 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+    <!-- Temp dependency until SLF4J is upgraded -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.12</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
@@ -647,7 +655,7 @@
     <!--Still needed for a no-osgi build because of PentahoSystem dependency -->
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
+      <artifactId>osgi.core</artifactId>
       <version>${osgi.core.version}</version>
       <scope>compile</scope>
       <exclusions>
@@ -656,6 +664,11 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.swissbox</groupId>
+      <artifactId>pax-swissbox-core</artifactId>
+      <version>${pax-swissbox-core.version}</version>
     </dependency>
   </dependencies>
 
