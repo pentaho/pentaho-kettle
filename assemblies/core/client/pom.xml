@@ -17,7 +17,6 @@
     <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
 
     <pentaho-launcher.version>10.2.0.0-SNAPSHOT</pentaho-launcher.version>
-    <oss-licenses.version>10.2.0.0-SNAPSHOT</oss-licenses.version>
     <pentaho-karaf.version>10.2.0.0-SNAPSHOT</pentaho-karaf.version>
 
     <!-- swt -->
@@ -54,12 +53,6 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>oss-licenses</artifactId>
-      <version>${oss-licenses.version}</version>
-      <type>zip</type>
     </dependency>
     <!-- swt -->
     <dependency>
