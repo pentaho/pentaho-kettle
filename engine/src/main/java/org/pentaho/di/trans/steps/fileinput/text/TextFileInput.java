@@ -729,6 +729,19 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
+  public JSONObject validateShowContentAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    TextFileInputMeta meta = (TextFileInputMeta) getStepMetaInterface();
+
+    FileInputList textFileList = meta.getFileInputList( getTransMeta().getBowl(), getTransMeta() );
+
+    if ( Objects.nonNull( textFileList ) && !( textFileList.nrOfFiles() > 0 ) ) {
+      response.put( "message", BaseMessages.getString( PKG, "TextFileInputDialog.NoValidFileFound.DialogMessage" ) );
+    }
+
+    return response;
+  }
+
   public JSONObject showContentAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
