@@ -153,7 +153,8 @@ public interface JobEntryInterface {
   String FAILURE_METHOD_NOT_RESPONSE = "Action failed with method not found";
   String STATUS = "Status";
   int SUCCESS_STATUS = 1;
-  int FAILURE_STATUS = 0;
+  int FAILURE_STATUS = -1;
+  int NOT_EXECUTED_STATUS = 0;
 
   /**
    * Execute the job entry. The previous result and number of rows are provided to the method for the purpose of
