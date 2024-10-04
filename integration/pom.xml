@@ -6,18 +6,18 @@
 
   <groupId>org.pentaho</groupId>
   <artifactId>pdi-integration-tests</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.2.0.1-241</version>
 
   <name>Pentaho Data Integration Integration Tests</name>
 
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.1-241</version>
   </parent>
 
   <properties>
-    <pdi.version>10.2.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>10.2.0.1-241</pdi.version>
     <mockito-all.version>1.10.19</mockito-all.version>
   </properties>
 
