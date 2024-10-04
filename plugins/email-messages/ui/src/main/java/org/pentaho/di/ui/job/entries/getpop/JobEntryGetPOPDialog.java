@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,7 +54,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.*;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogChannel;
@@ -72,7 +71,6 @@ import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -375,45 +373,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
   private FormData fdlProtocol, fdProtocol;
 
-  private Label wlUseAuth;
-
-  private Combo wUseAuth;
-
-  private FormData fdlUseAuth, fdUseAuth;
-
-  private Label wlGrantType;
-
-  private Combo grantType;
-
-  private FormData fdlGrantType,fdGrantType;
-
-  private LabelTextVar wAuthClientId;
-
-  private FormData fdAuthClientId;
-
-  private LabelTextVar wAuthSecretKey;
-
-  private FormData fdAuthSecretKey;
-
-  private LabelTextVar wAuthScope;
-
-  private FormData fdAuthScope;
-
-  private LabelTextVar wAuthTokenUrl;
-
-  private FormData fdAuthTokenUrl;
-
-  private LabelTextVar wAuthorizationCode;
-
-  private FormData fdAuthorizationCode;
-
-  private LabelTextVar wRedirectUri;
-
-  private FormData fdRedirectUri;
-
-  private LabelTextVar wAuthRefreshToken;
-
-  private FormData fdAuthRefreshToken;
   private Button wTest;
 
   private FormData fdTest;
@@ -444,52 +403,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     if ( this.jobEntry.getName() == null ) {
       this.jobEntry.setName( BaseMessages.getString( PKG, "JobGetPOP.Name.Default" ) );
     }
-  }
-  protected void setUseAuth() {
-    String selectedAuth = wUseAuth.getText();
-    if ( selectedAuth.equals( JobEntryGetPOP.AUTENTICATION_BASIC ) ) {
-       wAuthClientId.setEnabled( false );
-      wAuthSecretKey.setEnabled( false );
-      wUserName.setEnabled( true );
-      wPassword.setEnabled( true );
-      wAuthScope.setEnabled( false );
-      grantType.setEnabled( false );
-      wAuthTokenUrl.setEnabled( false );
-      wAuthorizationCode.setEnabled( false );
-      wRedirectUri.setEnabled( false );
-      wAuthRefreshToken.setEnabled( false );
-    } else if ( selectedAuth.equals( JobEntryGetPOP.AUTENTICATION_OAUTH ) ) {
-      wUserName.setEnabled( true );
-      wPassword.setEnabled( false );
-      wAuthClientId.setEnabled( true );
-      wAuthSecretKey.setEnabled( true );
-      wAuthScope.setEnabled( true );
-      grantType.setEnabled( true );
-    }
-  }
-  protected void setUseGrantType() {
-
-    String selectedAuth = grantType.getText();
-    if ( selectedAuth.equals( JobEntryGetPOP.GRANTTYPE_CLIENTCREDENTIALS ) ) {
-      wAuthTokenUrl.setEnabled( true );
-      wAuthorizationCode.setEnabled( false );
-      wRedirectUri.setEnabled( false );
-      wAuthRefreshToken.setEnabled( false );
-
-    } else if ( selectedAuth.equals( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN ) ) {
-      wAuthTokenUrl.setEnabled( true );
-      wAuthorizationCode.setEnabled( false );
-      wRedirectUri.setEnabled( false );
-      wAuthRefreshToken.setEnabled( true );
-    } else if ( selectedAuth.equals( JobEntryGetPOP.GRANTTYPE_AUTHORIZATION_CODE ) ) {
-      wAuthTokenUrl.setEnabled( true );
-      wAuthorizationCode.setEnabled( true );
-      wRedirectUri.setEnabled( true );
-      wAuthRefreshToken.setEnabled( false );
-
-    }
-
-
   }
 
   public JobEntryInterface open() {
@@ -633,38 +546,13 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdPort.right = new FormAttachment( 100, 0 );
     wPort.setLayoutData( fdPort );
 
-    // Authentication?
-    wlUseAuth = new Label( wServerSettings, SWT.RIGHT );
-    wlUseAuth.setText( BaseMessages.getString( PKG, "JobGetPOP.UseAuthentication.Label" ) );
-    props.setLook( wlUseAuth );
-    fdlUseAuth = new FormData();
-    fdlUseAuth.left = new FormAttachment( 0, 0 );
-    fdlUseAuth.top = new FormAttachment( wlPort, 2 * margin );
-    fdlUseAuth.right = new FormAttachment( middle, -margin );
-    wlUseAuth.setLayoutData( fdlUseAuth );
-    wUseAuth = new Combo( wServerSettings, SWT.DROP_DOWN );
-    wUseAuth.add( JobEntryGetPOP.AUTENTICATION_BASIC );
-    wUseAuth.add( JobEntryGetPOP.AUTENTICATION_OAUTH );
-    props.setLook( wUseAuth );
-    wUseAuth.addModifyListener( lsMod );
-    fdUseAuth = new FormData();
-    fdUseAuth.left = new FormAttachment( middle, margin );
-    fdUseAuth.top = new FormAttachment( wlPort, 2 * margin );
-    fdUseAuth.right = new FormAttachment( 100, 0 );
-    wUseAuth.setLayoutData( fdUseAuth );
-    wUseAuth.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        setUseAuth();
-      }
-    } );
-
     // UserName line
     wlUserName = new Label( wServerSettings, SWT.RIGHT );
     wlUserName.setText( BaseMessages.getString( PKG, "JobGetPOP.Username.Label" ) );
     props.setLook( wlUserName );
     fdlUserName = new FormData();
     fdlUserName.left = new FormAttachment( 0, 0 );
-    fdlUserName.top = new FormAttachment( wUseAuth, margin );
+    fdlUserName.top = new FormAttachment( wPort, margin );
     fdlUserName.right = new FormAttachment( middle, -margin );
     wlUserName.setLayoutData( fdlUserName );
     wUserName = new TextVar( jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -673,7 +561,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
     fdUserName.left = new FormAttachment( middle, 0 );
-    fdUserName.top = new FormAttachment( wUseAuth, margin );
+    fdUserName.top = new FormAttachment( wPort, margin );
     fdUserName.right = new FormAttachment( 100, 0 );
     wUserName.setLayoutData( fdUserName );
 
@@ -695,117 +583,13 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // AuthClientId line
-    wAuthClientId = new LabelTextVar( jobMeta, wServerSettings,
-            BaseMessages.getString( PKG, "JobGetPOP.AuthenticationClientId.Label" ),
-            BaseMessages.getString( PKG, "JobGetPOP.AuthenticationClientId.Tooltip" ) );
-    wAuthClientId.addModifyListener( lsMod );
-    fdAuthClientId = new FormData();
-    fdAuthClientId.left = new FormAttachment( 0, 0 );
-    fdAuthClientId.top = new FormAttachment( wPassword, margin );
-    fdAuthClientId.right = new FormAttachment( 100, 0 );
-    wAuthClientId.setLayoutData( fdAuthClientId );
-
-    // AuthSecretKey line
-    wAuthSecretKey = new LabelTextVar( jobMeta, wServerSettings,
-            BaseMessages.getString( PKG, "JobGetPOP.AuthenticationSecretKey.Label" ),
-            BaseMessages.getString( PKG, "JobGetPOP.AuthenticationSecretKey.Tooltip" ), true );
-    wAuthSecretKey.addModifyListener( lsMod );
-    fdAuthSecretKey= new FormData();
-    fdAuthSecretKey.left = new FormAttachment( 0, 0 );
-    fdAuthSecretKey.top = new FormAttachment( wAuthClientId, margin );
-    fdAuthSecretKey.right = new FormAttachment( 100, 0 );
-    wAuthSecretKey.setLayoutData( fdAuthSecretKey);
-
-    //scope line
-    wAuthScope = new LabelTextVar( jobMeta, wServerSettings,
-            BaseMessages.getString( PKG, "JobGetPOP.AuthenticationScope.Label" ),
-            BaseMessages.getString( PKG, "JobGetPOP.AuthenticationScope.Tooltip" ) );
-    wAuthScope.addModifyListener( lsMod );
-    fdAuthScope= new FormData();
-    fdAuthScope.left = new FormAttachment( 0, 0 );
-    fdAuthScope.top = new FormAttachment( wAuthSecretKey, margin );
-    fdAuthScope.right = new FormAttachment( 100, 0 );
-    wAuthScope.setLayoutData( fdAuthScope);
-
-    // Grant Type
-    wlGrantType = new Label( wServerSettings, SWT.RIGHT );
-    wlGrantType.setText( BaseMessages.getString( PKG, "JobGetPOP.GrantType.Label" ) );
-    props.setLook( wlGrantType );
-    fdlGrantType = new FormData();
-    fdlGrantType.left = new FormAttachment( 0, 0 );
-    fdlGrantType.top = new FormAttachment( wAuthScope, 2*margin );
-    fdlGrantType.right = new FormAttachment( middle, -margin );
-    wlGrantType.setLayoutData( fdlGrantType );
-    grantType = new Combo( wServerSettings, SWT.DROP_DOWN );
-    grantType.add( JobEntryGetPOP.GRANTTYPE_CLIENTCREDENTIALS );
-    grantType.add( JobEntryGetPOP.GRANTTYPE_AUTHORIZATION_CODE );
-    grantType.add( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN );
-    props.setLook( grantType );
-    grantType.addModifyListener( lsMod );
-    fdGrantType = new FormData();
-    fdGrantType.left = new FormAttachment( middle, margin );
-    fdGrantType.top = new FormAttachment( wAuthScope, 2*margin );
-    fdGrantType.right = new FormAttachment( 100, 0 );
-    grantType.setLayoutData( fdGrantType );
-    grantType.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        setUseGrantType();
-      }
-    } );
-
-    //Token Url
-    wAuthTokenUrl = new LabelTextVar( jobMeta, wServerSettings,
-            BaseMessages.getString( PKG, "JobGetPOP.AuthenticationTokenUrl.Label" ),
-            BaseMessages.getString( PKG, "JobGetPOP.AuthenticationTokenUrl.Tooltip" ) );
-    wAuthTokenUrl.addModifyListener( lsMod );
-    fdAuthTokenUrl= new FormData();
-    fdAuthTokenUrl.left = new FormAttachment( 0, 0 );
-    fdAuthTokenUrl.top = new FormAttachment( grantType, margin );
-    fdAuthTokenUrl.right = new FormAttachment( 100, 0 );
-    wAuthTokenUrl.setLayoutData( fdAuthTokenUrl);
-
-    //AuthorizationCode
-    wAuthorizationCode= new LabelTextVar( jobMeta, wServerSettings,
-            BaseMessages.getString( PKG, "JobGetPOP.AuthorizationCode.Label" ),
-            BaseMessages.getString( PKG, "JobGetPOP.AuthorizationCode.Tooltip" ));
-    wAuthorizationCode.addModifyListener( lsMod );
-    fdAuthorizationCode= new FormData();
-    fdAuthorizationCode.left = new FormAttachment( 0, 0 );
-    fdAuthorizationCode.top = new FormAttachment( wAuthTokenUrl, margin );
-    fdAuthorizationCode.right = new FormAttachment( 100, 0 );
-    wAuthorizationCode.setLayoutData( fdAuthorizationCode);
-
-    //Redirect Uri
-    wRedirectUri= new LabelTextVar( jobMeta, wServerSettings,
-            BaseMessages.getString( PKG, "JobGetPOP.RedirectURI.Label" ),
-            BaseMessages.getString( PKG, "JobGetPOP.RedirectURI.Tooltip" ));
-    wRedirectUri.addModifyListener( lsMod );
-    fdRedirectUri= new FormData();
-    fdRedirectUri.left = new FormAttachment( 0, 0 );
-    fdRedirectUri.top = new FormAttachment( wAuthorizationCode, margin );
-    fdRedirectUri.right = new FormAttachment( 100, 0 );
-    wRedirectUri.setLayoutData( fdRedirectUri );
-
-    //Refresh Token
-    wAuthRefreshToken= new LabelTextVar( jobMeta, wServerSettings,
-            BaseMessages.getString( PKG, "JobGetPOP.RefreshToken.Label" ),
-            BaseMessages.getString( PKG, "JobGetPOP.RefreshToken.Tooltip" ));
-    wAuthRefreshToken.addModifyListener( lsMod );
-    fdAuthRefreshToken= new FormData();
-    fdAuthRefreshToken.left = new FormAttachment( 0, 0 );
-    fdAuthRefreshToken.top = new FormAttachment(wRedirectUri, margin );
-    fdAuthRefreshToken.right = new FormAttachment( 100, 0 );
-    wAuthRefreshToken.setLayoutData( fdAuthRefreshToken);
-
-
     // USE proxy
     wlUseProxy = new Label( wServerSettings, SWT.RIGHT );
     wlUseProxy.setText( BaseMessages.getString( PKG, "JobGetPOP.UseProxyMails.Label" ) );
     props.setLook( wlUseProxy );
     fdlUseProxy = new FormData();
     fdlUseProxy.left = new FormAttachment( 0, 0 );
-    fdlUseProxy.top = new FormAttachment( wAuthRefreshToken, 2 * margin );
+    fdlUseProxy.top = new FormAttachment( wPassword, 2 * margin );
     fdlUseProxy.right = new FormAttachment( middle, -margin );
     wlUseProxy.setLayoutData( fdlUseProxy );
     wUseProxy = new Button( wServerSettings, SWT.CHECK );
@@ -813,7 +597,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdUseProxy = new FormData();
     wUseProxy.setToolTipText( BaseMessages.getString( PKG, "JobGetPOP.UseProxyMails.Tooltip" ) );
     fdUseProxy.left = new FormAttachment( middle, 0 );
-    fdUseProxy.top = new FormAttachment( wAuthRefreshToken, 2 * margin );
+    fdUseProxy.top = new FormAttachment( wPassword, 2 * margin );
     fdUseProxy.right = new FormAttachment( 100, 0 );
     wUseProxy.setLayoutData( fdUseProxy );
 
@@ -1935,7 +1719,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     getData();
     setUserProxy();
     chooseListMails();
-    setUseGrantType();
     activeAttachmentFolder();
     refreshProtocol( false );
     conditionReceivedDate();
@@ -2247,15 +2030,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wGetMessage.setSelection( jobEntry.isSaveMessage() );
     wGetAttachment.setSelection( jobEntry.isSaveAttachment() );
     wDifferentFolderForAttachment.setSelection( jobEntry.isDifferentFolderForAttachment() );
-    wAuthClientId.setText( Const.nullToEmpty( jobEntry.getClientId() ) );
-    wAuthSecretKey.setText( Const.nullToEmpty( jobEntry.getSecretKey() ) );
-    wAuthScope.setText( Const.nullToEmpty( jobEntry.getScope() ) );
-    wAuthTokenUrl.setText( Const.nullToEmpty( jobEntry.getTokenUrl() ) );
-    wAuthorizationCode.setText( Const.nullToEmpty( jobEntry.getAuthorization_code() ) );
-    wRedirectUri.setText( Const.nullToEmpty( jobEntry.getRedirectUri() ) );
-    wAuthRefreshToken.setText( Const.nullToEmpty( jobEntry.getRefresh_token() ) );
-    grantType.setText( Const.nullToEmpty( jobEntry.getGrant_type() ) );
-    wUseAuth.setText( Const.nullToEmpty( jobEntry.isUsingAuthentication() ) );
     if ( jobEntry.getAttachmentFolder() != null ) {
       wAttachmentFolder.setText( jobEntry.getAttachmentFolder() );
     }
@@ -2359,15 +2133,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       return;
     }
     jobEntry.setName( wName.getText() );
-    jobEntry.setClientId( wAuthClientId.getText() );
-    jobEntry.setSecretKey( wAuthSecretKey.getText() );
-    jobEntry.setScope( wAuthScope.getText() );
-    jobEntry.setTokenUrl( wAuthTokenUrl.getText() );
-    jobEntry.setAuthorization_code( wAuthorizationCode.getText() );
-    jobEntry.setRedirectUri( wRedirectUri.getText() );
-    jobEntry.setRefresh_token( wAuthRefreshToken.getText() );
-    jobEntry.setUsingAuthentication( wUseAuth.getText() );
-    jobEntry.setGrant_type( grantType.getText() );
     jobEntry.setServerName( wServerName.getText() );
     jobEntry.setUserName( wUserName.getText() );
     jobEntry.setPassword( wPassword.getText() );
