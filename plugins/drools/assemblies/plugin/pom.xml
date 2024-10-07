@@ -17,6 +17,7 @@
 
   <properties>
     <resources.directory>${project.basedir}/src/main/resources</resources.directory>
+    <samples.directory>${project.basedir}/samples</samples.directory>
   </properties>
 
   <dependencies>

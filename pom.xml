@@ -62,8 +62,6 @@
     <wstx-asl.version>3.2.4</wstx-asl.version>
     <jsch.version>0.2.9</jsch.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
-    <kettle-jetty.version>9.4.52.v20230823</kettle-jetty.version>
-    <kettle-jetty-server.version>9.4.52.v20230823</kettle-jetty-server.version>
 
     <!-- Test dependencies -->
     <mockito.version>5.10.0</mockito.version>
@@ -106,52 +104,52 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-server</artifactId>
-        <version>${kettle-jetty-server.version}</version>
+        <version>${jetty-server.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-util</artifactId>
-        <version>${kettle-jetty.version}</version>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-webapp</artifactId>
-        <version>${kettle-jetty.version}</version>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-xml</artifactId>
-        <version>${kettle-jetty.version}</version>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-servlet</artifactId>
-        <version>${kettle-jetty.version}</version>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-security</artifactId>
-        <version>${kettle-jetty.version}</version>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-jaas</artifactId>
-        <version>${kettle-jetty.version}</version>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-http</artifactId>
-        <version>${kettle-jetty.version}</version>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-io</artifactId>
-        <version>${kettle-jetty.version}</version>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-util-ajax</artifactId>
-        <version>${kettle-jetty.version}</version>
+        <version>${jetty.version}</version>
       </dependency>
 
       <!-- Third-party dependencies -->
@@ -251,6 +249,21 @@
             <artifactId>*</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${fasterxml-jackson.non-osgi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${fasterxml-jackson.non-osgi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${fasterxml-jackson.non-osgi.version}</version>
       </dependency>
 
       <!-- Test dependencies -->

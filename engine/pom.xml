@@ -525,17 +525,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.konloch</groupId>
-      <artifactId>safeyaml</artifactId>
-      <version>${safeyaml.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
       <version>${snmp4j.version}</version>
@@ -637,14 +626,17 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
+      <version>${fasterxml-jackson.non-osgi.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
+      <version>${fasterxml-jackson.non-osgi.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <version>${fasterxml-jackson.non-osgi.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -946,14 +938,14 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
-      <version>${kettle-jetty.version}</version>
+      <version>${jetty.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-http</artifactId>
-      <version>${kettle-jetty.version}</version>
+      <version>${jetty.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

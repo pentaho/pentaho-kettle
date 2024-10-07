@@ -16,6 +16,12 @@
     </file>
   </files>
 
+  <fileSets>
+    <fileSet>
+      <directory>${samples.directory}</directory>
+    </fileSet>
+  </fileSets>
+
   <dependencySets>
     <dependencySet>
       <outputDirectory>.</outputDirectory>

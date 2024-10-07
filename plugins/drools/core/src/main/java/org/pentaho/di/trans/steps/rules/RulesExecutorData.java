@@ -22,34 +22,28 @@
 
 package org.pentaho.di.trans.steps.rules;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.StringReader;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
-import org.kie.api.io.Resource;
-import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.ObjectFilter;
-import org.kie.internal.builder.KnowledgeBuilder;
-import org.kie.internal.builder.KnowledgeBuilderFactory;
-import org.kie.internal.io.ResourceFactory;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.rules.Rules.Column;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This Transformation Step allows a user to execute a rule set against an individual rule or a collection of rules.
@@ -192,7 +186,7 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
 
       @Override
       public boolean accept( Object o ) {
-        return o instanceof Rules.Row && !( (Rules.Row) o ).isExternalSource();
+        return o instanceof Rules.Column && !( (Rules.Column) o ).isExternalSource();
       }
     } );
 
