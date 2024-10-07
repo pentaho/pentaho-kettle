@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3962,6 +3962,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     ResultSet alltables = null;
     try {
       alltables = databaseMeta.getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getTableTypes() );
+      String currentDatabase = databaseMeta.getDatabaseName();
       while ( alltables.next() ) {
         // due to PDI-743 with ODBC and MS SQL Server the order is changed and
         // try/catch included for safety
@@ -3973,6 +3974,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           if ( log.isDebug() ) {
             log.logDebug( "Error getting tables for field TABLE_CAT (ignored): " + e.toString() );
           }
+        }
+
+        if ( currentDatabase!=null && !currentDatabase.equals( cat ) ) {
+          log.logDebug( "Skipping table from catalog: " + cat );
+          continue;
         }
 
         String schema = "";
@@ -4078,6 +4084,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     Map<String, Collection<String>> viewMap = new HashMap<>();
     try ( ResultSet allviews = getDatabaseMeta()
       .getTables( getDatabaseMetaData(), schemaname, null, databaseMeta.getViewTypes() ) ) {
+      String currentDatabase = databaseMeta.getDatabaseName();
       while ( allviews.next() ) {
         // due to PDI-743 with ODBC and MS SQL Server the order is changed and
         // try/catch included for safety
@@ -4089,6 +4096,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           if ( log.isDebug() ) {
             log.logDebug( "Error getting views for field TABLE_CAT (ignored): " + e.toString() );
           }
+        }
+
+        if ( currentDatabase!=null && !currentDatabase.equals( cat ) ) {
+          log.logDebug( "Skipping table from catalog: " + cat );
+          continue;
         }
 
         String schema = "";
