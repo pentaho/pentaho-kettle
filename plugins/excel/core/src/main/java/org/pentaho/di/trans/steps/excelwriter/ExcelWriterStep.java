@@ -282,8 +282,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       data.wb.write( out );
       if( data.wb instanceof SXSSFWorkbook ) {
         SXSSFWorkbook sxssfWorkbook = (SXSSFWorkbook) data.wb;
-        sxssfWorkbook.close();
         sxssfWorkbook.dispose();
+        sxssfWorkbook.close();
       }
       else {
         data.wb.close();
