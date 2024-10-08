@@ -1688,6 +1688,21 @@ public class Const {
   public static final String COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
 
   /**
+   Value to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as job input mode.
+   */
+  public static final String KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT = "KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT";
+
+  /**
+   Value to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as trans input mode.
+   */
+  public static final String KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT = "KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT";
+
+  /**
+   Value to show/not show the Warning messages regarding the configured behaviour of the flag "Execute every Input Row"
+   */
+  public static final String KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
+
+  /**
    Value to Configure if we want to export only the used connections to the XML file
    */
   public static final String STRING_ONLY_USED_DB_TO_XML = "STRING_ONLY_USED_DB_TO_XML";
@@ -1695,7 +1710,7 @@ public class Const {
   /**
    Value to Configure if we want to disable/grayed out internal variables, and remove from the new/edit schedule.
    */
-  public static final String HIDE_INTERNAL_VARIABLES = "HIDE_INTERNAL_VARIABLES";
+  public static final String HIDE_INTERNAL_VARIABLES = "PENTAHO_SCHEDULER_HIDE_INTERNAL_VARIABLES";
   public static final String HIDE_INTERNAL_VARIABLES_DEFAULT = "Y";
 
   /**

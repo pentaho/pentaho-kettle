@@ -115,6 +115,7 @@ public class UserRoleDelegate implements java.io.Serializable {
       target = target.header( TRUST_USER, userInfo.getLogin() );
     }
     String response = target.get( String.class );
+
     String provider = new JSONObject( response ).getString( "authenticationType" );
     managed = "jackrabbit".equals( provider );
   }

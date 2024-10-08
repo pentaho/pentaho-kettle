@@ -22,7 +22,6 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.model;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryDirectory;
 import org.pentaho.di.repository.ObjectId;
@@ -30,6 +29,8 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestRepositoryDirectory {
   @Test
@@ -140,12 +141,12 @@ public class TestRepositoryDirectory {
     RepositoryDirectory testRepositoryDirectory;
     //Test passing parentPath as null
     testRepositoryDirectory = RepositoryDirectory.build( null, testRepositoryDirectoryInterface );
-    Assert.assertEquals( testRepositoryDirectory.getPath(), "/directory1" );
+    assertEquals( "/directory1", testRepositoryDirectory.getPath() );
     //Test passing parentPath as "/" for Local File Repository
     testRepositoryDirectory = RepositoryDirectory.build( "/", testRepositoryDirectoryInterface );
-    Assert.assertEquals( testRepositoryDirectory.getPath(), "/directory1" );
+    assertEquals( "/directory1", testRepositoryDirectory.getPath() );
     //Test passing parentPath as "/home"
     testRepositoryDirectory = RepositoryDirectory.build( "/home", testRepositoryDirectoryInterface );
-    Assert.assertEquals( testRepositoryDirectory.getPath(), "/home/directory1" );
+    assertEquals( "/home/directory1", testRepositoryDirectory.getPath() );
   }
 }
