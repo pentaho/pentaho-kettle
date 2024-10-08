@@ -18,7 +18,7 @@ package org.pentaho.di.repository.pur;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.client.Invocation;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -104,7 +104,7 @@ public class UserRoleDelegate implements java.io.Serializable {
     Client client = ClientBuilder.newClient();
     client.register( authFeature );
 
-    WebTarget target = ( WebTarget ) client.target( webService ).request().accept( MediaType.APPLICATION_JSON_TYPE );
+    Invocation.Builder target = client.target( webService ).request( MediaType.APPLICATION_JSON_TYPE );
     /**
      * if set, _trust_user_ needs to be considered. See other places in pur-plugin's:
      *
@@ -112,9 +112,9 @@ public class UserRoleDelegate implements java.io.Serializable {
      * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
      */
     if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
-      target = ( WebTarget ) target.request().header( TRUST_USER, userInfo.getLogin() );
+      target = target.header( TRUST_USER, userInfo.getLogin() );
     }
-    String response = target.request( MediaType.TEXT_PLAIN ).get( String.class );
+    String response = target.get( String.class );
     String provider = new JSONObject( response ).getString( "authenticationType" );
     managed = "jackrabbit".equals( provider );
   }

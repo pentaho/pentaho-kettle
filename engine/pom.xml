@@ -44,6 +44,7 @@
     <jersey-server.version>2.44</jersey-server.version>
     <jersey-container-servlet-core.version>2.44</jersey-container-servlet-core.version>
     <jersey-client.version>2.44</jersey-client.version>
+    <jersey-common.version>2.44</jersey-common.version>
     <jxl.version>2.6.12</jxl.version>
     <ldapjdk.version>20000524</ldapjdk.version>
     <monetdb-jdbc.version>2.8</monetdb-jdbc.version>
@@ -81,6 +82,7 @@
     <xmlunit.version>1.5</xmlunit.version>
     <wiremock.version>2.25.0</wiremock.version>
     <javax.ws.rs-api.version>2.1</javax.ws.rs-api.version>
+    <hk2.version>2.6.1</hk2.version>
   </properties>
 
   <dependencyManagement>
@@ -611,6 +613,26 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-common</artifactId>
+      <version>${jersey-common.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.hk2</groupId>
+      <artifactId>hk2-utils</artifactId>
+      <version>${hk2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.hk2</groupId>
+      <artifactId>hk2-api</artifactId>
+      <version>${hk2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.hk2</groupId>
+      <artifactId>hk2-locator</artifactId>
+      <version>${hk2.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
