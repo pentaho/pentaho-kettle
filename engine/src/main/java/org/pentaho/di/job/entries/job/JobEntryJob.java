@@ -1229,16 +1229,36 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   private boolean shouldConsiderOldBehaviourForEveryInputRow( ) {
-    boolean shouldExecuteWithZeroRows = "Y".equalsIgnoreCase( System.getProperty( Const.COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT, "N" ) );
-    if ( "Y".equalsIgnoreCase( System.getProperty( Const.COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW, "N" ) ) ) {
+    boolean shouldExecuteWithZeroRows = "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT, "N" ) );
+    String shouldExecuteWithZeroRowsCompat = System.getProperty( Const.COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT );
+    if ( !Utils.isEmpty( shouldExecuteWithZeroRowsCompat ) && "Y".equalsIgnoreCase( shouldExecuteWithZeroRowsCompat ) != shouldExecuteWithZeroRows ) {
+      log.logError(
+        "COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT property is deprecated, please use KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT and remove the old one."
+      );
+      //Assumes the old variable setting until it is deleted
+      shouldExecuteWithZeroRows = !shouldExecuteWithZeroRows;
+    }
+
+    boolean showWarnings = "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW, "Y" ) );
+    String showWarningsCompat = System.getProperty( Const.COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW );
+    if ( !Utils.isEmpty( showWarningsCompat ) && "Y".equalsIgnoreCase( showWarningsCompat ) != showWarnings  ) {
+      log.logError(
+        "COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW property is deprecated, please use KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW."
+      );
+      //Assumes the old variable setting until it is deleted
+      showWarnings = !showWarnings;
+    }
+
+    if (  showWarnings  ) {
       if ( shouldExecuteWithZeroRows ) {
         log.logBasic(
-          "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+          "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
       } else {
         log.logBasic(
-          "WARN Detected \"Execute for every row\" but no rows were detected, applying default behavior, not to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+          "WARN Detected \"Execute for every row\" but no rows were detected, applying default behavior, not to execute. In case this is not desired behavior, please read property KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
       }
     }
+
     return shouldExecuteWithZeroRows;
   }
 
