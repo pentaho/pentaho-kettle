@@ -644,7 +644,7 @@
     <description>Set this variable to Y to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as job input mode.
       See Jira issue PPP-20033 for details.
     </description>
-    <variable>COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT</variable>
+    <variable>KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT</variable>
     <default-value>N</default-value>
   </kettle-variable>
 
@@ -652,7 +652,7 @@
     <description>Set this variable to Y to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as trans input mode.
       See Jira issue PPP-20033 for details.
     </description>
-    <variable>COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT</variable>
+    <variable>KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT</variable>
     <default-value>N</default-value>
   </kettle-variable>
 
@@ -660,7 +660,7 @@
     <description>Set this variable to Y/N to show/not show the Warning messages regarding the configured behaviour of the flag "Execute every Input Row".
       See Jira issue PPP-20033 for details.
     </description>
-    <variable>COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW</variable>
+    <variable>KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW</variable>
     <default-value>Y</default-value>
   </kettle-variable>
 </kettle-variables>
