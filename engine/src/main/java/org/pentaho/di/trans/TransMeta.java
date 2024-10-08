@@ -101,7 +101,6 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
@@ -583,7 +582,6 @@ public class TransMeta extends AbstractMeta
         transMeta.notes = new ArrayList<>();
         transMeta.dependencies = new ArrayList<>();
         transMeta.partitionSchemas = new ArrayList<>();
-        transMeta.slaveServers = new ArrayList<>();
         transMeta.clusterSchemas = new ArrayList<>();
         transMeta.namedParams = new NamedParamsDefault();
         transMeta.stepChangeListeners = new ArrayList<>();
@@ -593,6 +591,12 @@ public class TransMeta extends AbstractMeta
       for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( dbType ).entrySet() ) {
         // cloneNode is *probably* overkill
         transMeta.localSharedObjects.saveSharedObject( dbType, entry.getKey(), entry.getValue().cloneNode( true ) );
+      }
+      //SlaveServers
+      String slaveServerType = SharedObjectsIO.SharedObjectType.SLAVESERVER.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( slaveServerType ).entrySet() ) {
+        // cloneNode is *probably* overkill
+        transMeta.localSharedObjects.saveSharedObject( slaveServerType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
       for ( StepMeta step : steps ) {
         transMeta.addStep( (StepMeta) step.clone() );
@@ -621,9 +625,6 @@ public class TransMeta extends AbstractMeta
       }
       for ( TransDependency dep : dependencies ) {
         transMeta.addDependency( (TransDependency) dep.clone() );
-      }
-      for ( SlaveServer slave : slaveServers ) {
-        transMeta.getSlaveServers().add( (SlaveServer) slave.clone() );
       }
       for ( ClusterSchema schema : clusterSchemas ) {
         transMeta.getClusterSchemas().add( schema.clone() );
@@ -2526,10 +2527,10 @@ public class TransMeta extends AbstractMeta
     //
     if ( includeSlaves ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
-      for ( int i = 0; i < slaveServers.size(); i++ ) {
-        SlaveServer slaveServer = slaveServers.get( i );
+      for ( SharedObjectInterface slaveServer : localSharedObjectsMgr.getAll() ) {
         retval.append( slaveServer.getXML() );
       }
+
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
     }
 
@@ -3530,23 +3531,7 @@ public class TransMeta extends AbstractMeta
             continue;
           }
           slaveServer.shareVariablesWith( this );
-
-          // Check if the object exists and if it's a shared object.
-          // If so, then we will keep the shared version, not this one.
-          // The stored XML is only for backup purposes.
-          SlaveServer check = findSlaveServer( slaveServer.getName() );
-          if ( check != null ) {
-            if ( !check.isShared() ) {
-              // we don't overwrite shared objects.
-              if ( shouldOverwrite( prompter, props,
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteSlaveServerYN", slaveServer.getName() ),
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
-                addOrReplaceSlaveServer( slaveServer );
-              }
-            }
-          } else {
-            slaveServers.add( slaveServer );
-          }
+          localSharedObjectsMgr.add( slaveServer );
         }
 
         // Read the cluster schemas
@@ -3555,7 +3540,7 @@ public class TransMeta extends AbstractMeta
         int nrClusterSchemas = XMLHandler.countNodes( clusterSchemasNode, ClusterSchema.XML_TAG );
         for ( int i = 0; i < nrClusterSchemas; i++ ) {
           Node clusterSchemaNode = XMLHandler.getSubNodeByNr( clusterSchemasNode, ClusterSchema.XML_TAG, i );
-          ClusterSchema clusterSchema = new ClusterSchema( clusterSchemaNode, slaveServers );
+          ClusterSchema clusterSchema = new ClusterSchema( clusterSchemaNode, getSlaveServers() );
           clusterSchema.shareVariablesWith( this );
 
           // Check if the object exists and if it's a shared object.

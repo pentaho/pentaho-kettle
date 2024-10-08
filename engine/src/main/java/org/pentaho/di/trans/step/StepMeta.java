@@ -77,7 +77,7 @@ import org.w3c.dom.Node;
  *
  */
 public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface,
-    SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface,
+    SharedObjectInterface<StepMeta>, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface,
     AttributesInterface, BaseMeta {
   private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -1177,5 +1177,16 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   public String getSuggestion() {
     return suggestion;
+  }
+
+  @Override
+  public StepMeta makeClone() {
+    return (StepMeta) clone();
+  }
+
+  @Override
+  public Node toNode() throws KettleException {
+    Document doc = XMLHandler.loadXMLString( getXML() );
+    return XMLHandler.getSubNode( doc, XML_TAG );
   }
 }

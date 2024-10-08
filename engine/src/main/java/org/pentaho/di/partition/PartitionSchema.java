@@ -26,8 +26,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -39,6 +41,7 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -47,7 +50,7 @@ import org.w3c.dom.Node;
  *
  * @author Matt
  */
-public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObjectInterface,
+public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObjectInterface<PartitionSchema>,
   ResourceHolderInterface, RepositoryElementInterface, XMLInterface {
   public static final String XML_TAG = "partitionschema";
 
@@ -332,5 +335,16 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
    */
   public void setChangedDate( Date changedDate ) {
     this.changedDate = changedDate;
+  }
+
+  @Override
+  public PartitionSchema makeClone() {
+    return (PartitionSchema) clone();
+  }
+
+  @Override
+  public Node toNode() throws KettleException {
+    Document doc = XMLHandler.loadXMLString( getXML() );
+    return XMLHandler.getSubNode( doc, XML_TAG );
   }
 }

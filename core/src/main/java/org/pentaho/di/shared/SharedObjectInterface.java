@@ -25,8 +25,9 @@ package org.pentaho.di.shared;
 import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.w3c.dom.Node;
 
-public interface SharedObjectInterface {
+public interface SharedObjectInterface<T extends SharedObjectInterface> {
 
   /**
    * @deprecated
@@ -47,4 +48,13 @@ public interface SharedObjectInterface {
   public String getXML() throws KettleException;
 
   public Date getChangedDate();
+
+  /**
+   * Wrapper method for clone() so clone() can be called from interface
+   * @return Object
+   */
+  public T makeClone();
+
+  public Node toNode() throws KettleException;
+
 }
