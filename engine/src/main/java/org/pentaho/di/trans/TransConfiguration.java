@@ -23,9 +23,12 @@
 package org.pentaho.di.trans;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -61,8 +64,14 @@ public class TransConfiguration {
   public TransConfiguration( Node configNode ) throws KettleException {
     Node trecNode = XMLHandler.getSubNode( configNode, TransExecutionConfiguration.XML_TAG );
     transExecutionConfiguration = new TransExecutionConfiguration( trecNode );
+
+    VariableSpace variables = new Variables();
+    for ( Map.Entry<String, String> entry : transExecutionConfiguration.getVariables().entrySet() ) {
+      variables.setVariable( entry.getKey(), entry.getValue() );
+    }
+
     Node transNode = XMLHandler.getSubNode( configNode, TransMeta.XML_TAG );
-    transMeta = new TransMeta( transNode, transExecutionConfiguration.getRepository() );
+    transMeta = new TransMeta( transNode, transExecutionConfiguration.getRepository(), variables );
   }
 
   public static final TransConfiguration fromXML( String xml ) throws KettleException {

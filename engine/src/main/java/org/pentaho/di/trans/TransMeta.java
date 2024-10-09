@@ -3066,6 +3066,26 @@ public class TransMeta extends AbstractMeta
   }
 
   /**
+   * Parse a file containing the XML that describes the transformation. Specify a repository to load default list of
+   * database connections from and to reference in mappings etc.
+   *
+   * @param transnode
+   *          The XML node to load from
+   * @param rep
+   *          the repository to reference.
+   * @param parentVariableSpace
+   *          the parent variable space to use during TransMeta construction
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Node transnode, Repository rep, VariableSpace parentVariableSpace )
+      throws KettleXMLException, KettleMissingPluginsException {
+    loadXML( transnode, rep, false, parentVariableSpace );
+  }
+
+  /**
    * Parses an XML DOM (starting at the specified Node) that describes the transformation.
    *
    * @param transnode
