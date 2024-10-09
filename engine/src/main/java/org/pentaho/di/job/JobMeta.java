@@ -865,6 +865,19 @@ public class JobMeta extends AbstractMeta
   /**
    * Create a new JobMeta object by loading it from a a DOM node.
    *
+   * @param jobnode  The node to load from
+   * @param rep      The reference to a repository to load additional information from
+   * @throws KettleXMLException
+   */
+  public JobMeta( Node jobnode, Repository rep, VariableSpace parentSpace ) throws KettleXMLException {
+    this();
+    this.initializeVariablesFrom( parentSpace );
+    loadXML( jobnode, rep, false, null );
+  }
+
+  /**
+   * Create a new JobMeta object by loading it from a a DOM node.
+   *
    * @param jobnode                       The node to load from
    * @param rep                           The reference to a repository to load additional information from
    * @param ignoreRepositorySharedObjects Do not load shared objects, handled separately

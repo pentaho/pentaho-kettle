@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +40,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.www.service.zip.ZipService;
 import org.pentaho.di.www.service.zip.ZipServiceKettle;
@@ -106,7 +109,14 @@ public class RegisterPackageServlet extends BaseJobServlet {
             getConfigNode( zipBaseUrl, Job.CONFIGURATION_IN_EXPORT_FILENAME, JobExecutionConfiguration.XML_TAG );
         JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration( node );
 
-        JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), fileUrl, jobExecutionConfiguration.getRepository() );
+        VariableSpace variables = Variables.getADefaultVariableSpace();
+        Map<String, String> jecVars = jobExecutionConfiguration.getVariables();
+        for ( Map.Entry<String, String> entry : jecVars.entrySet() ) {
+          variables.setVariable( entry.getKey(), entry.getValue() );
+        }
+
+        JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), variables, fileUrl,
+          jobExecutionConfiguration.getRepository(), null, null );
         JobConfiguration jobConfiguration = new JobConfiguration( jobMeta, jobExecutionConfiguration );
 
         Job job = createJob( jobConfiguration );
@@ -117,8 +127,14 @@ public class RegisterPackageServlet extends BaseJobServlet {
                 TransExecutionConfiguration.XML_TAG );
         TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration( node );
 
+        VariableSpace variables = Variables.getADefaultVariableSpace();
+        Map<String, String> tecVars = transExecutionConfiguration.getVariables();
+        for ( Map.Entry<String, String> entry : tecVars.entrySet() ) {
+          variables.setVariable( entry.getKey(), entry.getValue() );
+        }
+
         TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), fileUrl,
-            transExecutionConfiguration.getRepository() );
+            transExecutionConfiguration.getRepository(), true, variables );
         TransConfiguration transConfiguration = new TransConfiguration( transMeta, transExecutionConfiguration );
 
         Trans trans = createTrans( transConfiguration );
