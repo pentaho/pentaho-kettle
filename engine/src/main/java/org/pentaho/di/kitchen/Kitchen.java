@@ -261,6 +261,8 @@ public class Kitchen {
       }
 
       if ( !Utils.isEmpty( pluginParam.toString() ) ) {
+        // make sure VFS providers are registered
+        blockAndThrow( kettleInitFuture );
         CommandExecutorResult rslt = validateAndSetPluginParam( log, pluginParam.toString() );
         if ( rslt.getCode() != 0 ) {
           blockAndThrow( kettleInitFuture );
