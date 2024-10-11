@@ -17,6 +17,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
@@ -27,11 +29,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
@@ -67,8 +71,6 @@ public class Splash {
   private Color versionWarningBackgroundColor;
   private Color versionWarningForegroundColor;
 
-  private int licFontSize = 12;
-
   private LogChannelInterface log;
 
   public Splash( Display display ) {
@@ -88,7 +90,6 @@ public class Splash {
     exclamationImage = loadAsResource( display, BasePropertyHandler.getProperty( "exclamation_image" ) );
 
     verFont = new Font( display, FONT_TYPE, 14, SWT.BOLD );
-    licFont = new Font( display, FONT_TYPE, licFontSize, SWT.NORMAL );
     devWarningFont = new Font( display, FONT_TYPE, 10, SWT.NORMAL );
 
     versionWarningBackgroundColor = new Color( display, 255, 255, 255 );
@@ -127,7 +128,7 @@ public class Splash {
       }
       e.gc.setFont( verFont );
       e.gc.setForeground( new Color( display, 65, 65, 65 ) );
-      e.gc.drawText( fullVersionText, 290, 162, true );
+      e.gc.drawText( fullVersionText, 300, 80, true );
 
       String inputStringDate = BuildVersion.getInstance().getBuildDate();
       String outputStringDate = "";
@@ -158,19 +159,50 @@ public class Splash {
       }
 
       // try using the desired font size for the license text
+      java.util.List<String> fontsAvailable = new ArrayList<String>();
+      for ( FontData fontData : display.getFontList(null, true) ) {
+        fontsAvailable.add( fontData.getName() );
+      }
+      
+      String licFontName = "Helvetica";
+      int licFontSize = 10;
+      // try to find a monospace font since SWT doesn't support logical 'Monospaced'
+      boolean fontFound = false;
+      if ( fontsAvailable.contains( "Courier New" ) ) {
+        licFontName = "Courier New";
+        fontFound = true;
+      }
+      if ( fontsAvailable.contains( "Courier" ) && !fontFound ) {
+        licFontName = "Courier";
+        fontFound = true;
+      }
+      if ( fontsAvailable.contains( "adobe-courier" ) && !fontFound ) {
+        licFontName = "adobe-courier";
+        fontFound = true;
+      }
+      if ( fontsAvailable.contains( "Lucida Console" ) && !fontFound ) {
+        licFontName = "Lucida Console";
+        fontFound = true;
+      }
+      if ( fontsAvailable.contains( "Monospace" ) && !fontFound ) {
+        licFontName = "Monospace";
+        fontFound = true;
+      }
+
+      licFont = new Font( display, licFontName, licFontSize, SWT.NORMAL );
       e.gc.setFont( licFont );
       e.gc.setForeground( new Color( display, 65, 65, 65 ) );
-
+      
       while ( !willLicenseTextFit( licenseText, e.gc ) ) {
         licFontSize--;
         if ( licFont != null ) {
           licFont.dispose();
         }
-        licFont = new Font( e.display, "Helvetica", licFontSize, SWT.NORMAL );
+        licFont = new Font( e.display, licFontName, licFontSize, SWT.NORMAL );
         e.gc.setFont( licFont );
       }
 
-      e.gc.drawText( licenseText, 290, 225, true );
+      e.gc.drawText( licenseText, 300, 150, true );
 
       String version = buildVersion;
       // If this is a Milestone or RC release, warn the user
@@ -188,8 +220,8 @@ public class Splash {
       // use the same font/size as the license text
       e.gc.setForeground( new Color( display, 65, 65, 65 ) );
       e.gc.setFont( new Font( display, FONT_TYPE, 10, SWT.NORMAL ) );
-      e.gc.drawText( version, 290, 182, true );
-      e.gc.drawText( buildDate, 290, 198, true );
+      e.gc.drawText( version, 300, 105, true );
+      e.gc.drawText( buildDate, 300, 122, true );
     } );
 
     shell.addDisposeListener( disposeEvent -> {
@@ -249,7 +281,7 @@ public class Splash {
   // determine if the license text will fit the allocated space
   private boolean willLicenseTextFit( String licenseText, GC gc ) {
     Point splashSize = shell.getSize();
-    Point licenseDrawLocation = new Point( 290, 290 );
+    Point licenseDrawLocation = new Point( 300, 150 );
     Point requiredSize = gc.textExtent( licenseText );
 
     int width = splashSize.x - licenseDrawLocation.x;

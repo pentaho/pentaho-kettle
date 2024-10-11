@@ -4,7 +4,7 @@ are individually licensed per the terms indicated by their respective copyright 
 included in text file or in the source code. 
 
 License text copyright (c) 2020 MariaDB Corporation Ab, All Rights Reserved.
-"Business Source License" is a trademark of MariaDB Corporation Ab.r
+"Business Source License" is a trademark of MariaDB Corporation Ab.
 
 Parameters
 
