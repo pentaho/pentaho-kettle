@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,9 @@
 
 package org.pentaho.di.core.plugins;
 
+import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettlePluginClassMapException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -35,6 +37,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.File;
@@ -47,6 +50,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -393,7 +397,7 @@ public class PluginRegistry {
   }
 
   private KettleURLClassLoader createClassLoader( PluginInterface plugin ) throws MalformedURLException,
-    UnsupportedEncodingException {
+    UnsupportedEncodingException, KettlePluginException {
     List<String> jarFiles = plugin.getLibraries();
     URL[] urls = new URL[jarFiles.size()];
     for ( int i = 0; i < jarFiles.size(); i++ ) {
@@ -405,6 +409,18 @@ public class PluginRegistry {
     if ( patterns != null ) {
       return new KettleSelectiveParentFirstClassLoader( urls, classLoader, plugin.getDescription(), patterns );
     } else {
+      if ( !Utils.isEmpty( plugin.getParentPluginPath() ) ) {
+        try {
+          classLoader = folderBasedClassLoaderMap.get( KettleVFS.getFileObject(
+              Paths.get( System.getProperty( "user.dir" ), plugin.getParentPluginPath() ).toUri().toURL().toString() )
+            .getURL().toString() );
+        } catch ( FileSystemException | KettleFileException e ) {
+          throw new KettlePluginException( e );
+        }
+        if ( classLoader == null ) {
+          throw new MalformedURLException( "Could not locate parent classLoader for at " + plugin.getParentPluginPath() );
+        }
+      }
       return new KettleURLClassLoader( urls, classLoader, plugin.getDescription() );
     }
   }

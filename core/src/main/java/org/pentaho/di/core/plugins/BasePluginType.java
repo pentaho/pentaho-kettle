@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -783,6 +783,11 @@ public abstract class BasePluginType implements PluginTypeInterface {
         ids, this.getClass(), mainType.value(), category, pluginName, description, imageFile, separateClassLoader,
         classLoaderGroup, nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl,
         casesUrl, forumUrl, suggestion );
+
+    ParentPlugin parentPluginAnnotation = clazz.getAnnotation( ParentPlugin.class );
+    if ( parentPluginAnnotation != null ) {
+      plugin.setParentPluginPath( parentPluginAnnotation.pathFromDataIntegration() );
+    }
 
     ParentFirst parentFirstAnnotation = clazz.getAnnotation( ParentFirst.class );
     if ( parentFirstAnnotation != null ) {

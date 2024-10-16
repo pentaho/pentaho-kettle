@@ -63,6 +63,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   private String casesUrl;
   private String forumUrl;
   private String suggestion;
+  private String parentPluginPath;  //This is the path to the parent plugin from the data-integration folder
 
   /**
    * @param ids
@@ -495,4 +496,13 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
     this.classLoaderGroup = classLoaderGroup;
   }
 
+  @Override
+  public String getParentPluginPath() {
+    return parentPluginPath;
+  }
+
+  @Override
+  public void setParentPluginPath( String parentPluginPath ) {
+    this.parentPluginPath = parentPluginPath;
+  }
 }
