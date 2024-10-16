@@ -14,15 +14,15 @@
  * See the GNU Lesser General Public License for more details.
  *
  *
- * Copyright (c) 2019 Hitachi Vantara. All rights reserved.
+ * Copyright (c) 2024 Hitachi Vantara. All rights reserved.
  *
  */
 
 package org.pentaho.di.engine.configuration.impl.pentaho.scheduler;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

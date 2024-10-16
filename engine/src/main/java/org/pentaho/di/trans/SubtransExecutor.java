@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans;
 
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -36,6 +35,7 @@ import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.steps.TransStepUtil;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,7 +70,7 @@ public class SubtransExecutor {
     this.parameters = parameters;
     this.subStep = subStep;
     this.statuses = new LinkedHashMap<>();
-    this.running = new ConcurrentHashSet<>();
+    this.running = ConcurrentHashMap.newKeySet();
     this.prefetchCount = prefetchCount;
     this.semaphore = new Semaphore( prefetchCount );
   }

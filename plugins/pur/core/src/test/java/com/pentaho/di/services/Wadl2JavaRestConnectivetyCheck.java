@@ -25,8 +25,8 @@ import org.pentaho.di.repository.pur.PurRepositoryRestService;
 import org.pentaho.di.repository.pur.WebServiceManager;
 import org.pentaho.platform.plugin.services.importexport.InitializationException;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
