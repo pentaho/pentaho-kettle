@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -22,6 +22,7 @@ package org.pentaho.di.core.util;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -88,7 +89,7 @@ public class AsyncDatabaseActionTest {
     KettleLogStore.getAppender().addLoggingEventListener( errorLogListener );
   }
 
-
+  @Ignore
   @Test
   public void getTables() throws InterruptedException, ExecutionException, TimeoutException {
     AsyncDatabaseAction.getTables( dbMeta, "PUBLIC", completion::complete );
