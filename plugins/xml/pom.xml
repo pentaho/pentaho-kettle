@@ -37,6 +37,7 @@
     <mockito.version>5.10.0</mockito.version>
     <saxon.version>8.7</saxon.version>
     <platform.version>10.3.0.0-SNAPSHOT</platform.version>
+    <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
   </properties>
 
   <dependencyManagement>
@@ -130,9 +131,9 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
-        <version>4.0.0-b07</version>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${jakarta.servlet.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

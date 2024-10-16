@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -24,9 +24,9 @@
 
 package org.pentaho.di.engine.api.remote;
 
-import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
-import javax.websocket.EndpointConfig;
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.EndpointConfig;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
