@@ -16,14 +16,18 @@
  */
 package com.pentaho.di.services;
 
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
 import org.pentaho.di.repository.IRepositoryService;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Generated;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.annotation.Generated;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 
 @Generated( value = { "wadl|file:/C:/env/ws/pdi-ee-plugin/wadl2java/wadl-resource/application.wadl.xml" },
@@ -35,6 +39,7 @@ public class PentahoDiPlugin {
    * 
    */
   public final static URI BASE_URI;
+  static Client client;
 
   static {
     URI originalURI = URI.create( "http://localhost:8080/pentaho/plugin/" );
@@ -67,7 +72,7 @@ public class PentahoDiPlugin {
   }
 
   public static PentahoDiPlugin.PurRepositoryPluginApiRevision purRepositoryPluginApiRevision(
-  javax.ws.rs.client.Client client, URI baseURI ) {
+   Client client, URI baseURI ) {
     return new PentahoDiPlugin.PurRepositoryPluginApiRevision( client, baseURI );
   }
 
@@ -82,15 +87,15 @@ public class PentahoDiPlugin {
    * Template method to allow tooling to override Client factory
    * 
    */
-  private static javax.ws.rs.client.Client createClientInstance( ClientConfig cc ) {
-    return javax.ws.rs.client.ClientBuilder.newClient( cc );
+  private static Client createClientInstance( ClientConfig cc ) {
+    return ClientBuilder.newClient( cc );
   }
 
   /**
    * Create a new Client instance
    * 
    */
-  public static javax.ws.rs.client.Client createClient() {
+  public static Client createClient() {
     ClientConfig cc = new ClientConfig();
     customizeClientConfiguration( cc );
     return createClientInstance( cc );
@@ -101,12 +106,12 @@ public class PentahoDiPlugin {
   }
 
   public static PentahoDiPlugin.PurRepositoryPluginApiRevision purRepositoryPluginApiRevision(
-    javax.ws.rs.client.Client client ) {
+    Client client ) {
     return purRepositoryPluginApiRevision( client, BASE_URI );
   }
 
   public static PentahoDiPlugin.PurRepositoryPluginApiPurge purRepositoryPluginApiPurge(
-    javax.ws.rs.client.Client client, URI baseURI ) {
+    Client client, URI baseURI ) {
     return new PentahoDiPlugin.PurRepositoryPluginApiPurge( client, baseURI );
   }
 
@@ -115,17 +120,17 @@ public class PentahoDiPlugin {
   }
 
   public static PentahoDiPlugin.PurRepositoryPluginApiPurge purRepositoryPluginApiPurge(
-      javax.ws.rs.client.Client client ) {
+      Client client ) {
     return purRepositoryPluginApiPurge( client, BASE_URI );
   }
 
   public static class PurRepositoryPluginApiPurge implements IRepositoryService {
 
-    private javax.ws.rs.client.Client _client;
+    private Client _client;
     private UriBuilder _uriBuilder;
     private Map<String, Object> _templateAndMatrixParameterValues;
 
-    private PurRepositoryPluginApiPurge( javax.ws.rs.client.Client client, UriBuilder uriBuilder,
+    private PurRepositoryPluginApiPurge( Client client, UriBuilder uriBuilder,
         Map<String, Object> map ) {
       _client = client;
       _uriBuilder = uriBuilder.clone();
@@ -136,7 +141,7 @@ public class PentahoDiPlugin {
      * Create new instance using existing Client instance, and a base URI and any parameters
      * 
      */
-    public PurRepositoryPluginApiPurge( javax.ws.rs.client.Client client, URI baseUri ) {
+    public PurRepositoryPluginApiPurge( Client client, URI baseUri ) {
       _client = client;
       _uriBuilder = UriBuilder.fromUri( baseUri );
       _uriBuilder = _uriBuilder.path( "/pur-repository-plugin/api/purge" );
@@ -150,11 +155,11 @@ public class PentahoDiPlugin {
 
     public static class PathIdPurge implements IRepositoryService {
 
-      private javax.ws.rs.client.Client _client;
+      private Client _client;
       private UriBuilder _uriBuilder;
       private Map<String, Object> _templateAndMatrixParameterValues;
 
-      private PathIdPurge( javax.ws.rs.client.Client client, UriBuilder uriBuilder, Map<String, Object> map ) {
+      private PathIdPurge( Client client, UriBuilder uriBuilder, Map<String, Object> map ) {
         _client = client;
         _uriBuilder = uriBuilder.clone();
         _templateAndMatrixParameterValues = map;
@@ -164,7 +169,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and a base URI and any parameters
        * 
        */
-      public PathIdPurge( javax.ws.rs.client.Client client, URI baseUri, String pathid ) {
+      public PathIdPurge( Client client, URI baseUri, String pathid ) {
         _client = client;
         _uriBuilder = UriBuilder.fromUri( baseUri );
         _uriBuilder = _uriBuilder.path( "{pathId : .+}/purge" );
@@ -176,7 +181,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and the URI from which the parameters will be extracted
        * 
        */
-      public PathIdPurge( javax.ws.rs.client.Client client, URI uri ) {
+      public PathIdPurge( Client client, URI uri ) {
         _client = client;
         StringBuilder template = new StringBuilder( BASE_URI.toString() );
         if ( template.charAt( ( template.length() - 1 ) ) != '/' ) {
@@ -212,14 +217,14 @@ public class PentahoDiPlugin {
         return new PentahoDiPlugin.PurRepositoryPluginApiPurge.PathIdPurge( _client, copyUriBuilder, copyMap );
       }
 
-      public <T> T postMultipartFormDataAs( Object input, javax.ws.rs.core.GenericType<T> returnType ) {
+      public <T> T postMultipartFormDataAs( Object input, jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "*/*" );
         resourceBuilder = resourceBuilder.header( "Content-Type" , "multipart/form-data" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "POST" );
         if ( response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
@@ -230,20 +235,20 @@ public class PentahoDiPlugin {
 
       public <T> T postMultipartFormDataAs( Object input, Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "*/*" );
         resourceBuilder = resourceBuilder.header( "Content-Type" , "multipart/form-data" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "POST" );
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           if ( response.getStatus() >= 400 ) {
             throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response.status(
                 response.getStatus() ).build() );
           }
         }
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           return (T) response.getEntity();
         } else {
           return returnType.cast( response );
@@ -256,11 +261,11 @@ public class PentahoDiPlugin {
 
   public static class PurRepositoryPluginApiRevision implements IRepositoryService {
 
-    private javax.ws.rs.client.Client _client;
+    private Client _client;
     private UriBuilder _uriBuilder;
     private Map<String, Object> _templateAndMatrixParameterValues;
 
-    private PurRepositoryPluginApiRevision(javax.ws.rs.client.Client client, UriBuilder uriBuilder, Map<String, Object> map) {
+    private PurRepositoryPluginApiRevision(Client client, UriBuilder uriBuilder, Map<String, Object> map) {
       _client = client;
       _uriBuilder = uriBuilder.clone();
       _templateAndMatrixParameterValues = map;
@@ -270,7 +275,7 @@ public class PentahoDiPlugin {
      * Create new instance using existing Client instance, and a base URI and any parameters
      * 
      */
-    public PurRepositoryPluginApiRevision( javax.ws.rs.client.Client client, URI baseUri ) {
+    public PurRepositoryPluginApiRevision( Client client, URI baseUri ) {
       _client = client;
       _uriBuilder = UriBuilder.fromUri( baseUri );
       _uriBuilder = _uriBuilder.path( "/pur-repository-plugin/api/revision" );
@@ -290,11 +295,11 @@ public class PentahoDiPlugin {
 
     public static class PathIdRevisions implements IRepositoryService {
 
-      private javax.ws.rs.client.Client _client;
+      private Client _client;
       private UriBuilder _uriBuilder;
       private Map<String, Object> _templateAndMatrixParameterValues;
 
-      private PathIdRevisions( javax.ws.rs.client.Client client, UriBuilder uriBuilder, Map<String, Object> map ) {
+      private PathIdRevisions( Client client, UriBuilder uriBuilder, Map<String, Object> map ) {
         _client = client;
         _uriBuilder = uriBuilder.clone();
         _templateAndMatrixParameterValues = map;
@@ -304,7 +309,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and a base URI and any parameters
        * 
        */
-      public PathIdRevisions( javax.ws.rs.client.Client client, URI baseUri, String pathid ) {
+      public PathIdRevisions( Client client, URI baseUri, String pathid ) {
         _client = client;
         _uriBuilder = UriBuilder.fromUri( baseUri );
         _uriBuilder = _uriBuilder.path( "{pathId : .+}/revisions" );
@@ -316,7 +321,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and the URI from which the parameters will be extracted
        * 
        */
-      public PathIdRevisions( javax.ws.rs.client.Client client, URI uri ) {
+      public PathIdRevisions( Client client, URI uri ) {
         _client = client;
         StringBuilder template = new StringBuilder( BASE_URI.toString() );
         if ( template.charAt( ( template.length() - 1 ) ) != '/' ) {
@@ -352,13 +357,13 @@ public class PentahoDiPlugin {
         return new PentahoDiPlugin.PurRepositoryPluginApiRevision.PathIdRevisions( _client, copyUriBuilder, copyMap );
       }
 
-      public <T> T getAsXml( javax.ws.rs.core.GenericType<T> returnType ) {
+      public <T> T getAsXml( jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
         if (response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage(Response
@@ -369,32 +374,32 @@ public class PentahoDiPlugin {
 
       public <T> T getAsXml( Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom(returnType)) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom(returnType)) {
           if ( response.getStatus() >= 400 ) {
             throw new PentahoDiPlugin.WebApplicationExceptionMessage(Response.status(
                 response.getStatus() ).build() );
           }
         }
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           return (T) response.getEntity();
         } else {
           return returnType.cast( response );
         }
       }
 
-      public <T> T getAsJson( javax.ws.rs.core.GenericType<T> returnType ) {
+      public <T> T getAsJson( jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target(localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
         if (response.getStatus() >= 400 ) {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
@@ -405,19 +410,19 @@ public class PentahoDiPlugin {
 
       public <T> T getAsJson( Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom(returnType)) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom(returnType)) {
           if ( response.getStatus() >= 400 ) {
             throw new PentahoDiPlugin.WebApplicationExceptionMessage(Response.status(
                 response.getStatus() ).build() );
           }
         }
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom(returnType)) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom(returnType)) {
           return (T) response.getEntity( );
         } else {
           return returnType.cast( response );
@@ -428,11 +433,11 @@ public class PentahoDiPlugin {
 
     public static class PathIdVersioningConfiguration implements IRepositoryService {
 
-      private javax.ws.rs.client.Client _client;
+      private Client _client;
       private UriBuilder _uriBuilder;
       private Map<String, Object> _templateAndMatrixParameterValues;
 
-      private PathIdVersioningConfiguration( javax.ws.rs.client.Client client, UriBuilder uriBuilder,
+      private PathIdVersioningConfiguration( Client client, UriBuilder uriBuilder,
           Map<String, Object> map ) {
         _client = client;
         _uriBuilder = uriBuilder.clone();
@@ -443,7 +448,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and a base URI and any parameters
        * 
        */
-      public PathIdVersioningConfiguration( javax.ws.rs.client.Client client, URI baseUri, String pathid ) {
+      public PathIdVersioningConfiguration( Client client, URI baseUri, String pathid ) {
         _client = client;
         _uriBuilder = UriBuilder.fromUri( baseUri );
         _uriBuilder = _uriBuilder.path( "{pathId}/versioningConfiguration" );
@@ -455,7 +460,7 @@ public class PentahoDiPlugin {
        * Create new instance using existing Client instance, and the URI from which the parameters will be extracted
        * 
        */
-      public PathIdVersioningConfiguration( javax.ws.rs.client.Client client, URI uri ) {
+      public PathIdVersioningConfiguration( Client client, URI uri ) {
         _client = client;
         StringBuilder template = new StringBuilder( BASE_URI.toString() );
         if ( template.charAt( ( template.length() - 1 ) ) != '/' ) {
@@ -494,29 +499,29 @@ public class PentahoDiPlugin {
 
       public FileVersioningConfiguration getAsFileVersioningConfigurationXml() {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
         if ( response.getStatus() >= 400 ) {
-          throw new PentahoDiPlugin.WebApplicationExceptionMessage( javax.ws.rs.core.Response
+          throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response
               .status( response.getStatus() ).build() );
         }
         return ( FileVersioningConfiguration ) response.getEntity( );
       }
 
-      public <T> T getAsXml( javax.ws.rs.core.GenericType<T> returnType ) {
+      public <T> T getAsXml( jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
         if ( response.getStatus() >= 400 ) {
-          throw new PentahoDiPlugin.WebApplicationExceptionMessage( javax.ws.rs.core.Response
+          throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response
               .status( response.getStatus() ).build() );
         }
         return (T) response.getEntity();
@@ -524,19 +529,19 @@ public class PentahoDiPlugin {
 
       public <T> T getAsXml( Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/xml" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           if ( response.getStatus() >= 400 ) {
-            throw new PentahoDiPlugin.WebApplicationExceptionMessage( javax.ws.rs.core.Response.status(
+            throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response.status(
                 response.getStatus() ).build() );
           }
         }
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           return (T) response.getEntity();
         } else {
           return returnType.cast( response );
@@ -545,29 +550,29 @@ public class PentahoDiPlugin {
 
       public FileVersioningConfiguration getAsFileVersioningConfigurationJson() {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
         if ( response.getStatus() >= 400 ) {
-          throw new PentahoDiPlugin.WebApplicationExceptionMessage( javax.ws.rs.core.Response
+          throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response
               .status( response.getStatus() ).build() );
         }
         return ( FileVersioningConfiguration ) response.getEntity();
       }
 
-      public <T> T getAsJson( javax.ws.rs.core.GenericType<T> returnType ) {
+      public <T> T getAsJson( jakarta.ws.rs.core.GenericType<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
         if ( response.getStatus() >= 400 ) {
-          throw new PentahoDiPlugin.WebApplicationExceptionMessage( javax.ws.rs.core.Response
+          throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response
               .status( response.getStatus() ).build() );
         }
         return (T) response.getEntity();
@@ -575,19 +580,19 @@ public class PentahoDiPlugin {
 
       public <T> T getAsJson( Class<T> returnType ) {
         UriBuilder localUriBuilder = _uriBuilder.clone();
-        javax.ws.rs.client.WebTarget resource =
+        WebTarget target =
             _client.target( localUriBuilder.buildFromMap( _templateAndMatrixParameterValues ) );
-        javax.ws.rs.client.Invocation.Builder resourceBuilder = resource.request();
+        Invocation.Builder resourceBuilder = target.request();
         resourceBuilder = resourceBuilder.accept( "application/json" );
-        javax.ws.rs.core.Response response;
+        jakarta.ws.rs.core.Response response;
         response = resourceBuilder.method( "GET" );
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           if ( response.getStatus() >= 400 ) {
-            throw new PentahoDiPlugin.WebApplicationExceptionMessage( javax.ws.rs.core.Response.status(
+            throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response.status(
                 response.getStatus() ).build() );
           }
         }
-        if ( !javax.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
           return (T) response.getEntity();
         } else {
           return returnType.cast( response );
@@ -623,7 +628,7 @@ public class PentahoDiPlugin {
     }
 
     public String toString() {
-      String s = "javax.ws.rs.WebApplicationException";
+      String s = "jakarta.ws.rs.WebApplicationException";
       String message = getLocalizedMessage();
       return ( s + ( ": " + message ) );
     }

@@ -24,9 +24,9 @@
   <dependencies>
     <!-- Third-party dependencies -->
     <dependency>
-      <groupId>javax.websocket</groupId>
-      <artifactId>javax.websocket-api</artifactId>
-      <version>1.0</version>
+      <groupId>jakarta.websocket</groupId>
+      <artifactId>jakarta.websocket-client-api</artifactId>
+      <version>${jakarta.websocket-api.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
