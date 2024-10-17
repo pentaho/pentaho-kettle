@@ -417,7 +417,7 @@ public class JobMeta extends AbstractMeta
         jobMeta.jobcopies = new ArrayList<JobEntryCopy>();
         jobMeta.jobhops = new ArrayList<JobHopMeta>();
         jobMeta.notes = new ArrayList<NotePadMeta>();
-        jobMeta.initializeLocalDatabases();
+        jobMeta.initializeSharedObjects();
         //jobMeta.slaveServers = new ArrayList<SlaveServer>();
         jobMeta.namedParams = new NamedParamsDefault();
       }
@@ -666,11 +666,10 @@ public class JobMeta extends AbstractMeta
     //
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
     try {
-      for ( SharedObjectInterface slaveServer : localSharedObjectsMgr.getAll() ) {
-        retval.append(slaveServer.getXML());
+      for ( SharedObjectInterface slaveServer : localSlaveServerMgr.getAll() ) {
+        retval.append( slaveServer.getXML() );
       }
-
-    } catch (KettleException exception) {
+    } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( BaseMessages.getString( PKG, "JobMeta.Log.UnableToReadSlaveServersFromXML" ), exception );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
@@ -1116,7 +1115,7 @@ public class JobMeta extends AbstractMeta
         Node slaveServerNode = XMLHandler.getSubNodeByNr( slaveServersNode, SlaveServer.XML_TAG, i );
         SlaveServer slaveServer = new SlaveServer( slaveServerNode );
         slaveServer.shareVariablesWith( this );
-        localSharedObjectsMgr.add( slaveServer );
+        localSlaveServerMgr.add( slaveServer );
       }
 
       /*

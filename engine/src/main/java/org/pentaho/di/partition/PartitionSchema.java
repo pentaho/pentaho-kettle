@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.exception.KettleException;

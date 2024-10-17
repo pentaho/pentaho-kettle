@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
@@ -62,6 +63,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.www.RegisterTransServlet;
+
+import static org.pentaho.di.core.util.Utils.isEmpty;
 
 /**
  *
@@ -521,7 +524,11 @@ public class SlaveServerDialog extends Dialog {
   public void ok() {
     getInfo();
 
-    if ( !slaveServer.getName().equals( originalServer.getName() ) ) {
+    if ( slaveServer.getName().isEmpty() ) {
+      showMessage( BaseMessages.getString( PKG, "SlaveServerDialog.SlaveServerNoName" ) );
+      return;
+    }
+    if ( originalServer.getName() != null && !slaveServer.getName().equals( originalServer.getName().trim() ) ) {
       if ( DialogUtils.objectWithTheSameNameExists( slaveServer, existingServers ) ) {
         String title = BaseMessages.getString( PKG, "SlaveServerDialog.SlaveServerNameExists.Title" );
         String message =
@@ -535,7 +542,7 @@ public class SlaveServerDialog extends Dialog {
       }
     }
 
-    originalServer.setName( slaveServer.getName() );
+    originalServer.setName( slaveServer.getName().trim() );
     originalServer.setHostname( slaveServer.getHostname() );
     originalServer.setPort( slaveServer.getPort() );
     originalServer.setWebAppName( slaveServer.getWebAppName() );
@@ -559,7 +566,7 @@ public class SlaveServerDialog extends Dialog {
 
   // Get dialog info in securityService
   private void getInfo() {
-    slaveServer.setName( wName.getText() );
+    slaveServer.setName( wName.getText().trim() );
     slaveServer.setHostname( wHostname.getText() );
     slaveServer.setPort( wPort.getText() );
     slaveServer.setWebAppName( wWebAppName.getText() );
@@ -602,5 +609,11 @@ public class SlaveServerDialog extends Dialog {
         + slaveServer.getHostname()
         + BaseMessages.getString( PKG, "SlaveServer.ExceptionUnableGetReplay.Error2" ), e );
     }
+  }
+
+  private void showMessage( String message ) {
+    MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+    mb.setMessage( message );
+    mb.open();
   }
 }

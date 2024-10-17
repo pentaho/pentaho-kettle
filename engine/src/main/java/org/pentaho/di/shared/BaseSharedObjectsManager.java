@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  */
 public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T>> implements SharedObjectsManagementInterface<T> {
 
-  public SharedObjectsIO sharedObjectsIO;
+  protected SharedObjectsIO sharedObjectsIO;
 
   private static final Logger log = LoggerFactory.getLogger( BaseSharedObjectsManager.class );
 
@@ -45,8 +45,8 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
     SharedObjectInterface - DatabaseMeta, SlaveServer, PartitionSchema and ClusterSchema
   */
   //public Map<String, Map<String, T>> sharedObjectsMap = new HashMap<String, Map<String, T>>();
-  public Map<String, T> sharedObjectsMap = new HashMap<>();
-  public volatile boolean initialized = false;
+  private Map<String, T> sharedObjectsMap = new HashMap<>();
+  private volatile boolean initialized = false;
   String sharedObjectType;
 
   protected Bowl bowl;
@@ -59,7 +59,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
    * Call the SharedObject type specific method to populate the internal map
    * @throws KettleException
    */
-  protected void populateSharedObjectMap() throws KettleException {
+  private void populateSharedObjectMap() throws KettleException {
     if ( !initialized ) {
       synchronized ( this ) {
         if ( !initialized ) {
@@ -78,6 +78,14 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
     }
   }
 
+  /**
+   * This method is called while populating the sharedObjectMap to create concrete SharedObjectInterface implementation
+   * class.
+   * This will be implemented by subclasses.
+   * @param node
+   * @return
+   * @throws KettleException
+   */
   protected abstract T createSharedObjectUsingNode( Node node ) throws KettleException;
 
 
@@ -107,7 +115,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
   public List<T> getAll() throws KettleException {
     populateSharedObjectMap();
 
-    return sharedObjectsMap.values().stream().map( sharedObject -> sharedObject.makeClone() ).collect( Collectors.toList() );
+    return sharedObjectsMap.values().stream().map( SharedObjectInterface::makeClone ).collect( Collectors.toList() );
 
   }
 

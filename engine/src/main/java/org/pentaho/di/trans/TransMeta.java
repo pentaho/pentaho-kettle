@@ -576,7 +576,7 @@ public class TransMeta extends AbstractMeta
         transMeta.clear();
       } else {
         // Clear out the things we're replacing below
-        transMeta.initializeLocalDatabases();
+        transMeta.initializeSharedObjects();
         transMeta.steps = new ArrayList<>();
         transMeta.hops = new ArrayList<>();
         transMeta.notes = new ArrayList<>();
@@ -2527,7 +2527,7 @@ public class TransMeta extends AbstractMeta
     //
     if ( includeSlaves ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
-      for ( SharedObjectInterface slaveServer : localSharedObjectsMgr.getAll() ) {
+      for ( SharedObjectInterface slaveServer : localSlaveServerMgr.getAll() ) {
         retval.append( slaveServer.getXML() );
       }
 
@@ -3531,7 +3531,7 @@ public class TransMeta extends AbstractMeta
             continue;
           }
           slaveServer.shareVariablesWith( this );
-          localSharedObjectsMgr.add( slaveServer );
+          localSlaveServerMgr.add( slaveServer );
         }
 
         // Read the cluster schemas
