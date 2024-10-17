@@ -95,6 +95,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.bowl.Bowl;
@@ -210,8 +211,6 @@ import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.shared.DatabaseManagementInterface;
-import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
@@ -232,7 +231,6 @@ import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.PrintSpool;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.auth.AuthProviderDialog;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 import org.pentaho.di.ui.core.dialog.AboutDialog;
 import org.pentaho.di.ui.core.dialog.BrowserEnvironmentWarningDialog;
 import org.pentaho.di.ui.core.dialog.CheckResultDialog;
@@ -291,6 +289,7 @@ import org.pentaho.di.ui.spoon.partition.processor.MethodProcessor;
 import org.pentaho.di.ui.spoon.partition.processor.MethodProcessorFactory;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.spoon.tree.TreeManager;
+import org.pentaho.di.ui.spoon.tree.TreePopupMenuProvider;
 import org.pentaho.di.ui.spoon.tree.extension.TreePaneExtension;
 import org.pentaho.di.ui.spoon.tree.extension.TreePaneManager;
 import org.pentaho.di.ui.spoon.tree.provider.ClustersFolderProvider;
@@ -2668,12 +2667,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  /**
+   * Adds the new slave server in the slave server node in the tree
+   */
   public void newSlaveServer() {
-    HasSlaveServersInterface hasSlaveServersInterface = getActiveHasSlaveServersInterface();
-    if ( Objects.isNull( hasSlaveServersInterface ) ) {
-      return;
-    }
-    newSlaveServer( hasSlaveServersInterface );
+    delegates.slaves.newSlaveServer( );
   }
 
   public void editTransformationPropertiesPopup() {
@@ -2971,6 +2969,87 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  /**
+   * Move the SlaveServer to global level
+   */
+  public void moveSlaveServerToGlobal() {
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    SlaveServerManagementInterface slaveServerManager = null;
+    SlaveServer slaveServer = null;
+    try {
+      slaveServerManager = getSlaveServerManager( leveledSelection.getLevel() );
+      slaveServer = slaveServerManager.get( leveledSelection.getName() );
+      getLog().logBasic( "Moving the slave server " + leveledSelection.getName() + " to global" );
+      delegates.slaves.moveToGlobal( slaveServerManager, slaveServer );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving slave servers", e );
+    }
+  }
+
+  /**
+   * Moving the slaveServer to project
+   */
+  public void moveSlaveServerToProject() {
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    SlaveServerManagementInterface slaveServerManager = null;
+    SlaveServer slaveServer = null;
+    try {
+      slaveServerManager = getSlaveServerManager( leveledSelection.getLevel() );
+      slaveServer = slaveServerManager.get( leveledSelection.getName() );
+      getLog().logBasic( "Moving the slave server " + leveledSelection.getName() + " to project" );
+      delegates.slaves.moveToProject( slaveServerManager, slaveServer );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving slave servers", e );
+    }
+  }
+
+  /**
+   * Copy the slaveServer to global level
+   */
+  public void copySlaveServerToGlobal() {
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    SlaveServerManagementInterface slaveServerManager = null;
+    SlaveServer slaveServer = null;
+    try {
+      slaveServerManager = getSlaveServerManager( leveledSelection.getLevel() );
+      slaveServer = slaveServerManager.get( leveledSelection.getName() );
+      getLog().logBasic( "Moving the slave server " + leveledSelection.getName() + " to global" );
+      delegates.slaves.copyToGlobal( slaveServerManager, slaveServer );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving slave servers", e );
+    }
+  }
+
+  /**
+   * Copy the slaveServer to project
+   */
+  public void copySlaveServerToProject() {
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    SlaveServerManagementInterface slaveServerManager = null;
+    SlaveServer slaveServer = null;
+    try {
+      slaveServerManager = getSlaveServerManager( leveledSelection.getLevel() );
+      slaveServer = slaveServerManager.get( leveledSelection.getName() );
+      getLog().logBasic( "Moving the slave server " + leveledSelection.getName() + " to project" );
+      delegates.slaves.copyToProject( slaveServerManager, slaveServer );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving slave servers", e );
+    }
+  }
+
+  public void dupeSlaveServer() {
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    SlaveServerManagementInterface slaveServerManager = null;
+    SlaveServer slaveServer = null;
+    try {
+      slaveServerManager = getSlaveServerManager( leveledSelection.getLevel() );
+      slaveServer = slaveServerManager.get( leveledSelection.getName() );
+      getLog().logBasic( "Moving the slave server " + leveledSelection.getName() + " to project" );
+      delegates.slaves.dupeSlaveServer( slaveServerManager, slaveServer );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving slave servers", e );
+    }
+  }
   public void editStep() {
     final TransMeta transMeta = (TransMeta) selectionObjectParent;
     final StepMeta stepMeta = (StepMeta) selectionObject;
@@ -3064,20 +3143,66 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     monitorClusterSchema( clusterSchema );
   }
 
+  /**
+   * Edit the Slave server configuration
+   */
   public void editSlaveServer() {
-    final SlaveServer slaveServer = (SlaveServer) selectionObject;
-    editSlaveServer( slaveServer );
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    editSlaveServer( leveledSelection );
+  }
+
+  private void editSlaveServer( SpoonTreeLeveledSelection leveledSelection ) {
+    SlaveServerManagementInterface slaveServerManager = null;
+    SlaveServer slaveServer = null;
+    try {
+      slaveServerManager = getSlaveServerManager( leveledSelection.getLevel() );
+      slaveServer = slaveServerManager.get( leveledSelection.getName() );
+      delegates.slaves.edit( slaveServerManager, slaveServer );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving slave servers", e );
+    }
+  }
+
+  private SlaveServerManagementInterface getSlaveServerManager( LeveledTreeNode.LEVEL level ) throws KettleException {
+    if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
+      return managementBowl.getManager( SlaveServerManagementInterface.class );
+    } else if ( level == LeveledTreeNode.LEVEL.GLOBAL ) {
+      return DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class );
+    } else if ( level == LeveledTreeNode.LEVEL.LOCAL ) {
+      AbstractMeta meta = getActiveAbstractMeta();
+      return meta != null ? meta.getSlaveServerManagementInterface() : null;
+    } else {
+      // shouldn't happen.
+      return null;
+    }
   }
 
   public void delSlaveServer() {
-    final HasSlaveServersInterface hasSlaveServersInterface = (HasSlaveServersInterface) selectionObjectParent;
-    final SlaveServer slaveServer = (SlaveServer) selectionObject;
-    delSlaveServer( hasSlaveServersInterface, slaveServer );
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    SlaveServerManagementInterface slaveServerManager = null;
+    SlaveServer slaveServer = null;
+    try {
+      slaveServerManager = getSlaveServerManager( leveledSelection.getLevel() );
+      slaveServer = slaveServerManager.get( leveledSelection.getName() );
+
+      delegates.slaves.delSlaveServer( slaveServerManager, slaveServer );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
+    }
+
   }
 
   public void addSpoonSlave() {
-    final SlaveServer slaveServer = (SlaveServer) selectionObject;
-    addSpoonSlave( slaveServer );
+    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
+    SlaveServerManagementInterface slaveServerManager = null;
+    SlaveServer slaveServer = null;
+    try {
+      slaveServerManager = getSlaveServerManager( leveledSelection.getLevel() );
+      slaveServer = slaveServerManager.get( leveledSelection.getName() );
+      delegates.slaves.addSpoonSlave( slaveServer );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving slave servers", e );
+    }
   }
 
   private synchronized void setMenu( Tree tree ) {
@@ -3136,6 +3261,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           spoonMenu = (XulMenupopup) menuMap.get( "cluster-schema-inst" );
         } else if ( STRING_SLAVES.equals( leveledSelection.getType() ) ) {
           spoonMenu = (XulMenupopup) menuMap.get( "slave-server-inst" );
+          new TreePopupMenuProvider().createSlaveServerMenuItems( mainSpoonContainer, leveledSelection );
         }
       } else if ( selection instanceof StepMeta ) {
         spoonMenu = (XulMenupopup) menuMap.get( "step-inst" );
@@ -3253,6 +3379,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+
   private DatabaseManagementInterface getDbManager( LeveledTreeNode.LEVEL level ) throws KettleException {
     if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
       return managementBowl.getManager( DatabaseManagementInterface.class );
@@ -3322,7 +3449,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         newClusteringSchema( (TransMeta) parent );
       }
       if ( selection.equals( SlaveServer.class ) ) {
-        newSlaveServer( (HasSlaveServersInterface) parent );
+        newSlaveServer();
       }
     } else {
       if ( selection instanceof TransMeta ) {
@@ -3360,6 +3487,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           delegates.db.editConnection( dbManager, databaseMeta );
         }
         // TODO: other shared object types should move in here in their respective stories
+        if ( STRING_SLAVES.equals( leveledSelection.getType() ) ) {
+          editSlaveServer( leveledSelection );
+        }
+
+
       }
       if ( selection instanceof StepMeta ) {
         StepMeta step = (StepMeta) selection;
@@ -3377,9 +3509,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       if ( selection instanceof ClusterSchema ) {
         delegates.clusters.editClusterSchema( (TransMeta) parent, (ClusterSchema) selection );
-      }
-      if ( selection instanceof SlaveServer ) {
-        editSlaveServer( (SlaveServer) selection );
       }
 
       editSelectionTreeExtension( object.getTreeItem(), selection );
@@ -8826,29 +8955,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    */
   public void newClusteringSchema( TransMeta transMeta ) {
     delegates.clusters.newClusteringSchema( transMeta );
-  }
-
-  /**
-   * This creates a slave server, edits it and adds it to the transformation metadata
-   *
-   */
-  public void newSlaveServer( HasSlaveServersInterface hasSlaveServersInterface ) {
-    delegates.slaves.newSlaveServer( hasSlaveServersInterface );
-  }
-
-  public void delSlaveServer( HasSlaveServersInterface hasSlaveServersInterface, SlaveServer slaveServer ) {
-    try {
-      delegates.slaves.delSlaveServer( hasSlaveServersInterface, slaveServer );
-    } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingSlave.Title" ), BaseMessages
-        .getString( PKG, "Spoon.Dialog.ErrorDeletingSlave.Message" ), e );
-    }
-  }
-
-  protected void editSlaveServer( SlaveServer slaveServer ) {
-     List<SlaveServer> existingServers = getActiveAbstractMeta().getSlaveServers();
-    // List<SlaveServer> existingServers = pickupSlaveServers( getActiveAbstractMeta() );
-    delegates.slaves.edit( slaveServer, existingServers );
   }
 
   /**
