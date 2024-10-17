@@ -16,9 +16,9 @@
  */
 package org.pentaho.di.repository.pur;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -38,7 +38,7 @@ import org.pentaho.platform.security.userroledao.ws.ProxyPentahoUser;
 import org.pentaho.platform.security.userroledao.ws.UserRoleException;
 import org.pentaho.platform.security.userroledao.ws.UserRoleSecurityInfo;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 

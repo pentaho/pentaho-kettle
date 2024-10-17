@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2002 - 2024 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -25,8 +25,8 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.CarteServlet;

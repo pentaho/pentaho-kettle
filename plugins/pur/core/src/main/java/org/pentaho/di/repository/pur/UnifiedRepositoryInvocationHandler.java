@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2024 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.ConnectException;
 
-import com.sun.xml.ws.client.ClientTransportException;
+import jakarta.xml.ws.WebServiceException;
 import org.pentaho.di.repository.KettleAuthenticationException;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 
@@ -66,7 +66,7 @@ class UnifiedRepositoryInvocationHandler<T> implements InvocationHandler {
 
   private boolean lookupAuthenticationException( Throwable root ) {
     while ( root != null ) {
-      if ( root instanceof ClientTransportException ) {
+      if ( root instanceof WebServiceException ) {
         return true;
       } else {
         root = root.getCause();

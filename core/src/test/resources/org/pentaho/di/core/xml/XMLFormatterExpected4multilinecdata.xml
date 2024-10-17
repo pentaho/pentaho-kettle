@@ -1,4 +1,4 @@
-<class_source><![CDATA[ import java.util.*;
+<class_source> import java.util.*;
 
 private int yearIndex;
 private Calendar calendar;
@@ -13,9 +13,9 @@ public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws K
   }
 
   if (first) {
-     yearIndex = getInputRowMeta().indexOfValue(getParameter("YEAR"));
-     if (yearIndex<0) {
-         throw new KettleException("Year field not found in the input row, check parameter 'YEAR'!");
+     yearIndex = getInputRowMeta().indexOfValue(getParameter(&quot;YEAR&quot;));
+     if (yearIndex &lt; 0) {
+         throw new KettleException(&quot;Year field not found in the input row, check parameter 'YEAR'!&quot;);
      }
 
      calendar = Calendar.getInstance();
@@ -52,4 +52,4 @@ private Date easterDate(int year) {
  
  calendar.set(year, (int)(Math.floor(n / 31) - 1), (int)((n % 31) + 1));
  return calendar.getTime();
-}]]></class_source>
+}</class_source>

@@ -28,7 +28,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
-import javax.xml.ws.WebServiceException;
+import jakarta.xml.ws.WebServiceException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;

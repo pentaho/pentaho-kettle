@@ -20,6 +20,7 @@
 
     <pdi.version>10.3.0.0-SNAPSHOT</pdi.version>
     <com.force.api.version>54.0.0</com.force.api.version>
+    <jakarta.xml.soap-api.version>3.0.0</jakarta.xml.soap-api.version>
   </properties>
 
   <build>
@@ -89,6 +90,11 @@
     <dependency>
       <groupId>jakarta.xml.ws</groupId>
       <artifactId>jakarta.xml.ws-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.soap</groupId>
+      <artifactId>jakarta.xml.soap-api</artifactId>
+      <version>${jakarta.xml.soap-api.version}</version>
     </dependency>
 
     <dependency>
