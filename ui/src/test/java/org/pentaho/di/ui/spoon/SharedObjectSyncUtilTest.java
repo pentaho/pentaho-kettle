@@ -22,27 +22,18 @@
 
 package org.pentaho.di.ui.spoon;
 
-import static org.mockito.Mockito.mock;
-
-import java.util.Collections;
-import java.util.UUID;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
 import org.apache.commons.vfs2.FileObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
 
-import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -63,6 +54,20 @@ import org.pentaho.di.ui.spoon.delegates.SpoonJobDelegate;
 import org.pentaho.di.ui.spoon.delegates.SpoonPartitionsDelegate;
 import org.pentaho.di.ui.spoon.delegates.SpoonSlaveDelegate;
 import org.pentaho.di.ui.spoon.delegates.SpoonTransformationDelegate;
+
+import java.util.Collections;
+import java.util.UUID;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -116,7 +121,9 @@ public class SharedObjectSyncUtilTest {
     }
   }
 
- /* @Test
+
+  @Ignore( "Need to figure out if we need to handle syning of sharedobjects when connected to repository" )
+  @Test
   public void synchronizeSlaveServerRenameRepository() throws Exception {
     try {
       spoon.rep = repository;
@@ -147,10 +154,10 @@ public class SharedObjectSyncUtilTest {
     }
   }
 
-
+  @Ignore( "Need to figure out if we need to handle syning of sharedobjects when connected to repository" )
   @Test
   public void synchronizeSlaveServerDeleteFromRepository() throws Exception {
-    try {
+   /* try {
       spoon.rep = repository;
       when( spoon.getRepository() ).thenReturn( repository );
 
@@ -188,8 +195,8 @@ public class SharedObjectSyncUtilTest {
     } finally {
       spoon.rep = null;
       when( spoon.getRepository() ).thenReturn( null );
-    }
-  }*/
+    }*/
+  }
 
   @Test
   public void synchronizePartitionSchemasDeleteFromRepository() throws Exception {

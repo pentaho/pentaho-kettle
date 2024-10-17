@@ -69,7 +69,6 @@ public class SlavesFolderProvider extends TreeFolderProvider {
       if ( currentBowl != DefaultBowl.getInstance() ) {
         SlaveServerManagementInterface slaveServerManager = currentBowl.getManager( SlaveServerManagementInterface.class );
         List<SlaveServer> slaveServers = slaveServerManager.getAll();
-        slaveServers.sort( ( s1, s2 ) -> String.CASE_INSENSITIVE_ORDER.compare( s1.getName(), s2.getName() ) );
 
         for ( SharedObjectInterface sharedObject : slaveServers ) {
           if ( !filterMatch( sharedObject.getName(), filter ) ) {
@@ -85,7 +84,6 @@ public class SlavesFolderProvider extends TreeFolderProvider {
       SlaveServerManagementInterface globalServerMgr = DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class );
       Set<String> globalServerNames = new HashSet<>();
       List<SlaveServer> servers = globalServerMgr.getAll();
-      servers.sort( ( s1, s2 ) -> String.CASE_INSENSITIVE_ORDER.compare( s1.getName(), s2.getName() ) );
       for ( SharedObjectInterface slaveServer : servers ) {
         if ( !filterMatch( slaveServer.getName(), filter ) ) {
           continue;

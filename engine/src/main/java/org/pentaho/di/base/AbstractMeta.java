@@ -26,9 +26,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import org.pentaho.di.cluster.SlaveServerManagementInterface;
-import org.pentaho.di.shared.PassthroughSlaveServerManager;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -81,6 +80,7 @@ import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.DelegatingSharedObjectsIO;
 import org.pentaho.di.shared.MemorySharedObjectsIO;
 import org.pentaho.di.shared.PassthroughDbConnectionManager;
+import org.pentaho.di.shared.PassthroughSlaveServerManager;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.shared.SharedObjectsIO;
@@ -260,7 +260,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
       new DelegatingSharedObjectsIO( bowl.getSharedObjectsIO(), localSharedObjects );
   protected DatabaseManagementInterface readDbManager = new PassthroughDbConnectionManager( combinedSharedObjects );
 
-  protected SlaveServerManagementInterface readSharedObjectsManager = new PassthroughSlaveServerManager( combinedSharedObjects );
+  protected SlaveServerManagementInterface readSlaveServerManager = new PassthroughSlaveServerManager( combinedSharedObjects );
 
   protected void initializeLocalDatabases() {
     // NOTE: this has to assign new objects, not just clear existing ones, because it is used in clone(), and
@@ -306,8 +306,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   }
 
   protected final DatabaseManagementInterface localDbMgr = new MetaDatabaseManager( localSharedObjects );
-  protected final SlaveServerManagementInterface localSharedObjectsMgr = new PassthroughSlaveServerManager( localSharedObjects );
-
+  protected final SlaveServerManagementInterface localSlaveServerMgr = new PassthroughSlaveServerManager( localSharedObjects );
   @Override
   public ObjectId getObjectId() {
     return objectId;
@@ -473,7 +472,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     this.bowl = Objects.requireNonNull( bowl );
     combinedSharedObjects = new DelegatingSharedObjectsIO( bowl.getSharedObjectsIO(), localSharedObjects );
     readDbManager = new PassthroughDbConnectionManager( combinedSharedObjects );
-    readSharedObjectsManager = new PassthroughSlaveServerManager( combinedSharedObjects );
+    readSlaveServerManager = new PassthroughSlaveServerManager( combinedSharedObjects );
   }
 
   /**
@@ -766,7 +765,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public void addOrReplaceSlaveServer( SlaveServer slaveServer ) {
     try {
-      localSharedObjectsMgr.add( slaveServer );
+      localSlaveServerMgr.add( slaveServer );
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logBasic( exception.getMessage(), exception );
     }
@@ -781,7 +780,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   @Override
   public List<SlaveServer> getSlaveServers() {
     try {
-      List<SlaveServer> slaveServers = readSharedObjectsManager.getAll();
+      List<SlaveServer> slaveServers = readSlaveServerManager.getAll();
       return slaveServers;
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( exception.getMessage(), exception );
@@ -796,9 +795,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public void setSlaveServers( List<SlaveServer> slaveServers ) {
     try {
-      localSharedObjectsMgr.clear();
+      localSlaveServerMgr.clear();
       for ( SlaveServer slaveServer : slaveServers ) {
-        localSharedObjectsMgr.add( slaveServer );
+        localSlaveServerMgr.add( slaveServer );
       }
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( exception.getMessage(), exception );
@@ -813,7 +812,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public SlaveServer findSlaveServer( String serverString ) {
     try {
-      List<SlaveServer> slaveServers = readSharedObjectsManager.getAll();
+      List<SlaveServer> slaveServers = readSlaveServerManager.getAll();
       for ( SlaveServer slaveServer : slaveServers ) {
         if ( ( slaveServer != null ) && ( slaveServer.getName() != null && slaveServer.getName().equalsIgnoreCase( serverString ) ) ) {
           return slaveServer;
@@ -832,7 +831,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public String[] getSlaveServerNames() {
     try {
-      List<SlaveServer> slaveServers = readSharedObjectsManager.getAll();
+      List<SlaveServer> slaveServers = readSlaveServerManager.getAll();
       return slaveServers.stream().map( SlaveServer::getName ).toArray( String[]::new );
     } catch ( KettleException ex ) {
       return null;
@@ -2286,7 +2285,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    * @return SharedObjectsManagementInterface
    */
   public SlaveServerManagementInterface getSlaveServerManagementInterface() {
-    return localSharedObjectsMgr;
+    return localSlaveServerMgr;
   }
 }
 
