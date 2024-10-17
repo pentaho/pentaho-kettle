@@ -129,6 +129,7 @@ public class ConnectionManager {
           for ( ConnectionDetails details : factory.getElements() ) {
             String name = details.getName();
             names.add( name );
+            EncryptUtils.decryptFields( details );
             detailsByName.put( name, details );
           }
           namesByConnectionProvider.put( provider.getName(), names );
