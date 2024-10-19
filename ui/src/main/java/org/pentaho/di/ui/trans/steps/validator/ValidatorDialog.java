@@ -1209,10 +1209,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
       selectedField.setSourcingValues( wSourceValues.getSelection() );
       selectedField.setSourcingField( wSourceField.getText() );
       selectedField.setSourcingStep( transMeta.findStep( wSourceStep.getText() ) );
-
-      // Save the old info in the map
-      //
-      // selectionList.add(selectedField);
+      selectedField.setSourcingStepName( wSourceStep.getText() );
     }
   }
 
