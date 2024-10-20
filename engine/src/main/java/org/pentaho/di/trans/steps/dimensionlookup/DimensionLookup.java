@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -798,8 +798,13 @@ public class DimensionLookup extends BaseDatabaseStep implements StepInterface {
 
     outputRow[ outputIndex++ ] = data.returnRowMeta.getInteger( returnRow, inputIndex++ );
 
-    // skip the version in the input
-    inputIndex++;
+    if ( meta.isPreloadingCache() ) {
+      // skip the key fields in the input (there is no version in the preload cache)
+      inputIndex += data.preloadKeyIndexes.length;
+    } else {
+      // skip the version in the input (for running cache and updates only)
+      inputIndex++;
+    }
 
     // Then get the "extra fields"...
     // don't return date from-to fields, they can be returned when explicitly
