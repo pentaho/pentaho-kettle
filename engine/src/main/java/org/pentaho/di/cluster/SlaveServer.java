@@ -114,7 +114,7 @@ import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace,
+public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface<SlaveServer>, VariableSpace,
   RepositoryElementInterface, XMLInterface {
   private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!
 
@@ -1409,5 +1409,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     } finally {
       lock.readLock().unlock();
     }
+  }
+  @Override
+  public SlaveServer makeClone() {
+    return (SlaveServer) clone();
+  }
+
+  @Override
+  public Node toNode() throws KettleException {
+    Document doc = XMLHandler.loadXMLString( getXML() );
+    return XMLHandler.getSubNode( doc, XML_TAG );
   }
 }

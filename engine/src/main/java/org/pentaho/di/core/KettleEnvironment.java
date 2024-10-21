@@ -50,6 +50,8 @@ import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.DatabaseConnectionManager;
 import org.pentaho.di.shared.DatabaseManagementInterface;
+import org.pentaho.di.cluster.SlaveServerManager;
+import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.trans.step.RowDistributionPluginType;
 
 import java.util.Arrays;
@@ -269,5 +271,8 @@ public class KettleEnvironment {
   private static void registerSharedObjectManagersWithBowl(){
     BowlManagerFactoryRegistry.getInstance().registerManagerFactory( DatabaseManagementInterface.class,
                         new DatabaseConnectionManager.DbConnectionManagerFactory() );
+    BowlManagerFactoryRegistry.getInstance().registerManagerFactory( SlaveServerManagementInterface.class,
+      new SlaveServerManager.SlaveServerManagerFactory() );
+
   }
 }

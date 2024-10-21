@@ -47,6 +47,7 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.SlaveServerDetection;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -57,7 +58,7 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 17-nov-2006
  */
-public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace,
+public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjectInterface<ClusterSchema>, VariableSpace,
   RepositoryElementInterface, XMLInterface {
   private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!
 
@@ -526,5 +527,16 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
    */
   public void setChangedDate( Date changedDate ) {
     this.changedDate = changedDate;
+  }
+
+  @Override
+  public ClusterSchema makeClone() {
+    return (ClusterSchema)clone();
+  }
+
+  @Override
+  public Node toNode() throws KettleException {
+    Document doc = XMLHandler.loadXMLString( getXML() );
+    return XMLHandler.getSubNode( doc, XML_TAG );
   }
 }
