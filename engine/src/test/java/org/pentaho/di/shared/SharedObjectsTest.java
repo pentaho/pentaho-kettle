@@ -41,7 +41,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 import org.junit.Assert;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * SharedObjects tests
@@ -113,7 +116,7 @@ public class SharedObjectsTest {
 
   }
 
-  private static class TestSharedObject extends SharedObjectBase implements SharedObjectInterface {
+  private static class TestSharedObject extends SharedObjectBase implements SharedObjectInterface<TestSharedObject> {
 
     private String name, xml;
 
@@ -132,6 +135,15 @@ public class SharedObjectsTest {
       return xml;
     }
 
+    @Override
+    public TestSharedObject makeClone() {
+      return null;
+    }
+
+    @Override
+    public Node toNode() throws KettleException {
+      return null;
+    }
   }
 
 }
