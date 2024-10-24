@@ -13,6 +13,10 @@
   <artifactId>email-messages-plugins-impl</artifactId>
   <name>PDI Email Messages and Get mails Plugins Impl</name>
 
+  <properties>
+    <javax.activation.version>1.1.1</javax.activation.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -48,6 +52,11 @@
       <artifactId>kettle-engine</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>${javax.activation.version}</version>
     </dependency>
   </dependencies>
 </project>
