@@ -920,7 +920,7 @@ public class TransDialog extends Dialog {
           try {
             DatabaseManagementInterface dbMgr =
               Spoon.getInstance().getBowl().getManager( DatabaseManagementInterface.class );
-            dbMgr.addDatabase( getDatabaseDialog().getDatabaseMeta() );
+            dbMgr.add( getDatabaseDialog().getDatabaseMeta() );
           } catch ( KettleException dbe ) {
             new ErrorDialog(
               shell, BaseMessages.getString( PKG, "TransDialog.ErrorAddingDatabase.Title" ), BaseMessages

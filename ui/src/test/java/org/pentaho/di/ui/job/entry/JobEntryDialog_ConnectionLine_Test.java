@@ -93,8 +93,8 @@ public class JobEntryDialog_ConnectionLine_Test {
   public void perTestTeardown() throws KettleException {
     clearInvocations( mockSpoon );
     clearInvocations( mockDialog );
-    for ( DatabaseMeta db : dbMgr.getDatabases() ) {
-      dbMgr.removeDatabase( db );
+    for ( DatabaseMeta db : dbMgr.getAll() ) {
+      dbMgr.remove( db );
     }
   }
 
@@ -127,7 +127,7 @@ public class JobEntryDialog_ConnectionLine_Test {
   @Test
   public void ignoresAdd_WhenConnectionNameIsNull() throws Exception {
     JobMeta jobMeta = new JobMeta();
-    dbMgr.addDatabase( createDefaultDatabase() );
+    dbMgr.add( createDefaultDatabase() );
 
     invokeAddConnectionListener( jobMeta, null );
 
@@ -141,14 +141,14 @@ public class JobEntryDialog_ConnectionLine_Test {
     DatabaseMeta db = createDefaultDatabase();
 
     jobMeta.addDatabase( db );
-    dbMgr.addDatabase( db );
+    dbMgr.add( db );
     assertTotalDbs( jobMeta, 2 );
     assertNumberOfGlobalDBs( 1 );
     assertNumberOfLocalDBs( jobMeta, 1 );
 
     invokeEditConnectionListener( jobMeta, INITIAL_NAME );
 
-    DatabaseMeta localDb = jobMeta.getDatabaseManagementInterface().getDatabase( INITIAL_NAME );
+    DatabaseMeta localDb = jobMeta.getDatabaseManagementInterface().get( INITIAL_NAME );
     DatabaseMeta globalDb =
       jobMeta.getDatabases().stream().filter( databaseMeta -> databaseMeta.getName().equals( INITIAL_NAME ) )
         .findFirst().get();
@@ -176,7 +176,7 @@ public class JobEntryDialog_ConnectionLine_Test {
   @Test
   public void edits_WhenNewNameIsUnique() throws Exception {
     JobMeta jobMeta = new JobMeta();
-    dbMgr.addDatabase( createDefaultDatabase() );
+    dbMgr.add( createDefaultDatabase() );
 
     invokeEditConnectionListener( jobMeta, INPUT_NAME );
 
@@ -202,7 +202,7 @@ public class JobEntryDialog_ConnectionLine_Test {
   @Test
   public void ignores_EditToGlobalConnectionWhenNewNameIsNull() throws Exception {
     JobMeta jobMeta = new JobMeta();
-    dbMgr.addDatabase( createDefaultDatabase() );
+    dbMgr.add( createDefaultDatabase() );
 
     invokeEditConnectionListener( jobMeta, null );
 
@@ -276,7 +276,7 @@ public class JobEntryDialog_ConnectionLine_Test {
     localDb.setName( INPUT_NAME );
 
     JobMeta jobMeta = new JobMeta();
-    dbMgr.addDatabase( globalDb );
+    dbMgr.add( globalDb );
     jobMeta.addDatabase( localDb );
     assertNumberOfGlobalDBs( 1 );
     assertNumberOfLocalDBs( jobMeta, 1 );
@@ -326,9 +326,9 @@ public class JobEntryDialog_ConnectionLine_Test {
     db3.setHostname( INITIAL_HOST );
 
     JobMeta jobMeta = new JobMeta();
-    dbMgr.addDatabase( db1 );
-    dbMgr.addDatabase( db2 );
-    dbMgr.addDatabase( db3 );
+    dbMgr.add( db1 );
+    dbMgr.add( db2 );
+    dbMgr.add( db3 );
 
     final String expectedResult = INITIAL_NAME + "2";
 
@@ -366,7 +366,7 @@ public class JobEntryDialog_ConnectionLine_Test {
     } else if ( level.equals( "local" ) ) {
       testDbMgr = jobMeta.getDatabaseManagementInterface();
     }
-    testDbMgr.addDatabase( db );
+    testDbMgr.add( db );
 
     DatabaseDialog databaseDialog = mock( DatabaseDialog.class );
     when( databaseDialog.open() )
@@ -398,8 +398,8 @@ public class JobEntryDialog_ConnectionLine_Test {
     } else if ( level.equals( "local" ) ) {
       testDbMgr = jobMeta.getDatabaseManagementInterface();
     }
-    testDbMgr.addDatabase( db1 );
-    testDbMgr.addDatabase( db2 );
+    testDbMgr.add( db1 );
+    testDbMgr.add( db2 );
 
     final String expectedResult = INPUT_NAME + "2";
 
@@ -445,7 +445,7 @@ public class JobEntryDialog_ConnectionLine_Test {
     when( databaseDialog.getDatabaseMeta() ).thenReturn( createDefaultDatabase() );
 
     DatabaseMeta db = createDefaultDatabase();
-    testDbMgr.addDatabase( db );
+    testDbMgr.add( db );
 
     mockDialog.databaseDialog = databaseDialog;
     mockDialog.jobMeta = jobMeta;
@@ -460,15 +460,15 @@ public class JobEntryDialog_ConnectionLine_Test {
 
   private void assertTotalDbs( JobMeta jobMeta, int expected ) throws KettleException {
     assertEquals( expected,
-      jobMeta.getDatabaseManagementInterface().getDatabases().size() + dbMgr.getDatabases().size() );
+      jobMeta.getDatabaseManagementInterface().getAll().size() + dbMgr.getAll().size() );
   }
 
   private void assertNumberOfGlobalDBs( int expected ) throws KettleException {
-    assertEquals( expected, dbMgr.getDatabases().size() );
+    assertEquals( expected, dbMgr.getAll().size() );
   }
 
   private void assertNumberOfLocalDBs( JobMeta jobMeta, int expected ) throws KettleException {
-    assertEquals( expected, jobMeta.getDatabaseManagementInterface().getDatabases().size() );
+    assertEquals( expected, jobMeta.getDatabaseManagementInterface().getAll().size() );
   }
 
   private void invokeAddConnectionListener( JobMeta jobMeta, String answeredName ) {

@@ -278,6 +278,12 @@
 
   <menupopup id="cluster-schema-inst">
     <menuitem id="cluster-schema-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editClusterSchema()" />
+    <menuitem id="cluster-schema-inst-move-project" label="${Spoon.Menu.Popup.CLUSTERS.MoveToProject}" command="spoon.moveClusterSchemaToProject()" />
+    <menuitem id="cluster-schema-inst-move-global" label="${Spoon.Menu.Popup.CLUSTERS.MoveToGlobal}" command="spoon.moveClusterSchemaToGlobal()" />
+    <menuitem id="cluster-schema-inst-copy-project" label="${Spoon.Menu.Popup.CLUSTERS.CopyToProject}" command="spoon.copyClusterSchemaToProject()" />
+    <menuitem id="cluster-schema-inst-copy-global" label="${Spoon.Menu.Popup.CLUSTERS.CopyToGlobal}" command="spoon.copyClusterSchemaToGlobal()" />
+    <menuitem id="cluster-schema-inst-duplicate-project" label="${Spoon.Menu.Popup.CLUSTERS.DuplicateInProject}" command="spoon.dupeClusterSchema()" />
+    <menuitem id="cluster-schema-inst-duplicate-global" label="${Spoon.Menu.Popup.CLUSTERS.DuplicateInGlobal}" command="spoon.dupeClusterSchema()" />
     <menuitem id="cluster-schema-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delClusterSchema()" />
     <menuitem id="cluster-schema-inst-monitor" label="${Spoon.Menu.Popup.CLUSTERS.Monitor}" command="spoon.monitorClusterSchema()" />
   </menupopup>
@@ -288,7 +294,8 @@
     <menuitem id="slave-server-inst-move-global" label="${Spoon.Menu.Popup.SLAVE_SERVER.MoveToGlobal}" command="spoon.moveSlaveServerToGlobal()" />
     <menuitem id="slave-server-inst-copy-project" label="${Spoon.Menu.Popup.SLAVE_SERVER.CopyToProject}" command="spoon.copySlaveServerToProject()" />
     <menuitem id="slave-server-inst-copy-global" label="${Spoon.Menu.Popup.SLAVE_SERVER.CopyToGlobal}" command="spoon.copySlaveServerToGlobal()" />
-    <menuitem id="slave-server-inst-duplicate" label="${Spoon.Menu.Popup.SLAVE_SERVER.Duplicate}" command="spoon.dupeSlaveServer()" />
+    <menuitem id="slave-server-inst-duplicate-project" label="${Spoon.Menu.Popup.SLAVE_SERVER.DuplicateInProject}" command="spoon.dupeSlaveServer()" />
+    <menuitem id="slave-server-inst-duplicate-global" label="${Spoon.Menu.Popup.SLAVE_SERVER.DuplicateInGlobal}" command="spoon.dupeSlaveServer()" />
     <menuitem id="slave-server-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delSlaveServer()" />
     <menuitem id="slave-server-inst-monitor" label="${Spoon.Menu.Popup.SLAVE_SERVER.Monitor}" command="spoon.addSpoonSlave()" />
   </menupopup>

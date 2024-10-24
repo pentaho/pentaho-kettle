@@ -192,8 +192,8 @@ public class StreamToJobNodeConverter implements Converter {
     if ( updateMeta ) {
       DatabaseMeta dbMetaToReplace = jobMeta.getDatabase( indexToReplace );
       dbMetaToReplace.setObjectId( repo.getDatabaseID( dbMetaToReplace.getName() ) );
-      jobMeta.getDatabaseManagementInterface().removeDatabase( dbMetaToReplace );
-      jobMeta.getDatabaseManagementInterface().addDatabase( dbMetaToReplace );
+      jobMeta.getDatabaseManagementInterface().remove( dbMetaToReplace );
+      jobMeta.getDatabaseManagementInterface().add( dbMetaToReplace );
     }
     // Store the slave servers...
     //

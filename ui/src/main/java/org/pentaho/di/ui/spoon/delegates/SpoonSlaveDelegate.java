@@ -23,19 +23,17 @@
 package org.pentaho.di.ui.spoon.delegates;
 
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
-import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.TreeUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonSlave;
@@ -49,8 +47,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
+
 /**
- * Spoon delegate class that handles all the right click popup menu actions in the Slave Server node in configuration tree
+ * Spoon delegate class that handles all the right click popup menu actions in the Slave Server node in configuration
+ * tree
  */
 public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
@@ -80,7 +82,8 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
     tabfolder.setSelected( idx );
   }
 
-  public void delSlaveServer( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer  ) throws KettleException {
+  public void delSlaveServer( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer  )
+      throws KettleException {
 
     MessageBox mb = new MessageBox( spoon.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
     mb.setMessage( BaseMessages.getString( PKG, "Spoon.Message.DeleteSlaveServerAsk.Message", slaveServer.getName() ) );
@@ -114,8 +117,10 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
   public void newSlaveServer() {
     SlaveServer slaveServer = new SlaveServer();
     try {
-      SlaveServerManagementInterface slaveServerManagementInterface = spoon.getBowl().getManager( SlaveServerManagementInterface.class );
-      SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), slaveServer, slaveServerManagementInterface.getAll() );
+      SlaveServerManagementInterface slaveServerManagementInterface =
+        spoon.getBowl().getManager( SlaveServerManagementInterface.class );
+      SlaveServerDialog dialog =
+        new SlaveServerDialog( spoon.getShell(), slaveServer, slaveServerManagementInterface.getAll() );
       if ( dialog.open() ) {
         spoon.getLog().logBasic( "Creating a new Slave Server " + slaveServer.getName() );
         slaveServerManagementInterface.add( slaveServer );
@@ -184,70 +189,39 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
     }
   }
 
-  public void moveToGlobal( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer ) throws KettleException {
-    moveCopy( slaveServerManager, DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class ), slaveServer, true );
+  public void moveToGlobal( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer )
+      throws KettleException {
+    moveCopy( slaveServerManager, DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class ),
+              slaveServer, true, "Spoon.Message.OverwriteSlaveServerYN" );
   }
 
-  public void moveToProject( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer ) throws KettleException {
-    moveCopy( slaveServerManager, spoon.getBowl().getManager( SlaveServerManagementInterface.class ), slaveServer, true );
+  public void moveToProject( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer )
+      throws KettleException {
+    moveCopy( slaveServerManager, spoon.getBowl().getManager( SlaveServerManagementInterface.class ), slaveServer, true,
+              "Spoon.Message.OverwriteSlaveServerYN" );
   }
 
-  public void copyToGlobal( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer ) throws KettleException {
-    moveCopy( slaveServerManager, DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class ), slaveServer, false );
+  public void copyToGlobal( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer )
+      throws KettleException {
+    moveCopy( slaveServerManager, DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class ),
+              slaveServer, false, "Spoon.Message.OverwriteSlaveServerYN" );
   }
 
-  public void copyToProject( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer ) throws KettleException {
-    moveCopy( slaveServerManager, spoon.getBowl().getManager( SlaveServerManagementInterface.class ), slaveServer, false );
-  }
-
-  public void moveCopy( SlaveServerManagementInterface srcSlaveManager, SlaveServerManagementInterface targetSlaveManager,
-                          SlaveServer slaveServer, boolean deleteFromSource ) throws KettleException {
-    try {
-      // If slave server already exist, prompt for overwrite
-      if ( slaveServer.findSlaveServer( targetSlaveManager.getAll(), slaveServer.getName() ) != null ) {
-        if ( !shouldOverwrite( BaseMessages.getString( PKG, "Spoon.Message.OverwriteSlaveServerYN", slaveServer.getName() ) ) ) {
-          return;
-        }
-      }
-      // Add the SlaveServer to target
-      targetSlaveManager.add( slaveServer );
-      if ( deleteFromSource ) {
-        srcSlaveManager.remove( slaveServer );
-      }
-      refreshTree();
-    } catch ( Exception exception ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ),
-        BaseMessages.getString( PKG, "Spoon.Dialog.UnexpectedDbError.Message", slaveServer.getName() ), exception );
-    }
+  public void copyToProject( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer )
+      throws KettleException {
+    moveCopy( slaveServerManager, spoon.getBowl().getManager( SlaveServerManagementInterface.class ), slaveServer,
+              false, "Spoon.Message.OverwriteSlaveServerYN" );
   }
 
   public void dupeSlaveServer( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer ) {
-    String originalName = slaveServer.getName().trim();
-
-    try {
-      List<SlaveServer> slaveServers = slaveServerManager.getAll();
-      Set<String> serverNames = getSlaveServerNames( slaveServers );
-
-      //Clone the SlaveServer
-      SlaveServer slaveServerCopy = (SlaveServer) slaveServer.clone();
-      String newName = TreeUtil.findUniqueSuffix( originalName, serverNames );
-      slaveServerCopy.setName( newName );
-
-      SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), slaveServerCopy, slaveServers );
+    ShowEditDialog<SlaveServer> sed = ( ss, servers ) -> {
+      SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), ss, servers );
       if ( dialog.open() ) {
-        String newServerName = slaveServerCopy.getName().trim();
-        slaveServerManager.add( slaveServerCopy );
+        String newServerName = ss.getName().trim();
+        slaveServerManager.add( ss );
       }
-      refreshTree();
-      spoon.refreshGraph();
-    } catch ( Exception exception ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ),
-        BaseMessages.getString( PKG, "Spoon.Dialog.UnexpectedDbError.Message", slaveServer.getName() ), exception );
-    }
-  }
-
-  private Set<String> getSlaveServerNames( List<SlaveServer> servers ) {
-    return servers.stream().map( SlaveServer::getName ).collect( Collectors.toSet() );
+    };
+    dupeSharedObject( slaveServerManager, slaveServer, sed );
   }
 
   private void showSaveErrorDialog( SlaveServer slaveServer, Exception e ) {
@@ -256,19 +230,8 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
         BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Message", slaveServer.getName() ), e );
   }
 
-  protected boolean shouldOverwrite( String message ) {
-    MessageBox mb = new MessageBox( spoon.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-    mb.setMessage( message );
-    mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteTransformation.Title" ) );
-    int response = mb.open();
-
-    if ( response != SWT.YES ) {
-      return false;
-    }
-    return true;
-  }
-
-  private void refreshTree() {
+  @Override
+  protected void refreshTree() {
     spoon.refreshTree( SlavesFolderProvider.STRING_SLAVES );
   }
 }

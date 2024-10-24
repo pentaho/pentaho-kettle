@@ -28,6 +28,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
  * be scoped based on the bowl and can be retrieved using bowl's getManager()
  *
  */
-public interface DatabaseManagementInterface extends SharedObjectsManagementInterface<DatabaseMeta> {
+public class ChangeTrackingDatabaseManager extends ChangeTrackingSharedObjectManager<DatabaseMeta> implements DatabaseManagementInterface {
 
+  public ChangeTrackingDatabaseManager( SharedObjectsManagementInterface<DatabaseMeta> parent ) {
+    super( parent );
+  }
 }

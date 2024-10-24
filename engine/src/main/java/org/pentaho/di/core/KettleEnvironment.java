@@ -22,7 +22,10 @@
 
 package org.pentaho.di.core;
 
-import com.google.common.util.concurrent.SettableFuture;
+import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
+import org.pentaho.di.cluster.ClusterSchemaManager;
+import org.pentaho.di.cluster.SlaveServerManagementInterface;
+import org.pentaho.di.cluster.SlaveServerManager;
 import org.pentaho.di.core.auth.AuthenticationConsumerPluginType;
 import org.pentaho.di.core.auth.AuthenticationProviderPluginType;
 import org.pentaho.di.core.bowl.BowlManagerFactoryRegistry;
@@ -30,8 +33,8 @@ import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleSupport;
-import org.pentaho.di.core.logging.LogTablePluginType;
 import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.core.logging.LogTablePluginType;
 import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
@@ -50,10 +53,9 @@ import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.DatabaseConnectionManager;
 import org.pentaho.di.shared.DatabaseManagementInterface;
-import org.pentaho.di.cluster.SlaveServerManager;
-import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.trans.step.RowDistributionPluginType;
 
+import com.google.common.util.concurrent.SettableFuture;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -269,10 +271,13 @@ public class KettleEnvironment {
    * Registers the SharedObject type specific factory with the Bowl factory registry.
    */
   private static void registerSharedObjectManagersWithBowl(){
-    BowlManagerFactoryRegistry.getInstance().registerManagerFactory( DatabaseManagementInterface.class,
-                        new DatabaseConnectionManager.DbConnectionManagerFactory() );
-    BowlManagerFactoryRegistry.getInstance().registerManagerFactory( SlaveServerManagementInterface.class,
+    BowlManagerFactoryRegistry registry = BowlManagerFactoryRegistry.getInstance();
+    registry.registerManagerFactory( DatabaseManagementInterface.class,
+      new DatabaseConnectionManager.DatabaseConnectionManagerFactory() );
+    registry.registerManagerFactory( SlaveServerManagementInterface.class,
       new SlaveServerManager.SlaveServerManagerFactory() );
+    registry.registerManagerFactory( ClusterSchemaManagementInterface.class,
+      new ClusterSchemaManager.ClusterSchemaManagerFactory() );
 
   }
 }

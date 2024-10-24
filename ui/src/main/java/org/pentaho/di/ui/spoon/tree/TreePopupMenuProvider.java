@@ -27,16 +27,22 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.components.XulMenuitem;
 
 /**
- * This class provides the right click popup menu items for SlaveServers
+ * This class provides the right click popup menu items for Shared Objects. This relies on a naming convention in
+ * menubar.xml
  */
 public class TreePopupMenuProvider {
 
   private static Class<?> PKG = Spoon.class;
-  public void createSlaveServerMenuItems( XulDomContainer mainSpoonContainer, SpoonTreeLeveledSelection leveledSelection ) {
+
+  public void createSharedObjectMenuItems( XulDomContainer mainSpoonContainer,
+      SpoonTreeLeveledSelection leveledSelection, String menubarPrefix ) {
     Bowl currentBowl = Spoon.getInstance().getBowl();
 
-    XulMenuitem moveProjectItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  "slave-server-inst-move-project"  );
-    XulMenuitem moveGlobalItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  "slave-server-inst-move-global"  );
+    XulMenuitem moveProjectItem =
+      (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( menubarPrefix + "-inst-move-project"  );
+    XulMenuitem moveGlobalItem =
+      (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( menubarPrefix + "-inst-move-global"  );
+
     if ( moveProjectItem != null && moveGlobalItem != null ) {
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
         moveGlobalItem.setVisible( true );
@@ -63,8 +69,10 @@ public class TreePopupMenuProvider {
       }
     }
     // Copy
-    XulMenuitem copyGlobalItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  "slave-server-inst-copy-global"  );
-    XulMenuitem copyProjectItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  "slave-server-inst-copy-project"  );
+    XulMenuitem copyGlobalItem =
+      (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  menubarPrefix + "-inst-copy-global"  );
+    XulMenuitem copyProjectItem =
+      (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(  menubarPrefix + "-inst-copy-project"  );
     if ( copyGlobalItem != null && copyProjectItem != null ) {
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
         copyGlobalItem.setVisible( true );
@@ -92,20 +100,19 @@ public class TreePopupMenuProvider {
       }
     }
     // duplicate
-    XulMenuitem dupItem = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( "slave-server-inst-duplicate" );
-    if ( dupItem != null ) {
+    XulMenuitem dupGlobalItem =
+      (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( menubarPrefix + "-inst-duplicate-global" );
+    XulMenuitem dupProjectItem =
+      (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( menubarPrefix + "-inst-duplicate-project" );
+    if ( dupGlobalItem != null && dupProjectItem != null ) {
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
-        dupItem.setVisible( true );
-        dupItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.SLAVE_SERVER.DuplicateInProject" ) );
+        dupGlobalItem.setVisible( false );
+        dupProjectItem.setVisible( true );
       }
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-        dupItem.setVisible( true );
-        dupItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.SLAVE_SERVER.DuplicateInGlobal" ) );
-      }
-      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
-        // If the connection is local, no need to show the menuitem
-        dupItem.setVisible( false );
+        dupGlobalItem.setVisible( true );
+        dupProjectItem.setVisible( false );
       }
     }
   }

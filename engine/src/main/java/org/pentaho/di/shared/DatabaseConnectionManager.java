@@ -21,17 +21,6 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.ManagerFactory;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
-
-import com.google.common.annotations.VisibleForTesting;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -40,122 +29,35 @@ import org.w3c.dom.Node;
  * This class caches the state of the underlying SharedObjectsIO, and does not re-read from the source. Only changes
  * written through this interface will be reflected.
  */
-public class DatabaseConnectionManager implements DatabaseManagementInterface {
-  public  static final String DB_TYPE = SharedObjectsIO.SharedObjectType.CONNECTION.getName();
-
-  private static Class<?> PKG = DatabaseConnectionManager.class; // for i18n purposes, needed by Translator2!!
-  private final SharedObjectsIO sharedObjectsIO;
-  private Map<String, DatabaseMeta> dbMetas = new HashMap<>();
-  private volatile boolean initialized = false;
-
-  public static DatabaseConnectionManager getInstance( Bowl bowl ) throws KettleException {
-    return new DatabaseConnectionManager( bowl );
-  }
-
-  private DatabaseConnectionManager( Bowl bowl ) throws KettleException {
-    this( bowl.getSharedObjectsIO() );
-  }
-
-  @VisibleForTesting
-  DatabaseConnectionManager( SharedObjectsIO sharedObjectsIO ) {
-    this.sharedObjectsIO = sharedObjectsIO;
-  }
+public class DatabaseConnectionManager extends BaseSharedObjectsManager<DatabaseMeta> implements DatabaseManagementInterface {
+  public static final String DB_TYPE = SharedObjectsIO.SharedObjectType.CONNECTION.getName();
 
   /**
-   * {@inheritDoc}
-   *
-   * @return List<DatabaseMeta> Returns a List of DatabaseMeta
-   * @throws KettleException
+   * Create an instance of SharedObjectManager using the Bowl's SharedObjectIO
+   * @param bowl
+   * @return
    */
-  @Override
-  public List<DatabaseMeta> getDatabases() throws KettleException {
-    populateDbMetaMap();
+  public static DatabaseConnectionManager getInstance( Bowl bowl ) {
+    return new DatabaseConnectionManager( bowl.getSharedObjectsIO() );
+  }
 
-    // defensive copies
-    return dbMetas.values().stream().map( db -> (DatabaseMeta) db.clone() ).collect( Collectors.toList() );
+  protected DatabaseConnectionManager( SharedObjectsIO sharedObjectsIO ) {
+    super( DB_TYPE, sharedObjectsIO );
   }
 
   @Override
-  public DatabaseMeta getDatabase( String name ) throws KettleException {
-    populateDbMetaMap();
-    DatabaseMeta db = dbMetas.get( name );
-    return db == null ? db : (DatabaseMeta) db.clone();
-  }
-
-  private void populateDbMetaMap() throws KettleException {
-    if ( !initialized ) {
-      synchronized( this ) {
-        if ( !initialized ) {
-          Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( DB_TYPE );
-          Map<String, DatabaseMeta> metaMap = new HashMap<>();
-          for ( String name : nodeMap.keySet() ) {
-            DatabaseMeta dbMeta = new DatabaseMeta( nodeMap.get( name ) );
-            if ( !metaMap.containsKey( name ) ) {
-              metaMap.put( name, dbMeta );
-            }
-          }
-          this.dbMetas = metaMap;
-        }
-      }
-      initialized = true;
-    }
-
-  }
-
-  public static Node toNode( DatabaseMeta databaseMeta ) throws KettleException {
-    String xml = databaseMeta.getXML();
-    Document doc = XMLHandler.loadXMLString( xml );
-    Node node = XMLHandler.getSubNode( doc, DB_TYPE );
-    return node;
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * The new connection is added to xml file and also in the in memory map.
-   * @param databaseMeta
-   * @throws KettleException
-   */
-  @Override
-  public synchronized void addDatabase( DatabaseMeta databaseMeta ) throws KettleException {
-    populateDbMetaMap();
-    String connName = databaseMeta.getName();
-    // Save the database connection in xml
-    Node node = toNode( databaseMeta );
-    this.sharedObjectsIO.saveSharedObject( DB_TYPE, connName, node );
-
-    // Add it to the map
-    dbMetas.put( connName, (DatabaseMeta) databaseMeta.clone() );
-  }
-
-  @Override
-  public synchronized void removeDatabase( DatabaseMeta databaseMeta ) throws KettleException {
-    removeDatabase( databaseMeta.getName() );
-  }
-
-  @Override
-  public synchronized void removeDatabase( String databaseName ) throws KettleException {
-    populateDbMetaMap();
-
-    this.sharedObjectsIO.delete( DB_TYPE, databaseName );
-
-    dbMetas.remove( databaseName );
-  }
-
-  @Override
-  public synchronized void clear() throws KettleException {
-    this.sharedObjectsIO.clear( DB_TYPE );
-    dbMetas.clear();
+  protected DatabaseMeta createSharedObjectUsingNode( Node node ) throws KettleException {
+    return new DatabaseMeta( node );
   }
 
   /**
    * Factory for the DatabaseConnectionManager. This factory class is registered with BowlFactory registry
    * during the initialization in KettleEnvironment
    */
-  public static class DbConnectionManagerFactory implements ManagerFactory<DatabaseManagementInterface> {
+  public static class DatabaseConnectionManagerFactory implements ManagerFactory<DatabaseManagementInterface> {
     public DatabaseManagementInterface apply( Bowl bowl ) throws KettleException {
       return DatabaseConnectionManager.getInstance( bowl );
     }
   }
-
 }
+

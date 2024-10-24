@@ -753,7 +753,7 @@ public class BaseStepDialog extends Dialog {
           try {
             DatabaseManagementInterface dbMgr =
               spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
-            dbMgr.addDatabase( newDBInfo );
+            dbMgr.add( newDBInfo );
           } catch ( KettleException ex ) {
             new ErrorDialog( wbwConnection.getShell(),
               BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogTitle" ),
@@ -845,7 +845,7 @@ public class BaseStepDialog extends Dialog {
           try {
             String finalName = name;
             collisionFound =
-              dbMgr.getDatabases().stream().anyMatch( db -> db.getName().trim().equalsIgnoreCase( finalName ) );
+              dbMgr.getAll().stream().anyMatch( db -> db.getName().trim().equalsIgnoreCase( finalName ) );
           } catch ( KettleException e ) {
             new ErrorDialog( shell,
               BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogTitle" ),
@@ -1529,7 +1529,7 @@ public class BaseStepDialog extends Dialog {
           spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
         String connectionName = showDbDialogUnlessCancelledOrValid( databaseMeta, null, dbMgr );
         if ( connectionName != null ) {
-          dbMgr.addDatabase( databaseMeta );
+          dbMgr.add( databaseMeta );
           reinitConnectionDropDown( wConnection, databaseMeta.getName() );
           spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
         }
@@ -1568,11 +1568,11 @@ public class BaseStepDialog extends Dialog {
             DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
           DatabaseManagementInterface transDbMgr = transMeta.getDatabaseManagementInterface();
 
-          if ( applicableDbMgr == null && dbMgr.getDatabase( originalName ) != null ) {
+          if ( applicableDbMgr == null && dbMgr.get( originalName ) != null ) {
             applicableDbMgr = dbMgr;
-          } else if ( applicableDbMgr == null && globalDbMgr.getDatabase( originalName ) != null ) {
+          } else if ( applicableDbMgr == null && globalDbMgr.get( originalName ) != null ) {
             applicableDbMgr = globalDbMgr;
-          } else if ( applicableDbMgr == null && transDbMgr.getDatabase( originalName ) != null ) {
+          } else if ( applicableDbMgr == null && transDbMgr.get( originalName ) != null ) {
             applicableDbMgr = transDbMgr;
           }
 
@@ -1585,8 +1585,8 @@ public class BaseStepDialog extends Dialog {
           if ( editedConnectionName != null ) {
             // To prevent the connection from moving between levels, the connection being edited is removed from and
             // then added back to its original database manager.
-            applicableDbMgr.removeDatabase( databaseMeta );
-            applicableDbMgr.addDatabase( clone );
+            applicableDbMgr.remove( databaseMeta );
+            applicableDbMgr.add( clone );
             reinitConnectionDropDown( wConnection, editedConnectionName );
             spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
           }

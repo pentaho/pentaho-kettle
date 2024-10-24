@@ -1313,7 +1313,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         cid.setModalDialog( true );
         if ( cid.open() != null ) {
           try {
-            transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+            transMeta.getDatabaseManagementInterface().add( databaseMeta );
           } catch ( KettleException ex ) {
             //Todo error message
           }

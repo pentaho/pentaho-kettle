@@ -17,9 +17,9 @@
 
 package org.pentaho.di.shared;
 
-import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.cluster.SlaveServerManagementInterface;
-import org.pentaho.di.cluster.SlaveServerManager;
+import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
+import org.pentaho.di.cluster.ClusterSchemaManager;
 import org.pentaho.di.core.exception.KettleException;
 import org.w3c.dom.Node;
 
@@ -27,13 +27,16 @@ import org.w3c.dom.Node;
  * This Manager that does not cache anything. Complete passthrough to the provided SharedObjectsIO instance.
  *
 */
-public class PassthroughSlaveServerManager extends PassthroughManager<SlaveServer> implements SlaveServerManagementInterface {
+public class PassthroughClusterSchemaManager extends PassthroughManager<ClusterSchema> implements ClusterSchemaManagementInterface {
 
-  public PassthroughSlaveServerManager( SharedObjectsIO sharedObjectsIO ) {
-    super( sharedObjectsIO, SlaveServer.class, SlaveServerManager.SLAVESERVER_TYPE );
+  private SlaveServersSupplier slaveServerSupplier;
+
+  public PassthroughClusterSchemaManager( SharedObjectsIO sharedObjectsIO, SlaveServersSupplier slaveServerSupplier ) {
+    super( sharedObjectsIO, ClusterSchema.class, ClusterSchemaManager.CLUSTERSCHEMA_TYPE );
+    this.slaveServerSupplier = slaveServerSupplier;
   }
 
-  protected SlaveServer createSharedObjectUsingNode( Node node ) throws KettleException {
-    return new SlaveServer( node );
+  protected ClusterSchema createSharedObjectUsingNode( Node node ) throws KettleException {
+    return new ClusterSchema( node, slaveServerSupplier.get() );
   }
 }

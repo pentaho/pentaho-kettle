@@ -17,7 +17,6 @@
 
 package org.pentaho.di.shared;
 
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.w3c.dom.Node;
 import org.slf4j.Logger;
@@ -40,19 +39,13 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
 
   private static final Logger log = LoggerFactory.getLogger( BaseSharedObjectsManager.class );
 
-  /* Map will be of the form { name, SharedObjectInterface} where
-    name - Name of Connection or slaveServer,PartitionSchema or ClusterSchema
-    SharedObjectInterface - DatabaseMeta, SlaveServer, PartitionSchema and ClusterSchema
-  */
-  //public Map<String, Map<String, T>> sharedObjectsMap = new HashMap<String, Map<String, T>>();
   private Map<String, T> sharedObjectsMap = new HashMap<>();
   private volatile boolean initialized = false;
   String sharedObjectType;
 
-  protected Bowl bowl;
-
-  public BaseSharedObjectsManager( String type ) {
-    sharedObjectType = type;
+  public BaseSharedObjectsManager( String type, SharedObjectsIO sharedObjectsIO ) {
+    this.sharedObjectType = type;
+    this.sharedObjectsIO = sharedObjectsIO;
   }
 
   /**

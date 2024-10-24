@@ -21,13 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.shared;
 
-import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 
-/**
- * This is the management interface used by the UI to perform CRUD operation. The implementors of this interface will
- * be scoped based on the bowl and can be retrieved using bowl's getManager()
- *
- */
-public interface DatabaseManagementInterface extends SharedObjectsManagementInterface<DatabaseMeta> {
+public class ChangeTrackingClusterSchemaManager extends ChangeTrackingSharedObjectManager<ClusterSchema> implements ClusterSchemaManagementInterface {
 
+  public ChangeTrackingClusterSchemaManager( SharedObjectsManagementInterface<ClusterSchema> parent ) {
+    super( parent );
+  }
 }

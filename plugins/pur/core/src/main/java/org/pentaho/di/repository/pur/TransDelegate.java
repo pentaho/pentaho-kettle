@@ -885,7 +885,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       if ( overWriteShared || transMeta.findDatabase( databaseMeta.getName() ) == null ) {
         if ( databaseMeta.getName() != null ) {
           databaseMeta.shareVariablesWith( transMeta );
-          transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+          transMeta.getDatabaseManagementInterface().add( databaseMeta );
           if ( !overWriteShared ) {
             databaseMeta.setChanged( false );
           }

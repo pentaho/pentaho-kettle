@@ -906,7 +906,7 @@ public class JobDialog extends Dialog {
           try {
             DatabaseManagementInterface dbMgr =
               Spoon.getInstance().getBowl().getManager( DatabaseManagementInterface.class );
-            dbMgr.addDatabase( getDatabaseDialog().getDatabaseMeta() );
+            dbMgr.add( getDatabaseDialog().getDatabaseMeta() );
           } catch ( KettleException dbe ) {
             new ErrorDialog(
               shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorAddingDatabase.Title" ), BaseMessages

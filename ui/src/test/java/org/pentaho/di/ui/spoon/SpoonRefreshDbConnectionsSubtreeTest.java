@@ -145,7 +145,7 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
             asList( mockDatabaseMeta( "1" ), mockDatabaseMeta( "2" ), mockDatabaseMeta( "3" ) );
 
     DatabaseManagementInterface dbMgr = mock( DatabaseManagementInterface.class );
-    when( dbMgr.getDatabases() ).thenReturn( dbs );
+    when( dbMgr.getAll() ).thenReturn( dbs );
     when( meta.getDatabaseManagementInterface() ).thenReturn( dbMgr );
     return meta;
   }
@@ -162,7 +162,7 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
     }
 
     List<DatabaseMeta> dbs = asList( metas );
-    when( mockDbManager.getDatabases() ).thenReturn( dbs );
+    when( mockDbManager.getAll() ).thenReturn( dbs );
     return mockDbManager;
   }
 
@@ -174,7 +174,7 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
     AbstractMeta meta = mock( AbstractMeta.class );
     List<DatabaseMeta> dbs = asList( metas );
     DatabaseManagementInterface dbMgr = mock( DatabaseManagementInterface.class );
-    when( dbMgr.getDatabases() ).thenReturn( dbs );
+    when( dbMgr.getAll() ).thenReturn( dbs );
     when( meta.getDatabaseManagementInterface() ).thenReturn( dbMgr );
     return meta;
   }

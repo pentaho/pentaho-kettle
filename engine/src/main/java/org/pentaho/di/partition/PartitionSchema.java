@@ -176,7 +176,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     int nrIDs = XMLHandler.countNodes( partitionSchemaNode, "partition" );
     partitionIDs = new ArrayList<String>();
     for ( int i = 0; i < nrIDs; i++ ) {
-      Node partitionNode = XMLHandler.getSubNodeByNr( partitionSchemaNode, "partition", i );
+      Node partitionNode = XMLHandler.getSubNodeByNr( partitionSchemaNode, "partition", i, false );
       partitionIDs.add( XMLHandler.getTagValue( partitionNode, "id" ) );
     }
 

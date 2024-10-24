@@ -96,8 +96,8 @@ public class BaseStepDialog_ConnectionLine_Test {
   public void perTestTeardown() throws KettleException {
     clearInvocations( mockSpoon );
     clearInvocations( mockDialog );
-    for ( DatabaseMeta db : dbMgr.getDatabases() ) {
-      dbMgr.removeDatabase( db );
+    for ( DatabaseMeta db : dbMgr.getAll() ) {
+      dbMgr.remove( db );
     }
   }
 
@@ -130,7 +130,7 @@ public class BaseStepDialog_ConnectionLine_Test {
   @Test
   public void ignoresAdd_WhenConnectionNameIsNull() throws Exception {
     TransMeta transMeta = new TransMeta();
-    dbMgr.addDatabase( createDefaultDatabase() );
+    dbMgr.add( createDefaultDatabase() );
 
     invokeAddConnectionListener( transMeta, null );
 
@@ -144,14 +144,14 @@ public class BaseStepDialog_ConnectionLine_Test {
     DatabaseMeta db = createDefaultDatabase();
 
     transMeta.addDatabase( db );
-    dbMgr.addDatabase( db );
+    dbMgr.add( db );
     assertTotalDbs( transMeta, 2 );
     assertNumberOfGlobalDBs( 1 );
     assertNumberOfLocalDBs( transMeta, 1 );
 
     invokeEditConnectionListener( transMeta, INITIAL_NAME );
 
-    DatabaseMeta localDb = transMeta.getDatabaseManagementInterface().getDatabase( INITIAL_NAME );
+    DatabaseMeta localDb = transMeta.getDatabaseManagementInterface().get( INITIAL_NAME );
     DatabaseMeta globalDb =
       transMeta.getDatabases().stream().filter( databaseMeta -> databaseMeta.getName().equals( INITIAL_NAME ) )
         .findFirst().get();
@@ -179,7 +179,7 @@ public class BaseStepDialog_ConnectionLine_Test {
   @Test
   public void edits_WhenNewNameIsUnique() throws Exception {
     TransMeta transMeta = new TransMeta();
-    dbMgr.addDatabase( createDefaultDatabase() );
+    dbMgr.add( createDefaultDatabase() );
 
     invokeEditConnectionListener( transMeta, INPUT_NAME );
 
@@ -205,7 +205,7 @@ public class BaseStepDialog_ConnectionLine_Test {
   @Test
   public void ignores_EditToGlobalConnectionWhenNewNameIsNull() throws Exception {
     TransMeta transMeta = new TransMeta();
-    dbMgr.addDatabase( createDefaultDatabase() );
+    dbMgr.add( createDefaultDatabase() );
 
     invokeEditConnectionListener( transMeta, null );
 
@@ -279,7 +279,7 @@ public class BaseStepDialog_ConnectionLine_Test {
     localDb.setName( INPUT_NAME );
 
     TransMeta transMeta = new TransMeta();
-    dbMgr.addDatabase( globalDb );
+    dbMgr.add( globalDb );
     transMeta.addDatabase( localDb );
     assertNumberOfGlobalDBs( 1 );
     assertNumberOfLocalDBs( transMeta, 1 );
@@ -329,9 +329,9 @@ public class BaseStepDialog_ConnectionLine_Test {
     db3.setHostname( INITIAL_HOST );
 
     TransMeta transMeta = new TransMeta();
-    dbMgr.addDatabase( db1 );
-    dbMgr.addDatabase( db2 );
-    dbMgr.addDatabase( db3 );
+    dbMgr.add( db1 );
+    dbMgr.add( db2 );
+    dbMgr.add( db3 );
 
     final String expectedResult = INITIAL_NAME + "2";
 
@@ -371,7 +371,7 @@ public class BaseStepDialog_ConnectionLine_Test {
     } else if ( level.equals( "local" ) ) {
       testDbMgr = transMeta.getDatabaseManagementInterface();
     }
-    testDbMgr.addDatabase( db );
+    testDbMgr.add( db );
 
     DatabaseDialog databaseDialog = mock( DatabaseDialog.class );
     when( databaseDialog.open() )
@@ -405,8 +405,8 @@ public class BaseStepDialog_ConnectionLine_Test {
     } else if ( level.equals( "local" ) ) {
       testDbMgr = transMeta.getDatabaseManagementInterface();
     }
-    testDbMgr.addDatabase( db1 );
-    testDbMgr.addDatabase( db2 );
+    testDbMgr.add( db1 );
+    testDbMgr.add( db2 );
 
     final String expectedResult = INPUT_NAME + "2";
 
@@ -452,7 +452,7 @@ public class BaseStepDialog_ConnectionLine_Test {
     when( databaseDialog.getDatabaseMeta() ).thenReturn( createDefaultDatabase() );
 
     DatabaseMeta db = createDefaultDatabase();
-    testDbMgr.addDatabase( db );
+    testDbMgr.add( db );
 
     mockDialog.databaseDialog = databaseDialog;
     mockDialog.transMeta = transMeta;
@@ -469,15 +469,15 @@ public class BaseStepDialog_ConnectionLine_Test {
 
   private void assertTotalDbs( TransMeta transMeta, int expected ) throws KettleException {
     assertEquals( expected,
-      transMeta.getDatabaseManagementInterface().getDatabases().size() + dbMgr.getDatabases().size() );
+      transMeta.getDatabaseManagementInterface().getAll().size() + dbMgr.getAll().size() );
   }
 
   private void assertNumberOfGlobalDBs( int expected ) throws KettleException {
-    assertEquals( expected, dbMgr.getDatabases().size() );
+    assertEquals( expected, dbMgr.getAll().size() );
   }
 
   private void assertNumberOfLocalDBs( TransMeta transMeta, int expected ) throws KettleException {
-    assertEquals( expected, transMeta.getDatabaseManagementInterface().getDatabases().size() );
+    assertEquals( expected, transMeta.getDatabaseManagementInterface().getAll().size() );
   }
 
   private void invokeAddConnectionListener( TransMeta transMeta, String answeredName ) {
