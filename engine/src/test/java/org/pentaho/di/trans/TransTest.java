@@ -138,12 +138,12 @@ public class TransTest {
     DatabaseMeta dbMeta1 =
       new DatabaseMeta( "encoded_DBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
     dbMeta1.setDisplayName( "encoded.DBConnection" );
-    meta.getDatabaseManagementInterface().addDatabase( dbMeta1 );
+    meta.getDatabaseManagementInterface().add( dbMeta1 );
 
     DatabaseMeta dbMeta2 =
       new DatabaseMeta( "normalDBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
     dbMeta2.setDisplayName( "normalDBConnection" );
-    meta.getDatabaseManagementInterface().addDatabase( dbMeta2 );
+    meta.getDatabaseManagementInterface().add( dbMeta2 );
 
     DatabaseMeta databaseMeta = meta.findDatabase( dbMeta1.getDisplayName() );
     assertNotNull( databaseMeta );

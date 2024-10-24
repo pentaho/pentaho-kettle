@@ -30,54 +30,13 @@ import org.w3c.dom.Node;
  * Database Manager that does not cache anything. Complete passthrough to the provided SharedObjectsIO instance.
  *
  */
-public class PassthroughDbConnectionManager implements DatabaseManagementInterface {
-
-  private final SharedObjectsIO sharedObjectsIO;
+public class PassthroughDbConnectionManager extends PassthroughManager<DatabaseMeta> implements DatabaseManagementInterface {
 
   public PassthroughDbConnectionManager( SharedObjectsIO sharedObjectsIO ) {
-    this.sharedObjectsIO = sharedObjectsIO;
+    super( sharedObjectsIO, DatabaseMeta.class, DatabaseConnectionManager.DB_TYPE );
   }
 
-  @Override
-  public void addDatabase( DatabaseMeta databaseMeta ) throws KettleException {
-    Node node = DatabaseConnectionManager.toNode( databaseMeta );
-    sharedObjectsIO.saveSharedObject( DatabaseConnectionManager.DB_TYPE, databaseMeta.getName(), node );
-  }
-
-  @Override
-  public void removeDatabase( DatabaseMeta databaseMeta ) throws KettleException {
-    removeDatabase( databaseMeta.getName() );
-  }
-
-  @Override
-  public void removeDatabase( String databaseName ) throws KettleException {
-    sharedObjectsIO.delete( DatabaseConnectionManager.DB_TYPE, databaseName );
-  }
-
-  @Override
-  public void clear() throws KettleException {
-    sharedObjectsIO.clear( DatabaseConnectionManager.DB_TYPE );
-  }
-
-  @Override
-  public List<DatabaseMeta> getDatabases() throws KettleException {
-    Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( DatabaseConnectionManager.DB_TYPE );
-    List<DatabaseMeta> result = new ArrayList<>( nodeMap.size() );
-
-    for ( Node node : nodeMap.values() ) {
-      result.add( new DatabaseMeta( node ) );
-    }
-    return result;
-  }
-
-  @Override
-  public DatabaseMeta getDatabase( String name ) throws KettleException {
-    Node node = sharedObjectsIO.getSharedObject( DatabaseConnectionManager.DB_TYPE, name );
-    if ( node == null ) {
-      return null;
-    }
+  protected DatabaseMeta createSharedObjectUsingNode( Node node ) throws KettleException {
     return new DatabaseMeta( node );
   }
-
 }
-

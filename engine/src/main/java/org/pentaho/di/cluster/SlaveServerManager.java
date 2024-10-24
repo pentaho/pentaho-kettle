@@ -44,8 +44,7 @@ public class SlaveServerManager extends BaseSharedObjectsManager<SlaveServer> im
   }
 
   protected SlaveServerManager( String type, SharedObjectsIO sharedObjectsIO ) {
-    super( type );
-    this.sharedObjectsIO = sharedObjectsIO;
+    super( type, sharedObjectsIO );
   }
 
   @Override

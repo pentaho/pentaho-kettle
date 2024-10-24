@@ -633,7 +633,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       if ( overWriteShared || jobMeta.findDatabase( databaseMeta.getName() ) == null ) {
         if ( databaseMeta.getName() != null ) {
           databaseMeta.shareVariablesWith( jobMeta );
-          jobMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+          jobMeta.getDatabaseManagementInterface().add( databaseMeta );
           if ( !overWriteShared ) {
             databaseMeta.setChanged( false );
           }

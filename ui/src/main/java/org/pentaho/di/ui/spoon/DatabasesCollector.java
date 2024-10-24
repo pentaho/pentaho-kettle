@@ -52,7 +52,7 @@ public class DatabasesCollector {
     List<DatabaseMeta> dbMetaList;
 
     if ( dbManager != null ) {
-      dbMetaList = dbManager.getDatabases();
+      dbMetaList = dbManager.getAll();
       addToMetaMap( dbMetaList );
     }
 

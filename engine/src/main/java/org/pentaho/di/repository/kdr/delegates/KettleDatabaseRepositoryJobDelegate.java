@@ -110,7 +110,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 
       // Before saving the job, see if it's not locked by someone else...
       //
-      int nrWorks = 2 + jobMeta.getDatabaseManagementInterface().getDatabases().size() + jobMeta.nrNotes()
+      int nrWorks = 2 + jobMeta.getDatabaseManagementInterface().getAll().size() + jobMeta.nrNotes()
                       + jobMeta.nrJobEntries() + jobMeta.nrJobHops();
       if ( monitor != null ) {
         monitor.beginTask( BaseMessages.getString( PKG, "JobMeta.Monitor.SavingTransformation" )
@@ -149,7 +149,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "JobMeta.Log.SavingDatabaseConnections" ) );
       }
-      List<DatabaseMeta> jobDatabases = jobMeta.getDatabaseManagementInterface().getDatabases();
+      List<DatabaseMeta> jobDatabases = jobMeta.getDatabaseManagementInterface().getAll();
       int dbi = 1;
       for ( DatabaseMeta databaseMeta : jobDatabases ) {
         if ( monitor != null ) {
@@ -720,7 +720,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         //
         if ( check == null || overWriteShared ) {
           if ( databaseMeta.getName() != null ) {
-            jobMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+            jobMeta.getDatabaseManagementInterface().add( databaseMeta );
             if ( !overWriteShared ) {
               databaseMeta.setChanged( false );
             }

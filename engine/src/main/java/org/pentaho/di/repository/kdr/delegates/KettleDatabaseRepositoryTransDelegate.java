@@ -173,7 +173,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       }
 
       int nrWorks =
-        2 + transMeta.getDatabaseManagementInterface().getDatabases().size() + transMeta.nrNotes()
+        2 + transMeta.getDatabaseManagementInterface().getAll().size() + transMeta.nrNotes()
           + transMeta.nrSteps() + transMeta.nrTransHops();
       if ( monitor != null ) {
         monitor.beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.SavingTransformationTask.Title" )
@@ -245,7 +245,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.SavingDatabaseConnections" ) );
       }
-      for ( DatabaseMeta databaseMeta : transMeta.getDatabaseManagementInterface().getDatabases() ) {
+      for ( DatabaseMeta databaseMeta : transMeta.getDatabaseManagementInterface().getAll() ) {
         if ( monitor != null && monitor.isCanceled() ) {
           throw new KettleDatabaseException( BaseMessages.getString( PKG, "TransMeta.Log.UserCancelledTransSave" ) );
         }
@@ -949,7 +949,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                                                                                // transformation
         if ( check == null || overWriteShared ) { // We only add, never overwrite database connections.
           if ( databaseMeta.getName() != null ) {
-            transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+            transMeta.getDatabaseManagementInterface().add( databaseMeta );
             if ( !overWriteShared ) {
               databaseMeta.setChanged( false );
             }

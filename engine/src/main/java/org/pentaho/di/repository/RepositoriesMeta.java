@@ -282,7 +282,7 @@ public class RepositoriesMeta {
         }
       } catch ( Exception kpe ) {
 
-        log.logError( BaseMessages.getString( PKG, "RepositoryMeta.Error.CreatingDatabaseMeta", dbcon.getName() ) );
+        log.logError( BaseMessages.getString( PKG, "RepositoryMeta.Error.CreatingDatabaseMeta", dbcon != null ? dbcon.getName() : "null" ) );
 
       }
     }

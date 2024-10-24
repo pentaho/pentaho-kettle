@@ -91,14 +91,14 @@ public class SpoonDBDelegate extends SpoonDelegate {
     String originalName = databaseMeta.getName();
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
     try {
-      getDatabaseDialog().setDatabases( dbManager.getDatabases() );
+      getDatabaseDialog().setDatabases( dbManager.getAll() );
       String newname = getDatabaseDialog().open();
       if ( !Utils.isEmpty( newname ) ) { // null: CANCEL
         databaseMeta.setName( originalName );
 
         databaseMeta = getDatabaseDialog().getDatabaseMeta();
         if ( !newname.equals( originalName )
-            && databaseMeta.findDatabase( dbManager.getDatabases(), newname ) != null ) {
+            && databaseMeta.findDatabase( dbManager.getAll(), newname ) != null ) {
           databaseMeta.setName( newname.trim() );
           DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
           databaseMeta.setName( originalName );
@@ -107,10 +107,10 @@ public class SpoonDBDelegate extends SpoonDelegate {
         }
         databaseMeta.setName( newname.trim() );
         databaseMeta.setDisplayName( newname.trim() );
-        dbManager.addDatabase( databaseMeta );
+        dbManager.add( databaseMeta );
 
         if ( !newname.equals( originalName ) ) {
-          dbManager.removeDatabase( originalName );
+          dbManager.remove( originalName );
           spoon.refreshDbConnection( newname.trim() );
         }
         spoon.refreshDbConnection( originalName );
@@ -134,7 +134,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
 
   public void dupeConnection( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) {
     try {
-      List<DatabaseMeta> databaseMetas = dbManager.getDatabases();
+      List<DatabaseMeta> databaseMetas = dbManager.getAll();
       String originalName = databaseMeta.getName();
       Set<String> dbNames = getDatabaseNames( databaseMetas );
 
@@ -146,20 +146,20 @@ public class SpoonDBDelegate extends SpoonDelegate {
 
       getDatabaseDialog().setDatabaseMeta( databaseMetaCopy );
 
-      getDatabaseDialog().setDatabases( dbManager.getDatabases() );
+      getDatabaseDialog().setDatabases( dbManager.getAll() );
       String selectedName = getDatabaseDialog().open();
       if ( !Utils.isEmpty( selectedName ) ) { // null: CANCEL
         selectedName = selectedName.trim();
         // check if the selectedName already exist
         if ( selectedName.equals( originalName )
-            && databaseMeta.findDatabase( dbManager.getDatabases(), selectedName ) != null ) {
+            && databaseMeta.findDatabase( dbManager.getAll(), selectedName ) != null ) {
           databaseMetaCopy.setName( selectedName );
           DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMetaCopy );
           return;
         }
         databaseMetaCopy.setName( selectedName );
         databaseMetaCopy.setDisplayName( selectedName );
-        dbManager.addDatabase( databaseMetaCopy );
+        dbManager.add( databaseMetaCopy );
         if ( !selectedName.equals( originalName ) ) {
           spoon.refreshDbConnection( selectedName );
         }
@@ -196,7 +196,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
     //      undoInterface, new DatabaseMeta[] { (DatabaseMeta) db.clone() }, new int[] { pos } );
     //}
     try {
-      dbMgr.removeDatabase( db );
+      dbMgr.remove( db );
     } catch ( Exception e ) {
       new ErrorDialog(
         spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnexpectedError.Title" ), BaseMessages
@@ -219,7 +219,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
   public String[] exploreDB( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager, boolean aLook ) {
     try {
       List<DatabaseMeta> databases = null;
-      List<DatabaseMeta> databaseMetas = dbManager.getDatabases();
+      List<DatabaseMeta> databaseMetas = dbManager.getAll();
 
       DatabaseExplorerDialog std =
         new DatabaseExplorerDialog( spoon.getShell(), SWT.NONE, databaseMeta, databases, aLook );
@@ -262,7 +262,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
                         DatabaseMeta databaseMeta, boolean deleteFromSource ) {
     try {
       // Check if the connection already exist in target, prompt for override
-      if ( targetDbManager.getDatabase( databaseMeta.getName() ) != null ) {
+      if ( targetDbManager.get( databaseMeta.getName() ) != null ) {
         if ( !spoon.overwritePrompt( BaseMessages.getString( PKG, "Spoon.Message.OverwriteConnectionYN", databaseMeta.getName() ),
           BaseMessages.getString( PKG, "Spoon.Message.OverwriteConnection.DontShowAnyMoreMessage" ), Props.STRING_ASK_ABOUT_REPLACING_DATABASES ) ) {
 
@@ -270,10 +270,10 @@ public class SpoonDBDelegate extends SpoonDelegate {
         }
       }
       // Adding the databaseMeta to target dbManager
-      targetDbManager.addDatabase( databaseMeta );
+      targetDbManager.add( databaseMeta );
 
       if ( deleteFromSource ) {
-        srcDbManager.removeDatabase( databaseMeta );
+        srcDbManager.remove( databaseMeta );
       }
       refreshTree();
     } catch ( Exception ex ) {
@@ -352,8 +352,8 @@ public class SpoonDBDelegate extends SpoonDelegate {
       // Create a new transformation...
       //
       TransMeta meta = new TransMeta();
-      meta.getDatabaseManagementInterface().addDatabase( sourceDBInfo );
-      meta.getDatabaseManagementInterface().addDatabase( targetDBInfo );
+      meta.getDatabaseManagementInterface().add( sourceDBInfo );
+      meta.getDatabaseManagementInterface().add( targetDBInfo );
 
       //
       // Add a note
@@ -504,8 +504,8 @@ public class SpoonDBDelegate extends SpoonDelegate {
       try {
         DatabaseManagementInterface databaseManagementInterface = spoon.getBowl().getManager( DatabaseManagementInterface.class );
 
-        if ( databaseMeta.findDatabase( databaseManagementInterface.getDatabases(), con_name ) == null ) {
-          databaseManagementInterface.addDatabase( databaseMeta );
+        if ( databaseMeta.findDatabase( databaseManagementInterface.getAll(), con_name ) == null ) {
+          databaseManagementInterface.add( databaseMeta );
           spoon.refreshDbConnection( con_name );
           refreshTree();
         } else {
@@ -531,8 +531,8 @@ public class SpoonDBDelegate extends SpoonDelegate {
       DatabaseMeta newDatabaseMeta = getDatabaseDialog().getDatabaseMeta();
 
       try {
-        if ( dbMgr.getDatabase( con_name ) == null ) {
-          dbMgr.addDatabase( newDatabaseMeta );
+        if ( dbMgr.get( con_name ) == null ) {
+          dbMgr.add( newDatabaseMeta );
           // TODO UNDO. No clue what the int should be
           //spoon.addUndoNew( (UndoInterface) meta, new DatabaseMeta[]{(DatabaseMeta) newDatabaseMeta
           //        .clone()}, new int[]{hasDatabasesInterface.indexOfDatabase( newDatabaseMeta )} );
@@ -554,9 +554,9 @@ public class SpoonDBDelegate extends SpoonDelegate {
     try {
       dbManager = spoon.getBowl().getManager( DatabaseManagementInterface.class );
       CreateDatabaseWizard cdw = new CreateDatabaseWizard();
-      DatabaseMeta newDdatabaseMeta = cdw.createAndRunDatabaseWizard( spoon.getShell(), PropsUI.getInstance(), dbManager.getDatabases() );
+      DatabaseMeta newDdatabaseMeta = cdw.createAndRunDatabaseWizard( spoon.getShell(), PropsUI.getInstance(), dbManager.getAll() );
       if ( newDdatabaseMeta != null ) { // finished
-         dbManager.addDatabase( newDdatabaseMeta );
+         dbManager.add( newDdatabaseMeta );
       }
       refreshTree();
     } catch ( Exception ex ) {

@@ -221,7 +221,7 @@ public class JobEntryDialog extends Dialog {
           try {
             DatabaseManagementInterface dbMgr =
               spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
-            dbMgr.addDatabase( newDBInfo );
+            dbMgr.add( newDBInfo );
           } catch ( KettleException exception ) {
             new ErrorDialog( spoonSupplier.get().getShell(),
               BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
@@ -310,7 +310,7 @@ public class JobEntryDialog extends Dialog {
           try {
             String finalName = name;
             collisionFound =
-              dbMgr.getDatabases().stream().anyMatch( db -> db.getName().trim().equalsIgnoreCase( finalName ) );
+              dbMgr.getAll().stream().anyMatch( db -> db.getName().trim().equalsIgnoreCase( finalName ) );
           } catch ( KettleException e ) {
             new ErrorDialog( shell,
               BaseMessages.getString( PKG, "BaseStepDialog.UnexpectedErrorEditingConnection.DialogTitle" ),
@@ -393,7 +393,7 @@ public class JobEntryDialog extends Dialog {
           spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
         String connectionName = showDbDialogUnlessCancelledOrValid( databaseMeta, null, dbMgr );
         if ( connectionName != null ) {
-          dbMgr.addDatabase( databaseMeta );
+          dbMgr.add( databaseMeta );
           reinitConnectionDropDown( wConnection, databaseMeta.getName() );
           spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
         }
@@ -429,11 +429,11 @@ public class JobEntryDialog extends Dialog {
             DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
           DatabaseManagementInterface jobDbMgr = jobMeta.getDatabaseManagementInterface();
 
-          if ( applicableDbMgr == null && dbMgr.getDatabase( originalName ) != null ) {
+          if ( applicableDbMgr == null && dbMgr.get( originalName ) != null ) {
             applicableDbMgr = dbMgr;
-          } else if ( applicableDbMgr == null && globalDbMgr.getDatabase( originalName ) != null ) {
+          } else if ( applicableDbMgr == null && globalDbMgr.get( originalName ) != null ) {
             applicableDbMgr = globalDbMgr;
-          } else if ( applicableDbMgr == null && jobDbMgr.getDatabase( originalName ) != null ) {
+          } else if ( applicableDbMgr == null && jobDbMgr.get( originalName ) != null ) {
             applicableDbMgr = jobDbMgr;
           }
 
@@ -446,8 +446,8 @@ public class JobEntryDialog extends Dialog {
           if ( editedConnectionName != null ) {
             // To prevent the connection from moving between levels, the connection being edited is removed from and
             // then added back to its original database manager.
-            applicableDbMgr.removeDatabase( databaseMeta );
-            applicableDbMgr.addDatabase( clone );
+            applicableDbMgr.remove( databaseMeta );
+            applicableDbMgr.add( clone );
             reinitConnectionDropDown( wConnection, editedConnectionName );
             spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
           }
