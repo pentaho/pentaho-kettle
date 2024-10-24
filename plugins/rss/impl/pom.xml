@@ -29,6 +29,31 @@
       <artifactId>jackcess</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome-modules</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome-utils</artifactId>
+      <version>${rome.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>

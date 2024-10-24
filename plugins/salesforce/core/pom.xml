@@ -112,5 +112,10 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
