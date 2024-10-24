@@ -278,6 +278,11 @@
 
   <menupopup id="cluster-schema-inst">
     <menuitem id="cluster-schema-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editClusterSchema()" />
+    <menuitem id="cluster-schema-inst-move-project" label="${Spoon.Menu.Popup.CLUSTERS.MoveToProject}" command="spoon.moveSlaveServerToProject()" />
+    <menuitem id="cluster-schema-inst-move-global" label="${Spoon.Menu.Popup.CLUSTERS.MoveToGlobal}" command="spoon.moveSlaveServerToGlobal()" />
+    <menuitem id="cluster-schema-inst-copy-project" label="${Spoon.Menu.Popup.CLUSTERS.CopyToProject}" command="spoon.copySlaveServerToProject()" />
+    <menuitem id="cluster-schema-inst-copy-global" label="${Spoon.Menu.Popup.CLUSTERS.CopyToGlobal}" command="spoon.copySlaveServerToGlobal()" />
+    <menuitem id="cluster-schema-inst-duplicate" label="${Spoon.Menu.Popup.CLUSTERS.Duplicate}" command="spoon.dupeSlaveServer()" />
     <menuitem id="cluster-schema-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delClusterSchema()" />
     <menuitem id="cluster-schema-inst-monitor" label="${Spoon.Menu.Popup.CLUSTERS.Monitor}" command="spoon.monitorClusterSchema()" />
   </menupopup>

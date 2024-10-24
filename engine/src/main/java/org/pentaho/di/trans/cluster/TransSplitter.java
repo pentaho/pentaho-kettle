@@ -339,8 +339,8 @@ public class TransSplitter {
     }
 
     transMeta.setBowl( originalTransformation.getBowl() );
-    for ( DatabaseMeta dbMeta : originalTransformation.getDatabaseManagementInterface().getDatabases() ) {
-      transMeta.getDatabaseManagementInterface().addDatabase( dbMeta );
+    for ( DatabaseMeta dbMeta : originalTransformation.getDatabaseManagementInterface().getAll() ) {
+      transMeta.getDatabaseManagementInterface().add( dbMeta );
     }
 
     // Feedback

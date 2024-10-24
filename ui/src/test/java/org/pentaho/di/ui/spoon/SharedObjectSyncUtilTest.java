@@ -30,7 +30,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.Ignore;
 
-import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.bowl.DefaultBowl;
@@ -310,83 +309,6 @@ public class SharedObjectSyncUtilTest {
   }
 
   @Test
-  public void synchronizeClusterSchemas() throws Exception {
-    final String clusterSchemaName = "SharedClusterSchema";
-    TransMeta transformarion1 = createTransMeta();
-    ClusterSchema clusterSchema1 = createClusterSchema( clusterSchemaName, true );
-    transformarion1.setClusterSchemas( Collections.singletonList( clusterSchema1 ) );
-    spoonDelegates.trans.addTransformation( transformarion1 );
-
-    TransMeta transformarion2 = createTransMeta();
-    ClusterSchema clusterSchema2 = createClusterSchema( clusterSchemaName, true );
-    transformarion2.setClusterSchemas( Collections.singletonList( clusterSchema2 ) );
-    spoonDelegates.trans.addTransformation( transformarion2 );
-
-    clusterSchema2.setDynamic( true );
-    sharedUtil.synchronizeClusterSchemas( clusterSchema2 );
-    assertThat( clusterSchema1.isDynamic(), equalTo( true ) );
-  }
-
-  @Test
-  public void synchronizeClusterSchemas_sync_shared_only() throws Exception {
-    final String clusterSchemaName = "ClusterSchema";
-    TransMeta transformarion1 = createTransMeta();
-    ClusterSchema clusterSchema1 = createClusterSchema( clusterSchemaName, true );
-    transformarion1.setClusterSchemas( Collections.singletonList( clusterSchema1 ) );
-    spoonDelegates.trans.addTransformation( transformarion1 );
-
-    TransMeta transformarion2 = createTransMeta();
-    ClusterSchema unsharedClusterSchema2 = createClusterSchema( clusterSchemaName, false );
-    transformarion2.setClusterSchemas( Collections.singletonList( unsharedClusterSchema2 ) );
-    spoonDelegates.trans.addTransformation( transformarion2 );
-
-    TransMeta transformarion3 = createTransMeta();
-    ClusterSchema clusterSchema3 = createClusterSchema( clusterSchemaName, true );
-    transformarion3.setClusterSchemas( Collections.singletonList( clusterSchema3 ) );
-    spoonDelegates.trans.addTransformation( transformarion3 );
-
-    clusterSchema3.setDynamic( true );
-    sharedUtil.synchronizeClusterSchemas( clusterSchema3 );
-    assertThat( clusterSchema1.isDynamic(), equalTo( true ) );
-    assertThat( unsharedClusterSchema2.isDynamic(), equalTo( false ) );
-  }
-
-  @Test
-  public void synchronizeClusterSchemas_should_not_sync_unshared() throws Exception {
-    final String clusterSchemaName = "ClusterSchema";
-    TransMeta transformarion1 = createTransMeta();
-    ClusterSchema clusterSchema1 = createClusterSchema( clusterSchemaName, true );
-    transformarion1.setClusterSchemas( Collections.singletonList( clusterSchema1 ) );
-    spoonDelegates.trans.addTransformation( transformarion1 );
-
-    TransMeta transformarion2 = createTransMeta();
-    ClusterSchema clusterSchema2 = createClusterSchema( clusterSchemaName, false );
-    transformarion2.setClusterSchemas( Collections.singletonList( clusterSchema2 ) );
-    spoonDelegates.trans.addTransformation( transformarion2 );
-
-    clusterSchema2.setDynamic( true );
-    sharedUtil.synchronizeClusterSchemas( clusterSchema2 );
-    assertThat( clusterSchema1.isDynamic(), equalTo( false ) );
-  }
-
-  @Test
-  public void synchronizeClusterSchemas_use_case_sensitive_name() throws Exception {
-    TransMeta transformarion1 = createTransMeta();
-    ClusterSchema clusterSchema1 = createClusterSchema( "ClusterSchema", true );
-    transformarion1.setClusterSchemas( Collections.singletonList( clusterSchema1 ) );
-    spoonDelegates.trans.addTransformation( transformarion1 );
-
-    TransMeta transformarion2 = createTransMeta();
-    ClusterSchema clusterSchema2 = createClusterSchema( "Clusterschema", true );
-    transformarion2.setClusterSchemas( Collections.singletonList( clusterSchema2 ) );
-    spoonDelegates.trans.addTransformation( transformarion2 );
-
-    clusterSchema2.setDynamic( true );
-    sharedUtil.synchronizeClusterSchemas( clusterSchema2 );
-    assertThat( clusterSchema1.isDynamic(), equalTo( false ) );
-  }
-
-  @Test
   public void synchronizePartitionSchemas() throws Exception {
     final String partitionSchemaName = "SharedPartitionSchema";
     TransMeta transformarion1 = createTransMeta();
@@ -583,15 +505,6 @@ public class SharedObjectSyncUtilTest {
     slaveServer.setName( name );
     slaveServer.setShared( shared );
     return slaveServer;
-  }
-
-  private static ClusterSchema createClusterSchema( String name, boolean shared ) {
-    ClusterSchema clusterSchema = new ClusterSchema();
-    clusterSchema.setName( name );
-    clusterSchema.setDescription( BEFORE_SYNC_VALUE );
-    clusterSchema.setDynamic( false );
-    clusterSchema.setShared( shared );
-    return clusterSchema;
   }
 
   private SharedObjects saveSharedObjects( String location, SharedObjectInterface...objects ) throws Exception {

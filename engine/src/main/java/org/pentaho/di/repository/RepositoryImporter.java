@@ -476,9 +476,9 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   private void replaceSharedObjects( AbstractMeta abstractMeta ) throws KettleException {
     for ( DatabaseMeta databaseMeta : getSharedObjects( DatabaseMeta.class ) ) {
       // Database...
-      DatabaseMeta imported = abstractMeta.getDatabaseManagementInterface().getDatabase( databaseMeta.getName() );
+      DatabaseMeta imported = abstractMeta.getDatabaseManagementInterface().get( databaseMeta.getName() );
       if ( imported == null ) {
-        abstractMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+        abstractMeta.getDatabaseManagementInterface().add( databaseMeta );
       } else {
         // Preserve the object id so we can update without having to look up the id
         imported.setObjectId( databaseMeta.getObjectId() );

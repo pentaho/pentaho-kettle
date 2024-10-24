@@ -177,7 +177,7 @@ public class StreamToNodeConvertersPrivateDatabasesTest {
   private void setDatabases( AbstractMeta meta, List<DatabaseMeta> databases ) throws Exception {
     meta.getDatabaseManagementInterface().clear();
     for ( DatabaseMeta db : databases ) {
-      meta.getDatabaseManagementInterface().addDatabase( db );
+      meta.getDatabaseManagementInterface().add( db );
     }
   }
 }

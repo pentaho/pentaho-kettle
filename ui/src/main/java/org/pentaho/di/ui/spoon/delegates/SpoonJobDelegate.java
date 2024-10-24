@@ -534,7 +534,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
     DatabaseManagementInterface dbMgr = jobMeta.getDatabaseManagementInterface();
     try {
       for ( DatabaseMeta dbMeta : databases ) {
-        dbMgr.addDatabase( dbMeta );
+        dbMgr.add( dbMeta );
       }
     } catch ( Exception e ) {
       new ErrorDialog( spoon.getShell(), "Error", "An unexpected error occurred!", e );
@@ -786,8 +786,8 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
   private void setTransMetaDatabase( DatabaseMeta sourceDbInfo, DatabaseMeta targetDbInfo, TransMeta transMeta )
     throws KettleException {
-    transMeta.getDatabaseManagementInterface().addDatabase( sourceDbInfo );
-    transMeta.getDatabaseManagementInterface().addDatabase( targetDbInfo );
+    transMeta.getDatabaseManagementInterface().add( sourceDbInfo );
+    transMeta.getDatabaseManagementInterface().add( targetDbInfo );
   }
 
   @VisibleForTesting

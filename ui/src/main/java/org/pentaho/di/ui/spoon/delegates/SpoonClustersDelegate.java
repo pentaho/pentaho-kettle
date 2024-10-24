@@ -25,10 +25,10 @@ package org.pentaho.di.ui.spoon.delegates;
 import java.util.List;
 
 import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -40,7 +40,9 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
     super( spoon );
   }
 
-  public void newClusteringSchema( TransMeta transMeta ) {
+  public void newClusteringSchema() {
+    //TODO
+    /*
     ClusterSchema clusterSchema = new ClusterSchema();
 
     ClusterSchemaDialog dialog =
@@ -77,6 +79,7 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
 
       refreshTree();
     }
+    */
   }
 
   private void showSaveError( ClusterSchema clusterSchema, KettleException e ) {
@@ -85,7 +88,9 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
       getMessage( "Spoon.Dialog.ErrorSavingCluster.Message", clusterSchema.getName() ), e );
   }
 
-  public void editClusterSchema( TransMeta transMeta, ClusterSchema clusterSchema ) {
+  public void editClusterSchema( ClusterSchemaManagementInterface manager, ClusterSchema clusterSchema ) {
+    //TODO
+    /*
     ClusterSchemaDialog dialog =
         new ClusterSchemaDialog( spoon.getShell(), clusterSchema, transMeta.getClusterSchemas(), transMeta.getSlaveServers() );
     if ( dialog.open() ) {
@@ -99,9 +104,12 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
       sharedObjectSyncUtil.synchronizeClusterSchemas( clusterSchema );
       refreshTree();
     }
+    */
   }
 
-  public void delClusterSchema( TransMeta transMeta, ClusterSchema clusterSchema ) {
+  public void delClusterSchema( ClusterSchemaManagementInterface manager, ClusterSchema clusterSchema ) {
+    // TODO
+    /*
     try {
 
       int idx = transMeta.getClusterSchemas().indexOf( clusterSchema );
@@ -121,6 +129,7 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
         spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Title" ), BaseMessages
           .getString( PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Message" ), e );
     }
+    */
   }
 
   private void refreshTree() {

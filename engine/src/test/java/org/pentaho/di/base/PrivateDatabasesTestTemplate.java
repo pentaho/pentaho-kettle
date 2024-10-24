@@ -63,7 +63,7 @@ public abstract class PrivateDatabasesTestTemplate<T extends AbstractMeta> {
   protected void doTest_OnePrivate_TwoSharedAllExport() throws Exception {
     T meta = createMeta();
     DatabaseMeta privateMeta = createDatabase( "privateMeta" );
-    meta.getDatabaseManagementInterface().addDatabase( privateMeta );
+    meta.getDatabaseManagementInterface().add( privateMeta );
     System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "N" );
 
     String xml = toXml( meta );
@@ -71,8 +71,8 @@ public abstract class PrivateDatabasesTestTemplate<T extends AbstractMeta> {
     DatabaseMeta meta1 = createDatabase( "meta1" );
     DatabaseMeta meta2 = createDatabase( "meta2" );
     DatabaseManagementInterface dbmgr = getBowlDbMrb();
-    dbmgr.addDatabase( meta1 );
-    dbmgr.addDatabase( meta2 );
+    dbmgr.add( meta1 );
+    dbmgr.add( meta2 );
 
     T loaded = fromXml( xml );
 
@@ -90,7 +90,7 @@ public abstract class PrivateDatabasesTestTemplate<T extends AbstractMeta> {
   protected void doTest_OnePrivate_TwoSharedOnlyUsed() throws Exception {
     T meta = createMeta();
     DatabaseMeta privateMeta = createDatabase( "privateMeta" );
-    meta.getDatabaseManagementInterface().addDatabase( privateMeta );
+    meta.getDatabaseManagementInterface().add( privateMeta );
 
     String xml = toXml( meta );
 
@@ -125,7 +125,7 @@ public abstract class PrivateDatabasesTestTemplate<T extends AbstractMeta> {
   protected void doTest_OnePrivate_NoSharedExportAll() throws Exception {
     T meta = createMeta();
     DatabaseMeta privateMeta = createDatabase( "privateMeta" );
-    meta.getDatabaseManagementInterface().addDatabase( privateMeta );
+    meta.getDatabaseManagementInterface().add( privateMeta );
     System.setProperty( Const.STRING_ONLY_USED_DB_TO_XML, "N" );
     String xml = toXml( meta );
 
@@ -144,7 +144,7 @@ public abstract class PrivateDatabasesTestTemplate<T extends AbstractMeta> {
   protected void doTest_OnePrivate_NoSharedOnlyUsed() throws Exception {
     T meta = createMeta();
     DatabaseMeta privateMeta = createDatabase( "privateMeta" );
-    meta.getDatabaseManagementInterface().addDatabase( privateMeta );
+    meta.getDatabaseManagementInterface().add( privateMeta );
     String xml = toXml( meta );
 
     T loaded = fromXml( xml );

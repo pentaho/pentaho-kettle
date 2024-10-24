@@ -94,6 +94,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.connections.ConnectionManager;
@@ -211,6 +212,8 @@ import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.shared.DatabaseManagementInterface;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.shared.SharedObjectsManagementInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
@@ -2661,10 +2664,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void newClusteringSchema() {
-    TransMeta transMeta = getActiveTransformation();
-    if ( transMeta != null ) {
-      newClusteringSchema( transMeta );
-    }
+    delegates.clusters.newClusteringSchema();
   }
 
   /**
@@ -2738,37 +2738,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public void editConnection() {
+  private void withDatabase( SharedObjectOp<DatabaseManagementInterface, DatabaseMeta> op ) {
+    withSharedObject( DatabaseManagementInterface.class, op );
+  }
 
+  public void editConnection() {
     if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.MODIFY_DATABASE ) ) {
       return;
     }
-    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    DatabaseManagementInterface dbManager = null;
-    DatabaseMeta databaseMeta = null;
-    try {
-      dbManager = getDbManager( leveledSelection.getLevel() );
-      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
-      delegates.db.editConnection( dbManager, databaseMeta );
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
-    }
+    withDatabase( ( dbManager, db) -> delegates.db.editConnection( dbManager, db ) );
   }
 
   public void dupeConnection() {
-    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    DatabaseManagementInterface dbManager = null;
-    DatabaseMeta databaseMeta = null;
-    try {
-      dbManager = getDbManager( leveledSelection.getLevel() );
-      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
-
+    withDatabase( ( dbManager, db ) -> {
+      SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
       getLog().logBasic( "Duplicating the connection " + leveledSelection.getName() );
-      delegates.db.dupeConnection( databaseMeta, dbManager );
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
-    }
+      delegates.db.dupeConnection( db, dbManager );
+    } );
   }
 
   public void delConnection() {
@@ -2776,40 +2762,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
 
-    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    DatabaseManagementInterface dbManager = null;
-    DatabaseMeta databaseMeta = null;
-    try {
-      dbManager = getDbManager( leveledSelection.getLevel() );
-      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
-      return;
-    }
+    withDatabase( ( dbManager, db ) -> {
+      MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+      mb.setMessage( BaseMessages.getString(
+        PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Message", db.getName() ) );
+      mb.setText( BaseMessages.getString( PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Title" ) );
+      int response = mb.open();
 
-    MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-    mb.setMessage( BaseMessages.getString(
-      PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Message", databaseMeta.getName() ) );
-    mb.setText( BaseMessages.getString( PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Title" ) );
-    int response = mb.open();
+      if ( response != SWT.YES ) {
+        return;
+      }
 
-    if ( response != SWT.YES ) {
-      return;
-    }
-
-    delegates.db.delConnection( dbManager, databaseMeta );
+      delegates.db.delConnection( dbManager, db );
+    } );
   }
 
   public void sqlConnection() {
-    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    DatabaseMeta databaseMeta = null;
-    try {
-      databaseMeta = getDatabaseMeta( leveledSelection );
-      delegates.db.sqlConnection( databaseMeta );
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
-    }
+    withDatabase( ( dbManager, db) -> delegates.db.sqlConnection( db ) );
   }
 
   public void clearDBCache( String id ) {
@@ -2817,15 +2786,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       delegates.db.clearDBCache( null );
     }
     if ( "database-inst-clear-cache".equals( id ) ) {
-      SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-      DatabaseMeta databaseMeta = null;
-      try {
-        databaseMeta = getDatabaseMeta( leveledSelection );
-        delegates.db.clearDBCache( databaseMeta );
-      } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-          BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
-      }
+      withDatabase( ( dbManager, db) -> delegates.db.clearDBCache( db ) );
     }
   }
 
@@ -2889,120 +2850,80 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void exploreDB() {
-    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    DatabaseManagementInterface dbManager = null;
-    DatabaseMeta databaseMeta = null;
-    try {
-      dbManager = getDbManager( leveledSelection.getLevel() );
-      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
-      delegates.db.exploreDB( databaseMeta, dbManager, true );
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
-    }
+    withDatabase( ( dbManager, db) -> delegates.db.exploreDB( db, dbManager, true ) );
   }
 
   public void moveConnectionToGlobal() {
-    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    DatabaseManagementInterface dbManager = null;
-    DatabaseMeta databaseMeta = null;
-    try {
-      dbManager = getDbManager( leveledSelection.getLevel() );
-      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
-
+    withDatabase( ( dbManager, db ) -> {
+      SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
       getLog().logBasic( "Moving the connection " + leveledSelection.getName() + " to global" );
-      delegates.db.moveToGlobal( databaseMeta, dbManager );
-
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-            BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
-    }
+      delegates.db.moveToGlobal( db, dbManager );
+    } );
   }
 
   public void moveConnectionToProject() {
-    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    DatabaseManagementInterface dbManager = null;
-    DatabaseMeta databaseMeta = null;
-    try {
-      dbManager = getDbManager( leveledSelection.getLevel() );
-      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
-
+    withDatabase( ( dbManager, db ) -> {
+      SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
       getLog().logBasic( "Moving the connection " + leveledSelection.getName() + " to project" );
-      delegates.db.moveToProject( databaseMeta, dbManager );
-
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
-    }
+      delegates.db.moveToProject( db, dbManager );
+    } );
   }
 
   public void copyConnectionToGlobal() {
-    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    DatabaseManagementInterface dbManager = null;
-    DatabaseMeta databaseMeta = null;
-    try {
-      dbManager = getDbManager( leveledSelection.getLevel() );
-      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
-
+    withDatabase( ( dbManager, db ) -> {
+      SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
       getLog().logBasic( "Copying the connection " + leveledSelection.getName() + " to Global" );
-      delegates.db.copyToGlobal( databaseMeta, dbManager );
-
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
-    }
+      delegates.db.copyToGlobal( db, dbManager );
+    } );
   }
+
   public void copyConnectionToProject() {
-    SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    DatabaseManagementInterface dbManager = null;
-    DatabaseMeta databaseMeta = null;
-    try {
-      dbManager = getDbManager( leveledSelection.getLevel() );
-      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
-
+    withDatabase( ( dbManager, db ) -> {
+      SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
       getLog().logBasic( "Copying the connection " + leveledSelection.getName() + " to Project" );
-      delegates.db.copyToProject( databaseMeta, dbManager );
-
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
-    }
+      delegates.db.copyToProject( db, dbManager );
+    } );
   }
 
   @FunctionalInterface
-  private static interface SlaveServerOp {
-    void op( SlaveServerManagementInterface ssm, SlaveServer ss ) throws Exception;
+  private static interface SharedObjectOp<M extends SharedObjectsManagementInterface<T>,
+                                          T extends SharedObjectInterface<T>> {
+    void op( M manager, T sharedObject ) throws KettleException;
   }
-  private void withSlaveServer( SlaveServerOp sso ) {
+
+  private <M extends SharedObjectsManagementInterface<T>, T extends SharedObjectInterface<T>>
+      void withSharedObject( Class<M> clazz, SharedObjectOp<M, T> sso ) {
     SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    SlaveServerManagementInterface slaveServerManager = null;
-    SlaveServer slaveServer = null;
+    M manager = null;
+    T sharedObject = null;
     try {
-      slaveServerManager = getSharedObjectManager( leveledSelection.getLevel(), SlaveServerManagementInterface.class );
-      slaveServer = slaveServerManager.get( leveledSelection.getName() );
-      sso.op( slaveServerManager, slaveServer );
-    } catch (Exception exception ) {
-      new ErrorDialog( shell, "Error", "Unexpected error retrieving slave servers", exception );
+      manager = getSharedObjectManager( leveledSelection.getLevel(), clazz );
+      sharedObject = manager.get( leveledSelection.getName() );
+      sso.op( manager, sharedObject );
+    } catch ( KettleException exception ) {
+      new ErrorDialog( shell, "Error", "Unexpected error retrieving shared objects", exception );
     }
   }
+
+  private void withSlaveServer( SharedObjectOp<SlaveServerManagementInterface, SlaveServer> op ) {
+    withSharedObject( SlaveServerManagementInterface.class, op );
+  }
+
   /**
    * Move the SlaveServer to global level
    */
   public void moveSlaveServerToGlobal() {
-    withSlaveServer( (slaveServerManager, slaveServer)->
-      {
-        getLog().logBasic( "Moving the slave server " + slaveServer.getName() + " to global");
-        delegates.slaves.moveToGlobal( slaveServerManager, slaveServer );
-      } );
-
+    withSlaveServer( ( slaveServerManager, slaveServer ) -> {
+      getLog().logBasic( "Moving the slave server " + slaveServer.getName() + " to global");
+      delegates.slaves.moveToGlobal( slaveServerManager, slaveServer );
+    } );
   }
 
   /**
    * Moving the slaveServer to project
    */
   public void moveSlaveServerToProject() {
-    withSlaveServer( (slaveServerManager, slaveServer)->
-    {
+    withSlaveServer( ( slaveServerManager, slaveServer ) -> {
       getLog().logBasic( "Moving the slave server " + slaveServer.getName() + " to project");
       delegates.slaves.moveToProject( slaveServerManager, slaveServer );
     } );
@@ -3012,8 +2933,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * Copy the slaveServer to global level
    */
   public void copySlaveServerToGlobal() {
-    withSlaveServer( (slaveServerManager, slaveServer)->
-    {
+    withSlaveServer( ( slaveServerManager, slaveServer ) -> {
       getLog().logBasic( "Copying the slave server " + slaveServer.getName() + " to global");
       delegates.slaves.copyToGlobal( slaveServerManager, slaveServer );
     } );
@@ -3023,20 +2943,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * Copy the slaveServer to project
    */
   public void copySlaveServerToProject() {
-    withSlaveServer( (slaveServerManager, slaveServer)->
-    {
+    withSlaveServer( ( slaveServerManager, slaveServer ) -> {
       getLog().logBasic( "Copying the slave server " + slaveServer.getName() + " to project");
       delegates.slaves.copyToProject( slaveServerManager, slaveServer );
     } );
   }
 
   public void dupeSlaveServer() {
-    withSlaveServer( (slaveServerManager, slaveServer)->
-    {
+    withSlaveServer( ( slaveServerManager, slaveServer ) -> {
       getLog().logBasic( "Duplicating the slave server " + slaveServer.getName() );
       delegates.slaves.dupeSlaveServer( slaveServerManager, slaveServer );
     } );
   }
+
   public void editStep() {
     final TransMeta transMeta = (TransMeta) selectionObjectParent;
     final StepMeta stepMeta = (StepMeta) selectionObject;
@@ -3113,16 +3032,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     delPartitionSchema( transMeta, partitionSchema );
   }
 
+  private void withClusterSchema( SharedObjectOp<ClusterSchemaManagementInterface, ClusterSchema> op ) {
+    withSharedObject( ClusterSchemaManagementInterface.class, op );
+  }
+
   public void editClusterSchema() {
-    final TransMeta transMeta = (TransMeta) selectionObjectParent;
-    final ClusterSchema clusterSchema = (ClusterSchema) selectionObject;
-    delegates.clusters.editClusterSchema( transMeta, clusterSchema );
+    withClusterSchema( ( manager, clusterSchema ) -> delegates.clusters.editClusterSchema( manager, clusterSchema ) );
   }
 
   public void delClusterSchema() {
-    final TransMeta transMeta = (TransMeta) selectionObjectParent;
-    final ClusterSchema clusterSchema = (ClusterSchema) selectionObject;
-    delegates.clusters.delClusterSchema( transMeta, clusterSchema );
+    withClusterSchema( ( manager, clusterSchema ) -> delegates.clusters.delClusterSchema( manager, clusterSchema ) );
   }
 
   public void monitorClusterSchema() throws KettleException {
@@ -3139,7 +3058,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private void editSlaveServer( SpoonTreeLeveledSelection leveledSelection ) {
-    withSlaveServer( (slaveServerManager, slaveServer)->
+    withSlaveServer( ( slaveServerManager, slaveServer ) ->
     {
       getLog().logBasic( "editing slave server " + slaveServer.getName() );
       delegates.slaves.edit( slaveServerManager, slaveServer );
@@ -3161,15 +3080,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void delSlaveServer() {
-    withSlaveServer( (slaveServerManager, slaveServer)->
-    {
+    withSlaveServer( ( slaveServerManager, slaveServer ) -> {
       delegates.slaves.delSlaveServer( slaveServerManager, slaveServer );
     } );
   }
 
   public void addSpoonSlave() {
-    withSlaveServer( (slaveServerManager, slaveServer)->
-    {
+    withSlaveServer( ( slaveServerManager, slaveServer ) -> {
       getLog().logBasic( "Add spoon slave " + slaveServer.getName() );
       delegates.slaves.addSpoonSlave( slaveServer );
     } );
@@ -3256,7 +3173,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     DatabaseMeta databaseMeta = null;
     try {
       dbManager = getDbManager( leveledSelection.getLevel() );
-      databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+      databaseMeta = dbManager.get( leveledSelection.getName() );
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
         BaseMessages.getString( PKG, "Unexpected error retrieving Database Connection", databaseMeta.getName() ), e );
@@ -3351,17 +3268,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
 
   private DatabaseManagementInterface getDbManager( LeveledTreeNode.LEVEL level ) throws KettleException {
-    if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
-      return managementBowl.getManager( DatabaseManagementInterface.class );
-    } else if ( level == LeveledTreeNode.LEVEL.GLOBAL ) {
-      return DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
-    } else if ( level == LeveledTreeNode.LEVEL.LOCAL ) {
-      AbstractMeta meta = getActiveAbstractMeta();
-      return meta != null ? meta.getDatabaseManagementInterface() : null;
-    } else {
-      // shouldn't happen.
-      return null;
-    }
+    return getSharedObjectManager( level, DatabaseManagementInterface.class );
   }
 
   private DatabaseMeta getDatabaseMeta( SpoonTreeLeveledSelection leveledSelection ) throws KettleException {
@@ -3369,7 +3276,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     DatabaseMeta databaseMeta = null;
 
     dbManager = getDbManager( leveledSelection.getLevel() );
-    databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+    databaseMeta = dbManager.get( leveledSelection.getName() );
 
     return databaseMeta;
 
@@ -3416,7 +3323,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         newPartitioningSchema( (TransMeta) parent );
       }
       if ( selection.equals( ClusterSchema.class ) ) {
-        newClusteringSchema( (TransMeta) parent );
+        delegates.clusters.newClusteringSchema();
       }
       if ( selection.equals( SlaveServer.class ) ) {
         newSlaveServer();
@@ -3450,7 +3357,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           DatabaseMeta databaseMeta = null;
           try {
             dbManager = getDbManager( leveledSelection.getLevel() );
-            databaseMeta = dbManager.getDatabase( leveledSelection.getName() );
+            databaseMeta = dbManager.get( leveledSelection.getName() );
           } catch ( Exception e ) {
             new ErrorDialog( shell, "Error", "Unexpected error retrieving Database Connection", e );
           }
@@ -3459,6 +3366,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // TODO: other shared object types should move in here in their respective stories
         if ( STRING_SLAVES.equals( leveledSelection.getType() ) ) {
           editSlaveServer( leveledSelection );
+        }
+        if ( STRING_CLUSTERS.equals( leveledSelection.getType() ) ) {
+
         }
 
 
@@ -3476,9 +3386,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       if ( selection instanceof PartitionSchema ) {
         editPartitionSchema( (TransMeta) parent, (PartitionSchema) selection );
-      }
-      if ( selection instanceof ClusterSchema ) {
-        delegates.clusters.editClusterSchema( (TransMeta) parent, (ClusterSchema) selection );
       }
 
       editSelectionTreeExtension( object.getTreeItem(), selection );
@@ -4210,7 +4117,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               // When the job gets saved, it will be added
               // to the repository.
               //
-              jobMeta.getDatabaseManagementInterface().addDatabase( oldDatabase );
+              jobMeta.getDatabaseManagementInterface().add( oldDatabase );
             }
           }
         }
@@ -4295,7 +4202,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               // When the transformation gets saved, it will be added
               // to the repository.
               //
-              transMeta.getDatabaseManagementInterface().addDatabase( oldDatabase );
+              transMeta.getDatabaseManagementInterface().add( oldDatabase );
             }
           }
         }
@@ -8919,14 +8826,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private void delPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
     delegates.partitions.delPartitionSchema( transMeta, partitionSchema );
-  }
-
-  /**
-   * This creates a new clustering schema, edits it and adds it to the transformation metadata if its name is not a
-   * duplicate of any of existing
-   */
-  public void newClusteringSchema( TransMeta transMeta ) {
-    delegates.clusters.newClusteringSchema( transMeta );
   }
 
   /**

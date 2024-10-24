@@ -22,64 +22,12 @@
 package org.pentaho.di.shared;
 
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-
-import java.util.List;
 
 /**
  * This is the management interface used by the UI to perform CRUD operation. The implementors of this interface will
  * be scoped based on the bowl and can be retrieved using bowl's getManager()
  *
  */
-public interface DatabaseManagementInterface {
-
-  /**
-   * Add the database connection to global or project specific file store(shared.xml) depending on the bowl
-   * @param databaseMeta
-   * @throws KettleException
-   */
-  void addDatabase( DatabaseMeta databaseMeta ) throws KettleException;
-
-  /**
-   * Get the list of databases connection based  on the current bowl
-   * @return List<DatabaseMeta> Returns the list of DatabaseMeta
-   * @throws KettleException
-   */
-  List<DatabaseMeta> getDatabases() throws KettleException;
-
-  /**
-   * Get a single database by name.
-   *
-   *
-   * @param name name of the database
-   *
-   * @return DatabaseMeta database instance
-   * @throws KettleException
-   */
-  DatabaseMeta getDatabase( String name ) throws KettleException;
-
-
-  /**
-   * Remove the provided database
-   *
-   *
-   * @param databaseMeta database to remove
-   */
-  void removeDatabase( DatabaseMeta databaseMeta ) throws KettleException;
-
-  /**
-   * Remove the provided database
-   *
-   *
-   * @param databasename name of the database to remove
-   */
-  void removeDatabase( String databaseName ) throws KettleException;
-
-  /**
-   * Removes all connections
-   *
-   */
-  void clear() throws KettleException;
-
+public interface DatabaseManagementInterface extends SharedObjectsManagementInterface<DatabaseMeta> {
 
 }

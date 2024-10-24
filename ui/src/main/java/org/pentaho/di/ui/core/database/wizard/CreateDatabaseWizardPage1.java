@@ -243,7 +243,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage {
       try {
         DatabaseManagementInterface dbMgr =
           Spoon.getInstance().getBowl().getManager( DatabaseManagementInterface.class );
-        if ( dbMgr.getDatabases().stream().anyMatch( db -> db.getName().trim().equalsIgnoreCase( trimmedName ) ) ) {
+        if ( dbMgr.getAll().stream().anyMatch( db -> db.getName().trim().equalsIgnoreCase( trimmedName ) ) ) {
           setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPage1.ErrorMessage.DBNameExists",
             trimmedName ) );
           return false;
