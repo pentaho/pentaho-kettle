@@ -4,13 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-engine-configuration-impl</artifactId>
-  <version>10.3.0.0-SNAPSHOT</version>
+  <version>10.3.0.0-127</version>
   <packaging>jar</packaging>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>engine-configuration</artifactId>
-    <version>10.3.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-127</version>
   </parent>
 
   <name>PDI Engine Configuration Plugin Implementation</name>
