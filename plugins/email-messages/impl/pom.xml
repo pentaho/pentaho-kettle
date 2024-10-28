@@ -13,6 +13,10 @@
   <artifactId>email-messages-plugins-impl</artifactId>
   <name>PDI Email Messages and Get mails Plugins Impl</name>
 
+  <properties>
+    <javax.mail.version>1.4</javax.mail.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -49,11 +53,16 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>pentaho</groupId>
-          <artifactId>pentaho-platform-extensions</artifactId>
-          <version>${pdi.version}</version>
-          <scope>provided</scope>
-      </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>${javax.mail.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>pentaho</groupId>
+        <artifactId>pentaho-platform-extensions</artifactId>
+        <version>${pdi.version}</version>
+        <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>

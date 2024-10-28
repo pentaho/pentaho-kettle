@@ -40,11 +40,11 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.loadfileinput.LoadFileInput;
 
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Message;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;

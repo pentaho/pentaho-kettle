@@ -13,7 +13,7 @@
 
 package org.pentaho.di.www.jaxrs;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class JobStatus {
