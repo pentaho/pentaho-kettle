@@ -13,31 +13,7 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
@@ -45,7 +21,6 @@ import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.client.RequestEntityProcessing;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.uri.UriComponent;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
@@ -61,6 +36,26 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.util.HttpClientManager;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Samatar
@@ -82,8 +77,8 @@ public class Rest extends BaseStep implements StepInterface {
     Client client = null;
     try {
       client = getClient( rowData );
-      WebTarget webResource = buildRequest( client, rowData );
-      return invokeRequest( webResource, rowData );
+      WebTarget target = buildRequest( client, rowData );
+      return invokeRequest( target, rowData );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CanNotReadURL", data.realUrl ), e );
     } finally {
@@ -126,13 +121,13 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   protected WebTarget buildRequest( Client client, Object[] rowData ) throws KettleException {
-    WebTarget webResource = null;
-    // create a WebResource object, which encapsulates a web resource for the client
-    webResource = client.target( data.realUrl );
+    WebTarget target = null;
+    // create a target object, which encapsulates a web resource for the client
+    target = client.target( data.realUrl );
 
     if ( data.useMatrixParams ) {
       // Add matrix parameters
-      UriBuilder builder = webResource.getUriBuilder();
+      UriBuilder builder = target.getUriBuilder();
       for ( int i = 0; i < data.nrMatrixParams; i++ ) {
         String value = data.inputRowMeta.getString( rowData, data.indexOfMatrixParamFields[ i ] );
         if ( isDebug() ) {
@@ -142,7 +137,7 @@ public class Rest extends BaseStep implements StepInterface {
         builder = builder.matrixParam( data.matrixParamNames[ i ],
                                        UriComponent.encode( value, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED ) );
       }
-      webResource = client.target( builder.build() );
+      target = client.target( builder.build() );
     }
 
     if ( data.useParams ) {
@@ -152,17 +147,17 @@ public class Rest extends BaseStep implements StepInterface {
         if ( isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[ i ], value ) );
         }
-        webResource = webResource.queryParam( data.paramNames[ i ],
+        target = target.queryParam( data.paramNames[ i ],
           UriComponent.encode( value, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED ) );
       }
     }
     if ( isDebug() ) {
-      logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", webResource.getUri() ) );
+      logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", target.getUri() ) );
     }
-    return webResource;
+    return target;
   }
 
-  private Object[] invokeRequest( WebTarget webResource, Object[] rowData ) throws KettleException {
+  private Object[] invokeRequest( WebTarget target, Object[] rowData ) throws KettleException {
     Object[] newRow = null;
     if ( rowData != null ) {
       newRow = rowData.clone();
@@ -171,7 +166,7 @@ public class Rest extends BaseStep implements StepInterface {
     // used for calculating the responseTime
     long startTime = System.currentTimeMillis();
 
-    Invocation.Builder invocationBuilder = webResource.request();
+    Invocation.Builder invocationBuilder = target.request();
 
     String contentType = null; // media type override, if not null
     if ( data.useHeaders ) {
@@ -283,13 +278,13 @@ public class Rest extends BaseStep implements StepInterface {
 
     // add status to output
     if ( !Utils.isEmpty( data.resultCodeFieldName ) ) {
-      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( status ) );
+      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, Long.valueOf( status ) );
       returnFieldsOffset++;
     }
 
     // add response time to output
     if ( !Utils.isEmpty( data.resultResponseFieldName ) ) {
-      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
+      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, Long.valueOf( responseTime ) );
       returnFieldsOffset++;
     }
     // add response header to output

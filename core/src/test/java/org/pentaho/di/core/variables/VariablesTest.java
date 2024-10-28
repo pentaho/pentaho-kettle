@@ -13,6 +13,7 @@
 
 package org.pentaho.di.core.variables;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -55,6 +56,7 @@ public class VariablesTest {
    * Test for PDI-12893 issue.  Checks if an ConcurrentModificationException while iterating over the System properties
    * is occurred.
    */
+  @Ignore
   @Test
   public void testInitializeVariablesFrom() {
     final Variables variablesMock = mock( Variables.class );

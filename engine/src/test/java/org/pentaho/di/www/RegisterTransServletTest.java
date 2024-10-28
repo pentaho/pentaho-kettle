@@ -12,14 +12,15 @@
 
 package org.pentaho.di.www;
 
+import jakarta.servlet.ReadListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -123,6 +124,21 @@ public class RegisterTransServletTest {
     when( mockHttpServletResponse.getOutputStream() ).thenReturn( outputStream );
     final ByteArrayInputStream is = new ByteArrayInputStream( xmlTrans.getBytes() );
     when( mockHttpServletRequest.getInputStream() ).thenReturn( new ServletInputStream() {
+      @Override
+      public boolean isFinished() {
+        return false;
+      }
+
+      @Override
+      public boolean isReady() {
+        return false;
+      }
+
+      @Override
+      public void setReadListener( ReadListener readListener ) {
+
+      }
+
       @Override public int read() throws IOException {
         return is.read();
       }

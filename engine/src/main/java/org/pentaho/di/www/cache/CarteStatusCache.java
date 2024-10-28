@@ -19,8 +19,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cache.CacheException;
-import org.hibernate.cfg.Configuration;
 import org.pentaho.di.core.Const;
 import org.hibernate.Cache;
 
@@ -74,7 +72,7 @@ public class CarteStatusCache implements Cache {
     removeService.scheduleAtFixedRate( this::clear, 1, 1, TimeUnit.DAYS );
   }
 
-  public void clear() throws CacheException {
+  public void clear() {
     cachedMap.forEach( ( k, v ) -> {
       if ( LocalDate.now().isAfter( v.getExceedTime() ) ) {
         remove( k );
@@ -101,7 +99,7 @@ public class CarteStatusCache implements Cache {
     }
   }
 
-  public void put( Object key, Object value ) throws CacheException {
+  public void put( Object key, Object value ) throws Exception {
     cachedMap.put( (String) key, (CachedItem) value );
   }
 
@@ -159,22 +157,20 @@ public class CarteStatusCache implements Cache {
     return null;
   }
 
-  @Override public boolean containsEntity( Class entityClass, Serializable identifier ) {
-    throwNotImplemented();
+  @Override public boolean containsEntity( Class<?> aClass, Object o ) {
     return false;
   }
 
-  @Override public boolean containsEntity( String entityName, Serializable identifier ) {
-    throwNotImplemented();
+  @Override public boolean containsEntity( String s, Object o ) {
     return false;
   }
 
-  @Override public void evictEntityData( Class entityClass, Serializable identifier ) {
-    throwNotImplemented();
+  @Override public void evictEntityData( Class<?> aClass, Object o ) {
+
   }
 
-  @Override public void evictEntityData( String entityName, Serializable identifier ) {
-    throwNotImplemented();
+  @Override public void evictEntityData( String s, Object o ) {
+
   }
 
   @Override public void evictEntityData( Class entityClass ) {
@@ -201,13 +197,12 @@ public class CarteStatusCache implements Cache {
     throwNotImplemented();
   }
 
-  @Override public boolean containsCollection( String role, Serializable ownerIdentifier ) {
-    throwNotImplemented();
+  @Override public boolean containsCollection( String s, Object o ) {
     return false;
   }
 
-  @Override public void evictCollectionData( String role, Serializable ownerIdentifier ) {
-    throwNotImplemented();
+  @Override public void evictCollectionData( String s, Object o ) {
+
   }
 
   @Override public void evictCollectionData( String role ) {
@@ -239,25 +234,28 @@ public class CarteStatusCache implements Cache {
     throwNotImplemented();
   }
 
-  @Override public boolean contains( Class cls, Object primaryKey ) {
-    throwNotImplemented();
-    return false;
-  }
-
-  @Override public void evict( Class cls, Object primaryKey ) {
-    throwNotImplemented();
-  }
-
-  @Override public void evict( Class cls ) {
-    throwNotImplemented();
-  }
-
-  @Override public <T> T unwrap( Class<T> cls ) {
-    throwNotImplemented();
-    return null;
-  }
 
   private void throwNotImplemented(){
     throw new NotImplementedException( "Method not Implemented with upgrade to hibernate 5.4.24");
+  }
+
+  @Override
+  public boolean contains( Class aClass, Object o ) {
+    return false;
+  }
+
+  @Override
+  public void evict( Class aClass, Object o ) {
+
+  }
+
+  @Override
+  public void evict( Class aClass ) {
+
+  }
+
+  @Override
+  public <T> T unwrap( Class<T> aClass ) {
+    return null;
   }
 }
