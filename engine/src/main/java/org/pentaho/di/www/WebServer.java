@@ -13,14 +13,16 @@
 
 package org.pentaho.di.www;
 
-import org.glassfish.jersey.servlet.ServletContainer;
-import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.jaas.JAASLoginService;
-import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.UserStore;
+import org.eclipse.jetty.security.RolePrincipal;
+import org.eclipse.jetty.security.UserPrincipal;
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.glassfish.jersey.servlet.ServletContainer;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -53,7 +55,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -186,13 +188,13 @@ public class WebServer {
         }
         hashLoginService = new HashLoginService( SERVICE_NAME, passwordFile ) {
           @Override
-          protected String[] loadRoleInfo( UserPrincipal user ) {
-            List<String> newRoles = new ArrayList<>();
-            String[] roles = super.loadRoleInfo( user );
-            if ( null != roles ) {
-              Collections.addAll( newRoles, roles );
+          protected List<RolePrincipal> loadRoleInfo( UserPrincipal user ) {
+            List<RolePrincipal> newRoles = new ArrayList<>();
+            List<RolePrincipal> roles = super.loadRoleInfo( user );
+            if ( roles != null ) {
+              newRoles.addAll( roles );
             }
-            return newRoles.toArray( new String[ newRoles.size() ] );
+            return newRoles;
           }
         };
       }
@@ -359,7 +361,7 @@ public class WebServer {
     // Create the server with the configurated number of acceptors
     if ( sslConfig != null ) {
       log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.SslModeUsing" ) );
-      SslContextFactory sslContextFactory = new SslContextFactory();
+      SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
       sslContextFactory.setKeyStorePath( sslConfig.getKeyStore() );
       sslContextFactory.setKeyStorePassword( sslConfig.getKeyStorePassword() );
       sslContextFactory.setKeyManagerPassword( sslConfig.getKeyPassword() );
