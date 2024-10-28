@@ -195,6 +195,7 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.partition.PartitionSchemaManagementInterface;
 import org.pentaho.di.pkg.JarfileGenerator;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
@@ -2656,13 +2657,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     refreshTree();
   }
 
-  public void newDatabasePartitioningSchema() {
-    TransMeta transMeta = getActiveTransformation();
-    if ( transMeta != null ) {
-      newPartitioningSchema( transMeta );
-    }
-  }
-
   public void newClusteringSchema() {
     TransMeta transMeta = getActiveTransformation();
     newClusteringSchema( transMeta );
@@ -3031,16 +3025,59 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     delHop( transMeta, transHopMeta );
   }
 
+  private void withPartitionSchema( SharedObjectOp<PartitionSchemaManagementInterface, PartitionSchema> op ) {
+    withSharedObject( PartitionSchemaManagementInterface.class, op );
+  }
+
+  private void withPartitionSchema( SpoonTreeLeveledSelection leveledSelection, SharedObjectOp<PartitionSchemaManagementInterface, PartitionSchema> op ) {
+    withSharedObject( leveledSelection, PartitionSchemaManagementInterface.class, op );
+  }
   public void editPartitionSchema() {
-    final TransMeta transMeta = (TransMeta) selectionObjectParent;
-    final PartitionSchema partitionSchema = (PartitionSchema) selectionObject;
-    editPartitionSchema( transMeta, partitionSchema );
+    withPartitionSchema( ( partitionSchemaManager, partitionSchema ) -> {
+      getLog().logBasic( "Editing Partition schema " + partitionSchema.getName() );
+      delegates.partitions.editPartitionSchema( getActiveTransformation(), partitionSchemaManager, partitionSchema );
+    } );
   }
 
   public void delPartitionSchema() {
-    final TransMeta transMeta = (TransMeta) selectionObjectParent;
-    final PartitionSchema partitionSchema = (PartitionSchema) selectionObject;
-    delPartitionSchema( transMeta, partitionSchema );
+    withPartitionSchema( ( partitionSchemaManager, partitionSchema ) -> {
+      delegates.partitions.delPartitionSchema( partitionSchemaManager, partitionSchema );
+    } );
+  }
+
+  public void movePartitionSchemaToProject() {
+    withPartitionSchema( ( partitionSchemaManager, partitionSchema ) -> {
+      getLog().logBasic( "Moving Partition schema " + partitionSchema.getName() + " to project" );
+      delegates.partitions.moveToProject( partitionSchemaManager, partitionSchema );
+    } );
+  }
+
+  public void movePartitionSchemaToGlobal() {
+    withPartitionSchema( ( partitionSchemaManager, partitionSchema ) -> {
+      getLog().logBasic( "Moving Partition schema " + partitionSchema.getName() + " to global" );
+      delegates.partitions.moveToGlobal( partitionSchemaManager, partitionSchema );
+    } );
+  }
+
+  public void copyPartitionSchemaToProject() {
+    withPartitionSchema( ( partitionSchemaManager, partitionSchema ) -> {
+      getLog().logBasic( "Copying Partition schema " + partitionSchema.getName() + " to project" );
+      delegates.partitions.copyToProject( partitionSchemaManager, partitionSchema );
+    } );
+  }
+
+  public void copyPartitionSchemaToGlobal() {
+    withPartitionSchema( ( partitionSchemaManager, partitionSchema ) -> {
+      getLog().logBasic( "Copying Partition schema " + partitionSchema.getName() + " to global" );
+      delegates.partitions.copyToGlobal( partitionSchemaManager, partitionSchema );
+    } );
+  }
+
+  public void dupePartitionSchema() {
+    withPartitionSchema( ( partitionSchemaManager, partitionSchema ) -> {
+      getLog().logBasic( "Duplicating the Partition schema " + partitionSchema.getName() );
+      delegates.partitions.dupePartitionSchema( partitionSchemaManager, partitionSchema );
+    } );
   }
 
   private void withClusterSchema( SharedObjectOp<ClusterSchemaManagementInterface, ClusterSchema> op ) {
@@ -3105,6 +3142,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       delegates.clusters.dupeClusterSchema( clusterSchemaManager, clusterSchema );
     } );
   }
+
 
   /**
    * Edit the Slave server configuration
@@ -3201,6 +3239,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           setDatabaseMenuItems( mainSpoonContainer, leveledSelection );
         } else if ( STRING_PARTITIONS.equals( leveledSelection.getType() ) ) {
           spoonMenu = (XulMenupopup) menuMap.get( "partition-schema-inst" );
+          new TreePopupMenuProvider().createSharedObjectMenuItems( mainSpoonContainer, leveledSelection, "partition-schema" );
         } else if ( STRING_CLUSTERS.equals( leveledSelection.getType() ) ) {
           spoonMenu = (XulMenupopup) menuMap.get( "cluster-schema-inst" );
           new TreePopupMenuProvider().createSharedObjectMenuItems( mainSpoonContainer, leveledSelection, "cluster-schema" );
@@ -3378,7 +3417,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         delegates.db.newConnection();
       }
       if ( selection.equals( PartitionSchema.class ) ) {
-        newPartitioningSchema( (TransMeta) parent );
+        newPartitioningSchema();
       }
       if ( selection.equals( ClusterSchema.class ) ) {
         TransMeta transMeta = getActiveTransformation();
@@ -3429,7 +3468,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( STRING_CLUSTERS.equals( leveledSelection.getType() ) ) {
           editClusterSchema( leveledSelection );
         }
-
+        if ( STRING_PARTITIONS.equals( leveledSelection.getType() ) ) {
+          editPartitionSchema( leveledSelection );
+        }
 
       }
       if ( selection instanceof StepMeta ) {
@@ -3443,10 +3484,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if ( selection instanceof TransHopMeta ) {
         editHop( (TransMeta) parent, (TransHopMeta) selection );
       }
-      if ( selection instanceof PartitionSchema ) {
-        editPartitionSchema( (TransMeta) parent, (PartitionSchema) selection );
-      }
-
       editSelectionTreeExtension( object.getTreeItem(), selection );
     }
   }
@@ -8875,16 +8912,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * This creates a new partitioning schema, edits it and adds it to the transformation metadata if its name is not a
    * duplicate of any of existing
    */
-  public void newPartitioningSchema( TransMeta transMeta ) {
-    delegates.partitions.newPartitioningSchema( transMeta );
+  public void newPartitioningSchema() {
+    delegates.partitions.newPartitioningSchema( getActiveTransformation() );
   }
 
-  private void editPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
-    delegates.partitions.editPartitionSchema( transMeta, partitionSchema );
-  }
+  private void editPartitionSchema( SpoonTreeLeveledSelection leveledSelection  ) {
+    withPartitionSchema( leveledSelection, ( PartitionSchemaManagementInterface, partitionSchema ) -> {
+      getLog().logBasic( "editing Partition Schema " + partitionSchema.getName() );
+      delegates.partitions.editPartitionSchema( getActiveTransformation(), PartitionSchemaManagementInterface, partitionSchema );
+    } );
 
-  private void delPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
-    delegates.partitions.delPartitionSchema( transMeta, partitionSchema );
   }
 
   /**
@@ -8894,6 +8931,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void newClusteringSchema( TransMeta transMeta ) {
     delegates.clusters.newClusteringSchema( transMeta );
   }
+
 
   /**
    * Sends transformation to slave server

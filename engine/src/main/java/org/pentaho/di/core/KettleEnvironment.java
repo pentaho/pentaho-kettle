@@ -49,6 +49,8 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.plugins.StepDialogFragmentType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.partition.PartitionSchemaManagementInterface;
+import org.pentaho.di.partition.PartitionSchemaManager;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.DatabaseConnectionManager;
@@ -278,6 +280,7 @@ public class KettleEnvironment {
       new SlaveServerManager.SlaveServerManagerFactory() );
     registry.registerManagerFactory( ClusterSchemaManagementInterface.class,
       new ClusterSchemaManager.ClusterSchemaManagerFactory() );
-
+    registry.registerManagerFactory( PartitionSchemaManagementInterface.class,
+      new PartitionSchemaManager.PartitionSchemaManagerFactory() );
   }
 }
