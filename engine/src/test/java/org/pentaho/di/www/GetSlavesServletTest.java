@@ -18,9 +18,9 @@ import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.List;
