@@ -84,13 +84,6 @@
     </dependency>
 
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-metaverse-api</artifactId>
-      <version>${pentaho-metaverse.version}</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>artemis-jms-client-osgi</artifactId>
       <version>${artemis.version}</version>

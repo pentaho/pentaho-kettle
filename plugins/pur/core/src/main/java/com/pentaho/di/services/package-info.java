@@ -11,6 +11,6 @@
  ******************************************************************************/
 
 
-@javax.xml.bind.annotation.XmlSchema( namespace = "fileVersioningConfiguration" )
+@jakarta.xml.bind.annotation.XmlSchema( namespace = "fileVersioningConfiguration" )
 package com.pentaho.di.services;
 

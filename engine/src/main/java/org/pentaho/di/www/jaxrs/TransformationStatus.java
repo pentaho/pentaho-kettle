@@ -16,7 +16,7 @@ package org.pentaho.di.www.jaxrs;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.pentaho.di.trans.step.StepStatus;
 

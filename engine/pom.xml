@@ -41,10 +41,6 @@
     <jcommon.version>1.0.16</jcommon.version>
     <json-simple.version>1.1</json-simple.version>
     <jsonpath.version>1.0</jsonpath.version>
-    <jersey-server.version>2.44</jersey-server.version>
-    <jersey-container-servlet-core.version>2.44</jersey-container-servlet-core.version>
-    <jersey-client.version>2.44</jersey-client.version>
-    <jersey-common.version>2.44</jersey-common.version>
     <jxl.version>2.6.12</jxl.version>
     <ldapjdk.version>20000524</ldapjdk.version>
     <monetdb-jdbc.version>2.8</monetdb-jdbc.version>
@@ -63,34 +59,28 @@
     <olap4j-xmla.version>1.2.0</olap4j-xmla.version>
     <wsdl4j.version>1.6.2</wsdl4j.version>
     <wsdl4j-qname.version>1.6.1</wsdl4j-qname.version>
-    <hibernate-core.version>5.4.24.Final</hibernate-core.version>
     <hibernate-commons-annotations.version>3.2.0.Final</hibernate-commons-annotations.version>
-    <hibernate-ehcache.version>5.4.24.Final</hibernate-ehcache.version>
     <jboss-logging.version>3.4.3.Final</jboss-logging.version>
-    <javax.persistence-api.version>2.2</javax.persistence-api.version>
     <byte-buddy.version>1.12.16</byte-buddy.version>
     <cglib-nodep.version>2.2</cglib-nodep.version>
     <js.version>1.7R3</js.version>
-    <mail.version>1.6.1</mail.version>
     <mstor.version>0.9.13</mstor.version>
     <commons-cli.version>1.2</commons-cli.version>
     <log4jdbc.version>1.2</log4jdbc.version>
-    <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <oro.version>2.0.8</oro.version>
-    <javax.websocket-api.version>1.1</javax.websocket-api.version>
     <rxjava.version>2.2.3</rxjava.version>
     <xmlunit.version>1.5</xmlunit.version>
     <wiremock.version>2.25.0</wiremock.version>
-    <javax.ws.rs-api.version>2.1</javax.ws.rs-api.version>
     <hk2.version>2.6.1</hk2.version>
+    <jaxb-runtime.version>4.0.2</jaxb-runtime.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
-        <version>${javax.servlet-api.version}</version>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${jakarta.servlet.version}</version>
         <scope>provided</scope>
       </dependency>
     </dependencies>
@@ -331,7 +321,7 @@
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
       <artifactId>jersey-container-servlet-core</artifactId>
-      <version>${jersey-container-servlet-core.version}</version>
+      <version>${jersey.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -342,7 +332,7 @@
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
-      <version>${jersey-client.version}</version>
+      <version>${jersey.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -353,7 +343,7 @@
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-server</artifactId>
-      <version>${jersey-server.version}</version>
+      <version>${jersey.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -591,20 +581,14 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.1-api</artifactId>
-      <version>1.0.0.Final</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>${jakarta.persistence-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-common</artifactId>
-      <version>${jersey-common.version}</version>
+      <version>${jersey.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.hk2</groupId>
@@ -620,6 +604,11 @@
       <groupId>org.glassfish.hk2</groupId>
       <artifactId>hk2-locator</artifactId>
       <version>${hk2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <version>${jersey.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -640,22 +629,11 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>${hibernate-core.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.1-api</artifactId>
-      <version>1.0.0.Final</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-ehcache</artifactId>
-      <version>${hibernate-ehcache.version}</version>
+      <artifactId>hibernate-jcache</artifactId>
+      <version>${hibernate-jcache.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -699,9 +677,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>javax.mail</artifactId>
-      <version>${mail.version}</version>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
+      <version>${jakarta.mail.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mnode.mstor</groupId>
@@ -812,18 +790,18 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>javax.ws.rs-api</artifactId>
-      <version>${javax.ws.rs-api.version}</version>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>${jakarta.ws.rs-api.version}</version>
     </dependency>
     <dependency>
-      <groupId>javax.websocket</groupId>
-      <artifactId>javax.websocket-api</artifactId>
-      <version>${javax.websocket-api.version}</version>
+      <groupId>jakarta.websocket</groupId>
+      <artifactId>jakarta.websocket-client-api</artifactId>
+      <version>${jakarta.websocket-api.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -856,8 +834,9 @@
       <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>${jaxb-runtime.version}</version>
       <scope>runtime</scope>
     </dependency>
 
@@ -936,20 +915,6 @@
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-jre8-standalone</artifactId>
       <version>${wiremock.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
-      <version>${jetty.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-http</artifactId>
-      <version>${jetty.version}</version>
-      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
