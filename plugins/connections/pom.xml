@@ -28,8 +28,6 @@
     <pentaho-osgi-bundles.version>10.3.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <cxf.karaf.version>3.0.13</cxf.karaf.version>
     <swt.version>4.6</swt.version>
-    <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
-    <dependency.javax.ws.rs-api.version>2.1</dependency.javax.ws.rs-api.version>
   </properties>
   <dependencyManagement>
     <dependencies>
