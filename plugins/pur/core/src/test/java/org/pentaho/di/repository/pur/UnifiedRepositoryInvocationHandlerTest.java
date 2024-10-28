@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 
 import java.net.ConnectException;
 
-import com.sun.xml.ws.client.ClientTransportException;
+import jakarta.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.repository.KettleAuthenticationException;
@@ -39,7 +39,7 @@ public class UnifiedRepositoryInvocationHandlerTest {
   private static final Object returnValue = "return-value";
   private static final RuntimeException rte = new RuntimeException( "some-exception" );
   private static final ConnectException connectException = new ConnectException();
-  private static final ClientTransportException clientTransportExceptionException = mock( ClientTransportException.class );
+  private static final WebServiceException webServiceException = mock( WebServiceException.class );
 
   private static final IFace wrappee = new IFace() {
 
@@ -60,7 +60,7 @@ public class UnifiedRepositoryInvocationHandlerTest {
 
     @Override
     public Object throwClientTransportException() {
-      throw new RuntimeException( "wrapper-exception", clientTransportExceptionException );
+      throw new RuntimeException( "wrapper-exception", webServiceException );
     }
 
   };
@@ -111,7 +111,7 @@ public class UnifiedRepositoryInvocationHandlerTest {
     } catch ( KettleAuthenticationException kae ) {
       Throwable found = kae;
       while ( found != null ) {
-        if ( clientTransportExceptionException.equals( found ) ) {
+        if ( webServiceException.equals( found ) ) {
           break;
         }
         found = found.getCause();
