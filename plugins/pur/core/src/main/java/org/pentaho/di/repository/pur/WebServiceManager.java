@@ -29,10 +29,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Service;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.soap.SOAPBinding;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.Service;
+import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.soap.SOAPBinding;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.util.ExecutorUtil;
@@ -45,12 +45,12 @@ import org.pentaho.platform.security.userroledao.ws.IUserRoleWebService;
 
 import com.pentaho.di.services.PentahoDiPlugin;
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import javax.ws.rs.client.ClientBuilder;
-import com.sun.xml.ws.developer.JAXWSProperties;
+
 
 /**
  * Web service factory. Not a true factory in that the things that this factory can create are not configurable. But it
@@ -141,8 +141,9 @@ public class WebServiceManager implements ServiceManager {
               ( (BindingProvider) port ).getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
               // support streaming binary data
               // TODO mlowery this is not portable between JAX-WS implementations (uses com.sun)
-              ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE,
-                  8192 );
+              Client client = ClientBuilder.newBuilder()
+                      .property( ClientProperties.CHUNKED_ENCODING_SIZE, 8192 )
+                      .build();
               SOAPBinding binding = (SOAPBinding) ( (BindingProvider) port ).getBinding();
               binding.setMTOMEnabled( true );
               return port;
