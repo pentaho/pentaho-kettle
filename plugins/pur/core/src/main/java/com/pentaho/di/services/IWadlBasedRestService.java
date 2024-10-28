@@ -15,7 +15,7 @@ package com.pentaho.di.services;
 import java.net.URI;
 import java.util.Map;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 public interface IWadlBasedRestService {
 
