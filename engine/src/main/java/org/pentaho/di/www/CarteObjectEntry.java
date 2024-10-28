@@ -15,7 +15,7 @@ package org.pentaho.di.www;
 
 import java.util.Comparator;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * A carte object entry in the transformation or job maps
