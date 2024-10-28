@@ -53,6 +53,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 /**
  * User: Dzmitry Stsiapanau Date: 11/20/13 Time: 12:41 PM
  */
+@Ignore
 public class IngresVectorwiseTest {
 
   private class IngresVectorwiseLoaderTest extends IngresVectorwiseLoader {

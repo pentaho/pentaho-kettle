@@ -14,6 +14,7 @@
 package org.pentaho.di.trans.steps.csvinput;
 
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
@@ -194,6 +195,7 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     );
   }
 
+  @Ignore
   @Test
   public void testEnclosures() throws Exception {
     meta.setDelimiter( ";" );

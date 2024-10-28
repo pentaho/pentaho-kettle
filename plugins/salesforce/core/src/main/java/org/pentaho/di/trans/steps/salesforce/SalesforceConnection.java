@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPException;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;

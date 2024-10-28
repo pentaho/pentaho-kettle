@@ -13,6 +13,10 @@
   <artifactId>mail-plugins-impl</artifactId>
   <name> PDI Mail Plugins Impl</name>
 
+  <properties>
+    <javax.mail.version>1.4</javax.mail.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -54,6 +58,11 @@
       <artifactId>kettle-engine</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>${javax.mail.version}</version>
     </dependency>
   </dependencies>
 </project>
