@@ -25,7 +25,12 @@
 package org.pentaho.di.engine.ui;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -38,9 +43,12 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.JobEntryRunConfigurableInterface;
+import org.pentaho.di.ui.core.widget.TreeUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -67,13 +75,18 @@ public class RunConfigurationDelegate {
       new RunConfigurationDialog( spoonSupplier.get().getShell(), configurationManager,
         runConfiguration );
     RunConfiguration savedRunConfiguration = dialog.open();
-
-    if ( savedRunConfiguration != null ) {
+    if ( savedRunConfiguration == null ) {
+      //When user click on cancel.
+      return;
+    }
+    if ( !configurationManager.getNames().contains( savedRunConfiguration.getName() ) ) {
       configurationManager.delete( key );
       configurationManager.save( savedRunConfiguration );
       refreshTree();
 
       updateLoadedJobs( key, savedRunConfiguration );
+    } else {
+      showRunConfigurationExistsDialog( spoonSupplier.get().getShell(), runConfiguration );
     }
   }
 
@@ -151,5 +164,78 @@ public class RunConfigurationDelegate {
   @VisibleForTesting
   void setRunConfigurationManager( RunConfigurationService runConfigurationManager ) {
     this.configurationManager = runConfigurationManager;
+  }
+
+  public void duplicate( RunConfiguration runConfiguration ) {
+    Set<String> existingNames = new HashSet<>( configurationManager.getNames() );
+    String newName = TreeUtil.findUniqueSuffix( runConfiguration.getName(), existingNames );
+    runConfiguration.setName( newName );
+    RunConfigurationDialog dialog =
+      new RunConfigurationDialog( spoonSupplier.get().getShell(), configurationManager, runConfiguration );
+    RunConfiguration duplicateRunConfiguration = dialog.open();
+    if ( duplicateRunConfiguration == null ) {
+      //When user click on cancel.
+      return;
+    }
+    if ( !existingNames.contains( duplicateRunConfiguration.getName() ) ) {
+      configurationManager.save( duplicateRunConfiguration );
+      refreshTree();
+    } else {
+      showRunConfigurationExistsDialog( spoonSupplier.get().getShell(), runConfiguration );
+    }
+  }
+
+  private void showRunConfigurationExistsDialog( Shell parent, RunConfiguration runConfiguration ) {
+    String title = BaseMessages.getString( PKG, "RunConfigurationDialog.RunConfigurationNameExists.Title" );
+    String message = BaseMessages.getString( PKG, "RunConfigurationDialog.RunConfigurationNameExists", runConfiguration.getName() );
+    String okButton = BaseMessages.getString( PKG, "System.Button.OK" );
+    MessageDialog dialog =
+      new MessageDialog( parent, title, null, message, MessageDialog.ERROR, new String[] { okButton }, 0 );
+    dialog.open();
+  }
+
+  public void copyToGlobal( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
+    moveCopy( manager, runConfiguration, DefaultBowl.getInstance(), false );
+  }
+
+  public void copyToProject( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
+    moveCopy( manager, runConfiguration, spoonSupplier.get().getBowl(), false );
+  }
+
+  public void moveToGlobal( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
+    moveCopy( manager, runConfiguration, DefaultBowl.getInstance(), true );
+  }
+
+  public void moveToProject( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
+    moveCopy( manager, runConfiguration, Spoon.getInstance().getBowl(), true );
+  }
+
+  private void moveCopy( RunConfigurationManager srcManager, RunConfiguration runConfiguration, Bowl targetBowl,
+                         boolean deleteSource ) {
+    CheckedMetaStoreSupplier ms = () -> targetBowl.getMetastore();
+    RunConfigurationManager targetManager = RunConfigurationManager.getInstance( ms );
+    if ( targetManager.getNames().contains( runConfiguration.getName() ) ) {
+      if ( !shouldOverwrite( BaseMessages.getString( PKG, "RunConfigurationDialog.OverwriteRunConfigurationYN",
+        runConfiguration.getName() ) ) ) {
+        return;
+      }
+    }
+    targetManager.save( runConfiguration );
+    if ( deleteSource ) {
+      srcManager.delete( runConfiguration.getName() );
+    }
+    refreshTree();
+  }
+
+  protected boolean shouldOverwrite( String message ) {
+    MessageBox mb = new MessageBox( spoonSupplier.get().getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+    mb.setMessage( message );
+    mb.setText( BaseMessages.getString( PKG, "RunConfigurationDialog.dialog.PromptOverwrite.Title" ) );
+    int response = mb.open();
+
+    if ( response != SWT.YES ) {
+      return false;
+    }
+    return true;
   }
 }

@@ -37,7 +37,6 @@ import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.CheckedMetaStoreSupplier;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
@@ -122,19 +121,91 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
           runConfigurationDelegate.edit( runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
         }
       } );
+    }
+    // clear old items
+    MenuItem[] items = itemMenu.getItems();
+    for ( int i = 1; i < items.length; i++ ) {
+      items[i].dispose();
+    }
 
-      MenuItem deleteMenuItem = new MenuItem( itemMenu, SWT.NONE );
-      deleteMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.Delete" ) );
-      deleteMenuItem.addSelectionListener( new SelectionAdapter() {
+    if ( runConfigurationTreeItem.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
+      MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      moveMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.MoveToGlobal" ) );
+      moveMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
           Bowl bowl = getEventBowl();
           CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
           RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.delete( runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+          runConfigurationDelegate.moveToGlobal( runConfigurationManager, runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+        }
+      } );
+
+      MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      copyMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.CopyToGlobal" ) );
+      copyMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          Bowl bowl = getEventBowl();
+          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
+          RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
+          RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
+          runConfigurationDelegate.copyToGlobal( runConfigurationManager, runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
         }
       } );
     }
+
+    if ( runConfigurationTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL && spoonSupplier.get().getBowl() != DefaultBowl.getInstance() ) {
+      MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      moveMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.MoveToProject" ) );
+      moveMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          Bowl bowl = getEventBowl();
+          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
+          RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
+          RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
+          runConfigurationDelegate.moveToProject( runConfigurationManager, runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+        }
+      } );
+      MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      copyMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.CopyToProject" ) );
+      copyMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          Bowl bowl = getEventBowl();
+          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
+          RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
+          RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
+          runConfigurationDelegate.copyToProject( runConfigurationManager, runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+        }
+      } );
+    }
+
+    MenuItem duplicateMenuItem = new MenuItem( itemMenu, SWT.NONE );
+    if ( runConfigurationTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
+      duplicateMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.DuplicateGlobal" ) );
+    } else {
+      duplicateMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.DuplicateProject" ) );
+    }
+    duplicateMenuItem.addSelectionListener( new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        Bowl bowl = getEventBowl();
+        CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
+        RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
+        RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
+        runConfigurationDelegate.duplicate( runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+      }
+    } );
+
+    MenuItem deleteMenuItem = new MenuItem( itemMenu, SWT.NONE );
+    deleteMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.Delete" ) );
+    deleteMenuItem.addSelectionListener( new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        Bowl bowl = getEventBowl();
+        CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
+        RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
+        RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
+        runConfigurationDelegate.delete( runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+      }
+    } );
     return itemMenu;
   }
 
