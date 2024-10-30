@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -146,10 +147,18 @@ public class StreamToJobNodeConverter implements Converter {
    */
   public IRepositoryFileData convert( final InputStream inputStream, final String charset, final String mimeType ) {
     try {
+      InputStream newInputStream = inputStream;
       long size = inputStream.available();
+
+      if ( size == 0 ) {
+        byte[] fileContent = IOUtils.toByteArray( newInputStream );
+        size = fileContent.length;
+        newInputStream = new ByteArrayInputStream( fileContent );
+      }
+
       JobMeta jobMeta = new JobMeta();
       Repository repository = connectToRepository();
-      Document doc = PDIImportUtil.loadXMLFrom( inputStream );
+      Document doc = PDIImportUtil.loadXMLFrom( newInputStream );
       if ( doc != null ) {
         jobMeta.loadXML( doc.getDocumentElement(), repository, null );
         if ( jobMeta.hasMissingPlugins() ) {
