@@ -27,6 +27,7 @@ import java.util.Set;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -147,18 +148,11 @@ public class StreamToJobNodeConverter implements Converter {
    */
   public IRepositoryFileData convert( final InputStream inputStream, final String charset, final String mimeType ) {
     try {
-      InputStream newInputStream = inputStream;
-      long size = inputStream.available();
-
-      if ( size == 0 ) {
-        byte[] fileContent = IOUtils.toByteArray( newInputStream );
-        size = fileContent.length;
-        newInputStream = new ByteArrayInputStream( fileContent );
-      }
+      BoundedInputStream bis = BoundedInputStream.builder().setInputStream( inputStream ).get();
 
       JobMeta jobMeta = new JobMeta();
       Repository repository = connectToRepository();
-      Document doc = PDIImportUtil.loadXMLFrom( newInputStream );
+      Document doc = PDIImportUtil.loadXMLFrom( bis );
       if ( doc != null ) {
         jobMeta.loadXML( doc.getDocumentElement(), repository, null );
         if ( jobMeta.hasMissingPlugins() ) {
@@ -169,7 +163,7 @@ public class StreamToJobNodeConverter implements Converter {
         }
         JobDelegate delegate = new JobDelegate( repository, this.unifiedRepository );
         delegate.saveSharedObjects( jobMeta, null );
-        return new NodeRepositoryFileData( delegate.elementToDataNode( jobMeta ), size );
+        return new NodeRepositoryFileData( delegate.elementToDataNode( jobMeta ), bis.getCount() );
       } else {
         return null;
       }
