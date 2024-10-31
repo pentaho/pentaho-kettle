@@ -111,12 +111,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.DatabaseImpact;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransExecutionConfiguration;
-import org.pentaho.di.trans.TransHopMeta;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.TransPainter;
+import org.pentaho.di.trans.*;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
@@ -3866,7 +3861,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // memory
           // To be able to completely test this, we need to run it as we would normally do in pan
           //
-          trans = this.createLegacyTrans();
+          trans = new TransSupplier( transMeta, log, this::createLegacyTrans ).get();
 
           trans.setRepository( spoon.getRepository() );
           trans.setMetaStore( spoon.getMetaStore() );
