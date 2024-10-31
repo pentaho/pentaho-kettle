@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
