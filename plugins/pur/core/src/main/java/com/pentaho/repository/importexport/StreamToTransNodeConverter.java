@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -132,10 +133,11 @@ public class StreamToTransNodeConverter implements Converter {
 
   public IRepositoryFileData convert( final InputStream inputStream, final String charset, final String mimeType ) {
     try {
-      long size = inputStream.available();
+      BoundedInputStream bis = BoundedInputStream.builder().setInputStream( inputStream ).get();
+
       TransMeta transMeta = new TransMeta();
       Repository repository = connectToRepository();
-      Document doc = PDIImportUtil.loadXMLFrom( inputStream );
+      Document doc = PDIImportUtil.loadXMLFrom( bis );
       transMeta.loadXML( doc.getDocumentElement(), repository, false );
 
       if ( transMeta.hasMissingPlugins() ) {
@@ -147,7 +149,7 @@ public class StreamToTransNodeConverter implements Converter {
 
       TransDelegate delegate = new TransDelegate( repository, this.unifiedRepository );
       saveSharedObjects( repository, transMeta );
-      return new NodeRepositoryFileData( delegate.elementToDataNode( transMeta ), size );
+      return new NodeRepositoryFileData( delegate.elementToDataNode( transMeta ), bis.getCount() );
     } catch ( IOException | KettleException e ) {
       logger.error( e );
       return null;
