@@ -22,26 +22,32 @@
 
 package org.pentaho.di.trans.steps.rest;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
@@ -51,7 +57,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class RestTest {
-
   @Ignore
   @Test
   public void testCallEndpointWithGetVerb() throws KettleException {
@@ -152,28 +157,25 @@ public class RestTest {
    * Verifies that a PUT request with an empty body does not trigger an IllegalStateException
    * @throws KettleException
    */
-  @Ignore
   @Test
   public void testPutWithEmptyBody() throws KettleException {
 
-    Invocation.Builder builder = mock( Invocation.Builder.class );
+    Invocation.Builder builder = Mockito.mock( Invocation.Builder.class );
+    WebTarget resource = Mockito.mock( WebTarget.class );
 
-    WebTarget resource = mock( WebTarget.class );
-    lenient().doReturn( builder ).when( resource ).request();
+    Mockito.lenient().when( resource.request() ).thenReturn( builder );
+    Mockito.lenient().when( builder.method( eq( "PUT" ), any( Entity.class ) ) ).thenReturn( Response.ok( "true" ).build() );
 
-    Client client = mock( Client.class );
-    lenient().doReturn( resource ).when( client ).target( anyString() );
+    Client client = Mockito.mock( Client.class );
+    Mockito.lenient().when( client.target( Mockito.anyString() ) ).thenReturn( resource );
 
-    ClientBuilder clientBuilder = mock( ClientBuilder.class );
-    lenient().when( clientBuilder.build() ).thenReturn( client );
+    RestMeta meta = Mockito.mock( RestMeta.class );
+    Mockito.when( meta.isUrlInField() ).thenReturn( false );
+    Mockito.when( meta.isDynamicMethod() ).thenReturn( false );
 
-    RestMeta meta = mock( RestMeta.class );
-    lenient().doReturn( false ).when( meta ).isUrlInField();
-    lenient().doReturn( false ).when( meta ).isDynamicMethod();
+    RowMetaInterface rmi = Mockito.mock( RowMetaInterface.class );
 
-    RowMetaInterface rmi = mock( RowMetaInterface.class );
-
-    RestData data = mock( RestData.class );
+    RestData data = Mockito.mock( RestData.class );
     data.method = RestMeta.HTTP_METHOD_PUT;
     data.config = new ClientConfig();
     data.inputRowMeta = rmi;
@@ -183,10 +185,10 @@ public class RestTest {
     data.useBody = true;
     // do not set data.indexOfBodyField
 
-    Rest rest = mock( Rest.class );
-    doCallRealMethod().when( rest ).callRest( any() );
-    doCallRealMethod().when( rest ).getClient( any() );
-    doCallRealMethod().when( rest ).buildRequest( any(), any() );
+    Rest rest = Mockito.mock( Rest.class );
+    Mockito.doCallRealMethod().when( rest ).callRest( Mockito.any() );
+    Mockito.doCallRealMethod().when( rest ).getClient( Mockito.any() );
+    Mockito.doCallRealMethod().when( rest ).buildRequest( Mockito.any(), Mockito.any() );
 
     ReflectionTestUtils.setField( rest, "meta", meta );
     ReflectionTestUtils.setField( rest, "data", data );
@@ -195,10 +197,8 @@ public class RestTest {
       rest.callRest( new Object[] { 0 } );
       Assert.fail( "Expected an exception" );
     } catch ( KettleException exception ) {
-      // Ignore the ConnectException which is expected as rest call to localhost:8080 will fail in unit test
-      // IllegalStateException is throws when the body is null
-      if ( exception.getCause().getCause() instanceof IllegalStateException ) {
-          Assert.fail( "PUT request with an empty body should not have failed with an IllegalStateException" );
+      if ( exception.getCause() instanceof IllegalStateException ) {
+        Assert.fail( "PUT request with an empty body should not have failed with an IllegalStateException" );
       }
     }
   }

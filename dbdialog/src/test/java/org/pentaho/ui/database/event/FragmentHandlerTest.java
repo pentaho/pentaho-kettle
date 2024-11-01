@@ -23,7 +23,6 @@ package org.pentaho.ui.database.event;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -47,7 +46,6 @@ import static org.mockito.Mockito.when;
 /**
  * Unit tests for FragmentHandler.
  */
-@Ignore
 public class FragmentHandlerTest {
 
   FragmentHandler fragmentHandler;
