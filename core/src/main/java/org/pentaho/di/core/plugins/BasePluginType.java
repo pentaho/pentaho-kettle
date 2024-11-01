@@ -623,13 +623,15 @@ public abstract class BasePluginType implements PluginTypeInterface {
    * Create a new URL class loader with the jar file specified. Also include all the jar files in the lib folder next to
    * that file.
    *
+   * @param pluginClassName
+   *          The name of the main class that implements the Step or JobEntry annotation
    * @param jarFileUrl
    *          The jar file to include
    * @param classLoader
    *          the parent class loader to use
    * @return The URL class loader
    */
-  protected URLClassLoader createUrlClassLoader( URL jarFileUrl, ClassLoader classLoader ) {
+  protected URLClassLoader createUrlClassLoader( String pluginClassName, URL jarFileUrl, ClassLoader classLoader ) {
     List<URL> urls = new ArrayList<>();
 
     // Also append all the files in the underlying lib folder if it exists...
@@ -734,7 +736,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
     for ( JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins ) {
 
       URLClassLoader urlClassLoader =
-        createUrlClassLoader( jarFilePlugin.getJarFile(), getClass().getClassLoader() );
+        createUrlClassLoader( jarFilePlugin.getClassName(), jarFilePlugin.getJarFile(), getClass().getClassLoader() );
 
       try {
         Class<?> clazz = urlClassLoader.loadClass( jarFilePlugin.getClassName() );
