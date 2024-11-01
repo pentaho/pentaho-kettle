@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -630,15 +631,13 @@ public abstract class BasePluginType implements PluginTypeInterface {
    * Create a new URL class loader with the jar file specified. Also include all the jar files in the lib folder next to
    * that file.
    *
-   * @param pluginClassName
-   *          The name of the main class that implements the Step or JobEntry annotation
    * @param jarFileUrl
    *          The jar file to include
    * @param classLoader
    *          the parent class loader to use
    * @return The URL class loader
    */
-  protected URLClassLoader createUrlClassLoader( String pluginClassName, URL jarFileUrl, ClassLoader classLoader ) {
+  protected URLClassLoader createUrlClassLoader( URL jarFileUrl, ClassLoader classLoader ) {
     List<URL> urls = new ArrayList<>();
 
     // Also append all the files in the underlying lib folder if it exists...
@@ -661,25 +660,27 @@ public abstract class BasePluginType implements PluginTypeInterface {
     urls.add( jarFileUrl );
 
     KettleURLClassLoader urlClassLoader = new KettleURLClassLoader( urls.toArray( new URL[ urls.size() ] ), classLoader );
-    return processPluginClasspathAnnotation( urlClassLoader, pluginClassName, jarFileUrl, urls, classLoader );
+    return processPluginClasspath( urlClassLoader, jarFileUrl, urls, classLoader );
   }
 
   /**
-   * Job (@JobEntry) or Step (@Step) classes using the @PluginClasspath annotation
-   * will add the "sourcesDirectories" to the plugin classpath
+   * Adds the entries defined in the classpath.properties located at the root of the plugin to the plugin classpath
    */
-  private KettleURLClassLoader processPluginClasspathAnnotation(
-    KettleURLClassLoader urlClassLoader, String pluginClassName, URL jarFileUrl, List<URL> urls, ClassLoader classLoader ) {
+  private KettleURLClassLoader processPluginClasspath(
+    KettleURLClassLoader urlClassLoader, URL jarFileUrl, List<URL> urls, ClassLoader classLoader ) {
     try {
-      String libFolderName = new File( URLDecoder.decode( jarFileUrl.getFile(), "UTF-8" ) ).getParent();
-      File libFolderNameFile = new File( libFolderName );
-      Class<?> clazz = urlClassLoader.loadClass( pluginClassName );
-      PluginClasspath pluginClasspathAnnotation = clazz.getAnnotation( PluginClasspath.class );
-      if ( pluginClasspathAnnotation != null ) {
-        if( libFolderNameFile.exists() ) {
-          String[] sourceDirectories = pluginClasspathAnnotation.libPaths();
+      String pluginRootFolderName = new File( URLDecoder.decode( jarFileUrl.getFile(), "UTF-8" ) ).getParent();
+      File pluginRootFolder = new File( pluginRootFolderName );
+      if( pluginRootFolder.exists() ) {
+        File classPathFile = new File( pluginRootFolder, "classpath.properties" );
+        if ( classPathFile.exists() ) {
+          FileInputStream classPathFileInputStream = new FileInputStream( classPathFile );
+          Properties classPathProperties = new Properties();
+          classPathProperties.load( classPathFileInputStream );
+          String classpathProperty = classPathProperties.getProperty( "classpath" );
+          String[] sourceDirectories = classpathProperty.split( ":" );
           for ( String sourceDirectory : sourceDirectories ) {
-            File sourceDirectoryFile = new File( libFolderNameFile, sourceDirectory);
+            File sourceDirectoryFile = new File( pluginRootFolder, sourceDirectory );
             if ( sourceDirectoryFile.getCanonicalFile().exists() ) {
               PluginFolder pluginFolder = new PluginFolder(
                 sourceDirectoryFile.getCanonicalPath(), false, true, searchLibDir );
@@ -692,6 +693,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
           urlClassLoader = new KettleURLClassLoader( urls.toArray( new URL[ urls.size() ] ), classLoader );
         }
       }
+
     } catch ( Exception e ) {
       LogChannel.GENERAL.logError( e.getMessage() );
     }
@@ -740,7 +742,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
     for ( JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins ) {
 
       URLClassLoader urlClassLoader =
-        createUrlClassLoader( jarFilePlugin.getClassName(), jarFilePlugin.getJarFile(), getClass().getClassLoader() );
+        createUrlClassLoader( jarFilePlugin.getJarFile(), getClass().getClassLoader() );
 
       try {
         Class<?> clazz = urlClassLoader.loadClass( jarFilePlugin.getClassName() );
