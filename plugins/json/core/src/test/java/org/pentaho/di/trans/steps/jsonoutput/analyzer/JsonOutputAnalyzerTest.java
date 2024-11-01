@@ -15,7 +15,6 @@ package org.pentaho.di.trans.steps.jsonoutput.analyzer;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -120,7 +119,6 @@ public class JsonOutputAnalyzerTest {
     assertTrue( types.contains( JsonOutputMeta.class ) );
   }
 
-  @Ignore
   @Test
   public void testJsonOutputExternalResourceConsumer() throws Exception {
     JsonOutputExternalResourceConsumer consumer = new JsonOutputExternalResourceConsumer();
