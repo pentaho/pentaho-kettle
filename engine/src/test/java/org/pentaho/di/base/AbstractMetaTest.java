@@ -205,20 +205,20 @@ public class AbstractMetaTest {
     assertFalse( meta.haveConnectionsChanged() );
     meta.clear();
     assertTrue( meta.getDatabases().isEmpty() );
-    assertTrue( meta.getDatabaseManagementInterface().getDatabases().isEmpty() );
+    assertTrue( meta.getDatabaseManagementInterface().getAll().isEmpty() );
     assertEquals( 0, meta.nrDatabases() );
     assertFalse( meta.haveConnectionsChanged() );
 
     DatabaseMeta db1 = new DatabaseMeta();
     db1.setName( "db1" );
     db1.setDisplayName( "db1" );
-    meta.getDatabaseManagementInterface().addDatabase( db1 );
+    meta.getDatabaseManagementInterface().add( db1 );
 
     assertEquals( 1, meta.getDatabases().size() );
-    assertEquals( 1, meta.getDatabaseManagementInterface().getDatabases().size() );
+    assertEquals( 1, meta.getDatabaseManagementInterface().getAll().size() );
     assertEquals( 1, meta.nrDatabases() );
     assertTrue( meta.haveConnectionsChanged() );
-    assertEquals( db1, meta.getDatabaseManagementInterface().getDatabase( "db1" ) );
+    assertEquals( db1, meta.getDatabaseManagementInterface().get( "db1" ) );
     assertEquals( db1, meta.findDatabase( "db1" ) );
   }
 
@@ -235,26 +235,26 @@ public class AbstractMetaTest {
     DatabaseMeta db1 = new DatabaseMeta();
     db1.setName( "db1" );
     db1.setDisplayName( "db1" );
-    meta.getDatabaseManagementInterface().addDatabase( db1 );
+    meta.getDatabaseManagementInterface().add( db1 );
     assertEquals( 1, meta.nrDatabases() );
     assertFalse( meta.getDatabases().isEmpty() );
     assertTrue( meta.haveConnectionsChanged() );
     DatabaseMeta db2 = new DatabaseMeta();
     db2.setName( "db2" );
     db2.setDisplayName( "db2" );
-    meta.getDatabaseManagementInterface().addDatabase( db2 );
+    meta.getDatabaseManagementInterface().add( db2 );
     assertEquals( 2, meta.nrDatabases() );
     // Test replace
-    meta.getDatabaseManagementInterface().addDatabase( db1 );
+    meta.getDatabaseManagementInterface().add( db1 );
     assertEquals( 2, meta.nrDatabases() );
-    meta.getDatabaseManagementInterface().addDatabase( db1 );
+    meta.getDatabaseManagementInterface().add( db1 );
     assertEquals( 2, meta.nrDatabases() );
     // Test duplicate
-    meta.getDatabaseManagementInterface().addDatabase( db2 );
+    meta.getDatabaseManagementInterface().add( db2 );
     assertEquals( 2, meta.nrDatabases() );
     DatabaseMeta db3 = new DatabaseMeta();
     db3.setName( "db3" );
-    meta.getDatabaseManagementInterface().addDatabase( db3 );
+    meta.getDatabaseManagementInterface().add( db3 );
     assertEquals( 3, meta.nrDatabases() );
     assertEquals( db1, meta.getDatabase( 0 ) );
     assertEquals( 0, meta.indexOfDatabase( db1 ) );
@@ -264,11 +264,11 @@ public class AbstractMetaTest {
     assertEquals( 2, meta.indexOfDatabase( db3 ) );
     DatabaseMeta db4 = new DatabaseMeta();
     db4.setName( "db4" );
-    meta.getDatabaseManagementInterface().addDatabase( db4 );
+    meta.getDatabaseManagementInterface().add( db4 );
     assertEquals( 4, meta.nrDatabases() );
     assertEquals( db4, meta.getDatabase( 3 ) );
     assertEquals( 3, meta.indexOfDatabase( db4 ) );
-    meta.getDatabaseManagementInterface().removeDatabase( db4 );
+    meta.getDatabaseManagementInterface().remove( db4 );
     assertEquals( 3, meta.nrDatabases() );
     assertTrue( meta.haveConnectionsChanged() );
     meta.clearChangedDatabases();

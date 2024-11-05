@@ -15,23 +15,18 @@
  *
  */
 
-package org.pentaho.di.shared;
+package org.pentaho.di.cluster;
 
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.w3c.dom.Node;
+import org.pentaho.di.shared.SharedObjectsManagementInterface;
 
-/**
- * Database Manager that does not cache anything. Complete passthrough to the provided SharedObjectsIO instance.
- *
- */
-public class PassthroughDbConnectionManager extends PassthroughManager<DatabaseMeta> implements DatabaseManagementInterface {
+import java.util.List;
 
-  public PassthroughDbConnectionManager( SharedObjectsIO sharedObjectsIO ) {
-    super( sharedObjectsIO, DatabaseMeta.class, DatabaseConnectionManager.DB_TYPE );
+public interface ClusterSchemaManagementInterface extends SharedObjectsManagementInterface<ClusterSchema> {
+
+  @FunctionalInterface
+  public interface SlaveServersSupplier {
+    List<SlaveServer> get() throws KettleException;
   }
 
-  protected DatabaseMeta createSharedObjectUsingNode( Node node ) throws KettleException {
-    return new DatabaseMeta( node );
-  }
 }

@@ -32,6 +32,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -98,6 +99,8 @@ import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.shared.ChangeTrackingClusterSchemaManager;
+import org.pentaho.di.shared.PassthroughClusterSchemaManager;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.trans.step.BaseStep;
@@ -171,7 +174,11 @@ public class TransMeta extends AbstractMeta
   protected List<TransDependency> dependencies;
 
   /** The list of cluster schemas associated with the transformation. */
-  protected List<ClusterSchema> clusterSchemas;
+  protected ChangeTrackingClusterSchemaManager localClusterSchemaManager =
+    new ChangeTrackingClusterSchemaManager( new PassthroughClusterSchemaManager( localSharedObjects,
+      () -> readSlaveServerManager.getAll() ) );
+  protected ClusterSchemaManagementInterface readClusterSchemaManager =
+    new PassthroughClusterSchemaManager( combinedSharedObjects, () -> readSlaveServerManager.getAll() );
 
   /** The list of partition schemas associated with the transformation. */
   private List<PartitionSchema> partitionSchemas;
@@ -582,7 +589,6 @@ public class TransMeta extends AbstractMeta
         transMeta.notes = new ArrayList<>();
         transMeta.dependencies = new ArrayList<>();
         transMeta.partitionSchemas = new ArrayList<>();
-        transMeta.clusterSchemas = new ArrayList<>();
         transMeta.namedParams = new NamedParamsDefault();
         transMeta.stepChangeListeners = new ArrayList<>();
       }
@@ -626,8 +632,11 @@ public class TransMeta extends AbstractMeta
       for ( TransDependency dep : dependencies ) {
         transMeta.addDependency( (TransDependency) dep.clone() );
       }
-      for ( ClusterSchema schema : clusterSchemas ) {
-        transMeta.getClusterSchemas().add( schema.clone() );
+      // ClusterSchemas
+      String clusterSchemaType = SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( clusterSchemaType ).entrySet() ) {
+        // cloneNode is *probably* overkill
+        transMeta.localSharedObjects.saveSharedObject( clusterSchemaType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
       for ( PartitionSchema schema : partitionSchemas ) {
         transMeta.getPartitionSchemas().add( (PartitionSchema) schema.clone() );
@@ -655,7 +664,6 @@ public class TransMeta extends AbstractMeta
     hops = new ArrayList<>();
     dependencies = new ArrayList<>();
     partitionSchemas = new ArrayList<>();
-    clusterSchemas = new ArrayList<>();
     namedParams = new NamedParamsDefault();
     stepChangeListeners = new ArrayList<>();
 
@@ -716,6 +724,15 @@ public class TransMeta extends AbstractMeta
     transformationType = TransformationType.Normal;
 
     log = LogChannel.GENERAL;
+  }
+
+  protected void initializeNonLocalSharedObjects() {
+    super.initializeNonLocalSharedObjects();
+    localClusterSchemaManager =
+      new ChangeTrackingClusterSchemaManager( new PassthroughClusterSchemaManager( localSharedObjects,
+        () -> readSlaveServerManager.getAll() ) );
+    readClusterSchemaManager = new PassthroughClusterSchemaManager( combinedSharedObjects,
+      () -> readSlaveServerManager.getAll() );
   }
 
   /**
@@ -2538,8 +2555,7 @@ public class TransMeta extends AbstractMeta
     //
     if ( includeClusters ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_CLUSTERSCHEMAS ) ).append( Const.CR );
-      for ( int i = 0; i < clusterSchemas.size(); i++ ) {
-        ClusterSchema clusterSchema = clusterSchemas.get( i );
+      for ( ClusterSchema clusterSchema : localClusterSchemaManager.getAll() ) {
         retval.append( clusterSchema.getXML() );
       }
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_CLUSTERSCHEMAS ) ).append( Const.CR );
@@ -2572,7 +2588,7 @@ public class TransMeta extends AbstractMeta
 
     // The database connections...
     if ( includeDatabase ) {
-      for ( DatabaseMeta dbMeta : localDbMgr.getDatabases() ) {
+      for ( DatabaseMeta dbMeta : localDbMgr.getAll() ) {
         //PDI-20078 - If props == null, it means transformation is running on the slave server. For the
         // method areOnlyUsedConnectionsSavedToXMLInServer to return false, the "STRING_ONLY_USED_DB_TO_XML"
         // needs to have "N" in the server startup script file
@@ -3268,7 +3284,7 @@ public class TransMeta extends AbstractMeta
           DatabaseMeta dbcon = new DatabaseMeta( nodecon );
           dbcon.shareVariablesWith( this );
             privateTransformationDatabases.add( dbcon.getName() );
-          localDbMgr.addDatabase( dbcon );
+          localDbMgr.add( dbcon );
         }
         setPrivateDatabases( privateTransformationDatabases );
         // make a copy so we don't keep re-reading it for the calls to loadXML
@@ -3565,28 +3581,13 @@ public class TransMeta extends AbstractMeta
           ClusterSchema clusterSchema = new ClusterSchema( clusterSchemaNode, getSlaveServers() );
           clusterSchema.shareVariablesWith( this );
 
-          // Check if the object exists and if it's a shared object.
-          // If so, then we will keep the shared version, not this one.
-          // The stored XML is only for backup purposes.
-          ClusterSchema check = findClusterSchema( clusterSchema.getName() );
-          if ( check != null ) {
-            if ( !check.isShared() ) {
-              // we don't overwrite shared objects.
-              if ( shouldOverwrite( prompter, props,
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteClusterSchemaYN", clusterSchema.getName() ),
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
-                addOrReplaceClusterSchema( clusterSchema );
-              }
-            }
-          } else {
-            clusterSchemas.add( clusterSchema );
-          }
+          localClusterSchemaManager.add( clusterSchema );
         }
 
         // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
         //
         for ( int i = 0; i < nrSteps(); i++ ) {
-          getStep( i ).setClusterSchemaAfterLoading( clusterSchemas );
+          getStep( i ).setClusterSchemaAfterLoading( localClusterSchemaManager.getAll() );
         }
 
         String srowset = XMLHandler.getTagValue( infonode, "size_rowset" );
@@ -3700,10 +3701,6 @@ public class TransMeta extends AbstractMeta
       } else if ( object instanceof PartitionSchema ) {
         PartitionSchema partitionSchema = (PartitionSchema) object;
         addOrReplacePartitionSchema( partitionSchema );
-      } else if ( object instanceof ClusterSchema ) {
-        ClusterSchema clusterSchema = (ClusterSchema) object;
-        clusterSchema.shareVariablesWith( this );
-        addOrReplaceClusterSchema( clusterSchema );
       } else {
         return false;
       }
@@ -3808,9 +3805,7 @@ public class TransMeta extends AbstractMeta
     for ( int i = 0; i < partitionSchemas.size(); i++ ) {
       partitionSchemas.get( i ).setChanged( false );
     }
-    for ( int i = 0; i < clusterSchemas.size(); i++ ) {
-      clusterSchemas.get( i ).setChanged( false );
-    }
+    localClusterSchemaManager.clearChanged();
 
     super.clearChanged();
   }
@@ -3878,14 +3873,7 @@ public class TransMeta extends AbstractMeta
    * @return true if the clustering schemas have been changed, false otherwise
    */
   public boolean haveClusterSchemasChanged() {
-    for ( int i = 0; i < clusterSchemas.size(); i++ ) {
-      ClusterSchema cs = clusterSchemas.get( i );
-      if ( cs.hasChanged() ) {
-        return true;
-      }
-    }
-
-    return false;
+    return localClusterSchemaManager.hasChanged();
   }
 
   /**
@@ -5459,7 +5447,7 @@ public class TransMeta extends AbstractMeta
     // Loop over all steps in the transformation and see what the used vars are...
     if ( searchDatabases ) {
       try {
-        for ( DatabaseMeta meta : localDbMgr.getDatabases() ) {
+        for ( DatabaseMeta meta : localDbMgr.getAll() ) {
           stringList.add( new StringSearchResult( meta.getName(), meta, this,
               BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
           if ( meta.getHostname() != null ) {
@@ -5691,7 +5679,12 @@ public class TransMeta extends AbstractMeta
    * @return a list of ClusterSchemas
    */
   public List<ClusterSchema> getClusterSchemas() {
-    return clusterSchemas;
+    try {
+      return localClusterSchemaManager.getAll();
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( exception.getMessage(), exception );
+      return null;
+    }
   }
 
   /**
@@ -5701,7 +5694,14 @@ public class TransMeta extends AbstractMeta
    *          the list of ClusterSchemas to set
    */
   public void setClusterSchemas( List<ClusterSchema> clusterSchemas ) {
-    this.clusterSchemas = clusterSchemas;
+    try {
+      localClusterSchemaManager.clear();
+      for ( ClusterSchema clusterSchema : clusterSchemas ) {
+        localClusterSchemaManager.add( clusterSchema );
+      }
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( exception.getMessage(), exception );
+    }
   }
 
   /**
@@ -5710,11 +5710,12 @@ public class TransMeta extends AbstractMeta
    * @return a String array containing the cluster schemas' names
    */
   public String[] getClusterSchemaNames() {
-    String[] names = new String[clusterSchemas.size()];
-    for ( int i = 0; i < names.length; i++ ) {
-      names[i] = clusterSchemas.get( i ).getName();
+    try {
+      List<ClusterSchema> clusterSchemas = readClusterSchemaManager.getAll();
+      return clusterSchemas.stream().map( ClusterSchema::getName ).toArray( String[]::new );
+    } catch ( KettleException ex ) {
+      return null;
     }
-    return names;
   }
 
   /**
@@ -5742,13 +5743,18 @@ public class TransMeta extends AbstractMeta
    * @return the cluster schema with the specified name of null if nothing was found
    */
   public ClusterSchema findClusterSchema( String name ) {
-    for ( int i = 0; i < clusterSchemas.size(); i++ ) {
-      ClusterSchema schema = clusterSchemas.get( i );
-      if ( schema.getName().equalsIgnoreCase( name ) ) {
-        return schema;
+    try {
+      List<ClusterSchema> clusterSchemas = readClusterSchemaManager.getAll();
+      for ( ClusterSchema clusterSchema : clusterSchemas ) {
+        if ( ( clusterSchema != null ) && ( clusterSchema.getName() != null &&
+                                            clusterSchema.getName().equalsIgnoreCase( name ) ) ) {
+          return clusterSchema;
+        }
       }
+      return null;
+    } catch ( KettleException ex ) {
+      return null;
     }
-    return null;
   }
 
   /**
@@ -5787,12 +5793,10 @@ public class TransMeta extends AbstractMeta
    *          The cluster schema to be added.
    */
   public void addOrReplaceClusterSchema( ClusterSchema clusterSchema ) {
-    int index = clusterSchemas.indexOf( clusterSchema );
-    if ( index < 0 ) {
-      clusterSchemas.add( clusterSchema );
-    } else {
-      ClusterSchema previous = clusterSchemas.get( index );
-      previous.replaceMeta( clusterSchema );
+    try {
+      localClusterSchemaManager.add( clusterSchema );
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logBasic( exception.getMessage(), exception );
     }
     setChanged();
   }
@@ -6644,6 +6648,18 @@ public class TransMeta extends AbstractMeta
           .append( step.isDoingErrorHandling() );
     }
     return hashCodeBuilder.toHashCode();
+  }
+
+  @Override
+  public <T> T getSharedObjectManager( Class<T> clazz ) {
+    T mgr = super.getSharedObjectManager( clazz );
+    if ( mgr != null ) {
+      return mgr;
+    }
+    if ( clazz.isAssignableFrom( ClusterSchemaManagementInterface.class ) ) {
+      return clazz.cast( localClusterSchemaManager );
+    }
+    return null;
   }
 
   private static String getStepMetaCacheKey( StepMeta stepMeta, boolean info ) {

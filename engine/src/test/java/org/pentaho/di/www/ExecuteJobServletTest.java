@@ -200,7 +200,8 @@ public class ExecuteJobServletTest {
       spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
       String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.UnableToFindRepository", "Unknown" );
-      assertTrue( out.toString().contains( message ) );
+      String output = out.toString();
+      assertTrue( output.contains( message ), "Missing message in output: " + output );
     }
   }
 

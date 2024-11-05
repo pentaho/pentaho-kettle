@@ -952,7 +952,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
     List<SlaveServerDetection> detections = new ArrayList<SlaveServerDetection>();
     for ( int i = 0; i < nrDetections; i++ ) {
-      Node detectionNode = XMLHandler.getSubNodeByNr( detectionsNode, SlaveServerDetection.XML_TAG, i );
+      Node detectionNode = XMLHandler.getSubNodeByNr( detectionsNode, SlaveServerDetection.XML_TAG, i, false );
       SlaveServerDetection detection = new SlaveServerDetection( detectionNode );
       detections.add( detection );
     }

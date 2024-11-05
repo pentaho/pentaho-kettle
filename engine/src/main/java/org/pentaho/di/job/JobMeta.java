@@ -418,7 +418,6 @@ public class JobMeta extends AbstractMeta
         jobMeta.jobhops = new ArrayList<JobHopMeta>();
         jobMeta.notes = new ArrayList<NotePadMeta>();
         jobMeta.initializeSharedObjects();
-        //jobMeta.slaveServers = new ArrayList<SlaveServer>();
         jobMeta.namedParams = new NamedParamsDefault();
       }
 
@@ -650,7 +649,7 @@ public class JobMeta extends AbstractMeta
     Set<DatabaseMeta> usedDatabaseMetas = getUsedDatabaseMetas();
     // Save the database connections...
     try {
-      for ( DatabaseMeta dbMeta : localDbMgr.getDatabases() ) {
+      for ( DatabaseMeta dbMeta : localDbMgr.getAll() ) {
         //PDI-20078 - If props == null, it means transformation is running on the slave server. For the
         // method areOnlyUsedConnectionsSavedToXMLInServer to return false, the "STRING_ONLY_USED_DB_TO_XML"
         // needs to have "N" in the server startup script file
@@ -1114,7 +1113,7 @@ public class JobMeta extends AbstractMeta
         DatabaseMeta dbcon = new DatabaseMeta( dbnode );
         dbcon.shareVariablesWith( this );
         privateDatabases.add( dbcon.getName() );
-        localDbMgr.addDatabase( dbcon );
+        localDbMgr.add( dbcon );
       }
       setPrivateDatabases( privateDatabases );
       // make a copy so we don't keep re-reading it for the calls to loadXML
@@ -2233,7 +2232,7 @@ public class JobMeta extends AbstractMeta
     if ( searchDatabases ) {
       // this searches the Local databases included in the file, not all the databases available.
       try {
-        for ( DatabaseMeta meta : localDbMgr.getDatabases() ) {
+        for ( DatabaseMeta meta : localDbMgr.getAll() ) {
           stringList.add( new StringSearchResult( meta.getName(), meta, this,
               BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseConnectionName" ) ) );
           if ( meta.getHostname() != null ) {

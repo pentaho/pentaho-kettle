@@ -56,6 +56,7 @@ public class SpoonRefreshSlavesSubtreeTest {
   private MockedStatic<GUIResource> guiResourceMockedStatic;
   private MockedStatic<DefaultBowl> defaultBowlMockedStatic;
   private SlaveServerManager mockSlaveServerManager;
+
   @Before
   public void setUp() throws Exception {
     mockGuiResource = mock( GUIResource.class );

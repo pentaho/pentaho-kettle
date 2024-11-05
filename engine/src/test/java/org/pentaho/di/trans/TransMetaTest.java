@@ -204,7 +204,7 @@ public class TransMetaTest {
     DatabaseMetaStoreUtil.createDatabaseElement( mstore, dbMetaStore );
 
     TransMeta trans = new TransMeta();
-    trans.getDatabaseManagementInterface().addDatabase( dbMetaShared );
+    trans.getDatabaseManagementInterface().add( dbMetaShared );
     trans.setMetaStore( mstore );
     trans.importFromMetaStore();
     DatabaseMeta dbMeta = trans.findDatabase( name );

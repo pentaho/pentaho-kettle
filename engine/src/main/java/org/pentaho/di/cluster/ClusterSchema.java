@@ -193,7 +193,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     Node slavesNode = XMLHandler.getSubNode( clusterSchemaNode, "slaveservers" );
     int nrSlaves = XMLHandler.countNodes( slavesNode, "name" );
     for ( int i = 0; i < nrSlaves; i++ ) {
-      Node serverNode = XMLHandler.getSubNodeByNr( slavesNode, "name", i );
+      Node serverNode = XMLHandler.getSubNodeByNr( slavesNode, "name", i, false );
       String serverName = XMLHandler.getNodeValue( serverNode );
       SlaveServer slaveServer = SlaveServer.findSlaveServer( referenceSlaveServers, serverName );
       if ( slaveServer != null ) {

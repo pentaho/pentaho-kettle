@@ -98,7 +98,7 @@ public class DatabasesCollectorTest {
     List<DatabaseMeta> dbs = asList( metas );
 
     DatabaseManagementInterface dbMgr = mock( DatabaseManagementInterface.class );
-    when( dbMgr.getDatabases() ).thenReturn( dbs );
+    when( dbMgr.getAll() ).thenReturn( dbs );
     when( meta.getDatabaseManagementInterface() ).thenReturn( dbMgr );
     return meta;
   }
@@ -110,7 +110,7 @@ public class DatabasesCollectorTest {
 
     DatabaseConnectionManager mgr = mock( DatabaseConnectionManager.class );
     List<DatabaseMeta> dbs = asList( metas );
-    when( mgr.getDatabases() ).thenReturn( dbs );
+    when( mgr.getAll() ).thenReturn( dbs );
     return mgr;
   }
 

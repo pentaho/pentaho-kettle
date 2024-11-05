@@ -45,6 +45,9 @@ import java.util.Optional;
 
 /**
  * Holds shared objects in memory.
+ * <p>
+ * Note that any shared objects stored in this cannot participate in the XmlHander cache. That is, they must pass
+ * 'false' to XMLHandler.getSubNodeByNr().
  *
  */
 public class MemorySharedObjectsIO implements SharedObjectsIO {

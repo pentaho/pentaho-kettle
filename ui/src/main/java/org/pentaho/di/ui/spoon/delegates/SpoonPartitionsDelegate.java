@@ -122,7 +122,9 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
         BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Message", partitionSchema.getName() ), e );
   }
 
-  private void refreshTree() {
+
+  @Override
+  protected void refreshTree() {
     spoon.refreshTree( PartitionsFolderProvider.STRING_PARTITIONS );
   }
 }

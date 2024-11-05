@@ -1146,7 +1146,7 @@ public class KettleFileRepository extends AbstractRepository {
                                                                                // transformation
         if ( check == null || overWriteShared ) { // We only add, never overwrite database connections.
           if ( databaseMeta.getName() != null ) {
-            transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+            transMeta.getDatabaseManagementInterface().add( databaseMeta );
             if ( !overWriteShared ) {
               databaseMeta.setChanged( false );
             }
@@ -1197,7 +1197,7 @@ public class KettleFileRepository extends AbstractRepository {
     for ( ObjectId id : getDatabaseIDs( false ) ) {
       DatabaseMeta databaseMeta = loadDatabaseMeta( id, null ); // Load last version
       databaseMeta.shareVariablesWith( jobMeta );
-      jobMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+      jobMeta.getDatabaseManagementInterface().add( databaseMeta );
     }
 
     for ( ObjectId id : getSlaveIDs( false ) ) {
@@ -1215,7 +1215,7 @@ public class KettleFileRepository extends AbstractRepository {
     for ( ObjectId id : getDatabaseIDs( false ) ) {
       DatabaseMeta databaseMeta = loadDatabaseMeta( id, null ); // Load last version
       databaseMeta.shareVariablesWith( transMeta );
-      transMeta.getDatabaseManagementInterface().addDatabase( databaseMeta );
+      transMeta.getDatabaseManagementInterface().add( databaseMeta );
     }
 
     for ( ObjectId id : getSlaveIDs( false ) ) {
