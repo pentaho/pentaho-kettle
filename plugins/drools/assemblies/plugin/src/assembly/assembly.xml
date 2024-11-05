@@ -6,7 +6,7 @@
     <format>zip</format>
   </formats>
 
-  <baseDirectory>kettle-drools5-plugin</baseDirectory>
+  <baseDirectory>kettle-drools8-plugin</baseDirectory>
 
   <files>
     <file>
@@ -16,11 +16,17 @@
     </file>
   </files>
 
+  <fileSets>
+    <fileSet>
+      <directory>${samples.directory}</directory>
+    </fileSet>
+  </fileSets>
+
   <dependencySets>
     <dependencySet>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>org.pentaho.di.plugins:kettle-drools5-core:jar</include>
+        <include>org.pentaho.di.plugins:kettle-drools8-core:jar</include>
       </includes>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
@@ -31,7 +37,7 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
       <excludes>
-        <exclude>*:kettle-drools5-core:*</exclude>
+        <exclude>*:kettle-drools8-core:*</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>

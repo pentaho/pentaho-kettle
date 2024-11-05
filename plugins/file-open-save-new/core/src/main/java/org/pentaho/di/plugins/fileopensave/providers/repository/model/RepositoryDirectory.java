@@ -27,6 +27,8 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.plugins.fileopensave.api.providers.Directory;
 import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
 
+import java.util.Objects;
+
 /**
  * Created by bmorrise on 5/16/17.
  */
@@ -50,7 +52,11 @@ public class RepositoryDirectory extends RepositoryFile implements Directory {
     RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
     repositoryDirectory.setParent( parentPath );
     repositoryDirectory.setName( repositoryDirectoryInterface.getName() );
-    repositoryDirectory.setPath( parentPath == null ? repositoryDirectoryInterface.getPath() : parentPath + "/" + repositoryDirectoryInterface.getName() );
+    if ( Objects.equals( parentPath, "/" ) || parentPath == null ) {
+      repositoryDirectory.setPath( repositoryDirectoryInterface.getPath() );
+    } else {
+      repositoryDirectory.setPath( parentPath + "/" + repositoryDirectoryInterface.getName() );
+    }
     repositoryDirectory.setObjectId( repositoryDirectoryInterface.getObjectId().getId() );
     repositoryDirectory.setHidden( !repositoryDirectoryInterface.isVisible() );
     repositoryDirectory.setRoot( RepositoryFileProvider.NAME );

@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2022 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2022-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -190,17 +190,6 @@ public class PentahoAvroReadWriteTest {
       "avroOutputNone.avro", true );
   }
 
-  @Test
-  public void testAvroFileWriteAndReadDefaultValues() throws Exception {
-    Object[] rowData = new Object[] { "Row3Field1", null, null, null, null, null, null, null, null, null };
-
-    String[] defaultValues =
-      { "default", "default2", "1234.0", "5.5", DEFAULT_INET_ADDR.getHostAddress(), "true", "-33456",
-        "1980/01/01 00:00:00.000", "1980/01/01 00:00:00.000", "binary" };
-
-    doReadWrite( DEFAULT_SCHEME_DESCRIPTION, rowData, IPentahoAvroOutputFormat.COMPRESSION.UNCOMPRESSED,
-      "avroOutputNone.avro", defaultValues, null, true );
-  }
 
   @Test( expected = org.apache.avro.file.DataFileWriter.AppendWriteException.class )
   public void testAvroFileNullsNotAllowed() throws Exception {
@@ -793,6 +782,52 @@ public class PentahoAvroReadWriteTest {
         return new ValueMetaBinary( fieldName );
     }
     return null;
+  }
+
+  @Test
+  public void testAvroFileWriteAndReadDefaultValues() throws Exception {
+    Object[] rowData = new Object[] { "Row3Field1", null, null, null, null, null, null, null, null, null };
+
+    String[] defaultValues = {"default", "default2", "1234.0", "5.5", DEFAULT_INET_ADDR.getHostAddress(), "true", "-33456",
+                    "1980/01/01 00:00:00.000", "2018/04/25 14:05:15.953Z", "000000: 7f45 4c46 0101 0100 0000 0000 0000 0000 .ELF............" };
+
+    doReadWrite( DEFAULT_SCHEME_DESCRIPTION, rowData, IPentahoAvroOutputFormat.COMPRESSION.UNCOMPRESSED,
+            "avroOutputNone.avro", defaultValues, null, true );
+  }
+
+  @Test
+  public void testAvroOutputDefaultsWithInvalidValues() throws Exception {
+    int expectedThrows = 5;
+    int actualThrows = 0;
+    String[] defaultValues = { "default#1", "default#2", "NotDouble", "NotDecimal", DEFAULT_INET_ADDR.getHostAddress(), "false", "-33456qw",
+            "1980/01/01Y00:00:00.000", "2018/04/25C14:05:15.953Z", "000000:vc@@7f45 4c46 0101 0100 0000 0000 0000 0000 .ELF............" };
+
+    PentahoAvroOutputFormat pentahoAvroOutputFormat = new PentahoAvroOutputFormat();
+    pentahoAvroOutputFormat.setNameSpace( "abc" );
+    pentahoAvroOutputFormat.setRecordName( "abc" );
+    pentahoAvroOutputFormat.setOutputFile( "abc",true );
+    pentahoAvroOutputFormat.setCompression( IPentahoAvroOutputFormat.COMPRESSION.UNCOMPRESSED );
+
+    for ( int i = 0; i < defaultValues.length; i++ ) {
+      try {
+        AvroOutputField avroOutputField = getAvroObject();
+        avroOutputField.setDefaultValue( defaultValues[i] );
+        avroOutputField.setFormatType( AvroSpec.DataType.getDataType( Integer.parseInt( DEFAULT_SCHEME_DESCRIPTION[i][2] ) ) );
+        pentahoAvroOutputFormat.setFields( List.of( avroOutputField ) );
+        pentahoAvroOutputFormat.createRecordWriter();
+      } catch ( IllegalArgumentException e ) {
+        actualThrows++;
+      }
+    }
+
+    assertEquals( expectedThrows,actualThrows );
+
+  }
+  private AvroOutputField getAvroObject() {
+    AvroOutputField avroOutputField = new AvroOutputField();
+    avroOutputField.setPentahoFieldName( "Test" );
+    avroOutputField.setFormatFieldName( "Test" );
+    return avroOutputField;
   }
 
 }
