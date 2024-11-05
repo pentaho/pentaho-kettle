@@ -415,6 +415,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
   private void getInfo( JobEntryTrans jet ) throws KettleException {
     jet.setName( wName.getText() );
+    jet.setParentJobMeta( jobMeta );
     if ( rep != null ) {
       specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
     } else {
