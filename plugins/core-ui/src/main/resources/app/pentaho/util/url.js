@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2024 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 define([
-  "./has"
-], function(has) {
+  "./has",
+  "common-ui/util/xss"
+], function(has, xssUtil) {
   "use strict";
 
   /* eslint new-cap: 0 */
@@ -93,7 +94,7 @@ define([
       protocol: protocol,
       username: auth.length > 0 ? auth[0] : "",
       password: auth.length > 1 ? auth[1] : "",
-      hostname: host,
+      hostname: xssUtil.sanitizeHtml(host),
       host: host + ":" + port,
       port: port,
       origin: protocol + "//" + host + ":" + port,
