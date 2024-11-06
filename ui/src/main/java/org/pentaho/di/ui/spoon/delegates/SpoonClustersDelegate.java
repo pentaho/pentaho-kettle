@@ -104,16 +104,18 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
       getMessage( "Spoon.Dialog.ErrorSavingCluster.Message", clusterSchema.getName() ), e );
   }
 
-  public void editClusterSchema( ClusterSchemaManagementInterface manager, ClusterSchema clusterSchema ) {
+  public void editClusterSchema( TransMeta transMeta, ClusterSchemaManagementInterface manager, ClusterSchema clusterSchema ) {
     String originalName = clusterSchema.getName().trim();
     try {
       // execution bowl for listing all slave servers
       SlaveServerManagementInterface slaveServerManagementInterface =
         spoon.getExecutionBowl().getManager( SlaveServerManagementInterface.class );
 
+      List<SlaveServer> slaveServers = transMeta != null ? transMeta.getSlaveServers()
+        : slaveServerManagementInterface.getAll();
+
       ClusterSchemaDialog dialog =
-          new ClusterSchemaDialog( spoon.getShell(), clusterSchema, manager.getAll(),
-                                   slaveServerManagementInterface.getAll() );
+          new ClusterSchemaDialog( spoon.getShell(), clusterSchema, manager.getAll(), slaveServers );
       if ( dialog.open() ) {
         String newName = clusterSchema.getName().trim();
         manager.add( clusterSchema );

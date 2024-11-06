@@ -3053,13 +3053,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void editClusterSchema() {
-    withClusterSchema( ( manager, clusterSchema ) -> delegates.clusters.editClusterSchema( manager, clusterSchema ) );
+    withClusterSchema( ( manager, clusterSchema ) -> delegates.clusters.editClusterSchema( getActiveTransformation(),
+      manager, clusterSchema ) );
   }
 
   private void editClusterSchema( SpoonTreeLeveledSelection leveledSelection ) {
     withClusterSchema( leveledSelection, ( clusterSchemaManager, clusterSchema ) -> {
       getLog().logBasic( "editing cluster schema " + clusterSchema.getName() );
-      delegates.clusters.editClusterSchema( clusterSchemaManager, clusterSchema );
+      delegates.clusters.editClusterSchema( getActiveTransformation(), clusterSchemaManager, clusterSchema );
     } );
   }
 
