@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.httppost;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs2.FileContent;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -44,6 +45,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -53,8 +55,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -111,7 +112,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
       data.realUrl = data.inputRowMeta.getString( rowData, data.indexOfUrlField );
     }
     // Prepare HTTP POST
-    FileInputStream fis = null;
+    InputStream fis = null;
     try {
       if ( isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "HTTPPOST.Log.ConnectingToURL", data.realUrl ) );
@@ -191,9 +192,9 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         // content length is explicitly specified
 
         if ( meta.isPostAFile() ) {
-          File input = new File( tmp );
-          fis = new FileInputStream( input );
-          post.setEntity( new InputStreamEntity( fis, input.length() ) );
+          FileContent filecontent = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( tmp ).getContent();
+          fis = filecontent.getInputStream();
+          post.setEntity( new InputStreamEntity( fis, filecontent.getSize() ) );
         } else {
           byte[] bytes;
           if ( ( data.realEncoding != null ) && ( data.realEncoding.length() > 0 ) ) {
