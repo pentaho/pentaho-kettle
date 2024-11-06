@@ -205,7 +205,7 @@
   </menupopup>
 
   <menupopup id="partition-schema-class">
-    <menuitem id="partition-schema-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newDatabasePartitioningSchema()" />
+    <menuitem id="partition-schema-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newPartitioningSchema()" />
   </menupopup>
 
   <menupopup id="cluster-schema-class">
@@ -273,6 +273,12 @@
 
   <menupopup id="partition-schema-inst">
     <menuitem id="partition-schema-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editPartitionSchema()" />
+    <menuitem id="partition-schema-inst-move-project" label="${Spoon.Menu.Popup.PARTITIONS.MoveToProject}" command="spoon.movePartitionSchemaToProject()" />
+    <menuitem id="partition-schema-inst-move-global" label="${Spoon.Menu.Popup.PARTITIONS.MoveToGlobal}" command="spoon.movePartitionSchemaToGlobal()" />
+    <menuitem id="partition-schema-inst-copy-project" label="${Spoon.Menu.Popup.PARTITIONS.CopyToProject}" command="spoon.copyPartitionSchemaToProject()" />
+    <menuitem id="partition-schema-inst-copy-global" label="${Spoon.Menu.Popup.PARTITIONS.CopyToGlobal}" command="spoon.copyPartitionSchemaToGlobal()" />
+    <menuitem id="partition-schema-inst-duplicate-project" label="${Spoon.Menu.Popup.PARTITIONS.DuplicateInProject}" command="spoon.dupePartitionSchema()" />
+    <menuitem id="partition-schema-inst-duplicate-global" label="${Spoon.Menu.Popup.PARTITIONS.DuplicateInGlobal}" command="spoon.dupePartitionSchema()" />
     <menuitem id="partition-schema-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delPartitionSchema()" />
   </menupopup>
 

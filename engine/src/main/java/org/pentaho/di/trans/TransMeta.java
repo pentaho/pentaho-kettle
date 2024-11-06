@@ -90,6 +90,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.partition.PartitionSchemaManagementInterface;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -100,7 +101,9 @@ import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.ChangeTrackingClusterSchemaManager;
+import org.pentaho.di.shared.ChangeTrackingPartitionSchemaManager;
 import org.pentaho.di.shared.PassthroughClusterSchemaManager;
+import org.pentaho.di.shared.PassthroughPartitionSchemaManager;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.trans.step.BaseStep;
@@ -180,8 +183,11 @@ public class TransMeta extends AbstractMeta
   protected ClusterSchemaManagementInterface readClusterSchemaManager =
     new PassthroughClusterSchemaManager( combinedSharedObjects, () -> readSlaveServerManager.getAll() );
 
-  /** The list of partition schemas associated with the transformation. */
-  private List<PartitionSchema> partitionSchemas;
+  protected PartitionSchemaManagementInterface readPartitionSchemaManager =
+    new PassthroughPartitionSchemaManager( combinedSharedObjects );
+
+  protected ChangeTrackingPartitionSchemaManager localPartitionSchemaMgr =
+    new ChangeTrackingPartitionSchemaManager( new PassthroughPartitionSchemaManager( localSharedObjects ) );
 
   /** The version string for the transformation. */
   protected String trans_version;
@@ -588,7 +594,6 @@ public class TransMeta extends AbstractMeta
         transMeta.hops = new ArrayList<>();
         transMeta.notes = new ArrayList<>();
         transMeta.dependencies = new ArrayList<>();
-        transMeta.partitionSchemas = new ArrayList<>();
         transMeta.namedParams = new NamedParamsDefault();
         transMeta.stepChangeListeners = new ArrayList<>();
       }
@@ -638,8 +643,10 @@ public class TransMeta extends AbstractMeta
         // cloneNode is *probably* overkill
         transMeta.localSharedObjects.saveSharedObject( clusterSchemaType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
-      for ( PartitionSchema schema : partitionSchemas ) {
-        transMeta.getPartitionSchemas().add( (PartitionSchema) schema.clone() );
+      // PartitionSchema
+      String partitionSchemaType = SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( partitionSchemaType ).entrySet() ) {
+        transMeta.localSharedObjects.saveSharedObject( partitionSchemaType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
       for ( String key : listParameters() ) {
         transMeta.addParameterDefinition( key, getParameterDefault( key ), getParameterDescription( key ) );
@@ -663,7 +670,6 @@ public class TransMeta extends AbstractMeta
     steps = new ArrayList<>();
     hops = new ArrayList<>();
     dependencies = new ArrayList<>();
-    partitionSchemas = new ArrayList<>();
     namedParams = new NamedParamsDefault();
     stepChangeListeners = new ArrayList<>();
 
@@ -733,6 +739,9 @@ public class TransMeta extends AbstractMeta
         () -> readSlaveServerManager.getAll() ) );
     readClusterSchemaManager = new PassthroughClusterSchemaManager( combinedSharedObjects,
       () -> readSlaveServerManager.getAll() );
+    localPartitionSchemaMgr = new ChangeTrackingPartitionSchemaManager(
+        new PassthroughPartitionSchemaManager( localSharedObjects ) );
+    readPartitionSchemaManager = new PassthroughPartitionSchemaManager( combinedSharedObjects );
   }
 
   /**
@@ -2534,8 +2543,7 @@ public class TransMeta extends AbstractMeta
     //
     if ( includePartitions ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARTITIONSCHEMAS ) ).append( Const.CR );
-      for ( int i = 0; i < partitionSchemas.size(); i++ ) {
-        PartitionSchema partitionSchema = partitionSchemas.get( i );
+      for ( PartitionSchema partitionSchema : localPartitionSchemaMgr.getAll() ) {
         retval.append( partitionSchema.getXML() );
       }
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARTITIONSCHEMAS ) ).append( Const.CR );
@@ -3283,7 +3291,7 @@ public class TransMeta extends AbstractMeta
 
           DatabaseMeta dbcon = new DatabaseMeta( nodecon );
           dbcon.shareVariablesWith( this );
-            privateTransformationDatabases.add( dbcon.getName() );
+          privateTransformationDatabases.add( dbcon.getName() );
           localDbMgr.add( dbcon );
         }
         setPrivateDatabases( privateTransformationDatabases );
@@ -3523,25 +3531,7 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrPartSchemas; i++ ) {
           Node partSchemaNode = XMLHandler.getSubNodeByNr( partSchemasNode, PartitionSchema.XML_TAG, i );
           PartitionSchema partitionSchema = new PartitionSchema( partSchemaNode );
-
-          // Check if the step exists and if it's a shared step.
-          // If so, then we will keep the shared version, not this one.
-          // The stored XML is only for backup purposes.
-          //
-          PartitionSchema check = findPartitionSchema( partitionSchema.getName() );
-          if ( check != null ) {
-            if ( !check.isShared() ) {
-              // we don't overwrite shared objects.
-              if ( shouldOverwrite( prompter, props, BaseMessages
-                  .getString( PKG, "TransMeta.Message.OverwritePartitionSchemaYN", partitionSchema.getName() ),
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
-                addOrReplacePartitionSchema( partitionSchema );
-              }
-            }
-          } else {
-            partitionSchemas.add( partitionSchema );
-          }
-
+          localPartitionSchemaMgr.add( partitionSchema );
         }
 
         // Have all step partitioning meta-data reference the correct schemas that we just loaded
@@ -3549,11 +3539,11 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrSteps(); i++ ) {
           StepPartitioningMeta stepPartitioningMeta = getStep( i ).getStepPartitioningMeta();
           if ( stepPartitioningMeta != null ) {
-            stepPartitioningMeta.setPartitionSchemaAfterLoading( partitionSchemas );
+            stepPartitioningMeta.setPartitionSchemaAfterLoading( localPartitionSchemaMgr.getAll() );
           }
           StepPartitioningMeta targetStepPartitioningMeta = getStep( i ).getTargetStepPartitioningMeta();
           if ( targetStepPartitioningMeta != null ) {
-            targetStepPartitioningMeta.setPartitionSchemaAfterLoading( partitionSchemas );
+            targetStepPartitioningMeta.setPartitionSchemaAfterLoading( localPartitionSchemaMgr.getAll() );
           }
         }
 
@@ -3698,9 +3688,6 @@ public class TransMeta extends AbstractMeta
       if ( object instanceof StepMeta ) {
         StepMeta stepMeta = (StepMeta) object;
         addOrReplaceStep( stepMeta );
-      } else if ( object instanceof PartitionSchema ) {
-        PartitionSchema partitionSchema = (PartitionSchema) object;
-        addOrReplacePartitionSchema( partitionSchema );
       } else {
         return false;
       }
@@ -3802,9 +3789,9 @@ public class TransMeta extends AbstractMeta
     for ( int i = 0; i < nrTransHops(); i++ ) {
       getTransHop( i ).setChanged( false );
     }
-    for ( int i = 0; i < partitionSchemas.size(); i++ ) {
-      partitionSchemas.get( i ).setChanged( false );
-    }
+
+    localPartitionSchemaMgr.clearChanged();
+
     localClusterSchemaManager.clearChanged();
 
     super.clearChanged();
@@ -3857,14 +3844,7 @@ public class TransMeta extends AbstractMeta
    * @return true if the partitioning schemas have been changed, false otherwise
    */
   public boolean havePartitionSchemasChanged() {
-    for ( int i = 0; i < partitionSchemas.size(); i++ ) {
-      PartitionSchema ps = partitionSchemas.get( i );
-      if ( ps.hasChanged() ) {
-        return true;
-      }
-    }
-
-    return false;
+    return localPartitionSchemaMgr.hasChanged();
   }
 
   /**
@@ -5590,7 +5570,12 @@ public class TransMeta extends AbstractMeta
    * @return a list of PartitionSchemas
    */
   public List<PartitionSchema> getPartitionSchemas() {
-    return partitionSchemas;
+    try {
+      return readPartitionSchemaManager.getAll();
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
+      return null;
+    }
   }
 
   /**
@@ -5600,7 +5585,14 @@ public class TransMeta extends AbstractMeta
    *          the list of PartitionSchemas to set
    */
   public void setPartitionSchemas( List<PartitionSchema> partitionSchemas ) {
-    this.partitionSchemas = partitionSchemas;
+    try {
+      localPartitionSchemaMgr.clear();
+      for ( PartitionSchema partitionSchema : partitionSchemas ) {
+        localPartitionSchemaMgr.add( partitionSchema );
+      }
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( " Error setting the list of partitionSchema ", exception );
+    }
   }
 
   /**
@@ -5609,11 +5601,13 @@ public class TransMeta extends AbstractMeta
    * @return a String array containing the available partition schema names.
    */
   public String[] getPartitionSchemasNames() {
-    String[] names = new String[partitionSchemas.size()];
-    for ( int i = 0; i < names.length; i++ ) {
-      names[i] = partitionSchemas.get( i ).getName();
+    try {
+      List<PartitionSchema> partitionSchemas = readPartitionSchemaManager.getAll();
+      return localPartitionSchemaMgr.getAll().stream().map( PartitionSchema::getName ).toArray( String[]::new );
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
+      return null;
     }
-    return names;
   }
 
   /**
@@ -5680,7 +5674,7 @@ public class TransMeta extends AbstractMeta
    */
   public List<ClusterSchema> getClusterSchemas() {
     try {
-      return localClusterSchemaManager.getAll();
+      return readClusterSchemaManager.getAll();
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( exception.getMessage(), exception );
       return null;
@@ -5726,13 +5720,18 @@ public class TransMeta extends AbstractMeta
    * @return the partition with the specified name of null if nothing was found
    */
   public PartitionSchema findPartitionSchema( String name ) {
-    for ( int i = 0; i < partitionSchemas.size(); i++ ) {
-      PartitionSchema schema = partitionSchemas.get( i );
-      if ( schema.getName().equalsIgnoreCase( name ) ) {
-        return schema;
+    try {
+      List<PartitionSchema> partitionSchemas = readPartitionSchemaManager.getAll();
+      for ( PartitionSchema partitionSchema : partitionSchemas ) {
+        if ( partitionSchema.getName().equalsIgnoreCase( name ) ) {
+          return partitionSchema;
+        }
       }
+      return null;
+    } catch ( Exception exception ) {
+      LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
+      return null;
     }
-    return null;
   }
 
   /**
@@ -5764,12 +5763,10 @@ public class TransMeta extends AbstractMeta
    *          The partition schema to be added.
    */
   public void addOrReplacePartitionSchema( PartitionSchema partitionSchema ) {
-    int index = partitionSchemas.indexOf( partitionSchema );
-    if ( index < 0 ) {
-      partitionSchemas.add( partitionSchema );
-    } else {
-      PartitionSchema previous = partitionSchemas.get( index );
-      previous.replaceMeta( partitionSchema );
+    try {
+      localPartitionSchemaMgr.add( partitionSchema );
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( " Error adding the list of partitionSchema ", exception );
     }
     setChanged();
   }
@@ -6658,7 +6655,10 @@ public class TransMeta extends AbstractMeta
     }
     if ( clazz.isAssignableFrom( ClusterSchemaManagementInterface.class ) ) {
       return clazz.cast( localClusterSchemaManager );
+    } else if ( clazz.isAssignableFrom( PartitionSchemaManagementInterface.class ) ) {
+      return clazz.cast( localPartitionSchemaMgr );
     }
+
     return null;
   }
 

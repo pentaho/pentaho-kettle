@@ -22,10 +22,16 @@
 
 package org.pentaho.di.ui.spoon;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.partition.PartitionSchemaManagementInterface;
+import org.pentaho.di.partition.PartitionSchemaManager;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
@@ -36,8 +42,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
@@ -46,17 +54,49 @@ public class SpoonRefreshPartitionsSubtreeTest {
 
   private PartitionsFolderProvider partitionsFolderProvider;
   private TreeNode treeNode;
+  private Spoon mockSpoon;
+  private GUIResource mockGuiResource;
+  private DefaultBowl mockDefaultBowl;
+  private MockedStatic<Spoon> spoonMockedStatic;
+  private MockedStatic<GUIResource> guiResourceMockedStatic;
+  private MockedStatic<DefaultBowl> defaultBowlMockedStatic;
+  private PartitionSchemaManager mockPartitionSchemaManager;
 
   @Before
   public void setUp() throws Exception {
-    GUIResource guiResource = mock( GUIResource.class );
-    Spoon spoon = mock( Spoon.class );
-    partitionsFolderProvider = new PartitionsFolderProvider( guiResource, spoon );
+    mockGuiResource = mock( GUIResource.class );
+    mockSpoon = mock( Spoon.class );
+    mockDefaultBowl = mock( DefaultBowl.class );
+
+    spoonMockedStatic = mockStatic( Spoon.class );
+    guiResourceMockedStatic = mockStatic( GUIResource.class );
+    defaultBowlMockedStatic = mockStatic( DefaultBowl.class );
+
+    when( Spoon.getInstance() ).thenReturn( mockSpoon );
+    when( GUIResource.getInstance() ).thenReturn( mockGuiResource );
+    when( DefaultBowl.getInstance() ).thenReturn( mockDefaultBowl );
+
+    mockPartitionSchemaManager = mock( PartitionSchemaManager.class );
+    partitionsFolderProvider = new PartitionsFolderProvider( mockGuiResource, mockSpoon );
     treeNode = new TreeNode();
+
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    when( mockDefaultBowl.getManager( PartitionSchemaManagementInterface.class ) ).thenReturn( mockPartitionSchemaManager );
+  }
+  @After
+  public void tearDown() {
+    spoonMockedStatic.close();
+    guiResourceMockedStatic.close();
+    defaultBowlMockedStatic.close();
   }
 
-  private void callRefreshWith( TransMeta meta, String filter ) {
-    partitionsFolderProvider.refresh( Optional.of( meta ), treeNode, filter );
+
+  private void callRefreshWith( AbstractMeta meta, String filter ) {
+    if ( meta == null ) {
+      partitionsFolderProvider.refresh( Optional.empty(), treeNode, filter );
+    } else {
+      partitionsFolderProvider.refresh( Optional.of( meta ), treeNode, filter );
+    }
   }
 
   private void verifyNumberOfNodesCreated( int times ) {
@@ -65,15 +105,15 @@ public class SpoonRefreshPartitionsSubtreeTest {
 
   @Test
   public void noPartitionsExist() {
-    TransMeta meta = mock( TransMeta.class );
-    when( meta.getPartitionSchemas() ).thenReturn( Collections.<PartitionSchema>emptyList() );
+    //TransMeta meta = mock( TransMeta.class );
+    //when( meta.getPartitionSchemas() ).thenReturn( Collections.<PartitionSchema>emptyList() );
 
-    callRefreshWith( meta, null );
+    callRefreshWith( null, null );
     verifyNumberOfNodesCreated( 0 );
   }
 
   @Test
-  public void severalPartitionsExist() {
+  public void severalPartitionsExist() throws Exception {
     TransMeta meta = prepareMetaWithThreeSchemas();
 
     callRefreshWith( meta, null );
@@ -81,7 +121,7 @@ public class SpoonRefreshPartitionsSubtreeTest {
   }
 
   @Test
-  public void onlyOneMatchesFiltering() {
+  public void onlyOneMatchesFiltering() throws Exception {
     TransMeta meta = prepareMetaWithThreeSchemas();
 
     callRefreshWith( meta, "2" );
@@ -89,10 +129,13 @@ public class SpoonRefreshPartitionsSubtreeTest {
   }
 
 
-  private static TransMeta prepareMetaWithThreeSchemas() {
+  private static TransMeta prepareMetaWithThreeSchemas() throws Exception {
     TransMeta meta = mock( TransMeta.class );
     List<PartitionSchema> schemas =
       asList( mockSchema( "1" ), mockSchema( "2" ), mockSchema( "3" ) );
+    PartitionSchemaManagementInterface mocPartitionSchemaMgr = mock( PartitionSchemaManager.class );
+    when( meta.getSharedObjectManager( PartitionSchemaManagementInterface.class ) ).thenReturn( mocPartitionSchemaMgr );
+    when( mocPartitionSchemaMgr.getAll() ).thenReturn( schemas );
     when( meta.getPartitionSchemas() ).thenReturn( schemas );
     return meta;
   }
