@@ -2543,7 +2543,8 @@ public class TransMeta extends AbstractMeta
     //
     if ( includePartitions ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARTITIONSCHEMAS ) ).append( Const.CR );
-      for ( PartitionSchema partitionSchema : localPartitionSchemaMgr.getAll() ) {
+      List<PartitionSchema> partitionSchemas = localPartitionSchemaMgr.getAll();
+      for ( PartitionSchema partitionSchema : partitionSchemas ) {
         retval.append( partitionSchema.getXML() );
       }
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARTITIONSCHEMAS ) ).append( Const.CR );
@@ -2552,7 +2553,8 @@ public class TransMeta extends AbstractMeta
     //
     if ( includeSlaves ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
-      for ( SharedObjectInterface slaveServer : localSlaveServerMgr.getAll() ) {
+      List<SlaveServer> slaveServers = localSlaveServerMgr.getAll();
+      for ( SharedObjectInterface slaveServer : slaveServers ) {
         retval.append( slaveServer.getXML() );
       }
 
@@ -2563,7 +2565,8 @@ public class TransMeta extends AbstractMeta
     //
     if ( includeClusters ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_CLUSTERSCHEMAS ) ).append( Const.CR );
-      for ( ClusterSchema clusterSchema : localClusterSchemaManager.getAll() ) {
+      List<ClusterSchema> clusterSchemas = localClusterSchemaManager.getAll();
+      for ( ClusterSchema clusterSchema : clusterSchemas ) {
         retval.append( clusterSchema.getXML() );
       }
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_CLUSTERSCHEMAS ) ).append( Const.CR );
@@ -2596,7 +2599,8 @@ public class TransMeta extends AbstractMeta
 
     // The database connections...
     if ( includeDatabase ) {
-      for ( DatabaseMeta dbMeta : localDbMgr.getAll() ) {
+      List<DatabaseMeta> dbMetas = localDbMgr.getAll();
+      for ( DatabaseMeta dbMeta : dbMetas ) {
         //PDI-20078 - If props == null, it means transformation is running on the slave server. For the
         // method areOnlyUsedConnectionsSavedToXMLInServer to return false, the "STRING_ONLY_USED_DB_TO_XML"
         // needs to have "N" in the server startup script file
@@ -3576,8 +3580,9 @@ public class TransMeta extends AbstractMeta
 
         // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
         //
+        List<ClusterSchema> clusterSchemas = localClusterSchemaManager.getAll();
         for ( int i = 0; i < nrSteps(); i++ ) {
-          getStep( i ).setClusterSchemaAfterLoading( localClusterSchemaManager.getAll() );
+          getStep( i ).setClusterSchemaAfterLoading( clusterSchemas );
         }
 
         String srowset = XMLHandler.getTagValue( infonode, "size_rowset" );
@@ -5427,7 +5432,8 @@ public class TransMeta extends AbstractMeta
     // Loop over all steps in the transformation and see what the used vars are...
     if ( searchDatabases ) {
       try {
-        for ( DatabaseMeta meta : localDbMgr.getAll() ) {
+        List<DatabaseMeta> dbMetas = localDbMgr.getAll();
+        for ( DatabaseMeta meta : dbMetas ) {
           stringList.add( new StringSearchResult( meta.getName(), meta, this,
               BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
           if ( meta.getHostname() != null ) {
@@ -5603,7 +5609,7 @@ public class TransMeta extends AbstractMeta
   public String[] getPartitionSchemasNames() {
     try {
       List<PartitionSchema> partitionSchemas = readPartitionSchemaManager.getAll();
-      return localPartitionSchemaMgr.getAll().stream().map( PartitionSchema::getName ).toArray( String[]::new );
+      return partitionSchemas.stream().map( PartitionSchema::getName ).toArray( String[]::new );
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
       return null;
