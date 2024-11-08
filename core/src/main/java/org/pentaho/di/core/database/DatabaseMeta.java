@@ -349,14 +349,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public static final int TYPE_DATABASE_SQLITE = 26;
 
   /**
-   * Connection to an Apache Derby database
-   *
-   * @deprecated
-   */
-  @Deprecated
-  public static final int TYPE_DATABASE_DERBY = 27;
-
-  /**
    * Connection to a BMC Remedy Action Request System
    *
    * @deprecated
