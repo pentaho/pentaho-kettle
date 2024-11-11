@@ -104,7 +104,8 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               if ( path[1].equals( Spoon.STRING_CLUSTERS ) ) {
                 object = new TreeSelection( treeItem, path[1], ClusterSchema.class );
               }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( treeItem, null, path, 2, objects ) );
+              executeExtensionPoint( new SpoonTreeDelegateExtension( treeItem, spoon.getActiveTransformation(), path,
+                2, objects ) );
             }
             break;
 
@@ -118,7 +119,8 @@ public class SpoonTreeDelegate extends SpoonDelegate {
 
                 object = new TreeSelection( treeItem, name, new SpoonTreeLeveledSelection( path[1], name, level ) );
               }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( treeItem, null, path, 3, objects ) );
+              executeExtensionPoint( new SpoonTreeDelegateExtension( treeItem, spoon.getActiveTransformation(), path,
+                3, objects ) );
             }
             break;
 
