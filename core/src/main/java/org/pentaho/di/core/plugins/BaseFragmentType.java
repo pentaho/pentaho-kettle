@@ -65,7 +65,7 @@ public abstract class BaseFragmentType extends BasePluginType {
     return true;
   }
 
-  @Override protected URLClassLoader createUrlClassLoader( String pluginClassName, URL jarFileUrl, ClassLoader classLoader ) {
+  @Override protected URLClassLoader createUrlClassLoader( URL jarFileUrl, ClassLoader classLoader ) {
     return new KettleURLClassLoader( new URL[]{ jarFileUrl }, classLoader );
   }
 
