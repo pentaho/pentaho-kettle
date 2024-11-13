@@ -11,8 +11,9 @@
  ******************************************************************************/
 
 define([
-  "./has"
-], function(has) {
+  "./has",
+  "common-ui/util/xss"
+], function(has, xssUtil) {
   "use strict";
 
   /* eslint new-cap: 0 */
@@ -93,7 +94,7 @@ define([
       hostname: host,
       host: host + ":" + port,
       port: port,
-      origin: protocol + "//" + host + ":" + port,
+      origin: xssUtil.sanitizeUrl(protocol + "//" + host + ":" + port),
       pathname: pathname,
 
       toString: function() {
