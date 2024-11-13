@@ -3543,11 +3543,11 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrSteps(); i++ ) {
           StepPartitioningMeta stepPartitioningMeta = getStep( i ).getStepPartitioningMeta();
           if ( stepPartitioningMeta != null ) {
-            stepPartitioningMeta.setPartitionSchemaAfterLoading( localPartitionSchemaMgr.getAll() );
+            stepPartitioningMeta.setPartitionSchemaAfterLoading( readPartitionSchemaManager.getAll() );
           }
           StepPartitioningMeta targetStepPartitioningMeta = getStep( i ).getTargetStepPartitioningMeta();
           if ( targetStepPartitioningMeta != null ) {
-            targetStepPartitioningMeta.setPartitionSchemaAfterLoading( localPartitionSchemaMgr.getAll() );
+            targetStepPartitioningMeta.setPartitionSchemaAfterLoading( readPartitionSchemaManager.getAll() );
           }
         }
 
@@ -3580,7 +3580,7 @@ public class TransMeta extends AbstractMeta
 
         // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
         //
-        List<ClusterSchema> clusterSchemas = localClusterSchemaManager.getAll();
+        List<ClusterSchema> clusterSchemas = readClusterSchemaManager.getAll();
         for ( int i = 0; i < nrSteps(); i++ ) {
           getStep( i ).setClusterSchemaAfterLoading( clusterSchemas );
         }
