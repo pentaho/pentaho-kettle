@@ -1,4 +1,4 @@
-Pentaho Developer Edition 10.3 Copyright 2024 Hitachi Vantara, LLC; licensed under the 
+Pentaho Developer Edition 10.3 Copyright 2024 Hitachi Vantara, LLC; licensed under the
 Business Source License 1.1 (BSL). This project may include third party components that
 are individually licensed per the terms indicated by their respective copyright owners
 included in text file or in the source code. 
