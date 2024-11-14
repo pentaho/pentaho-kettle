@@ -53,6 +53,7 @@
     <jface.version>3.22.0</jface.version>
     <pentaho-metadata.version>10.3.0.0-SNAPSHOT</pentaho-metadata.version>
     <google-http-client.version>1.42.3</google-http-client.version>
+    <pax-swissbox-core.version>1.8.2</pax-swissbox-core.version>
   </properties>
 
   <dependencies>
@@ -647,7 +648,7 @@
     <!--Still needed for a no-osgi build because of PentahoSystem dependency -->
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
+      <artifactId>osgi.core</artifactId>
       <version>${osgi.core.version}</version>
       <scope>compile</scope>
       <exclusions>
@@ -656,6 +657,11 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.swissbox</groupId>
+      <artifactId>pax-swissbox-core</artifactId>
+      <version>${pax-swissbox-core.version}</version>
     </dependency>
   </dependencies>
 
