@@ -25,8 +25,8 @@
   <dependencies>
     <dependency>
       <!-- this is required by OSGi bean declared in src/main/resources-filtered/OSGI-INF/blueprint/beans.xml -->
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
+      <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+      <artifactId>jackson-jakarta-rs-json-provider</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
