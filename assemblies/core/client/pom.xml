@@ -54,12 +54,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>oss-licenses</artifactId>
-      <version>${oss-licenses.version}</version>
-      <type>zip</type>
-    </dependency>
     <!-- swt -->
     <dependency>
       <groupId>org.eclipse.platform</groupId>
