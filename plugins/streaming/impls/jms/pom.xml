@@ -134,6 +134,19 @@
           <groupId>io.netty</groupId>
           <artifactId>netty-handler</artifactId>
         </exclusion>
+        <!-- Excluding Bouncy castle version 1.77 -->
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk18on</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcpkix-jdk18on</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcutil-jdk18on</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <!-- pulling newer version of io-netty version 108 -->
