@@ -1255,40 +1255,37 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   private boolean shouldConsiderOldBehaviourForEveryInputRow() {
-    String executeWithZeroRows =  System.getProperty( Const.KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT );
-    boolean shouldExecuteWithZeroRows = "Y".equalsIgnoreCase( executeWithZeroRows );
-    String executeWithZeroRowsCompat = System.getProperty( Const.COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT );
-    boolean shouldExecuteWithZeroRowsCompat = "Y".equalsIgnoreCase( executeWithZeroRowsCompat );
-    String showWarningsProp = System.getProperty( Const.KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW );
-    boolean showWarnings = ( !Utils.isEmpty( showWarningsProp ) && "Y".equalsIgnoreCase( showWarningsProp ) );
-    String showWarningsCompatProp = System.getProperty( Const.COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW );
-    boolean showWarningsCompat = !Utils.isEmpty( showWarningsCompatProp ) && "Y".equalsIgnoreCase( showWarningsCompatProp );
+    boolean showWarnings = calculateExecuteForEveryRowKettleProperty( Const.KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW, Const.COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW );
+    boolean shouldExecuteWithZeroRows = calculateExecuteForEveryRowKettleProperty( Const.KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT, Const.COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT );
 
-    //Shows warning accordingly with KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW, in case this property is empty shows warning accordingly with COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW
-    if ( showWarnings || ( Utils.isEmpty( showWarningsProp ) && showWarningsCompat ) ) {
-      if ( ( !Utils.isEmpty( executeWithZeroRows ) && shouldExecuteWithZeroRows && showWarnings ) ) {
+    if ( showWarnings ) {
+      if ( shouldExecuteWithZeroRows ) {
         log.logBasic(
           "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT." );
-      } else if ( ( Utils.isEmpty( executeWithZeroRows ) && !Utils.isEmpty( executeWithZeroRowsCompat )
-          && shouldExecuteWithZeroRowsCompat && showWarningsCompat ) )  {
-        log.logBasic(
-          "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT." );
-        log.logError( "COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW property is deprecated, please use KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW." );
       } else {
         log.logBasic(
           "WARN Detected \"Execute for every row\" but no rows were detected, applying default behavior, not to execute. In case this is not desired behavior, please read property KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT." );
       }
     }
 
-    if ( !Utils.isEmpty( executeWithZeroRows ) ) {
-      return shouldExecuteWithZeroRows;
-    } else if ( !Utils.isEmpty( executeWithZeroRowsCompat ) ) {
-      log.logError(
-        "COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT property is deprecated, please use KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT and remove the old one." );
-      return shouldExecuteWithZeroRowsCompat;
+    return shouldExecuteWithZeroRows;
+  }
+
+  private boolean calculateExecuteForEveryRowKettleProperty( String kettleCompatabilityProperty,
+                                                             String compatibilityProperty ) {
+    String kValue = System.getProperty( kettleCompatabilityProperty );
+
+    if ( !Utils.isEmpty( kValue ) ) {
+      return "Y".equalsIgnoreCase( kValue );
     }
 
-    return "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT, "N" ) );
+    String cValue = System.getProperty( compatibilityProperty );
+    if ( !Utils.isEmpty( cValue ) ) {
+      log.logError( compatibilityProperty + " property is deprecated, please use " + kettleCompatabilityProperty
+        + " and remove the old one." );
+    }
+
+    return "Y".equalsIgnoreCase( cValue );
   }
 
   protected void updateResult( Result result ) {
