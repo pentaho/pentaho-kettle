@@ -1271,8 +1271,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return shouldExecuteWithZeroRows;
   }
 
-  private boolean calculateExecuteForEveryRowKettleProperty( String kettleCompatabilityProperty,
-                                                             String compatibilityProperty ) {
+  private boolean calculateExecuteForEveryRowKettleProperty( String kettleCompatabilityProperty, String compatibilityProperty ) {
     String kValue = System.getProperty( kettleCompatabilityProperty );
 
     if ( !Utils.isEmpty( kValue ) ) {

@@ -1246,20 +1246,19 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   private boolean calculateExecuteForEveryRowKettleProperty( String kettleCompatabilityProperty, String compatibilityProperty ) {
-    boolean ret = false;
     String kValue = System.getProperty( kettleCompatabilityProperty );
 
     if ( !Utils.isEmpty( kValue ) ) {
-      ret = "Y".equalsIgnoreCase( kValue );
-    } else {
-      String cValue = System.getProperty( compatibilityProperty );
-      if ( !Utils.isEmpty( cValue ) ) {
-        log.logError( compatibilityProperty + " property is deprecated, please use " + kettleCompatabilityProperty + " and remove the old one." );
-      }
-      ret = "Y".equalsIgnoreCase( cValue );
+      return "Y".equalsIgnoreCase( kValue );
     }
 
-    return ret;
+    String cValue = System.getProperty( compatibilityProperty );
+    if ( !Utils.isEmpty( cValue ) ) {
+      log.logError( compatibilityProperty + " property is deprecated, please use " + kettleCompatabilityProperty
+        + " and remove the old one." );
+    }
+
+    return "Y".equalsIgnoreCase( cValue );
   }
 
   private boolean createParentFolder( String filename ) {
