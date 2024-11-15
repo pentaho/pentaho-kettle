@@ -22,6 +22,7 @@
 package org.pentaho.di.www;
 
 
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
@@ -86,6 +87,7 @@ public class RegisterJobServletTest {
     when( conf.getJobMeta() ).thenReturn( jobMeta );
     when( jobMap.getSlaveServerConfig() ).thenReturn( slaveServerConfig );
     when( jobMeta.listParameters() ).thenReturn( new String[] {} );
+    when( jobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     return jobServlet.createJob( conf );
   }
 

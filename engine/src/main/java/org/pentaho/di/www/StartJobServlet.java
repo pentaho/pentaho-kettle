@@ -278,11 +278,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
             JobConfiguration jobConfiguration = getJobMap().getConfiguration( jobName );
 
             String carteObjectId = UUID.randomUUID().toString();
-            SimpleLoggingObject servletLoggingObject =
-              new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
-            servletLoggingObject.setContainerObjectId( carteObjectId );
-
-            Job newJob = new Job( job.getRep(), job.getJobMeta(), servletLoggingObject );
+            Job newJob = BaseJobServlet.createJob( this, CONTEXT_PATH, carteObjectId, jobConfiguration );
             newJob.setLogLevel( job.getLogLevel() );
 
             // Discard old log lines from the old job
