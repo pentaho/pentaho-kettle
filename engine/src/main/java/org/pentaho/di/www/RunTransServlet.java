@@ -221,7 +221,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
 
       // Setting variables
       //
-      trans.initializeVariablesFrom( null );
+      trans.initializeVariablesFrom( transMeta.getBowl().getADefaultVariableSpace() );
       trans.getTransMeta().setInternalKettleVariables( trans );
       trans.injectVariables( transConfiguration.getTransExecutionConfiguration().getVariables() );
 

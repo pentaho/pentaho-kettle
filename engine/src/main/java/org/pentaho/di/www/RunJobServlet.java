@@ -249,7 +249,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
 
       // Setting variables
       //
-      job.initializeVariablesFrom( null );
+      job.initializeVariablesFrom( jobMeta.getBowl().getADefaultVariableSpace() );
       job.getJobMeta().setInternalKettleVariables( job );
       job.injectVariables( jobConfiguration.getJobExecutionConfiguration().getVariables() );
 
