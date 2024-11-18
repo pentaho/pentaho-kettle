@@ -101,7 +101,7 @@ import org.w3c.dom.Node;
 public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryMail.class; // for i18n purposes, needed by Translator2!!
 
-  public static String AUTENTICATION_OAUTH = "OAUTH";
+  public static String AUTENTICATION_OAUTH = "OAuth";
 
   public static  String AUTENTICATION_BASIC = "Basic";
 
@@ -1341,12 +1341,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                     environmentSubstitute( Const.NVL( server, "" ) ),
                     Integer.parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ),
                     environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
-                    getOauthToken( tokenUrl ).getAccessToken() );
+                    this.token.getAccessToken() );
           } else {
             transport.connect(
                     environmentSubstitute( Const.NVL( server, "" ) ),
                     environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
-                    getOauthToken( tokenUrl ).getAccessToken() );
+                    this.token.getAccessToken() );
           }
         } else {
           transport.connect();
@@ -1497,21 +1497,21 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     this.port = port;
   }
 
-  IEmailAuthenticationResponse getOauthToken(String tokenUrl) {
+  IEmailAuthenticationResponse getOauthToken( String tokenUrl ) {
     try ( CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient() ) {
-      this.tokenUrl=tokenUrl;
+      this.tokenUrl = environmentSubstitute( tokenUrl );
       HttpPost httpPost = new HttpPost( tokenUrl );
       List<NameValuePair> form = new ArrayList<>();
-      form.add( new BasicNameValuePair( "scope", scope ) );
-      form.add( new BasicNameValuePair( "client_id", clientId ) );
-      form.add( new BasicNameValuePair( "client_secret", secretKey ) );
+      form.add( new BasicNameValuePair( "scope", environmentSubstitute( scope ) ) );
+      form.add( new BasicNameValuePair( "client_id", environmentSubstitute( clientId ) ) );
+      form.add( new BasicNameValuePair( "client_secret", environmentSubstitute( secretKey ) ) );
       form.add( new BasicNameValuePair( "grant_type", grant_type ) );
       if ( grant_type.equals( JobEntryMail.GRANTTYPE_REFRESH_TOKEN ) ) {
-        form.add( new BasicNameValuePair( JobEntryMail.GRANTTYPE_REFRESH_TOKEN, refresh_token ) );
+        form.add( new BasicNameValuePair( JobEntryMail.GRANTTYPE_REFRESH_TOKEN, environmentSubstitute( refresh_token ) ) );
       }
       if ( grant_type.equals( JobEntryMail.GRANTTYPE_AUTHORIZATION_CODE ) ) {
-        form.add( new BasicNameValuePair( "code", authorization_code ) );
-        form.add( new BasicNameValuePair( "redirect_uri", redirectUri ) );
+        form.add( new BasicNameValuePair( "code", environmentSubstitute( authorization_code ) ) );
+        form.add( new BasicNameValuePair( "redirect_uri", environmentSubstitute( redirectUri ) ) );
       }
       UrlEncodedFormEntity entity = new UrlEncodedFormEntity( form, Consts.UTF_8 );
       httpPost.setEntity( entity );

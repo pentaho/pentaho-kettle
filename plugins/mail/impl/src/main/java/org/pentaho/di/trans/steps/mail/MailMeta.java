@@ -40,6 +40,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.platform.api.email.IEmailAuthenticationResponse;
 
 /**
  * Send mail step. based on Mail job entry
@@ -73,6 +74,36 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   private String subject;
 
+  public static String AUTENTICATION_OAUTH = "OAuth";
+
+  public static  String AUTENTICATION_BASIC = "Basic";
+
+  public static String AUTENTICATION_NONE = "No Auth";
+
+  public static String GRANTTYPE_CLIENTCREDENTIALS = "client_credentials";
+
+  public static String GRANTTYPE_AUTHORIZATION_CODE = "authorization_code";
+
+  public static String GRANTTYPE_REFRESH_TOKEN = "refresh_token";
+
+  private String clientId;
+
+  private String secretKey;
+
+  private String scope;
+
+  private String tokenUrl;
+
+  private String authorization_code;
+
+  private String redirectUri;
+
+  private String refresh_token;
+
+  private String grant_type;
+
+  private IEmailAuthenticationResponse token;
+
   private boolean includeDate;
 
   private boolean includeSubFolders;
@@ -105,7 +136,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   private String ziplimitsize;
 
-  private boolean usingAuthentication;
+  private String usingAuthentication;
 
   private String authenticationUser;
 
@@ -195,11 +226,19 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     setContactPhone( XMLHandler.getTagValue( stepnode, "contact_phone" ) );
     setComment( XMLHandler.getTagValue( stepnode, "comment" ) );
     setIncludingFiles( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_files" ) ) );
-    setUsingAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_auth" ) ) );
+    setUsingAuthentication( XMLHandler.getTagValue( stepnode, "use_auth" ) );
     setUsingSecureAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_secure_auth" ) ) );
     setAuthenticationUser( XMLHandler.getTagValue( stepnode, "auth_user" ) );
     setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(
       stepnode, "auth_password" ) ) );
+    setClientId( XMLHandler.getTagValue( stepnode, "auth_clientId" ) );
+    setSecretKey( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "auth_secretKey" ) ) );
+    setScope( XMLHandler.getTagValue( stepnode, "auth_scope" ) );
+    setTokenUrl( XMLHandler.getTagValue( stepnode, "auth_tokenUrl" ) );
+    setAuthorization_code( XMLHandler.getTagValue( stepnode, "auth_authorizationCode" ) );
+    setRedirectUri( XMLHandler.getTagValue( stepnode, "redirectURI" ) );
+    setRefresh_token( XMLHandler.getTagValue( stepnode, "refreshToken" ) );
+    setGrant_type( XMLHandler.getTagValue( stepnode, "use_grantType" ) );
     setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "only_comment" ) ) );
     setUseHTML( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_HTML" ) ) );
     setUsePriority( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_Priority" ) ) );
@@ -285,11 +324,20 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "zip_name", this.zipFilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "zip_limit_size", this.ziplimitsize ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_auth", this.usingAuthentication ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "use_grantType", grant_type) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_secure_auth", this.usingSecureAuthentication ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "auth_user", this.authenticationUser ) );
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "auth_password", Encr
         .encryptPasswordIfNotUsingVariables( this.authenticationPassword ) ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_clientId", clientId ) );
+    retval.append( "      " ).append(
+      XMLHandler.addTagValue( "auth_secretKey",  Encr.encryptPasswordIfNotUsingVariables( this.secretKey ) )  );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_scope", scope ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_tokenUrl", tokenUrl ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_authorizationCode", authorization_code ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "redirectURI", redirectUri ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshToken", refresh_token) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "only_comment", this.onlySendComment ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_HTML", this.useHTML ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_Priority", this.usePriority ) );
@@ -584,7 +632,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return Returns the usingAuthentication.
    */
-  public boolean isUsingAuthentication() {
+  public String isUsingAuthentication() {
     return this.usingAuthentication;
   }
 
@@ -592,7 +640,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
    * @param usingAuthentication
    *          The usingAuthentication to set.
    */
-  public void setUsingAuthentication( boolean usingAuthentication ) {
+  public void setUsingAuthentication( String usingAuthentication ) {
     this.usingAuthentication = usingAuthentication;
   }
 
@@ -738,6 +786,89 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     return this.importance;
   }
 
+  public void setGrant_type( String grant_type ) {
+    this.grant_type = grant_type;
+  }
+
+  public String getGrant_type() {
+    return grant_type;
+  }
+
+  public void setClientId( String clientId ) {
+    this.clientId = clientId;
+  }
+
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setSecretKey( String secretKey ) {
+    this.secretKey = secretKey;
+  }
+
+  public String getSecretKey() {
+    return secretKey;
+  }
+
+  public void setScope(String scope)
+  {
+    this.scope=scope;
+  }
+
+  public String getScope()
+  {
+    return scope;
+  }
+
+  public void setGrantType(String grant_type)
+  {
+    this.grant_type=grant_type;
+  }
+  public String getGrantType()
+  {
+    return grant_type;
+  }
+
+  public void setTokenUrl(String tokenUrl)
+  {
+    this.tokenUrl=tokenUrl;
+  }
+
+  public String getTokenUrl()
+  {
+    return tokenUrl;
+  }
+
+  public void setAuthorization_code(String authorization_code)
+  {
+    this.authorization_code=authorization_code;
+  }
+
+  public String getAuthorization_code()
+  {
+    return authorization_code;
+  }
+
+  public void setRedirectUri(String redirectUri)
+  {
+    this.redirectUri=redirectUri;
+  }
+
+  public String getRedirectUri()
+  {
+    return redirectUri;
+  }
+
+  public void setRefresh_token(String refresh_token)
+  {
+    this.refresh_token=refresh_token;
+  }
+
+  public String getRefresh_token()
+  {
+    return refresh_token;
+  }
+
   public String getSensitivity() {
     return sensitivity;
   }
@@ -797,12 +928,21 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
       this.includingFiles = rep.getStepAttributeBoolean( id_step, "include_files" );
 
-      this.usingAuthentication = rep.getStepAttributeBoolean( id_step, "use_auth" );
+      this.usingAuthentication = rep.getStepAttributeString( id_step, "use_auth" );
+      this.grant_type = rep.getStepAttributeString( id_step, "use_grantType" );
       this.usingSecureAuthentication = rep.getStepAttributeBoolean( id_step, "use_secure_auth" );
       this.authenticationUser = rep.getStepAttributeString( id_step, "auth_user" );
       this.authenticationPassword =
         Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "auth_password" ) );
 
+      this.clientId = rep.getStepAttributeString( id_step, "auth_clientId" );
+      this.secretKey =
+              Encr.decryptPasswordOptionallyEncrypted(  rep.getStepAttributeString( id_step, "auth_secretKey" ) ) ;
+      this.scope = rep.getStepAttributeString( id_step, "auth_scope" );
+      this.tokenUrl = rep.getStepAttributeString( id_step, "auth_tokenUrl" );
+      this.authorization_code = rep.getStepAttributeString( id_step, "auth_authorizationCode" );
+      this.redirectUri= rep.getStepAttributeString( id_step, "redirectURI" );
+      this.refresh_token = rep.getStepAttributeString( id_step, "refreshToken" );
       this.onlySendComment = rep.getStepAttributeBoolean( id_step, "only_comment" );
       this.useHTML = rep.getStepAttributeBoolean( id_step, "use_HTML" );
       this.usePriority = rep.getStepAttributeBoolean( id_step, "use_Priority" );
@@ -875,6 +1015,15 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "auth_password", Encr
         .encryptPasswordIfNotUsingVariables( authenticationPassword ) );
 
+      rep.saveStepAttribute( id_transformation, id_step, "auth_clientId", clientId );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_secretKey", Encr
+              .encryptPasswordIfNotUsingVariables( secretKey ) );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_scope", scope );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_tokenUrl", tokenUrl );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_authorizationCode", authorization_code );
+      rep.saveStepAttribute( id_transformation, id_step, "redirectURI", redirectUri );
+      rep.saveStepAttribute( id_transformation, id_step, "refreshToken", refresh_token );
+      rep.saveStepAttribute( id_transformation, id_step, "use_grantType", grant_type );
       rep.saveStepAttribute( id_transformation, id_step, "only_comment", onlySendComment );
       rep.saveStepAttribute( id_transformation, id_step, "use_HTML", useHTML );
       rep.saveStepAttribute( id_transformation, id_step, "use_Priority", usePriority );
