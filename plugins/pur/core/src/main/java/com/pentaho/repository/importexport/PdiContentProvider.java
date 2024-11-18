@@ -123,12 +123,6 @@ public class PdiContentProvider implements IPdiContentProvider {
     }
     return userVariables;
   }
-
-  @Override
-  public String getHideInternalVariable() {
-    return "";
-  }
-
   private Map<String, String> getTransVars( TransMeta transMeta, RepositoryFile file ) {
     /*
      * The following code was more or less copy/pasted from SpoonTransformationDelegate and

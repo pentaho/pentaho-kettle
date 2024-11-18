@@ -226,7 +226,7 @@ public class PentahoDiPlugin {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
               .status( response.getStatus() ).build() );
         }
-        return (T) response.getEntity();
+        return response.readEntity( returnType );
       }
 
       public <T> T postMultipartFormDataAs( Object input, Class<T> returnType ) {
@@ -245,7 +245,7 @@ public class PentahoDiPlugin {
           }
         }
         if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
-          return (T) response.getEntity();
+          return response.readEntity( returnType );
         } else {
           return returnType.cast( response );
         }
@@ -365,7 +365,7 @@ public class PentahoDiPlugin {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage(Response
               .status(response.getStatus() ).build() );
         }
-        return (T) response.getEntity();
+        return response.readEntity( returnType );
       }
 
       public <T> T getAsXml( Class<T> returnType ) {
@@ -383,7 +383,7 @@ public class PentahoDiPlugin {
           }
         }
         if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
-          return (T) response.getEntity();
+          return response.readEntity( returnType );
         } else {
           return returnType.cast( response );
         }
@@ -401,7 +401,7 @@ public class PentahoDiPlugin {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( Response
               .status( response.getStatus() ).build() );
         }
-        return (T) response.getEntity();
+        return response.readEntity( returnType );
       }
 
       public <T> T getAsJson( Class<T> returnType ) {
@@ -418,8 +418,8 @@ public class PentahoDiPlugin {
                 response.getStatus() ).build() );
           }
         }
-        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom(returnType)) {
-          return (T) response.getEntity( );
+        if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
+          return response.readEntity( returnType );
         } else {
           return returnType.cast( response );
         }
@@ -505,7 +505,7 @@ public class PentahoDiPlugin {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response
               .status( response.getStatus() ).build() );
         }
-        return ( FileVersioningConfiguration ) response.getEntity( );
+        return response.readEntity( FileVersioningConfiguration.class );
       }
 
       public <T> T getAsXml( jakarta.ws.rs.core.GenericType<T> returnType ) {
@@ -520,7 +520,7 @@ public class PentahoDiPlugin {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response
               .status( response.getStatus() ).build() );
         }
-        return (T) response.getEntity();
+        return response.readEntity( returnType );
       }
 
       public <T> T getAsXml( Class<T> returnType ) {
@@ -538,7 +538,7 @@ public class PentahoDiPlugin {
           }
         }
         if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
-          return (T) response.getEntity();
+          return response.readEntity( returnType );
         } else {
           return returnType.cast( response );
         }
@@ -556,7 +556,7 @@ public class PentahoDiPlugin {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response
               .status( response.getStatus() ).build() );
         }
-        return ( FileVersioningConfiguration ) response.getEntity();
+        return response.readEntity( FileVersioningConfiguration.class );
       }
 
       public <T> T getAsJson( jakarta.ws.rs.core.GenericType<T> returnType ) {
@@ -571,7 +571,7 @@ public class PentahoDiPlugin {
           throw new PentahoDiPlugin.WebApplicationExceptionMessage( jakarta.ws.rs.core.Response
               .status( response.getStatus() ).build() );
         }
-        return (T) response.getEntity();
+        return response.readEntity( returnType );
       }
 
       public <T> T getAsJson( Class<T> returnType ) {
@@ -589,7 +589,7 @@ public class PentahoDiPlugin {
           }
         }
         if ( !jakarta.ws.rs.core.Response.class.isAssignableFrom( returnType ) ) {
-          return (T) response.getEntity();
+          return response.readEntity( returnType );
         } else {
           return returnType.cast( response );
         }
