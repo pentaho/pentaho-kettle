@@ -12,16 +12,11 @@
 
 package org.pentaho.di.trans.steps.mail;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.Ignore;
-import org.junit.Assert;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -30,7 +25,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
-import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
@@ -44,8 +38,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -54,7 +46,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -82,7 +73,6 @@ public class MailTest {
   private static final String SMTP_AUTH_USER = "smtp_auth_user";
   private static final String SMTP_AUTH_PASSWORD = "smtp_auth_password";
   private static final String EMAIL_RECIPIENT = "email_recipient";
-  private static final String IS_Use_AUTH = "using_authentication";
   private static final String EMAIL_SENDER_NAME = "email_sender_name";
   private static final String EMAIL_SENDER_ADDRESS = "email_sender_address";
   private static final String EMAIL_SUBJECT = "email_subject";
@@ -196,13 +186,11 @@ public class MailTest {
     return message;
   }
 
-  @Ignore
   @Test
   public void testSendMailWithPlainPassword( ) throws Exception {
     testSendMailWithPassword( SMTP_AUTH_PASSWORD_DECRYPTED_VALUE );
   }
 
-  @Ignore
   @Test
   public void testSendMailWithEncryptedPassword( ) throws Exception {
     testSendMailWithPassword( SMTP_AUTH_PASSWORD_ENCRYPTED_VALUE );
@@ -250,7 +238,7 @@ public class MailTest {
     when( stepMockHelper.processRowsStepMetaInterface.getDestination() ).thenReturn( EMAIL_RECIPIENT );
     when( stepMockHelper.processRowsStepMetaInterface.getReplyAddress() ).thenReturn( EMAIL_SENDER_NAME );
     when( stepMockHelper.processRowsStepMetaInterface.getServer() ).thenReturn( SMTP_HOST );
-    when( stepMockHelper.processRowsStepMetaInterface.isUsingAuthentication() ).thenReturn( IS_Use_AUTH );
+    when( stepMockHelper.processRowsStepMetaInterface.isUsingAuthentication() ).thenReturn( true );
     when( stepMockHelper.processRowsStepMetaInterface.getAuthenticationUser() ).thenReturn( SMTP_AUTH_USER );
     when( stepMockHelper.processRowsStepMetaInterface.getAuthenticationPassword() ).thenReturn( SMTP_AUTH_PASSWORD );
     when( stepMockHelper.processRowsStepMetaInterface.getDestination() ).thenReturn( EMAIL_RECIPIENT );
@@ -518,93 +506,6 @@ public class MailTest {
 
     step.validateZipFiles( stepMockHelper.initStepMetaInterface );
 
-  }
-
-  @Test
-  public void testIsAuthenticationBasic() {
-    MailMeta meta = new MailMeta();
-    meta.setUsingAuthentication( MailMeta.AUTENTICATION_BASIC );
-    Assert.assertEquals( MailMeta.AUTENTICATION_BASIC, meta.isUsingAuthentication() );
-  }
-
-  @Test
-  public void testIsAuthenticationOAuth() {
-    MailMeta meta = new MailMeta();
-    meta.setUsingAuthentication( MailMeta.AUTENTICATION_OAUTH );
-    Assert.assertEquals( MailMeta.AUTENTICATION_OAUTH, meta.isUsingAuthentication() );
-  }
-
-  @Test
-  public void testGrantTypeIsClientCredentials() {
-    MailMeta meta = new MailMeta();
-    meta.setGrantType( MailMeta.GRANTTYPE_CLIENTCREDENTIALS );
-    assertEquals( MailMeta.GRANTTYPE_CLIENTCREDENTIALS, meta.getGrantType() );
-  }
-
-  @Test
-  public void testGrantTypeIsAuthorizationCode() {
-    MailMeta meta = new MailMeta();
-    meta.setGrantType( MailMeta.GRANTTYPE_AUTHORIZATION_CODE );
-    assertEquals( MailMeta.GRANTTYPE_AUTHORIZATION_CODE, meta.getGrantType() );
-  }
-
-  @Test
-  public void testGrantTypeIsRefreshToken() {
-    MailMeta meta = new MailMeta();
-    meta.setGrantType( MailMeta.GRANTTYPE_REFRESH_TOKEN );
-    assertEquals( MailMeta.GRANTTYPE_REFRESH_TOKEN, meta.getGrantType() );
-  }
-  @Test( expected = RuntimeException.class )
-  public void getOauthToken_withInvalidResponse_shouldThrowException() throws Exception {
-    Mail mail = spy( new Mail( null, null, 0, null, null ) );
-    MailMeta meta = mock( MailMeta.class );
-
-    Field metaField = Mail.class.getDeclaredField( "meta" );
-    metaField.setAccessible( true );
-    metaField.set( mail, meta );
-
-    when( meta.getTokenUrl() ).thenReturn( "http://token.url" );
-    when( meta.getScope() ).thenReturn( "scope" );
-    when( meta.getClientId() ).thenReturn( "client_id" );
-    when( meta.getSecretKey() ).thenReturn( "client_secret" );
-    when( meta.getGrant_type() ).thenReturn( "grant_type" );
-    when( meta.getRefresh_token() ).thenReturn( "refresh_token" );
-    when( meta.getAuthorization_code() ).thenReturn( "authorization_code" );
-    when( meta.getRedirectUri() ).thenReturn( "redirect_uri" );
-
-    CloseableHttpClient client = mock( CloseableHttpClient.class );
-    CloseableHttpResponse response = mock( CloseableHttpResponse.class );
-    when( client.execute( any( HttpPost.class ) ) ).thenReturn( response );
-    when( response.getStatusLine().getStatusCode() ).thenReturn( 400 );
-
-    doReturn( client ).when( HttpClientManager.getInstance() ).createDefaultClient();
-
-    mail.getOauthToken( "http://token.url" );
-  }
-
-  @Test( expected = RuntimeException.class )
-  public void getOauthToken_withIOException_shouldThrowException() throws Exception {
-    Mail mail = spy( new Mail( null, null, 0, null, null ) );
-    MailMeta meta = mock( MailMeta.class );
-    Field metaField = Mail.class.getDeclaredField( "meta" );
-    metaField.setAccessible( true );
-    metaField.set( mail, meta );
-
-    when( meta.getTokenUrl() ).thenReturn(  "http://token.url" );
-    when( meta.getScope() ).thenReturn( "scope" );
-    when( meta.getClientId() ).thenReturn( "client_id" );
-    when( meta.getSecretKey() ).thenReturn( "client_secret" );
-    when( meta.getGrant_type() ).thenReturn( "grant_type" );
-    when( meta.getRefresh_token() ).thenReturn( "refresh_token" );
-    when( meta.getAuthorization_code() ).thenReturn( "authorization_code" );
-    when( meta.getRedirectUri() ).thenReturn( "redirect_uri" );
-
-    CloseableHttpClient client = mock( CloseableHttpClient.class );
-    when( client.execute( any( HttpPost.class ) ) ).thenThrow( new IOException() );
-
-    doReturn( client ).when( HttpClientManager.getInstance() ).createDefaultClient();
-
-    mail.getOauthToken( "http://token.url" );
   }
 
 }
