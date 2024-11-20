@@ -14,6 +14,7 @@
 package org.pentaho.di.ui.core.dialog;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -71,6 +72,8 @@ public class Splash {
   private Color versionWarningBackgroundColor;
   private Color versionWarningForegroundColor;
 
+  private static final String LICENSE_FILE_PATH = "./LICENSE.TXT";
+
   private LogChannelInterface log;
 
   public Splash( Display display ) {
@@ -106,13 +109,13 @@ public class Splash {
 
       try {
         BufferedReader reader =
-                new BufferedReader( new InputStreamReader( Splash.class.getClassLoader().getResourceAsStream(
-                        "org/pentaho/di/ui/core/dialog/license/license.txt" ) ) );
+          new BufferedReader( new BufferedReader( new FileReader( LICENSE_FILE_PATH ) ) );
 
         while ( ( line = reader.readLine() ) != null ) {
           sb.append( line + System.getProperty( "line.separator" ) );
         }
       } catch ( Exception ex ) {
+        sb.append( String.format( "Error reading license file from product directory: \"%s\"", LICENSE_FILE_PATH ) );
         log.logError( BaseMessages.getString( PKG, "SplashDialog.LicenseTextNotFound" ), ex );
       }
       Calendar cal = Calendar.getInstance();
