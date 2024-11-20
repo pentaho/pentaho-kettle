@@ -66,18 +66,6 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
-    <!-- licenses -->
-    <dependencySet>
-      <unpack>true</unpack>
-      <unpackOptions>
-        <includes>
-          <include>PentahoDataIntegration_OSS_Licenses.html</include>
-        </includes>
-      </unpackOptions>
-      <outputDirectory>.</outputDirectory>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
     <!-- jdbc drivers -->
     <dependencySet>
       <includes>
