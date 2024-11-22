@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2020 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
+import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.ui.database.event.DataHandler;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -57,6 +58,15 @@ public class DataOverrideHandler extends DataHandler {
 
   @Override
   public void onOK() {
+    // check for duplicates before closing the dialog.
+    if ( databases != null ) {
+      DatabaseMeta database = new DatabaseMeta();
+      this.getInfo( database );
+      if ( DialogUtils.objectWithTheSameNameExists( database, databases ) ) {
+        DatabaseDialog.showDatabaseExistsDialog( getShell(), database );
+        return;
+      }
+    }
     super.onOK();
     this.cancelPressed = false;
   }

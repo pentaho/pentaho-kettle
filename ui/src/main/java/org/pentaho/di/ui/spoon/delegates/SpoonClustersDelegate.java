@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,14 +63,6 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
             spoon.getShell(), clusterSchema, clusterSchemaManagementInterface.getAll(), slaveServers );
 
       if ( dialog.open() ) {
-        if ( isDuplicate( clusterSchemaManagementInterface.getAll(), clusterSchema ) ) {
-          new ErrorDialog(
-            spoon.getShell(), getMessage( "Spoon.Dialog.ErrorSavingCluster.Title" ), getMessage(
-            "Spoon.Dialog.ErrorSavingCluster.Message", clusterSchema.getName() ),
-            new KettleException( getMessage( "Spoon.Dialog.ErrorSavingCluster.NotUnique" ) ) );
-          return;
-        }
-
         clusterSchemaManagementInterface.add( clusterSchema );
 
         if ( spoon.rep != null ) {

@@ -71,23 +71,21 @@ public class RunConfigurationDelegate {
 
   public void edit( RunConfiguration runConfiguration ) {
     final String key = runConfiguration.getName();
+    List<String> names = configurationManager.getNames();
     RunConfigurationDialog dialog =
       new RunConfigurationDialog( spoonSupplier.get().getShell(), configurationManager,
-        runConfiguration );
+        runConfiguration, names );
     RunConfiguration savedRunConfiguration = dialog.open();
     if ( savedRunConfiguration == null ) {
       //When user click on cancel.
       return;
     }
-    if ( !configurationManager.getNames().contains( savedRunConfiguration.getName() ) ) {
-      configurationManager.delete( key );
-      configurationManager.save( savedRunConfiguration );
-      refreshTree();
 
-      updateLoadedJobs( key, savedRunConfiguration );
-    } else {
-      showRunConfigurationExistsDialog( spoonSupplier.get().getShell(), runConfiguration );
-    }
+    configurationManager.delete( key );
+    configurationManager.save( savedRunConfiguration );
+    refreshTree();
+
+    updateLoadedJobs( key, savedRunConfiguration );
   }
 
   protected void updateLoadedJobs( String key, RunConfiguration runConfig ) {
@@ -140,7 +138,7 @@ public class RunConfigurationDelegate {
     defaultRunConfiguration.setName( name );
 
     RunConfigurationDialog dialog =
-      new RunConfigurationDialog( spoonSupplier.get().getShell(), configurationManager, defaultRunConfiguration );
+      new RunConfigurationDialog( spoonSupplier.get().getShell(), configurationManager, defaultRunConfiguration, names );
     RunConfiguration savedRunConfiguration = dialog.open();
 
     if ( savedRunConfiguration != null ) {
@@ -170,8 +168,9 @@ public class RunConfigurationDelegate {
     Set<String> existingNames = new HashSet<>( configurationManager.getNames() );
     String newName = TreeUtil.findUniqueSuffix( runConfiguration.getName(), existingNames );
     runConfiguration.setName( newName );
+    List<String> names = configurationManager.getNames();
     RunConfigurationDialog dialog =
-      new RunConfigurationDialog( spoonSupplier.get().getShell(), configurationManager, runConfiguration );
+      new RunConfigurationDialog( spoonSupplier.get().getShell(), configurationManager, runConfiguration, names );
     RunConfiguration duplicateRunConfiguration = dialog.open();
     if ( duplicateRunConfiguration == null ) {
       //When user click on cancel.

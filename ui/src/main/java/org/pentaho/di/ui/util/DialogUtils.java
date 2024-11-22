@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,9 +54,10 @@ public class DialogUtils {
 
   public static boolean objectWithTheSameNameExists( SharedObjectInterface object,
       Collection<? extends SharedObjectInterface> scope ) {
+    String objectName = object.getName().trim();
     for ( SharedObjectInterface element : scope ) {
-      String elementName = element.getName();
-      if ( elementName != null && elementName.equalsIgnoreCase( object.getName() ) && object != element ) {
+      String elementName = element.getName().trim();
+      if ( elementName != null && elementName.equalsIgnoreCase( objectName ) && object != element ) {
         return true;
       }
     }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -521,6 +521,13 @@ public class SlaveServerDialog extends Dialog {
     dispose();
   }
 
+  private String trim( String orig ) {
+    if ( orig == null ) {
+      return orig;
+    }
+    return orig.trim();
+  }
+
   public void ok() {
     getInfo();
 
@@ -528,7 +535,10 @@ public class SlaveServerDialog extends Dialog {
       showMessage( BaseMessages.getString( PKG, "SlaveServerDialog.SlaveServerNoName" ) );
       return;
     }
-    if ( originalServer.getName() != null && !slaveServer.getName().equals( originalServer.getName().trim() ) ) {
+    String newName = trim( slaveServer.getName() );
+    slaveServer.setName( newName );
+    String origName = trim( originalServer.getName() );
+    if ( !newName.equals( origName ) ) {
       if ( DialogUtils.objectWithTheSameNameExists( slaveServer, existingServers ) ) {
         String title = BaseMessages.getString( PKG, "SlaveServerDialog.SlaveServerNameExists.Title" );
         String message =
@@ -542,7 +552,7 @@ public class SlaveServerDialog extends Dialog {
       }
     }
 
-    originalServer.setName( slaveServer.getName().trim() );
+    originalServer.setName( newName );
     originalServer.setHostname( slaveServer.getHostname() );
     originalServer.setPort( slaveServer.getPort() );
     originalServer.setWebAppName( slaveServer.getWebAppName() );
