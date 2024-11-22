@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -120,6 +120,7 @@ public class XulDatabaseDialog {
         (XulTree) xulDialogComponent.getDocument().getRootElement().getElementById( "options-parameter-tree" );
       tree.getRootChildren().removeAll();
 
+      dataHandler.setDatabases( databases );
       dataHandler.setData( databaseMeta );
       xulDialogComponent.show(); // Attention: onload: loadConnectionData() is called here the second time, see above
                                  // for first time

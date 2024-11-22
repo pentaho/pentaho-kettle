@@ -495,14 +495,15 @@ public class SpoonDBDelegate extends SpoonDelegate {
   public void newConnection( ) {
     DatabaseMeta databaseMeta = new DatabaseMeta();
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
-    String con_name = getDatabaseDialog().open();
-    if ( !Utils.isEmpty( con_name ) ) {
-      con_name = con_name.trim();
-      databaseMeta.setName( con_name );
-      databaseMeta.setDisplayName( con_name );
-      databaseMeta = getDatabaseDialog().getDatabaseMeta();
-      try {
-        DatabaseManagementInterface databaseManagementInterface = spoon.getBowl().getManager( DatabaseManagementInterface.class );
+    try {
+      DatabaseManagementInterface databaseManagementInterface = spoon.getBowl().getManager( DatabaseManagementInterface.class );
+      getDatabaseDialog().setDatabases( databaseManagementInterface.getAll() );
+      String con_name = getDatabaseDialog().open();
+      if ( !Utils.isEmpty( con_name ) ) {
+        con_name = con_name.trim();
+        databaseMeta.setName( con_name );
+        databaseMeta.setDisplayName( con_name );
+        databaseMeta = getDatabaseDialog().getDatabaseMeta();
 
         if ( databaseMeta.findDatabase( databaseManagementInterface.getAll(), con_name ) == null ) {
           databaseManagementInterface.add( databaseMeta );
@@ -511,11 +512,11 @@ public class SpoonDBDelegate extends SpoonDelegate {
         } else {
           DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
         }
-      } catch ( KettleException exception ) {
-        new ErrorDialog( spoon.getShell(),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), exception );
       }
+    } catch ( KettleException exception ) {
+      new ErrorDialog( spoon.getShell(),
+                       BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
+                       BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), exception );
     }
   }
 

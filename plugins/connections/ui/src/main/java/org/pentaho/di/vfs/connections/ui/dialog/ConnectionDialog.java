@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.vfs.connections.ui.dialog;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -270,7 +271,7 @@ public class ConnectionDialog extends Dialog {
   private void setConnectionType() { // When first loaded
     if ( connectionName != null ) {
       connectionDetails = connectionManager.getConnectionDetails( connectionName );
-      originalName = connectionName;
+      originalName = connectionName.trim();
       if ( connectionDetails != null ) {
         connectionTypeKey = connectionDetails.getType();
         if ( newConnectionName != null ) {
@@ -461,6 +462,22 @@ public class ConnectionDialog extends Dialog {
 
   private void ok() {
     if ( validateEntries() ) {
+      connectionDetails.setName( connectionDetails.getName().trim() );
+      if ( !connectionDetails.getName().equals( originalName ) ) {
+        List<String> names = connectionManager.getNames();
+        if ( names.stream().anyMatch( n -> n.equalsIgnoreCase( connectionDetails.getName().trim() ) ) ) {
+          String title = BaseMessages.getString( PKG, "ConnectionDialog.ConnectionNameExists.Title" );
+          String message =
+            BaseMessages.getString( PKG, "ConnectionDialog.ConnectionNameExists", connectionDetails.getName() );
+          String okButton = BaseMessages.getString( PKG, "System.Button.OK" );
+          MessageDialog dialog =
+            new MessageDialog( shell, title, null, message, MessageDialog.ERROR, new String[] { okButton }, 0 );
+
+          dialog.open();
+          return;
+        }
+      }
+
       connectionManager.save( connectionDetails );
       if ( originalName != null && !originalName.equals( connectionDetails.getName() ) ) {
         connectionManager.delete( originalName );
@@ -496,11 +513,6 @@ public class ConnectionDialog extends Dialog {
     }
     if ( isEmpty( connectionDetails.getName() ) ) {
       return BaseMessages.getString( PKG, "ConnectionDialog.validate.failure.noName" );
-    }
-    ConnectionDetails attemptReadDetails = connectionManager.getConnectionDetails( connectionDetails.getName() );
-    if ( attemptReadDetails != null && attemptReadDetails.getType() != connectionDetails.getType() ) {
-      return BaseMessages.getString( PKG, "ConnectionDialog.validate.failure.sameNameOnDifferentType",
-        connectionDetails.getName(), convertKeyToTypeLabel( attemptReadDetails.getType() ) );
     }
     VFSConnectionDetails vfsConnectionDetails = asVFSConnectionDetails( connectionDetails );
     if ( vfsConnectionDetails != null && vfsConnectionDetails.isRootPathRequired() && isEmpty( vfsConnectionDetails.getRootPath() ) ) {
