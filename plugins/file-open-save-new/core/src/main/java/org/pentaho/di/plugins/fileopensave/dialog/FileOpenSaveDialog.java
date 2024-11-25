@@ -652,6 +652,14 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         }
       }
     } else {
+      if ( targetPath.startsWith( "file:///" ) ) {
+        // remove the protocol so we are left with a local file path, including the leading /
+        targetPath = targetPath.substring( 7 );
+      }
+      if ( targetPath.startsWith( "file:/" ) ) {
+        // remove the protocol so we are left with a local file path, including the leading /
+        targetPath = targetPath.substring( 5 );
+      }
       // For  VFS File Path
       if ( targetPath.contains( "pvfs://" ) || targetPath.contains( "hc://" ) ) {
         int indexOfDoubleSlash = targetPath.indexOf( "//" ) + 2;
