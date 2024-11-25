@@ -629,7 +629,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   /**
    * Throws if not ok
    */
-  private void handleStatus( HttpUriRequest method, StatusLine statusLine, int status ) throws KettleException {
+  private void handleStatus( HttpUriRequest method, StatusLine statusLine, int status, String responseBody ) throws KettleException {
     if ( status >= 300 ) {
       String message;
       if ( status == HttpStatus.SC_NOT_FOUND ) {
@@ -639,10 +639,16 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
           BaseMessages.getString( PKG, "SlaveServer.Error.404.Message" )
         );
       } else {
-        message = String.format( "HTTP Status %d - %s - %s",
+        String responseMessage = null;
+        if ( responseBody != null ) {
+          WebResult webResult = WebResult.fromXMLString( responseBody );
+          responseMessage = webResult.getMessage();
+        }
+        message = String.format( "HTTP Status %d - %s - %s%s",
           status,
           method.getURI().toString(),
-          statusLine.getReasonPhrase() );
+          statusLine.getReasonPhrase(),
+          responseMessage == null ? "" : "\n" + responseMessage );
       }
       throw new KettleException( message );
     }
@@ -724,7 +730,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
 
     // throw if not ok
-    handleStatus( method, statusLine, statusCode );
+    handleStatus( method, statusLine, statusCode, responseBody );
 
     return responseBody;
   }
