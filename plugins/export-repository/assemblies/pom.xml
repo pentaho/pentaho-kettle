@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>export-repository</artifactId>
-    <version>10.3.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-171</version>
   </parent>
 
   <artifactId>export-repository-assemblies</artifactId>
-  <version>10.3.0.0-SNAPSHOT</version>
+  <version>10.3.0.0-171</version>
   <packaging>pom</packaging>
 
   <name>PDI Export Repository To XML Plugin</name>
