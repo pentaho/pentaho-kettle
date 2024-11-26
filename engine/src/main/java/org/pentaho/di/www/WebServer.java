@@ -13,19 +13,23 @@
 
 package org.pentaho.di.www;
 
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.ee10.servlet.DefaultServlet;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.security.ConstraintMapping;
+import org.eclipse.jetty.ee10.servlet.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.Constraint;
 import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.UserStore;
 import org.eclipse.jetty.security.RolePrincipal;
 import org.eclipse.jetty.security.UserPrincipal;
-import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.jaas.JAASLoginService;
+import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.LowResourceMonitor;
@@ -34,12 +38,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Password;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.pentaho.di.cluster.SlaveServer;
@@ -58,11 +57,13 @@ import org.pentaho.di.i18n.BaseMessages;
 import jakarta.servlet.Servlet;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static org.eclipse.jetty.ee10.servlet.security.ConstraintSecurityHandler.ANY_ROLE;
+import static org.eclipse.jetty.security.Authenticator.BASIC_AUTH;
 
 public class WebServer {
 
@@ -153,7 +154,7 @@ public class WebServer {
     server = new Server();
 
     List<String> roles = new ArrayList<>();
-    roles.add( Constraint.ANY_AUTH );
+    roles.add( ANY_ROLE );
 
     // Set up the security handler, optionally with JAAS
     //
@@ -186,9 +187,10 @@ public class WebServer {
             passwordFile = Const.getKettleLocalCartePasswordFile();
           }
         }
-        hashLoginService = new HashLoginService( SERVICE_NAME, passwordFile ) {
+
+        hashLoginService = new HashLoginService( SERVICE_NAME, ResourceFactory.of( server ).newResource( passwordFile ) ) {
           @Override
-          protected List<RolePrincipal> loadRoleInfo( UserPrincipal user ) {
+          protected List<RolePrincipal> loadRoleInfo(UserPrincipal user ) {
             List<RolePrincipal> newRoles = new ArrayList<>();
             List<RolePrincipal> roles = super.loadRoleInfo( user );
             if ( roles != null ) {
@@ -201,10 +203,7 @@ public class WebServer {
       securityHandler.setLoginService( hashLoginService );
     }
 
-    Constraint constraint = new Constraint();
-    constraint.setName( Constraint.__BASIC_AUTH );
-    constraint.setRoles( roles.toArray( new String[ roles.size() ] ) );
-    constraint.setAuthenticate( true );
+    Constraint constraint = new Constraint.Builder().name( BASIC_AUTH ).roles( roles.toArray( new String[0] ) ).build();
 
     ConstraintMapping constraintMapping = new ConstraintMapping();
     constraintMapping.setConstraint( constraint );
@@ -220,9 +219,7 @@ public class WebServer {
 
     // Root
     //
-    ServletContextHandler
-        root =
-        new ServletContextHandler( contexts, GetRootServlet.CONTEXT_PATH, ServletContextHandler.SESSIONS );
+    ServletContextHandler root = new ServletContextHandler( GetRootServlet.CONTEXT_PATH, ServletContextHandler.SESSIONS );
     GetRootServlet rootServlet = new GetRootServlet();
     rootServlet.setJettyMode( true );
     root.addServlet( new ServletHolder( rootServlet ), "/*" );
@@ -236,9 +233,10 @@ public class WebServer {
       servlet.setJettyMode( true );
 
       ServletContextHandler servletContext =
-        new ServletContextHandler( contexts, getContextPath( servlet ), ServletContextHandler.SESSIONS );
+        new ServletContextHandler( getContextPath( servlet ), ServletContextHandler.SESSIONS );
       ServletHolder servletHolder = new ServletHolder( (Servlet) servlet );
       servletContext.addServlet( servletHolder, "/*" );
+      contexts.addHandler( servletContext );
     }
 
     // setup jersey (REST)
@@ -258,8 +256,8 @@ public class WebServer {
     // Allow png files to be shown for transformations and jobs...
     //
     ResourceHandler resourceHandler = new ResourceHandler();
-    resourceHandler.setResourceBase( "temp" );
-    // add all handlers/contexts to server
+    resourceHandler.setBaseResourceAsString( "temp" );
+    contexts.addHandler( resourceHandler );
 
     // set up static servlet
     ServletHolder staticHolder = new ServletHolder( "static", DefaultServlet.class );
@@ -269,10 +267,11 @@ public class WebServer {
     staticHolder.setInitParameter( "pathInfoOnly", "true" );
     root.addServlet( staticHolder, "/static/*" );
 
-    HandlerList handlers = new HandlerList();
-    handlers.setHandlers( new Handler[] { resourceHandler, contexts } );
-    securityHandler.setHandler( handlers );
+    contexts.addHandler( root );
 
+    securityHandler.setHandler( contexts );
+
+    // add all handlers/contexts to server
     server.setHandler( securityHandler );
     
     // Configure listeners (Acceptors, ServerConnector/SSL, etc)
