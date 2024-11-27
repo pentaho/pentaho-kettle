@@ -1229,17 +1229,36 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   private boolean shouldConsiderOldBehaviourForEveryInputRow( ) {
-    boolean shouldExecuteWithZeroRows = "Y".equalsIgnoreCase( System.getProperty( Const.COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT, "N" ) );
-    if ( "Y".equalsIgnoreCase( System.getProperty( Const.COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW, "N" ) ) ) {
+    boolean showWarnings = calculateExecuteForEveryRowKettleProperty( Const.KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW, Const.COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW );
+    boolean shouldExecuteWithZeroRows = calculateExecuteForEveryRowKettleProperty( Const.KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT, Const.COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT );
+
+    if ( showWarnings ) {
       if ( shouldExecuteWithZeroRows ) {
         log.logBasic(
-          "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+          "WARN Detected \"Execute for every row\" but no rows were detected, applying desired behavior, to execute. In case this is not desired behavior, please read property KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT." );
       } else {
         log.logBasic(
-          "WARN Detected \"Execute for every row\" but no rows were detected, applying default behavior, not to execute. In case this is not desired behavior, please read property COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT" );
+          "WARN Detected \"Execute for every row\" but no rows were detected, applying default behavior, not to execute. In case this is not desired behavior, please read property KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT." );
       }
     }
+
     return shouldExecuteWithZeroRows;
+  }
+
+  private boolean calculateExecuteForEveryRowKettleProperty( String kettleCompatabilityProperty, String compatibilityProperty ) {
+    String kValue = System.getProperty( kettleCompatabilityProperty );
+
+    if ( !Utils.isEmpty( kValue ) ) {
+      return "Y".equalsIgnoreCase( kValue );
+    }
+
+    String cValue = System.getProperty( compatibilityProperty );
+    if ( !Utils.isEmpty( cValue ) ) {
+      log.logError( compatibilityProperty + " property is deprecated, please use " + kettleCompatabilityProperty
+        + " and remove the old one." );
+    }
+
+    return "Y".equalsIgnoreCase( cValue );
   }
 
   private boolean createParentFolder( String filename ) {
