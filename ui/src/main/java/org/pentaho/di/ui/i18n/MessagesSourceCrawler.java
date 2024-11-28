@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 
 /**
  * This class takes care of crawling through the source code
@@ -276,7 +277,7 @@ public class MessagesSourceCrawler {
       return;
     }
 
-    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    TransformerFactory transformerFactory = XMLParserFactoryProducer.createSecureTransformerFactory();
     Transformer transformer = transformerFactory.newTransformer();
     transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, YES );
     transformer.setOutputProperty( OutputKeys.INDENT, YES );
