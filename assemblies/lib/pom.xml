@@ -573,6 +573,11 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-session</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
 
     <!-- To support Enunciate Annotations in Resource classes -->
     <dependency>
