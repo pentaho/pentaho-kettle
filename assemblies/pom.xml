@@ -44,7 +44,7 @@
         <dependencies>
           <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <version>${osgi.core.version}</version>
             <scope>compile</scope>
           </dependency>
