@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2023 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -147,6 +147,8 @@ public class DataHandler extends AbstractXulEventHandler {
   }
 
   protected DatabaseMeta databaseMeta = null;
+
+  protected String originalName = null;
 
   protected DatabaseMeta cache = new DatabaseMeta();
 
@@ -863,6 +865,7 @@ public class DataHandler extends AbstractXulEventHandler {
     if ( meta == null ) {
       return;
     }
+    originalName = meta.getName();
 
     if ( meta.getAttributes().containsKey( EXTRA_OPTION_WEB_APPLICATION_NAME ) ) {
       meta.setDBName( (String) meta.getAttributes().get( EXTRA_OPTION_WEB_APPLICATION_NAME ) );
