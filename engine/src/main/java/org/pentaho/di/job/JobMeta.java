@@ -515,7 +515,7 @@ public class JobMeta extends AbstractMeta
       DatabaseMeta[] dbs = jobEntryCopy.getEntry().getUsedDatabaseConnections();
       if ( dbs != null ) {
         for ( DatabaseMeta db : dbs ) {
-          if ( db.getName().equals( name ) ) {
+          if ( db != null && db.getName().equals( name ) ) {
             updateFields( db, newDatabaseMeta );
           }
         }

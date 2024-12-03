@@ -203,7 +203,11 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
   }
 
   public DatabaseMeta[] getUsedDatabaseConnections() {
-    return new DatabaseMeta[] { connection, };
+    if ( connection != null ) {
+      return new DatabaseMeta[] { connection, };
+    } else {
+      return new DatabaseMeta[ 0 ];
+    }
   }
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {

@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.core.database.dialog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
@@ -62,9 +63,11 @@ public class DataOverrideHandler extends DataHandler {
     if ( databases != null ) {
       DatabaseMeta database = new DatabaseMeta();
       this.getInfo( database );
-      if ( DialogUtils.objectWithTheSameNameExists( database, databases ) ) {
-        DatabaseDialog.showDatabaseExistsDialog( getShell(), database );
-        return;
+      if ( ! Objects.equals( database.getName(), originalName ) ) {
+        if ( DialogUtils.objectWithTheSameNameExists( database, databases ) ) {
+          DatabaseDialog.showDatabaseExistsDialog( getShell(), database );
+          return;
+        }
       }
     }
     super.onOK();
