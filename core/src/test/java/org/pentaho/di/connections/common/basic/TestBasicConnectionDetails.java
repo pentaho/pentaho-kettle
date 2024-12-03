@@ -22,7 +22,7 @@ import org.pentaho.metastore.persist.MetaStoreElementType;
 @MetaStoreElementType(
   name = "Test VFS Connection With No Domain and No Buckets",
   description = "Defines the connection details for a test vfs connection" )
-public class TestBasicConnectionDetails extends BaseVFSConnectionDetails {
+public class TestBasicConnectionDetails extends TestBaseVFSConnectionDetails {
 
   private static String TYPE = "test4";
 
@@ -80,11 +80,4 @@ public class TestBasicConnectionDetails extends BaseVFSConnectionDetails {
     this.password1 = password1;
   }
 
-  @Override public VariableSpace getSpace() {
-    return null;
-  }
-
-  @Override public void setSpace( VariableSpace space ) {
-
-  }
 }
