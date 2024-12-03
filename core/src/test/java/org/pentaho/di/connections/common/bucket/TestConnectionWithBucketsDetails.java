@@ -14,6 +14,7 @@
 package org.pentaho.di.connections.common.bucket;
 
 import org.pentaho.di.connections.annotations.Encrypted;
+import org.pentaho.di.connections.common.basic.TestBaseVFSConnectionDetails;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
@@ -22,7 +23,7 @@ import org.pentaho.metastore.persist.MetaStoreElementType;
 @MetaStoreElementType(
   name = "Test VFS Connection With Buckets",
   description = "Defines the connection details for a test vfs connection" )
-public class TestConnectionWithBucketsDetails extends BaseVFSConnectionDetails {
+public class TestConnectionWithBucketsDetails extends TestBaseVFSConnectionDetails {
 
   private static String TYPE = "test";
 
@@ -76,11 +77,4 @@ public class TestConnectionWithBucketsDetails extends BaseVFSConnectionDetails {
     this.password1 = password1;
   }
 
-  @Override public VariableSpace getSpace() {
-    return null;
-  }
-
-  @Override public void setSpace( VariableSpace space ) {
-
-  }
 }
