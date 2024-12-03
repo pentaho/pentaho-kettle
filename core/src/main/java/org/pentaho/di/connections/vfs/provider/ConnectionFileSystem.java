@@ -78,6 +78,8 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
       return new UndefinedConnectionFileObject( pvfsFileName, this );
     }
 
+    initializeVariableSpace( details );
+
     // 3. Connections with buckets don't support degenerate root provider URIs (e.g. s3://).
     //    If using buckets, such URIs would be generated, if transformer were called.
     if ( pvfsFileName.isConnectionRoot() && vfsConnectionManagerHelper.usesBuckets( details ) ) {
@@ -92,7 +94,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
 
     AbstractFileObject<?> providerFileObject =
       (AbstractFileObject<?>) getKettleVFS()
-        .getFileObject( providerFileName.getURI(), initializeVariableSpace( details ) );
+        .getFileObject( providerFileName.getURI(), details.getSpace() );
 
     return new ResolvedConnectionFileObject( pvfsFileName, this, providerFileObject );
   }
