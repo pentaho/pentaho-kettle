@@ -49,11 +49,5 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>pentaho</groupId>
-          <artifactId>pentaho-platform-extensions</artifactId>
-          <version>${pdi.version}</version>
-          <scope>provided</scope>
-      </dependency>
   </dependencies>
 </project>

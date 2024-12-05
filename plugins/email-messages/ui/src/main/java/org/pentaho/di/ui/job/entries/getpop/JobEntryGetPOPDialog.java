@@ -1961,6 +1961,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       String realpass = jobEntry.getRealPassword( jobMeta.environmentSubstitute( wPassword.getText() ) );
       int realport = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), -1 );
       String realproxyuser = jobMeta.environmentSubstitute( wProxyUsername.getText() );
+      if( wUseAuth.getText().equals( JobEntryGetPOP.AUTENTICATION_OAUTH ) ){
+        realpass = "Bearer "+jobEntry.getOauthToken( wAuthTokenUrl.getText() ).getAccessToken();
+      }
       try {
         mailConn =
           new MailConnection(
