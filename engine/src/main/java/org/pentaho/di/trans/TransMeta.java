@@ -732,6 +732,7 @@ public class TransMeta extends AbstractMeta
     log = LogChannel.GENERAL;
   }
 
+  @Override
   protected void initializeNonLocalSharedObjects() {
     super.initializeNonLocalSharedObjects();
     localClusterSchemaManager =
