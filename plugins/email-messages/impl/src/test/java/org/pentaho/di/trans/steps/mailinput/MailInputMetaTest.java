@@ -19,6 +19,7 @@ package org.pentaho.di.trans.steps.mailinput;
  * @author Marc Batchelor - removed useless test case, added load/save tests
  * @see MailInputMeta
  */
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,12 +29,20 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -43,15 +52,32 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 public class MailInputMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
+
+  @Mock
+  private CloseableHttpClient mockHttpClient;
+  @Mock
+  private CloseableHttpResponse mockResponse;
+
+  @Mock
+  private HttpClientManager httpClientManager;
+
+  private MailInputMeta mailInputMeta;
   Class<MailInputMeta> testMetaClass = MailInputMeta.class;
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Before
   public void setUpLoadSave() throws Exception {
+    MockitoAnnotations.initMocks( this );
+    mailInputMeta = new MailInputMeta();
     KettleEnvironment.init();
     PluginRegistry.init( false );
+    when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
     List<String> attributes =
         Arrays.asList( "conditionReceivedDate", "valueimaplist", "serverName", "userName", "password", "useSSL", "port",
             "firstMails", "retrievemails", "delete", "protocol", "firstIMAPMails", "IMAPFolder", "senderSearchTerm",
@@ -89,6 +115,124 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testProtocolType() {
+    MailInputMeta mailInputMeta = new MailInputMeta();
+    String expectedProtocol = "IMAP";
+    mailInputMeta.setProtocol( expectedProtocol );
+    assertEquals( expectedProtocol, mailInputMeta.getProtocol() );
+  }
+
+  @Test
+  public void testAuthenticationTypeNone() {
+    mailInputMeta.setUsingAuthentication( MailInputMeta.AUTENTICATION_NONE );
+    assertEquals( MailInputMeta.AUTENTICATION_NONE, mailInputMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeBasic() {
+    mailInputMeta.setUsingAuthentication( MailInputMeta.AUTENTICATION_BASIC );
+    assertEquals( MailInputMeta.AUTENTICATION_BASIC, mailInputMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeOAuth() {
+    mailInputMeta.setUsingAuthentication( MailInputMeta.AUTENTICATION_OAUTH );
+    assertEquals( MailInputMeta.AUTENTICATION_OAUTH, mailInputMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testGrantTypeClientCredentials() {
+    MailInputMeta mailInputMeta = new MailInputMeta();
+    mailInputMeta.setGrantType( MailInputMeta.GRANTTYPE_CLIENTCREDENTIALS );
+    assertEquals( MailInputMeta.GRANTTYPE_CLIENTCREDENTIALS, mailInputMeta.getGrantType() );
+  }
+
+
+  @Test( expected = RuntimeException.class )
+  public void getOauthToken_invalidResponse_throwsException() throws Exception {
+    String tokenUrl = "http://example.com/token";
+    String scope = "scope";
+    String clientId = "clientId";
+    String secretKey = "secretKey";
+    String grantType = MailInputMeta.GRANTTYPE_AUTHORIZATION_CODE;
+    String authorizationCode = "authCode";
+    String redirectUri = "redirectUri";
+
+    when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
+    when( mockHttpClient.execute( any( HttpPost.class) ) ).thenReturn( mockResponse );
+    when( mockResponse.getStatusLine().getStatusCode() ).thenReturn( HttpStatus.SC_BAD_REQUEST );
+
+    mailInputMeta.getOauthToken( tokenUrl, scope, clientId, secretKey, grantType, null, authorizationCode, redirectUri );
+  }
+
+  @Test( expected = RuntimeException.class )
+  public void getOauthToken_httpClientExecuteThrowsIOException_throwsRuntimeException() throws Exception {
+    String tokenUrl = "http://example.com/token";
+    String scope = "scope";
+    String clientId = "clientId";
+    String secretKey = "secretKey";
+    String grantType = MailInputMeta.GRANTTYPE_AUTHORIZATION_CODE;
+    String authorizationCode = "authCode";
+    String redirectUri = "redirectUri";
+
+    when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
+    when( mockHttpClient.execute( any( HttpPost.class ) ) ).thenThrow( new IOException( "IO error" ) );
+
+    mailInputMeta.getOauthToken( tokenUrl, scope, clientId, secretKey, grantType, null, authorizationCode, redirectUri );
+  }
+
+  @Test( expected = RuntimeException.class )
+  public void getOauthToken_invalidGrantType_throwsRuntimeException() throws Exception {
+    String tokenUrl = "http://example.com/token";
+    String scope = "scope";
+    String clientId = "clientId";
+    String secretKey = "secretKey";
+    String grantType = "invalid_grant_type";
+    String authorizationCode = "authCode";
+    String redirectUri = "redirectUri";
+
+    when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
+
+    mailInputMeta.getOauthToken( tokenUrl, scope, clientId, secretKey, grantType, null, authorizationCode, redirectUri );
+  }
+
+  @Test
+  public void testGrantTypeAuthorizationCode() {
+    MailInputMeta mailInputMeta = new MailInputMeta();
+    mailInputMeta.setGrantType( MailInputMeta.GRANTTYPE_AUTHORIZATION_CODE );
+    assertEquals( MailInputMeta.GRANTTYPE_AUTHORIZATION_CODE, mailInputMeta.getGrantType() );
+  }
+
+  @Test
+  public void testGrantTypeRefreshToken() {
+    MailInputMeta mailInputMeta = new MailInputMeta();
+    mailInputMeta.setGrantType(MailInputMeta.GRANTTYPE_REFRESH_TOKEN);
+    assertEquals(MailInputMeta.GRANTTYPE_REFRESH_TOKEN, mailInputMeta.getGrantType());
+  }
+
+  @Test
+  public void testAuthorizationCodeAndRedirectUri() {
+    MailInputMeta meta = new MailInputMeta();
+    String authorizationCode = "testAuthCode";
+    String redirectUri = "http://test.redirect.uri";
+
+    meta.setAuthorization_code( authorizationCode );
+    meta.setRedirectUri( redirectUri );
+
+    assertEquals( authorizationCode, meta.getAuthorization_code() );
+    assertEquals( redirectUri, meta.getRedirectUri() );
+  }
+
+  @Test( expected = RuntimeException.class )
+  public void testgetOauthTokenThrowsExceptionOnHttpClientExecuteFailure() throws IOException {
+    String tokenUrl = "http://example.com/token";
+
+    Mockito.when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
+    Mockito.when( mockHttpClient.execute( any( HttpPost.class ) ) ).thenThrow( new IOException() );
+    mailInputMeta.getOauthToken("token", "scope", "clientId", "secretKey", "authorization_code", null, "authCode", "redirectUri");
   }
 
   public class MailInputFieldLoadSaveValidator implements FieldLoadSaveValidator<MailInputField> {
