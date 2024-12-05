@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2021 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -617,7 +617,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public Object deepClone( boolean cloneUpdateFlag ) {
     DatabaseMeta databaseMeta = new DatabaseMeta();
     databaseMeta.replaceMeta( this, cloneUpdateFlag );
-    databaseMeta.setObjectId( null );
     return databaseMeta;
   }
 
@@ -1024,6 +1023,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
       setReadOnly( Boolean.valueOf( XMLHandler.getTagValue( con, "read_only" ) ) );
 
+      readObjectId( con );
+
       // Also, read the database attributes...
       Node attrsnode = XMLHandler.getSubNode( con, "attributes" );
       if ( attrsnode != null ) {
@@ -1075,6 +1076,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     retval.append( "    " ).append( XMLHandler.addTagValue( "servername", getServername() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "data_tablespace", getDataTablespace() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "index_tablespace", getIndexTablespace() ) );
+    appendObjectId( retval );
 
     // only write the tag out if it is set to true
     if ( isReadOnly() ) {

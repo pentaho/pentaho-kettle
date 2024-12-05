@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -169,6 +169,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     xml.append( "        " ).append( XMLHandler.addTagValue( "sockets_flush_interval", socketsFlushInterval ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "sockets_compressed", socketsCompressed ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "dynamic", dynamic ) );
+    appendObjectId( xml );
 
     xml.append( "        " ).append( XMLHandler.openTag( "slaveservers" ) ).append( Const.CR );
     for ( int i = 0; i < slaveServers.size(); i++ ) {
@@ -190,6 +191,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     socketsCompressed = "Y".equalsIgnoreCase( XMLHandler.getTagValue( clusterSchemaNode, "sockets_compressed" ) );
     dynamic = "Y".equalsIgnoreCase( XMLHandler.getTagValue( clusterSchemaNode, "dynamic" ) );
 
+    readObjectId( clusterSchemaNode );
     Node slavesNode = XMLHandler.getSubNode( clusterSchemaNode, "slaveservers" );
     int nrSlaves = XMLHandler.countNodes( slavesNode, "name" );
     for ( int i = 0; i < nrSlaves; i++ ) {

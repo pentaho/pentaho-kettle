@@ -29,6 +29,8 @@ import org.w3c.dom.Node;
 
 public interface SharedObjectInterface<T extends SharedObjectInterface> {
 
+  static final String OBJECT_ID = "object_id";
+
   /**
    * @deprecated
    *

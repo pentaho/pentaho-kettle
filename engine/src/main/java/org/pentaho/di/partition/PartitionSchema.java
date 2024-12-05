@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -164,6 +164,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     xml
       .append( "        " ).append(
         XMLHandler.addTagValue( "partitions_per_slave", numberOfPartitionsPerSlave ) );
+    appendObjectId( xml );
 
     xml.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     return xml.toString();
@@ -179,6 +180,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
       Node partitionNode = XMLHandler.getSubNodeByNr( partitionSchemaNode, "partition", i, false );
       partitionIDs.add( XMLHandler.getTagValue( partitionNode, "id" ) );
     }
+    readObjectId( partitionSchemaNode );
 
     dynamicallyDefined = "Y".equalsIgnoreCase( XMLHandler.getTagValue( partitionSchemaNode, "dynamic" ) );
     numberOfPartitionsPerSlave = XMLHandler.getTagValue( partitionSchemaNode, "partitions_per_slave" );

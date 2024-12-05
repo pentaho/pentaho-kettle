@@ -95,11 +95,6 @@ public class DefaultBowl extends BaseBowl {
     return sharedObjectsIO;
   }
 
-  /**
-   * Set a specific metastore supplier for use by later calls to this class. Note that this will cause the
-   * ConnectionManager from this class and from ConnectionManager.getInstance() to return different instances.
-   */
-  @VisibleForTesting
   public void setSharedObjectsIO( SharedObjectsIO sharedObjectsIO ) {
     this.sharedObjectsIO = sharedObjectsIO;
   }

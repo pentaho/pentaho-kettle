@@ -246,6 +246,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.master = "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "master" ) );
     initializeVariablesFrom( null );
     this.log = new LogChannel( this );
+    readObjectId( slaveNode );
 
     setSslMode( "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, SSL_MODE_TAG ) ) );
     Node sslConfig = XMLHandler.getSubNode( slaveNode, SslConfiguration.XML_TAG );
@@ -277,6 +278,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       xml.append( "        " ).append( XMLHandler.addTagValue( "non_proxy_hosts", nonProxyHosts ) );
       xml.append( "        " ).append( XMLHandler.addTagValue( "master", master ) );
       xml.append( "        " ).append( XMLHandler.addTagValue( SSL_MODE_TAG, isSslMode(), false ) );
+      appendObjectId( xml );
       if ( sslConfig != null ) {
         xml.append( sslConfig.getXML() );
       }

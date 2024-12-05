@@ -61,8 +61,7 @@ public abstract class BaseBowl implements Bowl {
     parentBowls.add( parent );
   }
 
-  // use with caution. For testing only.
-  @VisibleForTesting
+  // use with caution.
   public synchronized void clearManagers() {
     managerInstances.clear();
   }
