@@ -1693,6 +1693,12 @@ public class Const {
   public static final String STRING_ONLY_USED_DB_TO_XML = "STRING_ONLY_USED_DB_TO_XML";
 
   /**
+   Value to Configure if we want to disable/grayed out internal variables, and remove from the new/edit schedule.
+   */
+  public static final String HIDE_INTERNAL_VARIABLES = "HIDE_INTERNAL_VARIABLES";
+  public static final String HIDE_INTERNAL_VARIABLES_DEFAULT = "Y";
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *
