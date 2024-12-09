@@ -26,7 +26,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -135,11 +134,6 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
         tableItem.setText( 1, variableName );
         tableItem.setText( 2, Const.NVL( variableValue, "" ) );
       }
-    }
-    //Internal Varibles should get disabled based on the kettle varible HIDE_INTERNAL_VARIABLES=Y
-    if ( ValueMetaString.convertStringToBoolean( System.getProperty( Const.HIDE_INTERNAL_VARIABLES,
-            Const.HIDE_INTERNAL_VARIABLES_DEFAULT ) ) ) {
-      wVariables.table.setEnabled(false);
     }
     wVariables.removeEmptyRows();
     wVariables.setRowNums();

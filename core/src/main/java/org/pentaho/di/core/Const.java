@@ -22,7 +22,6 @@ import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
@@ -1697,12 +1696,6 @@ public class Const {
    Value to Configure if we want to export only the used connections to the XML file
    */
   public static final String STRING_ONLY_USED_DB_TO_XML = "STRING_ONLY_USED_DB_TO_XML";
-
-  /**
-   Value to Configure if we want to disable/grayed out internal variables, and remove from the new/edit schedule.
-   */
-  public static final String HIDE_INTERNAL_VARIABLES = "PENTAHO_SCHEDULER_HIDE_INTERNAL_VARIABLES";
-  public static final String HIDE_INTERNAL_VARIABLES_DEFAULT = "Y";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
