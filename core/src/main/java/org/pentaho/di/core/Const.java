@@ -1,16 +1,25 @@
 // CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
- * Pentaho
+ * Pentaho Data Integration
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
- * Use of this software is governed by the Business Source License included
- * in the LICENSE.TXT file.
+ *******************************************************************************
  *
- * Change Date: 2029-07-20
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  ******************************************************************************/
-
 
 package org.pentaho.di.core;
 
@@ -1679,30 +1688,9 @@ public class Const {
   public static final String COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
 
   /**
-   Value to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as job input mode.
-   */
-  public static final String KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT = "KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT";
-
-  /**
-   Value to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as trans input mode.
-   */
-  public static final String KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT = "KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT";
-
-  /**
-   Value to show/not show the Warning messages regarding the configured behaviour of the flag "Execute every Input Row"
-   */
-  public static final String KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
-
-  /**
    Value to Configure if we want to export only the used connections to the XML file
    */
   public static final String STRING_ONLY_USED_DB_TO_XML = "STRING_ONLY_USED_DB_TO_XML";
-
-  /**
-   Value to Configure if we want to disable/grayed out internal variables, and remove from the new/edit schedule.
-   */
-  public static final String HIDE_INTERNAL_VARIABLES = "PENTAHO_SCHEDULER_HIDE_INTERNAL_VARIABLES";
-  public static final String HIDE_INTERNAL_VARIABLES_DEFAULT = "Y";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
