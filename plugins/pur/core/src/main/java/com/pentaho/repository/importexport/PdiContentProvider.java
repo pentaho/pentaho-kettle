@@ -21,7 +21,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
@@ -114,12 +113,6 @@ public class PdiContentProvider implements IPdiContentProvider {
           log.error( e );
         }
       }
-      /*Updating userVariables to remove based on the HideInternalVariable setting. If no other variables other than
-      Internal variables, then it won't show the Internal variable screen.*/
-      if ( ValueMetaString.convertStringToBoolean( System.getProperty( Const.HIDE_INTERNAL_VARIABLES,
-              Const.HIDE_INTERNAL_VARIABLES_DEFAULT ) ) ) {
-        userVariables.keySet().removeIf(key -> key.contains("Internal."));
-      }
     }
     return userVariables;
   }
@@ -158,11 +151,6 @@ public class PdiContentProvider implements IPdiContentProvider {
     }
 
     return jobVarsMap;
-  }
-
-  @Override
-  public String getHideInternalVariable(){
-    return System.getProperty( Const.HIDE_INTERNAL_VARIABLES, Const.HIDE_INTERNAL_VARIABLES_DEFAULT );
   }
 
   private NamedParams filterUserParameters( NamedParams params ) {
