@@ -1,5 +1,13 @@
 <component>
   <fileSets>
+    <!-- license file -->
+    <fileSet>
+      <directory>${project.basedir}/../../..</directory>
+      <includes>
+        <include>LICENSE.TXT</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
     <fileSet>
       <directory>${project.basedir}/src/main/resources-filtered</directory>
       <outputDirectory>.</outputDirectory>

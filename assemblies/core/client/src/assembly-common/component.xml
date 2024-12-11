@@ -5,6 +5,14 @@
       <directory>${assembly.dir}</directory>
       <outputDirectory>.</outputDirectory>
     </fileSet>
+    <!-- license file -->
+    <fileSet>
+      <directory>${project.basedir}/../../..</directory>
+      <includes>
+        <include>LICENSE.TXT</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <!-- pdi components -->
@@ -70,21 +78,6 @@
       </includes>
       <outputDirectory>libswt/osx64_aarch</outputDirectory>
       <outputFileNameMapping>swt.jar</outputFileNameMapping>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <!-- licenses -->
-    <dependencySet>
-      <includes>
-        <include>pentaho:oss-licenses:zip</include>
-      </includes>
-      <unpack>true</unpack>
-      <unpackOptions>
-        <includes>
-          <include>PentahoDataIntegration_OSS_Licenses.html</include>
-        </includes>
-      </unpackOptions>
-      <outputDirectory>.</outputDirectory>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
