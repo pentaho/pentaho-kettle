@@ -4713,6 +4713,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         lastFileOpenedProvider = fileDialogOperation.getProvider();
       } else if ( path != null ) {
         Variables variables = new Variables();
+        // load globals
+        variables.initializeVariablesFrom( null );
         variables.setVariable( CONNECTION, fileDialogOperation.getConnection() );
         openFile( path, variables, importFile );
         lastFileOpened = path;
