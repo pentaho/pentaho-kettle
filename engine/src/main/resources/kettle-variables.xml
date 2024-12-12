@@ -645,7 +645,6 @@
       See Jira issue PPP-20033 for details.
     </description>
     <variable>KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT</variable>
-    <default-value>N</default-value>
   </kettle-variable>
 
   <kettle-variable>
@@ -653,7 +652,6 @@
       See Jira issue PPP-20033 for details.
     </description>
     <variable>KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT</variable>
-    <default-value>N</default-value>
   </kettle-variable>
 
   <kettle-variable>
@@ -661,6 +659,5 @@
       See Jira issue PPP-20033 for details.
     </description>
     <variable>KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW</variable>
-    <default-value>Y</default-value>
   </kettle-variable>
 </kettle-variables>

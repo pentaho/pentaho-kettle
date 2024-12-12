@@ -14,6 +14,7 @@
 package org.pentaho.di.connections.common.domainbuckets;
 
 import org.pentaho.di.connections.annotations.Encrypted;
+import org.pentaho.di.connections.common.basic.TestBaseVFSConnectionDetails;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
@@ -22,10 +23,9 @@ import org.pentaho.metastore.persist.MetaStoreElementType;
 @MetaStoreElementType(
   name = "Test VFS Connection With Domain And Buckets",
   description = "Defines the connection details for a test vfs connection" )
-public class TestConnectionWithDomainAndBucketsDetails extends BaseVFSConnectionDetails {
+public class TestConnectionWithDomainAndBucketsDetails extends TestBaseVFSConnectionDetails {
 
   private static String TYPE = "test3";
-  private VariableSpace space;
 
   @MetaStoreAttribute
   private String name;
@@ -81,11 +81,4 @@ public class TestConnectionWithDomainAndBucketsDetails extends BaseVFSConnection
     return "example.com";
   }
 
-  @Override public VariableSpace getSpace() {
-    return space;
-  }
-
-  @Override public void setSpace( VariableSpace space ) {
-    this.space = space;
-  }
 }

@@ -195,6 +195,14 @@ public class MailConnection {
       String protocolString =
         ( protocol == MailConnectionMeta.PROTOCOL_POP3 ) ? "pop3" : protocol == MailConnectionMeta.PROTOCOL_MBOX
           ? "mstor" : "imap";
+
+      if( password.contains( "Bearer ") ) {
+        this.prop.setProperty( "mail.imap.ssl.enable", "true" );
+        this.prop.setProperty( "mail.imap.auth.mechanisms", "XOAUTH2" );
+      }
+      this.prop.setProperty( "mail.imap.connectiontimeout", "10000" ); // 10 seconds
+      this.prop.setProperty( "mail.imap.timeout", "10000" ); // 10 seconds
+
       if ( usessl && protocol != MailConnectionMeta.PROTOCOL_MBOX ) {
         // Supports IMAP/POP3 connection with SSL, the connection is established via SSL.
         this.prop
@@ -211,7 +219,7 @@ public class MailConnection {
             ( ( protocol == MailConnectionMeta.PROTOCOL_POP3 )
               ? MailConnectionMeta.DEFAULT_SSL_POP3_PORT : MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
         }
-        URLName url = new URLName( protocolString, server, port, "", username, password );
+        URLName url = new URLName( protocolString, server, port, "", username, this.password.startsWith( "Bearer " ) ? this.password.substring( 7 ) : this.password );
         this.store =
           ( protocol == MailConnectionMeta.PROTOCOL_POP3 )
             ? new POP3SSLStore( this.session, url ) : new IMAPSSLStore( this.session, url );
@@ -291,11 +299,12 @@ public class MailConnection {
         PKG, "JobGetMailsFromPOP.Connecting", this.server, this.username, "" + this.port ) );
     }
     try {
-      if ( this.usessl || this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+      if ( (this.usessl || this.protocol == MailConnectionMeta.PROTOCOL_MBOX) && !( this.password.contains("Bearer ") ) ){
         // Supports IMAP/POP3 connection with SSL,
         // the connection is established via SSL.
         this.store.connect();
       } else {
+        this.password = this.password.startsWith( "Bearer " ) ? this.password.substring( 7 ) : this.password;
         if ( this.port > -1 ) {
           this.store.connect( this.server, this.port, this.username, this.password );
         } else {
