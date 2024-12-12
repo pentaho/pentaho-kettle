@@ -211,6 +211,7 @@ public interface Repository {
    */
   public TransMeta loadTransformation( ObjectId id_transformation, String versionLabel ) throws KettleException;
 
+  @Deprecated
   public void readTransSharedObjects( TransMeta transMeta ) throws KettleException;
 
   /**
@@ -286,6 +287,7 @@ public interface Repository {
    */
   public JobMeta loadJob( ObjectId id_job, String versionLabel ) throws KettleException;
 
+  @Deprecated
   public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException;
 
   /**

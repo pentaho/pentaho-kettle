@@ -30,7 +30,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.PropsUI;
@@ -98,14 +97,6 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
     try {
       slaveServerManager.remove( slaveServer );
 
-      Repository rep = spoon.getRepository();
-      if ( rep != null && slaveServer.getObjectId() != null ) {
-        // remove the slave server from the repository too...
-        rep.deleteSlave( slaveServer.getObjectId() );
-        if ( sharedObjectSyncUtil != null ) {
-          sharedObjectSyncUtil.deleteSlaveServer( slaveServer );
-        }
-      }
       refreshTree();
     } catch ( Exception exception ) {
       new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ),
@@ -133,30 +124,6 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
 
   }
 
-  /**
-   * For saving the slaveServer object in the repository.
-   * @param slaveServer
-   */
-  private void saveSlaveServerInRepository( SlaveServer slaveServer ) {
-    if ( spoon.rep != null ) {
-      try {
-        if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
-          spoon.rep.save( slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-          // repository objects are "global"
-          if ( sharedObjectSyncUtil != null ) {
-            sharedObjectSyncUtil.reloadJobRepositoryObjects( false );
-            sharedObjectSyncUtil.reloadTransformationRepositoryObjects( false );
-          }
-        } else {
-          showSaveErrorDialog( slaveServer,
-            new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) ) );
-        }
-      } catch ( KettleException e ) {
-        showSaveErrorDialog( slaveServer, e );
-      }
-    }
-  }
-
   public void edit( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer ) {
     String originalName = slaveServer.getName().trim();
     try {
@@ -165,21 +132,8 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
         String newName = slaveServer.getName().trim();
         if ( !newName.equals( originalName ) ) {
           slaveServerManager.remove( originalName );
-          refreshTree();
         }
         slaveServerManager.add( slaveServer );
-
-        if ( spoon.rep != null ) {
-          try {
-            saveSharedObjectToRepository( slaveServer, null );
-          } catch ( KettleException e ) {
-            showSaveErrorDialog( slaveServer, e );
-          }
-        }
-       /* Keeping it for now, until we decide what we want to do when connected with repository
-         if (sharedObjectSyncUtil != null) {
-          sharedObjectSyncUtil.synchronizeSlaveServers(slaveServer, originalName);
-        }*/
       }
       refreshTree();
       spoon.refreshGraph();

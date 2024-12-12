@@ -260,7 +260,6 @@ public class ConnectionsController extends LazilyInitializedController implement
               PKG, "ConnectionsController.Message.CreatingDatabase", getDatabaseDialog()
                 .getDatabaseMeta().getName() ) );
             repository.save( getDatabaseDialog().getDatabaseMeta(), Const.VERSION_COMMENT_INITIAL_VERSION, null );
-            reloadLoadedJobsAndTransformations();
           } else {
             showAlreadyExistsMessage();
           }
@@ -285,14 +284,6 @@ public class ConnectionsController extends LazilyInitializedController implement
     }
   }
 
-  private boolean reloadLoadedJobsAndTransformations() {
-    if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
-      mainController.getSharedObjectSyncUtil().reloadJobRepositoryObjects( false );
-      mainController.getSharedObjectSyncUtil().reloadTransformationRepositoryObjects( false );
-      return true;
-    }
-    return false;
-  }
 
   // package-local visibility for testing purposes
   void showAlreadyExistsMessage() {
@@ -389,7 +380,6 @@ public class ConnectionsController extends LazilyInitializedController implement
                 repository.insertLogEntry( BaseMessages.getString(
                   PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName() ) );
                 repository.save( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null );
-                reloadLoadedJobsAndTransformations();
               } else {
                 // trying to rename to an existing name - show error dialog
                 showAlreadyExistsMessage();
@@ -448,7 +438,6 @@ public class ConnectionsController extends LazilyInitializedController implement
               mb.open();
             } else {
               repository.deleteDatabaseMeta( databaseMeta.getName() );
-              reloadLoadedJobsAndTransformations();
             }
           }
         }

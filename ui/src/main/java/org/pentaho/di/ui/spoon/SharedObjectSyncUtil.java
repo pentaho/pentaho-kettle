@@ -138,33 +138,6 @@ public class SharedObjectSyncUtil {
       synchronizeByObjectId( updatedObject, handler.getObjectsForSyncFromTransformation( trans ), handler ) );
   }
 
-  public synchronized void reloadTransformationRepositoryObjects( boolean includeActive ) {
-    if ( spoon.rep != null ) {
-      synchronizeTransformations( includeActive, transMeta -> {
-        try {
-          spoon.rep.readTransSharedObjects( transMeta );
-        } catch ( KettleException e ) {
-          logError( e );
-        }
-      } );
-    }
-  }
-
-  public synchronized void reloadJobRepositoryObjects( boolean includeActive ) {
-    if ( spoon.rep != null ) {
-      synchronizeJobs( includeActive, jobMeta -> {
-        try {
-          spoon.rep.readJobMetaSharedObjects( jobMeta );
-        } catch ( KettleException e ) {
-          logError( e );
-        }
-      } );
-    }
-  }
-
-  public synchronized void reloadSharedObjects() {
-  }
-
   private synchronized void synchronizeJobs( boolean includeActive, Consumer<JobMeta> synchronizeAction ) {
     JobMeta current = spoon.getActiveJob();
     for ( JobMeta job : spoonDelegates.jobs.getLoadedJobs() ) {

@@ -162,10 +162,6 @@ public class SlavesController extends LazilyInitializedController implements IUI
             repository.insertLogEntry( BaseMessages.getString(
               PKG, "SlavesController.Message.CreatingSlave", slaveServer.getName() ) );
             repository.save( slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-            if ( getSharedObjectSyncUtil() != null ) {
-              getSharedObjectSyncUtil().reloadJobRepositoryObjects( true );
-              getSharedObjectSyncUtil().reloadTransformationRepositoryObjects( true );
-            }
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb

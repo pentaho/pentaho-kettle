@@ -70,18 +70,6 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
         }
 
         partitionSchemaManagementInterface.add( partitionSchema );
-
-        if ( spoon.rep != null ) {
-          if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
-            spoon.rep.save( partitionSchema, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-            if ( sharedObjectSyncUtil != null ) {
-              sharedObjectSyncUtil.reloadTransformationRepositoryObjects( false );
-            }
-          } else {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
-          }
-        }
       }
     } catch ( KettleException e ) {
       showSaveErrorDialog( partitionSchema, e );
@@ -106,16 +94,8 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
         String newName = partitionSchema.getName().trim();
         if ( !newName.equals( originalName ) ) {
           partitionSchemaManager.remove( originalName );
-          refreshTree();
         }
         partitionSchemaManager.add( partitionSchema );
-
-        if ( spoon.rep != null && partitionSchema.getObjectId() != null ) {
-          saveSharedObjectToRepository( partitionSchema, null );
-          if ( sharedObjectSyncUtil != null ) {
-            sharedObjectSyncUtil.synchronizePartitionSchemas( partitionSchema, originalName );
-          }
-        }
         refreshTree();
       }
     } catch ( KettleException exception ) {
@@ -139,13 +119,6 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
       spoon.getLog().logBasic( "Deleting the partition schema " +  partitionSchema.getName() );
       partitionSchemaManager.remove( partitionSchema );
 
-      if ( spoon.rep != null && partitionSchema.getObjectId() != null ) {
-        // remove the partition schema from the repository too...
-        spoon.rep.deletePartitionSchema( partitionSchema.getObjectId() );
-        if ( sharedObjectSyncUtil != null ) {
-          sharedObjectSyncUtil.deletePartitionSchema( partitionSchema );
-        }
-      }
       refreshTree();
     } catch ( KettleException e ) {
       new ErrorDialog(

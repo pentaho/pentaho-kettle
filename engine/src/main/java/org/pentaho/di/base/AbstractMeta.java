@@ -1755,10 +1755,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     SharedObjects sharedObjects = new SharedObjects( soFile );
     Map<?, SharedObjectInterface> objectsMap = sharedObjects.getObjectsMap();
 
-    // First read the databases...
-    // We read databases & slaves first because there might be dependencies
-    // that need to be resolved.
-    //
+    // This is basically only used for Steps now, and since those can no longer be shared, it's really just for
+    // backwards compatibility. All other shared object types are handled through the DefaultBowl instead.
     for ( SharedObjectInterface object : objectsMap.values() ) {
       loadSharedObject( object );
     }
@@ -1767,14 +1765,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   }
 
   public boolean loadSharedObject( SharedObjectInterface object ) {
-    if ( object instanceof DatabaseMeta ) {
-      // no longer used
-    } else if ( object instanceof SlaveServer ) {
-     // no longer used
-    } else {
-      return false;
-    }
-    return true;
+    return false;
   }
 
   /**
