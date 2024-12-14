@@ -7,14 +7,14 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>meta-inject</artifactId>
-    <version>10.3.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-192</version>
   </parent>
 
   <artifactId>meta-inject-plugins-impl</artifactId>
   <name>PDI Metadata Injection Plugins Impl</name>
 
   <properties>
-    <platform.version>10.3.0.0-SNAPSHOT</platform.version>
+    <platform.version>10.3.0.0-192</platform.version>
   </properties>
 
     <dependencies>
