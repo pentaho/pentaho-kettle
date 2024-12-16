@@ -115,7 +115,7 @@ public class VFSFile extends BaseEntity implements File {
     }
     vfsFile.setName( filename );
     if ( fileObject != null && fileObject.getName() != null ) {
-      vfsFile.setPath( fileObject.getName().getURI() );
+      vfsFile.setPath( parent + "/" + filename );
     }
     vfsFile.setParent( parent );
     if ( connection != null ) {
