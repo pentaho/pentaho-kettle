@@ -160,11 +160,6 @@ public class PdiContentProvider implements IPdiContentProvider {
     return jobVarsMap;
   }
 
-  @Override
-  public String getHideInternalVariable(){
-    return System.getProperty( Const.HIDE_INTERNAL_VARIABLES, Const.HIDE_INTERNAL_VARIABLES_DEFAULT );
-  }
-
   private NamedParams filterUserParameters( NamedParams params ) {
 
     NamedParams userParams = new NamedParamsDefault();

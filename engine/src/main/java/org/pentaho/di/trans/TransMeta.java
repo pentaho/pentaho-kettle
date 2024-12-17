@@ -5240,37 +5240,37 @@ public class TransMeta extends AbstractMeta
     if ( searchDatabases ) {
       for ( int i = 0; i < nrDatabases(); i++ ) {
         DatabaseMeta meta = getDatabase( i );
-        stringList.add( new StringSearchResult( meta.getName(), meta, this,
-            BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
-        if ( meta.getHostname() != null ) {
-          stringList.add( new StringSearchResult( meta.getHostname(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
-        }
-        if ( meta.getDatabaseName() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseName" ) ) );
-        }
-        if ( meta.getUsername() != null ) {
-          stringList.add( new StringSearchResult( meta.getUsername(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
-        }
-        if ( meta.getPluginId() != null ) {
-          stringList.add( new StringSearchResult( meta.getPluginId(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
-        }
-        if ( meta.getDatabasePortNumberString() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
-        }
-        if ( meta.getServername() != null ) {
-          stringList.add( new StringSearchResult( meta.getServername(), meta, this,
-              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
-        }
-
+        if( isDatabaseConnectionUsed( meta ) ){
+          stringList.add( new StringSearchResult( meta.getName(), meta, this,
+                  BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
+          if ( meta.getHostname() != null ) {
+            stringList.add( new StringSearchResult( meta.getHostname(), meta, this,
+                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
+          }
+          if ( meta.getDatabaseName() != null ) {
+            stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this,
+                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseName" ) ) );
+          }
+          if ( meta.getUsername() != null ) {
+            stringList.add( new StringSearchResult( meta.getUsername(), meta, this,
+                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
+          }
+          if ( meta.getPluginId() != null ) {
+            stringList.add( new StringSearchResult( meta.getPluginId(), meta, this,
+                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
+          }
+          if ( meta.getDatabasePortNumberString() != null ) {
+            stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this,
+                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
+          }
+          if ( meta.getServername() != null ) {
+            stringList.add( new StringSearchResult( meta.getServername(), meta, this,
+                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
+          }
           if ( meta.getPassword() != null ) {
             stringList.add( new StringSearchResult( Strings.repeat("*", meta.getPassword().length()), meta, this,
-                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
-
+                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
+          }
         }
       }
     }
