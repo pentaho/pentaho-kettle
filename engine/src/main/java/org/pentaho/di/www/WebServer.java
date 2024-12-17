@@ -274,11 +274,13 @@ public class WebServer {
 
     server.setHandler( securityHandler );
     
-    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.BeforeCarteStartup.id, server );
-    
-    // Start execution
+    // Configure listeners (Acceptors, ServerConnector/SSL, etc)
     createListeners();
+    
+    // Call directly before server.start()
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.BeforeCarteStartup.id, server );
 
+    // Start execution
     server.start();
   }
 

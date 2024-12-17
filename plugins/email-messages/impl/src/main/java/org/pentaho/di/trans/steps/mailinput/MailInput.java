@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.mail.Header;
 import javax.mail.Message;
+import java.util.Properties;
 
 import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +31,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.entries.getpop.IEmailAuthenticationResponse;
 import org.pentaho.di.job.entries.getpop.MailConnection;
 import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
 import org.pentaho.di.trans.Trans;
@@ -53,8 +55,11 @@ public class MailInput extends BaseStep implements StepInterface {
   private MailInputMeta meta;
   private MailInputData data;
 
+  Properties props = new Properties();
+
   private MessageParser instance = new MessageParser();
 
+  private IEmailAuthenticationResponse token;
   public MailInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -449,6 +454,11 @@ public class MailInput extends BaseStep implements StepInterface {
       stopAll();
     }
     try {
+
+      if( meta.isUsingAuthentication().equals( meta.AUTENTICATION_OAUTH ) ) {
+        realpassword = "Bearer " + meta.getOauthToken( meta.getTokenUrl(), meta.getScope(), meta.getClientId(),
+                meta.getSecretKey(), meta.getGrantType(), meta.getRefresh_token(), meta.getAuthorization_code(), meta.getRedirectUri()).getAccessToken();
+      }
       // create a mail connection object
       data.mailConn =
         new MailConnection(

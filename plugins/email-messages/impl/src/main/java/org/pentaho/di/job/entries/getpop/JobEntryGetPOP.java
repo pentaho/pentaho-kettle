@@ -68,8 +68,6 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.platform.api.email.IEmailAuthenticationResponse;
-import org.pentaho.platform.plugin.services.email.EmailAuthenticationResponse;
 import org.w3c.dom.Node;
 
 /**
@@ -1037,26 +1035,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         }
         moveafter = true;
       }
-
-      if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
-        props.put( "mail." + protocol + ".auth", "true" );
-
-        /*
-         * authenticator = new Authenticator() { protected PasswordAuthentication getPasswordAuthentication() { return new
-         * PasswordAuthentication( StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")),
-         * StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, "")) ); } };
-         */
-      }
-
-     else if( usingAuthentication.equals(JobEntryGetPOP.AUTENTICATION_OAUTH ) ) {
-        token = getOauthToken( tokenUrl );
-        props.put( "mail."+protocol+".auth.xoauth2.disable", "false" );
-        props.put( "mail."+protocol+".auth.mechanisms", "XOAUTH2" );
-        props.put( "mail.transport.protocol", "smtp" );
-        props.put( "mail."+protocol+".auth.login.disable", "true" );
-        props.put( "mail."+protocol+".auth.plain.disable", "true" );
-        props.setProperty( "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
-      }
       // check search terms
       // Received Date
       switch ( getConditionOnReceivedDate() ) {
@@ -1098,6 +1076,10 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
       initVariables();
       // create a mail connection object
+
+     if( usingAuthentication.equals( JobEntryGetPOP.AUTENTICATION_OAUTH ) ) {
+        realpassword = "Bearer " + getOauthToken( getTokenUrl() ).getAccessToken();
+      }
       mailConn =
         new MailConnection(
           log, MailConnectionMeta.getProtocolFromString( getProtocol(), MailConnectionMeta.PROTOCOL_IMAP ),
@@ -1486,7 +1468,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
-  IEmailAuthenticationResponse getOauthToken( String tokenUrl ) {
+  public IEmailAuthenticationResponse getOauthToken( String tokenUrl ) {
     try ( CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient() ) {
       this.tokenUrl=tokenUrl;
       HttpPost httpPost = new HttpPost( tokenUrl );
@@ -1508,8 +1490,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
           throw new HttpException( "Unable to get authorization token " + response.getStatusLine().toString() );
         }
+        String responseBody = EntityUtils.toString( response.getEntity() );
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue( EntityUtils.toString( response.getEntity() ), EmailAuthenticationResponse.class );
+        return mapper.readValue( responseBody, EmailAuthenticationResponse.class );
       } catch ( HttpException e ) {
         throw new RuntimeException( e );
       } catch ( IOException e ) {
