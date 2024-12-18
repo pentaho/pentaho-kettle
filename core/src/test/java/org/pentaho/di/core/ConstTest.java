@@ -2080,6 +2080,9 @@ public class ConstTest {
   public void testCreateName() {
     assertNull( Const.createName( null ) );
     assertEquals( "test - trans", Const.createName( "transformations" + Const.FILE_SEPARATOR + "test\t~- trans.ktr" ) );
+    assertEquals( "Transformation 3", Const.createName( "pvfs://localprojects/test/foo%20%25%20bar/Transformation%203.ktr" ) );
+    assertEquals( "Transformation 3", Const.createName( "/localprojects/test/foo%20%25%20bar/Transformation%203.ktr" ) );
+
   }
 
   @Test

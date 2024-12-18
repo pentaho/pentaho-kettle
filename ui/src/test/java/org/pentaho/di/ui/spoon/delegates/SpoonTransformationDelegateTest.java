@@ -74,6 +74,7 @@ public class SpoonTransformationDelegateTest {
 
     doReturn( transformationMap ).when( delegate ).getTransformationList();
     doReturn( spoon ).when( delegate ).getSpoon();
+    doCallRealMethod().when( delegate ).isDefaultTransformationName( any() );
     doCallRealMethod().when( delegate ).isLogTableDefined( any() );
     transLogTable = mock( TransLogTable.class );
   }
@@ -135,5 +136,16 @@ public class SpoonTransformationDelegateTest {
     verify( transMeta ).setClearingLog( TEST_BOOLEAN_PARAM );
     verify( transMeta ).setSafeModeEnabled( TEST_BOOLEAN_PARAM );
     verify( transMeta ).setGatheringMetrics( TEST_BOOLEAN_PARAM );
+  }
+
+  @Test
+  public void testDefaultTransformationName() {
+    assertTrue( delegate.isDefaultTransformationName( "Transformation" ) );
+    assertTrue( delegate.isDefaultTransformationName( "Transformation " ) );
+    assertTrue( delegate.isDefaultTransformationName( "Transformation 1" ) );
+    assertTrue( delegate.isDefaultTransformationName( "Transformation 2" ) );
+    assertFalse( delegate.isDefaultTransformationName( "Transformation1" ) );
+    assertFalse( delegate.isDefaultTransformationName( "Transformation  2" ) );
+    assertFalse( delegate.isDefaultTransformationName( "Transformation203" ) );
   }
 }
