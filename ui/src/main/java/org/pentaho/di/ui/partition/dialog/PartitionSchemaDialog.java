@@ -334,6 +334,7 @@ public class PartitionSchemaDialog extends Dialog {
 
     partitionSchema.setName( partitionSchema.getName().trim() );
     if ( !partitionSchema.getName().equals( originalSchema.getName() ) ) {
+      DialogUtils.removeMatchingObject( originalSchema.getName(), existingSchemas );
       if ( DialogUtils.objectWithTheSameNameExists( partitionSchema, existingSchemas ) ) {
         String title = BaseMessages.getString( PKG, "PartitionSchemaDialog.PartitionSchemaNameExists.Title" );
         String message =

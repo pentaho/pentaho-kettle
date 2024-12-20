@@ -22,12 +22,13 @@
 
 package org.pentaho.di.ui.util;
 
-import java.util.Collection;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author Andrey Khayrutdinov
@@ -62,6 +63,15 @@ public class DialogUtils {
       }
     }
     return false;
+  }
+
+  public static void removeMatchingObject( String nameToRemove, Collection<? extends SharedObjectInterface> objects ) {
+    Iterator<? extends SharedObjectInterface> iter = objects.iterator();
+    while ( iter.hasNext() ) {
+      if ( nameToRemove.equals( iter.next().getName() ) ) {
+        iter.remove();
+      }
+    }
   }
 
   public static String getPath( String parentPath, String path ) {

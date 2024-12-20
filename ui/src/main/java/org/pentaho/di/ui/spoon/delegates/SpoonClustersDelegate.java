@@ -110,11 +110,10 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
           new ClusterSchemaDialog( spoon.getShell(), clusterSchema, manager.getAll(), slaveServers );
       if ( dialog.open() ) {
         String newName = clusterSchema.getName().trim();
-        manager.add( clusterSchema );
-
-        if ( !newName.equalsIgnoreCase( originalName ) ) {
+        if ( !newName.equals( originalName ) ) {
           manager.remove( originalName );
         }
+        manager.add( clusterSchema );
         if ( spoon.rep != null && clusterSchema.getObjectId() != null ) {
           try {
             saveSharedObjectToRepository( clusterSchema, null );

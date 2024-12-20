@@ -163,12 +163,12 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
       SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), slaveServer, slaveServerManager.getAll() );
       if ( dialog.open() ) {
         String newName = slaveServer.getName().trim();
-        slaveServerManager.add( slaveServer );
-
-        if ( !newName.equalsIgnoreCase( originalName ) ) {
+        if ( !newName.equals( originalName ) ) {
           slaveServerManager.remove( originalName );
           refreshTree();
         }
+        slaveServerManager.add( slaveServer );
+
         if ( spoon.rep != null ) {
           try {
             saveSharedObjectToRepository( slaveServer, null );

@@ -465,6 +465,7 @@ public class ConnectionDialog extends Dialog {
       connectionDetails.setName( connectionDetails.getName().trim() );
       if ( !connectionDetails.getName().equals( originalName ) ) {
         List<String> names = connectionManager.getNames();
+        names.remove( originalName );
         if ( names.stream().anyMatch( n -> n.equalsIgnoreCase( connectionDetails.getName().trim() ) ) ) {
           String title = BaseMessages.getString( PKG, "ConnectionDialog.ConnectionNameExists.Title" );
           String message =
@@ -478,10 +479,10 @@ public class ConnectionDialog extends Dialog {
         }
       }
 
-      connectionManager.save( connectionDetails );
       if ( originalName != null && !originalName.equals( connectionDetails.getName() ) ) {
         connectionManager.delete( originalName );
       }
+      connectionManager.save( connectionDetails );
       refreshMenu();
       dispose();
     }
