@@ -72,7 +72,6 @@
     <xmlunit.version>1.5</xmlunit.version>
     <wiremock.version>2.25.0</wiremock.version>
     <hk2.version>2.6.1</hk2.version>
-    <jaxb-runtime.version>4.0.2</jaxb-runtime.version>
   </properties>
 
   <dependencyManagement>
