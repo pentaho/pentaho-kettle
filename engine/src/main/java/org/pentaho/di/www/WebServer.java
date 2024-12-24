@@ -13,7 +13,6 @@
 
 package org.pentaho.di.www;
 
-import org.eclipse.jetty.ee10.servlet.DefaultServlet;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.ee10.servlet.security.ConstraintMapping;
@@ -25,6 +24,8 @@ import org.eclipse.jetty.security.UserStore;
 import org.eclipse.jetty.security.RolePrincipal;
 import org.eclipse.jetty.security.UserPrincipal;
 import org.eclipse.jetty.security.jaas.JAASLoginService;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.eclipse.jetty.http.HttpVersion;
@@ -56,14 +57,16 @@ import org.pentaho.di.i18n.BaseMessages;
 
 import jakarta.servlet.Servlet;
 import java.io.File;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static org.eclipse.jetty.ee10.servlet.security.ConstraintSecurityHandler.ANY_ROLE;
 import static org.eclipse.jetty.security.Authenticator.BASIC_AUTH;
+import static org.eclipse.jetty.security.Constraint.Authorization.ANY_USER;
 
 public class WebServer {
 
@@ -153,9 +156,6 @@ public class WebServer {
   public void startServer() throws Exception {
     server = new Server();
 
-    List<String> roles = new ArrayList<>();
-    roles.add( ANY_ROLE );
-
     // Set up the security handler, optionally with JAAS
     //
     ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
@@ -203,8 +203,7 @@ public class WebServer {
       securityHandler.setLoginService( hashLoginService );
     }
 
-    Constraint constraint = new Constraint.Builder().name( BASIC_AUTH ).roles( roles.toArray( new String[0] ) ).build();
-
+    Constraint constraint = new Constraint.Builder().name( BASIC_AUTH ).authorization( ANY_USER ).build();
     ConstraintMapping constraintMapping = new ConstraintMapping();
     constraintMapping.setConstraint( constraint );
     constraintMapping.setPathSpec( "/*" );
@@ -223,6 +222,7 @@ public class WebServer {
     GetRootServlet rootServlet = new GetRootServlet();
     rootServlet.setJettyMode( true );
     root.addServlet( new ServletHolder( rootServlet ), "/*" );
+    contexts.addHandler( root );
 
     PluginRegistry pluginRegistry = PluginRegistry.getInstance();
     List<PluginInterface> plugins = pluginRegistry.getPlugins( CartePluginType.class );
@@ -255,19 +255,19 @@ public class WebServer {
 
     // Allow png files to be shown for transformations and jobs...
     //
+    URL url= new File( "static" ).toURI().toURL();
+
+    ResourceFactory.Closeable resourceFactory = ResourceFactory.closeable();
+    Resource resource = resourceFactory.newResource( url.toExternalForm() );
+
     ResourceHandler resourceHandler = new ResourceHandler();
-    resourceHandler.setBaseResourceAsString( "temp" );
-    contexts.addHandler( resourceHandler );
+    resourceHandler.setBaseResource( resource );
 
-    // set up static servlet
-    ServletHolder staticHolder = new ServletHolder( "static", DefaultServlet.class );
-    // resourceBase maps to the path relative to where carte is started
-    staticHolder.setInitParameter( "resourceBase", "./static/" );
-    staticHolder.setInitParameter( "dirAllowed", "true" );
-    staticHolder.setInitParameter( "pathInfoOnly", "true" );
-    root.addServlet( staticHolder, "/static/*" );
-
-    contexts.addHandler( root );
+    ContextHandler contextHandler = new ContextHandler();
+    contextHandler.setContextPath( "/static" );
+    contextHandler.setBaseResourceAsPath( Paths.get( url.toURI() ) );
+    contextHandler.setHandler( resourceHandler );
+    contexts.addHandler( contextHandler );
 
     securityHandler.setHandler( contexts );
 
