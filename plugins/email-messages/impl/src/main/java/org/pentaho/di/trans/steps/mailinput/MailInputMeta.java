@@ -388,6 +388,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "redirectURI", redirectUri );
       rep.saveStepAttribute( id_transformation, id_step, "refreshToken", refresh_token );
       rep.saveStepAttribute( id_transformation, id_step, "use_grantType", grant_type );
+      rep.saveStepAttribute( id_transformation, id_step, "use_auth", usingAuthentication );
       rep.saveStepAttribute( id_transformation, id_step, "usessl", usessl );
       rep.saveStepAttribute( id_transformation, id_step, "sslport", sslport );
       rep.saveStepAttribute( id_transformation, id_step, "retrievemails", retrievemails );
