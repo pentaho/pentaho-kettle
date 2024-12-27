@@ -13,9 +13,8 @@
 
 package org.pentaho.di.trans.steps.calculator;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileNotFoundException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -33,6 +32,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Calculate new field values using pre-defined functions.
@@ -643,6 +649,62 @@ public class Calculator extends BaseStep implements StepInterface {
     // So we remove them.
     //
     return RowDataUtil.removeItems( calcData, data.getTempIndexes() );
+  }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                             Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = Calculator.class.getDeclaredMethod( fieldName, Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getCalcTypes( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    JSONArray calculatorArray = new JSONArray();
+    for ( int i = 0; i < CalculatorMetaFunction.calc_desc.length; i++ ) {
+      JSONObject calcJsonObject = new JSONObject();
+      calcJsonObject.put( "id", CalculatorMetaFunction.getCalcFunctionDesc( i ) );
+      calcJsonObject.put( "name", CalculatorMetaFunction.getCalcFunctionLongDesc( i ) );
+      calculatorArray.add( calcJsonObject );
+    }
+
+    response.put( "calculationTypes", calculatorArray );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getCalcFields( Map<String, String> queryParams ) throws KettleStepException {
+    JSONObject response = new JSONObject();
+    JSONArray fieldsArray = new JSONArray();
+    String stepName = Objects.toString( queryParams.get( "stepName" ) );
+
+    CalculatorMeta calculatorMeta = (CalculatorMeta) getStepMetaInterface();
+    CalculatorMetaFunction[] calculatorMetaFunctions = calculatorMeta.getCalculation();
+    for ( CalculatorMetaFunction calculatorMetaFunction : calculatorMetaFunctions ) {
+      fieldsArray.add( calculatorMetaFunction.getFieldName() );
+    }
+
+    RowMetaInterface rowMetaInterface = getTransMeta().getPrevStepFields( stepName );
+    if ( Objects.nonNull( rowMetaInterface ) ) {
+      for ( int i = 0; i < rowMetaInterface.size(); i++ ) {
+        fieldsArray.add( rowMetaInterface.getValueMeta( i ).getName() );
+      }
+    }
+
+    response.put( "fields", fieldsArray );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
   }
 
   @Override
