@@ -7,7 +7,7 @@
   <parent>
     <artifactId>drools-assemblies</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
-    <version>10.3.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-209</version>
   </parent>
 
   <artifactId>kettle-drools8-plugin</artifactId>
