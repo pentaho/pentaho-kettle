@@ -17,14 +17,19 @@ package org.pentaho.di.core;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.http.conn.util.InetAddressUtils;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.vfs.IKettleVFS;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.version.BuildVersion;
@@ -3450,8 +3455,22 @@ public class Const {
   }
 
   public static String createName( String filename ) {
+    return createName( DefaultBowl.getInstance() , filename );
+  }
+
+  public static String createName( Bowl bowl, String filename ) {
     if ( Utils.isEmpty( filename ) ) {
       return filename;
+    }
+
+    IKettleVFS vfs = KettleVFS.getInstance( bowl );
+    try {
+      FileName fname = vfs.resolveURI( filename );
+      if ( fname != null ) {
+        filename = fname.getPathDecoded();
+      }
+    } catch ( FileSystemException | KettleException ex ) {
+      // must not have been a vfs URI
     }
 
     String pureFilename = filenameOnly( filename );

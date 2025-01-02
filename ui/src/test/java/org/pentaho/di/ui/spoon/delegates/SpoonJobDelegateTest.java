@@ -98,6 +98,7 @@ public class SpoonJobDelegateTest {
 
     doReturn( jobMap ).when( delegate ).getJobList();
     doReturn( spoon ).when( delegate ).getSpoon();
+    doCallRealMethod().when( delegate ).isDefaultJobName( any() );
     jobLogTable = mock( JobLogTable.class );
   }
 
@@ -239,6 +240,17 @@ public class SpoonJobDelegateTest {
     assertNull( transMeta.getName() );
     assertEquals( Const.createFilename( directory, transname, "."
       + Const.STRING_TRANS_DEFAULT_EXT ), transMeta.getFilename() );
+  }
+
+  @Test
+  public void testDefaultJobName() {
+    assertTrue( delegate.isDefaultJobName( "Job" ) );
+    assertTrue( delegate.isDefaultJobName( "Job " ) );
+    assertTrue( delegate.isDefaultJobName( "Job 1" ) );
+    assertTrue( delegate.isDefaultJobName( "Job 2" ) );
+    assertFalse( delegate.isDefaultJobName( "Job1" ) );
+    assertFalse( delegate.isDefaultJobName( "Job  2" ) );
+    assertFalse( delegate.isDefaultJobName( "Job203" ) );
   }
 
   public interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
