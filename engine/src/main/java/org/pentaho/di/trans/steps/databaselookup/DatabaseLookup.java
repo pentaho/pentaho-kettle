@@ -2,7 +2,7 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2024-25 by Hitachi Vantara, LLC : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
@@ -40,6 +40,19 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import java.util.Map;
+import java.util.Optional;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
+
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -677,6 +690,185 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
     if ( log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "DatabaseLookup.Log.ConnectedToDatabase" ) );
+    }
+  }
+
+  
+  @Override
+  public JSONObject doAction(String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                             Trans trans, Map<String, String> queryParamToValues) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = DatabaseLookup.class.getDeclaredMethod(fieldName + "Action", Map.class);
+      this.setStepMetaInterface(stepMetaInterface);
+      response = (JSONObject) actionMethod.invoke(this, queryParamToValues);
+    } catch (NoSuchMethodException e) {
+      log.logError("Method not found: " + e.getMessage(), e);
+      response.put("actionStatus", "FAILURE");
+      response.put("error", "Method not found: " + fieldName);
+    } catch (InvocationTargetException e) {
+      log.logError("Error invoking method: " + e.getCause().getMessage(), e.getCause());
+      response.put("actionStatus", "FAILURE");
+      response.put("error", "Error invoking method: " + fieldName);
+    } catch (IllegalAccessException e) {
+      log.logError("Illegal access to method: " + e.getMessage(), e);
+      response.put("actionStatus", "FAILURE");
+      response.put("error", "Illegal access to method: " + fieldName);
+    } catch (Exception e) {
+      log.logError("Unexpected error: " + e.getMessage(), e);
+      response.put("actionStatus", "FAILURE");
+      response.put("error", "Unexpected error occurred");
+    }
+    return response;
+  }
+
+  @SuppressWarnings("java:S1144") // Using reflection this method is being invoked
+  private JSONObject getSchemaAction(Map<String, String> queryParams) {
+    JSONObject response = new JSONObject();
+    response.put("actionStatus", "FAILURE");
+
+    String connectionName = queryParams.get("connection");
+    if (connectionName == null || connectionName.isBlank()) {
+      response.put("error", "Connection name is missing or empty.");
+      return response;
+    }
+
+    try {
+      String[] schemas = getSchemaNames(connectionName);
+      JSONArray schemaNames = Arrays.stream(schemas)
+        .collect(JSONArray::new, JSONArray::add, JSONArray::addAll);
+
+      response.put("schemaNames", schemaNames);
+      response.put("actionStatus", "SUCCESS");
+    } catch (KettleDatabaseException e) {
+      log.logError("Error fetching schema names: " + e.getMessage(), e);
+      response.put("error", "Database error occurred: " + e.getMessage());
+    } catch (Exception e) {
+      log.logError("Unexpected error: " + e.getMessage(), e);
+      response.put("error", "An unexpected error occurred.");
+    }
+    return response;
+  }
+
+  private String[] getSchemaNames(String dbname) throws KettleDatabaseException {
+    DatabaseMeta databaseMeta = Optional.ofNullable(getTransMeta().findDatabase(dbname))
+      .orElseThrow(() -> new KettleDatabaseException("Database not found: " + dbname));
+
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "DB Lookup Step", LoggingObjectType.STEP, null);
+
+    try (Database database = new Database(loggingObject, databaseMeta)) {
+      database.connect();
+      return Optional.ofNullable(database.getSchemas())
+        .map(Const::sortStrings)
+        .orElse(new String[0]);
+    } catch (Exception e) {
+      log.logError("Error fetching schemas for database: " + dbname, e);
+      throw new KettleDatabaseException("Failed to fetch schemas for database: " + dbname, e);
+    }
+  }
+
+  @SuppressWarnings("java:S1144") // Using reflection this method is being invoked
+  private JSONObject getTableFieldAction(Map<String, String> queryParams) {
+    JSONObject response = new JSONObject();
+    response.put("actionStatus", "FAILURE");
+
+    String connectionName = queryParams.get("connection");
+    String schema = queryParams.get("schema");
+    String table = queryParams.get("table");
+
+    if (connectionName == null || schema == null || table == null) {
+      response.put("error", "Missing required parameters: connection, schema, or table.");
+      return response;
+    }
+
+    try {
+      String[] columns = getTableFields(connectionName, schema, table);
+      JSONArray columnsList = Arrays.stream(columns)
+        .collect(JSONArray::new, JSONArray::add, JSONArray::addAll);
+
+      response.put("columns", columnsList);
+      response.put("actionStatus", "SUCCESS");
+    } catch (Exception e) {
+      log.logError("Error fetching table fields: " + e.getMessage(), e);
+      response.put("error", "An unexpected error occurred.");
+    }
+    return response;
+  }
+
+  private String[] getTableFields(String connection, String schema, String table) {
+    DatabaseMeta databaseMeta = Optional.ofNullable(getTransMeta().findDatabase(connection))
+      .orElseThrow(() -> new IllegalArgumentException("Database connection not found: " + connection));
+
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "DB Lookup Step", LoggingObjectType.STEP, null);
+
+    try (Database db = new Database(loggingObject, databaseMeta)) {
+      db.connect();
+      RowMetaInterface rowMeta = db.getTableFieldsMeta(schema, table);
+      return Optional.ofNullable(rowMeta)
+        .map(RowMetaInterface::getFieldNames)
+        .orElse(new String[0]);
+    } catch (Exception e) {
+      log.logError("Error fetching fields for table: " + table, e);
+      return new String[0];
+    }
+  }
+
+  @SuppressWarnings("java:S1144") // Using reflection this method is being invoked
+  private JSONObject getTableFieldAndTypeAction(Map<String, String> queryParams) {
+    JSONObject response = new JSONObject();
+    response.put("actionStatus", "FAILURE");
+
+    String connectionName = queryParams.get("connection");
+    String schema = queryParams.get("schema");
+    String table = queryParams.get("table");
+
+    if (connectionName == null || connectionName.isBlank() ||
+      schema == null || schema.isBlank() ||
+      table == null || table.isBlank()) {
+      response.put("error", "Missing or invalid parameters: connection, schema, or table.");
+      return response;
+    }
+    try {
+      JSONArray columnsList = getTableFieldsAndType(connectionName, schema, table);
+      response.put("columns", columnsList);
+      response.put("actionStatus", "SUCCESS");
+    } catch (Exception e) {
+      log.logError("Error fetching table fields and types: " + e.getMessage(), e);
+      response.put("error", "An unexpected error occurred.");
+    }
+    return response;
+  }
+
+  private JSONArray getTableFieldsAndType(String connection, String schema, String table) {
+    DatabaseMeta databaseMeta = Optional.ofNullable(getTransMeta().findDatabase(connection))
+      .orElseThrow(() -> new IllegalArgumentException("Database connection not found: " + connection));
+
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "DB Lookup Step", LoggingObjectType.STEP, null);
+
+    try (Database db = new Database(loggingObject, databaseMeta)) {
+      db.connect();
+      RowMetaInterface rowMeta = db.getTableFieldsMeta(schema, table);
+
+      if (rowMeta == null) {
+        log.logDebug("No metadata found for schema: " + schema + ", table: " + table);
+        return new JSONArray();
+      }
+
+      return rowMeta.getValueMetaList()
+        .stream()
+        .map(valueMeta -> {
+          JSONObject jsonObject = new JSONObject();
+          jsonObject.put("columnName", valueMeta.getName());
+          jsonObject.put("columnType", valueMeta.getTypeDesc());
+          return jsonObject;
+        })
+        .collect(JSONArray::new, JSONArray::add, JSONArray::addAll);
+    } catch (Exception e) {
+      log.logError("Error fetching fields and types for table: " + table, e);
+      return new JSONArray();
     }
   }
 }
