@@ -104,12 +104,12 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
                       databaseMetas, spoon.getBowl().getADefaultVariableSpace() );
       if ( dialog.open() ) {
         String newName = partitionSchema.getName().trim();
-        partitionSchemaManager.add( partitionSchema );
-
-        if ( !newName.equalsIgnoreCase( originalName ) ) {
+        if ( !newName.equals( originalName ) ) {
           partitionSchemaManager.remove( originalName );
           refreshTree();
         }
+        partitionSchemaManager.add( partitionSchema );
+
         if ( spoon.rep != null && partitionSchema.getObjectId() != null ) {
           saveSharedObjectToRepository( partitionSchema, null );
           if ( sharedObjectSyncUtil != null ) {

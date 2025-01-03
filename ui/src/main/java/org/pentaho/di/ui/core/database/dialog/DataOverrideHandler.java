@@ -64,6 +64,7 @@ public class DataOverrideHandler extends DataHandler {
       DatabaseMeta database = new DatabaseMeta();
       this.getInfo( database );
       if ( ! Objects.equals( database.getName(), originalName ) ) {
+        DialogUtils.removeMatchingObject( originalName, databases );
         if ( DialogUtils.objectWithTheSameNameExists( database, databases ) ) {
           DatabaseDialog.showDatabaseExistsDialog( getShell(), database );
           return;

@@ -539,6 +539,7 @@ public class SlaveServerDialog extends Dialog {
     slaveServer.setName( newName );
     String origName = trim( originalServer.getName() );
     if ( !newName.equals( origName ) ) {
+      DialogUtils.removeMatchingObject( origName, existingServers );
       if ( DialogUtils.objectWithTheSameNameExists( slaveServer, existingServers ) ) {
         String title = BaseMessages.getString( PKG, "SlaveServerDialog.SlaveServerNameExists.Title" );
         String message =

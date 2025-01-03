@@ -321,6 +321,7 @@ public class RunConfigurationDialog extends Dialog
     if ( validated() ) {
       runConfiguration.setName( runConfiguration.getName().trim() );
       if ( !runConfiguration.getName().equals( originalName ) ) {
+        existingNames.remove( originalName );
         if ( existingNames.stream().anyMatch( n -> n.equalsIgnoreCase( runConfiguration.getName().trim() ) ) ) {
           String title = BaseMessages.getString( PKG, "RunConfigurationDialog.RunConfigurationNameExists.Title" );
           String message =
