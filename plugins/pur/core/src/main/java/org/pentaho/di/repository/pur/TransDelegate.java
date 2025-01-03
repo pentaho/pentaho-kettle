@@ -856,18 +856,11 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   @SuppressWarnings( "unchecked" )
   @Override
+  @Deprecated // Shared Object reads should now go through a SharedObjectsIO
   public void loadSharedObjects( final RepositoryElementInterface element,
       final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType )
     throws KettleException {
-    TransMeta transMeta = (TransMeta) element;
-
-    // Repository objects take priority so let's overwrite them...
-    //
-    readDatabases( transMeta, true, (List<DatabaseMeta>) sharedObjectsByType.get( RepositoryObjectType.DATABASE ) );
-    readPartitionSchemas( transMeta, true, (List<PartitionSchema>) sharedObjectsByType
-        .get( RepositoryObjectType.PARTITION_SCHEMA ) );
-    readSlaves( transMeta, true, (List<SlaveServer>) sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER ) );
-    readClusters( transMeta, true, (List<ClusterSchema>) sharedObjectsByType.get( RepositoryObjectType.CLUSTER_SCHEMA ) );
+    // NO-OP
   }
 
   /**
@@ -961,51 +954,10 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     }
   }
 
+  @Deprecated // Shared Object writes should now go through a SharedObjectsIO
   public void saveSharedObjects( final RepositoryElementInterface element, final String versionComment )
     throws KettleException {
-    TransMeta transMeta = (TransMeta) element;
-    // First store the databases and other depending objects in the transformation.
-    //
-
-    // Only store if the database has actually changed or doesn't have an object ID (imported)
-    //
-    for ( DatabaseMeta databaseMeta : transMeta.getDatabases() ) {
-      if ( databaseMeta.hasChanged() || databaseMeta.getObjectId() == null ) {
-        if ( databaseMeta.getObjectId() == null
-            || unifiedRepositoryConnectionAclService.hasAccess( databaseMeta.getObjectId(),
-                RepositoryFilePermission.WRITE ) ) {
-          repo.save( databaseMeta, versionComment, null );
-        } else {
-          log.logError( BaseMessages.getString( PKG, "PurRepository.ERROR_0004_DATABASE_UPDATE_ACCESS_DENIED",
-              databaseMeta.getName() ) );
-        }
-      }
-    }
-
-    // Store the slave servers...
-    //
-    for ( SlaveServer slaveServer : transMeta.getSlaveServers() ) {
-      if ( slaveServer.hasChanged() || slaveServer.getObjectId() == null ) {
-        repo.save( slaveServer, versionComment, null );
-      }
-    }
-
-    // Store the cluster schemas
-    //
-    for ( ClusterSchema clusterSchema : transMeta.getClusterSchemas() ) {
-      if ( clusterSchema.hasChanged() || clusterSchema.getObjectId() == null ) {
-        repo.save( clusterSchema, versionComment, null );
-      }
-    }
-
-    // Save the partition schemas
-    //
-    for ( PartitionSchema partitionSchema : transMeta.getPartitionSchemas() ) {
-      if ( partitionSchema.hasChanged() || partitionSchema.getObjectId() == null ) {
-        repo.save( partitionSchema, versionComment, null );
-      }
-    }
-
+    // NO-OP
   }
 
 }

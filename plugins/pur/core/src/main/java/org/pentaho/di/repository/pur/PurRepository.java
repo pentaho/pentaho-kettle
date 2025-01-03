@@ -2032,12 +2032,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public void readJobMetaSharedObjects( final JobMeta jobMeta ) throws KettleException {
-    jobDelegate.loadSharedObjects( jobMeta, loadAndCacheSharedObjects( true ) );
+    // NO-OP
   }
 
   @Override
   public void readTransSharedObjects( final TransMeta transMeta ) throws KettleException {
-    transDelegate.loadSharedObjects( transMeta, loadAndCacheSharedObjects( true ) );
+    // NO-OP
   }
 
   @Override
@@ -2503,7 +2503,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     transMeta.setRepository( this );
     transMeta.setRepositoryDirectory( parentDir );
     transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
-    readTransSharedObjects( transMeta ); // This should read from the local cache
     transDelegate.dataNodeToElement( data.getNode(), transMeta );
     transMeta.clearChanged();
     return transMeta;
@@ -2618,7 +2617,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     jobMeta.setRepository( this );
     jobMeta.setRepositoryDirectory( parentDir );
     jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
-    readJobMetaSharedObjects( jobMeta ); // This should read from the local cache
     jobDelegate.dataNodeToElement( data.getNode(), jobMeta );
     jobMeta.clearChanged();
     return jobMeta;
@@ -3211,7 +3209,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
         jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
 
-        readJobMetaSharedObjects( jobMeta );
         // Additional obfuscation through obscurity
         jobMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
 
@@ -3254,8 +3251,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         transMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
         transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
         transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
-
-        readTransSharedObjects( transMeta );
 
         transDelegate.dataNodeToElement(
           pur.getDataAtVersionForRead( idTransformation.getId(), versionLabel, NodeRepositoryFileData.class ).getNode(),
@@ -3421,10 +3416,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       // We don't have possibility to read this file via UI
       throw new KettleException( BaseMessages.getString( PKG, "PurRepository.fileCannotBeSavedInRootDirectory",
         element.getName() + element.getRepositoryElementType().getExtension() ) );
-    }
-
-    if ( saveSharedObjects ) {
-      objectTransformer.saveSharedObjects( element, versionComment );
     }
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.BeforeSaveToRepository.id, element );

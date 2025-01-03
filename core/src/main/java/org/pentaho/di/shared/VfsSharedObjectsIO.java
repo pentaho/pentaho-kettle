@@ -193,6 +193,16 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
     // Get the map for the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
+
+    // strip out any Object IDs
+    NodeList children = node.getChildNodes();
+    for ( int i = 0; i < children.getLength(); i++ ) {
+      Node childNode = children.item( i );
+      if ( childNode.getNodeName().equalsIgnoreCase( SharedObjectInterface.OBJECT_ID ) ) {
+        node.removeChild( childNode );
+      }
+    }
+
     // Add or Update the map entry for this name
     nodeMap.put( name, node );
 

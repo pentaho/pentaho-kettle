@@ -958,7 +958,6 @@ public class KettleFileRepository extends AbstractRepository {
     jobMeta.setRepository( this );
     jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
 
-    readDatabases( jobMeta, true );
     jobMeta.clearChanged();
 
     return jobMeta;
@@ -1118,44 +1117,9 @@ public class KettleFileRepository extends AbstractRepository {
     transMeta.setName( transname );
     transMeta.setObjectId( new StringObjectId( calcObjectId( repdir, transname, EXT_TRANSFORMATION ) ) );
 
-    readDatabases( transMeta, true );
     transMeta.clearChanged();
 
     return transMeta;
-  }
-
-  /**
-   * Read all the databases from the repository, insert into the has databases object, overwriting optionally
-   *
-   * @param TransMeta
-   *          The transformation to load into.
-   * @param overWriteShared
-   *          if an object with the same name exists, overwrite
-   * @throws KettleException
-   */
-  public void readDatabases( AbstractMeta transMeta, boolean overWriteShared ) throws KettleException {
-    try {
-      ObjectId[] dbids = getDatabaseIDs( false );
-      for ( int i = 0; i < dbids.length; i++ ) {
-        DatabaseMeta databaseMeta = loadDatabaseMeta( dbids[i], null ); // reads last version
-        if ( transMeta instanceof VariableSpace ) {
-          databaseMeta.shareVariablesWith( (VariableSpace) transMeta );
-        }
-
-        DatabaseMeta check = transMeta.findDatabase( databaseMeta.getName() ); // Check if there already is one in the
-                                                                               // transformation
-        if ( check == null || overWriteShared ) { // We only add, never overwrite database connections.
-          if ( databaseMeta.getName() != null ) {
-            transMeta.getDatabaseManagementInterface().add( databaseMeta );
-            if ( !overWriteShared ) {
-              databaseMeta.setChanged( false );
-            }
-          }
-        }
-      }
-    } catch ( KettleException e ) {
-      throw e;
-    }
   }
 
   public ValueMetaAndData loadValueMetaAndData( ObjectId id_value ) throws KettleException {
@@ -1191,49 +1155,12 @@ public class KettleFileRepository extends AbstractRepository {
 
   @Override
   public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
-
-    // Then we read the databases etc...
-    //
-    for ( ObjectId id : getDatabaseIDs( false ) ) {
-      DatabaseMeta databaseMeta = loadDatabaseMeta( id, null ); // Load last version
-      databaseMeta.shareVariablesWith( jobMeta );
-      jobMeta.getDatabaseManagementInterface().add( databaseMeta );
-    }
-
-    for ( ObjectId id : getSlaveIDs( false ) ) {
-      SlaveServer slaveServer = loadSlaveServer( id, null ); // Load last version
-      slaveServer.shareVariablesWith( jobMeta );
-      jobMeta.addOrReplaceSlaveServer( slaveServer );
-    }
+    // No-Op
   }
 
   @Override
   public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
-
-    // Then we read the databases etc...
-    //
-    for ( ObjectId id : getDatabaseIDs( false ) ) {
-      DatabaseMeta databaseMeta = loadDatabaseMeta( id, null ); // Load last version
-      databaseMeta.shareVariablesWith( transMeta );
-      transMeta.getDatabaseManagementInterface().add( databaseMeta );
-    }
-
-    for ( ObjectId id : getSlaveIDs( false ) ) {
-      SlaveServer slaveServer = loadSlaveServer( id, null ); // Load last version
-      slaveServer.shareVariablesWith( transMeta );
-      transMeta.addOrReplaceSlaveServer( slaveServer );
-    }
-
-    for ( ObjectId id : getClusterIDs( false ) ) {
-      ClusterSchema clusterSchema = loadClusterSchema( id, transMeta.getSlaveServers(), null ); // Load last version
-      clusterSchema.shareVariablesWith( transMeta );
-      transMeta.addOrReplaceClusterSchema( clusterSchema );
-    }
-
-    for ( ObjectId id : getPartitionSchemaIDs( false ) ) {
-      PartitionSchema partitionSchema = loadPartitionSchema( id, null ); // Load last version
-      transMeta.addOrReplacePartitionSchema( partitionSchema );
-    }
+    // No-Op
   }
 
   private ObjectId renameObject( ObjectId id, RepositoryDirectoryInterface newDirectory, String newName,

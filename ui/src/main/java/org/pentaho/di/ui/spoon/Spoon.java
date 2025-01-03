@@ -213,6 +213,7 @@ import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.shared.DatabaseManagementInterface;
+import org.pentaho.di.shared.RepositorySharedObjectsIO;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsManagementInterface;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -4188,11 +4189,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         jobMeta.getDatabaseManagementInterface().clear();
         jobMeta.setSlaveServers( new ArrayList<SlaveServer>() );
 
-        // Read them from the new repository.
-        if ( repository != null ) {
-          repository.readJobMetaSharedObjects( jobMeta );
-        }
-
         // Then we need to re-match the databases at save time...
         for ( DatabaseMeta oldDatabase : oldDatabases ) {
           DatabaseMeta newDatabase = DatabaseMeta.findDatabase( jobMeta.getDatabases(), oldDatabase.getName() );
@@ -4273,10 +4269,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         transMeta.setSlaveServers( new ArrayList<SlaveServer>() );
         transMeta.setClusterSchemas( new ArrayList<ClusterSchema>() );
 
-        // Read them from the new repository.
-        if ( repository != null ) {
-          repository.readTransSharedObjects( transMeta );
-        }
 
         // Then we need to re-match the databases at save time...
         for ( DatabaseMeta oldDatabase : oldDatabases ) {
@@ -4337,14 +4329,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void clearSharedObjectCache() throws KettleException {
     if ( rep != null ) {
       rep.clearSharedObjectCache();
-      TransMeta transMeta = getActiveTransformation();
-      if ( transMeta != null ) {
-        rep.readTransSharedObjects( transMeta );
-      }
-      JobMeta jobMeta = getActiveJob();
-      if ( jobMeta != null ) {
-        rep.readJobMetaSharedObjects( jobMeta );
-      }
     }
   }
 
@@ -4570,7 +4554,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         setShellText();
         SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
         enableMenus();
-        updateTreeForActiveAbstractMetas();
+        forceRefreshTree();
         clearRepositoryDirectory();
       }
     }
@@ -5354,9 +5338,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     transMeta.setMetaStore( metaStoreSupplier.get() );
 
     try {
-      if ( rep != null ) {
-        rep.readTransSharedObjects( transMeta );
-      }
       transMeta.importFromMetaStore();
       transMeta.clearChanged();
     } catch ( Exception e ) {
@@ -5409,10 +5390,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       jobMeta.setMetaStore( metaStoreSupplier.get() );
 
       try {
-        // TODO: MAKE LIKE TRANS
-        if ( rep != null ) {
-          rep.readJobMetaSharedObjects( jobMeta );
-        }
         jobMeta.importFromMetaStore();
       } catch ( Exception e ) {
         new ErrorDialog(
@@ -5508,17 +5485,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * functionality seems covered in loadSessionInformation
    */
   public void loadRepositoryObjects( TransMeta transMeta ) {
-    // Load common database info from active repository...
-    if ( rep != null ) {
-      try {
-        rep.readTransSharedObjects( transMeta );
-      } catch ( Exception e ) {
-        new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "Spoon.Error.UnableToLoadSharedObjects.Title" ), BaseMessages
-            .getString( PKG, "Spoon.Error.UnableToLoadSharedObjects.Message" ), e );
-      }
-
-    }
   }
 
   public boolean promptForSave() throws KettleException {
@@ -6928,6 +6894,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
     setShellText();
     enableMenus();
+    forceRefreshTree();
   }
 
   private void warnRepositoryLost( KettleRepositoryLostException e ) {
@@ -9189,7 +9156,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setRepository( Repository rep ) {
     this.rep = rep;
+
     if ( rep != null ) {
+      DefaultBowl.getInstance().setSharedObjectsIO( new RepositorySharedObjectsIO( rep, () ->
+            getExecutionBowl().getManager( SlaveServerManagementInterface.class ).getAll() ) );
+      DefaultBowl.getInstance().clearManagers();
+
       this.repositoryName = rep.getName();
       List<LastUsedFile> lastUsedFiles = getLastUsedRepoFiles();
       if ( !Utils.isEmpty( lastUsedFiles ) ) {
@@ -9198,14 +9170,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         lastFileOpenedProvider = ProviderFilterType.REPOSITORY.toString();
       }
     } else {
+      // will be generated on the next call
+      DefaultBowl.getInstance().setSharedObjectsIO( null );
+      DefaultBowl.getInstance().clearManagers();
+
       this.repositoryName = null;
       lastFileOpened = props.getLastUsedLocalFile();
       // we don't know what the provider is.
       lastFileOpenedProvider = null;
     }
-      if ( rep != null ) {
-        this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-      }
+    if ( rep != null ) {
+      this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+    }
 
     ConnectionManager.getInstance().reset();
     // Registering the UI Support classes
@@ -9644,28 +9620,31 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     try {
 
-      final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-      String[] jobList = rep.getJobsUsingDatabase( databaseMeta.getObjectId() );
-      String[] transList = rep.getTransformationsUsingDatabase( databaseMeta.getObjectId() );
-      if ( jobList.length == 0 && transList.length == 0 ) {
-        MessageBox box = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
-        box.setText( "Connection dependencies" );
-        box.setMessage( "This connection is not used by a job nor a transformation." );
-        box.open();
-      } else {
-        for ( String aJobList : jobList ) {
-          if ( aJobList != null ) {
-            createTreeItem( parent, aJobList, GUIResource.getInstance().getImageJobGraph() );
-          }
-        }
+      withDatabase( ( dbManager, databaseMeta ) -> {
+        SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
 
-        for ( String aTransList : transList ) {
-          if ( aTransList != null ) {
-            createTreeItem( parent, aTransList, GUIResource.getInstance().getImageTransGraph() );
+        String[] jobList = rep.getJobsUsingDatabase( databaseMeta.getObjectId() );
+        String[] transList = rep.getTransformationsUsingDatabase( databaseMeta.getObjectId() );
+        if ( jobList.length == 0 && transList.length == 0 ) {
+          MessageBox box = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
+          box.setText( "Connection dependencies" );
+          box.setMessage( "This connection is not used by a job nor a transformation." );
+          box.open();
+        } else {
+          for ( String aJobList : jobList ) {
+            if ( aJobList != null ) {
+              createTreeItem( parent, aJobList, GUIResource.getInstance().getImageJobGraph() );
+            }
           }
+
+          for ( String aTransList : transList ) {
+            if ( aTransList != null ) {
+              createTreeItem( parent, aTransList, GUIResource.getInstance().getImageTransGraph() );
+            }
+          }
+          parent.setExpanded( true );
         }
-        parent.setExpanded( true );
-      }
+      } );
     } catch ( Exception e ) {
       new ErrorDialog( shell, "Error", "Error getting dependencies! :", e );
     }
@@ -9834,9 +9813,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   /**
-   * Retrieves the Bowl for the Management context. This Bowl should be used for write operations. This Bowl will only
-   * return objects directly owned by the particular context. It will not include objects owned by the global context.
-   * Use DefaultBowl to access the global context.
+   * Retrieves the Bowl for the Execution context. This Bowl should be used for runtime operations. This Bowl will
+   * return objects from all Spoon-wide Levels with appropriate overrides.
    *
    * @return Bowl The Bowl that should be used during execution.
    */
@@ -9845,7 +9823,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   /**
-   * Sets the Bowl for the management context. This Bowl should be used for write operations.
+   * Sets the Bowl for the Execution context. This Bowl should be used for runtime operations.
    *
    */
   public void setExecutionBowl( Bowl bowl ) {

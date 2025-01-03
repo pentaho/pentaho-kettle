@@ -180,43 +180,18 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
   // ~ Methods =========================================================================================================
   @SuppressWarnings( "unchecked" )
   @Override
+  @Deprecated // Shared Object reads should now go through a SharedObjectsIO
   public void loadSharedObjects( final RepositoryElementInterface element,
       final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType )
     throws KettleException {
-    JobMeta jobMeta = (JobMeta) element;
-
-    // Repository objects take priority so let's overwrite them...
-    //
-    readDatabases( jobMeta, true, (List<DatabaseMeta>) sharedObjectsByType.get( RepositoryObjectType.DATABASE ) );
-    readSlaves( jobMeta, true, (List<SlaveServer>) sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER ) );
+    // NO-OP
   }
 
+  @Override
+  @Deprecated // Shared Object writes should now go through a SharedObjectsIO
   public void saveSharedObjects( final RepositoryElementInterface element, final String versionComment )
     throws KettleException {
-    JobMeta jobMeta = (JobMeta) element;
-    // Now store the databases in the job.
-    // Only store if the database has actually changed or doesn't have an object ID (imported)
-    //
-    for ( DatabaseMeta databaseMeta : jobMeta.getDatabases() ) {
-      if ( databaseMeta.hasChanged() || databaseMeta.getObjectId() == null ) {
-        if ( databaseMeta.getObjectId() == null
-            || unifiedRepositoryConnectionAclService.hasAccess( databaseMeta.getObjectId(),
-                RepositoryFilePermission.WRITE ) ) {
-          repo.save( databaseMeta, versionComment, null );
-        } else {
-          log.logError( BaseMessages.getString( PKG, "PurRepository.ERROR_0004_DATABASE_UPDATE_ACCESS_DENIED",
-              databaseMeta.getName() ) );
-        }
-      }
-    }
-
-    // Store the slave server
-    //
-    for ( SlaveServer slaveServer : jobMeta.getSlaveServers() ) {
-      if ( slaveServer.hasChanged() || slaveServer.getObjectId() == null ) {
-        repo.save( slaveServer, versionComment, null );
-      }
-    }
+    // NO-OP
   }
 
   public RepositoryElementInterface dataNodeToElement( final DataNode rootNode ) throws KettleException {

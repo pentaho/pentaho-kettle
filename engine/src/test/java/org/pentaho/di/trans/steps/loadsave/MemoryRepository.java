@@ -22,23 +22,14 @@
 
 package org.pentaho.di.trans.steps.loadsave;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
-import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.AbstractRepository;
@@ -53,6 +44,7 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
@@ -61,11 +53,24 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.UUID;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 public class MemoryRepository extends AbstractRepository {
-  private final Map<ObjectId, Map<Integer, Map<String, String>>> stepAttributeMap =
+  protected final Map<ObjectId, Map<Integer, Map<String, String>>> stepAttributeMap =
       new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
-  private final Map<ObjectId, Map<Integer, Map<String, String>>> jobAttributeMap =
+  protected final Map<ObjectId, Map<Integer, Map<String, String>>> jobAttributeMap =
       new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
+  protected final Map<ObjectId, RepositoryElementInterface> elements = new HashMap<>();
 
   public MemoryRepository() {
 
@@ -228,16 +233,32 @@ public class MemoryRepository extends AbstractRepository {
   @Override
   public void save( RepositoryElementInterface repositoryElement, String versionComment,
       ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
-    // TODO Auto-generated method stub
-
+    save( repositoryElement );
   }
 
   @Override
   public void save( RepositoryElementInterface repositoryElement, String versionComment, Calendar versionDate,
       ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
-    // TODO Auto-generated method stub
-
+    save( repositoryElement );
   }
+
+  private void save( RepositoryElementInterface repositoryElement ) {
+    if ( repositoryElement.getObjectId() == null ) {
+      RepositoryElementInterface existingElement = findExisting( repositoryElement );
+      if ( existingElement != null ) {
+        repositoryElement.setObjectId( existingElement.getObjectId() );
+      } else {
+        repositoryElement.setObjectId( new StringObjectId( UUID.randomUUID().toString() ) );
+      }
+    }
+    elements.put( repositoryElement.getObjectId(), repositoryElement );
+  }
+
+  private RepositoryElementInterface findExisting( RepositoryElementInterface candidate ) {
+    return elements.values().stream()
+      .filter( e -> e.getClass().equals( candidate.getClass() ) && candidate.getName().equals( e.getName() ) )
+      .findAny().orElse( null );
+    }
 
   @Override
   public RepositoryDirectoryInterface getDefaultSaveDirectory( RepositoryElementInterface repositoryElement )
@@ -334,136 +355,180 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public DatabaseMeta loadDatabaseMeta( ObjectId id_database, String revision ) throws KettleException {
-    // TODO Auto-generated method stub
+    RepositoryElementInterface element = elements.get( id_database );
+    if ( element instanceof DatabaseMeta ) {
+      return (DatabaseMeta) element;
+    }
     return null;
   }
 
   @Override
   public void deleteDatabaseMeta( String databaseName ) throws KettleException {
-    // TODO Auto-generated method stub
-
+    ObjectId id = getDatabaseID( databaseName );
+    if ( id != null ) {
+      elements.remove( id );
+    }
   }
 
   @Override
   public ObjectId[] getDatabaseIDs( boolean includeDeleted ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof DatabaseMeta )
+      .map( RepositoryElementInterface::getObjectId )
+      .toArray( ObjectId[]::new );
   }
 
   @Override
   public String[] getDatabaseNames( boolean includeDeleted ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof DatabaseMeta )
+      .map( RepositoryElementInterface::getName )
+      .toArray( String[]::new );
   }
 
   @Override
   public List<DatabaseMeta> readDatabases() throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream().filter( e -> e instanceof DatabaseMeta )
+      .map( e -> (DatabaseMeta) e ).collect( Collectors.toList() );
   }
 
   @Override
   public ObjectId getDatabaseID( String name ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof DatabaseMeta && name.equals( e.getName() ) )
+      .map( RepositoryElementInterface::getObjectId )
+      .findAny().orElse( null );
   }
 
   @Override
   public ClusterSchema loadClusterSchema( ObjectId id_cluster_schema, List<SlaveServer> slaveServers,
       String versionLabel ) throws KettleException {
-    // TODO Auto-generated method stub
+    RepositoryElementInterface element = elements.get( id_cluster_schema );
+    if ( element instanceof ClusterSchema ) {
+      return (ClusterSchema) element;
+    }
     return null;
   }
 
   @Override
   public ObjectId[] getClusterIDs( boolean includeDeleted ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof ClusterSchema )
+      .map( RepositoryElementInterface::getObjectId )
+      .toArray( ObjectId[]::new );
   }
 
   @Override
   public String[] getClusterNames( boolean includeDeleted ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof ClusterSchema )
+      .map( RepositoryElementInterface::getName )
+      .toArray( String[]::new );
   }
 
   @Override
   public ObjectId getClusterID( String name ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof ClusterSchema && name.equals( e.getName() ) )
+      .map( RepositoryElementInterface::getObjectId )
+      .findAny().orElse( null );
   }
 
   @Override
   public void deleteClusterSchema( ObjectId id_cluster ) throws KettleException {
-    // TODO Auto-generated method stub
-
+    Object value = elements.get( id_cluster );
+    if ( value instanceof ClusterSchema ) {
+      elements.remove( id_cluster );
+    }
   }
 
   @Override
   public SlaveServer loadSlaveServer( ObjectId id_slave_server, String versionLabel ) throws KettleException {
-    // TODO Auto-generated method stub
+    RepositoryElementInterface element = elements.get( id_slave_server );
+    if ( element instanceof SlaveServer ) {
+      return (SlaveServer) element;
+    }
     return null;
   }
 
   @Override
   public ObjectId[] getSlaveIDs( boolean includeDeleted ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof SlaveServer )
+      .map( RepositoryElementInterface::getObjectId )
+      .toArray( ObjectId[]::new );
   }
 
   @Override
   public String[] getSlaveNames( boolean includeDeleted ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof SlaveServer )
+      .map( RepositoryElementInterface::getName )
+      .toArray( String[]::new );
   }
 
   @Override
   public List<SlaveServer> getSlaveServers() throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream().filter( e -> e instanceof SlaveServer )
+      .map( e -> (SlaveServer) e ).collect( Collectors.toList() );
   }
 
   @Override
   public ObjectId getSlaveID( String name ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof SlaveServer && name.equals( e.getName() ) )
+      .map( RepositoryElementInterface::getObjectId )
+      .findAny().orElse( null );
   }
 
   @Override
   public void deleteSlave( ObjectId id_slave ) throws KettleException {
-    // TODO Auto-generated method stub
-
+    Object value = elements.get( id_slave );
+    if ( value instanceof SlaveServer ) {
+      elements.remove( id_slave );
+    }
   }
 
   @Override
   public PartitionSchema loadPartitionSchema( ObjectId id_partition_schema, String versionLabel )
     throws KettleException {
-    // TODO Auto-generated method stub
+    RepositoryElementInterface element = elements.get( id_partition_schema );
+    if ( element instanceof PartitionSchema ) {
+      return (PartitionSchema) element;
+    }
     return null;
   }
 
   @Override
   public ObjectId[] getPartitionSchemaIDs( boolean includeDeleted ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof PartitionSchema )
+      .map( RepositoryElementInterface::getObjectId )
+      .toArray( ObjectId[]::new );
   }
 
   @Override
   public String[] getPartitionSchemaNames( boolean includeDeleted ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof PartitionSchema )
+      .map( RepositoryElementInterface::getName )
+      .toArray( String[]::new );
   }
 
   @Override
   public ObjectId getPartitionSchemaID( String name ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().stream()
+      .filter( e -> e instanceof PartitionSchema && name.equals( e.getName() ) )
+      .map( RepositoryElementInterface::getObjectId )
+      .findAny().orElse( null );
   }
 
   @Override
   public void deletePartitionSchema( ObjectId id_partition_schema ) throws KettleException {
-    // TODO Auto-generated method stub
-
+    Object value = elements.get( id_partition_schema );
+    if ( value instanceof PartitionSchema ) {
+      elements.remove( id_partition_schema );
+    }
   }
 
   @Override
@@ -805,4 +870,5 @@ public class MemoryRepository extends AbstractRepository {
     throws KettleException {
     return "Y".equalsIgnoreCase( getJobAttribute( id_jobentry, nr, code, def ? "Y" : "N" ) );
   }
+
 }
