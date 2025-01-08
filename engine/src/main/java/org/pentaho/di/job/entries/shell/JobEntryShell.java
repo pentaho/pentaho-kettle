@@ -476,21 +476,28 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else {
-        if ( insertScript ) {
-          realScript = environmentSubstitute( script );
-          tempFile = KettleVFS.createTempFile( KETTLE, "shell", System.getProperty( TEMP_DIR ), this );
-        } else {
-          String realFilename = environmentSubstitute( getFilename() );
-          URI uri = new URI( realFilename );
-          realFilename = uri.getPath();
-          try ( FileInputStream fis = new FileInputStream( realFilename ) ) {
-            realScript = IOUtils.toString( fis, "UTF-8" );
+        if ("Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE, "Y" ) )) {
+          if ( insertScript ) {
+            realScript = environmentSubstitute( script );
+            tempFile = KettleVFS.createTempFile( KETTLE, "shell", System.getProperty( TEMP_DIR ), this );
+          } else {
+            String realFilename = environmentSubstitute( getFilename() );
+            URI uri = new URI( realFilename );
+            realFilename = uri.getPath();
+            try ( FileInputStream fis = new FileInputStream( realFilename ) ) {
+              realScript = IOUtils.toString( fis, "UTF-8" );
+            }
+            // PDI-19676 - creating a temp file in same file location to avoid script failure.
+            String parentDir = Paths.get( realFilename ).getParent().toString();
+            tempFile = KettleVFS.createTempFile( KETTLE, "shell", parentDir, this );
           }
-          // PDI-19676 - creating a temp file in same file location to avoid script failure.
-          String parentDir = Paths.get(realFilename).getParent().toString();
-          tempFile = KettleVFS.createTempFile( KETTLE, "shell",parentDir , this );
+          fileObject = createTemporaryShellFile( tempFile, realScript );
+        } else {
+          if ( insertScript ) {
+            tempFile = KettleVFS.createTempFile( "kettle", "shell", System.getProperty( "java.io.tmpdir" ), this );
+            fileObject = createTemporaryShellFile( tempFile, realScript );
+          }
         }
-        fileObject = createTemporaryShellFile( tempFile, realScript );
         base = new String[] { KettleVFS.getFilename( fileObject ) };
       }
 

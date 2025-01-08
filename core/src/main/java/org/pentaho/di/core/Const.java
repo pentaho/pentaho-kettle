@@ -1694,6 +1694,11 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
 
   /**
+   Value to execute temporary generated file or the original script in Shell step
+   */
+  public static final String KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE = "KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE";
+
+  /**
    Value to Configure if we want to export only the used connections to the XML file
    */
   public static final String STRING_ONLY_USED_DB_TO_XML = "STRING_ONLY_USED_DB_TO_XML";
