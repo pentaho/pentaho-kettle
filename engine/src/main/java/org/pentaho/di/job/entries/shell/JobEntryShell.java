@@ -443,6 +443,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     FileObject tempFile = null;
     final String TEMP_DIR = "java.io.tmpdir";
     final String KETTLE = "kettle";
+    final String SHELL = "shell";
 
 
     try {
@@ -479,7 +480,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         if ("Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE, "Y" ) )) {
           if ( insertScript ) {
             realScript = environmentSubstitute( script );
-            tempFile = KettleVFS.createTempFile( KETTLE, "shell", System.getProperty( TEMP_DIR ), this );
+            tempFile = KettleVFS.createTempFile( KETTLE, SHELL, System.getProperty( TEMP_DIR ), this );
           } else {
             String realFilename = environmentSubstitute( getFilename() );
             URI uri = new URI( realFilename );
@@ -489,12 +490,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             }
             // PDI-19676 - creating a temp file in same file location to avoid script failure.
             String parentDir = Paths.get( realFilename ).getParent().toString();
-            tempFile = KettleVFS.createTempFile( KETTLE, "shell", parentDir, this );
+            tempFile = KettleVFS.createTempFile( KETTLE, SHELL, parentDir, this );
           }
           fileObject = createTemporaryShellFile( tempFile, realScript );
         } else {
           if ( insertScript ) {
-            tempFile = KettleVFS.createTempFile( "kettle", "shell", System.getProperty( "java.io.tmpdir" ), this );
+            tempFile = KettleVFS.createTempFile( "kettle", SHELL, System.getProperty( "java.io.tmpdir" ), this );
             fileObject = createTemporaryShellFile( tempFile, realScript );
           }
         }
