@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 Hitachi Vantara.  All rights reserved.
+ * Copyright 2024-2025 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.pentaho.di.shared;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.steps.loadsave.MemoryRepository;
@@ -29,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -57,6 +59,11 @@ public class RepositorySharedObjectsIOTest {
     reps.add( new Object[] { new MemoryRepository() } );
     reps.add( new Object[] { new MemoryRepositoryExtended() } );
     return reps;
+  }
+
+  @BeforeClass
+  public static void init() throws Exception {
+    KettleClientEnvironment.init();
   }
 
   @Before
