@@ -1694,7 +1694,7 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
 
   /**
-   Value to execute temporary generated file or the original script in Shell step
+   Value to execute a temporary generated file or the original script in Shell step
    */
   public static final String KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE = "KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE";
 
