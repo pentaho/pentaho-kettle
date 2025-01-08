@@ -237,6 +237,7 @@ public class PurRepositoryProxy implements Repository {
   }
 
   @Override
+  @Deprecated
   public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
     getDelegate().readTransSharedObjects( transMeta );
   }

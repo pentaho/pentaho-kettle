@@ -2030,11 +2030,13 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return copy;
   }
 
+  @Deprecated
   @Override
   public void readJobMetaSharedObjects( final JobMeta jobMeta ) throws KettleException {
     // NO-OP
   }
 
+  @Deprecated
   @Override
   public void readTransSharedObjects( final TransMeta transMeta ) throws KettleException {
     // NO-OP

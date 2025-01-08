@@ -170,9 +170,6 @@ public class ClustersController extends LazilyInitializedController implements I
             repository.insertLogEntry( BaseMessages.getString(
               RepositoryExplorer.class, "ClusterController.Message.CreatingNewCluster", cluster.getName() ) );
             repository.save( cluster, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-            if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
-              mainController.getSharedObjectSyncUtil().reloadTransformationRepositoryObjects( true );
-            }
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb.setMessage( BaseMessages.getString(

@@ -27,7 +27,6 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsManagementInterface;
@@ -63,19 +62,6 @@ public abstract class SpoonSharedObjectDelegate<T extends SharedObjectInterface<
       }
     }
     return false;
-  }
-
-  protected void saveSharedObjectToRepository( T sharedObject, String versionComment ) throws KettleException {
-    Repository rep = spoon.getRepository();
-    if ( rep != null  ) {
-      if ( !rep.getSecurityProvider().isReadOnly() ) {
-        rep.save( sharedObject, versionComment, null );
-        sharedObject.clearChanged();
-      } else {
-        throw new KettleException( BaseMessages.getString(
-            PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
-      }
-    }
   }
 
   protected void saveSharedObjects() {

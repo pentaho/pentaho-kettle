@@ -189,9 +189,6 @@ public class PartitionsController extends LazilyInitializedController implements
             repository.insertLogEntry( BaseMessages.getString(
               RepositoryExplorer.class, "PartitionsController.Message.CreatingPartition", partition.getName() ) );
             repository.save( partition, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-            if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
-              mainController.getSharedObjectSyncUtil().reloadTransformationRepositoryObjects( true );
-            }
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb.setMessage( BaseMessages.getString(
