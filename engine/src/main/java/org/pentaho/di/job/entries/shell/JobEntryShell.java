@@ -87,6 +87,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
   public String script;
   private String filename;
   private String workDirectory;
+  private static final String KETTLE = "kettle";
+  private static final String SHELL = "shell";
 
   public JobEntryShell( String name ) {
     super( name, "" );
@@ -441,10 +443,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     FileObject fileObject = null;
     String realScript = null;
     FileObject tempFile = null;
-    final String TEMP_DIR = "java.io.tmpdir";
-    final String KETTLE = "kettle";
-    final String SHELL = "shell";
-
 
     try {
       // What's the exact command?
@@ -466,21 +464,20 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         base = new String[] { "command.com", "/C" };
         if ( insertScript ) {
           tempFile =
-            KettleVFS.createTempFile( KETTLE, "shell.bat", System.getProperty( TEMP_DIR ), this );
+            KettleVFS.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else if ( Const.getOS().startsWith( "Windows" ) ) {
         base = new String[] { "cmd.exe", "/C" };
         if ( insertScript ) {
           tempFile =
-            KettleVFS.createTempFile( KETTLE, "shell.bat", System.getProperty( TEMP_DIR ), this );
+            KettleVFS.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else {
         if ("Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE, "Y" ) )) {
           if ( insertScript ) {
-            realScript = environmentSubstitute( script );
-            tempFile = KettleVFS.createTempFile( KETTLE, SHELL, System.getProperty( TEMP_DIR ), this );
+            tempFile = KettleVFS.createTempFile( KETTLE, SHELL, KettleVFS.TEMP_DIR, this );
           } else {
             String realFilename = environmentSubstitute( getFilename() );
             URI uri = new URI( realFilename );
@@ -495,7 +492,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           fileObject = createTemporaryShellFile( tempFile, realScript );
         } else {
           if ( insertScript ) {
-            tempFile = KettleVFS.createTempFile( "kettle", SHELL, System.getProperty( "java.io.tmpdir" ), this );
+            tempFile = KettleVFS.createTempFile( "kettle", SHELL, KettleVFS.TEMP_DIR, this );
             fileObject = createTemporaryShellFile( tempFile, realScript );
           }
         }
