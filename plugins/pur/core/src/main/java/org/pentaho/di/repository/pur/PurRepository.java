@@ -42,6 +42,7 @@ import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.Import;
 import org.pentaho.di.job.JobMeta;
@@ -97,14 +98,17 @@ import org.pentaho.platform.api.repository2.unified.UnifiedRepositoryUpdateFileE
 import org.pentaho.platform.api.repository2.unified.VersionSummary;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
+import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
 import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
+import java.io.ByteArrayInputStream;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -142,6 +146,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class PurRepository extends AbstractRepository implements Repository, ReconnectableRepository,
   RepositoryExtended, java.io.Serializable {
 
+  private static final boolean WRITE_AS_STREAM = true;
   private static final long serialVersionUID = 7460109109707189479L; /* EESOURCE: UPDATE SERIALVERUID */
 
   // Kettle property that when set to false disabled the lazy repository access
@@ -3234,7 +3239,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public TransMeta loadTransformation( ObjectId idTransformation, String versionLabel ) throws KettleException {
     try {
       RepositoryFile file = null;
-      EETransMeta transMeta = null;
+      TransMeta transMeta = null;
 
       readWriteLock.readLock().lock();
       try {
@@ -3243,7 +3248,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         } else {
           file = pur.getFileById( idTransformation.getId() );
         }
-        transMeta = new EETransMeta();
+        EETransMeta eeTransMeta = new EETransMeta();
+        transMeta = eeTransMeta;
         transMeta.setName( file.getTitle() );
         transMeta.setFilename( file.getPath() );
         transMeta.setDescription( file.getDescription() );
@@ -3251,12 +3257,22 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         transMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
         transMeta.setRepository( this );
         transMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
-        transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
+        eeTransMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
         transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
 
         transDelegate.dataNodeToElement(
           pur.getDataAtVersionForRead( idTransformation.getId(), versionLabel, NodeRepositoryFileData.class ).getNode(),
           transMeta );
+      } catch ( Throwable e ) {
+        // Should log here.
+        // file is there and may be legacy, attempt simple export
+        SimpleRepositoryFileData fileData =
+          pur.getDataForRead( file.getId(), SimpleRepositoryFileData.class );
+        if ( fileData != null ) {
+          transMeta = new TransMeta( fileData .getInputStream(), this, false, null, null );
+        } else {
+          throw e;
+        }
       } finally {
         readWriteLock.readLock().unlock();
       }
@@ -3450,9 +3466,20 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
             versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
             Const.NVL( element.getDescription(), "" ) ).build();
 
-        file =
-          pur.updateFile( file, new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ),
-            versionComment );
+        if ( WRITE_AS_STREAM && element instanceof XMLInterface ) {
+          XMLInterface xmlElement = (XMLInterface) element;
+          ByteArrayInputStream xmlStream = new ByteArrayInputStream( xmlElement.getXML().getBytes( "UTF-8" ) );
+          file =
+            pur.updateFile( file, new SimpleRepositoryFileData( xmlStream, "UTF-8",
+                                                                "application/vnd.pentaho.transformation" ),
+                            versionComment );
+        } else {
+          file =
+            pur.updateFile( file, new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ),
+              versionComment );
+        }
+      } catch ( IOException ex ) {
+        throw new KettleException( ex );
       } catch ( SOAPFaultException e ) {
         if ( e.getMessage().contains( UnifiedRepositoryUpdateFileException.PREFIX ) ) {
           throw new KettleException(
@@ -3476,9 +3503,20 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
             versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
             Const.NVL( element.getDescription(), "" ) ).build();
 
-        file =
-          pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
-            new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
+        if ( WRITE_AS_STREAM && element instanceof XMLInterface ) {
+          XMLInterface xmlElement = (XMLInterface) element;
+          ByteArrayInputStream xmlStream = new ByteArrayInputStream( xmlElement.getXML().getBytes( "UTF-8" ) );
+          file =
+            pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
+                            new SimpleRepositoryFileData( xmlStream, "UTF-8", "application/vnd.pentaho.transformation" ),
+                            versionComment );
+        } else {
+          file =
+            pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
+              new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
+        }
+      } catch ( IOException ex ) {
+        throw new KettleException( ex );
       } catch ( SOAPFaultException e ) {
         if ( e.getMessage().contains( UnifiedRepositoryCreateFileException.PREFIX ) ) {
           throw new KettleException(
