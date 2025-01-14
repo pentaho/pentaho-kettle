@@ -179,6 +179,12 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   private FormData fdbTrustStoreFile;
   private FormData fdlTrustStoreFile, fdTrustStoreFile;
 
+  private Label wlTrustAll;
+  private FormData fdlTrustAll;
+  private Button wTrustAll;
+  private FormData fdTrustAll;
+
+
   private boolean gotPreviousFields = false;
 
   private Button wMatrixGet;
@@ -836,6 +842,30 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdSSLTrustStore.right = new FormAttachment( 100, 0 );
     fdSSLTrustStore.top = new FormAttachment( gHttpAuth, margin );
     gSSLTrustStore.setLayoutData( fdSSLTrustStore );
+
+    // Trust all certificate?
+    wlTrustAll = new Label( gSSLTrustStore, SWT.RIGHT );
+    wlTrustAll.setText( BaseMessages.getString( PKG, "RestDialog.TrustAll.Label" ) );
+    props.setLook( wlTrustAll );
+    fdlTrustAll = new FormData();
+    fdlTrustAll.left = new FormAttachment( 0, 0 );
+    fdlTrustAll.top = new FormAttachment( wTrustStorePassword, margin );
+    fdlTrustAll.right = new FormAttachment( middle, -margin );
+    wlTrustAll.setLayoutData( fdlTrustAll );
+    wTrustAll = new Button( gSSLTrustStore, SWT.CHECK );
+    props.setLook( wTrustAll );
+    wTrustAll.setToolTipText( BaseMessages.getString( PKG, "RestDialog.TrustAll.Tooltip" ) );
+    fdTrustAll = new FormData();
+    fdTrustAll.left = new FormAttachment( middle, 0 );
+    fdTrustAll.top = new FormAttachment( wTrustStorePassword, margin );
+    wTrustAll.setLayoutData( fdTrustAll );
+
+    wTrustAll.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+        trustAll();
+      }
+    } );
 
     // END HTTP AUTH GROUP
     // ////////////////////////
