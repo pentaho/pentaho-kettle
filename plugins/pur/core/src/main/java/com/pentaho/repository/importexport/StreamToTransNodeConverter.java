@@ -16,6 +16,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -29,12 +31,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
@@ -80,34 +84,48 @@ public class StreamToTransNodeConverter implements Converter {
    * @return
    */
   public InputStream convert( final Serializable fileId ) {
+    if ( fileId == null ) {
+      return null;
+    }
     try {
-      // this will change in the future if PDI no longer has its
-      // own repository. For now, get the reference
-      if ( fileId != null ) {
-        Repository repository = connectToRepository();
-        RepositoryFile file = unifiedRepository.getFileById( fileId );
-        if ( file != null ) {
-          try {
-            TransMeta transMeta = repository.loadTransformation( new StringObjectId( fileId.toString() ), null );
-            if ( transMeta != null ) {
-              return new ByteArrayInputStream( filterPrivateDatabases( transMeta ).getXML().getBytes() );
-            }
-          } catch ( KettleException e ) {
-            logger.error( e );
-            // file is there and may be legacy, attempt simple export
-            SimpleRepositoryFileData fileData =
-                unifiedRepository.getDataForRead( fileId, SimpleRepositoryFileData.class );
-            if ( fileData != null ) {
-              logger.warn( "Reading as legacy CE tranformation " + file.getName() + "." );
-              return fileData.getInputStream();
-            }
-          }
-        }
-      }
+      return loadTransformationAsStream( fileId );
     } catch ( Exception e ) {
       logger.error( e );
+      return null;
     }
-    return null;
+  }
+
+  private InputStream loadTransformationAsStream( Serializable fileId ) throws KettleException {
+    Repository repository = connectToRepository();
+    RepositoryFile file = unifiedRepository.getFileById( fileId );
+    if ( file == null ) {
+      return null;
+    }
+    try {
+      return getTransformationStream( repository, fileId );
+    } catch ( KettleException e ) {
+      logger.error( e );
+      // file is there and may be legacy, attempt simple export
+      return getLegacyTransformationStream( fileId, file );
+    }
+  }
+
+  private InputStream getTransformationStream( Repository repository, Serializable fileId ) throws KettleException {
+    TransMeta transMeta = repository.loadTransformation( new StringObjectId( fileId.toString() ), null );
+    if ( transMeta == null ) {
+      return null;
+    }
+    String xml = XMLHandler.getXMLHeader() + filterPrivateDatabases( transMeta ).getXML();
+    return new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
+  }
+
+  private InputStream getLegacyTransformationStream( Serializable fileId, RepositoryFile file ) {
+    SimpleRepositoryFileData fileData = unifiedRepository.getDataForRead( fileId, SimpleRepositoryFileData.class );
+    if ( fileData == null ) {
+      return null;
+    }
+    logger.warn( "Reading as legacy CE transformation " + file.getName() + "." );
+    return fileData.getInputStream();
   }
 
   @VisibleForTesting
