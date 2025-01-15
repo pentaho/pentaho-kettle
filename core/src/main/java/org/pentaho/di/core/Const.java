@@ -3,7 +3,7 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2024-2025 by Hitachi Vantara, LLC : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
@@ -1713,6 +1713,11 @@ public class Const {
    */
   public static final String HIDE_INTERNAL_VARIABLES = "PENTAHO_SCHEDULER_HIDE_INTERNAL_VARIABLES";
   public static final String HIDE_INTERNAL_VARIABLES_DEFAULT = "Y";
+
+  /**
+   Set the maximum allowed size for byte arrays in Apache POI.
+   */
+  public static final String POI_BYTE_ARRAY_MAX_SIZE = "POI_BYTE_ARRAY_MAX_SIZE";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
