@@ -692,13 +692,17 @@ public class Calculator extends BaseStep implements StepInterface {
     CalculatorMeta calculatorMeta = (CalculatorMeta) getStepMetaInterface();
     CalculatorMetaFunction[] calculatorMetaFunctions = calculatorMeta.getCalculation();
     for ( CalculatorMetaFunction calculatorMetaFunction : calculatorMetaFunctions ) {
-      fieldsArray.add( calculatorMetaFunction.getFieldName() );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "name", calculatorMetaFunction.getFieldName() );
+      fieldsArray.add( jsonObject );
     }
 
     RowMetaInterface rowMetaInterface = getTransMeta().getPrevStepFields( stepName );
     if ( Objects.nonNull( rowMetaInterface ) ) {
       for ( int i = 0; i < rowMetaInterface.size(); i++ ) {
-        fieldsArray.add( rowMetaInterface.getValueMeta( i ).getName() );
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put( "name", rowMetaInterface.getValueMeta( i ).getName() );
+        fieldsArray.add( jsonObject );
       }
     }
 
