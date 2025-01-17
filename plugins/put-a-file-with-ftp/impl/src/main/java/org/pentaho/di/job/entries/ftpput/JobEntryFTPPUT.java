@@ -207,45 +207,45 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
-  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId jobEntryId, List<DatabaseMeta> databases,
                        List<SlaveServer> slaveServers ) throws KettleException {
     try {
-      serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
-      serverPort = rep.getJobEntryAttributeString( id_jobentry, "serverport" );
-      userName = rep.getJobEntryAttributeString( id_jobentry, "username" );
+      serverName = rep.getJobEntryAttributeString( jobEntryId, "servername" );
+      serverPort = rep.getJobEntryAttributeString( jobEntryId, "serverport" );
+      userName = rep.getJobEntryAttributeString( jobEntryId, "username" );
       password =
-        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
-      remoteDirectory = rep.getJobEntryAttributeString( id_jobentry, "remoteDirectory" );
-      localDirectory = rep.getJobEntryAttributeString( id_jobentry, "localDirectory" );
-      wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
-      binaryMode = rep.getJobEntryAttributeBoolean( id_jobentry, "binary" );
-      timeout = (int) rep.getJobEntryAttributeInteger( id_jobentry, "timeout" );
-      remove = rep.getJobEntryAttributeBoolean( id_jobentry, "remove" );
-      onlyPuttingNewFiles = rep.getJobEntryAttributeBoolean( id_jobentry, "only_new" );
-      activeConnection = rep.getJobEntryAttributeBoolean( id_jobentry, "active" );
-      controlEncoding = rep.getJobEntryAttributeString( id_jobentry, "control_encoding" );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( jobEntryId, "password" ) );
+      remoteDirectory = rep.getJobEntryAttributeString( jobEntryId, "remoteDirectory" );
+      localDirectory = rep.getJobEntryAttributeString( jobEntryId, "localDirectory" );
+      wildcard = rep.getJobEntryAttributeString( jobEntryId, "wildcard" );
+      binaryMode = rep.getJobEntryAttributeBoolean( jobEntryId, "binary" );
+      timeout = (int) rep.getJobEntryAttributeInteger( jobEntryId, "timeout" );
+      remove = rep.getJobEntryAttributeBoolean( jobEntryId, "remove" );
+      onlyPuttingNewFiles = rep.getJobEntryAttributeBoolean( jobEntryId, "only_new" );
+      activeConnection = rep.getJobEntryAttributeBoolean( jobEntryId, "active" );
+      controlEncoding = rep.getJobEntryAttributeString( jobEntryId, "control_encoding" );
       if ( controlEncoding == null ) {
         // if we couldn't retrieve an encoding, assume it's an old instance and
-        // put in the the encoding used before v 2.4.0
+        // put in the encoding used before v 2.4.0
         controlEncoding = LEGACY_CONTROL_ENCODING;
       }
 
-      proxyHost = rep.getJobEntryAttributeString( id_jobentry, "proxy_host" );
-      proxyPort = rep.getJobEntryAttributeString( id_jobentry, "proxy_port" );
-      proxyUsername = rep.getJobEntryAttributeString( id_jobentry, "proxy_username" );
+      proxyHost = rep.getJobEntryAttributeString( jobEntryId, "proxy_host" );
+      proxyPort = rep.getJobEntryAttributeString( jobEntryId, "proxy_port" );
+      proxyUsername = rep.getJobEntryAttributeString( jobEntryId, "proxy_username" );
       proxyPassword =
         Encr
-          .decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "proxy_password" ) );
-      socksProxyHost = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_host" );
-      socksProxyPort = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_port" );
-      socksProxyUsername = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_username" );
+          .decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( jobEntryId, "proxy_password" ) );
+      socksProxyHost = rep.getJobEntryAttributeString( jobEntryId, "socksproxy_host" );
+      socksProxyPort = rep.getJobEntryAttributeString( jobEntryId, "socksproxy_port" );
+      socksProxyUsername = rep.getJobEntryAttributeString( jobEntryId, "socksproxy_username" );
       socksProxyPassword =
         Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(
-          id_jobentry, "socksproxy_password" ) );
+          jobEntryId, "socksproxy_password" ) );
 
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPPUT.UnableToLoadFromRepo", String
-        .valueOf( id_jobentry ) ), dbe );
+        .valueOf( jobEntryId ) ), dbe );
     }
   }
 
@@ -609,7 +609,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.Logged", realUsername ) );
       }
 
-      // Fix for PDI-2534 - add auxilliary FTP File List parsers to the ftpclient object.
+      // Fix for PDI-2534 - add auxiliary FTP File List parsers to the ftpclient object.
       this.hookInOtherParsers( ftpclient );
 
       // move to spool dir ...
@@ -631,7 +631,6 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         }
       }
 
-
       final List<String> files;
       File localFiles = new File( realLocalDirectory );
       File[] children = localFiles.listFiles();
@@ -647,7 +646,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         }
         files = Collections.emptyList();
       } else {
-        files = new ArrayList<String>( children.length );
+        files = new ArrayList<>( children.length );
         for ( File child : children ) {
           // Get filename of file or directory
           if ( !child.isDirectory() ) {
@@ -811,7 +810,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       if ( !Utils.isEmpty( socksProxyUsername )
         && Utils.isEmpty( socksProxyPassword ) || Utils.isEmpty( socksProxyUsername )
         && !Utils.isEmpty( socksProxyPassword ) ) {
-        // we have a username without a password or vica versa
+        // we have a username without a password or vice versa
         throw new FTPException( BaseMessages.getString(
           PKG, "JobFTPPUT.SocksProxy.IncompleteCredentials", environmentSubstitute( socksProxyHost ),
           getName() ) );
@@ -898,7 +897,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         Object parserInstance = null;
         for ( int i = 0; i < parserClasses.length; i++ ) {
           cName = parserClasses[ i ].trim();
-          if ( cName.length() > 0 ) {
+          if ( !cName.isEmpty() ) {
             try {
               clazz = Class.forName( cName );
               parserInstance = clazz.newInstance();
