@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
@@ -1170,18 +1171,24 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
 
     TableItem item = new TableItem( wFields.table, SWT.NONE );
-    item.setText( 1, LoadFileInputField.ElementTypeDesc[0] );
-    item.setText( 2, LoadFileInputField.ElementTypeDesc[0] );
-    item.setText( 3, "String" );
+    item.setText( 1, LoadFileInputField.ElementTypeDesc[ 0 ] );
+    item.setText( 2, LoadFileInputField.ElementTypeDesc[ 0 ] );
+    item.setText( 3, Value.getTypeDesc( Value.VALUE_TYPE_STRING ) );
+    item.setText( 10, LoadFileInputField.trimTypeDesc[ 0 ] );
+    item.setText( 11, BaseMessages.getString( PKG, "System.Combo.No" ) );
     // file size
     item = new TableItem( wFields.table, SWT.NONE );
-    item.setText( 1, LoadFileInputField.ElementTypeDesc[1] );
-    item.setText( 2, LoadFileInputField.ElementTypeDesc[1] );
-    item.setText( 3, "Integer" );
+    item.setText( 1, LoadFileInputField.ElementTypeDesc[ 1 ] );
+    item.setText( 2, LoadFileInputField.ElementTypeDesc[ 1 ] );
+    item.setText( 3, Value.getTypeDesc( Value.VALUE_TYPE_INTEGER ) );
+    item.setText( 10, LoadFileInputField.trimTypeDesc[ 0 ] );
+    item.setText( 11, BaseMessages.getString( PKG, "System.Combo.No" ) );
 
     wFields.removeEmptyRows();
     wFields.setRowNums();
     wFields.optWidth( true );
+
+    input.setChanged();
   }
 
   private void setEncodings() {

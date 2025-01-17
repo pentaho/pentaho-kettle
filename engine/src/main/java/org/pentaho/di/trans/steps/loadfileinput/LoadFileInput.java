@@ -341,21 +341,21 @@ public class LoadFileInput extends BaseStep implements StepInterface {
             // DO Trimming!
             switch ( loadFileInputField.getTrimType() ) {
               case LoadFileInputField.TYPE_TRIM_LEFT:
-                if ( meta.getEncoding() != null ) {
+                if ( !Utils.isEmpty( meta.getEncoding() ) ) {
                   data.filecontent = Const.ltrim( new String( data.filecontent, meta.getEncoding() ) ).getBytes();
                 } else {
                   data.filecontent = Const.ltrim( new String( data.filecontent ) ).getBytes();
                 }
                 break;
               case LoadFileInputField.TYPE_TRIM_RIGHT:
-                if ( meta.getEncoding() != null ) {
+                if ( !Utils.isEmpty( meta.getEncoding() ) ) {
                   data.filecontent = Const.rtrim( new String( data.filecontent, meta.getEncoding() ) ).getBytes();
                 } else {
                   data.filecontent = Const.rtrim( new String( data.filecontent ) ).getBytes();
                 }
                 break;
               case LoadFileInputField.TYPE_TRIM_BOTH:
-                if ( meta.getEncoding() != null ) {
+                if ( !Utils.isEmpty( meta.getEncoding() ) ) {
                   data.filecontent = Const.trim( new String( data.filecontent, meta.getEncoding() ) ).getBytes();
                 } else {
                   data.filecontent = Const.trim( new String( data.filecontent ) ).getBytes();
@@ -366,7 +366,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
             }
             if ( targetValueMeta.getType() != ValueMetaInterface.TYPE_BINARY ) {
               // handle as a String
-              if (  meta.getEncoding() != null ) {
+              if ( !Utils.isEmpty( meta.getEncoding() ) ) {
                 o = new String( data.filecontent, meta.getEncoding() );
               } else {
                 o = new String( data.filecontent );
