@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -635,6 +636,15 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       File localFiles = new File( realLocalDirectory );
       File[] children = localFiles.listFiles();
       if ( children == null ) {
+        // Unable to read local directory for some reason...
+        if ( log.isDebug() ) {
+          logDebug(
+            BaseMessages.getString( PKG, "JobFTPPUT.Log.UnableToReadLocalDirectoryExtended", realLocalDirectory,
+              Files.isReadable( localFiles.toPath() ) ) );
+        } else if ( log.isDetailed() ) {
+          logDetailed(
+            BaseMessages.getString( PKG, "JobFTPPUT.Log.UnableToReadLocalDirectory", realLocalDirectory ) );
+        }
         files = Collections.emptyList();
       } else {
         files = new ArrayList<String>( children.length );
