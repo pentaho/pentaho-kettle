@@ -78,6 +78,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   private static final String EXTENSION_FIELD_NAME = "extensionFieldName";
   private static final String FILE = "file";
   private static final String FIELDS = "fields";
+  private static final String FIELD = "field";
 
   // Repository constant not sync with xml just to backward compatibility
   private static final String FILE_NAME_REP = "file_name";
@@ -96,12 +97,13 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   private static final String FIELD_REPEAT_REP = "field_repeat";
   private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
-  public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
-
   private static final String NO = "N";
   private static final String YES = "Y";
+
+  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
+    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesCode = new String[] { NO, YES };
+
 
   /** Array of filenames */
   private String[] fileName;
@@ -134,22 +136,22 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   private String encoding;
 
   /** Dynamic FilenameField */
-  private String DynamicFilenameField;
+  private String dynamicFilenameField;
 
   /** Is In fields */
-  private boolean fileinfield;
+  private boolean fileInField;
 
   /** Flag: add result filename **/
-  private boolean addresultfile;
+  private boolean addResultFile;
 
   /** Array of boolean values as string, indicating if a file is required. */
   private String[] fileRequired;
 
   /** Flag : do we ignore empty file? */
-  private boolean IsIgnoreEmptyFile;
+  private boolean isIgnoreEmptyFile;
 
   /** Flag : do we ignore missing path? */
-  private boolean IsIgnoreMissingPath;
+  private boolean isIgnoreMissingPath;
 
   /** Array of boolean values as string, indicating if we need to fetch sub folders. */
   private String[] includeSubFolders;
@@ -190,8 +192,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
-   * @param field
-   *          The pathFieldName to set.
+   * @param field The pathFieldName to set.
    */
   public void setPathField( String field ) {
     this.pathFieldName = field;
@@ -205,8 +206,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
-   * @param field
-   *          The hiddenFieldName to set.
+   * @param field The hiddenFieldName to set.
    */
   public void setIsHiddenField( String field ) {
     hiddenFieldName = field;
@@ -282,6 +282,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
   /**
    * @deprecated typo in method name
+   * @see #getExcludeFileMask()
    */
   @Deprecated
   public String[] getExludeFileMask() {
@@ -305,51 +306,50 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
   /**
    * @deprecated doesn't following naming standards
+   * @see #getAddResultFile()
    */
   @Deprecated
   public boolean addResultFile() {
-    return addresultfile;
+    return addResultFile;
   }
 
   /**
    * @return the add result filesname flag
    */
   public boolean getAddResultFile() {
-    return addresultfile;
+    return addResultFile;
   }
 
   /**
-   * @return the IsIgnoreEmptyFile flag
+   * @return the isIgnoreEmptyFile flag
    */
   public boolean isIgnoreEmptyFile() {
-    return IsIgnoreEmptyFile;
+    return isIgnoreEmptyFile;
   }
 
   /**
-   * @param the
-   *          IsIgnoreEmptyFile to set
+   * @param isIgnoreEmptyFile the isIgnoreEmptyFile to set
    */
-  public void setIgnoreEmptyFile( boolean IsIgnoreEmptyFile ) {
-    this.IsIgnoreEmptyFile = IsIgnoreEmptyFile;
+  public void setIgnoreEmptyFile( boolean isIgnoreEmptyFile ) {
+    this.isIgnoreEmptyFile = isIgnoreEmptyFile;
   }
 
   /**
-   * @return the IsIgnoreMissingPath flag
+   * @return the isIgnoreMissingPath flag
    */
   public boolean isIgnoreMissingPath() {
-    return IsIgnoreMissingPath;
+    return isIgnoreMissingPath;
   }
 
   /**
-   * @param the
-   *          IsIgnoreMissingPath to set
+   * @param isIgnoreMissingPath the isIgnoreMissingPath to set
    */
-  public void setIgnoreMissingPath( boolean IsIgnoreMissingPath ) {
-    this.IsIgnoreMissingPath = IsIgnoreMissingPath;
+  public void setIgnoreMissingPath( boolean isIgnoreMissingPath ) {
+    this.isIgnoreMissingPath = isIgnoreMissingPath;
   }
 
-  public void setAddResultFile( boolean addresultfile ) {
-    this.addresultfile = addresultfile;
+  public void setAddResultFile( boolean addResultFile ) {
+    this.addResultFile = addResultFile;
   }
 
   /**
@@ -367,45 +367,47 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     this.inputFields = inputFields;
   }
 
-  /************************************
+  /* ***********************************
    * get and set FilenameField
    *************************************/
   /**  */
   public String getDynamicFilenameField() {
-    return DynamicFilenameField;
+    return dynamicFilenameField;
   }
 
   /**  */
-  public void setDynamicFilenameField( String DynamicFilenameField ) {
-    this.DynamicFilenameField = DynamicFilenameField;
+  public void setDynamicFilenameField( String dynamicFilenameField ) {
+    this.dynamicFilenameField = dynamicFilenameField;
   }
 
-  /************************************
+  /* ***********************************
    * get / set fileInFields
    *************************************/
   /**  */
   public boolean getFileInFields() {
-    return fileinfield;
+    return fileInField;
   }
 
   /************************************
    * @deprecated doesn't follow standard naming
+   * @see #getFileInFields()
    *************************************/
   @Deprecated
   public boolean getIsInFields() {
-    return fileinfield;
+    return fileInField;
   }
 
   /**
-   * @deprecated doesn't follow standard naming 
+   * @deprecated doesn't follow standard naming
+   * @see #setFileInFields(boolean)
    */
   @Deprecated
-  public void setIsInFields( boolean IsInFields ) {
-    this.fileinfield = IsInFields;
+  public void setIsInFields( boolean fileInField ) {
+    this.fileInField = fileInField;
   }
 
-  public void setFileInFields( boolean IsInFields ) {
-    this.fileinfield = IsInFields;
+  public void setFileInFields( boolean fileInField ) {
+    this.fileInField = fileInField;
   }
 
   /**
@@ -488,6 +490,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   /**
    * @return Returns the includeFilename.
    * @deprecated doesn't follow standard naming
+   * @see #getIncludeFilename()
    */
   @Deprecated
   public boolean includeFilename() {
@@ -513,6 +516,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   /**
    * @return Returns the includeRowNumber.
    * @deprecated doesn't follow standard naming
+   * @see #getIncludeRowNumber()
    */
   @Deprecated
   public boolean includeRowNumber() {
@@ -583,6 +587,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     LoadFileInputMeta retval = (LoadFileInputMeta) super.clone();
 
@@ -604,15 +609,16 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     return retval;
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( INCLUDE, includeFilename ) );
     retval.append( "    " + XMLHandler.addTagValue( INCLUDE_FIELD, filenameField ) );
     retval.append( "    " + XMLHandler.addTagValue( ROWNUM, includeRowNumber ) );
-    retval.append( "    " + XMLHandler.addTagValue( ADDRESULTFILE, addresultfile ) );
-    retval.append( "    " + XMLHandler.addTagValue( IS_IGNORE_EMPTY_FILE, IsIgnoreEmptyFile ) );
-    retval.append( "    " + XMLHandler.addTagValue( IS_IGNORE_MISSING_PATH, IsIgnoreMissingPath ) );
+    retval.append( "    " + XMLHandler.addTagValue( ADDRESULTFILE, addResultFile ) );
+    retval.append( "    " + XMLHandler.addTagValue( IS_IGNORE_EMPTY_FILE, isIgnoreEmptyFile ) );
+    retval.append( "    " + XMLHandler.addTagValue( IS_IGNORE_MISSING_PATH, isIgnoreMissingPath ) );
 
     retval.append( "    " + XMLHandler.addTagValue( ROWNUM_FIELD, rowNumberField ) );
     retval.append( "    " + XMLHandler.addTagValue( ENCODING, encoding ) );
@@ -634,8 +640,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     retval.append( "      </" + FIELDS + ">" + Const.CR );
     retval.append( "    " + XMLHandler.addTagValue( LIMIT, rowLimit ) );
-    retval.append( "    " + XMLHandler.addTagValue( IS_IN_FIELDS, fileinfield ) );
-    retval.append( "    " + XMLHandler.addTagValue( DYNAMIC_FILENAME_FIELD, DynamicFilenameField ) );
+    retval.append( "    " + XMLHandler.addTagValue( IS_IN_FIELDS, fileInField ) );
+    retval.append( "    " + XMLHandler.addTagValue( DYNAMIC_FILENAME_FIELD, dynamicFilenameField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( SHORT_FILE_FIELD_NAME, shortFileFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( PATH_FIELD_NAME, pathFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( HIDDEN_FIELD_NAME, hiddenFieldName ) );
@@ -650,21 +656,21 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      includeFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, INCLUDE ) );
+      includeFilename = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, INCLUDE ) );
       filenameField = XMLHandler.getTagValue( stepnode, INCLUDE_FIELD );
 
-      addresultfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ADDRESULTFILE ) );
-      IsIgnoreEmptyFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, IS_IGNORE_EMPTY_FILE ) );
-      IsIgnoreMissingPath = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, IS_IGNORE_MISSING_PATH ) );
+      addResultFile = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ADDRESULTFILE ) );
+      isIgnoreEmptyFile = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, IS_IGNORE_EMPTY_FILE ) );
+      isIgnoreMissingPath = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, IS_IGNORE_MISSING_PATH ) );
 
-      includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ROWNUM ) );
+      includeRowNumber = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ROWNUM ) );
       rowNumberField = XMLHandler.getTagValue( stepnode, ROWNUM_FIELD );
       encoding = XMLHandler.getTagValue( stepnode, ENCODING );
 
       Node filenode = XMLHandler.getSubNode( stepnode, FILE );
       Node fields = XMLHandler.getSubNode( stepnode, FIELDS );
       int nrFiles = XMLHandler.countNodes( filenode, NAME );
-      int nrFields = XMLHandler.countNodes( fields, "field" );
+      int nrFields = XMLHandler.countNodes( fields, FIELD );
 
       allocate( nrFiles, nrFields );
 
@@ -682,7 +688,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       }
 
       for ( int i = 0; i < nrFields; i++ ) {
-        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
+        Node fnode = XMLHandler.getSubNodeByNr( fields, FIELD, i );
         LoadFileInputField field = new LoadFileInputField( fnode );
         inputFields[i] = field;
       }
@@ -690,9 +696,9 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       // Is there a limit on the number of rows we process?
       rowLimit = Const.toLong( XMLHandler.getTagValue( stepnode, LIMIT ), 0L );
 
-      fileinfield = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, IS_IN_FIELDS ) );
+      fileInField = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, IS_IN_FIELDS ) );
 
-      DynamicFilenameField = XMLHandler.getTagValue( stepnode, DYNAMIC_FILENAME_FIELD );
+      dynamicFilenameField = XMLHandler.getTagValue( stepnode, DYNAMIC_FILENAME_FIELD );
       shortFileFieldName = XMLHandler.getTagValue( stepnode, SHORT_FILE_FIELD_NAME );
       pathFieldName = XMLHandler.getTagValue( stepnode, PATH_FIELD_NAME );
       hiddenFieldName = XMLHandler.getTagValue( stepnode, HIDDEN_FIELD_NAME );
@@ -707,14 +713,13 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public void allocate( int nrfiles, int nrfields ) {
-    fileName = new String[nrfiles];
-    fileMask = new String[nrfiles];
-    excludeFileMask = new String[nrfiles];
-    fileRequired = new String[nrfiles];
-    includeSubFolders = new String[nrfiles];
-    inputFields = new LoadFileInputField[nrfields];
-
+  public void allocate( int nrFiles, int nrFields ) {
+    fileName = new String[ nrFiles ];
+    fileMask = new String[ nrFiles ];
+    excludeFileMask = new String[ nrFiles ];
+    fileRequired = new String[ nrFiles ];
+    includeSubFolders = new String[ nrFiles ];
+    inputFields = new LoadFileInputField[ nrFields ];
   }
 
   public void setDefault() {
@@ -727,40 +732,25 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     extensionFieldName = null;
 
     encoding = "";
-    IsIgnoreEmptyFile = false;
-    IsIgnoreMissingPath = false;
+    isIgnoreEmptyFile = false;
+    isIgnoreMissingPath = false;
     includeFilename = false;
     filenameField = "";
     includeRowNumber = false;
     rowNumberField = "";
-    addresultfile = true;
+    addResultFile = true;
 
-    int nrFiles = 0;
-    int nrFields = 0;
-
-    allocate( nrFiles, nrFields );
-
-    for ( int i = 0; i < nrFiles; i++ ) {
-      fileName[i] = "filename" + ( i + 1 );
-      fileMask[i] = "";
-      excludeFileMask[i] = "";
-      fileRequired[i] = RequiredFilesCode[0];
-      includeSubFolders[i] = RequiredFilesCode[0];
-    }
-
-    for ( int i = 0; i < nrFields; i++ ) {
-      inputFields[i] = new LoadFileInputField( "field" + ( i + 1 ) );
-    }
+    allocate( 0, 0 );
 
     rowLimit = 0;
 
-    fileinfield = false;
-    DynamicFilenameField = null;
+    fileInField = false;
+    dynamicFilenameField = null;
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    if ( !getIsInFields() ) {
+    if ( !getFileInFields() ) {
       r.clear();
     }
     int i;
@@ -813,46 +803,44 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     // Add additional fields
 
-    if ( getShortFileNameField() != null && getShortFileNameField().length() > 0 ) {
-      ValueMetaInterface v =
-          new ValueMetaString( space.environmentSubstitute( getShortFileNameField() ) );
+    if ( !Utils.isEmpty( getShortFileNameField() ) ) {
+      ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( getShortFileNameField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
-    if ( getExtensionField() != null && getExtensionField().length() > 0 ) {
+    if ( !Utils.isEmpty( getExtensionField() ) ) {
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( getExtensionField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
-    if ( getPathField() != null && getPathField().length() > 0 ) {
+    if ( !Utils.isEmpty( getPathField() ) ) {
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( getPathField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
-    if ( isHiddenField() != null && isHiddenField().length() > 0 ) {
+    if ( !Utils.isEmpty( isHiddenField() ) ) {
       ValueMetaInterface v = new ValueMetaBoolean( space.environmentSubstitute( isHiddenField() ) );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
-    if ( getLastModificationDateField() != null && getLastModificationDateField().length() > 0 ) {
-      ValueMetaInterface v =
-          new ValueMetaDate( space.environmentSubstitute( getLastModificationDateField() ) );
+    if ( !Utils.isEmpty( getLastModificationDateField() ) ) {
+      ValueMetaInterface v = new ValueMetaDate( space.environmentSubstitute( getLastModificationDateField() ) );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
-    if ( getUriField() != null && getUriField().length() > 0 ) {
+    if ( !Utils.isEmpty( getUriField() ) ) {
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( getUriField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
-    if ( getRootUriField() != null && getRootUriField().length() > 0 ) {
+    if ( !Utils.isEmpty( getRootUriField() ) ) {
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( getRootUriField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
@@ -860,34 +848,34 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases ) throws KettleException {
     try {
-      includeFilename = rep.getStepAttributeBoolean( id_step, INCLUDE );
-      filenameField = rep.getStepAttributeString( id_step, INCLUDE_FIELD );
+      includeFilename = rep.getStepAttributeBoolean( idStep, INCLUDE );
+      filenameField = rep.getStepAttributeString( idStep, INCLUDE_FIELD );
 
-      addresultfile = rep.getStepAttributeBoolean( id_step, ADDRESULTFILE );
-      IsIgnoreEmptyFile = rep.getStepAttributeBoolean( id_step, IS_IGNORE_EMPTY_FILE );
-      IsIgnoreMissingPath = rep.getStepAttributeBoolean( id_step, IS_IGNORE_MISSING_PATH );
+      addResultFile = rep.getStepAttributeBoolean( idStep, ADDRESULTFILE );
+      isIgnoreEmptyFile = rep.getStepAttributeBoolean( idStep, IS_IGNORE_EMPTY_FILE );
+      isIgnoreMissingPath = rep.getStepAttributeBoolean( idStep, IS_IGNORE_MISSING_PATH );
 
-      includeRowNumber = rep.getStepAttributeBoolean( id_step, ROWNUM );
-      rowNumberField = rep.getStepAttributeString( id_step, ROWNUM_FIELD );
-      rowLimit = rep.getStepAttributeInteger( id_step, LIMIT );
-      encoding = rep.getStepAttributeString( id_step, ENCODING );
+      includeRowNumber = rep.getStepAttributeBoolean( idStep, ROWNUM );
+      rowNumberField = rep.getStepAttributeString( idStep, ROWNUM_FIELD );
+      rowLimit = rep.getStepAttributeInteger( idStep, LIMIT );
+      encoding = rep.getStepAttributeString( idStep, ENCODING );
 
-      int nrFiles = rep.countNrStepAttributes( id_step, FILE_NAME_REP );
-      int nrFields = rep.countNrStepAttributes( id_step, FIELD_NAME_REP );
+      int nrFiles = rep.countNrStepAttributes( idStep, FILE_NAME_REP );
+      int nrFields = rep.countNrStepAttributes( idStep, FIELD_NAME_REP );
 
       allocate( nrFiles, nrFields );
 
       for ( int i = 0; i < nrFiles; i++ ) {
-        fileName[i] = rep.getStepAttributeString( id_step, i, FILE_NAME_REP );
-        fileMask[i] = rep.getStepAttributeString( id_step, i, FILE_MASK_REP );
-        excludeFileMask[i] = rep.getStepAttributeString( id_step, i, EXCLUDEFILE_MASK_REP );
-        fileRequired[i] = rep.getStepAttributeString( id_step, i, FILE_REQUIRED );
+        fileName[i] = rep.getStepAttributeString( idStep, i, FILE_NAME_REP );
+        fileMask[i] = rep.getStepAttributeString( idStep, i, FILE_MASK_REP );
+        excludeFileMask[i] = rep.getStepAttributeString( idStep, i, EXCLUDEFILE_MASK_REP );
+        fileRequired[i] = rep.getStepAttributeString( idStep, i, FILE_REQUIRED );
         if ( !YES.equalsIgnoreCase( fileRequired[i] ) ) {
           fileRequired[i] = NO;
         }
-        includeSubFolders[i] = rep.getStepAttributeString( id_step, i, INCLUDE_SUBFOLDERS );
+        includeSubFolders[i] = rep.getStepAttributeString( idStep, i, INCLUDE_SUBFOLDERS );
         if ( !YES.equalsIgnoreCase( includeSubFolders[i] ) ) {
           includeSubFolders[i] = NO;
         }
@@ -896,32 +884,32 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       for ( int i = 0; i < nrFields; i++ ) {
         LoadFileInputField field = new LoadFileInputField();
 
-        field.setName( rep.getStepAttributeString( id_step, i, FIELD_NAME_REP ) );
-        field.setElementType( LoadFileInputField.getElementTypeByCode( rep.getStepAttributeString( id_step, i,
+        field.setName( rep.getStepAttributeString( idStep, i, FIELD_NAME_REP ) );
+        field.setElementType( LoadFileInputField.getElementTypeByCode( rep.getStepAttributeString( idStep, i,
             ELEMENT_TYPE_REP ) ) );
-        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, FIELD_TYPE_REP ) ) );
-        field.setFormat( rep.getStepAttributeString( id_step, i, FIELD_FORMAT_REP ) );
-        field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, FIELD_CURRENCY_REP ) );
-        field.setDecimalSymbol( rep.getStepAttributeString( id_step, i, FIELD_DECIMAL_REP ) );
-        field.setGroupSymbol( rep.getStepAttributeString( id_step, i, FIELD_GROUP_REP ) );
-        field.setLength( (int) rep.getStepAttributeInteger( id_step, i, FIELD_LENGTH_REP ) );
-        field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, FIELD_PRECISION_REP ) );
-        field.setTrimType( LoadFileInputField.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
+        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( idStep, i, FIELD_TYPE_REP ) ) );
+        field.setFormat( rep.getStepAttributeString( idStep, i, FIELD_FORMAT_REP ) );
+        field.setCurrencySymbol( rep.getStepAttributeString( idStep, i, FIELD_CURRENCY_REP ) );
+        field.setDecimalSymbol( rep.getStepAttributeString( idStep, i, FIELD_DECIMAL_REP ) );
+        field.setGroupSymbol( rep.getStepAttributeString( idStep, i, FIELD_GROUP_REP ) );
+        field.setLength( (int) rep.getStepAttributeInteger( idStep, i, FIELD_LENGTH_REP ) );
+        field.setPrecision( (int) rep.getStepAttributeInteger( idStep, i, FIELD_PRECISION_REP ) );
+        field.setTrimType( LoadFileInputField.getTrimTypeByCode( rep.getStepAttributeString( idStep, i,
             FIELD_TRIM_TYPE_REP ) ) );
-        field.setRepeated( rep.getStepAttributeBoolean( id_step, i, FIELD_REPEAT_REP ) );
+        field.setRepeated( rep.getStepAttributeBoolean( idStep, i, FIELD_REPEAT_REP ) );
 
         inputFields[i] = field;
       }
-      fileinfield = rep.getStepAttributeBoolean( id_step, IS_IN_FIELDS );
+      fileInField = rep.getStepAttributeBoolean( idStep, IS_IN_FIELDS );
 
-      DynamicFilenameField = rep.getStepAttributeString( id_step, DYNAMIC_FILENAME_FIELD );
-      shortFileFieldName = rep.getStepAttributeString( id_step, SHORT_FILE_FIELD_NAME );
-      pathFieldName = rep.getStepAttributeString( id_step, PATH_FIELD_NAME );
-      hiddenFieldName = rep.getStepAttributeString( id_step, HIDDEN_FIELD_NAME );
-      lastModificationTimeFieldName = rep.getStepAttributeString( id_step, LAST_MODIFICATION_TIME_FIELD_NAME );
-      rootUriNameFieldName = rep.getStepAttributeString( id_step, ROOT_URI_NAME_FIELD_NAME );
-      uriNameFieldName = rep.getStepAttributeString(  id_step, URI_NAME_FIELD_NAME );
-      extensionFieldName = rep.getStepAttributeString( id_step, EXTENSION_FIELD_NAME );
+      dynamicFilenameField = rep.getStepAttributeString( idStep, DYNAMIC_FILENAME_FIELD );
+      shortFileFieldName = rep.getStepAttributeString( idStep, SHORT_FILE_FIELD_NAME );
+      pathFieldName = rep.getStepAttributeString( idStep, PATH_FIELD_NAME );
+      hiddenFieldName = rep.getStepAttributeString( idStep, HIDDEN_FIELD_NAME );
+      lastModificationTimeFieldName = rep.getStepAttributeString( idStep, LAST_MODIFICATION_TIME_FIELD_NAME );
+      rootUriNameFieldName = rep.getStepAttributeString( idStep, ROOT_URI_NAME_FIELD_NAME );
+      uriNameFieldName = rep.getStepAttributeString(  idStep, URI_NAME_FIELD_NAME );
+      extensionFieldName = rep.getStepAttributeString( idStep, EXTENSION_FIELD_NAME );
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG,
@@ -929,57 +917,57 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
     try {
-      rep.saveStepAttribute( id_transformation, id_step, INCLUDE, includeFilename );
-      rep.saveStepAttribute( id_transformation, id_step, INCLUDE_FIELD, filenameField );
-      rep.saveStepAttribute( id_transformation, id_step, ADDRESULTFILE, addresultfile );
-      rep.saveStepAttribute( id_transformation, id_step, IS_IGNORE_EMPTY_FILE, IsIgnoreEmptyFile );
-      rep.saveStepAttribute( id_transformation, id_step, IS_IGNORE_MISSING_PATH, IsIgnoreMissingPath );
+      rep.saveStepAttribute( idTransformation, idStep, INCLUDE, includeFilename );
+      rep.saveStepAttribute( idTransformation, idStep, INCLUDE_FIELD, filenameField );
+      rep.saveStepAttribute( idTransformation, idStep, ADDRESULTFILE, addResultFile );
+      rep.saveStepAttribute( idTransformation, idStep, IS_IGNORE_EMPTY_FILE, isIgnoreEmptyFile );
+      rep.saveStepAttribute( idTransformation, idStep, IS_IGNORE_MISSING_PATH, isIgnoreMissingPath );
 
-      rep.saveStepAttribute( id_transformation, id_step, ROWNUM, includeRowNumber );
-      rep.saveStepAttribute( id_transformation, id_step, ROWNUM_FIELD, rowNumberField );
-      rep.saveStepAttribute( id_transformation, id_step, LIMIT, rowLimit );
-      rep.saveStepAttribute( id_transformation, id_step, ENCODING, encoding );
+      rep.saveStepAttribute( idTransformation, idStep, ROWNUM, includeRowNumber );
+      rep.saveStepAttribute( idTransformation, idStep, ROWNUM_FIELD, rowNumberField );
+      rep.saveStepAttribute( idTransformation, idStep, LIMIT, rowLimit );
+      rep.saveStepAttribute( idTransformation, idStep, ENCODING, encoding );
 
       for ( int i = 0; i < fileName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, FILE_NAME_REP, fileName[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, FILE_MASK_REP, fileMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, EXCLUDEFILE_MASK_REP, excludeFileMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, FILE_REQUIRED, fileRequired[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, INCLUDE_SUBFOLDERS, includeSubFolders[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, FILE_NAME_REP, fileName[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, FILE_MASK_REP, fileMask[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, EXCLUDEFILE_MASK_REP, excludeFileMask[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, FILE_REQUIRED, fileRequired[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, INCLUDE_SUBFOLDERS, includeSubFolders[i] );
       }
 
       for ( int i = 0; i < inputFields.length; i++ ) {
         LoadFileInputField field = inputFields[i];
 
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_NAME_REP, field.getName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, ELEMENT_TYPE_REP, field.getElementTypeCode() );
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_TYPE_REP, field.getTypeDesc() );
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_FORMAT_REP, field.getFormat() );
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_CURRENCY_REP, field.getCurrencySymbol() );
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_DECIMAL_REP, field.getDecimalSymbol() );
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_GROUP_REP, field.getGroupSymbol() );
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_LENGTH_REP, field.getLength() );
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_PRECISION_REP, field.getPrecision() );
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_TRIM_TYPE_REP, field.getTrimTypeCode() );
-        rep.saveStepAttribute( id_transformation, id_step, i, FIELD_REPEAT_REP, field.isRepeated() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_NAME_REP, field.getName() );
+        rep.saveStepAttribute( idTransformation, idStep, i, ELEMENT_TYPE_REP, field.getElementTypeCode() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_TYPE_REP, field.getTypeDesc() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_FORMAT_REP, field.getFormat() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_CURRENCY_REP, field.getCurrencySymbol() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_DECIMAL_REP, field.getDecimalSymbol() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_GROUP_REP, field.getGroupSymbol() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_LENGTH_REP, field.getLength() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_PRECISION_REP, field.getPrecision() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_TRIM_TYPE_REP, field.getTrimTypeCode() );
+        rep.saveStepAttribute( idTransformation, idStep, i, FIELD_REPEAT_REP, field.isRepeated() );
       }
-      rep.saveStepAttribute( id_transformation, id_step, IS_IN_FIELDS, fileinfield );
+      rep.saveStepAttribute( idTransformation, idStep, IS_IN_FIELDS, fileInField );
 
-      rep.saveStepAttribute( id_transformation, id_step, DYNAMIC_FILENAME_FIELD, DynamicFilenameField );
-      rep.saveStepAttribute( id_transformation, id_step, SHORT_FILE_FIELD_NAME, shortFileFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, PATH_FIELD_NAME, pathFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, HIDDEN_FIELD_NAME, hiddenFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, LAST_MODIFICATION_TIME_FIELD_NAME,
+      rep.saveStepAttribute( idTransformation, idStep, DYNAMIC_FILENAME_FIELD, dynamicFilenameField );
+      rep.saveStepAttribute( idTransformation, idStep, SHORT_FILE_FIELD_NAME, shortFileFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, PATH_FIELD_NAME, pathFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, HIDDEN_FIELD_NAME, hiddenFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, LAST_MODIFICATION_TIME_FIELD_NAME,
           lastModificationTimeFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, URI_NAME_FIELD_NAME, uriNameFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, ROOT_URI_NAME_FIELD_NAME, rootUriNameFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, EXTENSION_FIELD_NAME, extensionFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, URI_NAME_FIELD_NAME, uriNameFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, ROOT_URI_NAME_FIELD_NAME, rootUriNameFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, EXTENSION_FIELD_NAME, extensionFieldName );
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "LoadFileInputMeta.Exception.ErrorSavingToRepository", ""
-          + id_step ), e );
+          + idStep ), e );
     }
   }
 
@@ -1002,7 +990,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       IMetaStore metaStore ) {
     CheckResult cr;
 
-    if ( getIsInFields() ) {
+    if ( getFileInFields() ) {
       // See if we get input...
       if ( input.length == 0 ) {
         cr =
@@ -1062,7 +1050,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
       //
-      if ( !fileinfield ) {
+      if ( !fileInField ) {
         for ( int i = 0; i < fileName.length; i++ ) {
           FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
           fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
@@ -1083,6 +1071,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     return new LoadFileInputData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
@@ -1097,16 +1086,16 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     LoadFileInputMeta that = (LoadFileInputMeta) o;
 
-    if ( IsIgnoreEmptyFile != that.IsIgnoreEmptyFile ) {
+    if ( isIgnoreEmptyFile != that.isIgnoreEmptyFile ) {
       return false;
     }
-    if ( IsIgnoreMissingPath != that.IsIgnoreMissingPath ) {
+    if ( isIgnoreMissingPath != that.isIgnoreMissingPath ) {
       return false;
     }
-    if ( addresultfile != that.addresultfile ) {
+    if ( addResultFile != that.addResultFile ) {
       return false;
     }
-    if ( fileinfield != that.fileinfield ) {
+    if ( fileInField != that.fileInField ) {
       return false;
     }
     if ( includeFilename != that.includeFilename ) {
@@ -1118,8 +1107,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     if ( rowLimit != that.rowLimit ) {
       return false;
     }
-    if ( DynamicFilenameField != null ? !DynamicFilenameField.equals( that.DynamicFilenameField )
-        : that.DynamicFilenameField != null ) {
+    if ( dynamicFilenameField != null ? !dynamicFilenameField.equals( that.dynamicFilenameField )
+        : that.dynamicFilenameField != null ) {
       return false;
     }
     if ( encoding != null ? !encoding.equals( that.encoding ) : that.encoding != null ) {
@@ -1173,7 +1162,6 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     return !( uriNameFieldName != null ? !uriNameFieldName.equals( that.uriNameFieldName )
         : that.uriNameFieldName != null );
-
   }
 
   @Override
@@ -1188,12 +1176,12 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     result = 31 * result + (int) ( rowLimit ^ ( rowLimit >>> 32 ) );
     result = 31 * result + ( inputFields != null ? Arrays.hashCode( inputFields ) : 0 );
     result = 31 * result + ( encoding != null ? encoding.hashCode() : 0 );
-    result = 31 * result + ( DynamicFilenameField != null ? DynamicFilenameField.hashCode() : 0 );
-    result = 31 * result + ( fileinfield ? 1 : 0 );
-    result = 31 * result + ( addresultfile ? 1 : 0 );
+    result = 31 * result + ( dynamicFilenameField != null ? dynamicFilenameField.hashCode() : 0 );
+    result = 31 * result + ( fileInField ? 1 : 0 );
+    result = 31 * result + ( addResultFile ? 1 : 0 );
     result = 31 * result + ( fileRequired != null ? Arrays.hashCode( fileRequired ) : 0 );
-    result = 31 * result + ( IsIgnoreEmptyFile ? 1 : 0 );
-    result = 31 * result + ( IsIgnoreMissingPath ? 1 : 0 );
+    result = 31 * result + ( isIgnoreEmptyFile ? 1 : 0 );
+    result = 31 * result + ( isIgnoreMissingPath ? 1 : 0 );
     result = 31 * result + ( includeSubFolders != null ? Arrays.hashCode( includeSubFolders ) : 0 );
     result = 31 * result + ( shortFileFieldName != null ? shortFileFieldName.hashCode() : 0 );
     result = 31 * result + ( pathFieldName != null ? pathFieldName.hashCode() : 0 );
