@@ -116,7 +116,6 @@ public class LoadFileInputField implements Cloneable {
     setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
     setTrimType( getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
     setRepeated( !"N".equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
-
   }
 
   public static final int getTrimTypeByCode( String tt ) {
@@ -199,6 +198,7 @@ public class LoadFileInputField implements Cloneable {
     return ElementTypeDesc[i];
   }
 
+  @Override
   public Object clone() {
     try {
       LoadFileInputField retval = (LoadFileInputField) super.clone();
@@ -281,24 +281,24 @@ public class LoadFileInputField implements Cloneable {
     return groupSymbol;
   }
 
-  public void setGroupSymbol( String group_symbol ) {
-    this.groupSymbol = group_symbol;
+  public void setGroupSymbol( String groupSymbol ) {
+    this.groupSymbol = groupSymbol;
   }
 
   public String getDecimalSymbol() {
     return decimalSymbol;
   }
 
-  public void setDecimalSymbol( String decimal_symbol ) {
-    this.decimalSymbol = decimal_symbol;
+  public void setDecimalSymbol( String decimalSymbol ) {
+    this.decimalSymbol = decimalSymbol;
   }
 
   public String getCurrencySymbol() {
     return currencySymbol;
   }
 
-  public void setCurrencySymbol( String currency_symbol ) {
-    this.currencySymbol = currency_symbol;
+  public void setCurrencySymbol( String currencySymbol ) {
+    this.currencySymbol = currencySymbol;
   }
 
   public int getPrecision() {
@@ -329,5 +329,4 @@ public class LoadFileInputField implements Cloneable {
 
   public void guess() {
   }
-
 }

@@ -14,7 +14,6 @@
 package org.pentaho.di.ui.trans.steps.loadfileinput;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -43,6 +42,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
@@ -297,8 +297,9 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdFileNameInField.top = new FormAttachment( 0, margin );
     wFilenameInField.setLayoutData( fdFileNameInField );
     SelectionAdapter lsxmlstream = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
-        ActiveXmlStreamField();
+        activeXmlStreamField();
         input.setChanged();
       }
     };
@@ -529,10 +530,10 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wFileConf );
     wFileConf.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.FileConf.Label" ) );
 
-    FormLayout XmlConfgroupLayout = new FormLayout();
-    XmlConfgroupLayout.marginWidth = 10;
-    XmlConfgroupLayout.marginHeight = 10;
-    wFileConf.setLayout( XmlConfgroupLayout );
+    FormLayout xmlConfGroupLayout = new FormLayout();
+    xmlConfGroupLayout.marginWidth = 10;
+    xmlConfGroupLayout.marginHeight = 10;
+    wFileConf.setLayout( xmlConfGroupLayout );
 
     wlEncoding = new Label( wFileConf, SWT.RIGHT );
     wlEncoding.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.Encoding.Label" ) );
@@ -577,6 +578,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdIgnoreEmptyFile.top = new FormAttachment( wEncoding, margin );
     wIgnoreEmptyFile.setLayoutData( fdIgnoreEmptyFile );
     wIgnoreEmptyFile.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -599,6 +601,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdIgnoreMissingPath.top = new FormAttachment( wIgnoreEmptyFile, margin );
     wIgnoreMissingPath.setLayoutData( fdIgnoreMissingPath );
     wIgnoreMissingPath.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -640,10 +643,10 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wAdditionalFields );
     wAdditionalFields.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.wAdditionalFields.Label" ) );
 
-    FormLayout AdditionalFieldsgroupLayout = new FormLayout();
-    AdditionalFieldsgroupLayout.marginWidth = 10;
-    AdditionalFieldsgroupLayout.marginHeight = 10;
-    wAdditionalFields.setLayout( AdditionalFieldsgroupLayout );
+    FormLayout additionalFieldsgroupLayout = new FormLayout();
+    additionalFieldsgroupLayout.marginWidth = 10;
+    additionalFieldsgroupLayout.marginHeight = 10;
+    wAdditionalFields.setLayout( additionalFieldsgroupLayout );
 
     wlInclFilename = new Label( wAdditionalFields, SWT.RIGHT );
     wlInclFilename.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.InclFilename.Label" ) );
@@ -727,10 +730,10 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wAddFileResult );
     wAddFileResult.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.wAddFileResult.Label" ) );
 
-    FormLayout AddFileResultgroupLayout = new FormLayout();
-    AddFileResultgroupLayout.marginWidth = 10;
-    AddFileResultgroupLayout.marginHeight = 10;
-    wAddFileResult.setLayout( AddFileResultgroupLayout );
+    FormLayout addFileResultgroupLayout = new FormLayout();
+    addFileResultgroupLayout.marginWidth = 10;
+    addFileResultgroupLayout.marginHeight = 10;
+    wAddFileResult.setLayout( addFileResultgroupLayout );
 
     wlAddResult = new Label( wAddFileResult, SWT.RIGHT );
     wlAddResult.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.AddResult.Label" ) );
@@ -748,6 +751,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdAddResult.top = new FormAttachment( wAdditionalFields, margin );
     wAddResult.setLayoutData( fdAddResult );
     wAddResult.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -921,6 +925,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -933,10 +938,11 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( new String[] {
+        wFilenameList.add(
           wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
-          LoadFileInputMeta.RequiredFilesCode[0], LoadFileInputMeta.RequiredFilesCode[0] } );
+          LoadFileInputMeta.RequiredFilesCode[ 0 ], LoadFileInputMeta.RequiredFilesCode[ 0 ] );
         wFilename.setText( "" );
         wFilemask.setText( "" );
         wExcludeFilemask.setText( "" );
@@ -950,6 +956,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Delete files from the list of files...
     wbdFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         int[] idx = wFilenameList.getSelectionIndices();
         wFilenameList.remove( idx );
@@ -960,6 +967,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Edit the selected file & remove from the list...
     wbeFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         int idx = wFilenameList.getSelectionIndex();
         if ( idx >= 0 ) {
@@ -976,6 +984,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Show the files that are selected at this time...
     wbShowFiles.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         try {
           LoadFileInputMeta tfii = new LoadFileInputMeta();
@@ -1003,6 +1012,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     } );
     // Enable/disable the right fields to allow a filename to be added to each row...
     wInclFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setIncludeFilename();
         input.setChanged();
@@ -1011,6 +1021,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Enable/disable the right fields to allow a row number to be added to each row...
     wInclRownum.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setIncludeRownum();
         input.setChanged();
@@ -1026,6 +1037,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         if ( !Utils.isEmpty( wFilemask.getText() ) || !Utils.isEmpty( wExcludeFilemask.getText() ) ) { // A mask: a directory!
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
@@ -1064,6 +1076,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -1074,7 +1087,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     // Set the shell size, based upon previous time...
     setSize();
     getData( input );
-    ActiveXmlStreamField();
+    activeXmlStreamField();
     input.setChanged( changed );
     wFields.optWidth( true );
 
@@ -1108,7 +1121,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
   }
 
-  private void ActiveXmlStreamField() {
+  private void activeXmlStreamField() {
     wlFilenameField.setEnabled( wFilenameInField.getSelection() );
     wFilenameField.setEnabled( wFilenameInField.getSelection() );
 
@@ -1170,18 +1183,24 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
 
     TableItem item = new TableItem( wFields.table, SWT.NONE );
-    item.setText( 1, LoadFileInputField.ElementTypeDesc[0] );
-    item.setText( 2, LoadFileInputField.ElementTypeDesc[0] );
-    item.setText( 3, "String" );
+    item.setText( 1, LoadFileInputField.ElementTypeDesc[ 0 ] );
+    item.setText( 2, LoadFileInputField.ElementTypeDesc[ 0 ] );
+    item.setText( 3, Value.getTypeDesc( Value.VALUE_TYPE_STRING ) );
+    item.setText( 10, LoadFileInputField.trimTypeDesc[ 0 ] );
+    item.setText( 11, BaseMessages.getString( PKG, "System.Combo.No" ) );
     // file size
     item = new TableItem( wFields.table, SWT.NONE );
-    item.setText( 1, LoadFileInputField.ElementTypeDesc[1] );
-    item.setText( 2, LoadFileInputField.ElementTypeDesc[1] );
-    item.setText( 3, "Integer" );
+    item.setText( 1, LoadFileInputField.ElementTypeDesc[ 1 ] );
+    item.setText( 2, LoadFileInputField.ElementTypeDesc[ 1 ] );
+    item.setText( 3, Value.getTypeDesc( Value.VALUE_TYPE_INTEGER ) );
+    item.setText( 10, LoadFileInputField.trimTypeDesc[ 0 ] );
+    item.setText( 11, BaseMessages.getString( PKG, "System.Combo.No" ) );
 
     wFields.removeEmptyRows();
     wFields.setRowNums();
     wFields.optWidth( true );
+
+    input.setChanged();
   }
 
   private void setEncodings() {
@@ -1190,9 +1209,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       gotEncodings = true;
       String encoding = wEncoding.getText();
       wEncoding.removeAll();
-      ArrayList<Charset> values = new ArrayList<Charset>( Charset.availableCharsets().values() );
-      for ( int i = 0; i < values.size(); i++ ) {
-        Charset charSet = values.get( i );
+      for ( Charset charSet : Charset.availableCharsets().values() ) {
         wEncoding.add( charSet.displayName() );
       }
 
@@ -1227,23 +1244,23 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       wFilenameList.removeAll();
 
       for ( int i = 0; i < in.getFileName().length; i++ ) {
-        wFilenameList.add( new String[] {
-          in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+        wFilenameList.add(
+          in.getFileName()[i], in.getFileMask()[i], in.getExcludeFileMask()[i],
           in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) );
       }
 
       wFilenameList.removeEmptyRows();
       wFilenameList.setRowNums();
       wFilenameList.optWidth( true );
     }
-    wInclFilename.setSelection( in.includeFilename() );
-    wInclRownum.setSelection( in.includeRowNumber() );
-    wAddResult.setSelection( in.addResultFile() );
+    wInclFilename.setSelection( in.getIncludeFilename() );
+    wInclRownum.setSelection( in.getIncludeRowNumber() );
+    wAddResult.setSelection( in.getAddResultFile() );
 
     wIgnoreEmptyFile.setSelection( in.isIgnoreEmptyFile() );
     wIgnoreMissingPath.setSelection( in.isIgnoreMissingPath() );
-    wFilenameInField.setSelection( in.getIsInFields() );
+    wFilenameInField.setSelection( in.getFileInFields() );
 
     if ( in.getDynamicFilenameField() != null ) {
       wFilenameField.setText( in.getDynamicFilenameField() );
@@ -1380,7 +1397,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     in.setFilenameField( wInclFilenameField.getText() );
     in.setIncludeRowNumber( wInclRownum.getSelection() );
 
-    in.setIsInFields( wFilenameInField.getSelection() );
+    in.setFileInFields( wFilenameInField.getSelection() );
     in.setDynamicFilenameField( wFilenameField.getText() );
 
     int nrFields = wFields.nrNonEmpty();
