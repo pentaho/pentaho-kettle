@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.missing.MissingEntry;
@@ -83,34 +85,48 @@ public class StreamToJobNodeConverter implements Converter {
    * @return
    */
   public InputStream convert( final Serializable fileId ) {
-    InputStream is = null;
-
+    if ( fileId == null ) {
+      return null;
+    }
     try {
-      if ( fileId != null ) {
-        Repository repository = connectToRepository();
-        RepositoryFile file = unifiedRepository.getFileById( fileId );
-        if ( file != null ) {
-          try {
-            JobMeta jobMeta = repository.loadJob( new StringObjectId( fileId.toString() ), null );
-            if ( jobMeta != null ) {
-              return new ByteArrayInputStream( filterPrivateDatabases( jobMeta ).getXML().getBytes() );
-            }
-          } catch ( KettleException e ) {
-            logger.error( e );
-            // file is there and may be legacy, attempt simple export
-            SimpleRepositoryFileData fileData =
-                unifiedRepository.getDataForRead( fileId, SimpleRepositoryFileData.class );
-            if ( fileData != null ) {
-              logger.warn( "Reading as legacy CE job " + file.getName() + "." );
-              return fileData.getInputStream();
-            }
-          }
-        }
-      }
+      return loadJobAsStream( fileId );
     } catch ( Exception e ) {
       logger.error( e );
+      return null;
     }
-    return is;
+  }
+
+  private InputStream loadJobAsStream( Serializable fileId ) throws KettleException {
+    Repository repository = connectToRepository();
+    RepositoryFile file = unifiedRepository.getFileById( fileId );
+    if ( file == null ) {
+      return null;
+    }
+    try {
+      return getJobStream( repository, fileId );
+    } catch ( KettleException e ) {
+      logger.error( e );
+      // file is there and may be legacy, attempt simple export
+      return getLegacyJobStream( fileId, file );
+    }
+  }
+
+  private InputStream getJobStream( Repository repository, Serializable fileId ) throws KettleException {
+    JobMeta jobMeta = repository.loadJob( new StringObjectId( fileId.toString() ), null );
+    if ( jobMeta == null ) {
+      return null;
+    }
+    String xml = XMLHandler.getXMLHeader() + filterPrivateDatabases( jobMeta ).getXML();
+    return new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
+  }
+
+  private InputStream getLegacyJobStream( Serializable fileId, RepositoryFile file ) {
+    SimpleRepositoryFileData fileData = unifiedRepository.getDataForRead( fileId, SimpleRepositoryFileData.class );
+    if ( fileData == null ) {
+      return null;
+    }
+    logger.warn( "Reading as legacy CE job " + file.getName() + "." );
+    return fileData.getInputStream();
   }
 
   @VisibleForTesting
