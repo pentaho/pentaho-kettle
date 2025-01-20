@@ -785,7 +785,7 @@ public class XMLHandler {
 
     if ( val != null && val.length() > 0 ) {
       value.append( '>' );
-      value.append( Encode.forXml( val ) );
+      value.append( Encode.forXmlContent( val ) );
 
       value.append( "</" );
       value.append( Encode.forXml( tag ) );
