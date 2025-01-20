@@ -179,6 +179,12 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   private FormData fdbTrustStoreFile;
   private FormData fdlTrustStoreFile, fdTrustStoreFile;
 
+  private Label wlIgnoreSSL;
+  private FormData fdlIgnoreSSL;
+  private Button wIgnoreSSL;
+  private FormData fdIgnoreSSL;
+
+
   private boolean gotPreviousFields = false;
 
   private Button wMatrixGet;
@@ -837,6 +843,28 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdSSLTrustStore.top = new FormAttachment( gHttpAuth, margin );
     gSSLTrustStore.setLayoutData( fdSSLTrustStore );
 
+    // Trust all certificate?
+    wlIgnoreSSL = new Label( gSSLTrustStore, SWT.RIGHT );
+    wlIgnoreSSL.setText( BaseMessages.getString( PKG, "RestDialog.IgnoreSSL.Label" ) );
+    props.setLook( wlIgnoreSSL );
+    fdlIgnoreSSL = new FormData();
+    fdlIgnoreSSL.left = new FormAttachment( 0, 0 );
+    fdlIgnoreSSL.top = new FormAttachment( wTrustStorePassword, margin );
+    fdlIgnoreSSL.right = new FormAttachment( middle, -margin );
+    wlIgnoreSSL.setLayoutData( fdlIgnoreSSL );
+    wIgnoreSSL = new Button( gSSLTrustStore, SWT.CHECK );
+    props.setLook( wIgnoreSSL );
+    wIgnoreSSL.setToolTipText( BaseMessages.getString( PKG, "RestDialog.IgnoreSSL.Tooltip" ) );
+    fdIgnoreSSL = new FormData();
+    fdIgnoreSSL.left = new FormAttachment( middle, 0 );
+    fdIgnoreSSL.top = new FormAttachment( wTrustStorePassword, margin );
+    wIgnoreSSL.setLayoutData( fdIgnoreSSL );
+    wIgnoreSSL.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } ); 
+
     // END HTTP AUTH GROUP
     // ////////////////////////
 
@@ -1321,6 +1349,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     if ( input.getTrustStorePassword() != null ) {
       wTrustStorePassword.setText( input.getTrustStorePassword() );
     }
+    wIgnoreSSL.setSelection(input.isIgnoreSsl());
+
     if ( input.getResponseHeaderFieldName() != null ) {
       wResponseHeader.setText( input.getResponseHeaderFieldName() );
     }
@@ -1390,6 +1420,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     input.setTrustStoreFile( wTrustStoreFile.getText() );
     input.setTrustStorePassword( wTrustStorePassword.getText() );
+    input.setIgnoreSsl(wIgnoreSSL.getSelection());
     input.setApplicationType( wApplicationType.getText() );
     stepname = wStepname.getText(); // return value
 
