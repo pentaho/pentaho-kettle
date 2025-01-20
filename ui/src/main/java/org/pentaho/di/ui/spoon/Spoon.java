@@ -335,6 +335,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -6408,7 +6409,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       VariableSpace variableSpace = meta instanceof VariableSpace ? (VariableSpace) meta : null;
       DataOutputStream dos = new DataOutputStream( KettleVFS.getOutputStream( filename, variableSpace, false ) );
-      dos.write( xml.getBytes( Const.XML_ENCODING ) );
+      dos.write( xml.getBytes( StandardCharsets.UTF_8 ) );
       dos.close();
 
       saved = true;
