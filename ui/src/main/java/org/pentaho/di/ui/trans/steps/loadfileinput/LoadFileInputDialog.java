@@ -72,16 +72,17 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private static final String STRING_SYSTEM_COMBO_YES = "System.Combo.Yes";
+  private static final String STRING_SYSTEM_COMBO_NO = "System.Combo.No";
+
   private static final String[] YES_NO_COMBO = new String[] {
-    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+    BaseMessages.getString( PKG, STRING_SYSTEM_COMBO_NO ), BaseMessages.getString( PKG, STRING_SYSTEM_COMBO_YES ) };
 
   private CTabFolder wTabFolder;
-  private FormData fdTabFolder;
 
   private CTabItem wFileTab, wContentTab, wFieldsTab;
 
   private Composite wFileComp, wContentComp, wFieldsComp;
-  private FormData fdFileComp, fdContentComp, fdFieldsComp;
 
   private Label wlFilename;
   private Button wbbFilename; // Browse: add file or directory
@@ -89,64 +90,47 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
   private Button wbeFilename; // Edit
   private Button wbaFilename; // Add or change
   private TextVar wFilename;
-  private FormData fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
 
   private Label wlFilenameList;
   private TableView wFilenameList;
-  private FormData fdlFilenameList, fdFilenameList;
 
   private Label wlFilemask;
   private TextVar wFilemask;
-  private FormData fdlFilemask, fdFilemask;
 
   private Label wlExcludeFilemask;
   private TextVar wExcludeFilemask;
-  private FormData fdlExcludeFilemask, fdExcludeFilemask;
 
   private Button wbShowFiles;
-  private FormData fdbShowFiles;
 
-  private FormData fdlFilenameField, fdlFilenameInField;
-  private FormData fdXMLField, fdFileNameInField;
-  private FormData fdOutputField, fdAdditionalFields, fdAddFileResult, fdXmlConf;
   private Label wlFilenameField, wlFilenameInField;
   private CCombo wFilenameField;
   private Button wFilenameInField;
 
   private Label wlInclFilename;
   private Button wInclFilename, wAddResult;
-  private FormData fdlInclFilename, fdInclFilename, fdAddResult, fdlAddResult;
 
   private Label wlInclFilenameField;
   private TextVar wInclFilenameField;
-  private FormData fdlInclFilenameField, fdInclFilenameField;
 
   private Label wlInclRownum, wlAddResult;
   private Button wInclRownum;
-  private FormData fdlInclRownum, fdRownum;
 
   private Label wlIgnoreEmptyFile;
   private Button wIgnoreEmptyFile;
-  private FormData fdlIgnoreEmptyFile, fdIgnoreEmptyFile;
 
   private Label wlIgnoreMissingPath;
   private Button wIgnoreMissingPath;
-  private FormData fdlIgnoreMissingPath, fdIgnoreMissingPath;
 
   private Label wlInclRownumField;
   private TextVar wInclRownumField;
-  private FormData fdlInclRownumField, fdInclRownumField;
 
   private Label wlLimit;
   private Text wLimit;
-  private FormData fdlLimit, fdLimit;
 
   private Label wlEncoding;
   private CCombo wEncoding;
-  private FormData fdlEncoding, fdEncoding;
 
   private TableView wFields;
-  private FormData fdFields;
 
   private Group wOutputField;
   private Group wAdditionalFields;
@@ -163,37 +147,22 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   private CTabItem wAdditionalFieldsTab;
   private Composite wAdditionalFieldsComp;
-  private FormData fdAdditionalFieldsComp;
 
   private Label wlShortFileFieldName;
-  private FormData fdlShortFileFieldName;
   private TextVar wShortFileFieldName;
-  private FormData fdShortFileFieldName;
   private Label wlPathFieldName;
-  private FormData fdlPathFieldName;
   private TextVar wPathFieldName;
-  private FormData fdPathFieldName;
 
   private Label wlIsHiddenName;
-  private FormData fdlIsHiddenName;
   private TextVar wIsHiddenName;
-  private FormData fdIsHiddenName;
   private Label wlLastModificationTimeName;
-  private FormData fdlLastModificationTimeName;
   private TextVar wLastModificationTimeName;
-  private FormData fdLastModificationTimeName;
   private Label wlUriName;
-  private FormData fdlUriName;
   private TextVar wUriName;
-  private FormData fdUriName;
   private Label wlRootUriName;
-  private FormData fdlRootUriName;
   private TextVar wRootUriName;
-  private FormData fdRootUriName;
   private Label wlExtensionFieldName;
-  private FormData fdlExtensionFieldName;
   private TextVar wExtensionFieldName;
-  private FormData fdExtensionFieldName;
 
   private int middle;
   private int margin;
@@ -234,7 +203,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlStepname = new Label( shell, SWT.RIGHT );
     wlStepname.setText( BaseMessages.getString( PKG, "System.Label.StepName" ) );
     props.setLook( wlStepname );
-    fdlStepname = new FormData();
+    FormData fdlStepname = new FormData();
     fdlStepname.left = new FormAttachment( 0, 0 );
     fdlStepname.top = new FormAttachment( 0, margin );
     fdlStepname.right = new FormAttachment( middle, -margin );
@@ -243,7 +212,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wStepname.setText( stepname );
     props.setLook( wStepname );
     wStepname.addModifyListener( lsMod );
-    fdStepname = new FormData();
+    FormData fdStepname = new FormData();
     fdStepname.left = new FormAttachment( middle, 0 );
     fdStepname.top = new FormAttachment( 0, margin );
     fdStepname.right = new FormAttachment( 100, 0 );
@@ -274,16 +243,16 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wOutputField );
     wOutputField.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.wOutputField.Label" ) );
 
-    FormLayout outputfieldgroupLayout = new FormLayout();
-    outputfieldgroupLayout.marginWidth = 10;
-    outputfieldgroupLayout.marginHeight = 10;
-    wOutputField.setLayout( outputfieldgroupLayout );
+    FormLayout outputFieldGroupLayout = new FormLayout();
+    outputFieldGroupLayout.marginWidth = 10;
+    outputFieldGroupLayout.marginHeight = 10;
+    wOutputField.setLayout( outputFieldGroupLayout );
 
     // Is filename defined in a Field
     wlFilenameInField = new Label( wOutputField, SWT.RIGHT );
     wlFilenameInField.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameInField.Label" ) );
     props.setLook( wlFilenameInField );
-    fdlFilenameInField = new FormData();
+    FormData fdlFilenameInField = new FormData();
     fdlFilenameInField.left = new FormAttachment( 0, -margin );
     fdlFilenameInField.top = new FormAttachment( 0, margin );
     fdlFilenameInField.right = new FormAttachment( middle, -2 * margin );
@@ -292,7 +261,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wFilenameInField = new Button( wOutputField, SWT.CHECK );
     props.setLook( wFilenameInField );
     wFilenameInField.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameInField.Tooltip" ) );
-    fdFileNameInField = new FormData();
+    FormData fdFileNameInField = new FormData();
     fdFileNameInField.left = new FormAttachment( middle, -margin );
     fdFileNameInField.top = new FormAttachment( 0, margin );
     wFilenameInField.setLayoutData( fdFileNameInField );
@@ -309,7 +278,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlFilenameField = new Label( wOutputField, SWT.RIGHT );
     wlFilenameField.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameField.Label" ) );
     props.setLook( wlFilenameField );
-    fdlFilenameField = new FormData();
+    FormData fdlFilenameField = new FormData();
     fdlFilenameField.left = new FormAttachment( 0, margin );
     fdlFilenameField.top = new FormAttachment( wFilenameInField, margin );
     fdlFilenameField.right = new FormAttachment( middle, -2 * margin );
@@ -319,7 +288,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wFilenameField.setEditable( true );
     props.setLook( wFilenameField );
     wFilenameField.addModifyListener( lsMod );
-    fdXMLField = new FormData();
+    FormData fdXMLField = new FormData();
     fdXMLField.left = new FormAttachment( middle, -margin );
     fdXMLField.top = new FormAttachment( wFilenameInField, margin );
     fdXMLField.right = new FormAttachment( 100, -margin );
@@ -333,7 +302,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       }
     } );
 
-    fdOutputField = new FormData();
+    FormData fdOutputField = new FormData();
     fdOutputField.left = new FormAttachment( 0, margin );
     fdOutputField.top = new FormAttachment( wFilenameList, margin );
     fdOutputField.right = new FormAttachment( 100, -margin );
@@ -348,7 +317,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlFilename = new Label( wFileComp, SWT.RIGHT );
     wlFilename.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.Filename.Label" ) );
     props.setLook( wlFilename );
-    fdlFilename = new FormData();
+    FormData fdlFilename = new FormData();
     fdlFilename.left = new FormAttachment( 0, 0 );
     fdlFilename.top = new FormAttachment( wOutputField, margin );
     fdlFilename.right = new FormAttachment( middle, -margin );
@@ -358,7 +327,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wbbFilename );
     wbbFilename.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameBrowse.Button" ) );
     wbbFilename.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
-    fdbFilename = new FormData();
+    FormData fdbFilename = new FormData();
     fdbFilename.right = new FormAttachment( 100, 0 );
     fdbFilename.top = new FormAttachment( wOutputField, margin );
     wbbFilename.setLayoutData( fdbFilename );
@@ -367,7 +336,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wbaFilename );
     wbaFilename.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameAdd.Button" ) );
     wbaFilename.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameAdd.Tooltip" ) );
-    fdbaFilename = new FormData();
+    FormData fdbaFilename = new FormData();
     fdbaFilename.right = new FormAttachment( wbbFilename, -margin );
     fdbaFilename.top = new FormAttachment( wOutputField, margin );
     wbaFilename.setLayoutData( fdbaFilename );
@@ -375,7 +344,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wFilename = new TextVar( transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wFilename );
     wFilename.addModifyListener( lsMod );
-    fdFilename = new FormData();
+    FormData fdFilename = new FormData();
     fdFilename.left = new FormAttachment( middle, 0 );
     fdFilename.right = new FormAttachment( wbaFilename, -margin );
     fdFilename.top = new FormAttachment( wOutputField, margin );
@@ -384,7 +353,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlFilemask = new Label( wFileComp, SWT.RIGHT );
     wlFilemask.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.RegExp.Label" ) );
     props.setLook( wlFilemask );
-    fdlFilemask = new FormData();
+    FormData fdlFilemask = new FormData();
     fdlFilemask.left = new FormAttachment( 0, 0 );
     fdlFilemask.top = new FormAttachment( wFilename, 2 * margin );
     fdlFilemask.right = new FormAttachment( middle, -margin );
@@ -392,7 +361,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wFilemask = new TextVar( transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wFilemask );
     wFilemask.addModifyListener( lsMod );
-    fdFilemask = new FormData();
+    FormData fdFilemask = new FormData();
     fdFilemask.left = new FormAttachment( middle, 0 );
     fdFilemask.top = new FormAttachment( wFilename, 2 * margin );
     fdFilemask.right = new FormAttachment( 100, 0 );
@@ -401,7 +370,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlExcludeFilemask = new Label( wFileComp, SWT.RIGHT );
     wlExcludeFilemask.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.ExcludeFilemask.Label" ) );
     props.setLook( wlExcludeFilemask );
-    fdlExcludeFilemask = new FormData();
+    FormData fdlExcludeFilemask = new FormData();
     fdlExcludeFilemask.left = new FormAttachment( 0, 0 );
     fdlExcludeFilemask.top = new FormAttachment( wFilemask, margin );
     fdlExcludeFilemask.right = new FormAttachment( middle, -margin );
@@ -409,7 +378,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wExcludeFilemask = new TextVar( transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wExcludeFilemask );
     wExcludeFilemask.addModifyListener( lsMod );
-    fdExcludeFilemask = new FormData();
+    FormData fdExcludeFilemask = new FormData();
     fdExcludeFilemask.left = new FormAttachment( middle, 0 );
     fdExcludeFilemask.top = new FormAttachment( wFilemask, margin );
     fdExcludeFilemask.right = new FormAttachment( wFilename, 0, SWT.RIGHT );
@@ -419,7 +388,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlFilenameList = new Label( wFileComp, SWT.RIGHT );
     wlFilenameList.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameList.Label" ) );
     props.setLook( wlFilenameList );
-    fdlFilenameList = new FormData();
+    FormData fdlFilenameList = new FormData();
     fdlFilenameList.left = new FormAttachment( 0, 0 );
     fdlFilenameList.top = new FormAttachment( wExcludeFilemask, margin );
     fdlFilenameList.right = new FormAttachment( middle, -margin );
@@ -430,7 +399,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wbdFilename );
     wbdFilename.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameRemove.Label" ) );
     wbdFilename.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameRemove.Tooltip" ) );
-    fdbdFilename = new FormData();
+    FormData fdbdFilename = new FormData();
     fdbdFilename.right = new FormAttachment( 100, 0 );
     fdbdFilename.top = new FormAttachment( wExcludeFilemask, 40 );
     wbdFilename.setLayoutData( fdbdFilename );
@@ -439,7 +408,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wbeFilename );
     wbeFilename.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameEdit.Label" ) );
     wbeFilename.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.FilenameEdit.Tooltip" ) );
-    fdbeFilename = new FormData();
+    FormData fdbeFilename = new FormData();
     fdbeFilename.right = new FormAttachment( 100, 0 );
     fdbeFilename.top = new FormAttachment( wbdFilename, margin );
     wbeFilename.setLayoutData( fdbeFilename );
@@ -447,7 +416,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wbShowFiles = new Button( wFileComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbShowFiles );
     wbShowFiles.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.ShowFiles.Button" ) );
-    fdbShowFiles = new FormData();
+    FormData fdbShowFiles = new FormData();
     fdbShowFiles.left = new FormAttachment( middle, 0 );
     fdbShowFiles.bottom = new FormAttachment( 100, 0 );
     wbShowFiles.setLayoutData( fdbShowFiles );
@@ -486,14 +455,14 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wFilenameList =
       new TableView( transMeta, wFileComp, SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER, colinfo, 2, lsMod, props );
     props.setLook( wFilenameList );
-    fdFilenameList = new FormData();
+    FormData fdFilenameList = new FormData();
     fdFilenameList.left = new FormAttachment( middle, 0 );
     fdFilenameList.right = new FormAttachment( wbdFilename, -margin );
     fdFilenameList.top = new FormAttachment( wExcludeFilemask, margin );
     fdFilenameList.bottom = new FormAttachment( wbShowFiles, -margin );
     wFilenameList.setLayoutData( fdFilenameList );
 
-    fdFileComp = new FormData();
+    FormData fdFileComp = new FormData();
     fdFileComp.left = new FormAttachment( 0, 0 );
     fdFileComp.top = new FormAttachment( 0, 0 );
     fdFileComp.right = new FormAttachment( 100, 0 );
@@ -538,7 +507,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlEncoding = new Label( wFileConf, SWT.RIGHT );
     wlEncoding.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.Encoding.Label" ) );
     props.setLook( wlEncoding );
-    fdlEncoding = new FormData();
+    FormData fdlEncoding = new FormData();
     fdlEncoding.left = new FormAttachment( 0, 0 );
     fdlEncoding.top = new FormAttachment( 0, margin );
     fdlEncoding.right = new FormAttachment( middle, -margin );
@@ -547,7 +516,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wEncoding.setEditable( true );
     props.setLook( wEncoding );
     wEncoding.addModifyListener( lsMod );
-    fdEncoding = new FormData();
+    FormData fdEncoding = new FormData();
     fdEncoding.left = new FormAttachment( middle, 0 );
     fdEncoding.top = new FormAttachment( 0, margin );
     fdEncoding.right = new FormAttachment( 100, 0 );
@@ -565,7 +534,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlIgnoreEmptyFile = new Label( wFileConf, SWT.RIGHT );
     wlIgnoreEmptyFile.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.IgnoreEmptyFile.Label" ) );
     props.setLook( wlIgnoreEmptyFile );
-    fdlIgnoreEmptyFile = new FormData();
+    FormData fdlIgnoreEmptyFile = new FormData();
     fdlIgnoreEmptyFile.left = new FormAttachment( 0, 0 );
     fdlIgnoreEmptyFile.top = new FormAttachment( wEncoding, margin );
     fdlIgnoreEmptyFile.right = new FormAttachment( middle, -margin );
@@ -573,7 +542,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wIgnoreEmptyFile = new Button( wFileConf, SWT.CHECK );
     props.setLook( wIgnoreEmptyFile );
     wIgnoreEmptyFile.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.IgnoreEmptyFile.Tooltip" ) );
-    fdIgnoreEmptyFile = new FormData();
+    FormData fdIgnoreEmptyFile = new FormData();
     fdIgnoreEmptyFile.left = new FormAttachment( middle, 0 );
     fdIgnoreEmptyFile.top = new FormAttachment( wEncoding, margin );
     wIgnoreEmptyFile.setLayoutData( fdIgnoreEmptyFile );
@@ -588,7 +557,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlIgnoreMissingPath = new Label( wFileConf, SWT.RIGHT );
     wlIgnoreMissingPath.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.IgnoreMissingPath.Label" ) );
     props.setLook( wlIgnoreMissingPath );
-    fdlIgnoreMissingPath = new FormData();
+    FormData fdlIgnoreMissingPath = new FormData();
     fdlIgnoreMissingPath.left = new FormAttachment( 0, 0 );
     fdlIgnoreMissingPath.top = new FormAttachment( wIgnoreEmptyFile, margin );
     fdlIgnoreMissingPath.right = new FormAttachment( middle, -margin );
@@ -596,7 +565,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wIgnoreMissingPath = new Button( wFileConf, SWT.CHECK );
     props.setLook( wIgnoreMissingPath );
     wIgnoreMissingPath.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.IgnoreMissingPath.Tooltip" ) );
-    fdIgnoreMissingPath = new FormData();
+    FormData fdIgnoreMissingPath = new FormData();
     fdIgnoreMissingPath.left = new FormAttachment( middle, 0 );
     fdIgnoreMissingPath.top = new FormAttachment( wIgnoreEmptyFile, margin );
     wIgnoreMissingPath.setLayoutData( fdIgnoreMissingPath );
@@ -611,7 +580,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlLimit = new Label( wFileConf, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.Limit.Label" ) );
     props.setLook( wlLimit );
-    fdlLimit = new FormData();
+    FormData fdlLimit = new FormData();
     fdlLimit.left = new FormAttachment( 0, 0 );
     fdlLimit.top = new FormAttachment( wIgnoreMissingPath, margin );
     fdlLimit.right = new FormAttachment( middle, -margin );
@@ -619,13 +588,13 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wLimit = new Text( wFileConf, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wLimit );
     wLimit.addModifyListener( lsMod );
-    fdLimit = new FormData();
+    FormData fdLimit = new FormData();
     fdLimit.left = new FormAttachment( middle, 0 );
     fdLimit.top = new FormAttachment( wIgnoreMissingPath, margin );
     fdLimit.right = new FormAttachment( 100, 0 );
     wLimit.setLayoutData( fdLimit );
 
-    fdXmlConf = new FormData();
+    FormData fdXmlConf = new FormData();
     fdXmlConf.left = new FormAttachment( 0, margin );
     fdXmlConf.top = new FormAttachment( 0, margin );
     fdXmlConf.right = new FormAttachment( 100, -margin );
@@ -643,15 +612,15 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wAdditionalFields );
     wAdditionalFields.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.wAdditionalFields.Label" ) );
 
-    FormLayout additionalFieldsgroupLayout = new FormLayout();
-    additionalFieldsgroupLayout.marginWidth = 10;
-    additionalFieldsgroupLayout.marginHeight = 10;
-    wAdditionalFields.setLayout( additionalFieldsgroupLayout );
+    FormLayout additionalFieldsGroupLayout = new FormLayout();
+    additionalFieldsGroupLayout.marginWidth = 10;
+    additionalFieldsGroupLayout.marginHeight = 10;
+    wAdditionalFields.setLayout( additionalFieldsGroupLayout );
 
     wlInclFilename = new Label( wAdditionalFields, SWT.RIGHT );
     wlInclFilename.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.InclFilename.Label" ) );
     props.setLook( wlInclFilename );
-    fdlInclFilename = new FormData();
+    FormData fdlInclFilename = new FormData();
     fdlInclFilename.left = new FormAttachment( 0, 0 );
     fdlInclFilename.top = new FormAttachment( wFileConf, 4 * margin );
     fdlInclFilename.right = new FormAttachment( middle, -margin );
@@ -659,7 +628,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wInclFilename = new Button( wAdditionalFields, SWT.CHECK );
     props.setLook( wInclFilename );
     wInclFilename.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.InclFilename.Tooltip" ) );
-    fdInclFilename = new FormData();
+    FormData fdInclFilename = new FormData();
     fdInclFilename.left = new FormAttachment( middle, 0 );
     fdInclFilename.top = new FormAttachment( wFileConf, 4 * margin );
     wInclFilename.setLayoutData( fdInclFilename );
@@ -667,14 +636,14 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlInclFilenameField = new Label( wAdditionalFields, SWT.LEFT );
     wlInclFilenameField.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.InclFilenameField.Label" ) );
     props.setLook( wlInclFilenameField );
-    fdlInclFilenameField = new FormData();
+    FormData fdlInclFilenameField = new FormData();
     fdlInclFilenameField.left = new FormAttachment( wInclFilename, margin );
     fdlInclFilenameField.top = new FormAttachment( wLimit, 4 * margin );
     wlInclFilenameField.setLayoutData( fdlInclFilenameField );
     wInclFilenameField = new TextVar( transMeta, wAdditionalFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wInclFilenameField );
     wInclFilenameField.addModifyListener( lsMod );
-    fdInclFilenameField = new FormData();
+    FormData fdInclFilenameField = new FormData();
     fdInclFilenameField.left = new FormAttachment( wlInclFilenameField, margin );
     fdInclFilenameField.top = new FormAttachment( wLimit, 4 * margin );
     fdInclFilenameField.right = new FormAttachment( 100, 0 );
@@ -683,7 +652,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlInclRownum = new Label( wAdditionalFields, SWT.RIGHT );
     wlInclRownum.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.InclRownum.Label" ) );
     props.setLook( wlInclRownum );
-    fdlInclRownum = new FormData();
+    FormData fdlInclRownum = new FormData();
     fdlInclRownum.left = new FormAttachment( 0, 0 );
     fdlInclRownum.top = new FormAttachment( wInclFilenameField, margin );
     fdlInclRownum.right = new FormAttachment( middle, -margin );
@@ -691,7 +660,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wInclRownum = new Button( wAdditionalFields, SWT.CHECK );
     props.setLook( wInclRownum );
     wInclRownum.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.InclRownum.Tooltip" ) );
-    fdRownum = new FormData();
+    FormData fdRownum = new FormData();
     fdRownum.left = new FormAttachment( middle, 0 );
     fdRownum.top = new FormAttachment( wInclFilenameField, margin );
     wInclRownum.setLayoutData( fdRownum );
@@ -699,20 +668,20 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlInclRownumField = new Label( wAdditionalFields, SWT.RIGHT );
     wlInclRownumField.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.InclRownumField.Label" ) );
     props.setLook( wlInclRownumField );
-    fdlInclRownumField = new FormData();
+    FormData fdlInclRownumField = new FormData();
     fdlInclRownumField.left = new FormAttachment( wInclRownum, margin );
     fdlInclRownumField.top = new FormAttachment( wInclFilenameField, margin );
     wlInclRownumField.setLayoutData( fdlInclRownumField );
     wInclRownumField = new TextVar( transMeta, wAdditionalFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wInclRownumField );
     wInclRownumField.addModifyListener( lsMod );
-    fdInclRownumField = new FormData();
+    FormData fdInclRownumField = new FormData();
     fdInclRownumField.left = new FormAttachment( wlInclRownumField, margin );
     fdInclRownumField.top = new FormAttachment( wInclFilenameField, margin );
     fdInclRownumField.right = new FormAttachment( 100, 0 );
     wInclRownumField.setLayoutData( fdInclRownumField );
 
-    fdAdditionalFields = new FormData();
+    FormData fdAdditionalFields = new FormData();
     fdAdditionalFields.left = new FormAttachment( 0, margin );
     fdAdditionalFields.top = new FormAttachment( wFileConf, margin );
     fdAdditionalFields.right = new FormAttachment( 100, -margin );
@@ -730,15 +699,15 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wAddFileResult );
     wAddFileResult.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.wAddFileResult.Label" ) );
 
-    FormLayout addFileResultgroupLayout = new FormLayout();
-    addFileResultgroupLayout.marginWidth = 10;
-    addFileResultgroupLayout.marginHeight = 10;
-    wAddFileResult.setLayout( addFileResultgroupLayout );
+    FormLayout addFileResultGroupLayout = new FormLayout();
+    addFileResultGroupLayout.marginWidth = 10;
+    addFileResultGroupLayout.marginHeight = 10;
+    wAddFileResult.setLayout( addFileResultGroupLayout );
 
     wlAddResult = new Label( wAddFileResult, SWT.RIGHT );
     wlAddResult.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.AddResult.Label" ) );
     props.setLook( wlAddResult );
-    fdlAddResult = new FormData();
+    FormData fdlAddResult = new FormData();
     fdlAddResult.left = new FormAttachment( 0, 0 );
     fdlAddResult.top = new FormAttachment( wAdditionalFields, margin );
     fdlAddResult.right = new FormAttachment( middle, -margin );
@@ -746,7 +715,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wAddResult = new Button( wAddFileResult, SWT.CHECK );
     props.setLook( wAddResult );
     wAddResult.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.AddResult.Tooltip" ) );
-    fdAddResult = new FormData();
+    FormData fdAddResult = new FormData();
     fdAddResult.left = new FormAttachment( middle, 0 );
     fdAddResult.top = new FormAttachment( wAdditionalFields, margin );
     wAddResult.setLayoutData( fdAddResult );
@@ -757,7 +726,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       }
     } );
 
-    fdAddFileResult = new FormData();
+    FormData fdAddFileResult = new FormData();
     fdAddFileResult.left = new FormAttachment( 0, margin );
     fdAddFileResult.top = new FormAttachment( wAdditionalFields, margin );
     fdAddFileResult.right = new FormAttachment( 100, -margin );
@@ -767,7 +736,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     // / END OF AddFileResult GROUP
     // ///////////////////////////////////////////////////////////
 
-    fdContentComp = new FormData();
+    FormData fdContentComp = new FormData();
     fdContentComp.left = new FormAttachment( 0, 0 );
     fdContentComp.top = new FormAttachment( 0, 0 );
     fdContentComp.right = new FormAttachment( 100, 0 );
@@ -839,8 +808,8 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
         new ColumnInfo(
           BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Repeat.Column" ),
           ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
-            BaseMessages.getString( PKG, "System.Combo.Yes" ),
-            BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
+            BaseMessages.getString( PKG, STRING_SYSTEM_COMBO_YES ),
+            BaseMessages.getString( PKG, STRING_SYSTEM_COMBO_NO ) }, true ),
 
       };
 
@@ -860,14 +829,14 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wFields =
       new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
-    fdFields = new FormData();
+    FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( 0, 0 );
     fdFields.right = new FormAttachment( 100, 0 );
     fdFields.bottom = new FormAttachment( wGet, -margin );
     wFields.setLayoutData( fdFields );
 
-    fdFieldsComp = new FormData();
+    FormData fdFieldsComp = new FormData();
     fdFieldsComp.left = new FormAttachment( 0, 0 );
     fdFieldsComp.top = new FormAttachment( 0, 0 );
     fdFieldsComp.right = new FormAttachment( 100, 0 );
@@ -879,7 +848,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     addAdditionalFieldsTab();
 
-    fdTabFolder = new FormData();
+    FormData fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
     fdTabFolder.top = new FormAttachment( wStepname, margin );
     fdTabFolder.right = new FormAttachment( 100, 0 );
@@ -1042,13 +1011,11 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
         if ( !Utils.isEmpty( wFilemask.getText() ) || !Utils.isEmpty( wExcludeFilemask.getText() ) ) { // A mask: a directory!
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
           if ( wFilename.getText() != null ) {
-            String fpath = transMeta.environmentSubstitute( wFilename.getText() );
-            dialog.setFilterPath( fpath );
+            dialog.setFilterPath( transMeta.environmentSubstitute( wFilename.getText() ) );
           }
 
           if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath();
-            wFilename.setText( str );
+            wFilename.setText( dialog.getFilterPath() );
           }
         } else {
           FileDialog dialog = new FileDialog( shell, SWT.OPEN );
@@ -1056,8 +1023,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
           dialog.setFilterExtensions( new String[] { "*.txt;", "*.csv", "*.TRT", "*" } );
 
           if ( wFilename.getText() != null ) {
-            String fname = transMeta.environmentSubstitute( wFilename.getText() );
-            dialog.setFileName( fname );
+            dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
           }
 
           dialog.setFilterNames( new String[] {
@@ -1187,14 +1153,14 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     item.setText( 2, LoadFileInputField.ElementTypeDesc[ 0 ] );
     item.setText( 3, Value.getTypeDesc( Value.VALUE_TYPE_STRING ) );
     item.setText( 10, LoadFileInputField.trimTypeDesc[ 0 ] );
-    item.setText( 11, BaseMessages.getString( PKG, "System.Combo.No" ) );
+    item.setText( 11, BaseMessages.getString( PKG, STRING_SYSTEM_COMBO_NO ) );
     // file size
     item = new TableItem( wFields.table, SWT.NONE );
     item.setText( 1, LoadFileInputField.ElementTypeDesc[ 1 ] );
     item.setText( 2, LoadFileInputField.ElementTypeDesc[ 1 ] );
     item.setText( 3, Value.getTypeDesc( Value.VALUE_TYPE_INTEGER ) );
     item.setText( 10, LoadFileInputField.trimTypeDesc[ 0 ] );
-    item.setText( 11, BaseMessages.getString( PKG, "System.Combo.No" ) );
+    item.setText( 11, BaseMessages.getString( PKG, STRING_SYSTEM_COMBO_NO ) );
 
     wFields.removeEmptyRows();
     wFields.setRowNums();
@@ -1215,11 +1181,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
       if ( !Utils.isEmpty( encoding ) ) {
         wEncoding.setText( encoding );
-      } /*
-         * else { // Now select the default! String defEncoding = Const.getEnvironmentVariable("file.encoding",
-         * "UTF-8"); int idx = Const.indexOfString(defEncoding, wEncoding.getItems() ); if (idx>=0) wEncoding.select(
-         * idx ); }
-         */
+      }
     }
   }
 
@@ -1294,8 +1256,8 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-          field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
-            PKG, "System.Combo.No" );
+          field.isRepeated() ? BaseMessages.getString( PKG, STRING_SYSTEM_COMBO_YES ) : BaseMessages.getString(
+            PKG, STRING_SYSTEM_COMBO_NO );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1330,7 +1292,6 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
         if ( rep != null ) {
           item.setText( 11, rep );
         }
-
       }
     }
 
@@ -1435,7 +1396,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       field.setDecimalSymbol( item.getText( 8 ) );
       field.setGroupSymbol( item.getText( 9 ) );
       field.setTrimType( LoadFileInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
-      field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
+      field.setRepeated( BaseMessages.getString( PKG, STRING_SYSTEM_COMBO_YES ).equalsIgnoreCase( item.getText( 11 ) ) );
 
       //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
@@ -1517,7 +1478,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlShortFileFieldName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
     wlShortFileFieldName.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.ShortFileFieldName.Label" ) );
     props.setLook( wlShortFileFieldName );
-    fdlShortFileFieldName = new FormData();
+    FormData fdlShortFileFieldName = new FormData();
     fdlShortFileFieldName.left = new FormAttachment( 0, 0 );
     fdlShortFileFieldName.top = new FormAttachment( wInclRownumField, margin );
     fdlShortFileFieldName.right = new FormAttachment( middle, -margin );
@@ -1526,7 +1487,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wShortFileFieldName = new TextVar( transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wShortFileFieldName );
     wShortFileFieldName.addModifyListener( lsMod );
-    fdShortFileFieldName = new FormData();
+    FormData fdShortFileFieldName = new FormData();
     fdShortFileFieldName.left = new FormAttachment( middle, 0 );
     fdShortFileFieldName.right = new FormAttachment( 100, -margin );
     fdShortFileFieldName.top = new FormAttachment( wInclRownumField, margin );
@@ -1536,7 +1497,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlExtensionFieldName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
     wlExtensionFieldName.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.ExtensionFieldName.Label" ) );
     props.setLook( wlExtensionFieldName );
-    fdlExtensionFieldName = new FormData();
+    FormData fdlExtensionFieldName = new FormData();
     fdlExtensionFieldName.left = new FormAttachment( 0, 0 );
     fdlExtensionFieldName.top = new FormAttachment( wShortFileFieldName, margin );
     fdlExtensionFieldName.right = new FormAttachment( middle, -margin );
@@ -1545,7 +1506,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wExtensionFieldName = new TextVar( transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wExtensionFieldName );
     wExtensionFieldName.addModifyListener( lsMod );
-    fdExtensionFieldName = new FormData();
+    FormData fdExtensionFieldName = new FormData();
     fdExtensionFieldName.left = new FormAttachment( middle, 0 );
     fdExtensionFieldName.right = new FormAttachment( 100, -margin );
     fdExtensionFieldName.top = new FormAttachment( wShortFileFieldName, margin );
@@ -1555,7 +1516,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlPathFieldName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
     wlPathFieldName.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.PathFieldName.Label" ) );
     props.setLook( wlPathFieldName );
-    fdlPathFieldName = new FormData();
+    FormData fdlPathFieldName = new FormData();
     fdlPathFieldName.left = new FormAttachment( 0, 0 );
     fdlPathFieldName.top = new FormAttachment( wExtensionFieldName, margin );
     fdlPathFieldName.right = new FormAttachment( middle, -margin );
@@ -1564,7 +1525,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wPathFieldName = new TextVar( transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPathFieldName );
     wPathFieldName.addModifyListener( lsMod );
-    fdPathFieldName = new FormData();
+    FormData fdPathFieldName = new FormData();
     fdPathFieldName.left = new FormAttachment( middle, 0 );
     fdPathFieldName.right = new FormAttachment( 100, -margin );
     fdPathFieldName.top = new FormAttachment( wExtensionFieldName, margin );
@@ -1574,7 +1535,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlIsHiddenName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
     wlIsHiddenName.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.IsHiddenName.Label" ) );
     props.setLook( wlIsHiddenName );
-    fdlIsHiddenName = new FormData();
+    FormData fdlIsHiddenName = new FormData();
     fdlIsHiddenName.left = new FormAttachment( 0, 0 );
     fdlIsHiddenName.top = new FormAttachment( wPathFieldName, margin );
     fdlIsHiddenName.right = new FormAttachment( middle, -margin );
@@ -1583,7 +1544,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wIsHiddenName = new TextVar( transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wIsHiddenName );
     wIsHiddenName.addModifyListener( lsMod );
-    fdIsHiddenName = new FormData();
+    FormData fdIsHiddenName = new FormData();
     fdIsHiddenName.left = new FormAttachment( middle, 0 );
     fdIsHiddenName.right = new FormAttachment( 100, -margin );
     fdIsHiddenName.top = new FormAttachment( wPathFieldName, margin );
@@ -1594,7 +1555,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlLastModificationTimeName.setText( BaseMessages.getString(
       PKG, "LoadFileInputDialog.LastModificationTimeName.Label" ) );
     props.setLook( wlLastModificationTimeName );
-    fdlLastModificationTimeName = new FormData();
+    FormData fdlLastModificationTimeName = new FormData();
     fdlLastModificationTimeName.left = new FormAttachment( 0, 0 );
     fdlLastModificationTimeName.top = new FormAttachment( wIsHiddenName, margin );
     fdlLastModificationTimeName.right = new FormAttachment( middle, -margin );
@@ -1603,7 +1564,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wLastModificationTimeName = new TextVar( transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wLastModificationTimeName );
     wLastModificationTimeName.addModifyListener( lsMod );
-    fdLastModificationTimeName = new FormData();
+    FormData fdLastModificationTimeName = new FormData();
     fdLastModificationTimeName.left = new FormAttachment( middle, 0 );
     fdLastModificationTimeName.right = new FormAttachment( 100, -margin );
     fdLastModificationTimeName.top = new FormAttachment( wIsHiddenName, margin );
@@ -1613,7 +1574,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlUriName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
     wlUriName.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.UriName.Label" ) );
     props.setLook( wlUriName );
-    fdlUriName = new FormData();
+    FormData fdlUriName = new FormData();
     fdlUriName.left = new FormAttachment( 0, 0 );
     fdlUriName.top = new FormAttachment( wLastModificationTimeName, margin );
     fdlUriName.right = new FormAttachment( middle, -margin );
@@ -1622,7 +1583,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wUriName = new TextVar( transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wUriName );
     wUriName.addModifyListener( lsMod );
-    fdUriName = new FormData();
+    FormData fdUriName = new FormData();
     fdUriName.left = new FormAttachment( middle, 0 );
     fdUriName.right = new FormAttachment( 100, -margin );
     fdUriName.top = new FormAttachment( wLastModificationTimeName, margin );
@@ -1632,7 +1593,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlRootUriName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
     wlRootUriName.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.RootUriName.Label" ) );
     props.setLook( wlRootUriName );
-    fdlRootUriName = new FormData();
+    FormData fdlRootUriName = new FormData();
     fdlRootUriName.left = new FormAttachment( 0, 0 );
     fdlRootUriName.top = new FormAttachment( wUriName, margin );
     fdlRootUriName.right = new FormAttachment( middle, -margin );
@@ -1641,13 +1602,13 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wRootUriName = new TextVar( transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wRootUriName );
     wRootUriName.addModifyListener( lsMod );
-    fdRootUriName = new FormData();
+    FormData fdRootUriName = new FormData();
     fdRootUriName.left = new FormAttachment( middle, 0 );
     fdRootUriName.right = new FormAttachment( 100, -margin );
     fdRootUriName.top = new FormAttachment( wUriName, margin );
     wRootUriName.setLayoutData( fdRootUriName );
 
-    fdAdditionalFieldsComp = new FormData();
+    FormData fdAdditionalFieldsComp = new FormData();
     fdAdditionalFieldsComp.left = new FormAttachment( 0, 0 );
     fdAdditionalFieldsComp.top = new FormAttachment( wStepname, margin );
     fdAdditionalFieldsComp.right = new FormAttachment( 100, 0 );

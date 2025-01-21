@@ -306,9 +306,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
    */
 
   private Object[] buildEmptyRow() {
-    Object[] rowData = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
-
-    return rowData;
+    return RowDataUtil.allocateRowData( data.outputRowMeta.size() );
   }
 
   Object[] getOneRow() throws KettleException {

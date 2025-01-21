@@ -79,6 +79,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   private static final String FILE = "file";
   private static final String FIELDS = "fields";
   private static final String FIELD = "field";
+  private static final String XML_TAG_INDENT = "    ";
+  private static final String XML_TAG_INDENT2 = "      ";
 
   // Repository constant not sync with xml just to backward compatibility
   private static final String FILE_NAME_REP = "file_name";
@@ -95,6 +97,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   private static final String FIELD_PRECISION_REP = "field_precision";
   private static final String FIELD_TRIM_TYPE_REP = "field_trim_type";
   private static final String FIELD_REPEAT_REP = "field_repeat";
+
   private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String NO = "N";
@@ -286,7 +289,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    */
   @Deprecated
   public String[] getExludeFileMask() {
-    return excludeFileMask;
+    return getExcludeFileMask();
   }
 
   /**
@@ -310,7 +313,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    */
   @Deprecated
   public boolean addResultFile() {
-    return addResultFile;
+    return getAddResultFile();
   }
 
   /**
@@ -394,7 +397,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    *************************************/
   @Deprecated
   public boolean getIsInFields() {
-    return fileInField;
+    return getFileInFields();
   }
 
   /**
@@ -403,7 +406,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    */
   @Deprecated
   public void setIsInFields( boolean fileInField ) {
-    this.fileInField = fileInField;
+    setFileInFields( fileInField );
   }
 
   public void setFileInFields( boolean fileInField ) {
@@ -494,7 +497,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    */
   @Deprecated
   public boolean includeFilename() {
-    return includeFilename;
+    return getIncludeFilename();
   }
 
   /**
@@ -520,7 +523,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    */
   @Deprecated
   public boolean includeRowNumber() {
-    return includeRowNumber;
+    return getIncludeRowNumber();
   }
 
   /**
@@ -583,6 +586,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     this.encoding = encoding;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -613,43 +617,43 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
-    retval.append( "    " + XMLHandler.addTagValue( INCLUDE, includeFilename ) );
-    retval.append( "    " + XMLHandler.addTagValue( INCLUDE_FIELD, filenameField ) );
-    retval.append( "    " + XMLHandler.addTagValue( ROWNUM, includeRowNumber ) );
-    retval.append( "    " + XMLHandler.addTagValue( ADDRESULTFILE, addResultFile ) );
-    retval.append( "    " + XMLHandler.addTagValue( IS_IGNORE_EMPTY_FILE, isIgnoreEmptyFile ) );
-    retval.append( "    " + XMLHandler.addTagValue( IS_IGNORE_MISSING_PATH, isIgnoreMissingPath ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( INCLUDE, includeFilename ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( INCLUDE_FIELD, filenameField ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( ROWNUM, includeRowNumber ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( ADDRESULTFILE, addResultFile ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( IS_IGNORE_EMPTY_FILE, isIgnoreEmptyFile ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( IS_IGNORE_MISSING_PATH, isIgnoreMissingPath ) );
 
-    retval.append( "    " + XMLHandler.addTagValue( ROWNUM_FIELD, rowNumberField ) );
-    retval.append( "    " + XMLHandler.addTagValue( ENCODING, encoding ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( ROWNUM_FIELD, rowNumberField ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( ENCODING, encoding ) );
 
-    retval.append( "    <" + FILE + ">" + Const.CR );
+    retval.append( XML_TAG_INDENT + "<" + FILE + ">" + Const.CR );
     for ( int i = 0; i < fileName.length; i++ ) {
-      retval.append( "      " + XMLHandler.addTagValue( NAME, fileName[i] ) );
-      retval.append( "      " + XMLHandler.addTagValue( FILEMASK, fileMask[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( EXCLUDE_FILEMASK, excludeFileMask[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( FILE_REQUIRED, fileRequired[i] ) );
-      retval.append( "      " + XMLHandler.addTagValue( INCLUDE_SUBFOLDERS, includeSubFolders[i] ) );
+      retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( NAME, fileName[i] ) );
+      retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( FILEMASK, fileMask[i] ) );
+      retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( EXCLUDE_FILEMASK, excludeFileMask[i] ) );
+      retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( FILE_REQUIRED, fileRequired[i] ) );
+      retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( INCLUDE_SUBFOLDERS, includeSubFolders[i] ) );
     }
-    retval.append( "      </" + FILE + ">" + Const.CR );
+    retval.append( XML_TAG_INDENT2 + "</" + FILE + ">" + Const.CR );
 
-    retval.append( "    <" + FIELDS + ">" + Const.CR );
+    retval.append( XML_TAG_INDENT + "<" + FIELDS + ">" + Const.CR );
     for ( int i = 0; i < inputFields.length; i++ ) {
       LoadFileInputField field = inputFields[i];
       retval.append( field.getXML() );
     }
-    retval.append( "      </" + FIELDS + ">" + Const.CR );
-    retval.append( "    " + XMLHandler.addTagValue( LIMIT, rowLimit ) );
-    retval.append( "    " + XMLHandler.addTagValue( IS_IN_FIELDS, fileInField ) );
-    retval.append( "    " + XMLHandler.addTagValue( DYNAMIC_FILENAME_FIELD, dynamicFilenameField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( SHORT_FILE_FIELD_NAME, shortFileFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( PATH_FIELD_NAME, pathFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( HIDDEN_FIELD_NAME, hiddenFieldName ) );
-    retval.append( "    " ).append(
+    retval.append( XML_TAG_INDENT2 + "</" + FIELDS + ">" + Const.CR );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( LIMIT, rowLimit ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( IS_IN_FIELDS, fileInField ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( DYNAMIC_FILENAME_FIELD, dynamicFilenameField ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( SHORT_FILE_FIELD_NAME, shortFileFieldName ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( PATH_FIELD_NAME, pathFieldName ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( HIDDEN_FIELD_NAME, hiddenFieldName ) );
+    retval.append( XML_TAG_INDENT ).append(
         XMLHandler.addTagValue( LAST_MODIFICATION_TIME_FIELD_NAME, lastModificationTimeFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( URI_NAME_FIELD_NAME, uriNameFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( ROOT_URI_NAME_FIELD_NAME, rootUriNameFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( EXTENSION_FIELD_NAME, extensionFieldName ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( URI_NAME_FIELD_NAME, uriNameFieldName ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( ROOT_URI_NAME_FIELD_NAME, rootUriNameFieldName ) );
+    retval.append( XML_TAG_INDENT ).append( XMLHandler.addTagValue( EXTENSION_FIELD_NAME, extensionFieldName ) );
 
     return retval.toString();
   }
@@ -748,13 +752,14 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     dynamicFilenameField = null;
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !getFileInFields() ) {
       r.clear();
     }
-    int i;
-    for ( i = 0; i < inputFields.length; i++ ) {
+
+    for ( int i = 0; i < inputFields.length; i++ ) {
       LoadFileInputField field = inputFields[i];
       int type = field.getType();
 
@@ -848,6 +853,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases ) throws KettleException {
     try {
       includeFilename = rep.getStepAttributeBoolean( idStep, INCLUDE );
@@ -917,6 +923,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
     try {
       rep.saveStepAttribute( idTransformation, idStep, INCLUDE, includeFilename );
@@ -985,6 +992,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     return includeSubFolderBoolean;
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -1044,6 +1052,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {

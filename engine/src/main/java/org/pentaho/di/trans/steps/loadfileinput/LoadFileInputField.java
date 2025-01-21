@@ -53,12 +53,26 @@ public class LoadFileInputField implements Cloneable {
     BaseMessages.getString( PKG, "LoadFileInputField.ElementType.FileContent" ),
     BaseMessages.getString( PKG, "LoadFileInputField.ElementType.FileSize" ), };
 
+  private static final String XML_TAG_NAME = "name";
+  private static final String XML_TAG_ELEMENT_TYPE = "element_type";
+  private static final String XML_TAG_TYPE = "type";
+  private static final String XML_TAG_FORMAT = "format";
+  private static final String XML_TAG_CURRENCY = "currency";
+  private static final String XML_TAG_DECIMAL = "decimal";
+  private static final String XML_TAG_GROUP = "group";
+  private static final String XML_TAG_LENGTH = "length";
+  private static final String XML_TAG_PRECISION = "precision";
+  private static final String XML_TAG_TRIM_TYPE = "trim_type";
+  private static final String XML_TAG_REPEAT = "repeat";
+  private static final String XML_TAG_INDENT2 = "        ";
+  private static final String XML_TAG_INDENT = "      ";
+
   private String name;
   private int type;
   private int length;
   private String format;
-  private int trimtype;
-  private int elementtype;
+  private int trimType;
+  private int elementType;
   private int precision;
   private String currencySymbol;
   private String decimalSymbol;
@@ -67,11 +81,11 @@ public class LoadFileInputField implements Cloneable {
 
   public LoadFileInputField( String fieldname ) {
     this.name = fieldname;
-    this.elementtype = ELEMENT_TYPE_FILECONTENT;
+    this.elementType = ELEMENT_TYPE_FILECONTENT;
     this.length = -1;
     this.type = ValueMetaInterface.TYPE_STRING;
     this.format = "";
-    this.trimtype = TYPE_TRIM_NONE;
+    this.trimType = TYPE_TRIM_NONE;
     this.groupSymbol = "";
     this.decimalSymbol = "";
     this.currencySymbol = "";
@@ -86,36 +100,35 @@ public class LoadFileInputField implements Cloneable {
   public String getXML() {
     String retval = "";
 
-    retval += "      <field>" + Const.CR;
-    retval += "        " + XMLHandler.addTagValue( "name", getName() );
-    retval += "        " + XMLHandler.addTagValue( "element_type", getElementTypeCode() );
-    retval += "        " + XMLHandler.addTagValue( "type", getTypeDesc() );
-    retval += "        " + XMLHandler.addTagValue( "format", getFormat() );
-    retval += "        " + XMLHandler.addTagValue( "currency", getCurrencySymbol() );
-    retval += "        " + XMLHandler.addTagValue( "decimal", getDecimalSymbol() );
-    retval += "        " + XMLHandler.addTagValue( "group", getGroupSymbol() );
-    retval += "        " + XMLHandler.addTagValue( "length", getLength() );
-    retval += "        " + XMLHandler.addTagValue( "precision", getPrecision() );
-    retval += "        " + XMLHandler.addTagValue( "trim_type", getTrimTypeCode() );
-    retval += "        " + XMLHandler.addTagValue( "repeat", isRepeated() );
-
-    retval += "        </field>" + Const.CR;
+    retval += XML_TAG_INDENT + "<field>" + Const.CR;
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_NAME, getName() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_ELEMENT_TYPE, getElementTypeCode() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_TYPE, getTypeDesc() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_FORMAT, getFormat() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_CURRENCY, getCurrencySymbol() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_DECIMAL, getDecimalSymbol() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_GROUP, getGroupSymbol() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_LENGTH, getLength() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_PRECISION, getPrecision() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_TRIM_TYPE, getTrimTypeCode() );
+    retval += XML_TAG_INDENT2 + XMLHandler.addTagValue( XML_TAG_REPEAT, isRepeated() );
+    retval += XML_TAG_INDENT + "</field>" + Const.CR;
 
     return retval;
   }
 
   public LoadFileInputField( Node fnode ) throws KettleValueException {
-    setName( XMLHandler.getTagValue( fnode, "name" ) );
-    setElementType( getElementTypeByCode( XMLHandler.getTagValue( fnode, "element_type" ) ) );
-    setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
-    setFormat( XMLHandler.getTagValue( fnode, "format" ) );
-    setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
-    setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
-    setGroupSymbol( XMLHandler.getTagValue( fnode, "group" ) );
-    setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
-    setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
-    setTrimType( getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
-    setRepeated( !"N".equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
+    setName( XMLHandler.getTagValue( fnode, XML_TAG_NAME ) );
+    setElementType( getElementTypeByCode( XMLHandler.getTagValue( fnode, XML_TAG_ELEMENT_TYPE ) ) );
+    setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, XML_TAG_TYPE ) ) );
+    setFormat( XMLHandler.getTagValue( fnode, XML_TAG_FORMAT ) );
+    setCurrencySymbol( XMLHandler.getTagValue( fnode, XML_TAG_CURRENCY ) );
+    setDecimalSymbol( XMLHandler.getTagValue( fnode, XML_TAG_DECIMAL ) );
+    setGroupSymbol( XMLHandler.getTagValue( fnode, XML_TAG_GROUP ) );
+    setLength( Const.toInt( XMLHandler.getTagValue( fnode, XML_TAG_LENGTH ), -1 ) );
+    setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, XML_TAG_PRECISION ), -1 ) );
+    setTrimType( getTrimTypeByCode( XMLHandler.getTagValue( fnode, XML_TAG_TRIM_TYPE ) ) );
+    setRepeated( !"N".equalsIgnoreCase( XMLHandler.getTagValue( fnode, XML_TAG_REPEAT ) ) );
   }
 
   public static final int getTrimTypeByCode( String tt ) {
@@ -246,35 +259,35 @@ public class LoadFileInputField implements Cloneable {
   }
 
   public int getTrimType() {
-    return trimtype;
+    return trimType;
   }
 
   public int getElementType() {
-    return elementtype;
+    return elementType;
   }
 
   public String getTrimTypeCode() {
-    return getTrimTypeCode( trimtype );
+    return getTrimTypeCode( trimType );
   }
 
   public String getElementTypeCode() {
-    return getElementTypeCode( elementtype );
+    return getElementTypeCode( elementType );
   }
 
   public String getTrimTypeDesc() {
-    return getTrimTypeDesc( trimtype );
+    return getTrimTypeDesc( trimType );
   }
 
   public String getElementTypeDesc() {
-    return getElementTypeDesc( elementtype );
+    return getElementTypeDesc( elementType );
   }
 
-  public void setTrimType( int trimtype ) {
-    this.trimtype = trimtype;
+  public void setTrimType( int trimType ) {
+    this.trimType = trimType;
   }
 
-  public void setElementType( int element_type ) {
-    this.elementtype = element_type;
+  public void setElementType( int elementType ) {
+    this.elementType = elementType;
   }
 
   public String getGroupSymbol() {
@@ -322,9 +335,7 @@ public class LoadFileInputField implements Cloneable {
   }
 
   public String getFieldPositionsCode() {
-    String enc = "";
-
-    return enc;
+    return "";
   }
 
   public void guess() {
