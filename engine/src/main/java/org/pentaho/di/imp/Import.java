@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -57,6 +58,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportFeedbackInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.shared.RepositorySharedObjectsIO;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.version.BuildVersion;
 import org.w3c.dom.Document;
@@ -344,6 +346,11 @@ public class Import {
     final boolean continueOnError =
       Utils.isEmpty( optionContinueOnError ) ? false : ValueMetaString.convertStringToBoolean( optionContinueOnError
         .toString() );
+
+    // prepare the Bowl for the repository
+    DefaultBowl.getInstance().setSharedObjectsIO( new RepositorySharedObjectsIO( repository, () ->
+          DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class ).getAll() ) );
+    DefaultBowl.getInstance().clearManagers();
 
     // Start the import!
     //

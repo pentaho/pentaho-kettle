@@ -22,24 +22,35 @@
 
 package org.pentaho.di.repository;
 
-import java.util.Collections;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
+import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.partition.PartitionSchemaManagementInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
+import org.pentaho.di.shared.PassthroughClusterSchemaManager;
+import org.pentaho.di.shared.PassthroughDbConnectionManager;
+import org.pentaho.di.shared.PassthroughPartitionSchemaManager;
+import org.pentaho.di.shared.PassthroughSlaveServerManager;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.util.Collections;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -58,6 +69,11 @@ public class RepositoryImporterTest {
   private RepositoryDirectoryInterface baseDirectory;
 
   private Node entityNode;
+
+  @BeforeClass
+  public static void setupBeforeClass() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Before
   public void beforeTest() {
@@ -223,6 +239,8 @@ public class RepositoryImporterTest {
         JobEntryCopy jec = mock( JobEntryCopy.class );
         when( jec.getEntry() ).thenReturn( jobEntryInterface );
         when( meta.getJobCopies() ).thenReturn( Collections.singletonList( jec ) );
+        doAnswer( invocationOnMock -> getSharedObjectManager( invocationOnMock.getArgument( 0 ) ) )
+          .when( meta ).getSharedObjectManager( any() );
         return meta;
       }
 
@@ -232,15 +250,9 @@ public class RepositoryImporterTest {
         StepMeta stepMeta = mock( StepMeta.class );
         when( stepMeta.getStepMetaInterface() ).thenReturn( stepMetaInterface );
         when( meta.getSteps() ).thenReturn( Collections.singletonList( stepMeta ) );
+        doAnswer( invocationOnMock -> getSharedObjectManager( invocationOnMock.getArgument( 0 ) ) )
+                  .when( meta ).getSharedObjectManager( any() );
         return meta;
-      }
-
-      @Override
-      protected void replaceSharedObjects( JobMeta transMeta ) throws KettleException {
-      }
-
-      @Override
-      protected void replaceSharedObjects( TransMeta transMeta ) throws KettleException {
       }
 
       @Override
@@ -249,6 +261,19 @@ public class RepositoryImporterTest {
       }
     };
     return importer;
+  }
+
+  private static <T> T getSharedObjectManager( Class<T> clazz ) {
+    if ( clazz.isAssignableFrom( SlaveServerManagementInterface.class ) ) {
+      return clazz.cast( new PassthroughSlaveServerManager( new MemorySharedObjectsIO() ) );
+    } else if ( clazz.isAssignableFrom( DatabaseManagementInterface.class ) ) {
+      return clazz.cast( new PassthroughDbConnectionManager( new MemorySharedObjectsIO() ) );
+    } else if ( clazz.isAssignableFrom( ClusterSchemaManagementInterface.class ) ) {
+      return clazz.cast( new PassthroughClusterSchemaManager( new MemorySharedObjectsIO(), Collections::emptyList ) );
+    } else if ( clazz.isAssignableFrom( PartitionSchemaManagementInterface.class ) ) {
+      return clazz.cast( new PassthroughPartitionSchemaManager( new MemorySharedObjectsIO() ) );
+    }
+    return null;
   }
 
 }
