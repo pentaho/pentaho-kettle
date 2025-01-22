@@ -74,7 +74,31 @@ import com.enterprisedt.net.ftp.FTPTransferType;
         image = "ui/images/PFTP.svg",
         documentationUrl = "http://wiki.pentaho.com/display/EAI/Put+a+file+with+FTP" )
 public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface {
+  public static final String STRING_Y = "Y";
   private static Class<?> PKG = JobEntryFTPPUT.class; // for i18n purposes, needed by Translator2!!
+
+  private static final String XML_TAG_WILDCARD = "wildcard";
+  private static final String XML_TAG_BINARY = "binary";
+  private static final String XML_TAG_TIMEOUT = "timeout";
+  private static final String XML_TAG_REMOVE = "remove";
+  private static final String XML_TAG_ONLY_NEW = "only_new";
+  private static final String XML_TAG_ACTIVE = "active";
+  private static final String CONTROL_ENCODING = "control_encoding";
+  private static final String XML_TAG_PROXY_HOST = "proxy_host";
+  private static final String XML_TAG_PROXY_PORT = "proxy_port";
+  private static final String XML_TAG_PROXY_USERNAME = "proxy_username";
+  private static final String XML_TAG_PROXY_PASSWORD = "proxy_password";
+  private static final String XML_TAG_SOCKSPROXY_HOST = "socksproxy_host";
+  private static final String XML_TAG_SOCKSPROXY_PORT = "socksproxy_port";
+  private static final String XML_TAG_SOCKSPROXY_USERNAME = "socksproxy_username";
+  private static final String XML_TAG_SOCKSPROXY_PASSWORD = "socksproxy_password";
+  private static final String XML_TAG_REMOTE_DIRECTORY = "remoteDirectory";
+  private static final String XML_TAG_LOCAL_DIRECTORY = "localDirectory";
+  private static final String XML_TAG_SERVERNAME = "servername";
+  private static final String XML_TAG_SERVERPORT = "serverport";
+  private static final String XML_TAG_USERNAME = "username";
+  private static final String XML_TAG_PASSWORD = "password";
+  private static final String XML_TAG_INDENT2 = "      ";
 
   public static final int FTP_DEFAULT_PORT = 21;
 
@@ -128,74 +152,76 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     this( "" );
   }
 
+  @Override
   public Object clone() {
     JobEntryFTPPUT je = (JobEntryFTPPUT) super.clone();
     return je;
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 450 ); // 365 characters in spaces and tag names alone
 
     retval.append( super.getXML() );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "servername", serverName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "serverport", serverPort ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "username", userName ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "remoteDirectory", remoteDirectory ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "localDirectory", localDirectory ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "wildcard", wildcard ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "binary", binaryMode ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "timeout", timeout ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "remove", remove ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "only_new", onlyPuttingNewFiles ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "active", activeConnection ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "control_encoding", controlEncoding ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SERVERNAME, serverName ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SERVERPORT, serverPort ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_USERNAME, userName ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_PASSWORD,
+      Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_REMOTE_DIRECTORY, remoteDirectory ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_LOCAL_DIRECTORY, localDirectory ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_WILDCARD, wildcard ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_BINARY, binaryMode ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_TIMEOUT, timeout ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_REMOVE, remove ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_ONLY_NEW, onlyPuttingNewFiles ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_ACTIVE, activeConnection ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( CONTROL_ENCODING, controlEncoding ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_host", proxyHost ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_port", proxyPort ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_username", proxyUsername ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "proxy_password", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "socksproxy_host", socksProxyHost ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "socksproxy_port", socksProxyPort ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "socksproxy_username", socksProxyUsername ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "socksproxy_password", Encr
-        .encryptPasswordIfNotUsingVariables( socksProxyPassword ) ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_PROXY_HOST, proxyHost ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_PROXY_PORT, proxyPort ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_PROXY_USERNAME, proxyUsername ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_PROXY_PASSWORD,
+      Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SOCKSPROXY_HOST, socksProxyHost ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SOCKSPROXY_PORT, socksProxyPort ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SOCKSPROXY_USERNAME, socksProxyUsername ) );
+    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SOCKSPROXY_PASSWORD,
+      Encr.encryptPasswordIfNotUsingVariables( socksProxyPassword ) ) );
 
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
                        Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
-      serverName = XMLHandler.getTagValue( entrynode, "servername" );
-      serverPort = XMLHandler.getTagValue( entrynode, "serverport" );
-      userName = XMLHandler.getTagValue( entrynode, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "password" ) );
-      remoteDirectory = XMLHandler.getTagValue( entrynode, "remoteDirectory" );
-      localDirectory = XMLHandler.getTagValue( entrynode, "localDirectory" );
-      wildcard = XMLHandler.getTagValue( entrynode, "wildcard" );
-      binaryMode = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "binary" ) );
-      timeout = Const.toInt( XMLHandler.getTagValue( entrynode, "timeout" ), 10000 );
-      remove = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "remove" ) );
-      onlyPuttingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "only_new" ) );
-      activeConnection = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "active" ) );
-      controlEncoding = XMLHandler.getTagValue( entrynode, "control_encoding" );
+      serverName = XMLHandler.getTagValue( entrynode, XML_TAG_SERVERNAME );
+      serverPort = XMLHandler.getTagValue( entrynode, XML_TAG_SERVERPORT );
+      userName = XMLHandler.getTagValue( entrynode, XML_TAG_USERNAME );
+      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, XML_TAG_PASSWORD ) );
+      remoteDirectory = XMLHandler.getTagValue( entrynode, XML_TAG_REMOTE_DIRECTORY );
+      localDirectory = XMLHandler.getTagValue( entrynode, XML_TAG_LOCAL_DIRECTORY );
+      wildcard = XMLHandler.getTagValue( entrynode, XML_TAG_WILDCARD );
+      binaryMode = STRING_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, XML_TAG_BINARY ) );
+      timeout = Const.toInt( XMLHandler.getTagValue( entrynode, XML_TAG_TIMEOUT ), 10000 );
+      remove = STRING_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, XML_TAG_REMOVE ) );
+      onlyPuttingNewFiles = STRING_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, XML_TAG_ONLY_NEW ) );
+      activeConnection = STRING_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, XML_TAG_ACTIVE ) );
+      controlEncoding = XMLHandler.getTagValue( entrynode, CONTROL_ENCODING );
 
-      proxyHost = XMLHandler.getTagValue( entrynode, "proxy_host" );
-      proxyPort = XMLHandler.getTagValue( entrynode, "proxy_port" );
-      proxyUsername = XMLHandler.getTagValue( entrynode, "proxy_username" );
+      proxyHost = XMLHandler.getTagValue( entrynode, XML_TAG_PROXY_HOST );
+      proxyPort = XMLHandler.getTagValue( entrynode, XML_TAG_PROXY_PORT );
+      proxyUsername = XMLHandler.getTagValue( entrynode, XML_TAG_PROXY_USERNAME );
       proxyPassword =
-        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "proxy_password" ) );
-      socksProxyHost = XMLHandler.getTagValue( entrynode, "socksproxy_host" );
-      socksProxyPort = XMLHandler.getTagValue( entrynode, "socksproxy_port" );
-      socksProxyUsername = XMLHandler.getTagValue( entrynode, "socksproxy_username" );
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, XML_TAG_PROXY_PASSWORD ) );
+      socksProxyHost = XMLHandler.getTagValue( entrynode, XML_TAG_SOCKSPROXY_HOST );
+      socksProxyPort = XMLHandler.getTagValue( entrynode, XML_TAG_SOCKSPROXY_PORT );
+      socksProxyUsername = XMLHandler.getTagValue( entrynode, XML_TAG_SOCKSPROXY_USERNAME );
       socksProxyPassword =
-        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "socksproxy_password" ) );
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, XML_TAG_SOCKSPROXY_PASSWORD ) );
 
       if ( controlEncoding == null ) {
         // if we couldn't retrieve an encoding, assume it's an old instance and
@@ -207,41 +233,42 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
+  @Override
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId jobEntryId, List<DatabaseMeta> databases,
                        List<SlaveServer> slaveServers ) throws KettleException {
     try {
-      serverName = rep.getJobEntryAttributeString( jobEntryId, "servername" );
-      serverPort = rep.getJobEntryAttributeString( jobEntryId, "serverport" );
-      userName = rep.getJobEntryAttributeString( jobEntryId, "username" );
+      serverName = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_SERVERNAME );
+      serverPort = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_SERVERPORT );
+      userName = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_USERNAME );
       password =
-        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( jobEntryId, "password" ) );
-      remoteDirectory = rep.getJobEntryAttributeString( jobEntryId, "remoteDirectory" );
-      localDirectory = rep.getJobEntryAttributeString( jobEntryId, "localDirectory" );
-      wildcard = rep.getJobEntryAttributeString( jobEntryId, "wildcard" );
-      binaryMode = rep.getJobEntryAttributeBoolean( jobEntryId, "binary" );
-      timeout = (int) rep.getJobEntryAttributeInteger( jobEntryId, "timeout" );
-      remove = rep.getJobEntryAttributeBoolean( jobEntryId, "remove" );
-      onlyPuttingNewFiles = rep.getJobEntryAttributeBoolean( jobEntryId, "only_new" );
-      activeConnection = rep.getJobEntryAttributeBoolean( jobEntryId, "active" );
-      controlEncoding = rep.getJobEntryAttributeString( jobEntryId, "control_encoding" );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( jobEntryId, XML_TAG_PASSWORD ) );
+      remoteDirectory = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_REMOTE_DIRECTORY );
+      localDirectory = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_LOCAL_DIRECTORY );
+      wildcard = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_WILDCARD );
+      binaryMode = rep.getJobEntryAttributeBoolean( jobEntryId, XML_TAG_BINARY );
+      timeout = (int) rep.getJobEntryAttributeInteger( jobEntryId, XML_TAG_TIMEOUT );
+      remove = rep.getJobEntryAttributeBoolean( jobEntryId, XML_TAG_REMOVE );
+      onlyPuttingNewFiles = rep.getJobEntryAttributeBoolean( jobEntryId, XML_TAG_ONLY_NEW );
+      activeConnection = rep.getJobEntryAttributeBoolean( jobEntryId, XML_TAG_ACTIVE );
+      controlEncoding = rep.getJobEntryAttributeString( jobEntryId, CONTROL_ENCODING );
       if ( controlEncoding == null ) {
         // if we couldn't retrieve an encoding, assume it's an old instance and
         // put in the encoding used before v 2.4.0
         controlEncoding = LEGACY_CONTROL_ENCODING;
       }
 
-      proxyHost = rep.getJobEntryAttributeString( jobEntryId, "proxy_host" );
-      proxyPort = rep.getJobEntryAttributeString( jobEntryId, "proxy_port" );
-      proxyUsername = rep.getJobEntryAttributeString( jobEntryId, "proxy_username" );
+      proxyHost = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_PROXY_HOST );
+      proxyPort = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_PROXY_PORT );
+      proxyUsername = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_PROXY_USERNAME );
       proxyPassword =
         Encr
-          .decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( jobEntryId, "proxy_password" ) );
-      socksProxyHost = rep.getJobEntryAttributeString( jobEntryId, "socksproxy_host" );
-      socksProxyPort = rep.getJobEntryAttributeString( jobEntryId, "socksproxy_port" );
-      socksProxyUsername = rep.getJobEntryAttributeString( jobEntryId, "socksproxy_username" );
+          .decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( jobEntryId, XML_TAG_PROXY_PASSWORD ) );
+      socksProxyHost = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_SOCKSPROXY_HOST );
+      socksProxyPort = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_SOCKSPROXY_PORT );
+      socksProxyUsername = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_SOCKSPROXY_USERNAME );
       socksProxyPassword =
         Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(
-          jobEntryId, "socksproxy_password" ) );
+          jobEntryId, XML_TAG_SOCKSPROXY_PASSWORD ) );
 
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPPUT.UnableToLoadFromRepo", String
@@ -249,37 +276,38 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
+  @Override
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idJob ) throws KettleException {
     try {
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_SERVERNAME, serverName );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_SERVERPORT, serverPort );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_USERNAME, userName );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_PASSWORD, Encr
         .encryptPasswordIfNotUsingVariables( password ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "remoteDirectory", remoteDirectory );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "localDirectory", localDirectory );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "binary", binaryMode );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "timeout", timeout );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "remove", remove );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "only_new", onlyPuttingNewFiles );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "active", activeConnection );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "control_encoding", controlEncoding );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_REMOTE_DIRECTORY, remoteDirectory );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_LOCAL_DIRECTORY, localDirectory );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_WILDCARD, wildcard );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_BINARY, binaryMode );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_TIMEOUT, timeout );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_REMOVE, remove );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_ONLY_NEW, onlyPuttingNewFiles );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_ACTIVE, activeConnection );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), CONTROL_ENCODING, controlEncoding );
 
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_host", proxyHost );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_port", proxyPort );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_username", proxyUsername );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_password", Encr
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_PROXY_HOST, proxyHost );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_PROXY_PORT, proxyPort );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_PROXY_USERNAME, proxyUsername );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_PROXY_PASSWORD, Encr
         .encryptPasswordIfNotUsingVariables( proxyPassword ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_host", socksProxyHost );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_port", socksProxyPort );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_username", socksProxyUsername );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_password", Encr
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_SOCKSPROXY_HOST, socksProxyHost );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_SOCKSPROXY_PORT, socksProxyPort );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_SOCKSPROXY_USERNAME, socksProxyUsername );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), XML_TAG_SOCKSPROXY_PASSWORD, Encr
         .encryptPasswordIfNotUsingVariables( socksProxyPassword ) );
 
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPPUT.UnableToSaveToRepo", String
-        .valueOf( id_job ) ), dbe );
+        .valueOf( idJob ) ), dbe );
     }
   }
 
@@ -825,10 +853,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     return new PDIFTPClient( log );
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
 
+  @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
     if ( !Utils.isEmpty( serverName ) ) {
@@ -846,11 +876,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator().validate(
-      this, "localDirectory", remarks, AndValidator.putValidators(
+      this, XML_TAG_LOCAL_DIRECTORY, remarks, AndValidator.putValidators(
           JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+    JobEntryValidatorUtils.andValidator().validate( this, XML_TAG_PASSWORD, remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "serverPort", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
