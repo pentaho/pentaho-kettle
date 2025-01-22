@@ -115,7 +115,7 @@ public class CarteTest {
 
     when( Client.create( any( ClientConfig.class ) ) ).thenReturn( client );
 
-    Carte.callStopCarteRestService( "localhost", "8080", "admin", "Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde" );
+    Carte.callStopCarteRestService( "localhost", "8080", "admin", "Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde", false, null );
 
     // the expected value is: "Basic <base64 encoded username:password>"
     assertEquals( "Basic " + new String( Base64.getEncoder().encode( "admin:password".getBytes( "utf-8" ) ) ),

@@ -13,11 +13,20 @@
 
 package org.pentaho.di.www;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.cli.BasicParser;
@@ -29,6 +38,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
@@ -38,6 +48,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -50,6 +61,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.client.urlconnection.HTTPSProperties;
 
 public class Carte {
   private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
@@ -58,6 +70,7 @@ public class Carte {
   private SlaveServerConfig config;
   private boolean allOK;
   private static Options options;
+  private static final String NO_SERVER_FOUND_ERROR = "Carte.Error.NoServerFound";
 
   public Carte( final SlaveServerConfig config ) throws Exception {
     this( config, null );
@@ -184,9 +197,6 @@ public class Carte {
     //
     SlaveServerConfig config = null;
     if ( arguments.length == 1 && !Utils.isEmpty( arguments[0] ) ) {
-      if ( cmd.hasOption( 's' ) ) {
-        throw new Carte.CarteCommandException( BaseMessages.getString( PKG, "Carte.Error.illegalStop" ) );
-      }
       usingConfigFile = true;
       FileObject file = KettleVFS.getFileObject( arguments[0] );
       Document document = XMLHandler.loadXMLFile( file );
@@ -197,6 +207,14 @@ public class Carte {
         config.readAutoSequences();
       }
       config.setFilename( arguments[0] );
+
+      if ( cmd.hasOption( 's' ) ) {
+        String user = cmd.getOptionValue( 'u' );
+        String password = cmd.getOptionValue( 'p' );
+        SlaveServer slaveServer = config.getSlaveServer();
+        shutdown( slaveServer.getHostname(), slaveServer.getPort(), user, password, slaveServer.isSslMode(), slaveServer.getSslConfig() );
+        System.exit( 0 );
+      }
     }
     if ( arguments.length == 2 && !Utils.isEmpty( arguments[0] ) && !Utils.isEmpty( arguments[1] ) ) {
       String hostname = arguments[0];
@@ -205,7 +223,7 @@ public class Carte {
       if ( cmd.hasOption( 's' ) ) {
         String user = cmd.getOptionValue( 'u' );
         String password = cmd.getOptionValue( 'p' );
-        shutdown( hostname, port, user, password );
+        shutdown( hostname, port, user, password, false, null );
         System.exit( 0 );
       }
 
@@ -309,9 +327,9 @@ public class Carte {
     return target.substring( target.indexOf( strip ) + strip.length() );
   }
 
-  private static void shutdown( String hostname, String port, String username, String password ) {
+  private static void shutdown( String hostname, String port, String username, String password, boolean sslMode, SslConfiguration sslConfig ) {
     try {
-      callStopCarteRestService( hostname, port, username, password );
+      callStopCarteRestService( hostname, port, username, password, sslMode, sslConfig );
     } catch ( Exception e ) {
       e.printStackTrace();
     }
@@ -328,7 +346,7 @@ public class Carte {
    * @throws CarteCommandException
    */
   @VisibleForTesting
-  static void callStopCarteRestService( String hostname, String port, String username, String password )
+  static void callStopCarteRestService( String hostname, String port, String username, String password, boolean sslMode, SslConfiguration sslConfig )
     throws ParseException, CarteCommandException {
     // get information about the remote connection
     try {
@@ -336,17 +354,18 @@ public class Carte {
 
       ClientConfig clientConfig = new DefaultClientConfig();
       clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
+      if ( sslMode ) {
+        addSSLToClientConfig( sslConfig,clientConfig, hostname, port );
+      }
       Client client = Client.create( clientConfig );
 
       client.addFilter( new HTTPBasicAuthFilter( username, Encr.decryptPasswordOptionallyEncrypted( password ) ) );
 
-      // check if the user can access the carte server. Don't really need this call but may want to check it's output at
-      // some point
-      String contextURL = "http://" + hostname + ":" + port + "/kettle";
+      String contextURL = HttpUtil.constructUrl( new Variables(), hostname, port, "kettle", "", sslMode );
       WebResource resource = client.resource( contextURL + "/status/?xml=Y" );
       String response = resource.get( String.class );
       if ( response == null || !response.contains( "<serverstatus>" ) ) {
-        throw new Carte.CarteCommandException( BaseMessages.getString( PKG, "Carte.Error.NoServerFound", hostname, ""
+        throw new Carte.CarteCommandException( BaseMessages.getString( PKG, NO_SERVER_FOUND_ERROR, hostname, ""
             + port ) );
       }
 
@@ -358,9 +377,43 @@ public class Carte {
             + port ) );
       }
     } catch ( Exception e ) {
-      throw new Carte.CarteCommandException( BaseMessages.getString( PKG, "Carte.Error.NoServerFound", hostname, ""
+      throw new Carte.CarteCommandException( BaseMessages.getString( PKG, NO_SERVER_FOUND_ERROR, hostname, ""
           + port ), e );
     }
+  }
+
+  private static void addSSLToClientConfig ( SslConfiguration sslConfig, ClientConfig clientConfig, String hostname, String port  )
+    throws CarteCommandException {
+    HostnameVerifier hostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
+    SSLContext sslContext;
+    try {
+      sslContext = getSSLContext( sslConfig.getKeyStore(), sslConfig.getKeyStorePassword() );
+    } catch ( Exception e ) {
+      CarteSingleton.getInstance().getLog().logError( "Unable to create SSL context. Please check SSL configuration." );
+      throw new Carte.CarteCommandException( BaseMessages.getString( PKG, NO_SERVER_FOUND_ERROR, hostname, "" + port ), e );
+    }
+
+    clientConfig.getProperties().put( HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties( hostnameVerifier, sslContext ) );
+  }
+
+  private static SSLContext getSSLContext( String keyStore, String keyStorePassword ) throws IOException, GeneralSecurityException {
+    KeyStore ks = KeyStore.getInstance( "JKS" );
+
+    // Using a try-with-resources block to guarantee that the stream is always automatically closed
+    try ( FileInputStream keyStoreStream = new FileInputStream( keyStore ) ) {
+      ks.load( keyStoreStream, Encr.decryptPasswordOptionallyEncrypted( keyStorePassword ).toCharArray() );
+    }
+
+    KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
+    keyManagerFactory.init( ks, Encr.decryptPasswordOptionallyEncrypted(keyStorePassword).toCharArray());
+
+    TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
+    trustManagerFactory.init( ks );
+
+    SSLContext sslContext = SSLContext.getInstance( "TLS" );
+    sslContext.init( keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null );
+
+    return sslContext;
   }
 
   /**
