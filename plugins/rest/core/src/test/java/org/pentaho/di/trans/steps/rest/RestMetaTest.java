@@ -65,7 +65,7 @@ public class RestMetaTest {
     List<String> attributes =
       Arrays.asList( "applicationType", "method", "url", "urlInField", "dynamicMethod", "methodFieldName",
         "urlField", "bodyField", "httpLogin", "httpPassword", "proxyHost", "proxyPort", "preemptive",
-        "trustStoreFile", "trustStorePassword", "headerField", "headerName", "parameterField", "parameterName",
+        "trustStoreFile", "trustStorePassword", "ignoreSSL", "headerField", "headerName", "parameterField", "parameterName",
         "matrixParameterField", "matrixParameterName", "fieldName", "resultCodeFieldName", "responseTimeFieldName",
         "responseHeaderFieldName" );
 
@@ -114,7 +114,7 @@ public class RestMetaTest {
 
     // Setting the step to read the URL from a field should fix one of the check() errors
     meta.setUrlInField( true );
-    meta.setUrlField( "urlField" );
+    meta.setAttUrlField( "urlField" );
     prev.addValueMeta( new ValueMetaString( "urlField" ) );
     remarks.clear();
     meta.check( remarks, transMeta, step, prev, input, output, info, variables, repo, metaStore );

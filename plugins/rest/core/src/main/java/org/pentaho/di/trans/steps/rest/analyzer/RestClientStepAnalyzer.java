@@ -39,18 +39,18 @@ public class RestClientStepAnalyzer extends ExternalResourceStepAnalyzer<RestMet
     Set<StepField> usedFields = new HashSet<>();
 
     // add url field
-    if ( stepMeta.isUrlInField() && StringUtils.isNotEmpty( stepMeta.getUrlField() ) ) {
-      usedFields.addAll( createStepFields( stepMeta.getUrlField(), getInputs() ) );
+    if ( stepMeta.isUrlInField() && StringUtils.isNotEmpty( stepMeta.getAttUrlField() ) ) {
+      usedFields.addAll( createStepFields( stepMeta.getAttUrlField(), getInputs() ) );
     }
 
     // add method field
-    if ( stepMeta.isDynamicMethod() && StringUtils.isNotEmpty( stepMeta.getMethodFieldName() ) ) {
-      usedFields.addAll( createStepFields( stepMeta.getMethodFieldName(), getInputs() ) );
+    if ( stepMeta.isDynamicMethod() && StringUtils.isNotEmpty( stepMeta.getAttMethodFieldName() ) ) {
+      usedFields.addAll( createStepFields( stepMeta.getAttMethodFieldName(), getInputs() ) );
     }
 
     // add body field
-    if ( StringUtils.isNotEmpty( stepMeta.getBodyField() ) ) {
-      usedFields.addAll( createStepFields( stepMeta.getBodyField(), getInputs() ) );
+    if ( StringUtils.isNotEmpty( stepMeta.getAttBodyField() ) ) {
+      usedFields.addAll( createStepFields( stepMeta.getAttBodyField(), getInputs() ) );
     }
 
     // add parameters as used fields

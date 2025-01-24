@@ -179,6 +179,12 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   private FormData fdbTrustStoreFile;
   private FormData fdlTrustStoreFile, fdTrustStoreFile;
 
+  private Label wlIgnoreSSL;
+  private FormData fdlIgnoreSSL;
+  private Button wIgnoreSSL;
+  private FormData fdIgnoreSSL;
+
+
   private boolean gotPreviousFields = false;
 
   private Button wMatrixGet;
@@ -301,6 +307,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdUrlInField.right = new FormAttachment( 100, 0 );
     wUrlInField.setLayoutData( fdUrlInField );
     wUrlInField.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         activeUrlInfield();
@@ -360,7 +367,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wMethod.setLayoutData( fdMethod );
     wMethod.setItems( RestMeta.HTTP_METHODS );
     wMethod.addSelectionListener( new SelectionAdapter() {
-
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setMethod();
       }
@@ -383,6 +390,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdMethodInField.right = new FormAttachment( 100, 0 );
     wMethodInField.setLayoutData( fdMethodInField );
     wMethodInField.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         activeMethodInfield();
@@ -474,7 +482,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wApplicationType.setLayoutData( fdApplicationType );
     wApplicationType.setItems( RestMeta.APPLICATION_TYPES );
     wApplicationType.addSelectionListener( new SelectionAdapter() {
-
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -673,6 +681,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdPreemptive.right = new FormAttachment( 100, 0 );
     wPreemptive.setLayoutData( fdPreemptive );
     wPreemptive.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -836,6 +845,29 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdSSLTrustStore.right = new FormAttachment( 100, 0 );
     fdSSLTrustStore.top = new FormAttachment( gHttpAuth, margin );
     gSSLTrustStore.setLayoutData( fdSSLTrustStore );
+
+    // Trust all certificate?
+    wlIgnoreSSL = new Label( gSSLTrustStore, SWT.RIGHT );
+    wlIgnoreSSL.setText( BaseMessages.getString( PKG, "RestDialog.IgnoreSSL.Label" ) );
+    props.setLook( wlIgnoreSSL );
+    fdlIgnoreSSL = new FormData();
+    fdlIgnoreSSL.left = new FormAttachment( 0, 0 );
+    fdlIgnoreSSL.top = new FormAttachment( wTrustStorePassword, margin );
+    fdlIgnoreSSL.right = new FormAttachment( middle, -margin );
+    wlIgnoreSSL.setLayoutData( fdlIgnoreSSL );
+    wIgnoreSSL = new Button( gSSLTrustStore, SWT.CHECK );
+    props.setLook( wIgnoreSSL );
+    wIgnoreSSL.setToolTipText( BaseMessages.getString( PKG, "RestDialog.IgnoreSSL.Tooltip" ) );
+    fdIgnoreSSL = new FormData();
+    fdIgnoreSSL.left = new FormAttachment( middle, 0 );
+    fdIgnoreSSL.top = new FormAttachment( wTrustStorePassword, margin );
+    wIgnoreSSL.setLayoutData( fdIgnoreSSL );
+    wIgnoreSSL.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } ); 
 
     // END HTTP AUTH GROUP
     // ////////////////////////
@@ -1278,18 +1310,18 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     wMethod.setText( Const.NVL( input.getMethod(), RestMeta.HTTP_METHOD_GET ) );
     wMethodInField.setSelection( input.isDynamicMethod() );
-    if ( input.getBodyField() != null ) {
-      wBody.setText( input.getBodyField() );
+    if ( input.getAttBodyField() != null ) {
+      wBody.setText( input.getAttBodyField() );
     }
-    if ( input.getMethodFieldName() != null ) {
-      wMethodField.setText( input.getMethodFieldName() );
+    if ( input.getAttMethodFieldName() != null ) {
+      wMethodField.setText( input.getAttMethodFieldName() );
     }
     if ( input.getUrl() != null ) {
       wUrl.setText( input.getUrl() );
     }
     wUrlInField.setSelection( input.isUrlInField() );
-    if ( input.getUrlField() != null ) {
-      wUrlField.setText( input.getUrlField() );
+    if ( input.getAttUrlField() != null ) {
+      wUrlField.setText( input.getAttUrlField() );
     }
     if ( input.getFieldName() != null ) {
       wResult.setText( input.getFieldName() );
@@ -1301,31 +1333,33 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
       wResponseTime.setText( input.getResponseTimeFieldName() );
     }
 
-    if ( input.getHttpLogin() != null ) {
-      wHttpLogin.setText( input.getHttpLogin() );
+    if ( input.getAttHttpLogin() != null ) {
+      wHttpLogin.setText( input.getAttHttpLogin() );
     }
-    if ( input.getHttpPassword() != null ) {
-      wHttpPassword.setText( input.getHttpPassword() );
+    if ( input.getAttHttpPassword() != null ) {
+      wHttpPassword.setText( input.getAttHttpPassword() );
     }
-    if ( input.getProxyHost() != null ) {
-      wProxyHost.setText( input.getProxyHost() );
+    if ( input.getAttProxyHost() != null ) {
+      wProxyHost.setText( input.getAttProxyHost() );
     }
-    if ( input.getProxyPort() != null ) {
-      wProxyPort.setText( input.getProxyPort() );
+    if ( input.getAttProxyPort() != null ) {
+      wProxyPort.setText( input.getAttProxyPort() );
     }
     wPreemptive.setSelection( input.isPreemptive() );
 
-    if ( input.getTrustStoreFile() != null ) {
-      wTrustStoreFile.setText( input.getTrustStoreFile() );
+    if ( input.getAttTrustStoreFile() != null ) {
+      wTrustStoreFile.setText( input.getAttTrustStoreFile() );
     }
-    if ( input.getTrustStorePassword() != null ) {
-      wTrustStorePassword.setText( input.getTrustStorePassword() );
+    if ( input.getAttTrustStorePassword() != null ) {
+      wTrustStorePassword.setText( input.getAttTrustStorePassword() );
     }
+    wIgnoreSSL.setSelection(input.isIgnoreSsl());
+
     if ( input.getResponseHeaderFieldName() != null ) {
       wResponseHeader.setText( input.getResponseHeaderFieldName() );
     }
 
-    wApplicationType.setText( Const.NVL( input.getApplicationType(), "" ) );
+    wApplicationType.setText( Const.NVL( input.getAttApplicationType(), "" ) );
 
     wFields.setRowNums();
     wFields.optWidth( true );
@@ -1371,26 +1405,27 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     }
 
     input.setDynamicMethod( wMethodInField.getSelection() );
-    input.setMethodFieldName( wMethodField.getText() );
+    input.setAttMethodFieldName( wMethodField.getText() );
     input.setMethod( wMethod.getText() );
     input.setUrl( wUrl.getText() );
-    input.setUrlField( wUrlField.getText() );
+    input.setAttUrlField( wUrlField.getText() );
     input.setUrlInField( wUrlInField.getSelection() );
-    input.setBodyField( wBody.getText() );
+    input.setAttBodyField( wBody.getText() );
     input.setFieldName( wResult.getText() );
     input.setResultCodeFieldName( wResultCode.getText() );
     input.setResponseTimeFieldName( wResponseTime.getText() );
     input.setResponseHeaderFieldName( wResponseHeader.getText() );
 
-    input.setHttpLogin( wHttpLogin.getText() );
-    input.setHttpPassword( wHttpPassword.getText() );
-    input.setProxyHost( wProxyHost.getText() );
-    input.setProxyPort( wProxyPort.getText() );
+    input.setAttHttpLogin( wHttpLogin.getText() );
+    input.setAttHttpPassword( wHttpPassword.getText() );
+    input.setAttProxyHost( wProxyHost.getText() );
+    input.setAttProxyPort( wProxyPort.getText() );
     input.setPreemptive( wPreemptive.getSelection() );
 
-    input.setTrustStoreFile( wTrustStoreFile.getText() );
-    input.setTrustStorePassword( wTrustStorePassword.getText() );
-    input.setApplicationType( wApplicationType.getText() );
+    input.setAttTrustStoreFile( wTrustStoreFile.getText() );
+    input.setAttTrustStorePassword( wTrustStorePassword.getText() );
+    input.setIgnoreSsl(wIgnoreSSL.getSelection());
+    input.setAttApplicationType( wApplicationType.getText() );
     stepname = wStepname.getText(); // return value
 
     setAdditionalFieldsInMeta();

@@ -420,13 +420,13 @@ public class Rest extends BaseStep implements StepInterface {
 
       // Let's set URL
       if ( meta.isUrlInField() ) {
-        if ( Utils.isEmpty( meta.getUrlField() ) ) {
+        if ( Utils.isEmpty( meta.getAttUrlField() ) ) {
           logError( BaseMessages.getString( PKG, "Rest.Log.NoField" ) );
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Log.NoField" ) );
         }
         // cache the position of the field
         if ( data.indexOfUrlField < 0 ) {
-          String realUrlfieldName = environmentSubstitute( meta.getUrlField() );
+          String realUrlfieldName = environmentSubstitute( meta.getAttUrlField() );
           data.indexOfUrlField = data.inputRowMeta.indexOfValue( realUrlfieldName );
           if ( data.indexOfUrlField < 0 ) {
             // The field is unreachable !
@@ -440,7 +440,7 @@ public class Rest extends BaseStep implements StepInterface {
       }
       // Check Method
       if ( meta.isDynamicMethod() ) {
-        String field = environmentSubstitute( meta.getMethodFieldName() );
+        String field = environmentSubstitute( meta.getAttMethodFieldName() );
         if ( Utils.isEmpty( field ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.MethodFieldMissing" ) );
         }
@@ -514,7 +514,7 @@ public class Rest extends BaseStep implements StepInterface {
 
       // Do we need to set body
       if ( RestMeta.isActiveBody( substitutedMethod ) ) {
-        String field = environmentSubstitute( meta.getBodyField() );
+        String field = environmentSubstitute( meta.getAttBodyField() );
         if ( !Utils.isEmpty( field ) ) {
           data.indexOfBodyField = data.inputRowMeta.indexOfValue( field );
           if ( data.indexOfBodyField < 0 ) {
@@ -565,11 +565,11 @@ public class Rest extends BaseStep implements StepInterface {
       data.resultHeaderFieldName = environmentSubstitute( meta.getResponseHeaderFieldName() );
 
       // get authentication settings once
-      data.realProxyHost = environmentSubstitute( meta.getProxyHost() );
-      data.realProxyPort = Const.toInt( environmentSubstitute( meta.getProxyPort() ), 8080 );
-      data.realHttpLogin = environmentSubstitute( meta.getHttpLogin() );
+      data.realProxyHost = environmentSubstitute( meta.getAttProxyHost() );
+      data.realProxyPort = Const.toInt( environmentSubstitute( meta.getAttProxyPort() ), 8080 );
+      data.realHttpLogin = environmentSubstitute( meta.getAttHttpLogin() );
       data.realHttpPassword =
-        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) );
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getAttHttpPassword() ) );
 
       if ( !meta.isDynamicMethod() ) {
         data.method = environmentSubstitute( meta.getMethod() );
@@ -579,11 +579,11 @@ public class Rest extends BaseStep implements StepInterface {
         }
       }
 
-      data.trustStoreFile = environmentSubstitute( meta.getTrustStoreFile() );
+      data.trustStoreFile = environmentSubstitute( meta.getAttTrustStoreFile() );
       data.trustStorePassword =
-        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getTrustStorePassword() ) );
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getAttTrustStorePassword() ) );
 
-      String applicationType = Const.NVL( meta.getApplicationType(), "" );
+      String applicationType = Const.NVL( meta.getAttApplicationType(), "" );
       if ( applicationType.equals( RestMeta.APPLICATION_TYPE_XML ) ) {
         data.mediaType = MediaType.APPLICATION_XML_TYPE;
       } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_JSON ) ) {

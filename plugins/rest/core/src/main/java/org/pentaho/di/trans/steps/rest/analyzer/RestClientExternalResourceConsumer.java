@@ -77,10 +77,10 @@ public class RestClientExternalResourceConsumer extends BaseStepExternalResource
     if ( !meta.isDynamicMethod() ) {
       resourceInfo.setMethod( meta.getMethod() );
     }
-    if ( StringUtils.isNotEmpty( meta.getBodyField() ) ) {
-      resourceInfo.setBody( meta.getBodyField() );
+    if ( StringUtils.isNotEmpty( meta.getAttBodyField() ) ) {
+      resourceInfo.setBody( meta.getAttBodyField() );
     }
-    resourceInfo.setApplicationType( meta.getApplicationType() );
+    resourceInfo.setApplicationType( meta.getAttApplicationType() );
     return resourceInfo;
   }
 
@@ -100,7 +100,7 @@ public class RestClientExternalResourceConsumer extends BaseStepExternalResource
 
       try {
         if ( meta.isUrlInField() ) {
-          url = rowMeta.getString( row, meta.getUrlField(), null );
+          url = rowMeta.getString( row, meta.getAttUrlField(), null );
         } else {
           url = meta.getUrl();
         }
@@ -121,12 +121,12 @@ public class RestClientExternalResourceConsumer extends BaseStepExternalResource
             }
           }
           if ( meta.isDynamicMethod() ) {
-            method = rowMeta.getString( row, meta.getMethodFieldName(), null );
+            method = rowMeta.getString( row, meta.getAttMethodFieldName(), null );
             resourceInfo.setMethod( method );
           }
 
-          if ( StringUtils.isNotEmpty( meta.getBodyField() ) ) {
-            body = rowMeta.getString( row, meta.getBodyField(), null );
+          if ( StringUtils.isNotEmpty( meta.getAttBodyField() ) ) {
+            body = rowMeta.getString( row, meta.getAttBodyField(), null );
             resourceInfo.setBody( body );
           }
 

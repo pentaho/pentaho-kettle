@@ -191,4 +191,10 @@ public class RestTest {
     }
   }
 
+  /*
+   * We need to add the new IgnoreSSL test, but I do not see a TrustStore test here, as it was a variation of that test
+   */
+
+   //TODO: Include TrustStore and IgnoreSSL tests.
+
 }

@@ -80,7 +80,7 @@ public class RestClientStepAnalyzerTest {
   public void testGetUsedFields_urlInField() throws Exception {
     Set<StepField> fields = new HashSet<>();
     when( meta.isUrlInField() ).thenReturn( true );
-    when( meta.getUrlField() ).thenReturn( "url" );
+    when( meta.getAttUrlField() ).thenReturn( "url" );
     doReturn( stepNodes ).when( analyzer ).getInputs();
     doReturn( fields ).when( analyzer ).createStepFields( "url", stepNodes );
 
@@ -93,7 +93,7 @@ public class RestClientStepAnalyzerTest {
   public void testGetUsedFields_urlInFieldNoFieldSet() throws Exception {
     Set<StepField> fields = new HashSet<>();
     when( meta.isUrlInField() ).thenReturn( true );
-    when( meta.getUrlField() ).thenReturn( null );
+    when( meta.getAttUrlField() ).thenReturn( null );
 
     Set<StepField> usedFields = analyzer.getUsedFields( meta );
 
@@ -104,7 +104,7 @@ public class RestClientStepAnalyzerTest {
   public void testGetUsedFields_methodInField() throws Exception {
     Set<StepField> fields = new HashSet<>();
     when( meta.isDynamicMethod() ).thenReturn( true );
-    when( meta.getMethodFieldName() ).thenReturn( "method" );
+    when( meta.getAttMethodFieldName() ).thenReturn( "method" );
     doReturn( stepNodes ).when( analyzer ).getInputs();
     doReturn( fields ).when( analyzer ).createStepFields( "method", stepNodes );
 
@@ -117,7 +117,7 @@ public class RestClientStepAnalyzerTest {
   public void testGetUsedFields_methodInFieldNoFieldSet() throws Exception {
     Set<StepField> fields = new HashSet<>();
     when( meta.isDynamicMethod() ).thenReturn( true );
-    when( meta.getMethodFieldName() ).thenReturn( null );
+    when( meta.getAttMethodFieldName() ).thenReturn( null );
 
     Set<StepField> usedFields = analyzer.getUsedFields( meta );
 
@@ -127,7 +127,7 @@ public class RestClientStepAnalyzerTest {
   @Test
   public void testGetUsedFields_bodyInField() throws Exception {
     Set<StepField> fields = new HashSet<>();
-    when( meta.getBodyField() ).thenReturn( "body" );
+    when( meta.getAttBodyField() ).thenReturn( "body" );
     doReturn( stepNodes ).when( analyzer ).getInputs();
     doReturn( fields ).when( analyzer ).createStepFields( "body", stepNodes );
 

@@ -54,6 +54,24 @@ import java.util.List;
   documentationUrl = "mk-95pdia003/pdi-transformation-steps/rest-client-step", name = "Rest.name",
   description = "Rest.description", categoryDescription = "Rest.category" )
 public class RestMeta extends BaseStepMeta implements StepMetaInterface {
+
+  private static final String ATT_APPLICATION_TYPE = "applicationType";
+  private static final String ATT_HTTP_PASSWORD = "httpPassword";
+  private static final String ATT_METHOD = "method";
+  private static final String ATT_URL = "url";
+  private static final String ATT_URL_IN_FIELD = "urlInField";
+  private static final String ATT_DYNAMIC_METHOD = "dynamicMethod";
+  private static final String ATT_METHOD_FIELD_NAME = "methodFieldName";
+  private static final String ATT_URL_FIELD = "urlField";
+  private static final String ATT_BODY_FIELD = "bodyField";
+  private static final String ATT_HTTP_LOGIN = "httpLogin";
+  private static final String ATT_PROXY_HOST = "proxyHost";
+  private static final String ATT_PROXY_PORT = "proxyPort";
+  private static final String ATT_TRUST_STORE_PASSWORD = "trustStorePassword";
+  private static final String ATT_PREEMPTIVE = "preemptive";
+  private static final String ATT_TRUST_STORE_FILE = "trustStoreFile";
+  private static final String ATT_IGNORE_SSL = "ignoreSsl";
+
   private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] APPLICATION_TYPES = new String[] {
@@ -67,6 +85,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   public static final String APPLICATION_TYPE_ATOM_XML = "ATOM XML";
   public static final String APPLICATION_TYPE_SVG_XML = "SVG XML";
   public static final String APPLICATION_TYPE_TEXT_XML = "TEXT XML";
+
 
   private String applicationType;
 
@@ -145,7 +164,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return Returns the bodyField.
    */
-  public String getBodyField() {
+  public String getAttBodyField() {
     return bodyField;
   }
 
@@ -153,7 +172,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    * @param value
    *          The bodyField to set.
    */
-  public void setBodyField( String value ) {
+  public void setAttBodyField( String value ) {
     this.bodyField = value;
   }
 
@@ -310,21 +329,21 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return methodFieldName
    */
-  public String getMethodFieldName() {
+  public String getAttMethodFieldName() {
     return methodFieldName;
   }
 
   /**
    * @param methodFieldName
    */
-  public void setMethodFieldName( String methodFieldName ) {
+  public void setAttMethodFieldName( String methodFieldName ) {
     this.methodFieldName = methodFieldName;
   }
 
   /**
    * @return The field name that contains the url.
    */
-  public String getUrlField() {
+  public String getAttUrlField() {
     return urlField;
   }
 
@@ -332,7 +351,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    * @param urlField
    *          name of the field that contains the url
    */
-  public void setUrlField( String urlField ) {
+  public void setAttUrlField( String urlField ) {
     this.urlField = urlField;
   }
 
@@ -351,10 +370,19 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldName = resultName;
   }
 
+    /**
+   * Setter
+   *
+   * @param ignoreSsl
+   *          ignoreSsl is used to say that all SSL certificates are trusted.
+   */
   public boolean isIgnoreSsl() {
     return ignoreSsl;
   }
 
+  /**
+   * @return Returns the ignoreSsl value.
+   */
   public void setIgnoreSsl(boolean ignoreSsl) {
     this.ignoreSsl = ignoreSsl;
   }
@@ -409,6 +437,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     this.dynamicMethod = false;
     this.methodFieldName = null;
     this.preemptive = false;
+    this.ignoreSsl = false;
     this.trustStoreFile = null;
     this.trustStorePassword = null;
     this.applicationType = APPLICATION_TYPE_TEXT_PLAIN;
@@ -447,26 +476,27 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
-    retval.append( "    " ).append( XMLHandler.addTagValue( "applicationType", applicationType ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "method", method ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "url", url ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "urlInField", urlInField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "dynamicMethod", dynamicMethod ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "methodFieldName", methodFieldName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_APPLICATION_TYPE, applicationType ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_METHOD, method ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_URL, url ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_URL_IN_FIELD, urlInField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_DYNAMIC_METHOD, dynamicMethod ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_METHOD_FIELD_NAME, methodFieldName ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "urlField", urlField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "bodyField", bodyField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "httpLogin", httpLogin ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_URL_FIELD, urlField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_BODY_FIELD, bodyField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_HTTP_LOGIN, httpLogin ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "httpPassword", Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
+        XMLHandler.addTagValue( ATT_HTTP_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyHost", proxyHost ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyPort", proxyPort ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "preemptive", preemptive ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_PROXY_HOST, proxyHost ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_PROXY_PORT, proxyPort ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_PREEMPTIVE, preemptive ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "trustStoreFile", trustStoreFile ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_TRUST_STORE_FILE, trustStoreFile ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATT_IGNORE_SSL, ignoreSsl ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "trustStorePassword", Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
+        XMLHandler.addTagValue( ATT_TRUST_STORE_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
 
     retval.append( "    <headers>" ).append( Const.CR );
     for ( int i = 0, len = ( headerName != null ? headerName.length : 0 ); i < len; i++ ) {
@@ -507,25 +537,26 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
-      applicationType = XMLHandler.getTagValue( stepnode, "applicationType" );
-      method = XMLHandler.getTagValue( stepnode, "method" );
-      url = XMLHandler.getTagValue( stepnode, "url" );
-      urlInField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "urlInField" ) );
-      methodFieldName = XMLHandler.getTagValue( stepnode, "methodFieldName" );
+      applicationType = XMLHandler.getTagValue( stepnode, ATT_APPLICATION_TYPE );
+      method = XMLHandler.getTagValue( stepnode, ATT_METHOD );
+      url = XMLHandler.getTagValue( stepnode, ATT_URL );
+      urlInField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ATT_URL_IN_FIELD ) );
+      methodFieldName = XMLHandler.getTagValue( stepnode, ATT_METHOD_FIELD_NAME );
 
-      dynamicMethod = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "dynamicMethod" ) );
-      urlField = XMLHandler.getTagValue( stepnode, "urlField" );
-      bodyField = XMLHandler.getTagValue( stepnode, "bodyField" );
-      httpLogin = XMLHandler.getTagValue( stepnode, "httpLogin" );
-      httpPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "httpPassword" ) );
+      dynamicMethod = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ATT_DYNAMIC_METHOD ) );
+      urlField = XMLHandler.getTagValue( stepnode, ATT_URL_FIELD );
+      bodyField = XMLHandler.getTagValue( stepnode, ATT_BODY_FIELD );
+      httpLogin = XMLHandler.getTagValue( stepnode, ATT_HTTP_LOGIN );
+      httpPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, ATT_HTTP_PASSWORD ) );
 
-      proxyHost = XMLHandler.getTagValue( stepnode, "proxyHost" );
-      proxyPort = XMLHandler.getTagValue( stepnode, "proxyPort" );
-      preemptive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "preemptive" ) );
+      proxyHost = XMLHandler.getTagValue( stepnode, ATT_PROXY_HOST );
+      proxyPort = XMLHandler.getTagValue( stepnode, ATT_PROXY_PORT );
+      preemptive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ATT_PREEMPTIVE ) );
 
-      trustStoreFile = XMLHandler.getTagValue( stepnode, "trustStoreFile" );
+      ignoreSsl = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ATT_IGNORE_SSL ) ); 
+      trustStoreFile = XMLHandler.getTagValue( stepnode, ATT_TRUST_STORE_FILE );
       trustStorePassword =
-          Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "trustStorePassword" ) );
+          Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, ATT_TRUST_STORE_PASSWORD ) );
 
       Node headernode = XMLHandler.getSubNode( stepnode, "headers" );
       int nrheaders = XMLHandler.countNodes( headernode, "header" );
@@ -563,27 +594,28 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
-      applicationType = rep.getStepAttributeString( id_step, "applicationType" );
-      method = rep.getStepAttributeString( id_step, "method" );
-      url = rep.getStepAttributeString( id_step, "url" );
-      urlInField = rep.getStepAttributeBoolean( id_step, "urlInField" );
+      applicationType = rep.getStepAttributeString( id_step, ATT_APPLICATION_TYPE );
+      method = rep.getStepAttributeString( id_step, ATT_METHOD );
+      url = rep.getStepAttributeString( id_step, ATT_URL );
+      urlInField = rep.getStepAttributeBoolean( id_step, ATT_URL_IN_FIELD );
 
-      methodFieldName = rep.getStepAttributeString( id_step, "methodFieldName" );
-      dynamicMethod = rep.getStepAttributeBoolean( id_step, "dynamicMethod" );
-      urlField = rep.getStepAttributeString( id_step, "urlField" );
-      bodyField = rep.getStepAttributeString( id_step, "bodyField" );
-      httpLogin = rep.getStepAttributeString( id_step, "httpLogin" );
+      methodFieldName = rep.getStepAttributeString( id_step, ATT_METHOD_FIELD_NAME );
+      dynamicMethod = rep.getStepAttributeBoolean( id_step, ATT_DYNAMIC_METHOD );
+      urlField = rep.getStepAttributeString( id_step, ATT_URL_FIELD );
+      bodyField = rep.getStepAttributeString( id_step, ATT_BODY_FIELD );
+      httpLogin = rep.getStepAttributeString( id_step, ATT_HTTP_LOGIN );
       httpPassword =
-        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "httpPassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, ATT_HTTP_PASSWORD ) );
 
-      proxyHost = rep.getStepAttributeString( id_step, "proxyHost" );
-      proxyPort = rep.getStepAttributeString( id_step, "proxyPort" );
+      proxyHost = rep.getStepAttributeString( id_step, ATT_PROXY_HOST );
+      proxyPort = rep.getStepAttributeString( id_step, ATT_PROXY_PORT );
 
-      trustStoreFile = rep.getStepAttributeString( id_step, "trustStoreFile" );
+      ignoreSsl = "Y".equalsIgnoreCase( rep.getStepAttributeString( id_step, ATT_IGNORE_SSL) ); 
+      trustStoreFile = rep.getStepAttributeString( id_step, ATT_TRUST_STORE_FILE );
       trustStorePassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "trustStorePassword" ) );
+          Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, ATT_TRUST_STORE_PASSWORD ) );
 
-      preemptive = rep.getStepAttributeBoolean( id_step, "preemptive" );
+      preemptive = rep.getStepAttributeBoolean( id_step, ATT_PREEMPTIVE );
       int nrheaders = rep.countNrStepAttributes( id_step, "header_field" );
       int nrparams = rep.countNrStepAttributes( id_step, "parameter_field" );
       int nrmatrixparams = rep.countNrStepAttributes( id_step, "matrix_parameter_field" );
@@ -615,27 +647,28 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
-      rep.saveStepAttribute( id_transformation, id_step, "applicationType", applicationType );
-      rep.saveStepAttribute( id_transformation, id_step, "method", method );
-      rep.saveStepAttribute( id_transformation, id_step, "url", url );
-      rep.saveStepAttribute( id_transformation, id_step, "methodFieldName", methodFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_APPLICATION_TYPE, applicationType );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_METHOD, method );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_URL, url );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_METHOD_FIELD_NAME, methodFieldName );
 
-      rep.saveStepAttribute( id_transformation, id_step, "dynamicMethod", dynamicMethod );
-      rep.saveStepAttribute( id_transformation, id_step, "urlInField", urlInField );
-      rep.saveStepAttribute( id_transformation, id_step, "urlField", urlField );
-      rep.saveStepAttribute( id_transformation, id_step, "bodyField", bodyField );
-      rep.saveStepAttribute( id_transformation, id_step, "httpLogin", httpLogin );
-      rep.saveStepAttribute( id_transformation, id_step, "httpPassword", Encr
+      rep.saveStepAttribute( id_transformation, id_step, ATT_DYNAMIC_METHOD, dynamicMethod );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_URL_IN_FIELD, urlInField );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_URL_FIELD, urlField );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_BODY_FIELD, bodyField );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_HTTP_LOGIN, httpLogin );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_HTTP_PASSWORD, Encr
         .encryptPasswordIfNotUsingVariables( httpPassword ) );
 
-      rep.saveStepAttribute( id_transformation, id_step, "proxyHost", proxyHost );
-      rep.saveStepAttribute( id_transformation, id_step, "proxyPort", proxyPort );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_PROXY_HOST, proxyHost );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_PROXY_PORT, proxyPort );
 
-      rep.saveStepAttribute( id_transformation, id_step, "trustStoreFile", trustStoreFile );
-      rep.saveStepAttribute( id_transformation, id_step, "trustStorePassword", Encr
+      rep.saveStepAttribute( id_transformation, id_step, ATT_IGNORE_SSL, ignoreSsl );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_TRUST_STORE_FILE, trustStoreFile );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_TRUST_STORE_PASSWORD, Encr
           .encryptPasswordIfNotUsingVariables( trustStorePassword ) );
 
-      rep.saveStepAttribute( id_transformation, id_step, "preemptive", preemptive );
+      rep.saveStepAttribute( id_transformation, id_step, ATT_PREEMPTIVE, preemptive );
       for ( int i = 0; i < headerName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "header_field", headerField[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "header_name", headerName[i] );
@@ -764,7 +797,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @param proxyHost
    */
-  public void setProxyHost( String proxyHost ) {
+  public void setAttProxyHost( String proxyHost ) {
     this.proxyHost = proxyHost;
   }
 
@@ -773,7 +806,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return
    */
-  public String getProxyHost() {
+  public String getAttProxyHost() {
     return proxyHost;
   }
 
@@ -782,7 +815,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @param proxyPort
    */
-  public void setProxyPort( String proxyPort ) {
+  public void setAttProxyPort( String proxyPort ) {
     this.proxyPort = proxyPort;
   }
 
@@ -791,7 +824,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return
    */
-  public String getProxyPort() {
+  public String getAttProxyPort() {
     return this.proxyPort;
   }
 
@@ -800,7 +833,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @param applicationType
    */
-  public void setApplicationType( String applicationType ) {
+  public void setAttApplicationType( String applicationType ) {
     this.applicationType = applicationType;
   }
 
@@ -809,7 +842,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return
    */
-  public String getApplicationType() {
+  public String getAttApplicationType() {
     return applicationType;
   }
 
@@ -818,7 +851,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @param httpLogin
    */
-  public void setHttpLogin( String httpLogin ) {
+  public void setAttHttpLogin( String httpLogin ) {
     this.httpLogin = httpLogin;
   }
 
@@ -827,7 +860,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return
    */
-  public String getHttpLogin() {
+  public String getAttHttpLogin() {
     return httpLogin;
   }
 
@@ -836,7 +869,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @param httpPassword
    */
-  public void setHttpPassword( String httpPassword ) {
+  public void setAttHttpPassword( String httpPassword ) {
     this.httpPassword = httpPassword;
   }
 
@@ -844,7 +877,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return
    */
-  public String getHttpPassword() {
+  public String getAttHttpPassword() {
     return httpPassword;
   }
 
@@ -853,7 +886,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @param trustStoreFile
    */
-  public void setTrustStoreFile( String trustStoreFile ) {
+  public void setAttTrustStoreFile( String trustStoreFile ) {
     this.trustStoreFile = trustStoreFile;
   }
 
@@ -861,7 +894,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return trustStoreFile
    */
-  public String getTrustStoreFile() {
+  public String getAttTrustStoreFile() {
     return trustStoreFile;
   }
 
@@ -870,7 +903,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @param trustStorePassword
    */
-  public void setTrustStorePassword( String trustStorePassword ) {
+  public void setAttTrustStorePassword( String trustStorePassword ) {
     this.trustStorePassword = trustStorePassword;
   }
 
@@ -878,7 +911,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return trustStorePassword
    */
-  public String getTrustStorePassword() {
+  public String getAttTrustStorePassword() {
     return trustStorePassword;
   }
 

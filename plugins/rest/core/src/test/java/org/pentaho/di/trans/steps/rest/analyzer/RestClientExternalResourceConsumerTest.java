@@ -72,7 +72,7 @@ public class RestClientExternalResourceConsumerTest {
   @Test
   public void testGetResourcesFromRow() throws Exception {
     when( meta.isUrlInField() ).thenReturn( true );
-    when( meta.getUrlField() ).thenReturn( "url" );
+    when( meta.getAttUrlField() ).thenReturn( "url" );
     when( meta.getHeaderField() ).thenReturn( headerFields );
     when( meta.getParameterField() ).thenReturn( paramFields );
     when( meta.getHeaderName() ).thenReturn( headerNames );
@@ -93,12 +93,12 @@ public class RestClientExternalResourceConsumerTest {
   @Test
   public void testGetResourcesFromRow_fieldsForMethodAndBody() throws Exception {
     when( meta.isUrlInField() ).thenReturn( true );
-    when( meta.getUrlField() ).thenReturn( "url" );
+    when( meta.getAttUrlField() ).thenReturn( "url" );
     when( meta.getHeaderField() ).thenReturn( null );
     when( meta.getParameterField() ).thenReturn( null );
     when( meta.isDynamicMethod() ).thenReturn( true );
-    when( meta.getMethodFieldName() ).thenReturn( "method" );
-    when( meta.getBodyField() ).thenReturn( "body" );
+    when( meta.getAttMethodFieldName() ).thenReturn( "method" );
+    when( meta.getAttBodyField() ).thenReturn( "body" );
     when( rmi.getString( row, "method", null ) ).thenReturn( row[ 2 ].toString() );
     when( rmi.getString( row, "body", null ) ).thenReturn( row[ 2 ].toString() );
 
