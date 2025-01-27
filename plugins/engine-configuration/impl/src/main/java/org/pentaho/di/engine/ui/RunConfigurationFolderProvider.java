@@ -19,7 +19,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.i18n.BaseMessages;
@@ -50,7 +49,9 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
     GUIResource guiResource = GUIResource.getInstance();
     Set<String> bowlNames = new HashSet<>();
     Bowl currentBowl = Spoon.getInstance().getBowl();
-    if ( !currentBowl.equals( DefaultBowl.getInstance() ) ) {
+    Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
+
+    if ( !currentBowl.equals( globalBowl ) ) {
       RunConfigurationDelegate bowlDelegate =
         RunConfigurationDelegate.getInstance( () -> currentBowl.getMetastore() );
       for ( RunConfiguration runConfiguration : bowlDelegate.load() ) {
@@ -71,7 +72,7 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
     }
 
     RunConfigurationDelegate globalDelegate =
-      RunConfigurationDelegate.getInstance( () -> DefaultBowl.getInstance().getMetastore() );
+      RunConfigurationDelegate.getInstance( () -> globalBowl.getMetastore() );
 
     for ( RunConfiguration runConfiguration : globalDelegate.load() ) {
       if ( !filterMatch( runConfiguration.getName(), filter ) ) {

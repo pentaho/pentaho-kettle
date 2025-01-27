@@ -16,7 +16,6 @@ package org.pentaho.di.ui.spoon.tree.provider;
 import org.eclipse.swt.graphics.Image;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
@@ -59,11 +58,11 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
   @Override
   public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
     Bowl currentBowl = Spoon.getInstance().getBowl();
-
+    Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
     List<PartitionSchema> partitionSchemas;
     try {
       Set<String> projectSchemaNames = new HashSet<>();
-      if ( currentBowl != DefaultBowl.getInstance() ) {
+      if ( currentBowl != globalBowl ) {
         PartitionSchemaManagementInterface partitionManager = currentBowl.getManager( PartitionSchemaManagementInterface.class );
 
         partitionSchemas = partitionManager.getAll();
@@ -78,7 +77,7 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
       }
 
       // Global
-      PartitionSchemaManagementInterface globalPartitionManager = DefaultBowl.getInstance().getManager( PartitionSchemaManagementInterface.class );
+      PartitionSchemaManagementInterface globalPartitionManager = globalBowl.getManager( PartitionSchemaManagementInterface.class );
       Set<String> globalSchemaNames = new HashSet<>();
       partitionSchemas = globalPartitionManager.getAll();
       for ( PartitionSchema partitionSchema : partitionSchemas ) {

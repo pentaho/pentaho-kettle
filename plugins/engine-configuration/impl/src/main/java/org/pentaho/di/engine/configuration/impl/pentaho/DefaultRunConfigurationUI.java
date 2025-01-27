@@ -30,7 +30,6 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.configuration.api.RunConfigurationDialog;
@@ -367,12 +366,14 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
       try {
         // Get the slave servers for the project
         Bowl currentBowl = spoonSupplier.get().getBowl();
-        if ( currentBowl != DefaultBowl.getInstance() ) {
+        Bowl globalBowl = spoonSupplier.get().getGlobalManagementBowl();
+
+        if ( currentBowl != globalBowl ) {
           slaveServers = currentBowl.getManager( SlaveServerManagementInterface.class ).getAll();
         }
 
         // Add any  global slave servers to the list
-        List<SlaveServer> globalServers = DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class ).getAll();
+        List<SlaveServer> globalServers = globalBowl.getManager( SlaveServerManagementInterface.class ).getAll();
         for ( SlaveServer slaveServer : globalServers ) {
           if ( !slaveServers.contains( slaveServer ) ) {
             slaveServers.add( slaveServer );
