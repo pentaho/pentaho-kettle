@@ -38,6 +38,7 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -184,6 +185,7 @@ public class StepWithMappingMetaTest {
 
 
     Repository rep = mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
     Mockito.doReturn( Mockito.mock( RepositoryDirectoryInterface.class ) ).when( rep ).findDirectory( anyString() );
 
     TransMeta child = new TransMeta();
@@ -370,6 +372,7 @@ public class StepWithMappingMetaTest {
     Mockito.when( mappingMetaMock.getParentStepMeta() ).thenReturn( stepMeta );
 
     Repository rep = mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
     RepositoryDirectoryInterface directoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
     Mockito.doReturn( directoryInterface ).when( rep ).findDirectory( anyString() );
     Mockito.doReturn( new TransMeta() ).when( rep )

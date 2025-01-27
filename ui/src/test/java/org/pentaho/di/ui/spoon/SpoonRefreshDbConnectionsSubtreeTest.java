@@ -80,6 +80,7 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
 
     treeNode = new TreeNode();
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getGlobalManagementBowl();
     when( mockDefaultBowl.getManager( DatabaseManagementInterface.class ) ).thenReturn( mockDbManager );
   }
 

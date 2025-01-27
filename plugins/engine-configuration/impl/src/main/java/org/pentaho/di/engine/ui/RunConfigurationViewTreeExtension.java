@@ -31,7 +31,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -61,7 +60,7 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
 
         Bowl bowl;
         if ( level.equals( LeveledTreeNode.LEVEL.GLOBAL ) ) {
-          bowl = DefaultBowl.getInstance();
+          bowl = Spoon.getInstance().getGlobalManagementBowl();
         } else {
           bowl = Spoon.getInstance().getBowl();
         }

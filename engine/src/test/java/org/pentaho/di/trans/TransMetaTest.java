@@ -49,6 +49,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
@@ -492,6 +493,7 @@ public class TransMetaTest {
     Mockito.when( jobNode.getChildNodes() ).thenReturn( nodeList );
 
     Repository rep = Mockito.mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
     RepositoryDirectory repDirectory =
       new RepositoryDirectory( new RepositoryDirectory( new RepositoryDirectory(), "home" ), "admin" );
     Mockito.when( rep.findDirectory( Mockito.eq( directory ) ) ).thenReturn( repDirectory );
@@ -847,7 +849,9 @@ public class TransMetaTest {
     RepositoryDirectoryInterface path = mock( RepositoryDirectoryInterface.class );
 
     when( path.getPath() ).thenReturn( "aPath" );
-    transMetaTest.setRepository( mock( Repository.class ) );
+    Repository rep = mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
+    transMetaTest.setRepository( rep );
     transMetaTest.setRepositoryDirectory( path );
     transMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
     transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );

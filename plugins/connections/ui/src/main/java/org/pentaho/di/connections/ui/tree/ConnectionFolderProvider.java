@@ -26,7 +26,6 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
@@ -60,7 +59,9 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
     try {
       Set<String> bowlNames = new HashSet<>();
       Bowl currentBowl = Spoon.getInstance().getBowl();
-      if ( !currentBowl.equals( DefaultBowl.getInstance() ) ) {
+      Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
+
+      if ( !currentBowl.equals( globalBowl ) ) {
         ConnectionManager bowlCM = currentBowl.getManager( ConnectionManager.class );
         for ( String name : bowlCM.getNames() ) {
           if ( !filterMatch( name, filter ) ) {
@@ -72,7 +73,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
         }
       }
 
-      ConnectionManager globalCM = DefaultBowl.getInstance().getManager( ConnectionManager.class );
+      ConnectionManager globalCM = globalBowl.getManager( ConnectionManager.class );
       for ( String name : globalCM.getNames() ) {
         if ( !filterMatch( name, filter ) ) {
           continue;

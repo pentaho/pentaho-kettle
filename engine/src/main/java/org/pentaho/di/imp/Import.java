@@ -347,11 +347,6 @@ public class Import {
       Utils.isEmpty( optionContinueOnError ) ? false : ValueMetaString.convertStringToBoolean( optionContinueOnError
         .toString() );
 
-    // prepare the Bowl for the repository
-    DefaultBowl.getInstance().setSharedObjectsIO( new RepositorySharedObjectsIO( repository, () ->
-          DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class ).getAll() ) );
-    DefaultBowl.getInstance().clearManagers();
-
     // Start the import!
     //
     log.logMinimal( BaseMessages.getString( PKG, "Import.Log.Starting" ) );

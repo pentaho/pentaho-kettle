@@ -73,6 +73,7 @@ public class SpoonRefreshClustersSubtreeTest {
     when( GUIResource.getInstance() ).thenReturn( mockGuiResource );
     when( DefaultBowl.getInstance() ).thenReturn( mockDefaultBowl );
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getGlobalManagementBowl();
     mockClusterSchemaManager = mock( ClusterSchemaManager.class );
     when( mockDefaultBowl.getManager( ClusterSchemaManagementInterface.class ) ).thenReturn( mockClusterSchemaManager );
 

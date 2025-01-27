@@ -18,7 +18,6 @@
 package org.pentaho.di.ui.spoon.tree;
 
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -37,6 +36,7 @@ public class TreePopupMenuProvider {
   public void createSharedObjectMenuItems( XulDomContainer mainSpoonContainer,
       SpoonTreeLeveledSelection leveledSelection, String menubarPrefix ) {
     Bowl currentBowl = Spoon.getInstance().getBowl();
+    Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
 
     XulMenuitem moveProjectItem =
       (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( menubarPrefix + "-inst-move-project"  );
@@ -50,7 +50,7 @@ public class TreePopupMenuProvider {
       }
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-        if ( currentBowl != DefaultBowl.getInstance() ) {
+        if ( currentBowl != globalBowl ) {
           moveProjectItem.setVisible( true );
           moveGlobalItem.setVisible( false );
         } else {
@@ -59,7 +59,7 @@ public class TreePopupMenuProvider {
         }
       }
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
-        if ( currentBowl == DefaultBowl.getInstance() ) {
+        if ( currentBowl == globalBowl ) {
           moveGlobalItem.setVisible( true );
           moveProjectItem.setVisible( false );
         } else {
@@ -80,7 +80,7 @@ public class TreePopupMenuProvider {
       }
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-        if ( currentBowl != DefaultBowl.getInstance() ) {
+        if ( currentBowl != globalBowl ) {
           copyProjectItem.setVisible( true );
           copyGlobalItem.setVisible( false );
         } else {
@@ -89,7 +89,7 @@ public class TreePopupMenuProvider {
         }
       }
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
-        if ( currentBowl == DefaultBowl.getInstance() ) {
+        if ( currentBowl == globalBowl ) {
           copyGlobalItem.setVisible( true );
           copyProjectItem.setVisible( false );
         } else {

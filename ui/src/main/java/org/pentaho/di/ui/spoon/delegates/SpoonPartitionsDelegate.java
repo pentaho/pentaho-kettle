@@ -27,7 +27,6 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -135,7 +134,7 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
 
   public void moveToGlobal( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
     throws KettleException {
-    moveCopy( partitionSchemaManager, DefaultBowl.getInstance().getManager( PartitionSchemaManagementInterface.class ), partitionSchema, true,
+    moveCopy( partitionSchemaManager, spoon.getGlobalManagementBowl().getManager( PartitionSchemaManagementInterface.class ), partitionSchema, true,
       "Spoon.Message.OverwritePartitionSchemaYN" );
   }
 
@@ -147,7 +146,7 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
 
   public void copyToGlobal( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
     throws KettleException {
-    moveCopy( partitionSchemaManager, DefaultBowl.getInstance().getManager( PartitionSchemaManagementInterface.class ), partitionSchema, false,
+    moveCopy( partitionSchemaManager, spoon.getGlobalManagementBowl().getManager( PartitionSchemaManagementInterface.class ), partitionSchema, false,
       "Spoon.Message.OverwritePartitionSchemaYN" );
   }
 

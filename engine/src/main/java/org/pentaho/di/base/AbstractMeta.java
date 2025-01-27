@@ -470,6 +470,11 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   @Override
   public void setRepository( Repository repository ) {
     this.repository = repository;
+    if ( repository != null ) {
+      setBowl( repository.getBowl() );
+    } else {
+      setBowl( DefaultBowl.getInstance() );
+    }
   }
 
   /**

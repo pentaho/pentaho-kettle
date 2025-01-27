@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -154,7 +153,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
       } );
     }
 
-    if ( runConfigurationTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL && spoonSupplier.get().getBowl() != DefaultBowl.getInstance() ) {
+    if ( runConfigurationTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL &&
+         spoonSupplier.get().getBowl() != spoonSupplier.get().getGlobalManagementBowl() ) {
       MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
       moveMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.MoveToProject" ) );
       moveMenuItem.addSelectionListener( new SelectionAdapter() {
@@ -212,9 +212,9 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
   private Bowl getEventBowl() {
     // Edit and Delete use the bowl that the item is in
     if ( runConfigurationTreeItem.getLevel().equals( LeveledTreeNode.LEVEL.GLOBAL ) ) {
-      return DefaultBowl.getInstance();
+      return spoonSupplier.get().getGlobalManagementBowl();
     } else {
-      return Spoon.getInstance().getBowl();
+      return spoonSupplier.get().getBowl();
     }
   }
 }

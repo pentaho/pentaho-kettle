@@ -230,6 +230,8 @@ public class RepositoryImporterTest {
                                                               StepMetaInterface stepMetaInterface,
                                                               final boolean needToCheckPathForVariables ) {
     Repository repository = mock( Repository.class );
+    when( repository.getBowl() ).thenReturn( new RepositoryBowl( repository ) );
+
     LogChannelInterface log = mock( LogChannelInterface.class );
     RepositoryImporter importer = new RepositoryImporter( repository, log ) {
 

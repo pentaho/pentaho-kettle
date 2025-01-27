@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -768,4 +769,12 @@ public interface Repository {
    * @return repository for connect to server
    */
   public IUnifiedRepository getUnderlyingRepository();
+
+  /**
+   * Get a Bowl that represents context for the repository. Metastore and SharedObjects will come from the repository.
+   *
+   *
+   * @return Bowl
+   */
+  Bowl getBowl();
 }

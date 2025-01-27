@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -426,7 +425,7 @@ public class JobEntryDialog extends Dialog {
           DatabaseManagementInterface dbMgr =
             spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
           DatabaseManagementInterface globalDbMgr =
-            DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
+            spoonSupplier.get().getGlobalManagementBowl().getManager( DatabaseManagementInterface.class );
           DatabaseManagementInterface jobDbMgr = jobMeta.getDatabaseManagementInterface();
 
           if ( applicableDbMgr == null && dbMgr.get( originalName ) != null ) {

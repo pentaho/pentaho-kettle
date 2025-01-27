@@ -29,7 +29,6 @@ import org.pentaho.di.connections.ui.dialog.ConnectionDeleteDialog;
 import org.pentaho.di.connections.ui.dialog.ConnectionOverwriteDialog;
 import org.pentaho.di.connections.ui.tree.ConnectionFolderProvider;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -128,19 +127,19 @@ public class ConnectionDelegate {
   }
 
   public void copyToGlobal( String name ) {
-    moveCopy( name, spoonSupplier.get().getBowl(), DefaultBowl.getInstance(), false );
+    moveCopy( name, spoonSupplier.get().getBowl(), spoonSupplier.get().getGlobalManagementBowl(), false );
   }
 
   public void copyToProject( String name ) {
-    moveCopy( name, DefaultBowl.getInstance(), spoonSupplier.get().getBowl(), false );
+    moveCopy( name, spoonSupplier.get().getGlobalManagementBowl(), spoonSupplier.get().getBowl(), false );
   }
 
   public void moveToGlobal( String name ) {
-    moveCopy( name, spoonSupplier.get().getBowl(), DefaultBowl.getInstance(), true );
+    moveCopy( name, spoonSupplier.get().getBowl(), spoonSupplier.get().getGlobalManagementBowl(), true );
   }
 
   public void moveToProject( String name ) {
-    moveCopy( name, DefaultBowl.getInstance(), spoonSupplier.get().getBowl(), true );
+    moveCopy( name, spoonSupplier.get().getGlobalManagementBowl(), spoonSupplier.get().getBowl(), true );
   }
 
   private void moveCopy( String name, Bowl sourceBowl, Bowl targetBowl, boolean deleteSource ) {
@@ -173,7 +172,7 @@ public class ConnectionDelegate {
     if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
       return spoon.getBowl();
     } else {
-      return DefaultBowl.getInstance();
+      return spoon.getGlobalManagementBowl();
     }
   }
 

@@ -18,6 +18,7 @@ package org.pentaho.di.repository.pur.provider;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -179,6 +180,11 @@ public class PurRepositoryProxy implements Repository {
   @Override
   public void init( RepositoryMeta repositoryMeta ) {
     getDelegate().init( repositoryMeta );
+  }
+
+  @Override
+  public Bowl getBowl() {
+    return getDelegate().getBowl();
   }
 
   @Override

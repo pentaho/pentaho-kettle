@@ -32,7 +32,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.NotePadMeta;
@@ -235,7 +234,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
   }
 
   public void moveToGlobal( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {
-    moveCopy( dbManager, DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class ), databaseMeta, true );
+    moveCopy( dbManager, spoon.getGlobalManagementBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, true );
   }
 
   public void moveToProject( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {
@@ -243,7 +242,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
   }
 
   public void copyToGlobal( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {
-    moveCopy( dbManager, DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class ), databaseMeta, false );
+    moveCopy( dbManager, spoon.getGlobalManagementBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, false );
   }
 
   public void copyToProject( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {

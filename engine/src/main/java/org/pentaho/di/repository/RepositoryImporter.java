@@ -41,7 +41,6 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -496,7 +495,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     throws KettleException {
 
     SharedObjectsManagementInterface<T> srcManager = source.getSharedObjectManager( managerClass );
-    SharedObjectsManagementInterface<T> tgtManager = DefaultBowl.getInstance().getManager( managerClass );
+    SharedObjectsManagementInterface<T> tgtManager = rep.getBowl().getManager( managerClass );
 
     for ( T srcObject : srcManager.getAll() ) {
       T destObject = tgtManager.get( srcObject.getName() );
@@ -549,7 +548,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   }
 
   void patchTransDatabaseConnections( TransMeta transMeta ) throws KettleException {
-    DatabaseManagementInterface dbMgr = DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
+    DatabaseManagementInterface dbMgr = rep.getBowl().getManager( DatabaseManagementInterface.class );
     for ( DatabaseMeta storedDB : dbMgr.getAll() ) {
       transMeta.databaseUpdated( storedDB.getName() );
     }
@@ -633,6 +632,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     // Load transformation from XML into a directory, possibly created!
     //
     TransMeta transMeta = createTransMetaForNode( transnode ); // ignore shared objects
+    transMeta.setRepository( rep );
     feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportTrans.Label", Integer
         .toString( transformationNumber ), transMeta.getName() ) );
 
@@ -673,7 +673,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
 
     if ( existingId == null || overwrite ) {
       filterSharedObjects( transMeta );
-      SharedObjectUtil.moveAllSharedObjects( transMeta, DefaultBowl.getInstance() );
+      SharedObjectUtil.moveAllSharedObjects( transMeta, rep.getBowl() );
 
       transMeta.setObjectId( existingId );
       transMeta.setRepositoryDirectory( targetDirectory );
@@ -738,6 +738,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     // Load the job from the XML node.
     //
     JobMeta jobMeta = createJobMetaForNode( jobnode );
+    jobMeta.setRepository( rep );
     feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportJob.Label",
         Integer.toString( jobNumber ), jobMeta.getName() ) );
     validateImportedElement( importRules, jobMeta );
@@ -780,7 +781,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
 
     if ( existintId == null || overwrite ) {
       filterSharedObjects( jobMeta );
-      SharedObjectUtil.moveAllSharedObjects( jobMeta, DefaultBowl.getInstance() );
+      SharedObjectUtil.moveAllSharedObjects( jobMeta, rep.getBowl() );
 
       jobMeta.setRepositoryDirectory( targetDirectory );
       jobMeta.setObjectId( existintId );

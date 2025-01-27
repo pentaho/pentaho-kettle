@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.shared.MemorySharedObjectsIO;
 import org.pentaho.platform.api.repository2.unified.ConverterException;
@@ -65,6 +66,8 @@ public class StreamToJobNodeConverterTest {
 
     Repository repository = mock( Repository.class );
     when( repository.loadJob( any( StringObjectId.class ), anyString() ) ).thenReturn( jobMeta );
+    when( repository.getBowl() ).thenReturn( new RepositoryBowl( repository ) );
+
 
     StreamToJobNodeConverter jobNodeConverter = new StreamToJobNodeConverter( pur );
     jobNodeConverter = spy( jobNodeConverter );

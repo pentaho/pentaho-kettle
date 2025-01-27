@@ -60,6 +60,7 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.MemorySharedObjectsIO;
@@ -122,6 +123,7 @@ public class AbstractMetaTest {
     meta = new AbstractMetaStub();
     objectId = mock( ObjectId.class );
     repo = mock( Repository.class );
+    when( repo.getBowl() ).thenReturn( new RepositoryBowl( repo ) );
   }
 
   @Test

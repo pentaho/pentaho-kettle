@@ -25,7 +25,6 @@ package org.pentaho.di.ui.spoon.tree.provider;
 import org.eclipse.swt.graphics.Image;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -66,9 +65,10 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
   @Override
   public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
     Bowl currentBowl = Spoon.getInstance().getBowl();
+    Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
     try {
       Set<String> projectDbNames = new HashSet<>();
-      if ( currentBowl != DefaultBowl.getInstance() ) {
+      if ( currentBowl != globalBowl ) {
 
         DatabaseManagementInterface dbManager = currentBowl.getManager( DatabaseManagementInterface.class );
         DatabasesCollector collector = new DatabasesCollector( dbManager, null );
@@ -84,7 +84,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
         }
       }
       // Global
-      DatabaseManagementInterface globalDbConnMgr = DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
+      DatabaseManagementInterface globalDbConnMgr = globalBowl.getManager( DatabaseManagementInterface.class );
       DatabasesCollector collector = new DatabasesCollector( globalDbConnMgr, null );
       Set<String> globalDbNames = new HashSet<>();
       for ( String name : collector.getDatabaseNames() ) {
