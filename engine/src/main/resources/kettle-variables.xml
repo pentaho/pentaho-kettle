@@ -668,4 +668,11 @@
     <variable>KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE</variable>
     <default-value>Y</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>Sets the maximum size for in-memory byte arrays in Apache POI.</description>
+    <variable>POI_BYTE_ARRAY_MAX_SIZE</variable>
+    <default-value>157286400</default-value>
+  </kettle-variable>
+
 </kettle-variables>
