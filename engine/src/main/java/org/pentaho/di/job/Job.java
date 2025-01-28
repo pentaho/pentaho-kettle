@@ -911,6 +911,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       throw threadExceptions.poll();
     }
 
+    // In parallel execution, we aggregate all the results, simply add them to
+    // the previous result...
+    //
+    for ( Result threadResult : threadResults ) {
+      res.add( threadResult );
+    }
+
     // If there have been errors, logically, we need to set the result to
     // "false"...
     //
