@@ -2,7 +2,7 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2024-2025 by Hitachi Vantara, LLC : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
@@ -50,6 +50,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -92,6 +93,10 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
     // get next row
     Object[] r = getRow();
+    //default value for maximum allowed size we are maintaining 150MB  150 * 1024 * 1024
+    int maxSize = Const.toInt( EnvUtil.getSystemProperty( Const.POI_BYTE_ARRAY_MAX_SIZE ), 157286400 );
+    // Increase the maximum allowed size
+    org.apache.poi.util.IOUtils.setByteArrayMaxOverride( maxSize );
 
     // first row initialization
     if ( first ) {
