@@ -668,8 +668,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
           logDebug(
             BaseMessages.getString( PKG, "JobFTPPUT.Log.UnableToReadLocalDirectoryExtended", realLocalDirectory,
               Files.isReadable( localFiles.toPath() ) ) );
-        } else if ( log.isDetailed() ) {
-          logDetailed(
+        } else if ( log.isBasic() ) {
+          logBasic(
             BaseMessages.getString( PKG, "JobFTPPUT.Log.UnableToReadLocalDirectory", realLocalDirectory ) );
         }
         files = Collections.emptyList();
