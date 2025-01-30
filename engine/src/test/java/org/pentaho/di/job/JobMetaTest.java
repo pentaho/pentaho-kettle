@@ -10,7 +10,6 @@
  * Change Date: 2029-07-20
  ******************************************************************************/
 
-
 package org.pentaho.di.job;
 
 import org.junit.Assert;
@@ -36,6 +35,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -348,6 +348,7 @@ public class JobMetaTest {
     RepositoryDirectory repDirectory =
       new RepositoryDirectory( new RepositoryDirectory( new RepositoryDirectory(), "home" ), "admin" );
     Mockito.when( rep.findDirectory( Mockito.eq( directory ) ) ).thenReturn( repDirectory );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
     JobMeta meta = new JobMeta();
 
     meta.loadXML( jobNode, null, rep, Mockito.mock( IMetaStore.class ), false,
@@ -375,7 +376,9 @@ public class JobMetaTest {
     RepositoryDirectoryInterface repoDir = mock( RepositoryDirectoryInterface.class );
     when( repoDir.getPath() ).thenReturn( pathAfter );
 
-    jobMeta.setRepository( mock( Repository.class ) );
+    Repository rep = mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
+    jobMeta.setRepository( rep );
     jobMeta.setRepositoryDirectory( repoDirOrig );
 
     CurrentDirectoryChangedListener listener = mock( CurrentDirectoryChangedListener.class );
@@ -448,7 +451,9 @@ public class JobMetaTest {
     RepositoryDirectoryInterface path = mock( RepositoryDirectoryInterface.class );
 
     when( path.getPath() ).thenReturn( "aPath" );
-    jobMetaTest.setRepository( mock( Repository.class ) );
+    Repository rep = mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
+    jobMetaTest.setRepository( rep );
     jobMetaTest.setRepositoryDirectory( path );
     jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
     jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
@@ -488,7 +493,9 @@ public class JobMetaTest {
     RepositoryDirectoryInterface path = mock( RepositoryDirectoryInterface.class );
 
     when( path.getPath() ).thenReturn( "aPath" );
-    jobMetaTest.setRepository( mock( Repository.class ) );
+    Repository rep = mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
+    jobMetaTest.setRepository( rep );
     jobMetaTest.setRepositoryDirectory( path );
     jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
     jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );

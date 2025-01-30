@@ -29,7 +29,6 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TreeSelection;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 
 import java.util.function.Supplier;
@@ -132,7 +131,7 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
       } );
     }
     if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL
-         && spoonSupplier.get().getBowl() != DefaultBowl.getInstance() ) {
+         && spoonSupplier.get().getBowl() != spoonSupplier.get().getGlobalManagementBowl() ) {
       MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
       moveMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.MoveToProject" ) );
       moveMenuItem.addSelectionListener( new SelectionAdapter() {

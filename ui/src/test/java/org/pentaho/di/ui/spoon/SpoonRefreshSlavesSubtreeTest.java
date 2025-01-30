@@ -67,6 +67,7 @@ public class SpoonRefreshSlavesSubtreeTest {
     treeNode = new TreeNode();
 
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getGlobalManagementBowl();
     when( mockDefaultBowl.getManager( SlaveServerManagementInterface.class ) ).thenReturn( mockSlaveServerManager );
   }
 

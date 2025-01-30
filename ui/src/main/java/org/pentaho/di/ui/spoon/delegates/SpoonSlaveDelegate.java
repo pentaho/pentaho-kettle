@@ -16,7 +16,6 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -136,7 +135,7 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
 
   public void moveToGlobal( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer )
       throws KettleException {
-    moveCopy( slaveServerManager, DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class ),
+    moveCopy( slaveServerManager, spoon.getGlobalManagementBowl().getManager( SlaveServerManagementInterface.class ),
               slaveServer, true, "Spoon.Message.OverwriteSlaveServerYN" );
   }
 
@@ -148,7 +147,7 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
 
   public void copyToGlobal( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer )
       throws KettleException {
-    moveCopy( slaveServerManager, DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class ),
+    moveCopy( slaveServerManager, spoon.getGlobalManagementBowl().getManager( SlaveServerManagementInterface.class ),
               slaveServer, false, "Spoon.Message.OverwriteSlaveServerYN" );
   }
 

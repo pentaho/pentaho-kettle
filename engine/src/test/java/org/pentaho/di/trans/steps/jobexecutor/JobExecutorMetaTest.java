@@ -28,6 +28,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -135,6 +136,7 @@ public class JobExecutorMetaTest {
 
     JobExecutorMeta jobExecutorMeta = spy( new JobExecutorMeta() );
     Repository repository = Mockito.mock( Repository.class );
+    Mockito.when( repository.getBowl() ).thenReturn( new RepositoryBowl( repository ) );
 
     JobMeta meta = new JobMeta();
     meta.setVariable( param2, "childValue2 should be override" );

@@ -72,6 +72,7 @@ public class SpoonRefreshPartitionsSubtreeTest {
     treeNode = new TreeNode();
 
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getGlobalManagementBowl();
     when( mockDefaultBowl.getManager( PartitionSchemaManagementInterface.class ) ).thenReturn( mockPartitionSchemaManager );
   }
   @After

@@ -35,6 +35,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -341,6 +342,7 @@ public class JobEntryTransTest {
     jobEntryTrans.setParentJobMeta( parentJobMeta);
 
     Repository rep = Mockito.mock( Repository.class );
+    when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
     RepositoryDirectory repositoryDirectory = Mockito.mock( RepositoryDirectory.class );
     RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
     Mockito.doReturn( repositoryDirectoryInterface ).when( rep ).loadRepositoryDirectoryTree();
@@ -390,6 +392,7 @@ public class JobEntryTransTest {
     jobEntryTrans.setParentJobMeta( parentJobMeta);
 
     Repository rep = Mockito.mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
     RepositoryDirectory repositoryDirectory = Mockito.mock( RepositoryDirectory.class );
     RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
     Mockito.doReturn( repositoryDirectoryInterface ).when( rep ).loadRepositoryDirectoryTree();

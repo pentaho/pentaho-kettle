@@ -41,7 +41,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SourceToTargetMapping;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -1556,7 +1555,7 @@ public class BaseStepDialog extends Dialog {
           DatabaseManagementInterface dbMgr =
             spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
           DatabaseManagementInterface globalDbMgr =
-            DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );
+            spoonSupplier.get().getGlobalManagementBowl().getManager( DatabaseManagementInterface.class );
           DatabaseManagementInterface transDbMgr = transMeta.getDatabaseManagementInterface();
 
           if ( applicableDbMgr == null && dbMgr.get( originalName ) != null ) {

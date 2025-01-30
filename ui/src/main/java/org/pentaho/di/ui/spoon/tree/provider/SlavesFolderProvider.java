@@ -18,7 +18,6 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -54,10 +53,11 @@ public class SlavesFolderProvider extends TreeFolderProvider {
   @Override
   public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
     Bowl currentBowl = Spoon.getInstance().getBowl();
+    Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
     try {
       Set<String> projectSlaveServerNames = new HashSet<>();
       // Bowl specific
-      if ( currentBowl != DefaultBowl.getInstance() ) {
+      if ( currentBowl != globalBowl ) {
         SlaveServerManagementInterface slaveServerManager = currentBowl.getManager( SlaveServerManagementInterface.class );
         List<SlaveServer> slaveServers = slaveServerManager.getAll();
 
@@ -72,7 +72,7 @@ public class SlavesFolderProvider extends TreeFolderProvider {
       }
 
       // Global
-      SlaveServerManagementInterface globalServerMgr = DefaultBowl.getInstance().getManager( SlaveServerManagementInterface.class );
+      SlaveServerManagementInterface globalServerMgr = globalBowl.getManager( SlaveServerManagementInterface.class );
       Set<String> globalServerNames = new HashSet<>();
       List<SlaveServer> servers = globalServerMgr.getAll();
       for ( SharedObjectInterface slaveServer : servers ) {

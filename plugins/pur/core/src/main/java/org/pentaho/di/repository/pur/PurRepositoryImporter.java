@@ -87,18 +87,6 @@ public class PurRepositoryImporter extends RepositoryImporter implements java.io
   }
 
   @Override
-  protected void replaceSharedObjects( TransMeta transMeta ) throws KettleException {
-    populateSharedObjectsMap();
-    super.replaceSharedObjects( transMeta );
-  }
-
-  @Override
-  protected void replaceSharedObjects( JobMeta jobMeta ) throws KettleException {
-    populateSharedObjectsMap();
-    super.replaceSharedObjects( jobMeta );
-  }
-
-  @Override
   protected boolean equals( DatabaseMeta databaseMeta, DatabaseMeta databaseMeta2 ) {
     return rep.getDatabaseMetaTransformer().equals( databaseMeta, databaseMeta2 );
   }

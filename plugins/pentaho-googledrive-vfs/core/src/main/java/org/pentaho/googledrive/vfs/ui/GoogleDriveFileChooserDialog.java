@@ -75,7 +75,7 @@ public class GoogleDriveFileChooserDialog extends CustomVfsUiPanel {
     } else if ( Spoon.getInstance().getActiveJob() != null ) {
       return Spoon.getInstance().getActiveJob().getBowl();
     } else {
-      return DefaultBowl.getInstance();
+      return Spoon.getInstance().getExecutionBowl();
     }
   }
 }

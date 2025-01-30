@@ -15,7 +15,6 @@ package org.pentaho.repositoryvfs.dialog;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -49,7 +48,7 @@ public class RepositoryVfsProviderDialog extends CustomVfsUiPanel {
 
   public FileObject resolveFile( String fileUri ) throws FileSystemException {
     try {
-      return KettleVFS.getInstance( DefaultBowl.getInstance() )
+      return KettleVFS.getInstance( Spoon.getInstance().getGlobalManagementBowl() )
         .getFileObject( fileUri, getVariableSpace(), getFileSystemOptions() );
     } catch ( KettleFileException e ) {
       throw new FileSystemException( e );

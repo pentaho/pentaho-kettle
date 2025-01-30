@@ -19,7 +19,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -183,7 +182,7 @@ public class RunConfigurationDelegate {
   }
 
   public void copyToGlobal( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
-    moveCopy( manager, runConfiguration, DefaultBowl.getInstance(), false );
+    moveCopy( manager, runConfiguration, spoonSupplier.get().getGlobalManagementBowl(), false );
   }
 
   public void copyToProject( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
@@ -191,7 +190,7 @@ public class RunConfigurationDelegate {
   }
 
   public void moveToGlobal( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
-    moveCopy( manager, runConfiguration, DefaultBowl.getInstance(), true );
+    moveCopy( manager, runConfiguration, spoonSupplier.get().getGlobalManagementBowl(), true );
   }
 
   public void moveToProject( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
