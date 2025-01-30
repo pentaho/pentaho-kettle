@@ -13,10 +13,20 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import org.apache.commons.lang3.StringUtils;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
@@ -25,15 +35,19 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
+import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -809,4 +823,229 @@ public class ExcelInput extends BaseStep implements StepInterface {
     }
     super.dispose( smi, sdi );
   }
+
+  /**
+   * Processing excel workbook, filling fields
+   *
+   * @param fields   RowMetaInterface for filling fields
+   * @param info     ExcelInputMeta
+   * @param workbook excel workbook for processing
+   * @throws KettlePluginException
+   */
+  public void processingWorkbook( RowMetaInterface fields, ExcelInputMeta info, KWorkbook workbook )
+      throws KettlePluginException {
+    int nrSheets = workbook.getNumberOfSheets();
+    for ( int j = 0; j < nrSheets; j++ ) {
+      KSheet sheet = workbook.getSheet( j );
+
+      // See if it's a selected sheet:
+      int sheetIndex;
+      if ( info.readAllSheets() ) {
+        sheetIndex = 0;
+      } else {
+        sheetIndex = Const.indexOfString( sheet.getName(), info.getSheetName() );
+      }
+      if ( sheetIndex >= 0 ) {
+        // We suppose it's the complete range we're looking for...
+        //
+        int rownr = 0;
+        int startcol = 0;
+
+        if ( info.readAllSheets() ) {
+          if ( info.getStartColumn().length == 1 ) {
+            startcol = info.getStartColumn()[ 0 ];
+          }
+          if ( info.getStartRow().length == 1 ) {
+            rownr = info.getStartRow()[ 0 ];
+          }
+        } else {
+          rownr = info.getStartRow()[ sheetIndex ];
+          startcol = info.getStartColumn()[ sheetIndex ];
+        }
+
+        boolean stop = false;
+        for ( int colnr = startcol; !stop; colnr++ ) {
+          try {
+            String fieldname = null;
+            int fieldtype = ValueMetaInterface.TYPE_NONE;
+
+            KCell cell = sheet.getCell( colnr, rownr );
+            if ( cell == null ) {
+              stop = true;
+            } else {
+              if ( cell.getType() != KCellType.EMPTY ) {
+                // We found a field.
+                fieldname = cell.getContents();
+              }
+
+              // System.out.println("Fieldname = "+fieldname);
+
+              KCell below = sheet.getCell( colnr, rownr + 1 );
+
+              if ( below != null ) {
+                if ( below.getType() == KCellType.BOOLEAN ) {
+                  fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
+                } else if ( below.getType() == KCellType.DATE ) {
+                  fieldtype = ValueMetaInterface.TYPE_DATE;
+                } else if ( below.getType() == KCellType.LABEL ) {
+                  fieldtype = ValueMetaInterface.TYPE_STRING;
+                } else if ( below.getType() == KCellType.NUMBER ) {
+                  fieldtype = ValueMetaInterface.TYPE_NUMBER;
+                } else {
+                  fieldtype = ValueMetaInterface.TYPE_STRING;
+                }
+              } else {
+                fieldtype = ValueMetaInterface.TYPE_STRING;
+              }
+
+              if ( Utils.isEmpty( fieldname ) ) {
+                stop = true;
+              } else {
+                if ( fieldtype != ValueMetaInterface.TYPE_NONE ) {
+                  ValueMetaInterface field = ValueMetaFactory.createValueMeta( fieldname, fieldtype );
+                  fields.addValueMeta( field );
+                }
+              }
+            }
+          } catch ( ArrayIndexOutOfBoundsException aioobe ) {
+            // System.out.println("index out of bounds at column "+colnr+" : "+aioobe.toString());
+            stop = true;
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = ExcelInput.class.getDeclaredMethod( fieldName, Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  private JSONObject getFiles( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    String filter = queryParams.get( "filter" );
+    String isRegex = queryParams.get( "isRegex" );
+
+    ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
+    String[] files = excelInputMeta.getFilePaths( getTransMeta() );
+    JSONArray filteredFiles = new JSONArray();
+
+    if ( files == null || files.length == 0 ) {
+      response.put( "message", BaseMessages.getString( PKG, "ExcelInputDialog.NoFilesFound.DialogMessage" ) );
+    } else {
+      for ( String file : files ) {
+        if ( Boolean.parseBoolean( isRegex ) ) {
+          Matcher matcher = Pattern.compile( filter ).matcher( file );
+          if ( matcher.matches() ) {
+            filteredFiles.add( file );
+          }
+        } else if ( StringUtils.isBlank( filter ) || StringUtils.contains( file.toUpperCase(), filter.toUpperCase() ) ) {
+          filteredFiles.add( file );
+        }
+      }
+    }
+
+    response.put( "files", filteredFiles );
+    return response;
+  }
+
+  private JSONObject getSheets( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    List<String> sheetNames = new ArrayList<>();
+
+    ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
+    FileInputList fileList = excelInputMeta.getFileList( getTransMeta() );
+    for ( FileObject fileObject : fileList.getFiles() ) {
+      try {
+        KWorkbook workbook =
+            WorkbookFactory.getWorkbook( excelInputMeta.getSpreadSheetType(),
+                KettleVFS.getFilename( fileObject ),
+                excelInputMeta.getEncoding(),
+                excelInputMeta.getPassword() );
+
+        int nrSheets = workbook.getNumberOfSheets();
+        for ( int j = 0; j < nrSheets; j++ ) {
+          KSheet sheet = workbook.getSheet( j );
+          String sheetName = sheet.getName();
+
+          if ( Const.indexOfString( sheetName, sheetNames ) < 0 ) {
+            sheetNames.add( sheetName );
+          }
+        }
+
+        workbook.close();
+      } catch ( Exception ex ) {
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE + " by exception: " + ex.getMessage() );
+      }
+    }
+
+    response.put( "sheets", sheetNames );
+    return response;
+  }
+
+  public JSONObject getFields( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    RowMetaInterface fields = new RowMeta();
+    ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
+    FileInputList fileList = excelInputMeta.getFileList( getTransMeta() );
+    for ( FileObject file : fileList.getFiles() ) {
+      try {
+        KWorkbook workbook =
+            WorkbookFactory.getWorkbook( excelInputMeta.getSpreadSheetType(),
+                KettleVFS.getFilename( file ),
+                excelInputMeta.getEncoding(),
+                excelInputMeta.getPassword() );
+        processingWorkbook( fields, excelInputMeta, workbook );
+        workbook.close();
+      } catch ( Exception ex ) {
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE + " by exception: " + ex.getMessage() );
+      }
+    }
+
+    response.put( "fields", generateFieldsJSON( fields ) );
+    return response;
+  }
+
+  private JSONObject generateFieldsJSON( RowMetaInterface fields ) {
+    JSONArray columnInfoArray = new JSONArray();
+    JSONObject stepJSON = new JSONObject();
+    JSONArray rowsArray = new JSONArray();
+    stepJSON.put( "columnInfo", columnInfoArray );
+    stepJSON.put( "rows", rowsArray );
+
+    if ( fields.getValueMetaList() == null ) {
+      return stepJSON;
+    }
+
+    for ( int i = 0; i < fields.getValueMetaList().size(); i++ ) {
+      JSONArray dataArray = new JSONArray();
+      JSONObject rowObject = new JSONObject();
+      dataArray.add( fields.getValueMeta( i ).getName() );
+      dataArray.add( fields.getValueMeta( i ).getTypeDesc() );
+      dataArray.add( StringUtils.EMPTY );
+      dataArray.add( StringUtils.EMPTY );
+      dataArray.add( "none" );
+      dataArray.add( "N" );
+      dataArray.add( StringUtils.EMPTY );
+      dataArray.add( StringUtils.EMPTY );
+      dataArray.add( StringUtils.EMPTY );
+      dataArray.add( StringUtils.EMPTY );
+      rowObject.put( "data", dataArray );
+      rowsArray.add( rowObject );
+    }
+
+    return stepJSON;
+  }
+
 }
