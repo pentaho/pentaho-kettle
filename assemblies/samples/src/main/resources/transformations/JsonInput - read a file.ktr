@@ -511,7 +511,7 @@
     <ignoreMissingPath>N</ignoreMissingPath>
     <rownum_field/>
     <file>
-      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x5c;files&#x5c;jsonfile.js</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x5c;files&#x5c;jsonfile.json</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
