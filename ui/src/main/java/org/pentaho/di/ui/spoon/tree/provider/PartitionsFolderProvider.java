@@ -86,7 +86,7 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
         }
         globalSchemaNames.add( partitionSchema.getName() );
         TreeNode childTreeNode = createTreeNode( treeNode, partitionSchema.getName(), guiResource.getImagePartitionSchema(),
-          LeveledTreeNode.LEVEL.GLOBAL, projectSchemaNames.contains( partitionSchema.getName() ) );
+          LeveledTreeNode.LEVEL.GLOBAL, containsIgnoreCase( projectSchemaNames, partitionSchema.getName() ) );
       }
 
       // Local
@@ -100,7 +100,7 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
             }
             TreeNode childTreeNode = createTreeNode( treeNode, partitionSchema.getName(), guiResource.getImagePartitionSchema(),
               LeveledTreeNode.LEVEL.LOCAL,
-              projectSchemaNames.contains( partitionSchema.getName() ) || globalSchemaNames.contains( partitionSchema.getName() ) );
+              containsIgnoreCase( projectSchemaNames, partitionSchema.getName() ) || containsIgnoreCase( globalSchemaNames, partitionSchema.getName() ) );
           }
         }
       }

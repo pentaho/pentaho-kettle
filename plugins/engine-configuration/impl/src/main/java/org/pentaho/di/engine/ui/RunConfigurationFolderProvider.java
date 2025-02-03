@@ -84,7 +84,7 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
       }
       String imageFile = runConfiguration.isReadOnly() ? "images/run_tree_disabled.svg" : "images/run_tree.svg";
       TreeNode childTreeNode = createChildTreeNode( treeNode, runConfiguration.getName(), getRunConfigurationImage(
-              guiResource, imageFile ), level, bowlNames.contains( runConfiguration.getName() ) );
+              guiResource, imageFile ), level, containsIgnoreCase( bowlNames, runConfiguration.getName() ) );
       if ( runConfiguration.isReadOnly() ) {
         childTreeNode.setForeground( getDisabledColor() );
       }

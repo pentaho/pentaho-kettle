@@ -14,6 +14,7 @@
 package org.pentaho.di.partition;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +46,8 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
   public static final String XML_TAG = "partitionschema";
 
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.PARTITION_SCHEMA;
+  public static final Comparator<PartitionSchema> COMPARATOR = Comparator.comparing( PartitionSchema::getName,
+                                                                                     String.CASE_INSENSITIVE_ORDER);
 
   private String name;
 

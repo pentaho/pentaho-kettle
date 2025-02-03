@@ -96,6 +96,7 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -110,6 +111,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SLAVESERVER = "Slave Server";
+  public static final Comparator<SlaveServer> COMPARATOR = Comparator.comparing( SlaveServer::getName, String.CASE_INSENSITIVE_ORDER );
 
   private static final Random RANDOM = new Random();
 

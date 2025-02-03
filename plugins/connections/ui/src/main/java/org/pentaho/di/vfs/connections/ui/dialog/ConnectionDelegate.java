@@ -141,6 +141,8 @@ public class ConnectionDelegate {
           new ConnectionOverwriteDialog( spoonSupplier.get().getShell() );
         if ( !( connectionOverwriteDialog.open( name ) == SWT.YES ) ) {
           return;
+        } else {
+          targetBowl.getManager( ConnectionManager.class ).delete( targetConnection.getName() );
         }
       }
 

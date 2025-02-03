@@ -14,6 +14,7 @@
 package org.pentaho.di.cluster;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
   public static final String XML_TAG = "clusterschema";
 
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.CLUSTER_SCHEMA;
+  public static final Comparator<ClusterSchema> COMPARATOR = Comparator.comparing( ClusterSchema::getName, String.CASE_INSENSITIVE_ORDER );
 
   /** the name of the cluster schema */
   private String name;

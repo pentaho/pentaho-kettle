@@ -52,7 +52,8 @@ public interface SharedObjectsIO {
   Map<String, Node> getSharedObjects( String type ) throws KettleException;
 
   /**
-   * Save the SharedObject node for the type and name.
+   * Save the SharedObject node for the type and name. If the SharedObject name exist but in a
+   * different case, the existing entry will be deleted and the new entry will be saved with provided name
    * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and clusterschema"
    * @param name The name is the name of the sharedObject
    * @param node The Xml node containing the details of the shared object
@@ -61,7 +62,8 @@ public interface SharedObjectsIO {
   void saveSharedObject( String type, String name, Node node ) throws KettleException;
 
   /**
-   * Return the Shared Object Node for the given type and name
+   * Return the Shared Object Node for the given type and name. The lookup for the SharedObject
+   * using the name will be case-insensitive
    * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and clusterschema"
    * @param name The name is the name of the sharedObject
    * @return Xml node
@@ -70,7 +72,7 @@ public interface SharedObjectsIO {
   Node getSharedObject( String type, String name ) throws KettleException;
 
   /**
-   * Delete the SharedObject for the given type and name
+   * Delete the SharedObject for the given type and name. The delete operation will be case-insensitive.
    * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and clusterschema"
    * @param name The name is the name of the sharedObject
    * @throws KettleException
@@ -84,5 +86,14 @@ public interface SharedObjectsIO {
    * @param type Type to clear
    */
   void clear( String type ) throws KettleException;
+
+  static String findSharedObjectIgnoreCase( String name, Map< String, Node> nodeMap ) {
+    for ( String key : nodeMap.keySet() ) {
+      if ( key.equalsIgnoreCase( name ) ) {
+        return key;
+      }
+    }
+    return null;
+  }
 
 }

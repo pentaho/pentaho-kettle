@@ -15,7 +15,6 @@ package org.pentaho.di.shared;
 
 import org.pentaho.di.core.exception.KettleException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,8 +47,11 @@ public class DelegatingSharedObjectsIO implements SharedObjectsIO {
     Map<String, Node> retMap = new HashMap<>();
     for ( SharedObjectsIO store : stores ) {
       Map<String, Node> storeMap = store.getSharedObjects( type );
-      for ( Map.Entry<String,Node> entry : storeMap.entrySet() ) {
-        retMap.putIfAbsent( entry.getKey(), entry.getValue() );
+      for ( Map.Entry<String, Node> entry : storeMap.entrySet() ) {
+        // case in-sensitive check to skip adding entry with same name
+        if ( !retMap.entrySet().stream().anyMatch( e -> e.getKey().equalsIgnoreCase( entry.getKey() ) ) ) {
+          retMap.put( entry.getKey(), entry.getValue() );
+        }
       }
     }
     return retMap;
