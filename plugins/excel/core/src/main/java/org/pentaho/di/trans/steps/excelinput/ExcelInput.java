@@ -924,8 +924,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
       Method actionMethod = ExcelInput.class.getDeclaredMethod( fieldName, Map.class );
       this.setStepMetaInterface( stepMetaInterface );
       response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
       log.logError( e.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
     }
@@ -954,6 +953,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
           filteredFiles.add( file );
         }
       }
+
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
     }
 
     response.put( "files", filteredFiles );
@@ -985,8 +986,10 @@ public class ExcelInput extends BaseStep implements StepInterface {
         }
 
         workbook.close();
+        response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
       } catch ( Exception ex ) {
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE + " by exception: " + ex.getMessage() );
+        response.put( "message", ex.getMessage() );
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
       }
     }
 
@@ -1008,8 +1011,10 @@ public class ExcelInput extends BaseStep implements StepInterface {
                 excelInputMeta.getPassword() );
         processingWorkbook( fields, excelInputMeta, workbook );
         workbook.close();
+        response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
       } catch ( Exception ex ) {
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE + " by exception: " + ex.getMessage() );
+        response.put( "message", ex.getMessage() );
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
       }
     }
 
