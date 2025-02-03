@@ -55,7 +55,7 @@ public class DummyPlugin extends BaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this );
+      meta.getFields( data.outputRowMeta, getStepname(), null, null, this );
     }
 
     Object extraValue = meta.getValue().getValueData();

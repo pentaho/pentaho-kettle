@@ -83,16 +83,6 @@ REM ===========================================
 REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
 
-REM ===========================================
-REM Check if running Windows 11
-REM ===========================================
-
-REM Check if the major version of Windows is 10.0 (Windows 10 or Windows 11). If it is save the build number
-for /f "tokens=4-7 delims=[.] " %%i in ('ver') do @(if %%i=="10.0" (set WINDOWS_BUILD_VERSION= ) else (set WINDOWS_BUILD_VERSION=%%k))
-
-REM Convert WINDOWS_BUILD_VERSION to a number
-set /A WINDOWS_BUILD_NUMBER=%WINDOWS_BUILD_VERSION%
-
 set LIBSPATH=libswt\win64;native-lib\win64;..\native-lib\win64
 set SWTJAR=..\libswt\win64
 :CONTINUE
@@ -157,9 +147,6 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-REM If %STARTTITLE% is set, start Spoon even if it is Windows 8 on Windows 11
-if NOT "%STARTTITLE%"=="" GOTO :NORMALSTART
-:NORMALSTART
 if %STARTTITLE%!==! SET STARTTITLE="Spoon"
 REM Eventually call java instead of javaw and do not run in a separate window
 if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start %STARTTITLE%

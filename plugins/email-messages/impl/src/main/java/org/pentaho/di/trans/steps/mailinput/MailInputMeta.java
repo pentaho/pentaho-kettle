@@ -13,8 +13,17 @@
 
 package org.pentaho.di.trans.steps.mailinput;
 
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.Consts;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -33,9 +42,14 @@ import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.entries.getpop.EmailAuthenticationResponse;
+import org.pentaho.di.job.entries.getpop.IEmailAuthenticationResponse;
 import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -48,6 +62,10 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Step( id = "MailInput", name = "BaseStep.TypeLongDesc.MailInput",
         i18nPackageName = "org.pentaho.di.trans.step.mailinput",
@@ -68,6 +86,36 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String servername;
   private String username;
   private String password;
+  protected static VariableSpace variables = new Variables();
+  public static String AUTENTICATION_OAUTH = "OAuth";
+
+  public static  String AUTENTICATION_BASIC = "Basic";
+
+  public static String AUTENTICATION_NONE= "No Auth";
+
+  public static String GRANTTYPE_CLIENTCREDENTIALS="client_credentials";
+
+  public static String GRANTTYPE_AUTHORIZATION_CODE="authorization_code";
+
+  public static String GRANTTYPE_REFRESH_TOKEN="refresh_token";
+
+  private String clientId;
+
+  private String secretKey;
+
+  private String scope;
+
+  private String tokenUrl;
+
+  private String authorization_code;
+
+  private String redirectUri;
+
+  private String refresh_token;
+
+  private String grant_type;
+
+  private String usingAuthentication;
   private boolean usessl;
   private String sslport;
   private String firstmails;
@@ -134,6 +182,15 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private void readData( Node stepnode ) {
     servername = XMLHandler.getTagValue( stepnode, "servername" );
     username = XMLHandler.getTagValue( stepnode, "username" );
+    usingAuthentication = XMLHandler.getTagValue( stepnode, "use_auth" ) ;
+    clientId = XMLHandler.getTagValue( stepnode, "auth_clientId" );
+    secretKey = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "auth_secretKey" ) );
+    scope = XMLHandler.getTagValue( stepnode, "auth_scope" );
+    tokenUrl = XMLHandler.getTagValue( stepnode, "auth_tokenUrl" );
+    authorization_code = XMLHandler.getTagValue( stepnode, "auth_authorizationCode" );
+    redirectUri = XMLHandler.getTagValue( stepnode, "redirectURI" );
+    refresh_token = XMLHandler.getTagValue( stepnode, "refreshToken" );
+    grant_type = XMLHandler.getTagValue( stepnode, "use_grantType" );
     password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "password" ) );
     usessl = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "usessl" ) );
     sslport = XMLHandler.getTagValue( stepnode, "sslport" );
@@ -241,6 +298,16 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
       servername = rep.getStepAttributeString( id_step, "servername" );
       username = rep.getStepAttributeString( id_step, "username" );
       password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "password" ) );
+      usingAuthentication = rep.getStepAttributeString( id_step, "use_auth" );
+      grant_type = rep.getStepAttributeString( id_step, "use_grantType" );
+      clientId = rep.getStepAttributeString( id_step, "auth_clientId" );
+      secretKey =
+              Encr.decryptPasswordOptionallyEncrypted(  rep.getStepAttributeString( id_step, "auth_secretKey" ) ) ;
+      scope = rep.getStepAttributeString( id_step, "auth_scope" );
+      tokenUrl = rep.getStepAttributeString( id_step, "auth_tokenUrl" );
+      authorization_code = rep.getStepAttributeString( id_step, "auth_authorizationCode" );
+      redirectUri= rep.getStepAttributeString( id_step, "redirectURI" );
+      refresh_token = rep.getStepAttributeString( id_step, "refreshToken" );
       usessl = rep.getStepAttributeBoolean( id_step, "usessl" );
       int intSSLPort = (int) rep.getStepAttributeInteger( id_step, "sslport" );
       sslport = rep.getStepAttributeString( id_step, "sslport" ); // backward compatible.
@@ -314,6 +381,16 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "username", username );
       rep.saveStepAttribute( id_transformation, id_step, "password", Encr
         .encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_clientId", clientId );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_secretKey", Encr
+              .encryptPasswordIfNotUsingVariables( secretKey ) );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_scope", scope );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_tokenUrl", tokenUrl );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_authorizationCode", authorization_code );
+      rep.saveStepAttribute( id_transformation, id_step, "redirectURI", redirectUri );
+      rep.saveStepAttribute( id_transformation, id_step, "refreshToken", refresh_token );
+      rep.saveStepAttribute( id_transformation, id_step, "use_grantType", grant_type );
+      rep.saveStepAttribute( id_transformation, id_step, "use_auth", usingAuthentication );
       rep.saveStepAttribute( id_transformation, id_step, "usessl", usessl );
       rep.saveStepAttribute( id_transformation, id_step, "sslport", sslport );
       rep.saveStepAttribute( id_transformation, id_step, "retrievemails", retrievemails );
@@ -379,6 +456,16 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", username ) );
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "use_auth", usingAuthentication ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "use_grantType", grant_type) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_clientId", clientId ) );
+    retval.append( "      " ).append(
+            XMLHandler.addTagValue( "auth_secretKey",  Encr.encryptPasswordIfNotUsingVariables( secretKey) )  );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_scope", scope ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_tokenUrl", tokenUrl ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_authorizationCode", authorization_code ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "redirectURI", redirectUri ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshToken", refresh_token) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "usessl", usessl ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sslport", sslport ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "retrievemails", retrievemails ) );
@@ -812,5 +899,128 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   public void setBatchSize( Integer batchSize ) {
     this.batchSize = batchSize;
   }
+  public String isUsingAuthentication() {
+    return this.usingAuthentication;
+  }
 
+  public void setUsingAuthentication( String usingAuthentication ) {
+    this.usingAuthentication = usingAuthentication;
+  }
+
+  public void setGrant_type( String grant_type ) {
+    this.grant_type = grant_type;
+  }
+
+  public String getGrant_type() {
+    return grant_type;
+  }
+
+  public void setClientId( String clientId ) {
+    this.clientId = clientId;
+  }
+
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setSecretKey( String secretKey ) {
+    this.secretKey = secretKey;
+  }
+
+  public String getSecretKey() {
+    return secretKey;
+  }
+
+  public void setScope(String scope)
+  {
+    this.scope=scope;
+  }
+
+  public String getScope()
+  {
+    return scope;
+  }
+
+  public void setGrantType(String grant_type)
+  {
+    this.grant_type=grant_type;
+  }
+  public String getGrantType()
+  {
+    return grant_type;
+  }
+
+  public void setTokenUrl(String tokenUrl)
+  {
+    this.tokenUrl=tokenUrl;
+  }
+
+  public String getTokenUrl()
+  {
+    return tokenUrl;
+  }
+
+  public void setAuthorization_code(String authorization_code)
+  {
+    this.authorization_code=authorization_code;
+  }
+
+  public String getAuthorization_code()
+  {
+    return authorization_code;
+  }
+
+  public void setRedirectUri(String redirectUri)
+  {
+    this.redirectUri=redirectUri;
+  }
+
+  public String getRedirectUri()
+  {
+    return redirectUri;
+  }
+
+  public void setRefresh_token(String refresh_token)
+  {
+    this.refresh_token=refresh_token;
+  }
+
+  public String getRefresh_token()
+  {
+    return refresh_token;
+  }
+
+  public IEmailAuthenticationResponse getOauthToken(String tokenUrl, String scope, String clientId, String secretKey,
+                                                    String grantType, String refreshToken, String authorizationCode, String redirectUri) {
+    try (CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient()) {
+      HttpPost httpPost = new HttpPost(tokenUrl);
+      List<NameValuePair> form = new ArrayList<>();
+      form.add(new BasicNameValuePair("scope", scope));
+      form.add(new BasicNameValuePair("client_id", clientId));
+      form.add(new BasicNameValuePair("client_secret", secretKey));
+      form.add(new BasicNameValuePair("grant_type", grantType));
+      if (grantType.equals(GRANTTYPE_REFRESH_TOKEN)) {
+        form.add(new BasicNameValuePair(GRANTTYPE_REFRESH_TOKEN, refreshToken));
+      }
+      if (grantType.equals(GRANTTYPE_AUTHORIZATION_CODE)) {
+        form.add(new BasicNameValuePair("code", authorizationCode));
+        form.add(new BasicNameValuePair("redirect_uri", redirectUri));
+      }
+      UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);
+      httpPost.setEntity(entity);
+      try (CloseableHttpResponse response = client.execute(httpPost)) {
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+          throw new HttpException("Unable to get authorization token " + response.getStatusLine().toString());
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(EntityUtils.toString(response.getEntity()), EmailAuthenticationResponse.class);
+      } catch (HttpException e) {
+        throw new RuntimeException(e);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

@@ -28,6 +28,8 @@ import org.pentaho.di.trans.steps.avro.AvroSpec;
 import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
 import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
 
+import com.fasterxml.jackson.databind.node.NullNode;
+
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -55,8 +57,6 @@ import org.apache.avro.Schema;
 import org.apache.avro.util.Utf8;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.codehaus.jackson.node.NullNode;
-
 
 
 /**
@@ -663,10 +663,10 @@ public class AvroNestedReader {
         fieldS = defaultSchema.getField( part );
       }
 
-      if ( fieldS == null || fieldS.defaultValue() == null ) {
+      if ( fieldS == null || fieldS.defaultVal() == null ) {
         return null;
       }
-      field = fieldS.defaultValue();
+      field = fieldS.defaultVal();
     }
 
     Schema.Type fieldT = fieldS.schema().getType();

@@ -117,16 +117,16 @@ public class LoadFileInput extends BaseStep implements StepInterface {
         } // end if first
 
         // get field value
-        String Fieldvalue = data.inputRowMeta.getString( data.readrow, data.indexOfFilenameField );
+        String fieldvalue = data.inputRowMeta.getString( data.readrow, data.indexOfFilenameField );
 
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString(
-            PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(), Fieldvalue ) );
+            PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(), fieldvalue ) );
         }
 
         try {
           // Source is a file.
-          data.file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( Fieldvalue );
+          data.file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( fieldvalue );
         } catch ( Exception e ) {
           throw new KettleException( e );
         }
@@ -166,25 +166,25 @@ public class LoadFileInput extends BaseStep implements StepInterface {
         }
         data.filename = KettleVFS.getFilename( data.file );
         // Add additional fields?
-        if ( meta.getShortFileNameField() != null && meta.getShortFileNameField().length() > 0 ) {
+        if ( !Utils.isEmpty( meta.getShortFileNameField() ) ) {
           data.shortFilename = data.file.getName().getBaseName();
         }
-        if ( meta.getPathField() != null && meta.getPathField().length() > 0 ) {
+        if ( !Utils.isEmpty( meta.getPathField() ) ) {
           data.path = KettleVFS.getFilename( data.file.getParent() );
         }
-        if ( meta.isHiddenField() != null && meta.isHiddenField().length() > 0 ) {
+        if ( !Utils.isEmpty( meta.isHiddenField() ) ) {
           data.hidden = data.file.isHidden();
         }
-        if ( meta.getExtensionField() != null && meta.getExtensionField().length() > 0 ) {
+        if ( !Utils.isEmpty( meta.getExtensionField() ) ) {
           data.extension = data.file.getName().getExtension();
         }
-        if ( meta.getLastModificationDateField() != null && meta.getLastModificationDateField().length() > 0 ) {
+        if ( !Utils.isEmpty( meta.getLastModificationDateField() ) ) {
           data.lastModificationDateTime = new Date( data.file.getContent().getLastModifiedTime() );
         }
-        if ( meta.getUriField() != null && meta.getUriField().length() > 0 ) {
+        if ( !Utils.isEmpty( meta.getUriField() ) ) {
           data.uriName = Const.optionallyDecodeUriString( data.file.getName().getURI() );
         }
-        if ( meta.getRootUriField() != null && meta.getRootUriField().length() > 0 ) {
+        if ( !Utils.isEmpty( meta.getRootUriField() ) ) {
           data.rootUriName = data.file.getName().getRootURI();
         }
         // get File content
@@ -283,7 +283,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
   private void handleMissingFiles() throws KettleException {
     List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
 
-    if ( nonExistantFiles.size() != 0 ) {
+    if ( !nonExistantFiles.isEmpty() ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
       logError( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
         PKG, "LoadFileInput.Log.RequiredFiles", message ) );
@@ -292,7 +292,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     }
 
     List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
-    if ( nonAccessibleFiles.size() != 0 ) {
+    if ( !nonAccessibleFiles.isEmpty() ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
       logError( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
         PKG, "LoadFileInput.Log.RequiredNotAccessibleFiles", message ) );
@@ -308,9 +308,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
    */
 
   private Object[] buildEmptyRow() {
-    Object[] rowData = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
-
-    return rowData;
+    return RowDataUtil.allocateRowData( data.outputRowMeta.size() );
   }
 
   Object[] getOneRow() throws KettleException {
@@ -323,7 +321,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
     try {
       // Create new row or clone
-      if ( meta.getIsInFields() ) {
+      if ( meta.getFileInFields() ) {
         outputRowData = copyOrCloneArrayFromLoadFile( outputRowData, data.readrow );
       }
 
@@ -343,21 +341,21 @@ public class LoadFileInput extends BaseStep implements StepInterface {
             // DO Trimming!
             switch ( loadFileInputField.getTrimType() ) {
               case LoadFileInputField.TYPE_TRIM_LEFT:
-                if ( meta.getEncoding() != null ) {
+                if ( !Utils.isEmpty( meta.getEncoding() ) ) {
                   data.filecontent = Const.ltrim( new String( data.filecontent, meta.getEncoding() ) ).getBytes();
                 } else {
                   data.filecontent = Const.ltrim( new String( data.filecontent ) ).getBytes();
                 }
                 break;
               case LoadFileInputField.TYPE_TRIM_RIGHT:
-                if ( meta.getEncoding() != null ) {
+                if ( !Utils.isEmpty( meta.getEncoding() ) ) {
                   data.filecontent = Const.rtrim( new String( data.filecontent, meta.getEncoding() ) ).getBytes();
                 } else {
                   data.filecontent = Const.rtrim( new String( data.filecontent ) ).getBytes();
                 }
                 break;
               case LoadFileInputField.TYPE_TRIM_BOTH:
-                if ( meta.getEncoding() != null ) {
+                if ( !Utils.isEmpty( meta.getEncoding() ) ) {
                   data.filecontent = Const.trim( new String( data.filecontent, meta.getEncoding() ) ).getBytes();
                 } else {
                   data.filecontent = Const.trim( new String( data.filecontent ) ).getBytes();
@@ -368,7 +366,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
             }
             if ( targetValueMeta.getType() != ValueMetaInterface.TYPE_BINARY ) {
               // handle as a String
-              if (  meta.getEncoding() != null ) {
+              if ( !Utils.isEmpty( meta.getEncoding() ) ) {
                 o = new String( data.filecontent, meta.getEncoding() );
               } else {
                 o = new String( data.filecontent );
@@ -403,41 +401,41 @@ public class LoadFileInput extends BaseStep implements StepInterface {
       int rowIndex = data.totalpreviousfields + data.nrInputFields;
 
       // See if we need to add the filename to the row...
-      if ( meta.includeFilename() && meta.getFilenameField() != null && meta.getFilenameField().length() > 0 ) {
+      if ( meta.getIncludeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
         outputRowData[rowIndex++] = data.filename;
       }
 
       // See if we need to add the row number to the row...
-      if ( meta.includeRowNumber() && meta.getRowNumberField() != null && meta.getRowNumberField().length() > 0 ) {
+      if ( meta.getIncludeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
         outputRowData[rowIndex++] = new Long( data.rownr );
       }
       // Possibly add short filename...
-      if ( meta.getShortFileNameField() != null && meta.getShortFileNameField().length() > 0 ) {
+      if ( !Utils.isEmpty( meta.getShortFileNameField() ) ) {
         outputRowData[rowIndex++] = data.shortFilename;
       }
       // Add Extension
-      if ( meta.getExtensionField() != null && meta.getExtensionField().length() > 0 ) {
+      if ( !Utils.isEmpty( meta.getExtensionField() ) ) {
         outputRowData[rowIndex++] = data.extension;
       }
       // add path
-      if ( meta.getPathField() != null && meta.getPathField().length() > 0 ) {
+      if ( !Utils.isEmpty( meta.getPathField() ) ) {
         outputRowData[rowIndex++] = data.path;
       }
 
       // add Hidden
-      if ( meta.isHiddenField() != null && meta.isHiddenField().length() > 0 ) {
+      if ( !Utils.isEmpty( meta.isHiddenField() ) ) {
         outputRowData[rowIndex++] = new Boolean( data.hidden );
       }
       // Add modification date
-      if ( meta.getLastModificationDateField() != null && meta.getLastModificationDateField().length() > 0 ) {
+      if ( !Utils.isEmpty( meta.getLastModificationDateField() ) ) {
         outputRowData[rowIndex++] = data.lastModificationDateTime;
       }
       // Add Uri
-      if ( meta.getUriField() != null && meta.getUriField().length() > 0 ) {
+      if ( !Utils.isEmpty( meta.getUriField() ) ) {
         outputRowData[rowIndex++] = data.uriName;
       }
       // Add RootUri
-      if ( meta.getRootUriField() != null && meta.getRootUriField().length() > 0 ) {
+      if ( !Utils.isEmpty( meta.getRootUriField() ) ) {
         outputRowData[rowIndex++] = data.rootUriName;
       }
       RowMetaInterface irow = getInputRowMeta();
@@ -460,7 +458,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     data = (LoadFileInputData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( !meta.getIsInFields() ) {
+      if ( !meta.getFileInFields() ) {
         try {
           data.files = meta.getFiles( getTransMeta().getBowl(), this );
           handleMissingFiles();

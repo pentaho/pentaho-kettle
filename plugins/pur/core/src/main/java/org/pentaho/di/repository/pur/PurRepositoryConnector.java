@@ -12,7 +12,6 @@
 
 package org.pentaho.di.repository.pur;
 
-import com.google.gwt.user.server.Base64Utils;
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
 import com.pentaho.pdi.ws.RepositorySyncException;
 import org.apache.commons.lang.BooleanUtils;
@@ -52,9 +51,6 @@ import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedReposi
 import org.pentaho.platform.repository2.unified.webservices.jaxws.UnifiedRepositoryToWebServiceAdapter;
 
 import javax.xml.ws.WebServiceException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -102,14 +98,13 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     final String decryptedPassword = Encr.decryptPasswordOptionallyEncrypted( password );
     final RepositoryConnectResult result = new RepositoryConnectResult( purRepositoryServiceRegistry );
     try {
-      final String urlEncodedPassword = encodePassword( decryptedPassword );
       /*
        * Three scenarios: 1. Connect in process: username fetched using PentahoSessionHolder; no authentication occurs
        * 2. Connect externally with trust: username specified is assumed authenticated if IP of calling code is trusted
        * 3. Connect externally: authentication occurs normally (i.e. password is checked)
        */
       user1.setLogin( username );
-      user1.setPassword( urlEncodedPassword );
+      user1.setPassword( decryptedPassword );
       user1.setName( username );
       result.setUser( user1 );
 
@@ -128,7 +123,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             user1 = new EEUserInfo();
             user1.setLogin( name );
             user1.setName( name );
-            user1.setPassword( urlEncodedPassword );
+            user1.setPassword( decryptedPassword );
             result.setUser( user1 );
             result.setSuccess( true );
             result.getUser().setAdmin(
@@ -191,7 +186,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
               log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositoryWebService.Start" ) ); //$NON-NLS-1$
             }
             repoWebService =
-                serviceManager.createService( username, urlEncodedPassword, IUnifiedRepositoryJaxwsWebService.class ); //$NON-NLS-1$
+                serviceManager.createService( username, decryptedPassword, IUnifiedRepositoryJaxwsWebService.class ); //$NON-NLS-1$
             if ( log.isBasic() ) {
               log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositoryWebService.End" ) ); //$NON-NLS-1$
             }
@@ -215,7 +210,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
               log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositorySyncWebService.Start" ) );
             }
             IRepositorySyncWebService syncWebService =
-                serviceManager.createService( username, urlEncodedPassword, IRepositorySyncWebService.class ); //$NON-NLS-1$
+                serviceManager.createService( username, decryptedPassword, IRepositorySyncWebService.class ); //$NON-NLS-1$
             if ( log.isBasic() ) {
               log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositorySyncWebService.Sync" ) ); //$NON-NLS-1$
             }
@@ -243,7 +238,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
               log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Start" ) );
             }
             CredentialsProvider provider = new BasicCredentialsProvider();
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( username, urlEncodedPassword );
+            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( username, decryptedPassword );
             provider.setCredentials( AuthScope.ANY, credentials );
             HttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider( provider ).build();
             HttpGet method = new HttpGet( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" );
@@ -295,7 +290,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       }
 
       purRepositoryServiceRegistry.registerService( PurRepositoryRestService.PurRepositoryPluginApiRevision.class,
-          serviceManager.createService( username, urlEncodedPassword,
+          serviceManager.createService( username, decryptedPassword,
               PurRepositoryRestService.PurRepositoryPluginApiRevision.class ) );
 
       purRepositoryServiceRegistry.registerService( IRevisionService.class, new UnifiedRepositoryRevisionService(
@@ -314,7 +309,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       }
 
       result.setSuccess( true );
-    } catch ( NullPointerException | UnsupportedEncodingException e ) {
+    } catch ( NullPointerException npe ) {
       result.setSuccess( false );
       throw new KettleException( BaseMessages.getString( PKG, "PurRepository.LoginException.Message" ) );
     } catch ( Throwable e ) {
@@ -324,15 +319,6 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     }
     return result;
   }
-
-  private static String encodePassword( String decryptedPassword ) throws UnsupportedEncodingException {
-    if ( StringUtils.isEmpty( decryptedPassword ) ) {
-      return null;
-    }
-    String urlEncodedPassword = URLEncoder.encode( decryptedPassword, StandardCharsets.UTF_8.name() );
-    return "ENC:" + Base64Utils.toBase64( urlEncodedPassword.getBytes() );
-  }
-
   ExecutorService getExecutor() {
     return ExecutorUtil.getExecutor();
   }

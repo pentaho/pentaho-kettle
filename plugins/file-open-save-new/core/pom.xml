@@ -8,11 +8,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>file-open-save-new</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>file-open-save-new-core</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.3.0.0-SNAPSHOT</version>
   <!-- <packaging>bundle</packaging> -->
 
   <name>PDI File Open and Save New Plugin Core</name>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.ui.workbench</artifactId>
-      <version>3.127.0</version>
+      <version>3.132.0</version>
       <exclusions>
         <exclusion>
           <artifactId>javax.annotation-api</artifactId>

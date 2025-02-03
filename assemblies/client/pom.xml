@@ -11,21 +11,20 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
     <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
 
-    <pentaho-launcher.version>10.2.0.0-SNAPSHOT</pentaho-launcher.version>
-    <oss-licenses.version>10.2.0.0-SNAPSHOT</oss-licenses.version>
-    <pentaho-karaf.version>10.2.0.0-SNAPSHOT</pentaho-karaf.version>
+    <pentaho-launcher.version>10.3.0.0-SNAPSHOT</pentaho-launcher.version>
+    <oss-licenses.version>10.3.0.0-SNAPSHOT</oss-licenses.version>
+    <pentaho-karaf.version>10.3.0.0-SNAPSHOT</pentaho-karaf.version>
 
     <!-- swt -->
     <org.eclipse.swt.gtk.linux.x86.version>3.108.0</org.eclipse.swt.gtk.linux.x86.version>
     <org.eclipse.swt.gtk.linux.x86_64.version>3.108.0</org.eclipse.swt.gtk.linux.x86_64.version>
     <org.eclipse.swt.win32.win32.x86_64.version>3.122.0</org.eclipse.swt.win32.win32.x86_64.version>
-    <org.eclipse.swt.win32.win32.x86_64.java8.version>3.115.0</org.eclipse.swt.win32.win32.x86_64.java8.version>
     <org.eclipse.swt.cocoa.macosx.x86_64.version>3.115.100</org.eclipse.swt.cocoa.macosx.x86_64.version>
     <org.eclipse.swt.cocoa.macosx.aarch64.version>3.122.0</org.eclipse.swt.cocoa.macosx.aarch64.version>
 
@@ -55,12 +54,6 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>oss-licenses</artifactId>
-      <version>${oss-licenses.version}</version>
-      <type>zip</type>
     </dependency>
     <!-- swt -->
     <dependency>
@@ -181,33 +174,6 @@
       </dependencies>
       <build>
         <plugins>
-          <plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>copy-model</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-
-                  <artifactItems>
-                    <artifactItem>
-                      <groupId>org.eclipse.platform</groupId>
-                      <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
-                      <version>${org.eclipse.swt.win32.win32.x86_64.java8.version}</version>
-                      <includes>org.eclipse.swt.win32.win32.x86_64.jar</includes>
-                      <type>jar</type>
-                      <destFileName>swt.jar</destFileName>
-                    </artifactItem>
-                  </artifactItems>
-
-                  <outputDirectory>${assembly.dir}/libswt/win64_java8</outputDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <executions>

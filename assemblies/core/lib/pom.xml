@@ -12,25 +12,24 @@
     <parent>
         <groupId>org.pentaho.di</groupId>
         <artifactId>pdi-core</artifactId>
-        <version>10.2.0.0-SNAPSHOT</version>
+        <version>10.3.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
         <rxjava.version>2.2.3</rxjava.version>
 
-        <pentaho-json.version>10.2.0.0-SNAPSHOT</pentaho-json.version>
+        <pentaho-json.version>10.3.0.0-SNAPSHOT</pentaho-json.version>
         <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
-        <commons-database.version>10.2.0.0-SNAPSHOT</commons-database.version>
-        <pentaho-registry.version>10.2.0.0-SNAPSHOT</pentaho-registry.version>
-        <pentaho-metaverse.version>10.2.0.0-SNAPSHOT</pentaho-metaverse.version>
-        <platform.version>10.2.0.0-SNAPSHOT</platform.version>
-        <pentaho-reporting.version>10.2.0.0-SNAPSHOT</pentaho-reporting.version>
-        <pdi-osgi-bridge.version>10.2.0.0-SNAPSHOT</pdi-osgi-bridge.version>
-        <pentaho-hadoop-shims.version>10.2.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
+        <commons-database.version>10.3.0.0-SNAPSHOT</commons-database.version>
+        <pentaho-registry.version>10.3.0.0-SNAPSHOT</pentaho-registry.version>
+        <pentaho-metaverse.version>10.3.0.0-SNAPSHOT</pentaho-metaverse.version>
+        <platform.version>10.3.0.0-SNAPSHOT</platform.version>
+        <pentaho-reporting.version>10.3.0.0-SNAPSHOT</pentaho-reporting.version>
+        <pdi-osgi-bridge.version>10.3.0.0-SNAPSHOT</pdi-osgi-bridge.version>
+        <pentaho-hadoop-shims.version>10.3.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
 
         <!-- third party -->
-        <derbyclient.version>10.2.1.6</derbyclient.version>
         <hsqldb.version>2.3.2</hsqldb.version>
         <jaybird.version>2.1.6</jaybird.version>
         <jt400.version>6.1</jt400.version>
@@ -237,28 +236,6 @@
             <artifactId>jaxen</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${derby.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbyclient</artifactId>
-            <version>${derbyclient.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>${hsqldb.version}</version>
@@ -369,7 +346,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.metro</groupId>
@@ -648,7 +625,7 @@
               <!--Still needed even for a no-osgi build because of PentahoSystem dependency -->
               <dependency>
                 <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
+                <artifactId>osgi.core</artifactId>
                 <scope>compile</scope>
                 <exclusions>
                     <exclusion>

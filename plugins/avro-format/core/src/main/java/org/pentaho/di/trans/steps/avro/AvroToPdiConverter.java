@@ -12,6 +12,8 @@
 
 package org.pentaho.di.trans.steps.avro;
 
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.pentaho.di.trans.steps.avro.input.IAvroInputField;
 import org.pentaho.di.trans.steps.avro.input.AvroInputField;
 import org.pentaho.di.trans.steps.avro.input.PentahoAvroInputFormat;
@@ -20,8 +22,6 @@ import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.util.Utf8;
-import org.codehaus.jackson.node.NullNode;
-import org.codehaus.jackson.node.TextNode;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 
@@ -111,7 +111,7 @@ public class AvroToPdiConverter {
         case STRING:
           if ( avroData instanceof GenericData.EnumSymbol ) {
             pentahoData = ( (GenericData.EnumSymbol) avroData ).toString();
-          } else if ( avroData instanceof TextNode ) {
+          } else if ( avroData instanceof TextNode) {
             pentahoData = convertToPentahoType( pentahoType, ( (TextNode) avroData ).asText(), avroInputField );
           } else {
             pentahoData = convertToPentahoType( pentahoType, (String) avroData, avroInputField );

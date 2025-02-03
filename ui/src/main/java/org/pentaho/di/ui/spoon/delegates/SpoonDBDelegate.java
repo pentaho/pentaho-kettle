@@ -81,6 +81,9 @@ public class SpoonDBDelegate extends SpoonDelegate {
   public void editConnection( DatabaseManagementInterface dbManager, DatabaseMeta databaseMeta ) {
     String originalName = databaseMeta.getName();
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
+    if ( getDatabaseDialog().getDatabaseMeta() == null ) {
+      return;
+    }
     try {
       getDatabaseDialog().setDatabases( dbManager.getAll() );
       String newname = getDatabaseDialog().open();
@@ -128,6 +131,9 @@ public class SpoonDBDelegate extends SpoonDelegate {
       databaseMetaCopy.setDisplayName( newName );
 
       getDatabaseDialog().setDatabaseMeta( databaseMetaCopy );
+      if ( getDatabaseDialog().getDatabaseMeta() == null ) {
+        return;
+      }
 
       getDatabaseDialog().setDatabases( dbManager.getAll() );
       String selectedName = getDatabaseDialog().open();
@@ -509,6 +515,10 @@ public class SpoonDBDelegate extends SpoonDelegate {
       () -> databaseMeta.initializeVariablesFrom( null ) );
 
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
+    if ( getDatabaseDialog().getDatabaseMeta() == null ) {
+      return;
+    }
+
     String con_name = getDatabaseDialog().open();
     if ( !Utils.isEmpty( con_name ) ) {
       con_name = con_name.trim();

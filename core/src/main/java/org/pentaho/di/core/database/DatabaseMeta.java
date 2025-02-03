@@ -154,14 +154,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public static final int TYPE_DATABASE_AS400 = 3;
 
   /**
-   * Connection to an Microsoft Access database
-   *
-   * @deprecated
-   */
-  @Deprecated
-  public static final int TYPE_DATABASE_ACCESS = 4;
-
-  /**
    * Connection to a Microsoft SQL Server database
    *
    * @deprecated
@@ -216,14 +208,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   @Deprecated
   public static final int TYPE_DATABASE_GUPTA = 11;
-
-  /**
-   * Connection to a DBase III/IV/V database through JDBC
-   *
-   * @deprecated
-   */
-  @Deprecated
-  public static final int TYPE_DATABASE_DBASE = 12;
 
   /**
    * Connection to a FireBird database
@@ -338,14 +322,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public static final int TYPE_DATABASE_SQLITE = 26;
 
   /**
-   * Connection to an Apache Derby database
-   *
-   * @deprecated
-   */
-  @Deprecated
-  public static final int TYPE_DATABASE_DERBY = 27;
-
-  /**
    * Connection to a BMC Remedy Action Request System
    *
    * @deprecated
@@ -432,6 +408,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connect to the database using ODBC.
+   * @deprecated
    */
   public static final int TYPE_ACCESS_ODBC = 1;
 
@@ -453,13 +430,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   /**
    * Short description of the access type, used in XML and the repository.
    */
-  public static final String[] dbAccessTypeCode = { "Native", "ODBC", "OCI", "Plugin", "JNDI", ",", };
+  public static final String[] dbAccessTypeCode = { "Native", "ODBC (deprecated)", "OCI", "Plugin", "JNDI", ",", };
 
   /**
    * Longer description for user interactions.
    */
   public static final String[] dbAccessTypeDesc = {
-    "Native (JDBC)", "ODBC", "OCI", "Plugin specific access method", "JNDI", "Custom", };
+    "Native (JDBC)", "ODBC (deprecated)", "OCI", "Plugin specific access method", "JNDI", "Custom", };
 
   /**
    * Use this length in a String value to indicate that you want to use a CLOB in stead of a normal text field.
@@ -746,8 +723,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * Return the type of database access. One of
    * <p>
    * TYPE_ACCESS_NATIVE
-   * <p>
-   * TYPE_ACCESS_ODBC
    * <p>
    * TYPE_ACCESS_OCI
    * <p>

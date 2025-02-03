@@ -1646,16 +1646,16 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
           String[] sectionsList = new String[wini.keySet().size()];
           int i = 0;
           while ( itSection.hasNext() ) {
-            sectionsList[i] = itSection.next().toString();
+            sectionsList[i] = itSection.next();
             i++;
           }
           Const.sortStrings( sectionsList );
           EnterSelectionDialog dialog = new EnterSelectionDialog( shell, sectionsList,
             BaseMessages.getString( PKG, "PropertyInputDialog.Dialog.SelectASection.Title" ),
             BaseMessages.getString( PKG, "PropertyInputDialog.Dialog.SelectASection.Message" ) );
-          String sectionname = dialog.open();
-          if ( sectionname != null ) {
-            wSection.setText( sectionname );
+          String sectionName = dialog.open();
+          if ( sectionName != null ) {
+            wSection.setText( sectionName );
           }
         } else {
           // The file not exists !

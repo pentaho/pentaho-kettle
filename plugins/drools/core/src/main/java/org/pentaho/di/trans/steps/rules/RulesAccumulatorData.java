@@ -13,45 +13,43 @@
 
 package org.pentaho.di.trans.steps.rules;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.definition.KnowledgePackage;
-import org.drools.io.Resource;
-import org.drools.io.ResourceFactory;
-import org.drools.runtime.ObjectFilter;
-import org.drools.runtime.StatefulKnowledgeSession;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.builder.Results;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.ObjectFilter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.rules.Rules.Row;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 public class RulesAccumulatorData extends BaseStepData implements StepDataInterface {
-  private static Class<?> PKG = RulesAccumulator.class; // for i18n purposes
+  private static final Class<?> PKG = RulesAccumulator.class; // for i18n purposes
 
   private RowMetaInterface outputRowMeta;
   private RowMetaInterface inputRowMeta;
 
-  private KnowledgeBuilder kbuilder;
-
-  private KnowledgeBase kbase;
+  private KieBase kieBase;
 
   private List<Object[]> results;
 
   private String ruleString;
 
-  private List<Row> rowList = new ArrayList<Row>();
-  private List<Row> resultList = new ArrayList<Row>();
+  private final List<Row> rowList = new ArrayList<>();
+  private final List<Row> resultList = new ArrayList<>();
 
   public String getRuleString() {
     return ruleString;
@@ -85,26 +83,30 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
     ClassLoader orig = Thread.currentThread().getContextClassLoader();
     ClassLoader loader = getClass().getClassLoader();
     Thread.currentThread().setContextClassLoader( loader );
+    KieServices kieServices = KieServices.Factory.get();
+    KieFileSystem kfs = kieServices.newKieFileSystem();
+    String internalFilePath = "src/main/resources/kettle.drl";
 
-    Resource ruleSet = null;
     if ( ruleString != null ) {
-      ruleSet = ResourceFactory.newReaderResource( new StringReader( ruleString ) );
+      kfs.write( internalFilePath, ruleString );
     } else {
-      ruleSet = ResourceFactory.newFileResource( ruleFilePath );
+      try {
+        FileInputStream fis = new FileInputStream( ruleFilePath );
+        kfs.write( internalFilePath, kieServices.getResources().newInputStreamResource( fis ) );
+      } catch ( FileNotFoundException e ) {
+        throw new RuntimeException( BaseMessages.getString( PKG, "RulesData.Error.CompileDRL" ) );
+      }
     }
-    kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-    kbuilder.add( ruleSet, ResourceType.DRL );
+    KieBuilder kieBuilder = kieServices.newKieBuilder( kfs ).buildAll();
+    Results results = kieBuilder.getResults();
 
-    if ( kbuilder.hasErrors() ) {
-      System.out.println( kbuilder.getErrors().toString() );
+    if ( results.hasMessages( Message.Level.ERROR ) ) {
+      System.out.println( results.getMessages() );
       throw new RuntimeException( BaseMessages.getString( PKG, "RulesData.Error.CompileDRL" ) );
     }
 
-    Collection<KnowledgePackage> pkgs = kbuilder.getKnowledgePackages();
-
-    kbase = KnowledgeBaseFactory.newKnowledgeBase();
-    // Cache the knowledge base as its creation is intensive
-    kbase.addKnowledgePackages( pkgs );
+    KieContainer kieContainer = kieServices.newKieContainer( kieServices.getRepository().getDefaultReleaseId() );
+    kieBase = kieContainer.getKieBase();
 
     // reset classloader back to original
     Thread.currentThread().setContextClassLoader( orig );
@@ -119,9 +121,9 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
     this.inputRowMeta = _inputRowMeta;
   }
 
-  public void loadRow( Object[] r ) throws Exception {
+  public void loadRow( Object[] r ) {
     // Store rows for processing
-    Map<String, Object> columns = new Hashtable<String, Object>();
+    Map<String, Object> columns = new Hashtable<>();
     for ( String field : inputRowMeta.getFieldNames() ) {
       columns.put( field, r[inputRowMeta.indexOfValue( field )] );
     }
@@ -134,22 +136,20 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
   }
 
   public void execute() throws Exception {
-    if ( kbase != null ) {
-      StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
+    if ( kieBase != null ) {
+      KieSession kieSession = kieBase.newKieSession();
 
       for ( Row row : rowList ) {
-        session.insert( row );
+        kieSession.insert( row );
       }
 
-      session.fireAllRules();
+      kieSession.fireAllRules();
 
-      Collection<Object> oList = session.getObjects( new ObjectFilter() {
+      Collection<?> oList = kieSession.getObjects( new ObjectFilter() {
+
         @Override
         public boolean accept( Object o ) {
-          if ( o instanceof Row && !( (Row) o ).isExternalSource() ) {
-            return true;
-          }
-          return false;
+          return o instanceof Row && !( (Row) o ).isExternalSource();
         }
       } );
 
@@ -157,7 +157,7 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
         resultList.add( (Row) o );
       }
 
-      session.dispose();
+      kieSession.dispose();
     }
   }
 

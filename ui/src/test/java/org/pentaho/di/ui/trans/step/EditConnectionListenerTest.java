@@ -13,24 +13,35 @@
 
 package org.pentaho.di.ui.trans.step;
 
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.shared.DatabaseManagementInterface;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog.EditConnectionListener;
+
+import java.io.IOException;
 
 import org.eclipse.swt.custom.CCombo;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class EditConnectionListenerTest {
@@ -76,7 +87,7 @@ public class EditConnectionListenerTest {
 
     @Override
     public String answer( InvocationOnMock invocation ) throws Throwable {
-      DatabaseMeta meta = (DatabaseMeta) invocation.getArguments()[ 0 ];
+      DatabaseMeta meta = (DatabaseMeta) invocation.getArguments()[0];
       meta.setName( name );
       meta.setHostname( host );
       return name;

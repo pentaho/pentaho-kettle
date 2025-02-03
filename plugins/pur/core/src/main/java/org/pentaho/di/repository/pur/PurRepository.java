@@ -33,6 +33,8 @@ import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.Import;
 import org.pentaho.di.job.JobMeta;
@@ -101,6 +103,7 @@ import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -3458,6 +3461,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         renameKettleEntity( element, null, element.getName() );
       }
     } else {
+
+      int dataSize = calculateDataSize( element );
+
       readWriteLock.writeLock().lock();
       try {
         file =
@@ -3465,11 +3471,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
             + element.getRepositoryElementType().getExtension() ) ).versioned( true ).title(
             RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
             versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
-            Const.NVL( element.getDescription(), "" ) ).build();
+            Const.NVL( element.getDescription(), "" ) ).fileSize( dataSize ).build();
 
         file =
           pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
-            new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
+            new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ), dataSize ), versionComment );
       } catch ( SOAPFaultException e ) {
         if ( e.getMessage().contains( UnifiedRepositoryCreateFileException.PREFIX ) ) {
           throw new KettleException(
@@ -3493,6 +3499,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       TransMeta transMeta = loadTransformation( objectId, null );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransImportAfterSaveToRepo.id, transMeta );
     }
+  }
+
+  private static int calculateDataSize( RepositoryElementInterface element ) throws KettleException {
+    if ( !( element instanceof XMLInterface ) ) {
+      return 0;
+    }
+
+    String xml = XMLHandler.getXMLHeader() + ( (XMLInterface) element ).getXML();
+    byte[] bytes = xml.getBytes( StandardCharsets.UTF_8 );
+    return bytes.length;
   }
 
   protected ObjectId renameKettleEntity( final RepositoryElementInterface transOrJob,

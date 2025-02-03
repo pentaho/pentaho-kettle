@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-engine</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.3.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI Engine</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -24,10 +24,10 @@
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
 
     <!-- Pentaho dependencies -->
-    <pentaho-reporting.version>10.2.0.0-SNAPSHOT</pentaho-reporting.version>
-    <pentaho-registry.version>10.2.0.0-SNAPSHOT</pentaho-registry.version>
-    <pentaho-connections.version>10.2.0.0-SNAPSHOT</pentaho-connections.version>
-    <mondrian.version>10.2.0.0-SNAPSHOT</mondrian.version>
+    <pentaho-reporting.version>10.3.0.0-SNAPSHOT</pentaho-reporting.version>
+    <pentaho-registry.version>10.3.0.0-SNAPSHOT</pentaho-registry.version>
+    <pentaho-connections.version>10.3.0.0-SNAPSHOT</pentaho-connections.version>
+    <mondrian.version>10.3.0.0-SNAPSHOT</mondrian.version>
 
     <!-- Third-party dependencies -->
     <antlr-complete.version>3.5.2</antlr-complete.version>
@@ -51,7 +51,6 @@
     <odfdom-java.version>0.8.6</odfdom-java.version>
     <commons-collections4.version>4.4</commons-collections4.version>
     <commons-math3.version>3.6.1</commons-math3.version>
-    <xmlbeans.version>5.2.0</xmlbeans.version>
     <curvesapi.version>1.06</curvesapi.version>
     <SassyReader.version>0.5</SassyReader.version>
     <saxon.version>9.1.0.8</saxon.version>
@@ -65,7 +64,6 @@
     <wsdl4j.version>1.6.2</wsdl4j.version>
     <wsdl4j-qname.version>1.6.1</wsdl4j-qname.version>
     <hibernate-core.version>5.4.24.Final</hibernate-core.version>
-    <hibernate-c3p0.version>5.4.24.Final</hibernate-c3p0.version>
     <hibernate-commons-annotations.version>3.2.0.Final</hibernate-commons-annotations.version>
     <hibernate-ehcache.version>5.4.24.Final</hibernate-ehcache.version>
     <jboss-logging.version>3.4.3.Final</jboss-logging.version>
@@ -239,15 +237,6 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.rometools</groupId>
-      <artifactId>rome-modules</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.rometools</groupId>
-      <artifactId>rome-utils</artifactId>
-      <version>${rome.version}</version>
     </dependency>
     <dependency>
       <groupId>infobright</groupId>
@@ -490,10 +479,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.rometools</groupId>
-      <artifactId>rome</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.eobjects.sassyreader</groupId>
       <artifactId>SassyReader</artifactId>
       <version>${SassyReader.version}</version>
@@ -519,17 +504,6 @@
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon-dom</artifactId>
       <version>${saxon-dom.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.konloch</groupId>
-      <artifactId>safeyaml</artifactId>
-      <version>${safeyaml.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -639,14 +613,17 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
+      <version>${fasterxml-jackson.non-osgi.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
+      <version>${fasterxml-jackson.non-osgi.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <version>${fasterxml-jackson.non-osgi.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -660,21 +637,10 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-c3p0</artifactId>
-      <version>${hibernate-c3p0.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.1-api</artifactId>
+      <version>1.0.0.Final</version>
     </dependency>
-    <dependency>
-    <groupId>org.hibernate.javax.persistence</groupId>
-    <artifactId>hibernate-jpa-2.1-api</artifactId>
-    <version>1.0.0.Final</version>
-  </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-ehcache</artifactId>

@@ -88,6 +88,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
   public String script;
   private String filename;
   private String workDirectory;
+  private static final String KETTLE = "kettle";
+  private static final String SHELL = "shell";
 
   public JobEntryShell( String name ) {
     super( name, "" );
@@ -442,9 +444,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     FileObject fileObject = null;
     String realScript = null;
     FileObject tempFile = null;
-    final String TEMP_DIR = "java.io.tmpdir";
-    final String KETTLE = "kettle";
-
 
     try {
       // What's the exact command?
@@ -468,32 +467,38 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         base = new String[] { "command.com", "/C" };
         if ( insertScript ) {
           tempFile =
-            vfs.createTempFile( KETTLE, "shell.bat", System.getProperty( TEMP_DIR ), this );
+            vfs.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else if ( Const.getOS().startsWith( "Windows" ) ) {
         base = new String[] { "cmd.exe", "/C" };
         if ( insertScript ) {
           tempFile =
-            vfs.createTempFile( KETTLE, "shell.bat", System.getProperty( TEMP_DIR ), this );
+            vfs.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else {
-        if ( insertScript ) {
-          realScript = environmentSubstitute( script );
-          tempFile = vfs.createTempFile( KETTLE, "shell", System.getProperty( TEMP_DIR ), this );
-        } else {
-          String realFilename = environmentSubstitute( getFilename() );
-          URI uri = new URI( realFilename );
-          realFilename = uri.getPath();
-          try ( FileInputStream fis = new FileInputStream( realFilename ) ) {
-            realScript = IOUtils.toString( fis, "UTF-8" );
+        if ("Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE, "Y" ) )) {
+          if ( insertScript ) {
+            tempFile = vfs.createTempFile( KETTLE, SHELL, KettleVFS.TEMP_DIR, this );
+          } else {
+            String realFilename = environmentSubstitute( getFilename() );
+            URI uri = new URI( realFilename );
+            realFilename = uri.getPath();
+            try ( FileInputStream fis = new FileInputStream( realFilename ) ) {
+              realScript = IOUtils.toString( fis, "UTF-8" );
+            }
+            // PDI-19676 - creating a temp file in same file location to avoid script failure.
+            String parentDir = Paths.get( realFilename ).getParent().toString();
+            tempFile = vfs.createTempFile( KETTLE, SHELL, parentDir, this );
           }
-          // PDI-19676 - creating a temp file in same file location to avoid script failure.
-          String parentDir = Paths.get(realFilename).getParent().toString();
-          tempFile = vfs.createTempFile( KETTLE, "shell",parentDir , this );
+          fileObject = createTemporaryShellFile( tempFile, realScript );
+        } else {
+          if ( insertScript ) {
+            tempFile = vfs.createTempFile( "kettle", SHELL, KettleVFS.TEMP_DIR, this );
+            fileObject = createTemporaryShellFile( tempFile, realScript );
+          }
         }
-        fileObject = createTemporaryShellFile( tempFile, realScript );
         base = new String[] { KettleVFS.getFilename( fileObject ) };
       }
 

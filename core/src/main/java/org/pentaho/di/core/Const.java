@@ -3,7 +3,7 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2024-2025 by Hitachi Vantara, LLC : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
@@ -12,18 +12,25 @@
  ******************************************************************************/
 
 
+
 package org.pentaho.di.core;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.http.conn.util.InetAddressUtils;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.vfs.IKettleVFS;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.version.BuildVersion;
@@ -1441,6 +1448,18 @@ public class Const {
   }
 
   /**
+   * File used to prevent multiple instances of kettle from starting at the same time to avoid file
+   * system contention when building karaf sys/cache directories.
+   */
+  public static final String KARAF_BOOT_LOCK_FILE = "karaf.boot.lock";
+  public static final String KARAF_BOOT_LOCK_WAIT_TIME = "KARAF_BOOT_LOCK_WAIT_TIME";
+  /**
+   * Flag to indicate whether to check for and set a boot lock file when starting karaf, or proceed without the lock.
+   * Default behavior is to not use a lock file and boot without checking or waiting.
+   */
+  public static final String KARAF_WAIT_FOR_BOOT_LOCK_FILE = "KARAF_WAIT_FOR_BOOT_LOCK_FILE";
+
+  /**
    * Determines whether failure to find the HDFS file system is a fatal error in Hadoop File Input step.
    * Default (legacy) behavior is false.
    */
@@ -1666,9 +1685,40 @@ public class Const {
   public static final String COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
 
   /**
+   Value to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as job input mode.
+   */
+  public static final String KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT = "KETTLE_COMPATIBILITY_JOB_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT";
+
+  /**
+   Value to revert the behaviour of the flag "Execute every Input Row" behavior back to executing even with 0 rows as trans input mode.
+   */
+  public static final String KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT = "KETTLE_COMPATIBILITY_TRANS_EXECUTE_FOR_EVERY_ROW_ON_NO_INPUT";
+
+  /**
+   Value to show/not show the Warning messages regarding the configured behaviour of the flag "Execute every Input Row"
+   */
+  public static final String KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
+
+  /**
+   Value to execute a temporary generated file or the original script in Shell step
+   */
+  public static final String KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE = "KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE";
+
+  /**
    Value to Configure if we want to export only the used connections to the XML file
    */
   public static final String STRING_ONLY_USED_DB_TO_XML = "STRING_ONLY_USED_DB_TO_XML";
+
+  /**
+   Value to Configure if we want to disable/grayed out internal variables, and remove from the new/edit schedule.
+   */
+  public static final String HIDE_INTERNAL_VARIABLES = "PENTAHO_SCHEDULER_HIDE_INTERNAL_VARIABLES";
+  public static final String HIDE_INTERNAL_VARIABLES_DEFAULT = "Y";
+
+  /**
+   Set the maximum allowed size for byte arrays in Apache POI.
+   */
+  public static final String POI_BYTE_ARRAY_MAX_SIZE = "POI_BYTE_ARRAY_MAX_SIZE";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
@@ -3416,8 +3466,22 @@ public class Const {
   }
 
   public static String createName( String filename ) {
+    return createName( DefaultBowl.getInstance() , filename );
+  }
+
+  public static String createName( Bowl bowl, String filename ) {
     if ( Utils.isEmpty( filename ) ) {
       return filename;
+    }
+
+    IKettleVFS vfs = KettleVFS.getInstance( bowl );
+    try {
+      FileName fname = vfs.resolveURI( filename );
+      if ( fname != null ) {
+        filename = fname.getPathDecoded();
+      }
+    } catch ( FileSystemException | KettleException ex ) {
+      // must not have been a vfs URI
     }
 
     String pureFilename = filenameOnly( filename );

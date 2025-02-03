@@ -13,32 +13,23 @@
 
 package org.pentaho.di.ui.spoon;
 
-import org.apache.commons.vfs2.FileObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.Ignore;
-
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.partition.PartitionSchemaManagementInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.spoon.delegates.SpoonClustersDelegate;
 import org.pentaho.di.ui.spoon.delegates.SpoonDBDelegate;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
@@ -49,6 +40,14 @@ import org.pentaho.di.ui.spoon.delegates.SpoonTransformationDelegate;
 
 import java.util.Collections;
 import java.util.UUID;
+
+import org.apache.commons.vfs2.FileObject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -114,7 +113,6 @@ public class SharedObjectSyncUtilTest {
       sharedObjectsFile.delete();
     }
   }
-
 
   @Ignore( "Need to figure out if we need to handle syning of sharedobjects when connected to repository" )
   @Test

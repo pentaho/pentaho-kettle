@@ -45,8 +45,6 @@ public class SequenceMetaTest {
 
     DatabaseInterface[] doNotSupport = new DatabaseInterface[] {
       new CacheDatabaseMeta(),
-      new DbaseDatabaseMeta(),
-      new DerbyDatabaseMeta(),
       new Exasol4DatabaseMeta(),
       new ExtenDBDatabaseMeta(),
       new ExtenDBDatabaseMeta(),
@@ -61,7 +59,6 @@ public class SequenceMetaTest {
       new InterbaseDatabaseMeta(),
       new LucidDBDatabaseMeta(),
       new MondrianNativeDatabaseMeta(),
-      new MSAccessDatabaseMeta(),
       new MySQLDatabaseMeta(),
       new MariaDBDatabaseMeta(),
       new NeoviewDatabaseMeta(),
@@ -211,14 +208,6 @@ public class SequenceMetaTest {
     assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
-    databaseInterface = new DbaseDatabaseMeta();
-    assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
-
-    databaseInterface = new DerbyDatabaseMeta();
-    assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
-
     databaseInterface = new ExtenDBDatabaseMeta();
     assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
@@ -252,10 +241,6 @@ public class SequenceMetaTest {
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new LucidDBDatabaseMeta();
-    assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
-
-    databaseInterface = new MSAccessDatabaseMeta();
     assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 

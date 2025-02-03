@@ -43,7 +43,6 @@ public class RepositoryDirectory extends RepositoryFile implements Directory {
     RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
     repositoryDirectory.setParent( parentPath );
     repositoryDirectory.setName( repositoryDirectoryInterface.getName() );
-    repositoryDirectory.setPath( parentPath == null ? repositoryDirectoryInterface.getPath() : parentPath + "/" + repositoryDirectoryInterface.getName() );
     if ( Objects.equals( parentPath, "/" ) || parentPath == null ) {
       repositoryDirectory.setPath( repositoryDirectoryInterface.getPath() );
     } else {

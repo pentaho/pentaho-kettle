@@ -7,22 +7,23 @@
   <parent>
     <artifactId>drools-assemblies</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>kettle-drools5-plugin</artifactId>
+  <artifactId>kettle-drools8-plugin</artifactId>
   <packaging>pom</packaging>
 
   <name>PDI Drools Plugin Distribution</name>
 
   <properties>
     <resources.directory>${project.basedir}/src/main/resources</resources.directory>
+    <samples.directory>${project.basedir}/samples</samples.directory>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>kettle-drools5-core</artifactId>
+      <artifactId>kettle-drools8-core</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
