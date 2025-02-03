@@ -19,7 +19,6 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -112,7 +111,7 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
 
   public void moveToGlobal( ClusterSchemaManagementInterface clusterSchemaManager, ClusterSchema clusterSchema )
       throws KettleException {
-    moveCopy( clusterSchemaManager, DefaultBowl.getInstance().getManager( ClusterSchemaManagementInterface.class ),
+    moveCopy( clusterSchemaManager, spoon.getGlobalManagementBowl().getManager( ClusterSchemaManagementInterface.class ),
               clusterSchema, true, "Spoon.Message.OverwriteClusterSchemaYN" );
   }
 
@@ -124,7 +123,7 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
 
   public void copyToGlobal( ClusterSchemaManagementInterface clusterSchemaManager, ClusterSchema clusterSchema )
       throws KettleException {
-    moveCopy( clusterSchemaManager, DefaultBowl.getInstance().getManager( ClusterSchemaManagementInterface.class ),
+    moveCopy( clusterSchemaManager, spoon.getGlobalManagementBowl().getManager( ClusterSchemaManagementInterface.class ),
               clusterSchema, false, "Spoon.Message.OverwriteClusterSchemaYN" );
   }
 

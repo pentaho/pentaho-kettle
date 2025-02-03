@@ -29,7 +29,6 @@ import org.pentaho.di.connections.vfs.provider.ConnectionFileName;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;

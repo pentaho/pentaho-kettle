@@ -28,7 +28,9 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.ConverterException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -53,7 +55,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertTrue;
-import org.pentaho.di.shared.MemorySharedObjectsIO;
 
 public class StreamToTransNodeConverterTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -104,6 +105,8 @@ public class StreamToTransNodeConverterTest {
 
     Repository repository = mock( Repository.class );
     when( repository.loadTransformation( any( StringObjectId.class ), anyString() ) ).thenReturn( transMeta );
+    when( repository.getBowl() ).thenReturn( new RepositoryBowl( repository ) );
+
 
     StreamToTransNodeConverter transNodeConverter = new StreamToTransNodeConverter( pur );
     transNodeConverter = spy( transNodeConverter );

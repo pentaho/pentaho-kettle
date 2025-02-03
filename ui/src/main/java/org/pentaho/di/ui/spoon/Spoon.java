@@ -191,6 +191,7 @@ import org.pentaho.di.pkg.JarfileGenerator;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -495,6 +496,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public PropsUI props;
 
   // should never be null
+  private Bowl globalManagementBowl = DefaultBowl.getInstance();
   private Bowl managementBowl = DefaultBowl.getInstance();
   private Bowl executionBowl = DefaultBowl.getInstance();
 
@@ -3158,7 +3160,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
       return managementBowl.getManager( clazz );
     } else if ( level == LeveledTreeNode.LEVEL.GLOBAL ) {
-      return DefaultBowl.getInstance().getManager( clazz );
+      return globalManagementBowl.getManager( clazz );
     } else if ( level == LeveledTreeNode.LEVEL.LOCAL ) {
       AbstractMeta meta = getActiveAbstractMeta();
       return meta != null ? meta.getSharedObjectManager( clazz ) : null;
@@ -3290,7 +3292,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-        if ( getBowl() != DefaultBowl.getInstance() ) {
+        if ( getBowl() != getGlobalManagementBowl() ) {
           moveProjectItem.setVisible( true );
           moveGlobalItem.setVisible( false );
         } else {
@@ -3299,7 +3301,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
-        if ( getBowl() == DefaultBowl.getInstance() ) {
+        if ( getBowl() == getGlobalManagementBowl() ) {
           moveGlobalItem.setVisible( true );
           moveProjectItem.setVisible( false );
         } else {
@@ -3319,7 +3321,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-        if ( getBowl() != DefaultBowl.getInstance() ) {
+        if ( getBowl() != getGlobalManagementBowl() ) {
           copyProjectItem.setVisible( true );
           copyGlobalItem.setVisible( false );
         } else {
@@ -3328,7 +3330,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
-        if ( getBowl() == DefaultBowl.getInstance() ) {
+        if ( getBowl() == getGlobalManagementBowl() ) {
           copyGlobalItem.setVisible( true );
           copyProjectItem.setVisible( false );
         } else {
@@ -6737,7 +6739,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     Map<String, String> newProperties = dialog.open();
     if ( newProperties != null ) {
       VariableSpace bowlSpace;
-      if ( managementBowl.equals( DefaultBowl.getInstance() ) ) {
+      if ( managementBowl.equals( getGlobalManagementBowl() ) ) {
         bowlSpace = new Variables();
       } else {
         bowlSpace = managementBowl.getADefaultVariableSpace();
@@ -9150,9 +9152,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     this.rep = rep;
 
     if ( rep != null ) {
-      DefaultBowl.getInstance().setSharedObjectsIO( new RepositorySharedObjectsIO( rep, () ->
-            getExecutionBowl().getManager( SlaveServerManagementInterface.class ).getAll() ) );
-      DefaultBowl.getInstance().clearManagers();
+      globalManagementBowl = new RepositoryBowl( rep );
+      managementBowl = globalManagementBowl;
+      executionBowl = globalManagementBowl;
 
       this.repositoryName = rep.getName();
       List<LastUsedFile> lastUsedFiles = getLastUsedRepoFiles();
@@ -9162,9 +9164,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         lastFileOpenedProvider = ProviderFilterType.REPOSITORY.toString();
       }
     } else {
-      // will be generated on the next call
-      DefaultBowl.getInstance().setSharedObjectsIO( null );
-      DefaultBowl.getInstance().clearManagers();
+      globalManagementBowl = DefaultBowl.getInstance();
+      managementBowl = globalManagementBowl;
+      executionBowl = globalManagementBowl;
 
       this.repositoryName = null;
       lastFileOpened = props.getLastUsedLocalFile();
@@ -9785,9 +9787,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   /**
+   * Retrieves the Bowl for the Global Management context. This Bowl should be used for write operations specifically at
+   * the Global level. This Bowl will only return objects directly owned by the global context.
+   *
+   * @return Bowl The Bowl that should be used during execution.
+   */
+  public Bowl getGlobalManagementBowl() {
+    return globalManagementBowl;
+  }
+
+  /**
    * Retrieves the Bowl for the Management context. This Bowl should be used for write operations. This Bowl will only
    * return objects directly owned by the particular context. It will not include objects owned by the global context.
-   * Use DefaultBowl to access the global context.
+   * Use getGlobalManagementBowl() to access the global context.
    *
    * @return Bowl The Bowl that should be used during execution.
    */
