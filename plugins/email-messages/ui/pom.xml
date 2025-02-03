@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>email-messages</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.2-293</version>
   </parent>
 
   <artifactId>email-messages-plugins-ui</artifactId>
