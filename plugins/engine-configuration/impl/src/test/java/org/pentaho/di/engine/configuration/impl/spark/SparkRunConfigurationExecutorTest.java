@@ -45,10 +45,8 @@ public class SparkRunConfigurationExecutorTest {
 
   private SparkRunConfigurationExecutor sparkRunConfigurationExecutor;
 
-  @Mock
   private AbstractMeta abstractMeta;
 
-  @Mock
   private VariableSpace variableSpace;
 
   private DefaultCapabilityManager capabilityManager;
@@ -58,6 +56,8 @@ public class SparkRunConfigurationExecutorTest {
   public void setup() throws Exception {
     sparkRunConfigurationExecutor = new SparkRunConfigurationExecutor();
     capabilityProvider = mock( ICapabilityProvider.class );
+    abstractMeta = mock( AbstractMeta.class );
+    variableSpace = mock( VariableSpace.class );
 
     capabilityManager = DefaultCapabilityManager.getInstance();
     capabilityManager.registerCapabilityProvider( capabilityProvider );

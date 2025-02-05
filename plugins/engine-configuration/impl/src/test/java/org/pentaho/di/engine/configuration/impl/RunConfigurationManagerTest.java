@@ -96,7 +96,7 @@ public class RunConfigurationManagerTest {
   public void testLoad() {
     List<RunConfiguration> runConfigurations = executionConfigurationManager.load();
 
-    assertEquals( 2, runConfigurations.size() ); //Includes default
+    assertEquals( 3, runConfigurations.size() ); //Includes default
   }
 
   @Test
@@ -197,17 +197,19 @@ public class RunConfigurationManagerTest {
 
     assertEquals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME, runConfigurations.get( 0 ).getName() );
     assertEquals( "a", runConfigurations.get( 1 ).getName() );
-    assertEquals( "f", runConfigurations.get( 2 ).getName() );
-    assertEquals( "x", runConfigurations.get( 3 ).getName() );
-    assertEquals( "z", runConfigurations.get( 4 ).getName() );
+    assertEquals( "d", runConfigurations.get( 2 ).getName() );
+    assertEquals( "f", runConfigurations.get( 3 ).getName() );
+    assertEquals( "x", runConfigurations.get( 4 ).getName() );
+    assertEquals( "z", runConfigurations.get( 5 ).getName() );
 
     List<String> names = executionConfigurationManager.getNames();
 
     assertEquals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME, names.get( 0 ) );
     assertEquals( "a", names.get( 1 ) );
-    assertEquals( "f", names.get( 2 ) );
-    assertEquals( "x", names.get( 3 ) );
-    assertEquals( "z", names.get( 4 ) );
+    assertEquals( "d", names.get( 2 ) );
+    assertEquals( "f", names.get( 3 ) );
+    assertEquals( "x", names.get( 4 ) );
+    assertEquals( "z", names.get( 5 ) );
   }
 
   private static MetastoreLocator createMetastoreLocator( IMetaStore memoryMetaStore ) {
