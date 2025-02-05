@@ -52,9 +52,9 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
     Repository repository = (Repository) ( (Object[]) o )[ 3 ];
     EmbeddedMetaStore embeddedMetaStore = meta.getEmbeddedMetaStore();
 
-    //RunConfigurationManager runConfigurationManager = rcmProvider.apply( meta.getBowl() );
+    RunConfigurationManager runConfigurationManager = rcmProvider.apply( meta.getBowl() );
     // TODO - Find a better fix for this change. SparkConfiguration is not being added using the above call. This is done temporarily to fix RunConfiguration not found error for AEL Spark
-    RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
+    //RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
     RunConfiguration runConfiguration =
       runConfigurationManager.load( executionConfiguration.getRunConfiguration() );
 
