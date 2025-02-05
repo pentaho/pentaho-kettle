@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -59,8 +60,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -164,14 +165,16 @@ public class TransWebSocketEngineAdapterTest {
     latch.countDown();
   }
 
-  private Matcher<StopMessage> matchesSafeStop() {
-    return new BaseMatcher<StopMessage>() {
-      @Override public boolean matches( Object o ) {
-        return ( (StopMessage) o ).isSafeStop();
+  private ArgumentMatcher<StopMessage> matchesSafeStop() {
+    return new ArgumentMatcher<StopMessage>() {
+      @Override
+      public boolean matches(StopMessage stopMessage) {
+        return stopMessage.isSafeStop();
       }
 
-      @Override public void describeTo( Description description ) {
-
+      @Override
+      public Class<?> type() {
+        return ArgumentMatcher.super.type();
       }
     };
   }

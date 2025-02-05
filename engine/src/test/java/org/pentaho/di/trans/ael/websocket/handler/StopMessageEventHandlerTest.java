@@ -25,10 +25,8 @@ package org.pentaho.di.trans.ael.websocket.handler;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.Whitebox;
-import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelFileWriterBuffer;
@@ -45,7 +43,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,17 +53,11 @@ import static org.mockito.Mockito.spy;
 
 
 public class StopMessageEventHandlerTest {
-  @Mock
-  TransWebSocketEngineAdapter transWebSocketEngineAdapter;
-
-  @Mock
-  DaemonMessagesClientEndpoint daemonMessagesClientEndpoint;
 
   private LogChannel logChannel;
   private String logChannelSubject = "pdi";
   private String channelId = "1234-5678-abcd-efgh";
 
-  private LogLevel logLevel;
   private LogMessageInterface logMsgInterface;
   private LogChannelFileWriterBuffer logChFileWriterBuffer;
 
@@ -80,30 +72,21 @@ public class StopMessageEventHandlerTest {
   public void setUp() throws Exception {
     KettleLogStore.init();
     this.id = UUID.randomUUID().toString();
-    LogLevel logLevelStatic = mock( LogLevel.class );
-    Whitebox.setInternalState( logLevelStatic, "name", "Basic" );
-    Whitebox.setInternalState( logLevelStatic, "ordinal", 3 );
-
-    mockStatic( DefaultLogLevel.class );
-    when( DefaultLogLevel.getLogLevel() ).thenReturn( LogLevel.BASIC );
-
     logChFileWriterBuffer = Mockito.mock( LogChannelFileWriterBuffer.class );
 
     LoggingRegistry regInstance = Mockito.mock( LoggingRegistry.class );
     Mockito.when( regInstance.registerLoggingSource( logChannelSubject ) ).thenReturn( channelId );
     Mockito.when( regInstance.getLogChannelFileWriterBuffer( channelId ) ).thenReturn( logChFileWriterBuffer );
-
-    mockStatic( LoggingRegistry.class );
-    when( LoggingRegistry.getInstance() ).thenReturn( regInstance );
-
-    logLevel = mock( LogLevel.class );
-    Whitebox.setInternalState( logLevel, "name", "Basic" );
-    Whitebox.setInternalState( logLevel, "ordinal", 3 );
+    try ( MockedStatic<LoggingRegistry> loggingRegistry = mockStatic( LoggingRegistry.class ) ) {
+      loggingRegistry.when( LoggingRegistry::getInstance ).thenReturn( regInstance );
+    }
 
     logMsgInterface = Mockito.mock( LogMessageInterface.class );
-    Mockito.when( logMsgInterface.getLevel() ).thenReturn( logLevel );
+    Mockito.when( logMsgInterface.getLevel() ).thenReturn( LogLevel.BASIC );
 
     logChannel = spy( new LogChannel( logChannelSubject ) );
+    TransWebSocketEngineAdapter transWebSocketEngineAdapter = mock( TransWebSocketEngineAdapter.class );
+    DaemonMessagesClientEndpoint daemonMessagesClientEndpoint = mock( DaemonMessagesClientEndpoint.class );
     handlerUnderTest = new StopMessageEventHandler( logChannel,
         errors,
         transFinishSignal,

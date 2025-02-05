@@ -25,7 +25,6 @@
 package org.pentaho.di.trans.ael.adapters;
 
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -34,7 +33,8 @@ import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
-import org.mockito.Mock;
+
+import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -87,8 +87,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 public class TransMetaConverterTest {
@@ -96,15 +103,7 @@ public class TransMetaConverterTest {
 
   @Spy StepMetaInterface stepMetaInterface = new DummyTransMeta();
 
-  @Mock
-  ConnectionFileObject connectionFileObject;
-
   final String XML = "<xml></xml>";
-
-  @Before
-  public void before() throws KettleException {
-    when( stepMetaInterface.getXML() ).thenReturn( XML );
-  }
 
   @BeforeClass
   public static void init() throws Exception {
@@ -412,10 +411,12 @@ public class TransMetaConverterTest {
 
     TransMeta cloneTransMeta = (TransMeta) cloneTransMetaCaptor.getResult();
 
+    TransMeta spyCloneTransMeta = spy( cloneTransMeta );
+    spyCloneTransMeta.getXML();
     verify( originalTransMeta ).realClone( eq( false ) );
     assertThat( cloneTransMeta.getName(), is( originalTransMeta.getName() ) );
     verify( originalTransMeta, never() ).getXML();
-    verify( cloneTransMeta ).getXML();
+    verify( spyCloneTransMeta ).getXML();
   }
   @Test
   public void testResolveStepMetaResources() throws KettleException, MetaStoreException {
@@ -444,23 +445,25 @@ public class TransMetaConverterTest {
   public void testConvertConnectionFileObjectPVFS() throws KettleException {
     final String FINAL_NAME = "realURI";
     TransMeta transMeta = spy( new TransMeta() );
-    mockStatic( KettleVFS.class );
+    try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
 
-    doReturn( transMeta ).when( transMeta ).realClone( false );
-    when( KettleVFS.getFileObject( any() ) ).thenReturn( connectionFileObject );
-    when( connectionFileObject.getAELSafeURIString() ).thenReturn( FINAL_NAME );
+      doReturn( transMeta ).when( transMeta ).realClone( false );
+      ConnectionFileObject connectionFileObject = mock( ConnectionFileObject.class );
+      kettleVFSMockedStatic.when( () -> KettleVFS.getFileObject( any() ) ).thenReturn( connectionFileObject );
+      when( connectionFileObject.getAELSafeURIString() ).thenReturn( FINAL_NAME );
 
-    StepMeta textFileStep = new StepMeta( "resolvableStep", spy( new TextFileInputMeta() ) );
-    BaseFileInputFiles inputFiles = new BaseFileInputFiles();
-    inputFiles.fileName = new String[] { "pvfs://somefile" };
-    ( (TextFileInputMeta) textFileStep.getStepMetaInterface() ).inputFiles = inputFiles;
+      StepMeta textFileStep = new StepMeta( "resolvableStep", spy( new TextFileInputMeta() ) );
+      BaseFileInputFiles inputFiles = new BaseFileInputFiles();
+      inputFiles.fileName = new String[] { "pvfs://somefile" };
+      ( (TextFileInputMeta) textFileStep.getStepMetaInterface() ).inputFiles = inputFiles;
 
-    transMeta.addStep( textFileStep );
+      transMeta.addStep( textFileStep );
 
-    TransMetaConverter.convert( transMeta );
+      TransMetaConverter.convert(transMeta);
 
-    assertTrue( ( (TextFileInputMeta) transMeta.getStep( 0 ).getStepMetaInterface() )
-            .inputFiles.fileName[0].equalsIgnoreCase( FINAL_NAME ) );
+      assertTrue( ( ( TextFileInputMeta ) transMeta.getStep( 0 ).getStepMetaInterface() )
+              .inputFiles.fileName[0].equalsIgnoreCase( FINAL_NAME ) );
+    }
   }
 
   private static class TestMetaResolvableResource extends BaseStepMeta

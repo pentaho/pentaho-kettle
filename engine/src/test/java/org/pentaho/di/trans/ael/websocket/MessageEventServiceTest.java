@@ -45,7 +45,7 @@ import org.pentaho.di.trans.ael.websocket.handler.MessageEventHandler;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.pentaho.di.core.util.Assert.assertFalse;
@@ -77,10 +77,6 @@ public class MessageEventServiceTest {
     operationMessageEvent = Util.getOperationLogEvent( "Operation_ID" );
     otherOpMessageEvent  = Util.getMetricEvents( "Metrics_ID" );
     otherTransMessageEvent = Util.getTransformationStatusEvent();
-
-    doReturn( "message" ).when( logEntry ).getMessage();
-    doReturn( LogLevel.ERROR ).when( logEntry ).getLogLogLevel();
-    doReturn( new Date() ).when( logEntry ).getTimestamp();
   }
 
   @Test
