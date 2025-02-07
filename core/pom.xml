@@ -497,7 +497,7 @@
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-jdbc</artifactId>
-      <version>8.5.27</version>
+      <version>${tomcat.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
