@@ -58,6 +58,7 @@ import org.w3c.dom.Document;
  * @author rmansoor
  */
 public class StreamToTransNodeConverter implements Converter {
+  private static final boolean WRITE_AS_STREAM = true;
   IUnifiedRepository unifiedRepository;
 
   private static final Log logger = LogFactory.getLog( StreamToTransNodeConverter.class );
@@ -115,6 +116,9 @@ public class StreamToTransNodeConverter implements Converter {
   }
 
   public IRepositoryFileData convert( final InputStream inputStream, final String charset, final String mimeType ) {
+    if ( WRITE_AS_STREAM ) {
+      return new SimpleRepositoryFileData( inputStream, charset, mimeType );
+    }
     try {
       long size = inputStream.available();
       TransMeta transMeta = new TransMeta();
@@ -211,14 +215,27 @@ public class StreamToTransNodeConverter implements Converter {
 
   public void convertPostRepoSave( RepositoryFile repositoryFile ) {
     if ( repositoryFile != null ) {
+      Repository repo;
+      TransMeta transMeta = null;
       try {
-        Repository repo = connectToRepository();
-        if ( repo != null ) {
-          TransMeta
-              transMeta =
+        repo = connectToRepository();
+        try {
+          if ( repo != null ) {
+            transMeta =
               repo.loadTransformation( new StringObjectId( repositoryFile.getId().toString() ), null );
+          }
+        } catch ( Exception e ) {
+          logger.error( KettleExtensionPoint.TransImportAfterSaveToRepo.id, e );
+          // file is there and may be legacy, attempt simple export
+          SimpleRepositoryFileData fileData =
+            unifiedRepository.getDataForRead( repositoryFile.getId(), SimpleRepositoryFileData.class );
+          if ( fileData != null ) {
+            transMeta = new TransMeta( fileData .getInputStream(), repo, false, null, null );
+          }
+        }
+        if ( transMeta != null ) {
           ExtensionPointHandler.callExtensionPoint( new LogChannel( this ),
-              KettleExtensionPoint.TransImportAfterSaveToRepo.id, transMeta );
+            KettleExtensionPoint.TransImportAfterSaveToRepo.id, transMeta );
         }
       } catch ( Exception e ) {
         logger.error( KettleExtensionPoint.TransImportAfterSaveToRepo.id, e );
