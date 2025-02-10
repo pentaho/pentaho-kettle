@@ -16,7 +16,6 @@ package org.pentaho.di.trans.steps.databaselookup;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
@@ -40,8 +39,17 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
-
 import com.google.common.annotations.VisibleForTesting;
+import java.util.Collections;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Optional;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 
 /**
  * Looks up values in a database using keys from input streams.
