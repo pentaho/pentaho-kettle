@@ -57,8 +57,6 @@ import org.pentaho.di.i18n.BaseMessages;
 
 import jakarta.servlet.Servlet;
 import java.io.File;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -255,17 +253,11 @@ public class WebServer {
 
     // Allow png files to be shown for transformations and jobs...
     //
-    URL url= new File( "static" ).toURI().toURL();
-
-    ResourceFactory.Closeable resourceFactory = ResourceFactory.closeable();
-    Resource resource = resourceFactory.newResource( url.toExternalForm() );
-
     ResourceHandler resourceHandler = new ResourceHandler();
-    resourceHandler.setBaseResource( resource );
+    resourceHandler.setBaseResourceAsString( "static" );
 
     ContextHandler contextHandler = new ContextHandler();
     contextHandler.setContextPath( "/static" );
-    contextHandler.setBaseResourceAsPath( Paths.get( url.toURI() ) );
     contextHandler.setHandler( resourceHandler );
     contexts.addHandler( contextHandler );
 
