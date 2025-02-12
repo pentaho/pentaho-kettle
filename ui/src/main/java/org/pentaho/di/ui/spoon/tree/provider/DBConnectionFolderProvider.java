@@ -85,7 +85,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
         DatabaseMeta databaseMeta = collector.getMetaFor( name );
         globalDbNames.add( databaseMeta.getDisplayName() );
         createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree(), LeveledTreeNode.LEVEL.GLOBAL,
-          projectDbNames.contains( name ) );
+          containsIgnoreCase( projectDbNames, name ) );
       }
 
       // Local Db connection
@@ -98,7 +98,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
           }
           DatabaseMeta databaseMeta = collector.getMetaFor( name );
           createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree(), LeveledTreeNode.LEVEL.LOCAL,
-            projectDbNames.contains( name ) || globalDbNames.contains( name ) );
+            containsIgnoreCase( projectDbNames, name ) || containsIgnoreCase( globalDbNames, name ) );
         }
       }
     } catch ( KettleException e ) {

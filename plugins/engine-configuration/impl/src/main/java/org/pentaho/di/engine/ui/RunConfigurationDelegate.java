@@ -201,10 +201,12 @@ public class RunConfigurationDelegate {
                          boolean deleteSource ) {
     CheckedMetaStoreSupplier ms = () -> targetBowl.getMetastore();
     RunConfigurationManager targetManager = RunConfigurationManager.getInstance( ms );
-    if ( targetManager.getNames().contains( runConfiguration.getName() ) ) {
+    if ( targetManager.getNames().stream().anyMatch( element -> element.equalsIgnoreCase( runConfiguration.getName() ) ) ) {
       if ( !shouldOverwrite( BaseMessages.getString( PKG, "RunConfigurationDialog.OverwriteRunConfigurationYN",
         runConfiguration.getName() ) ) ) {
         return;
+      } else {
+        targetManager.delete( runConfiguration.getName() );
       }
     }
     targetManager.save( runConfiguration );

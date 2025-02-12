@@ -754,6 +754,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   public List<SlaveServer> getSlaveServers() {
     try {
       List<SlaveServer> slaveServers = readSlaveServerManager.getAll();
+      Collections.sort( slaveServers, SlaveServer.COMPARATOR );
       return slaveServers;
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( exception.getMessage(), exception );
@@ -805,6 +806,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   public String[] getSlaveServerNames() {
     try {
       List<SlaveServer> slaveServers = readSlaveServerManager.getAll();
+      Collections.sort( slaveServers, SlaveServer.COMPARATOR );
       return slaveServers.stream().map( SlaveServer::getName ).toArray( String[]::new );
     } catch ( KettleException ex ) {
       return null;
@@ -1310,6 +1312,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   public String[] getDatabaseNames() {
     try {
       List<DatabaseMeta> databases = readDbManager.getAll();
+      Collections.sort( databases, DatabaseMeta.comparator );
       return databases.stream().map( DatabaseMeta::getName ).toArray( String[]::new );
     } catch ( KettleException ex ) {
       return null;

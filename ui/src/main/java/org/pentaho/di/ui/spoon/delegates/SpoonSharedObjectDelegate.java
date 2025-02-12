@@ -72,10 +72,15 @@ public abstract class SpoonSharedObjectDelegate<T extends SharedObjectInterface<
       String overWritePromptKey ) throws KettleException {
     try {
       // If object already exist, prompt for overwrite
-      if ( findObject( targetManager.getAll(), object.getName() ) != null ) {
+      T existingObject = findObject( targetManager.getAll(), object.getName() );
+      if ( existingObject != null ) {
         if ( !shouldOverwrite( BaseMessages.getString( PKG, overWritePromptKey, object.getName() ) ) ) {
           return;
+        } else {
+          // Remove the existing object from target with same name and different case
+          targetManager.remove( existingObject );
         }
+
       }
       // Add the object to target
       targetManager.add( object );
