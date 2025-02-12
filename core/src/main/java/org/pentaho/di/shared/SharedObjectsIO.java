@@ -87,7 +87,7 @@ public interface SharedObjectsIO {
    */
   void clear( String type ) throws KettleException;
 
-  static String findSharedObjectIgnoreCase( String name, Map< String, Node> nodeMap ) {
+  static String findSharedObjectIgnoreCase( String name, Map<String, Node> nodeMap ) {
     for ( String key : nodeMap.keySet() ) {
       if ( key.equalsIgnoreCase( name ) ) {
         return key;

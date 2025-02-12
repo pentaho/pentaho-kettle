@@ -80,12 +80,17 @@ public class RepositorySharedObjectsIOTest {
     DatabaseMeta readDb = new DatabaseMeta( node );
     assertNotNull( readDb.getObjectId() );
 
+    node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "FOO" );
+    assertNotNull( node );
+
     Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
     assertNotNull( dbs );
     assertEquals( 1, dbs.size() );
     assertNotNull( dbs.get( "foo" ) );
     readDb = new DatabaseMeta( dbs.get( "foo" ) );
     assertNotNull( readDb.getObjectId() );
+    // Should not throw.
+    assertNull( shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "bar" ) );
   }
 
   @Test
@@ -106,7 +111,8 @@ public class RepositorySharedObjectsIOTest {
     db.setServername( "testing" );
 
     // should replace the existing item.
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
+    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName().toUpperCase(),
+      db.toNode() );
 
     dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
     assertEquals( 1, dbs.size() );
@@ -140,6 +146,35 @@ public class RepositorySharedObjectsIOTest {
     shared.delete( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "foo" );
 
     node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+    assertNull( node );
+
+    dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+    assertNotNull( dbs );
+    assertEquals( 0, dbs.size() );
+  }
+
+  @Test
+  public void testDeleteDifferentCase() throws Exception {
+    DatabaseMeta db = new DatabaseMeta();
+    db.setName( "foo" );
+    db.setDBName( "bar" );
+
+    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
+
+    Node node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+    assertNotNull( node );
+
+    Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+    assertNotNull( dbs );
+    assertEquals( 1, dbs.size() );
+    assertNotNull( dbs.get( "foo" ) );
+
+    shared.delete( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "FOO" );
+
+    node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+    assertNull( node );
+
+    node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "FOO" );
     assertNull( node );
 
     dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );

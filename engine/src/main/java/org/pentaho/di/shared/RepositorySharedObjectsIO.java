@@ -113,39 +113,8 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
 
   @Override
   public Node getSharedObject( String type, String name ) throws KettleException {
-    SharedObjectInterface object = null;
-    ObjectId id = null;
-    SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
-    switch ( objectType ) {
-        case CONNECTION:
-          id = repository.getDatabaseID( name );
-          if ( id != null ) {
-            object = repository.loadDatabaseMeta( id, null );
-          }
-          break;
-        case SLAVESERVER:
-          id = repository.getSlaveID( name );
-          if ( id != null ) {
-            object = repository.loadSlaveServer( id, null );
-          }
-          break;
-        case PARTITIONSCHEMA:
-          id = repository.getPartitionSchemaID( name );
-          if ( id != null ) {
-            object = repository.loadPartitionSchema( id, null );
-          }
-          break;
-        case CLUSTERSCHEMA:
-          id = repository.getClusterID( name );
-          if ( id != null ) {
-            object = repository.loadClusterSchema( id, slaveServerSupplier.get(), null );
-          }
-          break;
-    }
-    if ( object != null ) {
-      return object.toNode();
-    }
-    return null;
+    Map<String, Node> nodeMap = getSharedObjects( type );
+    return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap ) );
   }
 
   @Override
@@ -183,25 +152,36 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
   @Override
   public void delete( String type, String name ) throws KettleException {
     SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
+
+    Map<String, Node> nodeMap = getSharedObjects( type );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap );
+    if ( existingName == null ) {
+      existingName = name;
+    }
+
+    deleteInner( objectType, existingName );
+  }
+
+  private void deleteInner( SharedObjectType objectType, String existingName ) throws KettleException {
     ObjectId id;
     switch ( objectType ) {
         case CONNECTION:
-          repository.deleteDatabaseMeta( name );
+          repository.deleteDatabaseMeta( existingName );
           break;
         case SLAVESERVER:
-          id = repository.getSlaveID( name );
+          id = repository.getSlaveID( existingName );
           if ( id != null ) {
             repository.deleteSlave( id );
           }
           break;
         case PARTITIONSCHEMA:
-          id = repository.getPartitionSchemaID( name );
+          id = repository.getPartitionSchemaID( existingName );
           if ( id != null ) {
             repository.deletePartitionSchema( id );
           }
           break;
         case CLUSTERSCHEMA:
-          id = repository.getClusterID( name );
+          id = repository.getClusterID( existingName );
           if ( id != null ) {
             repository.deleteClusterSchema( id );
           }
@@ -211,8 +191,15 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
 
   @Override
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
-    RepositoryElementInterface repoElement = null;
     SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
+
+    Map<String, Node> nodeMap = getSharedObjects( type );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap );
+    if ( existingName != null ) {
+      deleteInner( objectType, existingName );
+    }
+
+    RepositoryElementInterface repoElement = null;
     switch ( objectType ) {
         case CONNECTION:
           repoElement = new DatabaseMeta( node );
