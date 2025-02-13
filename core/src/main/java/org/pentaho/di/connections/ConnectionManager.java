@@ -699,7 +699,13 @@ public class ConnectionManager {
    */
   public ConnectionDetails getConnectionDetails( String name ) {
     initialize();
-    return clone( detailsByName.get( name ) );
+    // Get the details in ignoring the case
+    for ( String key : detailsByName.keySet() ) {
+      if ( key.equalsIgnoreCase( name ) ) {
+        return clone( detailsByName.get( key ) );
+      }
+    }
+    return null;
   }
 
   /* The following are sugar methods: `getDetails` and `getExistingDetails`. These perform casting of the result to the
@@ -939,4 +945,5 @@ public class ConnectionManager {
       return (MetaStoreException) super.getCause();
     }
   }
+
 }

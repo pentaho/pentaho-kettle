@@ -63,7 +63,7 @@ import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
 import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 
-public class SpoonDBDelegate extends SpoonDelegate {
+public class SpoonDBDelegate extends SpoonSharedObjectDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
   private DatabaseDialog databaseDialog;
 
@@ -171,10 +171,9 @@ public class SpoonDBDelegate extends SpoonDelegate {
   }
 
   /**
-   * Delete a database connection
-   *
-   * @param name
-   *          The name of the database connection.
+   * Delete the database connection
+   * @param dbMgr
+   * @param db
    */
   public void delConnection( DatabaseManagementInterface dbMgr, DatabaseMeta db ) {
     UndoInterface undoInterface = spoon.getActiveUndoInterface();
@@ -231,46 +230,25 @@ public class SpoonDBDelegate extends SpoonDelegate {
   }
 
   public void moveToGlobal( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {
-    moveCopy( dbManager, spoon.getGlobalManagementBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, true );
+    moveCopy( dbManager, spoon.getGlobalManagementBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, true,
+      "Spoon.Message.OverwriteConnectionYN"  );
   }
 
   public void moveToProject( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {
-    moveCopy( dbManager, spoon.getBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, true );
+    moveCopy( dbManager, spoon.getBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, true,
+      "Spoon.Message.OverwriteConnectionYN" );
   }
 
   public void copyToGlobal( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {
-    moveCopy( dbManager, spoon.getGlobalManagementBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, false );
+    moveCopy( dbManager, spoon.getGlobalManagementBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, false,
+      "Spoon.Message.OverwriteConnectionYN" );
   }
 
   public void copyToProject( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {
-    moveCopy( dbManager, spoon.getBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, false );
+    moveCopy( dbManager, spoon.getBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, false,
+      "Spoon.Message.OverwriteConnectionYN" );
   }
 
-  private void moveCopy( DatabaseManagementInterface srcDbManager, DatabaseManagementInterface targetDbManager,
-                        DatabaseMeta databaseMeta, boolean deleteFromSource ) {
-    try {
-      // Check if the connection already exist in target, prompt for override
-      if ( targetDbManager.get( databaseMeta.getName() ) != null ) {
-        if ( !spoon.overwritePrompt( BaseMessages.getString( PKG, "Spoon.Message.OverwriteConnectionYN", databaseMeta.getName() ),
-          BaseMessages.getString( PKG, "Spoon.Message.OverwriteConnection.DontShowAnyMoreMessage" ), Props.STRING_ASK_ABOUT_REPLACING_DATABASES ) ) {
-
-          return;
-        }
-      }
-      // Adding the databaseMeta to target dbManager
-      targetDbManager.add( databaseMeta );
-
-      if ( deleteFromSource ) {
-        srcDbManager.remove( databaseMeta );
-      }
-      refreshTree();
-    } catch ( Exception ex ) {
-      new ErrorDialog(
-        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnexpectedError.Title" ),
-        BaseMessages.getString( PKG, "Spoon.Dialog.UnexpectedDbError.Message" ), new KettleException( ex.getMessage(), ex ) );
-    }
-
-  }
   public void getSQL() {
     TransMeta transMeta = spoon.getActiveTransformation();
     if ( transMeta != null ) {
@@ -558,7 +536,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
         BaseMessages.getString( PKG, "Spoon.Dialog.UnexpectedDbError.Message" ), new KettleException( ex.getMessage(), ex ) );
     }
   }
-  private void refreshTree() {
+  protected void refreshTree() {
     spoon.refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
   }
 }

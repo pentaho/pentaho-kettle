@@ -82,7 +82,7 @@ public class SlavesFolderProvider extends TreeFolderProvider {
 
         globalServerNames.add( slaveServer.getName() );
         TreeNode childTreeNode = createTreeNode( treeNode, slaveServer.getName(), guiResource.getImageSlaveTree(),
-          LeveledTreeNode.LEVEL.GLOBAL, projectSlaveServerNames.contains( slaveServer.getName() ) );
+          LeveledTreeNode.LEVEL.GLOBAL, containsIgnoreCase( projectSlaveServerNames, slaveServer.getName() ) );
       }
 
       // Local SlaveServers
@@ -95,7 +95,8 @@ public class SlavesFolderProvider extends TreeFolderProvider {
           }
 
           TreeNode childTreeNode = createTreeNode( treeNode, sharedObjectInterface.getName(), guiResource.getImageSlaveTree(),
-            LeveledTreeNode.LEVEL.LOCAL, projectSlaveServerNames.contains( sharedObjectInterface.getName() ) || globalServerNames.contains( sharedObjectInterface.getName() ) );
+            LeveledTreeNode.LEVEL.LOCAL, containsIgnoreCase( projectSlaveServerNames, sharedObjectInterface.getName() ) ||
+                    containsIgnoreCase( globalServerNames, sharedObjectInterface.getName() ) );
         }
       }
     } catch ( KettleException exception ) {

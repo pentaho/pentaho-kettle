@@ -82,6 +82,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 
@@ -898,6 +899,8 @@ public class JobDialog extends Dialog {
             DatabaseManagementInterface dbMgr =
               Spoon.getInstance().getBowl().getManager( DatabaseManagementInterface.class );
             dbMgr.add( getDatabaseDialog().getDatabaseMeta() );
+            // Refresh left hand tree
+            Spoon.getInstance().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
           } catch ( KettleException dbe ) {
             new ErrorDialog(
               shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorAddingDatabase.Title" ), BaseMessages

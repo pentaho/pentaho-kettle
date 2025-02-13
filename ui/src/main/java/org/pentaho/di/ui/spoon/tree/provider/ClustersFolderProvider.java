@@ -86,7 +86,7 @@ public class ClustersFolderProvider extends TreeFolderProvider {
 
         globalClusterNames.add( clusterSchema.getName() );
         TreeNode childTreeNode = createTreeNode( treeNode, clusterSchema.getName(), guiResource.getImageClusterMedium(),
-          LeveledTreeNode.LEVEL.GLOBAL, projectClusterNames.contains( clusterSchema.getName() ) );
+          LeveledTreeNode.LEVEL.GLOBAL, containsIgnoreCase( projectClusterNames, clusterSchema.getName() ) );
       }
 
       // Local ClusterSchemas
@@ -103,8 +103,8 @@ public class ClustersFolderProvider extends TreeFolderProvider {
 
             TreeNode childTreeNode = createTreeNode( treeNode, sharedObjectInterface.getName(),
               guiResource.getImageClusterMedium(), LeveledTreeNode.LEVEL.LOCAL,
-              projectClusterNames.contains( sharedObjectInterface.getName() ) ||
-                globalClusterNames.contains( sharedObjectInterface.getName() ) );
+              containsIgnoreCase( projectClusterNames, sharedObjectInterface.getName() ) ||
+                containsIgnoreCase( globalClusterNames, sharedObjectInterface.getName() ) );
           }
         }
       }

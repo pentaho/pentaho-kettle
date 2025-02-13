@@ -60,26 +60,56 @@ public class MemorySharedObjectsIO implements SharedObjectsIO {
     return getNodesMapForType( type );
   }
 
+  /**
+   * Save the SharedObject in memory. This operation is case-insensitive. If the SharedObject name exist in a different case,
+   * the existing entry will be deleted and the new entry will be saved with provided name
+   * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and clusterschema"
+   * @param name The name is the name of the sharedObject
+   * @param node The Xml node containing the details of the shared object
+   * @throws KettleException
+   */
   @Override
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
     // Get the map for the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap );
+    if ( existingName != null ) {
+      nodeMap.remove( existingName );
+    }
     // Add or Update the map entry for this name
     nodeMap.put( name, node );
   }
 
+  /**
+   * Return the node for the given SharedObject type and name. The lookup for the SharedObject
+   * using the name will be case-insensitive
+   * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and clusterschema"
+   * @param name The name is the name of the sharedObject
+   * @return
+   * @throws KettleException
+   */
   @Override
   public Node getSharedObject( String type, String name ) throws KettleException {
     // Get the Map using the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
-    return nodeMap.get( name );
+    return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap ) );
   }
 
+  /**
+   * Remove the SharedObject for the type and name. The lookup for the SharedObject
+   * using the name will be case-insensitive
+   * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and clusterschema"
+   * @param name The name is the name of the sharedObject
+   * @throws KettleException
+   */
   @Override
   public void delete( String type, String name ) throws KettleException {
     // Get the nodeMap for the type
     Map<String, Node> nodeTypeMap = getNodesMapForType( type );
-    Node removedNode = nodeTypeMap.remove( name );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeTypeMap );
+    if ( existingName != null ) {
+      nodeTypeMap.remove( existingName );
+    }
   }
 
   @Override

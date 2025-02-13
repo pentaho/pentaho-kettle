@@ -5570,7 +5570,9 @@ public class TransMeta extends AbstractMeta
    */
   public List<PartitionSchema> getPartitionSchemas() {
     try {
-      return readPartitionSchemaManager.getAll();
+      List<PartitionSchema> partitionSchemas =  readPartitionSchemaManager.getAll();
+      Collections.sort( partitionSchemas, PartitionSchema.COMPARATOR );
+      return partitionSchemas;
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
       return null;
@@ -5602,6 +5604,7 @@ public class TransMeta extends AbstractMeta
   public String[] getPartitionSchemasNames() {
     try {
       List<PartitionSchema> partitionSchemas = readPartitionSchemaManager.getAll();
+      Collections.sort( partitionSchemas, PartitionSchema.COMPARATOR );
       return partitionSchemas.stream().map( PartitionSchema::getName ).toArray( String[]::new );
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
@@ -5673,7 +5676,9 @@ public class TransMeta extends AbstractMeta
    */
   public List<ClusterSchema> getClusterSchemas() {
     try {
-      return readClusterSchemaManager.getAll();
+      List<ClusterSchema> clusterSchemas =  readClusterSchemaManager.getAll();
+      Collections.sort( clusterSchemas, ClusterSchema.COMPARATOR );
+      return clusterSchemas;
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( exception.getMessage(), exception );
       return null;
@@ -5705,6 +5710,7 @@ public class TransMeta extends AbstractMeta
   public String[] getClusterSchemaNames() {
     try {
       List<ClusterSchema> clusterSchemas = readClusterSchemaManager.getAll();
+      Collections.sort( clusterSchemas, ClusterSchema.COMPARATOR );
       return clusterSchemas.stream().map( ClusterSchema::getName ).toArray( String[]::new );
     } catch ( KettleException ex ) {
       return null;

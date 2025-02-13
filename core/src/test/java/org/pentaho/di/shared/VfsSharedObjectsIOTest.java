@@ -15,8 +15,9 @@ package org.pentaho.di.shared;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Test;
 import org.junit.BeforeClass;
-import org.pentaho.di.core.bowl.DefaultBowl;
+import org.junit.Before;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -41,12 +42,19 @@ public class VfsSharedObjectsIOTest {
                   +  " <access>Native</access> <database>sampledata</database> <port>5435</port> <username>postgres</username> "
                   +  " </connection> </sharedobjects>";
 
+  private String db_type;
+
   @BeforeClass
   public static void setUpOnce() throws KettlePluginException, KettleException {
     // Register Natives to create a default DatabaseMeta
     DatabasePluginType.getInstance().searchPlugins();
     ValueMetaPluginType.getInstance().searchPlugins();
     KettleClientEnvironment.init();
+  }
+
+  @Before
+  public void setup() throws Exception {
+    db_type = String.valueOf( SharedObjectsIO.SharedObjectType.CONNECTION );
   }
 
   @Test
@@ -106,5 +114,72 @@ public class VfsSharedObjectsIOTest {
     Node node = entry.getValue();
     assertEquals( connectionName, key );
 
+  }
+
+  @Test
+  public void testSaveSharedObjectCaseInsensitive() throws Exception {
+    SharedObjectsIO sharedObjectsIO = createVfsSharedObject( ROOT_FILE_PATH );
+
+    // Create a new DatabaseMeta object
+    String connectionName = "NewConn";
+    DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
+    sharedObjectsIO.saveSharedObject( db_type, connectionName, dbMeta.toNode() );
+
+    // Add another connection with same name different case
+    String newConnectionName = "newconn";
+    dbMeta = createDatabaseMeta( newConnectionName );
+    sharedObjectsIO.saveSharedObject( db_type, newConnectionName, dbMeta.toNode() );
+
+    // Verify that there is only one entry in the map
+    Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( db_type );
+    assertEquals( 1, nodesMap.size() );
+
+    //Get the key
+    Map.Entry<String, Node> entry = nodesMap.entrySet().iterator().next();
+    String key = entry.getKey();
+    Node node = entry.getValue();
+    assertEquals( newConnectionName, key );
+  }
+
+  @Test
+  public void testGetSharedObjectCaseInsensitive() throws Exception {
+    SharedObjectsIO sharedObjectsIO = createVfsSharedObject( ROOT_FILE_PATH );
+
+    String connectionName = "NewConn";
+    // Create a new DatabaseMeta object
+    DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
+    sharedObjectsIO.saveSharedObject( db_type, connectionName, dbMeta.toNode() );
+
+    // Get the SharedObject with case-insensitive name
+    Node node = sharedObjectsIO.getSharedObject( db_type, "newconn" );
+    assertEquals( connectionName, XMLHandler.getTagValue( node, "name" ) );
+  }
+
+  @Test
+  public void testDeleteCaseInsensitive() throws Exception {
+    SharedObjectsIO sharedObjectsIO = createVfsSharedObject( ROOT_FILE_PATH );
+
+    String connectionName = "NewConn";
+    // Create a new DatabaseMeta object
+    DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
+    sharedObjectsIO.saveSharedObject( db_type, dbMeta.getName(), dbMeta.toNode() );
+
+    // Delete the SharedObject
+    sharedObjectsIO.delete( db_type, "newconn" );
+    Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( db_type );
+    assertEquals( 0, nodesMap.size() );
+  }
+
+  private VfsSharedObjectsIO createVfsSharedObject( String rootPath ) throws Exception {
+    FileObject projectDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( ROOT_FILE_PATH );
+    projectDirectory.createFolder();
+
+    return new VfsSharedObjectsIO( ROOT_FILE_PATH );
+  }
+
+  private DatabaseMeta createDatabaseMeta( String name ) {
+    DatabaseMeta dbMeta = new DatabaseMeta();
+    dbMeta.setName( name );
+    return dbMeta;
   }
 }

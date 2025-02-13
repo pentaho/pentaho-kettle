@@ -70,7 +70,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
           continue;
         }
         createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree(), LeveledTreeNode.LEVEL.GLOBAL,
-                        bowlNames.contains( name ) );
+                        containsIgnoreCase( bowlNames, name ) );
       }
     } catch ( KettleException e ) {
       new ErrorDialog( Spoon.getInstance().getShell(),

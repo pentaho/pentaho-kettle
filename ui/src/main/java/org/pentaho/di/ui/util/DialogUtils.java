@@ -58,6 +58,9 @@ public class DialogUtils {
   }
 
   public static void removeMatchingObject( String nameToRemove, Collection<? extends SharedObjectInterface> objects ) {
+    if ( nameToRemove == null ) {
+      return;
+    }
     Iterator<? extends SharedObjectInterface> iter = objects.iterator();
     while ( iter.hasNext() ) {
       if ( nameToRemove.equals( iter.next().getName() ) ) {

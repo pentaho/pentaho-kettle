@@ -19,6 +19,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -66,5 +67,14 @@ public abstract class TreeFolderProvider {
 
   public void setTreeManager( TreeManager treeManager ) {
     this.treeManager = treeManager;
+  }
+
+  protected boolean containsIgnoreCase( Collection<String> stringList, String nodeName ) {
+    for ( String treeNodeName : stringList ){
+      if ( treeNodeName.equalsIgnoreCase( nodeName )) {
+        return true;
+      }
+    }
+    return false;
   }
 }
