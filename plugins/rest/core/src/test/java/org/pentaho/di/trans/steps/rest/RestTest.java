@@ -21,7 +21,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -48,7 +47,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class RestTest {
-  @Ignore
   @Test
   public void testCallEndpointWithGetVerb() throws KettleException {
     Invocation.Builder builder = mock( Invocation.Builder.class );
