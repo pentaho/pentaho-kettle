@@ -4,18 +4,18 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>repositories-plugin-core</artifactId>
-  <version>10.3.0.0-SNAPSHOT</version>
+  <version>10.3.0.0-254</version>
 
   <name>PDI Repositories Plugin Core</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>repositories</artifactId>
-    <version>10.3.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-254</version>
   </parent>
 
   <properties>
-    <pdi.version>10.3.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>10.3.0.0-254</pdi.version>
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
     <json-simple.version>1.1</json-simple.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
