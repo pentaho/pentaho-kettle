@@ -72,7 +72,7 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
 
   public static TransMeta loadMappingMeta( Bowl bowl, StepWithMappingMeta mappingMeta, Repository rep,
                                            IMetaStore metaStore, VariableSpace space ) throws KettleException {
-    return loadMappingMeta( mappingMeta, rep, metaStore, space, true );
+    return loadMappingMeta( bowl, mappingMeta, rep, metaStore, space, true );
   }
 
   @Deprecated
