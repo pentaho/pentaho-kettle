@@ -33,6 +33,9 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 
 /**
  * This utility provides methods for synchronization of kettle's shared objects.
+ *
+ * NOTE: this is currently only used for editing Steps and the Repository Explorer. Other uses have been replaced by
+ * Bowls and their embedded managers.
  * 
  */
 public class SharedObjectSyncUtil {
@@ -57,9 +60,6 @@ public class SharedObjectSyncUtil {
   public SharedObjectSyncUtil( Spoon spoon ) {
     this.spoonDelegates = spoon.delegates;
     this.spoon = spoon;
-    spoonDelegates.slaves.setSharedObjectSyncUtil( this );
-    spoonDelegates.clusters.setSharedObjectSyncUtil( this );
-    spoonDelegates.partitions.setSharedObjectSyncUtil( this );
   }
 
   public synchronized void synchronizeConnections( DatabaseMeta database ) {

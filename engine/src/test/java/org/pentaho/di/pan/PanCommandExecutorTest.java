@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -121,7 +122,7 @@ public class PanCommandExecutorTest {
   public void testMetastoreFromRepoAddedIn() throws Exception {
 
     // mock Trans loading from repo
-    TransMeta t = new TransMeta( getClass().getResource( SAMPLE_KTR ).getPath() );
+    TransMeta t = new TransMeta( DefaultBowl.getInstance(), getClass().getResource( SAMPLE_KTR ).getPath() );
     when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), nullable( String.class ) ) ).thenReturn( t );
 
     // test

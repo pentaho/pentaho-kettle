@@ -23,7 +23,6 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsManagementInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TreeUtil;
-import org.pentaho.di.ui.spoon.SharedObjectSyncUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.List;
@@ -34,15 +33,9 @@ import org.eclipse.swt.widgets.MessageBox;
 
 public abstract class SpoonSharedObjectDelegate<T extends SharedObjectInterface<T> & RepositoryElementInterface & ChangedFlagInterface> extends SpoonDelegate {
   protected static final Class<?> PKG = Spoon.class;
-  protected SharedObjectSyncUtil sharedObjectSyncUtil;
 
   public SpoonSharedObjectDelegate( Spoon spoon ) {
     super( spoon );
-  }
-
-
-  public void setSharedObjectSyncUtil( SharedObjectSyncUtil sharedObjectSyncUtil ) {
-    this.sharedObjectSyncUtil = sharedObjectSyncUtil;
   }
 
   protected static <T extends SharedObjectInterface<T>> boolean isDuplicate( List<T> objects, T object ) {
