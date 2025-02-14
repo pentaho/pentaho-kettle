@@ -263,7 +263,7 @@ public interface StepMetaInterface {
    */
   default void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
     StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    getFields( inputRowMeta, name, info, nextStep, space, repository, metaStore );
+    getFields( bowl, inputRowMeta, name, info, nextStep, space, repository, metaStore );
   }
 
   /**

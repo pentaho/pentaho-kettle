@@ -6612,7 +6612,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       String xml = XMLHandler.getXMLHeader() + meta.getXML();
 
       VariableSpace variableSpace = meta instanceof VariableSpace ? (VariableSpace) meta : null;
-      DataOutputStream dos = new DataOutputStream( KettleVFS.getOutputStream( filename, variableSpace, false ) );
+
+      DataOutputStream dos = new DataOutputStream( KettleVFS.getInstance( executionBowl )
+        .getOutputStream( filename, variableSpace, false ) );
       dos.write( xml.getBytes( Const.XML_ENCODING ) );
       dos.close();
 
