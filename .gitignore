@@ -8,6 +8,7 @@ release.properties
 pom.xml.releaseBackup
 *.iml
 .idea
+.vscode
 bin
 *.class
 *.jar
