@@ -65,7 +65,7 @@ public class RestMetaTest {
     List<String> attributes =
       Arrays.asList( "applicationType", "method", "url", "urlInField", "dynamicMethod", "methodFieldName",
         "urlField", "bodyField", "httpLogin", "httpPassword", "proxyHost", "proxyPort", "preemptive",
-        "trustStoreFile", "trustStorePassword", "headerField", "headerName", "parameterField", "parameterName",
+        "trustStoreFile", "trustStorePassword", "ignoreSSL", "headerField", "headerName", "parameterField", "parameterName",
         "matrixParameterField", "matrixParameterName", "fieldName", "resultCodeFieldName", "responseTimeFieldName",
         "responseHeaderFieldName" );
 
