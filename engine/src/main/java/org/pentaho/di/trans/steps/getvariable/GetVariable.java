@@ -139,36 +139,4 @@ public class GetVariable extends BaseStep implements StepInterface {
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     super.dispose( smi, sdi );
   }
-
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                             Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-
-    try {
-      Method actionMethod = GetVariable.class.getDeclaredMethod( fieldName + "Action" );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
-  private JSONObject getVariableAction() {
-    JSONObject response = new JSONObject();
-    String[] keys = getTransMeta().listVariables();
-    JSONArray variables = new JSONArray();
-    for ( String key : keys ) {
-      JSONObject variable = new JSONObject();
-      variable.put( "name", key );
-      variable.put( "variable", "${" + key + "}" );
-      variable.put( "type", "String" );
-      variables.add( variable );
-    }
-    response.put( "variables", variables );
-    return response;
-  }
-
 }
