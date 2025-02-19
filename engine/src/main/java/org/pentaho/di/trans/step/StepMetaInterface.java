@@ -890,7 +890,7 @@ public interface StepMetaInterface {
   @Deprecated
   default TransMeta fetchTransMeta( StepMetaInterface stepMeta, Repository rep, IMetaStore metastore,
     VariableSpace space ) throws KettleException {
-    return null; // default
+    return fetchTransMeta( DefaultBowl.getInstance(), stepMeta, rep, metastore, space );
   }
 
   /**
