@@ -538,10 +538,10 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     }
   }
 
-  void patchTransDatabaseConnections( TransMeta transMeta ) throws KettleException {
+  void patchDatabaseConnections( AbstractMeta meta ) throws KettleException {
     DatabaseManagementInterface dbMgr = rep.getBowl().getManager( DatabaseManagementInterface.class );
     for ( DatabaseMeta storedDB : dbMgr.getAll() ) {
-      transMeta.databaseUpdated( storedDB.getName() );
+      meta.databaseUpdated( storedDB.getName() );
     }
   }
 
@@ -669,7 +669,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
       transMeta.setObjectId( existingId );
       transMeta.setRepositoryDirectory( targetDirectory );
       patchTransSteps( transMeta );
-      patchTransDatabaseConnections( transMeta );
+      patchDatabaseConnections( transMeta );
 
       try {
         // Keep info on who & when this transformation was created...
@@ -777,6 +777,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
       jobMeta.setRepositoryDirectory( targetDirectory );
       jobMeta.setObjectId( existintId );
       patchJobEntries( jobMeta );
+      patchDatabaseConnections( jobMeta );
       try {
         saveJobMeta( jobMeta );
 
