@@ -208,6 +208,7 @@ import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.RepositorySharedObjectsIO;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsManagementInterface;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
@@ -5829,6 +5830,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         meta.setObjectId( existingId );
       }
 
+      if ( meta instanceof AbstractMeta ) {
+        // TODO BACKLOG-41787: prompt for user to accept changes
+        AbstractMeta ameta = (AbstractMeta) meta;
+        SharedObjectUtil.moveAllSharedObjects( ameta, rep.getBowl() );
+        // refresh the dbs in the meta
+        DatabaseManagementInterface dbMgr = rep.getBowl().getManager( DatabaseManagementInterface.class );
+        for ( DatabaseMeta storedDB : dbMgr.getAll() ) {
+          ameta.databaseUpdated( storedDB.getName() );
+        }
+        forceRefreshTree();
+      }
+
       try {
         shell.setCursor( cursor_hourglass );
 
@@ -9154,7 +9167,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     this.rep = rep;
 
     if ( rep != null ) {
-      globalManagementBowl = new RepositoryBowl( rep );
+      globalManagementBowl = rep.getBowl();
       managementBowl = globalManagementBowl;
       executionBowl = globalManagementBowl;
 
