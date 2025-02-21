@@ -95,6 +95,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace,
   EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
@@ -234,17 +235,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   public void setAlwaysShowRunOptions( boolean alwaysShowRunOptions ) {
     this.alwaysShowRunOptions = alwaysShowRunOptions;
   }
-
-  /**
-   * The set of names of databases available only for this meta. The list is needed to distinguish connections when we
-   * load/save the meta in JCR repository.
-   * <p/>
-   * Should be {@code null} if we use old meta
-   *
-   * @see <a href="http://jira.pentaho.com/browse/PPP-3405">PPP-3405</a>,
-   * <a href="http://jira.pentaho.com/browse/PPP-3413">PPP-3413</a>
-   **/
-  protected Set<String> privateDatabases;
 
   protected MemorySharedObjectsIO localSharedObjects = new MemorySharedObjectsIO();
   // important, these need to be updated if the bowl is changed.
@@ -2047,21 +2037,16 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Returns the set of databases available only for this meta or <b>null</b> if it was not initialized.
-   * Note, that the internal collection is returned with no protection wrapper!
    *
    * @return <b>nonSharableDatabases</b>
    */
   public Set<String> getPrivateDatabases() {
-    return privateDatabases;
-  }
-
-  /**
-   * Sets private databases' names
-   *
-   * @param privateDatabases - The list of databases available only for this meta
-   */
-  public void setPrivateDatabases( Set<String> privateDatabases ) {
-    this.privateDatabases = privateDatabases;
+    try {
+      List<DatabaseMeta> databases = localDbMgr.getAll();
+      return databases.stream().map( DatabaseMeta::getName ).collect( Collectors.toSet() );
+    } catch ( KettleException ex ) {
+      return null;
+    }
   }
 
   @Override
