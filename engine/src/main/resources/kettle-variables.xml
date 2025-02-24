@@ -675,4 +675,11 @@
     <default-value>157286400</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>Set this variable to Y/N to override gather performance metrics checkbox value in scheduler dialog.
+    </description>
+    <variable>KETTLE_PUC_SCHEDULE_GATHER_METRICS_OVERRIDE_VALUE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
 </kettle-variables>

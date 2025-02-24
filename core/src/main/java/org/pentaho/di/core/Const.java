@@ -1704,6 +1704,11 @@ public class Const {
   public static final String KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE = "KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE";
 
   /**
+   Value that overrides gather performance metrics checkbox value in scheduler dialog
+   */
+  public static final String KETTLE_PUC_SCHEDULE_GATHER_METRICS_OVERRIDE_VALUE = "KETTLE_PUC_SCHEDULE_GATHER_METRICS_OVERRIDE_VALUE";
+
+  /**
    Value to Configure if we want to export only the used connections to the XML file
    */
   public static final String STRING_ONLY_USED_DB_TO_XML = "STRING_ONLY_USED_DB_TO_XML";
