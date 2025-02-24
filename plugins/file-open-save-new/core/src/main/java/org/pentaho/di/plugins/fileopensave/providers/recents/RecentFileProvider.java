@@ -193,7 +193,7 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
           objectID = spoonInstance.rep.getJobId( lastUsedFile.getFilename(),
             spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() ) );
         }
-      } catch ( KettleException e ) {
+      } catch ( KettleException | IllegalAccessError e ) {
         objectID = null;
       }
       if ( objectID != null ) {
