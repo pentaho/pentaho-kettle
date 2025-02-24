@@ -318,24 +318,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.gwtproject</groupId>
-      <artifactId>gwt-servlet-jakarta</artifactId>
-      <version>${gwt-servlet-jakarta.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.websocket</groupId>
-      <artifactId>jakarta.websocket-api</artifactId>
-      <version>${jakarta.websocket-api.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.glassfish.hk2</groupId>
       <artifactId>spring-bridge</artifactId>
       <version>${spring-bridge.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.ext</groupId>
-      <artifactId>jersey-spring6</artifactId>
-      <version>${jersey.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
