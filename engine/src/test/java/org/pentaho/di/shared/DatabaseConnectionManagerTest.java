@@ -50,6 +50,7 @@ public class DatabaseConnectionManagerTest {
     dbManager.add( meta );
 
     Assert.assertNotNull( dbManager.get( "meta1" ) );
+    Assert.assertNotNull( dbManager.get( "META1" ) );
   }
 
   @Test
@@ -65,6 +66,18 @@ public class DatabaseConnectionManagerTest {
     Assert.assertEquals( "meta1", dbManager.get( "meta1" ).getName() );
     Assert.assertNotNull( dbManager.get( "meta2" ) );
     Assert.assertEquals( "meta2", dbManager.get( "meta2" ).getName() );
+
+    meta.setName( "META2" );
+    dbManager.add( meta );
+    Assert.assertNotNull( dbManager.get( "meta1" ) );
+    Assert.assertEquals( "meta1", dbManager.get( "meta1" ).getName() );
+    Assert.assertNotNull( dbManager.get( "meta2" ) );
+    Assert.assertNotNull( dbManager.get( "META2" ) );
+    Assert.assertEquals( "META2", dbManager.get( "meta2" ).getName() );
+    Assert.assertEquals( 2, dbManager.getAll().size() );
+
+    dbManager.remove( "META1" );
+    Assert.assertEquals( 1, dbManager.getAll().size() );
   }
 
   protected DatabaseMeta createDatabase( String name ) {

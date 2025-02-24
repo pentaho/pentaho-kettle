@@ -13,10 +13,11 @@
 
 package org.pentaho.di.shared;
 
+import org.pentaho.di.core.exception.KettleException;
+
 import java.io.IOException;
 import java.util.Map;
-
-import org.pentaho.di.core.exception.KettleException;
+import java.util.Set;
 import org.w3c.dom.Node;
 
 /**
@@ -87,8 +88,8 @@ public interface SharedObjectsIO {
    */
   void clear( String type ) throws KettleException;
 
-  static String findSharedObjectIgnoreCase( String name, Map<String, Node> nodeMap ) {
-    for ( String key : nodeMap.keySet() ) {
+  static String findSharedObjectIgnoreCase( String name, Set<String> existingKeys ) {
+    for ( String key : existingKeys ) {
       if ( key.equalsIgnoreCase( name ) ) {
         return key;
       }

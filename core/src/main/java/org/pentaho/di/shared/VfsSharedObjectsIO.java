@@ -201,7 +201,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
     }
     // Before adding, verify that the SharedObject with the name (case insensitive) does not exist,
     // if it exist, delete the entry from map
-    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() );
     if ( existingName != null ) {
       nodeMap.remove( existingName );
     }
@@ -300,7 +300,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   public Node getSharedObject( String type, String name ) throws KettleException {
     // Get the Map using the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
-    return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap ) );
+    return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() ) );
   }
 
   /**
@@ -313,7 +313,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   public void delete( String type, String name ) throws KettleException {
     // Get the nodeMap for the type
     Map<String, Node> nodeTypeMap = getNodesMapForType( type );
-    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeTypeMap );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeTypeMap.keySet() );
     if ( existingName != null ) {
       nodeTypeMap.remove( existingName );
       saveToFile();

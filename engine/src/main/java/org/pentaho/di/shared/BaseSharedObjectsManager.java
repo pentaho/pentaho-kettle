@@ -90,6 +90,16 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
     populateSharedObjectMap();
     String name = sharedObjectInterface.getName();
     Node node = sharedObjectInterface.toNode();
+
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, sharedObjectsMap.keySet() );
+    if ( existingName != null && !existingName.equals( name ) ) {
+      // NOTE: we do *not* need to remove from the sharedObjectsIO because the contract for saveSharedObject()
+      // requires it to handle renames, even including just case changes, and some SharedObjectsIO, particularly
+      // for the Repository, don't allow deletions of in-use databases in particular.
+      // We do need to remove it from this class's cache, though.
+      sharedObjectsMap.remove( existingName );
+    }
+
     sharedObjectsIO.saveSharedObject( sharedObjectType, name, node );
     Node readBackNode = sharedObjectsIO.getSharedObject( sharedObjectType, sharedObjectInterface.getName() );
     T readBack = createSharedObjectUsingNode( readBackNode );
@@ -120,7 +130,8 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
   public T get( String name ) throws KettleException {
     populateSharedObjectMap();
 
-    T sharedObjectInterface = sharedObjectsMap.get( name );
+    T sharedObjectInterface =
+      sharedObjectsMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, sharedObjectsMap.keySet() ) );
     return sharedObjectInterface == null ? sharedObjectInterface : sharedObjectInterface.makeClone();
   }
 
@@ -139,8 +150,11 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
   public synchronized void remove( String sharedObjectName ) throws KettleException {
     populateSharedObjectMap( );
 
-    this.sharedObjectsIO.delete( sharedObjectType, sharedObjectName );
-    sharedObjectsMap.remove( sharedObjectName );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( sharedObjectName, sharedObjectsMap.keySet() );
+    if ( existingName != null ) {
+      this.sharedObjectsIO.delete( sharedObjectType, existingName );
+      sharedObjectsMap.remove( existingName );
+    }
   }
 
   @Override
