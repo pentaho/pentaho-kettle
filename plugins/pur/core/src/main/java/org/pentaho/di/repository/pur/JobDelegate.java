@@ -201,30 +201,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
     JobMeta jobMeta = (JobMeta) element;
 
-    Set<String> privateDatabases = null;
-    // read the private databases
-    DataNode privateDbsNode = rootNode.getNode( NODE_JOB_PRIVATE_DATABASES );
-    // if we have node than we use one of two new formats. The older format that took
-    // too long to save, uses a separate node for each database name, the new format
-    // puts all the database names in the PROP_JOB_PRIVATE_DATABASE_NAMES property.
-    // BACKLOG-6635
-    if ( privateDbsNode != null ) {
-      privateDatabases = new HashSet<>();
-      if ( privateDbsNode.hasProperty( PROP_JOB_PRIVATE_DATABASE_NAMES ) ) {
-        for ( String privateDatabaseName : getString( privateDbsNode, PROP_JOB_PRIVATE_DATABASE_NAMES ).split(
-            JOB_PRIVATE_DATABASE_DELIMITER ) ) {
-          if ( !privateDatabaseName.isEmpty() ) {
-            privateDatabases.add( privateDatabaseName );
-          }
-        }
-      } else {
-        for ( DataNode privateDatabase : privateDbsNode.getNodes() ) {
-          privateDatabases.add( privateDatabase.getName() );
-        }
-      }
-    }
-    jobMeta.setPrivateDatabases( privateDatabases );
-
     // Keep a unique list of job entries to facilitate in the loading.
     //
     List<JobEntryInterface> jobentries = new ArrayList<>();
@@ -445,13 +421,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     JobMeta jobMeta = (JobMeta) element;
 
     DataNode rootNode = new DataNode( NODE_JOB );
-
-    if ( jobMeta.getPrivateDatabases() != null ) {
-      // save all private database names http://jira.pentaho.com/browse/PPP-3413
-      String privateDatabaseNames = StringUtils.join( jobMeta.getPrivateDatabases(), JOB_PRIVATE_DATABASE_DELIMITER );
-      DataNode privateDatabaseNode = rootNode.addNode( NODE_JOB_PRIVATE_DATABASES );
-      privateDatabaseNode.setProperty( PROP_JOB_PRIVATE_DATABASE_NAMES, privateDatabaseNames );
-    }
 
     // Save the notes
     //

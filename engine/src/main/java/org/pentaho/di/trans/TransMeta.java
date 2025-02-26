@@ -3276,7 +3276,6 @@ public class TransMeta extends AbstractMeta
 
         // Handle connections
         int n = XMLHandler.countNodes( transnode, DatabaseMeta.XML_TAG );
-        Set<String> privateTransformationDatabases = new HashSet<>( n );
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.WeHaveConnections", String.valueOf( n ) ) );
         }
@@ -3288,10 +3287,8 @@ public class TransMeta extends AbstractMeta
 
           DatabaseMeta dbcon = new DatabaseMeta( nodecon );
           dbcon.shareVariablesWith( this );
-          privateTransformationDatabases.add( dbcon.getName() );
           localDbMgr.add( dbcon );
         }
-        setPrivateDatabases( privateTransformationDatabases );
         // make a copy so we don't keep re-reading it for the calls to loadXML
         List<DatabaseMeta> databases = getDatabases();
 
@@ -5381,7 +5378,7 @@ public class TransMeta extends AbstractMeta
       DatabaseMeta[] dbs = step.getStepMetaInterface().getUsedDatabaseConnections();
       if ( dbs != null ) {
         for ( DatabaseMeta db : dbs ) {
-          if ( db.getName().equals( name ) ) {
+          if ( db.getName().equalsIgnoreCase( name ) ) {
             updateFields( db, newDatabaseMeta );
           }
         }
