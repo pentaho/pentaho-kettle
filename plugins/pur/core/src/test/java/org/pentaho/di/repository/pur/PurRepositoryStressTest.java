@@ -211,11 +211,9 @@ public class PurRepositoryStressTest {
     DataNode dataNode = mock( DataNode.class );
     when( dataNode.getProperty( anyString() ) ).thenReturn( dataNodeProp );
     when( dataNode.getNode( anyString() ) ).thenReturn( dataNodeRes );
-    when( dataNode.getNode( eq( "transPrivateDatabases" ) ) ).thenReturn( null );
     when( dataNode.getNode( eq( "steps" ) ) ).thenReturn( stepsNode );
     when( dataNode.getNode( eq( "notes" ) ) ).thenReturn( stepsNode );
     when( dataNode.getNode( eq( "hops" ) ) ).thenReturn( stepsNode );
-    when( dataNode.getNode( eq( "jobPrivateDatabases" ) ) ).thenReturn( null );
     when( dataNode.getNode( eq( "entries" ) ) ).thenReturn( stepsNode );
 
     NodeRepositoryFileData modeRepoFileData = mock( NodeRepositoryFileData.class );

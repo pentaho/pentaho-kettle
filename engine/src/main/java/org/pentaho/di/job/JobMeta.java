@@ -506,7 +506,7 @@ public class JobMeta extends AbstractMeta
       DatabaseMeta[] dbs = jobEntryCopy.getEntry().getUsedDatabaseConnections();
       if ( dbs != null ) {
         for ( DatabaseMeta db : dbs ) {
-          if ( db != null && db.getName().equals( name ) ) {
+          if ( db != null && db.getName().equalsIgnoreCase( name ) ) {
             updateFields( db, newDatabaseMeta );
           }
         }
@@ -1098,15 +1098,12 @@ public class JobMeta extends AbstractMeta
       // Read the database connections
       //
       int nr = XMLHandler.countNodes( jobnode, "connection" );
-      Set<String> privateDatabases = new HashSet<String>( nr );
       for ( int i = 0; i < nr; i++ ) {
         Node dbnode = XMLHandler.getSubNodeByNr( jobnode, "connection", i );
         DatabaseMeta dbcon = new DatabaseMeta( dbnode );
         dbcon.shareVariablesWith( this );
-        privateDatabases.add( dbcon.getName() );
         localDbMgr.add( dbcon );
       }
-      setPrivateDatabases( privateDatabases );
       // make a copy so we don't keep re-reading it for the calls to loadXML
       List<DatabaseMeta> databases = getDatabases();
 
