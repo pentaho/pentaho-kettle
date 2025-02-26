@@ -44,7 +44,7 @@ public class JsonSampler {
 
   private int start = 0;
   private Configuration configuration;
-  private JsonFactory jsonFactory = new MappingJsonFactory();
+  public JsonFactory jsonFactory = new MappingJsonFactory();
 
   /**
    * The constructor that takes are configuration object as a parameter
@@ -68,6 +68,12 @@ public class JsonSampler {
    * @throws IOException
    */
   private Node sample( JsonParser jsonParser, Tree tree ) throws IOException {
+    Node node = getNode( jsonParser );
+    convertToSwtTree( node, null, tree );
+    return node;
+  }
+
+  public Node getNode( JsonParser jsonParser ) throws IOException {
     jsonParser.enable( JsonParser.Feature.ALLOW_COMMENTS );
     Node node = null;
     while ( jsonParser.nextToken() != null ) {
@@ -86,7 +92,6 @@ public class JsonSampler {
     if ( node != null && configuration.isDedupe() ) {
       node.dedupe();
     }
-    convertToSwtTree( node, null, tree );
     return node;
   }
 
