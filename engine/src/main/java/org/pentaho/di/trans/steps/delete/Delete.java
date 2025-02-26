@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.delete;
 import java.sql.SQLException;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -26,6 +27,17 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
+import java.util.Collections;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Optional;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Delete data in a database table.
@@ -41,7 +53,7 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
   private DeleteData data;
 
   public Delete( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                 Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -95,8 +107,8 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       data.schemaTable =
-              meta.getDatabaseMeta().getQuotedSchemaTableCombination(
-                      environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       // lookup the values!
       if ( log.isDetailed() ) {
@@ -110,26 +122,26 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
       for ( int i = 0; i < len; i++ ) {
         data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getKeyFields()[i].getKeyStream() );
         if ( data.keynrs[i] < 0 && // couldn't find field!
-                !"IS NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) && // No field needed!
-                !"IS NOT NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) // No field needed!
+          !"IS NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) && // No field needed!
+          !"IS NOT NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) // No field needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "Delete.Exception.FieldRequired",
-                  meta.getKeyFields()[i].getKeyStream() ) );
+            meta.getKeyFields()[i].getKeyStream() ) );
         }
 
         data.keynrs2[i] = ( meta.getKeyFields()[i].getKeyStream2() != null
-                && meta.getKeyFields()[i].getKeyStream2().length() > 0 )
-                ? getInputRowMeta().indexOfValue( meta.getKeyFields()[i].getKeyStream2() ) : -1;
+          && meta.getKeyFields()[i].getKeyStream2().length() > 0 )
+          ? getInputRowMeta().indexOfValue( meta.getKeyFields()[i].getKeyStream2() ) : -1;
         if ( data.keynrs2[i] < 0 && // couldn't find field!
-                "BETWEEN".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) // 2 fields needed!
+          "BETWEEN".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) // 2 fields needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "Delete.Exception.FieldRequired",
-                  meta.getKeyFields()[i].getKeyStream2() ) );
+            meta.getKeyFields()[i].getKeyStream2() ) );
         }
 
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "Delete.Log.FieldInfo",
-                  meta.getKeyFields()[i].getKeyStream() ) + data.keynrs[i] );
+            meta.getKeyFields()[i].getKeyStream() ) + data.keynrs[i] );
         }
       }
 
@@ -187,7 +199,7 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
         data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyFields()[i].getKeyStream() ) );
         data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyFields()[i].getKeyStream2() ) );
       } else if ( "IS NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() )
-              || "IS NOT NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) ) {
+        || "IS NOT NULL".equalsIgnoreCase( meta.getKeyFields()[i].getKeyCondition() ) ) {
         sql += " " + meta.getKeyFields()[i].getKeyCondition() + " ";
       } else {
         sql += " " + meta.getKeyFields()[i].getKeyCondition() + " ? ";
@@ -210,8 +222,8 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
     data = (DeleteData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-        data.db.setCommitSize( meta.getCommitSize( this ) );
-        return true;
+      data.db.setCommitSize( meta.getCommitSize( this ) );
+      return true;
     }
     return false;
   }
@@ -237,11 +249,125 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
         data.db.closeUpdate();
       } catch ( KettleDatabaseException e ) {
         logError( BaseMessages.getString( PKG, "Delete.Log.UnableToCommitUpdateConnection" )
-                + data.db + "] :" + e.toString() );
+          + data.db + "] :" + e.toString() );
         setErrors( 1 );
       }
     }
     super.dispose( smi, sdi );
   }
 
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = Delete.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getTableFieldAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    String connectionName = getTransMeta().environmentSubstitute( queryParams.get( "connection" ) );
+    String schema = getTransMeta().environmentSubstitute( queryParams.get( "schema" ) );
+    String table = getTransMeta().environmentSubstitute( queryParams.get( "table" ) );
+    String[] columns = getTableFields( connectionName, schema, table );
+    JSONArray columnsList = new JSONArray();
+    Collections.addAll( columnsList, columns );
+    response.put( "columns", columnsList );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  private String[] getTableFields( String connection, String schema, String table ) {
+    DatabaseMeta databaseMeta = getTransMeta().findDatabase( connection );
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Delete Step", LoggingObjectType.STEP, null );
+    Database db = new Database( loggingObject, databaseMeta );
+    try {
+      db.connect();
+      RowMetaInterface r =
+        db.getTableFieldsMeta( schema, table );
+      if ( null != r ) {
+        String[] fieldNames = r.getFieldNames();
+        if ( null != fieldNames ) {
+          return fieldNames;
+        }
+      }
+    } catch ( Exception e ) {
+      // ignore any errors here. drop downs will not be
+      // filled, but no problem for the user
+    } finally {
+      try {
+        if ( db != null ) {
+          db.disconnect();
+        }
+      } catch ( Exception ignored ) {
+        // ignore any errors here. Nothing we can do if
+        // connection fails to close properly
+        db = null;
+      }
+    }
+    return null;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getTableFieldAndTypeAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+
+    String connectionName = queryParams.get( "connection" );
+    String schema = queryParams.get( "schema" );
+    String table = queryParams.get( "table" );
+
+    if ( connectionName == null || connectionName.isBlank() ||
+      schema == null || schema.isBlank() ||
+      table == null || table.isBlank() ) {
+      response.put( "error", BaseMessages.getString( PKG, "Delete.MissingArguments.Error" ) );
+      return response;
+    }
+    try {
+      JSONArray columnsList = getTableFieldsAndType( connectionName, schema, table );
+      response.put( "columns", columnsList );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( Exception e ) {
+      log.logError( BaseMessages.getString( PKG, "Delete.FetchTableFieldsAndType.Error" ) + e.getMessage(), e );
+      response.put( "error", BaseMessages.getString( PKG, "Delete.Unexpected.Error" ) );
+    }
+    return response;
+  }
+
+  private JSONArray getTableFieldsAndType( String connection, String schema, String table ) {
+    DatabaseMeta databaseMeta = Optional.ofNullable( getTransMeta().findDatabase( connection ) ).orElseThrow( () -> new IllegalArgumentException( BaseMessages.getString( PKG, "Delete.DatabaseConnectionNotFound" ) + connection ) );
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Delete Step", LoggingObjectType.STEP, null );
+
+    try ( Database db = new Database( loggingObject, databaseMeta ) ) {
+      db.connect();
+      RowMetaInterface rowMeta = db.getTableFieldsMeta( schema, table );
+
+      if ( rowMeta == null ) {
+        log.logDebug( BaseMessages.getString( PKG, "DeleteMeta.Exception.ConnectionUndefined", schema, table ) );
+        return new JSONArray();
+      }
+
+      return rowMeta.getValueMetaList()
+        .stream()
+        .map( valueMeta -> {
+          JSONObject jsonObject = new JSONObject();
+          jsonObject.put( "columnName", valueMeta.getName() );
+          jsonObject.put( "columnType", valueMeta.getTypeDesc() );
+          return jsonObject;
+        } )
+        .collect( JSONArray::new, JSONArray::add, JSONArray::addAll );
+    } catch ( Exception e ) {
+      log.logError( BaseMessages.getString( PKG, "Delete.FetchTableFieldsAndType.Error" ) + table, e );
+      return new JSONArray();
+    }
+  }
 }
