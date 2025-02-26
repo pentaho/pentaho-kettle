@@ -114,7 +114,7 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
   @Override
   public Node getSharedObject( String type, String name ) throws KettleException {
     Map<String, Node> nodeMap = getSharedObjects( type );
-    return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap ) );
+    return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() ) );
   }
 
   @Override
@@ -154,7 +154,7 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
     SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
 
     Map<String, Node> nodeMap = getSharedObjects( type );
-    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() );
     if ( existingName == null ) {
       existingName = name;
     }
@@ -192,12 +192,6 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
   @Override
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
     SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
-
-    Map<String, Node> nodeMap = getSharedObjects( type );
-    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap );
-    if ( existingName != null ) {
-      deleteInner( objectType, existingName );
-    }
 
     RepositoryElementInterface repoElement = null;
     switch ( objectType ) {

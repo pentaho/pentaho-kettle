@@ -72,7 +72,7 @@ public class MemorySharedObjectsIO implements SharedObjectsIO {
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
     // Get the map for the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
-    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() );
     if ( existingName != null ) {
       nodeMap.remove( existingName );
     }
@@ -92,7 +92,7 @@ public class MemorySharedObjectsIO implements SharedObjectsIO {
   public Node getSharedObject( String type, String name ) throws KettleException {
     // Get the Map using the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
-    return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap ) );
+    return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() ) );
   }
 
   /**
@@ -106,7 +106,7 @@ public class MemorySharedObjectsIO implements SharedObjectsIO {
   public void delete( String type, String name ) throws KettleException {
     // Get the nodeMap for the type
     Map<String, Node> nodeTypeMap = getNodesMapForType( type );
-    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeTypeMap );
+    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeTypeMap.keySet() );
     if ( existingName != null ) {
       nodeTypeMap.remove( existingName );
     }
