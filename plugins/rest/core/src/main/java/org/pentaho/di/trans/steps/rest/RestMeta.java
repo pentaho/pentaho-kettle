@@ -465,6 +465,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "preemptive", preemptive ) );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "trustStoreFile", trustStoreFile ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "ignoreSsl", ignoreSsl ) );
     retval.append( "    " ).append(
         XMLHandler.addTagValue( "trustStorePassword", Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
 
@@ -523,6 +524,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       proxyPort = XMLHandler.getTagValue( stepnode, "proxyPort" );
       preemptive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "preemptive" ) );
 
+      ignoreSsl = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "ignoreSsl" ) );
       trustStoreFile = XMLHandler.getTagValue( stepnode, "trustStoreFile" );
       trustStorePassword =
           Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "trustStorePassword" ) );
@@ -580,6 +582,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       proxyPort = rep.getStepAttributeString( id_step, "proxyPort" );
 
       trustStoreFile = rep.getStepAttributeString( id_step, "trustStoreFile" );
+      ignoreSsl = "Y".equalsIgnoreCase( rep.getStepAttributeString( id_step, "ignoreSsl") );
       trustStorePassword =
           Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "trustStorePassword" ) );
 
@@ -631,6 +634,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "proxyHost", proxyHost );
       rep.saveStepAttribute( id_transformation, id_step, "proxyPort", proxyPort );
 
+      rep.saveStepAttribute( id_transformation, id_step, "ignoreSsl", ignoreSsl );
       rep.saveStepAttribute( id_transformation, id_step, "trustStoreFile", trustStoreFile );
       rep.saveStepAttribute( id_transformation, id_step, "trustStorePassword", Encr
           .encryptPasswordIfNotUsingVariables( trustStorePassword ) );
