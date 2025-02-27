@@ -65,9 +65,9 @@ public class RestMetaTest {
     List<String> attributes =
       Arrays.asList( "applicationType", "method", "url", "urlInField", "dynamicMethod", "methodFieldName",
         "urlField", "bodyField", "httpLogin", "httpPassword", "proxyHost", "proxyPort", "preemptive",
-        "trustStoreFile", "trustStorePassword", "headerField", "headerName", "parameterField", "parameterName",
-        "matrixParameterField", "matrixParameterName", "fieldName", "resultCodeFieldName", "responseTimeFieldName",
-        "responseHeaderFieldName" );
+        "trustStoreFile", "trustStorePassword", "ignoreSsl", "headerField", "headerName", "parameterField",
+        "parameterName", "matrixParameterField", "matrixParameterName", "fieldName", "resultCodeFieldName",
+        "responseTimeFieldName", "responseHeaderFieldName" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
       new HashMap<String, FieldLoadSaveValidator<?>>();
