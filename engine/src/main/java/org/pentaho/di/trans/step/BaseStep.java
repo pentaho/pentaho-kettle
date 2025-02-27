@@ -2055,7 +2055,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   protected void openRemoteOutputStepSocketsOnce() throws KettleStepException {
     if ( remoteOutputSteps.isEmpty()
-      || remoteOutputStepsInitialized ) {
+      || remoteOutputStepsInitialized
+      || stepMeta.isMappingOutput() ) { // PDI-20183 MappingOutput is configured in the Mapping step
 
       return;
     }
