@@ -330,6 +330,15 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     }
   }
 
+  public void setFields( String[] fieldNames ) {
+    inputFields = new TextFileInputField[ fieldNames.length ];
+    for ( int i = 0; i < fieldNames.length; i++ ) {
+      TextFileInputField field = new TextFileInputField();
+      field.setName( fieldNames[ i ] );
+      inputFields[i] = field;
+    }
+  }
+
   @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
