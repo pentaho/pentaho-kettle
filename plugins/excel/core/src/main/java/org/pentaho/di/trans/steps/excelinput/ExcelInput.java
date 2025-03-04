@@ -16,12 +16,11 @@ package org.pentaho.di.trans.steps.excelinput;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -29,7 +28,6 @@ import org.json.simple.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
@@ -48,7 +46,6 @@ import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -64,6 +61,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 import org.pentaho.di.trans.steps.utils.CommonExcelUtils;
+import org.springframework.util.CollectionUtils;
 
 /**
  * This class reads data from one or more Microsoft Excel files.
@@ -933,48 +931,28 @@ public class ExcelInput extends BaseStep implements StepInterface {
 
   private JSONObject getFiles( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
-    String filter = queryParams.get( "filter" );
-    String isRegex = queryParams.get( "isRegex" );
-
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
     String[] files = excelInputMeta.getFilePaths( getTransMeta() );
-    JSONArray filteredFiles = new JSONArray();
 
     if ( files == null || files.length == 0 ) {
       response.put( "message", BaseMessages.getString( PKG, "ExcelInputDialog.NoFilesFound.DialogMessage" ) );
     } else {
-      for ( String file : files ) {
-        if ( Boolean.parseBoolean( isRegex ) ) {
-          Matcher matcher = Pattern.compile( filter ).matcher( file );
-          if ( matcher.matches() ) {
-            filteredFiles.add( file );
-          }
-        } else if ( StringUtils.isBlank( filter ) || StringUtils.contains( file.toUpperCase(), filter.toUpperCase() ) ) {
-          filteredFiles.add( file );
-        }
-      }
-
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      response.put( "files", Arrays.asList( files ) );
     }
 
-    response.put( "files", filteredFiles );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
     return response;
   }
 
   private JSONObject getSheets( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     List<String> sheetNames = new ArrayList<>();
-
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
     FileInputList fileList = excelInputMeta.getFileList( getTransMeta() );
+
     for ( FileObject fileObject : fileList.getFiles() ) {
       try {
-        KWorkbook workbook =
-            WorkbookFactory.getWorkbook( excelInputMeta.getSpreadSheetType(),
-                KettleVFS.getFilename( fileObject ),
-                excelInputMeta.getEncoding(),
-                excelInputMeta.getPassword() );
-
+        KWorkbook workbook = getWorkBook( excelInputMeta, fileObject );
         int nrSheets = workbook.getNumberOfSheets();
         for ( int j = 0; j < nrSheets; j++ ) {
           KSheet sheet = workbook.getSheet( j );
@@ -988,9 +966,15 @@ public class ExcelInput extends BaseStep implements StepInterface {
         workbook.close();
         response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
       } catch ( Exception ex ) {
-        response.put( "message", ex.getMessage() );
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+        errorResponse( response, ex, fileObject );
+        return response;
       }
+    }
+
+    if ( CollectionUtils.isEmpty( sheetNames ) ) {
+      response.put( "message", BaseMessages.getString( PKG, "ExcelInputDialog.UnableToFindSheets.DialogMessage" ) );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      return response;
     }
 
     response.put( "sheets", sheetNames );
@@ -1002,24 +986,41 @@ public class ExcelInput extends BaseStep implements StepInterface {
     RowMetaInterface fields = new RowMeta();
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
     FileInputList fileList = excelInputMeta.getFileList( getTransMeta() );
+
     for ( FileObject file : fileList.getFiles() ) {
       try {
-        KWorkbook workbook =
-            WorkbookFactory.getWorkbook( excelInputMeta.getSpreadSheetType(),
-                KettleVFS.getFilename( file ),
-                excelInputMeta.getEncoding(),
-                excelInputMeta.getPassword() );
+        KWorkbook workbook = getWorkBook( excelInputMeta, file );
         processingWorkbook( fields, excelInputMeta, workbook );
         workbook.close();
         response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
       } catch ( Exception ex ) {
-        response.put( "message", ex.getMessage() );
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+        errorResponse( response, ex, file );
+        return response;
       }
+    }
+
+    if ( fields.getValueMetaList() == null || fields.getValueMetaList().size() == 0 ) {
+      response.put( "message", BaseMessages.getString( PKG, "ExcelInputDialog.UnableToFindFields.DialogMessage" ) );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      return response;
     }
 
     response.put( "fields", generateFieldsJSON( fields ) );
     return response;
+  }
+
+  private KWorkbook getWorkBook( ExcelInputMeta excelInputMeta, FileObject fileObject ) throws KettleException {
+    return WorkbookFactory.getWorkbook( excelInputMeta.getSpreadSheetType(),
+        KettleVFS.getFilename( fileObject ),
+        excelInputMeta.getEncoding(),
+        excelInputMeta.getPassword() );
+  }
+
+  private void errorResponse( JSONObject response, Exception ex, FileObject file ) {
+    response.put( "errorLabel", BaseMessages
+        .getString( PKG, "ExcelInputDialog.ErrorReadingFile.DialogMessage", KettleVFS.getFilename( file ) ) );
+    response.put( "errorMessage", ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage()  );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
   }
 
   private JSONObject generateFieldsJSON( RowMetaInterface fields ) {
