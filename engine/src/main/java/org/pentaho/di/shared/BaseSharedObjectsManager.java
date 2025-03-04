@@ -14,6 +14,8 @@
 package org.pentaho.di.shared;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.RepositoryElementInterface;
+
 import org.w3c.dom.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +31,8 @@ import java.util.stream.Collectors;
  * This class caches the state of the underlying SharedObjectsIO, and does not re-read from the source. Only changes
  * written through this interface will be reflected.
  */
-public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T>> implements SharedObjectsManagementInterface<T> {
+public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T> & RepositoryElementInterface>
+  implements SharedObjectsManagementInterface<T> {
 
   protected SharedObjectsIO sharedObjectsIO;
 
@@ -86,7 +89,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
    */
 
   @Override
-  public synchronized void add( T sharedObjectInterface )  throws KettleException {
+  public synchronized void add( T sharedObjectInterface ) throws KettleException {
     populateSharedObjectMap();
     String name = sharedObjectInterface.getName();
     Node node = sharedObjectInterface.toNode();
@@ -101,7 +104,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
     }
 
     sharedObjectsIO.saveSharedObject( sharedObjectType, name, node );
-    Node readBackNode = sharedObjectsIO.getSharedObject( sharedObjectType, sharedObjectInterface.getName() );
+    Node readBackNode = sharedObjectsIO.getSharedObject( sharedObjectType, name );
     T readBack = createSharedObjectUsingNode( readBackNode );
 
     sharedObjectsMap.put( name, readBack.makeClone() );
