@@ -13,15 +13,25 @@
 
 package org.pentaho.di.trans.steps.systemdata;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -38,6 +48,9 @@ import org.pentaho.di.version.BuildVersion;
  * @since 4-aug-2003
  */
 public class SystemData extends BaseStep implements StepInterface {
+
+  private static Class<?> PKG = SystemDataMeta.class;
+
   private SystemDataMeta meta;
   private SystemDataData data;
 
@@ -757,6 +770,53 @@ public class SystemData extends BaseStep implements StepInterface {
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     super.dispose( smi, sdi );
+  }
+
+  @Override
+  public JSONObject doAction(String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                             Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = SystemData.class.getDeclaredMethod( fieldName + "Action" );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( NoSuchMethodException e ) {
+      return super.doAction( fieldName, stepMetaInterface, transMeta, trans, queryParamToValues );
+    } catch ( InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject typeAction() {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    try {
+      JSONArray jsonArray = new JSONArray();
+      for(int i=1;i<SystemDataTypes.values().length; i++) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put( "id", SystemDataTypes.values()[i].name() );
+        jsonObject.put( "name", SystemDataTypes.values()[i].getDescription() );
+        jsonArray.add( jsonObject );
+      }
+      response.put( "types", jsonArray );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      response.put( StepInterface.STATUS, StepInterface.SUCCESS_STATUS );
+    } catch ( Exception e ) {
+      response.put( "errorMsg", BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage" ) );
+      StringBuilder details = new StringBuilder();
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter( sw );
+      e.printStackTrace( pw );
+      details.append( sw.getBuffer() );
+      response.put( "details", details.toString() );
+      log.logError( e.getMessage() );
+      response.put( StepInterface.STATUS, StepInterface.FAILURE_STATUS );
+    }
+    return response;
   }
 
 }
