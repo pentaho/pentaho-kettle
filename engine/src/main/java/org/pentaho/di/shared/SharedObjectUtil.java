@@ -25,11 +25,14 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.partition.PartitionSchemaManagementInterface;
+import org.pentaho.di.repository.RepositoryElementInterface;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Utilities for dealing with Shared Objects
@@ -51,20 +54,96 @@ public class SharedObjectUtil {
              targetBowl.getManager( SlaveServerManagementInterface.class ) );
   }
 
-  public static <T extends SharedObjectInterface<T>> void moveAll( SharedObjectsManagementInterface<T> sourceManager,
-    SharedObjectsManagementInterface<T> targetManager ) throws KettleException {
+  /**
+   * Copies used database connections plus all other shared objects from the source bowl to the target AbstractMeta.
+   *
+   *
+   * @param sourceBowl
+   * @param targetMeta
+   */
+  public static void copySharedObjects( Bowl sourceBowl, AbstractMeta targetMeta ) throws KettleException {
+    copyAll( sourceBowl.getManager( ClusterSchemaManagementInterface.class ),
+             targetMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class ) );
+    copyAll( sourceBowl.getManager( PartitionSchemaManagementInterface.class ),
+             targetMeta.getSharedObjectManager( PartitionSchemaManagementInterface.class ) );
+    copyAll( sourceBowl.getManager( SlaveServerManagementInterface.class ),
+             targetMeta.getSharedObjectManager( SlaveServerManagementInterface.class ) );
+
+    copyUsedDbConnections( sourceBowl, targetMeta );
+
+  }
+
+  public static <T extends SharedObjectInterface<T> & RepositoryElementInterface>
+    void moveAll( SharedObjectsManagementInterface<T> sourceManager, SharedObjectsManagementInterface<T> targetManager )
+      throws KettleException {
     if ( sourceManager != null && targetManager != null ) {
       copyAll( sourceManager, targetManager );
       sourceManager.clear();
     }
   }
 
-  public static <T extends SharedObjectInterface<T>> void copyAll( SharedObjectsManagementInterface<T> sourceManager,
-    SharedObjectsManagementInterface<T> targetManager ) throws KettleException {
+  public static <T extends SharedObjectInterface<T> & RepositoryElementInterface>
+    void copyAll( SharedObjectsManagementInterface<T> sourceManager, SharedObjectsManagementInterface<T> targetManager )
+      throws KettleException {
     if ( sourceManager != null && targetManager != null ) {
       for ( T object : sourceManager.getAll() ) {
         targetManager.add( object );
       }
+    }
+  }
+
+  public static void copyUsedDbConnections( Bowl sourceBowl, AbstractMeta targetMeta ) throws KettleException {
+    DatabaseManagementInterface sourceManager = sourceBowl.getManager( DatabaseManagementInterface.class );
+    DatabaseManagementInterface targetManager = targetMeta.getSharedObjectManager( DatabaseManagementInterface.class );
+
+    Set<String> usedNames = targetMeta.getUsedDatabaseConnectionNames();
+    for ( String name : usedNames ) {
+      DatabaseMeta db = sourceManager.get( name );
+      if ( db != null ) {
+        targetManager.add( db );
+        targetMeta.databaseUpdated( name );
+      }
+    }
+  }
+
+  /**
+   * updates all the database connections from the bowl in the meta. Updates ObjectIds before import to the repository.
+   * Call after moveAllSharedObjects.
+   *
+   *
+   * @param bowl
+   * @param meta
+   */
+  public static void patchDatabaseConnections( Bowl bowl, AbstractMeta meta ) throws KettleException {
+    DatabaseManagementInterface dbMgr = bowl.getManager( DatabaseManagementInterface.class );
+    for ( DatabaseMeta storedDB : dbMgr.getAll() ) {
+      meta.databaseUpdated( storedDB.getName() );
+    }
+  }
+
+  /**
+   * Remove ObjectIds from all the Local objects. Use before serializing to some format that should not contain object
+   * ids from the repository.
+   *
+   *
+   * @param meta
+   */
+  public static void stripObjectIds( AbstractMeta meta ) throws KettleException {
+    stripObjectIds( meta.getSharedObjectManager( ClusterSchemaManagementInterface.class ) );
+    stripObjectIds( meta.getSharedObjectManager( DatabaseManagementInterface.class ) );
+    stripObjectIds( meta.getSharedObjectManager( PartitionSchemaManagementInterface.class ) );
+    stripObjectIds( meta.getSharedObjectManager( SlaveServerManagementInterface.class ) );
+  }
+
+  public static <T extends SharedObjectInterface<T> & RepositoryElementInterface>
+      void stripObjectIds( SharedObjectsManagementInterface<T> manager ) throws KettleException {
+    if ( manager == null ) {
+      return;
+    }
+    List<T> all = manager.getAll();
+    for ( T object : all ) {
+      object.setObjectId( null );
+      manager.add( object );
     }
   }
 

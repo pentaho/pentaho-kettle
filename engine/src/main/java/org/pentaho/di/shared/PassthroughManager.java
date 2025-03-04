@@ -14,6 +14,7 @@
 package org.pentaho.di.shared;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.RepositoryElementInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,8 @@ import org.w3c.dom.Node;
  * This Manager that does not cache anything. Complete passthrough to the provided SharedObjectsIO instance.
  *
 */
-public abstract class PassthroughManager<T extends SharedObjectInterface<T>> implements SharedObjectsManagementInterface<T> {
+public abstract class PassthroughManager<T extends SharedObjectInterface<T> & RepositoryElementInterface>
+  implements SharedObjectsManagementInterface<T> {
 
   private final SharedObjectsIO sharedObjectsIO;
   private final String type;

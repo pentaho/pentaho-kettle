@@ -481,8 +481,9 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   }
 
   // filters which shared objects will be imported
-  private <T extends SharedObjectInterface<T>> void filterSharedObjects( AbstractMeta source,
-    Class<? extends SharedObjectsManagementInterface<T>> managerClass, String message, String importAskPref )
+  private <T extends SharedObjectInterface<T> & RepositoryElementInterface>
+    void filterSharedObjects( AbstractMeta source, Class<? extends SharedObjectsManagementInterface<T>> managerClass,
+                              String message, String importAskPref )
     throws KettleException {
 
     SharedObjectsManagementInterface<T> srcManager = source.getSharedObjectManager( managerClass );
@@ -539,10 +540,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   }
 
   void patchDatabaseConnections( AbstractMeta meta ) throws KettleException {
-    DatabaseManagementInterface dbMgr = rep.getBowl().getManager( DatabaseManagementInterface.class );
-    for ( DatabaseMeta storedDB : dbMgr.getAll() ) {
-      meta.databaseUpdated( storedDB.getName() );
-    }
+    SharedObjectUtil.patchDatabaseConnections( rep.getBowl(), meta );
   }
 
   private void patchJobEntries( JobMeta jobMeta ) {

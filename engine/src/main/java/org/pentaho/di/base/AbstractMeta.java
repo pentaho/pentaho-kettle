@@ -535,6 +535,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     return getDatabases().get( i );
   }
 
+  public abstract Set<String> getUsedDatabaseConnectionNames();
+
   public void importFromMetaStore() throws MetaStoreException, KettlePluginException {
     // Read the databases...
     //
