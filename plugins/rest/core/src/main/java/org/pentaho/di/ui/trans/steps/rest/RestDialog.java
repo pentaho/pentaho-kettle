@@ -178,6 +178,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   private Button wbTrustStoreFile;
   private FormData fdbTrustStoreFile;
   private FormData fdlTrustStoreFile, fdTrustStoreFile;
+  private Button wIgnoreSSL;
 
   private boolean gotPreviousFields = false;
 
@@ -837,6 +838,30 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdSSLTrustStore.top = new FormAttachment( gHttpAuth, margin );
     gSSLTrustStore.setLayoutData( fdSSLTrustStore );
 
+    // Trust all certificate?
+    Label wlIgnoreSSL = new Label( gSSLTrustStore, SWT.RIGHT );
+    wlIgnoreSSL.setText( BaseMessages.getString( PKG, "RestDialog.IgnoreSSL.Label" ) );
+    props.setLook( wlIgnoreSSL );
+    FormData fdlIgnoreSSL = new FormData();
+    fdlIgnoreSSL.left = new FormAttachment( 0, 0 );
+    fdlIgnoreSSL.top = new FormAttachment( wTrustStorePassword, margin );
+    fdlIgnoreSSL.right = new FormAttachment( middle, -margin );
+    wlIgnoreSSL.setLayoutData( fdlIgnoreSSL );
+    wIgnoreSSL = new Button( gSSLTrustStore, SWT.CHECK );
+    props.setLook( wIgnoreSSL );
+    wIgnoreSSL.setToolTipText( BaseMessages.getString( PKG, "RestDialog.IgnoreSSL.Tooltip" ) );
+    FormData fdIgnoreSSL = new FormData();
+    fdIgnoreSSL.left = new FormAttachment( middle, 0 );
+    fdIgnoreSSL.top = new FormAttachment( wTrustStorePassword, margin );
+    wIgnoreSSL.setLayoutData( fdIgnoreSSL );
+    wIgnoreSSL.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+        setSsl();
+      }
+    } );
+
     // END HTTP AUTH GROUP
     // ////////////////////////
 
@@ -1149,6 +1174,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     activeUrlInfield();
     activeMethodInfield();
     setMethod();
+    setSsl();
     input.setChanged( changed );
 
     shell.open();
@@ -1174,6 +1200,13 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wlMatrixParameters.setEnabled( activateParams );
     wMatrixParameters.setEnabled( activateParams );
     wMatrixGet.setEnabled( activateParams );
+  }
+
+  protected void setSsl() {
+    boolean ignoreSsl = wIgnoreSSL.getSelection();
+    wTrustStoreFile.setEnabled( !ignoreSsl );
+    wTrustStorePassword.setEnabled( !ignoreSsl );
+    wbTrustStoreFile.setEnabled( !ignoreSsl );
   }
 
   protected void setComboBoxes() {
@@ -1321,6 +1354,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     if ( input.getTrustStorePassword() != null ) {
       wTrustStorePassword.setText( input.getTrustStorePassword() );
     }
+    wIgnoreSSL.setSelection( input.isIgnoreSsl() );
     if ( input.getResponseHeaderFieldName() != null ) {
       wResponseHeader.setText( input.getResponseHeaderFieldName() );
     }
@@ -1390,6 +1424,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     input.setTrustStoreFile( wTrustStoreFile.getText() );
     input.setTrustStorePassword( wTrustStorePassword.getText() );
+    input.setIgnoreSsl( wIgnoreSSL.getSelection() );
     input.setApplicationType( wApplicationType.getText() );
     stepname = wStepname.getText(); // return value
 
