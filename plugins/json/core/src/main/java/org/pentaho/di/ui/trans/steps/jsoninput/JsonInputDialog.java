@@ -1444,10 +1444,13 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
         List<String> paths = new ArrayList<>();
         for ( int i = 0; i < wFields.table.getItems().length; i++ ) {
           TableItem item = wFields.table.getItem( i );
-          paths.add( item.getText( 2 ) );
+          String value = item.getText( 2 );
+          if ( !value.trim().isEmpty() ) {
+            paths.add( value );
+          }
         }
 
-        GetFieldsDialog getFieldsDialog = new GetFieldsDialog( shell );
+        GetFieldsDialog getFieldsDialog = new GetFieldsDialog( shell, input );
         getFieldsDialog.open( filename, paths, wFields );
 
       }
