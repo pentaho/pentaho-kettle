@@ -13,13 +13,8 @@
 
 package org.pentaho.di.trans.steps.getvariable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -139,4 +134,5 @@ public class GetVariable extends BaseStep implements StepInterface {
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     super.dispose( smi, sdi );
   }
+
 }
