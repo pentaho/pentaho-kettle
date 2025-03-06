@@ -12,6 +12,8 @@
 
 package org.pentaho.di.repository.pur;
 
+import java.util.Objects;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.partition.PartitionSchema;
@@ -79,7 +81,7 @@ public class PartitionDelegate extends AbstractDelegate implements ITransformer,
 
     // Check for naming collision
     ObjectId partitionId = repo.getPartitionSchemaID( partitionSchema.getName() );
-    if ( partitionId != null && !partitionSchema.getObjectId().equals( partitionId ) ) {
+    if ( partitionId != null && !Objects.equals( partitionSchema.getObjectId(), partitionId ) ) {
       // We have a naming collision, abort the save
       throw new KettleException( "Failed to save object to repository. Object [" + partitionSchema.getName()
           + "] already exists." );
