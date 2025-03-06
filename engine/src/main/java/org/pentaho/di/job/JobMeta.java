@@ -100,6 +100,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The definition of a PDI job is represented by a JobMeta object. It is typically loaded from a .kjb file, a PDI
@@ -525,13 +526,23 @@ public class JobMeta extends AbstractMeta
       }
     }
 
-    databaseMetas.add( jobLogTable.getDatabaseMeta() );
+    if ( jobLogTable.getDatabaseMeta() != null ) {
+      databaseMetas.add( jobLogTable.getDatabaseMeta() );
+    }
 
     for ( LogTableInterface logTable : getExtraLogTables() ) {
-      databaseMetas.add( logTable.getDatabaseMeta() );
+      if ( logTable.getDatabaseMeta() != null ) {
+        databaseMetas.add( logTable.getDatabaseMeta() );
+      }
     }
     return databaseMetas;
   }
+
+  @Override
+  public Set<String> getUsedDatabaseConnectionNames() {
+    return getUsedDatabaseMetas().stream().map( DatabaseMeta::getName ).collect( Collectors.toSet() );
+  }
+
 
   /**
    * This method asks all steps in the transformation whether or not the specified database connection is used. The

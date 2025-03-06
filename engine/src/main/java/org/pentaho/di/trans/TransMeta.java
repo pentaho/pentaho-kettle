@@ -5365,7 +5365,23 @@ public class TransMeta extends AbstractMeta
     }
 
     return transLogTable.getDatabaseMeta() != null && transLogTable.getDatabaseMeta().equals( databaseMeta );
+  }
 
+  @Override
+  public Set<String> getUsedDatabaseConnectionNames() {
+    Set<String> dbNames = new HashSet<>();
+    for ( int i = 0; i < nrSteps(); i++ ) {
+      StepMeta stepMeta = getStep( i );
+      DatabaseMeta[] dbs = stepMeta.getStepMetaInterface().getUsedDatabaseConnections();
+      for ( int d = 0; d < dbs.length; d++ ) {
+        dbNames.add( dbs[d].getName() );
+      }
+    }
+
+    if ( transLogTable.getDatabaseMeta() != null ) {
+      dbNames.add( transLogTable.getDatabaseMeta().getName() );
+    }
+    return dbNames;
   }
 
   @Override

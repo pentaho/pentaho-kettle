@@ -39,6 +39,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.pur.JobDelegate;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.ui.job.entries.missing.MissingEntryDialog;
 import org.pentaho.platform.api.repository2.unified.Converter;
 import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
@@ -116,6 +117,8 @@ public class StreamToJobNodeConverter implements Converter {
     if ( jobMeta == null ) {
       return null;
     }
+    SharedObjectUtil.copySharedObjects( repository.getBowl(), jobMeta );
+    SharedObjectUtil.stripObjectIds( jobMeta );
     String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
     return new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
   }
@@ -147,6 +150,7 @@ public class StreamToJobNodeConverter implements Converter {
 
       JobMeta jobMeta = new JobMeta();
       Repository repository = connectToRepository();
+      jobMeta.setRepository( repository );
       Document doc = PDIImportUtil.loadXMLFrom( bis );
       if ( doc != null ) {
         jobMeta.loadXML( doc.getDocumentElement(), repository, null );
@@ -157,6 +161,8 @@ public class StreamToJobNodeConverter implements Converter {
           throw new ConverterException( missingPluginsException );
         }
         JobDelegate delegate = new JobDelegate( repository, this.unifiedRepository );
+        SharedObjectUtil.moveAllSharedObjects( jobMeta, repository.getBowl() );
+        SharedObjectUtil.patchDatabaseConnections( repository.getBowl(), jobMeta );
         delegate.saveSharedObjects( jobMeta, null );
         return new NodeRepositoryFileData( delegate.elementToDataNode( jobMeta ), bis.getCount() );
       } else {

@@ -14,6 +14,7 @@
 package org.pentaho.di.shared;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.RepositoryElementInterface;
 
 import java.util.List;
 
@@ -21,7 +22,8 @@ import java.util.List;
  * This Manager wraps another manager and tracks changes.
  *
 */
-public class ChangeTrackingSharedObjectManager<T extends SharedObjectInterface<T>> implements SharedObjectsManagementInterface<T> {
+public class ChangeTrackingSharedObjectManager<T extends SharedObjectInterface<T> & RepositoryElementInterface>
+  implements SharedObjectsManagementInterface<T> {
 
   private final SharedObjectsManagementInterface<T> parent;
   private volatile boolean changed = false;

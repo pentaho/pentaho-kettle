@@ -2878,17 +2878,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   @FunctionalInterface
   private static interface SharedObjectOp<M extends SharedObjectsManagementInterface<T>,
-                                          T extends SharedObjectInterface<T>> {
+                                          T extends SharedObjectInterface<T> & RepositoryElementInterface> {
     void op( M manager, T sharedObject ) throws KettleException;
   }
 
-  private <M extends SharedObjectsManagementInterface<T>, T extends SharedObjectInterface<T>>
+  private <M extends SharedObjectsManagementInterface<T>, T extends SharedObjectInterface<T> & RepositoryElementInterface>
       void withSharedObject( Class<M> clazz, SharedObjectOp<M, T> sso ) {
     SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
     withSharedObject( leveledSelection, clazz, sso );
   }
 
-  private <M extends SharedObjectsManagementInterface<T>, T extends SharedObjectInterface<T>>
+  private <M extends SharedObjectsManagementInterface<T>, T extends SharedObjectInterface<T> & RepositoryElementInterface>
       void withSharedObject( SpoonTreeLeveledSelection leveledSelection, Class<M> clazz, SharedObjectOp<M, T> sso ) {
     M manager = null;
     T sharedObject = null;

@@ -14,6 +14,7 @@
 package org.pentaho.di.shared;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.RepositoryElementInterface;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ import java.util.List;
  * be scoped based on the bowl and can be retrieved using bowl's getManager()
  *
  */
-public interface SharedObjectsManagementInterface<T extends SharedObjectInterface> {
+public interface SharedObjectsManagementInterface<T extends SharedObjectInterface<T> & RepositoryElementInterface> {
 
   /**
    * Add the SharedObject to global or project specific file store(shared.xml) depending on the bowl

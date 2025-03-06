@@ -805,6 +805,11 @@ public class AbstractMetaTest {
     }
 
     @Override
+    public Set<String> getUsedDatabaseConnectionNames() {
+      return Collections.emptySet();
+    }
+
+    @Override
     public String getXML() throws KettleException {
       return null;
     }
