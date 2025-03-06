@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
@@ -806,7 +805,6 @@ public class SystemData extends BaseStep implements StepInterface {
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
       response.put( StepInterface.STATUS, StepInterface.SUCCESS_STATUS );
     } catch ( Exception e ) {
-      response.put( "errorMsg", BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage" ) );
       StringBuilder details = new StringBuilder();
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter( sw );
