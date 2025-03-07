@@ -120,8 +120,12 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
       SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), slaveServer, slaveServerManager.getAll() );
       if ( dialog.open() ) {
         String newName = slaveServer.getName().trim();
-        if ( !newName.equals( originalName ) ) {
+        // This should be case insensitive. We only need to remove if the name changed beyond case. The Managers handle
+        // case-only changes.
+        if ( !newName.equalsIgnoreCase( originalName ) ) {
           slaveServerManager.remove( originalName );
+          // ideally we wouldn't leak this repository-specific concept, but I don't see how at the moment.
+          slaveServer.setObjectId( null );
         }
         slaveServerManager.add( slaveServer );
       }

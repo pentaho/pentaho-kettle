@@ -82,8 +82,12 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
                       databaseMetas, spoon.getBowl().getADefaultVariableSpace() );
       if ( dialog.open() ) {
         String newName = partitionSchema.getName().trim();
-        if ( !newName.equals( originalName ) ) {
+        // This should be case insensitive. We only need to remove if the name changed beyond case. The Managers handle
+        // case-only changes.
+        if ( !newName.equalsIgnoreCase( originalName ) ) {
           partitionSchemaManager.remove( originalName );
+          // ideally we wouldn't leak this repository-specific concept, but I don't see how at the moment.
+          partitionSchema.setObjectId( null );
         }
         partitionSchemaManager.add( partitionSchema );
         refreshTree();

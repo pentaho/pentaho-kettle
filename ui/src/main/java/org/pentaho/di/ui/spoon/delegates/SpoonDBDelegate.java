@@ -92,10 +92,14 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate {
         databaseMeta = getDatabaseDialog().getDatabaseMeta();
         databaseMeta.setName( newname.trim() );
         databaseMeta.setDisplayName( newname.trim() );
-        if ( !newname.equals( originalName ) ) {
+        // This should be case insensitive. We only need to remove if the name changed beyond case. The Managers handle
+        // case-only changes.
+        if ( !newname.equalsIgnoreCase( originalName ) ) {
           dbManager.remove( originalName );
-          spoon.refreshDbConnection( newname.trim() );
+          // ideally we wouldn't leak this repository-specific concept, but I don't see how at the moment.
+          databaseMeta.setObjectId( null );
         }
+        spoon.refreshDbConnection( newname.trim() );
 
         dbManager.add( databaseMeta );
         spoon.refreshDbConnection( originalName );

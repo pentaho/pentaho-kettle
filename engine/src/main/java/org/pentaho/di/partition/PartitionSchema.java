@@ -81,7 +81,6 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
   public Object clone() {
     PartitionSchema partitionSchema = new PartitionSchema();
     partitionSchema.replaceMeta( this );
-    partitionSchema.setObjectId( null );
     return partitionSchema;
   }
 
