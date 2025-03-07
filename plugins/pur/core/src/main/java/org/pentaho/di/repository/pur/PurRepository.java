@@ -981,11 +981,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public ObjectId getClusterID( String name ) throws KettleException {
-    try {
-      return getObjectId( name, null, RepositoryObjectType.CLUSTER_SCHEMA, false );
-    } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for cluster schema [" + name + "]", e );
-    }
+    return getObjectID( name, RepositoryObjectType.CLUSTER_SCHEMA );
   }
 
   @Override
@@ -1018,23 +1014,27 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public ObjectId getDatabaseID( final String name ) throws KettleException {
+    return getObjectID( name, RepositoryObjectType.DATABASE );
+  }
+
+  private ObjectId getObjectID( String name, RepositoryObjectType type ) throws KettleException {
     try {
-      ObjectId objectId = getObjectId( name, null, RepositoryObjectType.DATABASE, false );
+      ObjectId objectId = getObjectId( name, null, type, false );
       if ( objectId == null ) {
-        List<RepositoryFile> allDatabases = getAllFilesOfType( null, RepositoryObjectType.DATABASE, false );
-        String[] existingNames = new String[ allDatabases.size() ];
-        for ( int i = 0; i < allDatabases.size(); i++ ) {
-          RepositoryFile file = allDatabases.get( i );
+        List<RepositoryFile> allFilesOfType = getAllFilesOfType( null, type, false );
+        String[] existingNames = new String[ allFilesOfType.size() ];
+        for ( int i = 0; i < allFilesOfType.size(); i++ ) {
+          RepositoryFile file = allFilesOfType.get( i );
           existingNames[ i ] = file.getTitle();
         }
         int index = DatabaseMeta.indexOfName( existingNames, name );
         if ( index != -1 ) {
-          return new StringObjectId( allDatabases.get( index ).getId().toString() );
+          return new StringObjectId( allFilesOfType.get( index ).getId().toString() );
         }
       }
       return objectId;
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for database [" + name + "]", e );
+      throw new KettleException( "Unable to get ID for " + type + " [" + name + "]", e );
     }
   }
 
@@ -1587,11 +1587,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public ObjectId getPartitionSchemaID( String name ) throws KettleException {
-    try {
-      return getObjectId( name, null, RepositoryObjectType.PARTITION_SCHEMA, false );
-    } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for partition schema [" + name + "]", e );
-    }
+    return getObjectID( name, RepositoryObjectType.PARTITION_SCHEMA );
   }
 
   @Override
@@ -1639,11 +1635,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public ObjectId getSlaveID( String name ) throws KettleException {
-    try {
-      return getObjectId( name, null, RepositoryObjectType.SLAVE_SERVER, false );
-    } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for slave server with name [" + name + "]", e );
-    }
+    return getObjectID( name, RepositoryObjectType.SLAVE_SERVER );
   }
 
   @Override
