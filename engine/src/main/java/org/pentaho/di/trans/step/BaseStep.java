@@ -2016,31 +2016,33 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * <b>This method should be called before any data is read from previous steps.</b> <br>
    * This action is executed only once.
    *
-   * @throws KettleStepException
+   * @throws KettleStepException if there is an error opening socket connections to the remote input steps
    */
   protected void openRemoteInputStepSocketsOnce() throws KettleStepException {
-    if ( !remoteInputSteps.isEmpty() ) {
-      if ( !remoteInputStepsInitialized ) {
-        // Loop over the remote steps and open client sockets to them
-        // Just be careful in case we're dealing with a partitioned clustered step.
-        // A partitioned clustered step has only one. (see dispatch())
-        //
-        inputRowSetsLock.writeLock().lock();
-        try {
-          for ( RemoteStep remoteStep : remoteInputSteps ) {
-            try {
-              BlockingRowSet rowSet = remoteStep.openReaderSocket( this );
-              inputRowSets.add( rowSet );
-            } catch ( Exception e ) {
-              throw new KettleStepException( "Error opening reader socket to remote step '" + remoteStep + "'", e );
-            }
-          }
-        } finally {
-          inputRowSetsLock.writeLock().unlock();
-        }
-        remoteInputStepsInitialized = true;
-      }
+    if ( remoteInputSteps.isEmpty()
+      || remoteInputStepsInitialized ) {
+
+      return;
     }
+
+    // Loop over the remote steps and open client sockets to them
+    // Just be careful in case we're dealing with a partitioned clustered step.
+    // A partitioned clustered step has only one. (see dispatch())
+    //
+    inputRowSetsLock.writeLock().lock();
+    try {
+      for ( RemoteStep remoteStep : remoteInputSteps ) {
+        try {
+          BlockingRowSet rowSet = remoteStep.openReaderSocket( this );
+          inputRowSets.add( rowSet );
+        } catch ( Exception e ) {
+          throw new KettleStepException( "Error opening reader socket to remote step '" + remoteStep + "'", e );
+        }
+      }
+    } finally {
+      inputRowSetsLock.writeLock().unlock();
+    }
+    remoteInputStepsInitialized = true;
   }
 
   /**
@@ -2049,48 +2051,49 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * as soon as possible to avoid time-out situations. <br>
    * This action is executed only once.
    *
-   * @throws KettleStepException
+   * @throws KettleStepException if there is an error opening socket connections to the remote output steps
    */
   protected void openRemoteOutputStepSocketsOnce() throws KettleStepException {
-    if ( !remoteOutputSteps.isEmpty() ) {
-      if ( !remoteOutputStepsInitialized ) {
+    if ( remoteOutputSteps.isEmpty()
+      || remoteOutputStepsInitialized
+      || stepMeta.isMappingOutput() ) { // PDI-20183 MappingOutput is configured in the Mapping step
 
-        outputRowSetsLock.writeLock().lock();
-        try {
-          // Set the current slave target name on all the current output steps (local)
-          //
-          for ( RowSet rowSet : outputRowSets ) {
-            rowSet.setRemoteSlaveServerName( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) );
-            if ( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) == null ) {
-              throw new KettleStepException( "Variable '"
-                + Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME + "' is not defined." );
-            }
-          }
-
-          // Start threads: one per remote step to funnel the data through...
-          //
-          for ( RemoteStep remoteStep : remoteOutputSteps ) {
-            try {
-              if ( remoteStep.getTargetSlaveServerName() == null ) {
-                throw new KettleStepException(
-                  "The target slave server name is not defined for remote output step: " + remoteStep );
-              }
-              BlockingRowSet rowSet = remoteStep.openWriterSocket();
-              if ( log.isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.OpenedWriterSocketToRemoteStep", remoteStep ) );
-              }
-              outputRowSets.add( rowSet );
-            } catch ( IOException e ) {
-              throw new KettleStepException( "Error opening writer socket to remote step '" + remoteStep + "'", e );
-            }
-          }
-        } finally {
-          outputRowSetsLock.writeLock().unlock();
-        }
-
-        remoteOutputStepsInitialized = true;
-      }
+      return;
     }
+
+    outputRowSetsLock.writeLock().lock();
+    try {
+      // Set the current slave target name on all the current output steps (local)
+      //
+      for ( RowSet rowSet : outputRowSets ) {
+        rowSet.setRemoteSlaveServerName( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) );
+        if ( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) == null ) {
+          throw new KettleStepException( "Variable '"
+            + Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME + "' is not defined." );
+        }
+      }
+
+      // Start threads: one per remote step to funnel the data through...
+      //
+      for ( RemoteStep remoteStep : remoteOutputSteps ) {
+        try {
+          if ( remoteStep.getTargetSlaveServerName() == null ) {
+            throw new KettleStepException(
+              "The target slave server name is not defined for remote output step: " + remoteStep );
+          }
+          BlockingRowSet rowSet = remoteStep.openWriterSocket();
+          if ( log.isDetailed() ) {
+            logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.OpenedWriterSocketToRemoteStep", remoteStep ) );
+          }
+          outputRowSets.add( rowSet );
+        } catch ( IOException e ) {
+          throw new KettleStepException( "Error opening writer socket to remote step '" + remoteStep + "'", e );
+        }
+      }
+    } finally {
+      outputRowSetsLock.writeLock().unlock();
+    }
+    remoteOutputStepsInitialized = true;
   }
 
   /**

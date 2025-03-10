@@ -602,7 +602,7 @@
     <fields>
       <field>
         <name>filename</name>
-        <variable>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x5c;files&#x5c;jsonfile.js</variable>
+        <variable>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x5c;files&#x5c;jsonfile.json</variable>
         <type>String</type>
         <format/>
         <currency/>
