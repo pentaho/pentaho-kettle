@@ -24,10 +24,12 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.spreadsheet.KSheet;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
@@ -71,6 +73,10 @@ public class PoiWorkbook implements KWorkbook {
           }
         }
       } else {
+        //default value for maximum allowed size we are maintaining 150MB  150 * 1024 * 1024
+        int maxSize = Const.toInt( EnvUtil.getSystemProperty( Const.POI_BYTE_ARRAY_MAX_SIZE ), 157286400 );
+        // Increase the maximum allowed size
+        org.apache.poi.util.IOUtils.setByteArrayMaxOverride( maxSize );
         internalIS = KettleVFS.getInputStream( filename );
         workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create( internalIS, password );
       }
