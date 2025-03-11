@@ -79,13 +79,6 @@ public class PartitionDelegate extends AbstractDelegate implements ITransformer,
     PartitionSchema partitionSchema = (PartitionSchema) element;
     DataNode rootNode = new DataNode( NODE_ROOT );
 
-    // Check for naming collision
-    ObjectId partitionId = repo.getPartitionSchemaID( partitionSchema.getName() );
-    if ( partitionId != null && !Objects.equals( partitionSchema.getObjectId(), partitionId ) ) {
-      // We have a naming collision, abort the save
-      throw new KettleException( "Failed to save object to repository. Object [" + partitionSchema.getName()
-          + "] already exists." );
-    }
     rootNode.setProperty( PROP_DYNAMIC_DEFINITION, partitionSchema.isDynamicallyDefined() );
     rootNode.setProperty( PROP_PARTITIONS_PER_SLAVE, partitionSchema.getNumberOfPartitionsPerSlave() );
 

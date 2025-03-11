@@ -84,8 +84,12 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
           new ClusterSchemaDialog( spoon.getShell(), clusterSchema, manager.getAll(), slaveServers );
       if ( dialog.open() ) {
         String newName = clusterSchema.getName().trim();
-        if ( !newName.equals( originalName ) ) {
+        // This should be case insensitive. We only need to remove if the name changed beyond case. The Managers handle
+        // case-only changes.
+        if ( !newName.equalsIgnoreCase( originalName ) ) {
           manager.remove( originalName );
+          // ideally we wouldn't leak this repository-specific concept, but I don't see how at the moment.
+          clusterSchema.setObjectId( null );
         }
         manager.add( clusterSchema );
         refreshTree();
