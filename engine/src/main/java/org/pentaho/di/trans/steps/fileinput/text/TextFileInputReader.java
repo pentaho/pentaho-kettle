@@ -60,6 +60,7 @@ public class TextFileInputReader implements IBaseFileInputReader {
     this.meta = meta;
     this.data = data;
     this.log = log;
+    this.linesWritten = step.getLinesWritten();
 
     CompressionProvider provider =
         CompressionProviderFactory.getInstance().getCompressionProviderByName( meta.content.fileCompression );
