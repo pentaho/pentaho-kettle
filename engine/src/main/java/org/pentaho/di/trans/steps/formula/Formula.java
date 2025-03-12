@@ -80,7 +80,7 @@ public class Formula extends BaseStep implements StepInterface {
 
       // Calculate replace indexes...
       //
-      data.replaceIndex = new int[ meta.getFormula().length ];
+      data.replaceIndex = new int[meta.getFormula().length];
       for ( int i = 0; i < meta.getFormula().length; i++ ) {
         FormulaMetaFunction fn = meta.getFormula()[ i ];
         if ( !Utils.isEmpty( fn.getReplaceField() ) ) {
