@@ -13,6 +13,8 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,7 +23,11 @@ import java.util.Map;
 import java.util.Arrays;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -33,6 +39,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -588,5 +595,114 @@ public class TransExecutor extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
+  public JSONObject doAction(String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                             Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = TransExecutor.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      this.meta = (TransExecutorMeta) stepMetaInterface;
+      this.meta.setRepository( transMeta.getRepository() );
+      this.repository = transMeta.getRepository();
+      this.setTransMeta( transMeta );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
 
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  private JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
+    TransExecutorMeta transExecutorMeta = (TransExecutorMeta) getStepMetaInterface();
+
+    JSONObject response = new JSONObject();
+    JSONArray parameterArray = new JSONArray();
+    try {
+      String filename = transExecutorMeta.getDirectoryPath() + "/" + transExecutorMeta.getTransName();
+      TransMeta inputTransMeta =  loadTransformation( filename, transExecutorMeta.getSpecificationMethod() );
+      if( inputTransMeta != null ) {
+        String[] parameters = inputTransMeta.listParameters();
+        for ( int i = 0; i < parameters.length; i++ ) {
+          JSONObject parameter = new JSONObject();
+          String name = parameters[ i ];
+          String desc = inputTransMeta.getParameterDescription( name );
+          String str = inputTransMeta.getParameterDefault( name );
+          str = ( StringUtils.isNotBlank( str ) ? str : ( desc != null ? desc : "" ) );
+
+          parameter.put( "variable", Const.NVL( name, "" ) );
+          parameter.put( "field", "" );
+          parameter.put( "input", Const.NVL( str, "" ) );
+          parameterArray.add( parameter );
+        }
+      }
+      response.put( "parameters", parameterArray );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
+
+  public TransMeta loadTransformation( String filename, ObjectLocationSpecificationMethod specificationMethod ) throws KettleException {
+    TransMeta executorTransMeta = null;
+    if ( repository != null ) {
+      specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+    } else {
+      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+    }
+    switch ( specificationMethod ) {
+      case FILENAME:
+        if ( Utils.isEmpty( filename ) ) {
+          return executorTransMeta;
+        }
+        if ( !filename.endsWith( ".ktr" ) ) {
+          filename = filename + ".ktr";
+        }
+        executorTransMeta = loadFileTrans( filename );
+        break;
+      case REPOSITORY_BY_NAME:
+        if ( Utils.isEmpty( filename ) ) {
+          return executorTransMeta;
+        }
+        String transPath = loadExecutorTransMeta().environmentSubstitute( filename );
+        String realTransname = transPath;
+        String realDirectory = "";
+        int index = transPath.lastIndexOf( "/" );
+        if ( index != -1 ) {
+          realTransname = transPath.substring( index + 1 );
+          realDirectory = transPath.substring( 0, index );
+        }
+
+        if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realTransname ) ) {
+          throw new KettleException(
+                  BaseMessages.getString( PKG, "TransExecutor.Exception.NoValidMappingDetailsFound" ) );
+        }
+        RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
+        if ( repdir == null ) {
+          throw new KettleException( BaseMessages.getString(
+                  PKG, "TransExecutor.Exception.UnableToFindRepositoryDirectory" ) );
+        }
+        executorTransMeta = loadRepositoryTrans( realTransname, repdir );
+        break;
+      default:
+        break;
+    }
+    return executorTransMeta;
+  }
+
+  private TransMeta loadFileTrans( String fname ) throws KettleException {
+    TransMeta executorTransMeta = new TransMeta( loadExecutorTransMeta().environmentSubstitute( fname ), repository );
+    executorTransMeta.clearChanged();
+    return executorTransMeta;
+  }
+
+  private TransMeta loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
+    TransMeta executorTransMeta =
+            repository.loadTransformation( loadExecutorTransMeta().environmentSubstitute( transName ), repdir, null, false, null );
+    executorTransMeta.clearChanged();
+    return executorTransMeta;
+  }
 }

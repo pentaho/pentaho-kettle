@@ -13,6 +13,7 @@
 
 package org.pentaho.di.trans.steps.rest;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
@@ -20,6 +21,7 @@ import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.client.RequestEntityProcessing;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.uri.UriComponent;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
@@ -27,6 +29,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -45,20 +48,23 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Samatar
@@ -623,6 +629,43 @@ public class Rest extends BaseStep implements StepInterface {
     data.indexOfHeaderFields = null;
     data.paramNames = null;
     super.dispose( smi, sdi );
+  }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = Rest.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
+      log.logError( ex.getMessage() );
+      if ( ex.getCause() instanceof KettleException ) {
+        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_RESPONSE );
+      } else {
+        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_METHOD_NOT_RESPONSE );
+      }
+      response.put( JobEntryInterface.ERROR_DETAILS, ExceptionUtils.getRootCauseMessage( ex ) );
+    }
+    return response;
+  }
+
+  private JSONObject applicationTypesAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    JSONArray applicationTypes = new JSONArray();
+    applicationTypes.addAll( Arrays.asList( RestMeta.APPLICATION_TYPES ) );
+    response.put( "applicationTypes", applicationTypes );
+    return response;
+  }
+
+  private JSONObject httpMethodsAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    JSONArray httpMethods = new JSONArray();
+    httpMethods.addAll( Arrays.asList( RestMeta.HTTP_METHODS ) );
+    response.put( "httpMethods", httpMethods );
+    return response;
   }
 
 }

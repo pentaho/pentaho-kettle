@@ -527,6 +527,15 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
     content.rowLimit = 0L;
   }
 
+  public void setFields( String[] fieldNames ) {
+    inputFields = new BaseFileField[ fieldNames.length ];
+    for ( int i = 0; i < fieldNames.length; i++ ) {
+      BaseFileField field = new BaseFileField();
+      field.setName( fieldNames[ i ] );
+      inputFields[i] = field;
+    }
+  }
+
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
@@ -1196,9 +1205,9 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
 
   public int getFileFormatTypeNr() {
     // calculate the file format type in advance so we can use a switch
-    if ( content.fileFormat.equalsIgnoreCase( "DOS" ) ) {
+    if ( StringUtils.equalsIgnoreCase( content.fileFormat,  "DOS" ) ) {
       return FILE_FORMAT_DOS;
-    } else if ( content.fileFormat.equalsIgnoreCase( "unix" ) ) {
+    } else if ( StringUtils.equalsIgnoreCase( content.fileFormat, "unix" ) ) {
       return TextFileInputMeta.FILE_FORMAT_UNIX;
     } else {
       return TextFileInputMeta.FILE_FORMAT_MIXED;

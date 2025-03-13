@@ -14,6 +14,8 @@
 package org.pentaho.di.trans.steps.salesforce;
 
 import com.google.common.primitives.Ints;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -28,7 +30,10 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.TimeZone;
 
 
@@ -39,8 +44,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
   public SalesforceStepMeta meta;
   public SalesforceStepData data;
 
-  public SalesforceStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public SalesforceStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -132,5 +136,105 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
       value = Ints.checkedCast( (Long) value );
     }
     return value;
+  }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = SalesforceStep.class.getDeclaredMethod( fieldName + "Action" );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject testButtonAction() {
+    JSONObject response = new JSONObject();
+    boolean successConnection = testConnection();
+    response.put( "connectionStatus", successConnection );
+    return response;
+  }
+
+  public boolean testConnection() {
+    boolean successConnection = true;
+    SalesforceConnection connection = null;
+
+    try {
+      SalesforceStepMeta salesforceStepMeta = (SalesforceStepMeta) getStepMetaInterface();
+      String realURL = getTransMeta().environmentSubstitute( salesforceStepMeta.getTargetURL() );
+      String realUsername = getTransMeta().environmentSubstitute( salesforceStepMeta.getUsername() );
+      String realPassword = Utils.resolvePassword( getTransMeta(), salesforceStepMeta.getPassword() );
+      int realTimeOut = Const.toInt( getTransMeta().environmentSubstitute( salesforceStepMeta.getTimeout() ), 0 );
+
+      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
+      connection.setTimeOut( realTimeOut );
+      connection.connect();
+
+    } catch ( Exception e ) {
+      successConnection = false;
+      logError( e.getMessage() );
+    } finally {
+      if ( connection != null ) {
+        try {
+          connection.close();
+        } catch ( Exception e ) {
+          //Ignore
+        }
+      }
+    }
+    return successConnection;
+  }
+
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject modulesAction() {
+    JSONObject response = new JSONObject();
+    try {
+      String[] modules = getModules();
+      JSONArray modulesList = new JSONArray();
+      for(String module:modules){
+        modulesList.add( module );
+      }
+      response.put( "modules", modulesList );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
+
+  public String[] getModules() throws Exception {
+
+    SalesforceConnection connection = null;
+    try {
+      SalesforceStepMeta salesforceStepMeta = (SalesforceStepMeta) getStepMetaInterface();
+      String realURL = getTransMeta().environmentSubstitute( salesforceStepMeta.getTargetURL() );
+      String realUsername = getTransMeta().environmentSubstitute( salesforceStepMeta.getUsername() );
+      String realPassword = Utils.resolvePassword( getTransMeta(), salesforceStepMeta.getPassword() );
+      int realTimeOut = Const.toInt( getTransMeta().environmentSubstitute( salesforceStepMeta.getTimeout() ), 0 );
+
+      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
+      connection.setTimeOut( realTimeOut );
+      connection.connect();
+
+      return connection.getAllAvailableObjects( false );
+
+    } catch ( Exception e ) {
+      throw new Exception( e );
+    } finally {
+      if ( connection != null ) {
+        try {
+          connection.close();
+        } catch ( Exception e ) { /* Ignore */
+        }
+      }
+    }
   }
 }

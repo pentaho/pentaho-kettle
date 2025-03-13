@@ -17,13 +17,23 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -49,6 +59,8 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
@@ -971,5 +983,118 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       // prevented at UI, but still
       throw new KettleException( "Password protection currently only supported for XLS file format." );
     }
+  }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = ExcelWriterStep.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  private JSONObject getFilesAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    ExcelWriterStepMeta excelWriterStepMeta = (ExcelWriterStepMeta) getStepMetaInterface();
+    String[] files = excelWriterStepMeta.getFiles( getTransMeta() );
+    JSONArray fileList = new JSONArray();
+    for ( String file : files ) {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "name", file );
+      fileList.add( jsonObject );
+    }
+    response.put( "files", fileList );
+    return response;
+  }
+
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getFormatsAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    try {
+      String[] formats = getFormats();
+      JSONArray formatList = new JSONArray();
+      for ( String format : formats ) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put( "name", format );
+        formatList.add( jsonObject );
+      }
+      response.put( "formats", formatList );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
+
+  public String[] getFormats() {
+    // Prepare a list of possible formats, filtering reserved internal formats away
+    String[] formats = BuiltinFormats.getAll();
+
+    List<String> allFormats = Arrays.asList( formats );
+    List<String> nonReservedFormats = new ArrayList<String>( allFormats.size() );
+
+    for ( String format : allFormats ) {
+      if ( !format.startsWith( "reserved" ) ) {
+        nonReservedFormats.add( format );
+      }
+    }
+
+    Collections.sort( nonReservedFormats );
+    formats = nonReservedFormats.toArray( new String[ 0 ] );
+    return formats;
+  }
+
+  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
+    JSONObject jsonObject = new JSONObject();
+    JSONArray excelFileFields = new JSONArray();
+    ObjectMapper objectMapper = new ObjectMapper();
+    for ( ExcelWriterStepFieldDTO excelWriterStepField : getUpdatedExcelFields() ) {
+      excelFileFields.add( objectMapper.readTree( objectMapper.writeValueAsString( excelWriterStepField ) ) );
+    }
+    jsonObject.put( "updatedData", excelFileFields );
+    return jsonObject;
+  }
+
+  private List<ExcelWriterStepFieldDTO> getUpdatedExcelFields() {
+    ExcelWriterStepMeta excelWriterStepMeta = (ExcelWriterStepMeta) getStepMetaInterface();
+    List<ExcelWriterStepFieldDTO> excelFileFields = new ArrayList<>();
+    for ( ExcelWriterStepField item : excelWriterStepMeta.getOutputFields() ) {
+      ExcelWriterStepFieldDTO field = new ExcelWriterStepFieldDTO();
+      field.setFormat( formatType( item.getType() ) );
+      field.setType( item.getTypeDesc());
+      field.setCommentField( item.getCommentField() );
+      field.setCommentAuthorField( item.getCommentAuthorField() );
+      field.setStyleCell( item.getStyleCell() );
+      field.setTitleStyleCell( item.getTitleStyleCell() );
+      field.setFormula( item.isFormula() );
+      field.setName( item.getName() );
+      field.setTitle( item.getTitle() );
+      field.setHyperlinkField( item.getHyperlinkField() );
+      excelFileFields.add( field );
+    }
+    return excelFileFields;
+  }
+
+  public String formatType( int type ) {
+    switch ( type ) {
+      case ValueMetaInterface.TYPE_STRING:
+        return "";
+      case ValueMetaInterface.TYPE_INTEGER:
+        return "0";
+      case ValueMetaInterface.TYPE_NUMBER:
+        return "0.#####";
+      default:
+        break;
+    }
+    return null;
   }
 }

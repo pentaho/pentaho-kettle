@@ -13,29 +13,45 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.PartitionDatabaseMeta;
+import org.pentaho.di.core.database.SqlScriptStatement;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Writes rows to a database table.
@@ -598,6 +614,321 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
       super.dispose( smi, sdi );
     }
   }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = TableOutput.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getSQLAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    try {
+      SQLStatement sql = sql( queryParams.get( "stepName" ), queryParams.get( "connection" ) );
+      if ( Objects.nonNull( sql ) ) {
+        if ( !sql.hasError() ) {
+          if ( sql.hasSQL() ) {
+            response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+            response.put( "sqlString", sql.getSQL() );
+          } else {
+            response.put( "details", BaseMessages.getString( PKG, "TableOutput.NoSQL.DialogMessage" ) );
+          }
+        } else {
+          response.put( "details", sql.getError() );
+        }
+      } else {
+        response.put( "details", BaseMessages.getString( PKG, "TableOutput.NoSQL.EmptyCSVFields" ) );
+      }
+
+    } catch ( KettleStepException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+      response.put( "details", e.getMessage() );
+    }
+    return response;
+  }
+
+  public SQLStatement sql( String stepName, String connection ) throws KettleStepException {
+
+    TableOutputMeta info = (TableOutputMeta) getStepMetaInterface();
+    info.setDatabaseMeta( getTransMeta().findDatabase( connection ) );
+
+    RowMetaInterface prev = getTransMeta().getPrevStepFields( stepName );
+    if ( info.isTableNameInField() && !info.isTableNameInTable() && info.getTableNameField().length() > 0 ) {
+      int idx = prev.indexOfValue( info.getTableNameField() );
+      if ( idx >= 0 ) {
+        prev.removeValueMeta( idx );
+      }
+    }
+    StepMeta stepMeta = getTransMeta().findStep( stepName );
+
+    if ( info.specifyFields() ) {
+      // Only use the fields that were specified.
+      RowMetaInterface prevNew = new RowMeta();
+
+      for ( int i = 0; i < info.getFieldDatabase().length; i++ ) {
+        ValueMetaInterface insValue = prev.searchValueMeta( info.getFieldStream()[ i ] );
+        if ( insValue != null ) {
+          ValueMetaInterface insertValue = insValue.clone();
+          insertValue.setName( info.getFieldDatabase()[ i ] );
+          prevNew.addValueMeta( insertValue );
+        } else {
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "TableOutputDialog.FailedToFindField.Message", info.getFieldStream()[ i ] ) );
+        }
+      }
+      prev = prevNew;
+    }
+
+    boolean autoInc = false;
+    String pk = null;
+
+    // Add the auto-increment field too if any is present.
+    //
+    if ( info.isReturningGeneratedKeys() && !Utils.isEmpty( info.getGeneratedKeyField() ) ) {
+      ValueMetaInterface valueMeta = new ValueMetaInteger( info.getGeneratedKeyField() );
+      valueMeta.setLength( 15 );
+      prev.addValueMeta( 0, valueMeta );
+      autoInc = true;
+      pk = info.getGeneratedKeyField();
+    }
+
+    if ( isValidRowMeta( prev ) ) {
+      SQLStatement sql = info.getSQLStatements( getTransMeta(), stepMeta, prev, pk, autoInc, pk );
+      return sql;
+    } else {
+      return null;
+    }
+
+  }
+
+  private static boolean isValidRowMeta( RowMetaInterface rowMeta ) {
+    for ( ValueMetaInterface value : rowMeta.getValueMetaList() ) {
+      String name = value.getName();
+      if ( name == null || name.isEmpty() ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getSchemaAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    try {
+      String[] schemas = getSchemaNames( queryParams.get( "connection" ) );
+      JSONArray schemaNames = new JSONArray();
+      for ( String schema : schemas ) {
+        schemaNames.add( schema );
+      }
+      response.put( "schemaNames", schemaNames );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( KettleDatabaseException e ) {
+      log.logError( e.getMessage() );
+    }
+    return response;
+  }
+
+  public String[] getSchemaNames( String dbname ) throws KettleDatabaseException {
+    DatabaseMeta databaseMeta = getTransMeta().findDatabase( dbname );
+    if ( databaseMeta != null ) {
+      LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+        "Table Output Step", LoggingObjectType.STEP, null );
+      Database database = new Database( loggingObject, databaseMeta );
+      try {
+        database.connect();
+        return Const.sortStrings( database.getSchemas() );
+      } finally {
+        database.disconnect();
+      }
+    }
+    return new String[ 0 ];
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getExecAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    String connectionName = queryParams.get( "connection" );
+    String sqlScript = queryParams.get( "sqlScript" );
+    TableOutputSQLDTO outputSQLDTO = exec( connectionName, sqlScript );
+    if ( Objects.nonNull( outputSQLDTO.getBufferRowMeta() ) ) {
+      response = generateSQLResultsJSON( outputSQLDTO );
+    }
+    response.put( "isError", outputSQLDTO.isError() );
+    response.put( "message", outputSQLDTO.message );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  private TableOutputSQLDTO exec( String connectionName, String sqlScript ) {
+
+    DatabaseMeta ci = getTransMeta().findDatabase( connectionName );
+    TableOutputMeta info = (TableOutputMeta) getStepMetaInterface();
+    info.setDatabaseMeta( ci );
+    DatabaseMeta connection = ci;
+    if ( ci == null ) {
+      return null;
+    }
+    StringBuilder message = new StringBuilder();
+    TableOutputSQLDTO tableOutputSQLDTO = new TableOutputSQLDTO();
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Table Output Step", LoggingObjectType.STEP, null );
+    Database db = new Database( loggingObject, ci );
+    boolean first = true;
+    PartitionDatabaseMeta[] partitioningInformation = ci.getPartitioningInformation();
+    for ( int partitionNr = 0; first
+      || ( partitioningInformation != null && partitionNr < partitioningInformation.length ); partitionNr++ ) {
+      first = false;
+      String partitionId = null;
+      if ( partitioningInformation != null && partitioningInformation.length > 0 ) {
+        partitionId = partitioningInformation[ partitionNr ].getPartitionId();
+      }
+      try {
+        db.connect( partitionId );
+        List<SqlScriptStatement> statements = ci.getDatabaseInterface().getSqlScriptStatements( sqlScript + Const.CR );
+        int nrstats = 0;
+        for ( SqlScriptStatement sql : statements ) {
+          if ( sql.isQuery() ) {
+            // A Query
+            log.logDetailed( "launch SELECT statement: " + Const.CR + sql );
+            nrstats++;
+            tableOutputSQLDTO.setQuery( true );
+            try {
+              List<Object[]> rows = db.getRows( sql.getStatement(), 1000 );
+              RowMetaInterface rowMeta = db.getReturnRowMeta();
+              if ( rows.size() > 0 ) {
+                tableOutputSQLDTO.setBufferRowData( rows );
+                tableOutputSQLDTO.setBufferRowMeta( rowMeta );
+                return tableOutputSQLDTO;
+              }
+            } catch ( KettleDatabaseException dbe ) {
+              tableOutputSQLDTO.setMessage( "An error occured while executing the following sql : " + sql );
+            }
+          } else {
+            log.logDetailed( "launch DDL statement: " + Const.CR + sql );
+            // A DDL statement
+            nrstats++;
+            int startLogLine = KettleLogStore.getLastBufferLineNr();
+            try {
+              log.logDetailed( "Executing SQL: " + Const.CR + sql );
+              db.execStatement( sql.getStatement() );
+              // Clear the database cache, in case we're using one...
+              DBCache dbcache = getTransMeta().getDbCache();
+              if ( dbcache != null ) {
+                dbcache.clear( ci.getName() );
+              }
+            } catch ( Exception dbe ) {
+              tableOutputSQLDTO.setError( true );
+              tableOutputSQLDTO.setMessage( "Error while executing : " + sql );
+            } finally {
+              int endLogLine = KettleLogStore.getLastBufferLineNr();
+              sql.setLoggingText( KettleLogStore.getAppender().getLogBufferFromTo(
+                db.getLogChannelId(), true, startLogLine, endLogLine ).toString() );
+              sql.setComplete( true );
+            }
+          }
+        }
+      } catch ( KettleDatabaseException dbe ) {
+        tableOutputSQLDTO.setError( true );
+        tableOutputSQLDTO.setMessage(
+          "Unable to connect to the database\\!\\nPlease check the connection setting for " + connectionName );
+      } finally {
+        db.disconnect();
+      }
+    }
+    return tableOutputSQLDTO;
+  }
+
+
+  public JSONObject generateSQLResultsJSON( TableOutputSQLDTO metaData ) {
+    JSONArray columnInfoArray = new JSONArray();
+    for ( int i = 0; i < metaData.bufferRowMeta.size(); i++ ) {
+      String columnName = metaData.bufferRowMeta.getValueMeta( i ).getName();
+      columnInfoArray.add( columnName );
+    }
+    JSONArray rowsArray = new JSONArray();
+    for ( int i = 0; i < metaData.bufferRowData.size(); i++ ) {
+      Object[] row = metaData.bufferRowData.get( i );
+
+      JSONArray dataArray = new JSONArray();
+      int columnCount = Math.min( row.length, columnInfoArray.size() );
+      for ( int j = 0; j < columnCount; j++ ) {
+        Object data = row[ j ];
+        dataArray.add( data != null ? data.toString() : null );
+      }
+
+      JSONObject rowObject = new JSONObject();
+      rowObject.put( "data", dataArray );
+
+      rowsArray.add( rowObject );
+    }
+    JSONObject stepJSON = new JSONObject();
+    stepJSON.put( "columnInfo", columnInfoArray );
+    stepJSON.put( "rows", rowsArray );
+
+    return stepJSON;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getTableFieldAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    String connectionName = queryParams.get( "connection" );
+    String schema = queryParams.get( "schema" );
+    String table = queryParams.get( "table" );
+    String[] columns = getTableFields( connectionName, schema, table );
+    JSONArray columnsList = new JSONArray();
+    for ( String column : columns ) {
+      columnsList.add( column );
+    }
+    response.put( "columns", columnsList );
+    response.put( "actionStatus", StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  private String[] getTableFields( String connection, String schema, String table ) {
+    DatabaseMeta databaseMeta = getTransMeta().findDatabase( connection );
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Table Output Step", LoggingObjectType.STEP, null );
+    Database db = new Database( loggingObject, databaseMeta );
+    try {
+      db.connect();
+      RowMetaInterface r =
+        db.getTableFieldsMeta( schema, table );
+      if ( null != r ) {
+        String[] fieldNames = r.getFieldNames();
+        if ( null != fieldNames ) {
+          return fieldNames;
+        }
+      }
+    } catch ( Exception e ) {
+      // ignore any errors here. drop downs will not be
+      // filled, but no problem for the user
+    } finally {
+      try {
+        if ( db != null ) {
+          db.disconnect();
+        }
+      } catch ( Exception ignored ) {
+        // ignore any errors here. Nothing we can do if
+        // connection fails to close properly
+        db = null;
+      }
+    }
+    return null;
+  }
+
 
   /**
    * Allows subclasses of TableOuput to get hold of the step meta
