@@ -23,11 +23,6 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
-import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfiguration;
-import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
-import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.util.ArrayList;
@@ -52,15 +47,11 @@ public class RunConfigurationManagerTest {
 
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
     CheckedMetaStoreSupplier metastoreSupplier = () -> memoryMetaStore;
-    MetastoreLocator metastoreLocator = createMetastoreLocator( memoryMetaStore );
+
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreSupplier );
 
-    SparkRunConfigurationProvider sparkRunConfigurationProvider =
-    new SparkRunConfigurationProvider( metastoreLocator );
-
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
-    runConfigurationProviders.add( sparkRunConfigurationProvider );
     executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
     executionConfigurationManager.setDefaultRunConfigurationProvider( defaultRunConfigurationProvider );
 
@@ -70,18 +61,11 @@ public class RunConfigurationManagerTest {
     defaultRunConfiguration.setLocal( true );
 
     executionConfigurationManager.save( defaultRunConfiguration );
-    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
-    sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setDescription( "Spark Configuration Description" );
-    sparkRunConfiguration.setUrl( "127.0.0.1" );
-
-    executionConfigurationManager.save( sparkRunConfiguration );
   }
 
   @After
   public void tearDown() {
     executionConfigurationManager.delete( "Default Configuration" );
-    executionConfigurationManager.delete( "Spark Configuration" );
   }
 
 
@@ -89,7 +73,6 @@ public class RunConfigurationManagerTest {
   public void testGetTypes() {
     String[] types = executionConfigurationManager.getTypes();
     assertTrue( Arrays.asList( types ).contains( DefaultRunConfiguration.TYPE ) );
-    assertTrue( Arrays.asList( types ).contains( SparkRunConfiguration.TYPE ) );
   }
 
   @Test
@@ -141,11 +124,8 @@ public class RunConfigurationManagerTest {
     DefaultRunConfiguration defaultRunConfiguration =
       (DefaultRunConfiguration) executionConfigurationManager.getRunConfigurationByType( DefaultRunConfiguration.TYPE );
     assertNotNull( defaultRunConfiguration );
-    SparkRunConfiguration sparkRunConfiguration =
-            (SparkRunConfiguration) executionConfigurationManager.getRunConfigurationByType( SparkRunConfiguration.TYPE );
 
     assertNotNull( defaultRunConfiguration );
-    assertNotNull( sparkRunConfiguration );
   }
 
   @Test
@@ -158,17 +138,12 @@ public class RunConfigurationManagerTest {
   @Test
   public void testOrdering() {
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
-    MetastoreLocator metastoreLocator = createMetastoreLocator( memoryMetaStore );
     CheckedMetaStoreSupplier metastoreSupplier = () -> memoryMetaStore;
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreSupplier );
 
-    SparkRunConfigurationProvider sparkRunConfigurationProvider =
-            null;
-    sparkRunConfigurationProvider = new SparkRunConfigurationProvider( metastoreLocator );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
-    runConfigurationProviders.add( sparkRunConfigurationProvider );
 
     executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
     executionConfigurationManager.setDefaultRunConfigurationProvider( defaultRunConfigurationProvider );
@@ -176,10 +151,6 @@ public class RunConfigurationManagerTest {
     DefaultRunConfiguration defaultRunConfiguration1 = new DefaultRunConfiguration();
     defaultRunConfiguration1.setName( "z" );
     executionConfigurationManager.save( defaultRunConfiguration1 );
-
-    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
-    sparkRunConfiguration.setName( "d" );
-    executionConfigurationManager.save( sparkRunConfiguration );
 
     DefaultRunConfiguration defaultRunConfiguration2 = new DefaultRunConfiguration();
     defaultRunConfiguration2.setName( "f" );
@@ -197,45 +168,17 @@ public class RunConfigurationManagerTest {
 
     assertEquals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME, runConfigurations.get( 0 ).getName() );
     assertEquals( "a", runConfigurations.get( 1 ).getName() );
-    assertEquals( "d", runConfigurations.get( 2 ).getName() );
-    assertEquals( "f", runConfigurations.get( 3 ).getName() );
-    assertEquals( "x", runConfigurations.get( 4 ).getName() );
-    assertEquals( "z", runConfigurations.get( 5 ).getName() );
+    assertEquals( "f", runConfigurations.get( 2 ).getName() );
+    assertEquals( "x", runConfigurations.get( 3 ).getName() );
+    assertEquals( "z", runConfigurations.get( 4 ).getName() );
 
     List<String> names = executionConfigurationManager.getNames();
 
     assertEquals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME, names.get( 0 ) );
     assertEquals( "a", names.get( 1 ) );
-    assertEquals( "d", names.get( 2 ) );
-    assertEquals( "f", names.get( 3 ) );
-    assertEquals( "x", names.get( 4 ) );
-    assertEquals( "z", names.get( 5 ) );
-  }
-
-  private static MetastoreLocator createMetastoreLocator( IMetaStore memoryMetaStore ) {
-    return new MetastoreLocator() {
-
-      @Override
-      public IMetaStore getMetastore( String providerKey ) {
-        return memoryMetaStore;
-      }
-
-      @Override
-      public IMetaStore getMetastore() {
-        return memoryMetaStore;
-      }
-
-      @Override public String setEmbeddedMetastore( IMetaStore metastore ) {
-        return null;
-      }
-
-      @Override public void disposeMetastoreProvider( String providerKey ) {
-      }
-
-      @Override public IMetaStore getExplicitMetastore(String providerKey ) {
-        return null;
-      }
-    };
+    assertEquals( "f", names.get( 2 ) );
+    assertEquals( "x", names.get( 3 ) );
+    assertEquals( "z", names.get( 4 ) );
   }
 
 }
