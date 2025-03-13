@@ -1126,7 +1126,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           //
           //trans = new Trans( transMeta, this );
           final TransMeta meta = transMeta;
-          trans = new TransSupplier( transMeta, log, () -> new Trans( meta, this ) ).get();
+
+          trans = transMeta.getTransSupplier().get( transMeta, log, () -> new Trans( meta, this ) );
+
 
           // Pass the socket repository as early as possible...
           //
