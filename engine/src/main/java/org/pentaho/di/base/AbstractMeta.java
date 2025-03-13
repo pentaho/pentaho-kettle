@@ -70,6 +70,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
+import org.pentaho.di.trans.TransSupplier;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElement;
@@ -129,6 +130,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected RepositoryDirectoryInterface directory;
 
   protected Bowl bowl = DefaultBowl.getInstance();
+
+  protected TransSupplier transSupplier;
 
   /**
    * The repository to reference in the one-off case that it is needed
@@ -401,6 +404,14 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   public void setBowl( Bowl bowl ) {
     this.bowl = bowl;
+  }
+
+  public TransSupplier getTransSupplier() {
+    return transSupplier;
+  }
+
+  public void setTransSupplier( TransSupplier transSupplier ) {
+    this.transSupplier = transSupplier;
   }
 
   /**
