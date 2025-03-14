@@ -552,6 +552,15 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     }
   }
 
+  private void patchPartitionSchemas( TransMeta transMeta ) throws KettleException {
+    List<PartitionSchema> partitionSchemas = transMeta.getPartitionSchemas();
+    for ( StepMeta step : transMeta.getSteps() ) {
+      if ( step.getStepPartitioningMeta() != null ) {
+        step.getStepPartitioningMeta().setPartitionSchemaAfterLoading( partitionSchemas );
+      }
+    }
+  }
+
   private void patchRepositoryDirectories( boolean[] referenceEnabled, HasRepositoryDirectories metaWithReferences ) {
     String[] repDirectories = metaWithReferences.getDirectories();
     if ( referenceEnabled != null && repDirectories != null ) {
@@ -668,6 +677,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
       transMeta.setRepositoryDirectory( targetDirectory );
       patchTransSteps( transMeta );
       patchDatabaseConnections( transMeta );
+      patchPartitionSchemas( transMeta );
 
       try {
         // Keep info on who & when this transformation was created...
