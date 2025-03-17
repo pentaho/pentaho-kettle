@@ -14,7 +14,6 @@
 package org.pentaho.di.job.entries.trans;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.base.IMetaFileLoader;
@@ -78,8 +77,6 @@ import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1736,27 +1733,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, JobEntryInterface jobEntryInterface, JobMeta jobMeta,
-                              Job job, Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = JobEntryTrans.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setRepository( job.getRep() );
-      response = (JSONObject) actionMethod.invoke( this, queryParams );
-      response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
-      log.logError( ex.getMessage() );
-      if ( ex.getCause() instanceof KettleException ) {
-        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_RESPONSE );
-      } else {
-        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_METHOD_NOT_RESPONSE );
-      }
-      response.put( JobEntryInterface.ERROR_DETAILS, ExceptionUtils.getRootCauseMessage( ex ) );
-    }
-    return response;
-  }
-
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     TransMeta inputTransMeta = this.getTransMeta( this.rep, this.metaStore, this.parentJobMeta );

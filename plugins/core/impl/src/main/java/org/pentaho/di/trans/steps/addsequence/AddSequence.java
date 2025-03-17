@@ -13,6 +13,9 @@
 
 package org.pentaho.di.trans.steps.addsequence;
 
+import java.util.Arrays;
+import java.util.Map;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
@@ -36,10 +39,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Map;
 
 /**
  * Adds a sequential number to a stream of rows.
@@ -263,40 +262,23 @@ public class AddSequence extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = AddSequence.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject getSequenceAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+
     DatabaseMeta databaseMeta = getTransMeta().findDatabase( queryParams.get( "connection" ) );
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Add Sequence Step", LoggingObjectType.STEP, null );
+
     if ( databaseMeta != null ) {
-      LoggingObjectInterface loggingObject = new SimpleLoggingObject(
-        "Add Sequence Step", LoggingObjectType.STEP, null );
-      Database database = new Database( loggingObject, databaseMeta );
-      try {
+      try ( Database database = new Database( loggingObject, databaseMeta ) ) {
         database.connect();
         String[] sequences = database.getSequences();
         if ( null != sequences && sequences.length > 0 ) {
           sequences = Const.sortStrings( sequences );
           JSONArray sequenceNames = new JSONArray();
-          for ( String schema : sequences ) {
-            sequenceNames.add( schema );
-          }
+          sequenceNames.addAll( Arrays.asList( sequences ) );
           response.put( "sequences", sequenceNames );
           response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
         }

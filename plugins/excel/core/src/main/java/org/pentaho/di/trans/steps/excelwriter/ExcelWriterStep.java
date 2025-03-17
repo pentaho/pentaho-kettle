@@ -17,8 +17,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,13 +60,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -985,22 +983,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     }
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = ExcelWriterStep.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject getFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     ExcelWriterStepMeta excelWriterStepMeta = (ExcelWriterStepMeta) getStepMetaInterface();
@@ -1053,6 +1036,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     return formats;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();
     JSONArray excelFileFields = new JSONArray();
@@ -1070,7 +1054,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     for ( ExcelWriterStepField item : excelWriterStepMeta.getOutputFields() ) {
       ExcelWriterStepFieldDTO field = new ExcelWriterStepFieldDTO();
       field.setFormat( formatType( item.getType() ) );
-      field.setType( item.getTypeDesc());
+      field.setType( item.getTypeDesc() );
       field.setCommentField( item.getCommentField() );
       field.setCommentAuthorField( item.getCommentAuthorField() );
       field.setStyleCell( item.getStyleCell() );

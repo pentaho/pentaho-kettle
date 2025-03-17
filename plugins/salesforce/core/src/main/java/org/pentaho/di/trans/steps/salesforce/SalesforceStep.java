@@ -13,6 +13,10 @@
 
 package org.pentaho.di.trans.steps.salesforce;
 
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.TimeZone;
+
 import com.google.common.primitives.Ints;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -29,12 +33,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Calendar;
-import java.util.Map;
-import java.util.TimeZone;
 
 
 public abstract class SalesforceStep extends BaseStep implements StepInterface {
@@ -138,22 +136,6 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
     return value;
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = SalesforceStep.class.getDeclaredMethod( fieldName + "Action" );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject testButtonAction() {
     JSONObject response = new JSONObject();
@@ -192,16 +174,13 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
     return successConnection;
   }
 
-
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject modulesAction() {
     JSONObject response = new JSONObject();
     try {
       String[] modules = getModules();
       JSONArray modulesList = new JSONArray();
-      for(String module:modules){
-        modulesList.add( module );
-      }
+      Collections.addAll( modulesList, modules );
       response.put( "modules", modulesList );
     } catch ( Exception e ) {
       log.logError( e.getMessage() );
@@ -210,7 +189,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
     return response;
   }
 
-  public String[] getModules() throws Exception {
+  public String[] getModules() throws KettleException {
 
     SalesforceConnection connection = null;
     try {
@@ -227,7 +206,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
       return connection.getAllAvailableObjects( false );
 
     } catch ( Exception e ) {
-      throw new Exception( e );
+      throw new KettleException( e );
     } finally {
       if ( connection != null ) {
         try {
@@ -237,4 +216,5 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
       }
     }
   }
+
 }

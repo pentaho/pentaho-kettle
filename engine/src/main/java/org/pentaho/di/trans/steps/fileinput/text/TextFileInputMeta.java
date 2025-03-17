@@ -13,14 +13,18 @@
 
 package org.pentaho.di.trans.steps.fileinput.text;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -40,7 +44,6 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.AliasedFileObject;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -61,10 +64,6 @@ import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
 import org.pentaho.di.trans.steps.file.BaseFileInputMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 @SuppressWarnings( "deprecation" )
 @InjectionSupported( localizationPrefix = "TextFileInput.Injection.", groups = { "FILENAME_LINES", "FIELDS", "FILTERS" } )
@@ -527,12 +526,17 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
     content.rowLimit = 0L;
   }
 
+  /**
+   * Sets the input fields for the text file input step.
+   *
+   * @param fieldNames an array of field names to be set as input fields
+   */
   public void setFields( String[] fieldNames ) {
     inputFields = new BaseFileField[ fieldNames.length ];
     for ( int i = 0; i < fieldNames.length; i++ ) {
       BaseFileField field = new BaseFileField();
       field.setName( fieldNames[ i ] );
-      inputFields[i] = field;
+      inputFields[ i ] = field;
     }
   }
 

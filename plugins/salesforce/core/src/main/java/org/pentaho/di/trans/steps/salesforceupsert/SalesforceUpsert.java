@@ -13,22 +13,25 @@
 
 package org.pentaho.di.trans.steps.salesforceupsert;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.bind.XmlObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -39,14 +42,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
-import org.pentaho.di.trans.steps.salesforceupdate.SalesforceUpdate;
 import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.sforce.soap.partner.sobject.SObject;
-import com.sforce.ws.bind.XmlObject;
-
-import javax.xml.namespace.QName;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
@@ -442,24 +438,6 @@ public class SalesforceUpsert extends SalesforceStep {
     return value;
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = SalesforceUpsert.class.getDeclaredMethod( fieldName + "Action" );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException e ) {
-      return super.doAction( fieldName, stepMetaInterface, transMeta, trans, queryParamToValues );
-    } catch ( InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject getModuleFieldsAction() {
     JSONObject response = new JSONObject();
@@ -467,9 +445,7 @@ public class SalesforceUpsert extends SalesforceStep {
     try {
       String[] moduleFields = getModuleFields();
       JSONArray moduleFieldsList = new JSONArray();
-      for ( String module : moduleFields ) {
-        moduleFieldsList.add( module );
-      }
+      moduleFieldsList.addAll( Arrays.asList( moduleFields ) );
       response.put( "moduleFields", moduleFieldsList );
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
     } catch ( Exception e ) {
@@ -479,8 +455,7 @@ public class SalesforceUpsert extends SalesforceStep {
     return response;
   }
 
-  public String[] getModuleFields() throws Exception {
-
+  public String[] getModuleFields() throws KettleException {
     SalesforceConnection connection = null;
     try {
       SalesforceStepMeta salesforceStepMeta = (SalesforceStepMeta) getStepMetaInterface();
@@ -494,16 +469,17 @@ public class SalesforceUpsert extends SalesforceStep {
       connection.connect();
 
       return connection.getFields( salesforceStepMeta.getModule(), true );
-
     } catch ( Exception e ) {
-      throw new Exception( e );
+      throw new KettleException( e );
     } finally {
       if ( connection != null ) {
         try {
           connection.close();
         } catch ( Exception e ) { /* Ignore */
+          logError( e.getMessage() );
         }
       }
     }
   }
+
 }

@@ -16,15 +16,18 @@ package org.pentaho.di.trans.steps.formula;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -34,13 +37,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.reporting.libraries.formula.LibFormulaErrorValue;
 import org.pentaho.reporting.libraries.formula.parser.FormulaParser;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Map;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.pentaho.libformula.editor.FormulaEvaluator;
-import org.pentaho.libformula.editor.FormulaMessage;
 
 /**
  * Calculate new field values using pre-defined functions.
@@ -298,20 +294,7 @@ public class Formula extends BaseStep implements StepInterface {
     return false;
   }
 
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = this.getClass().getDeclaredMethod( fieldName + "Action", Map.class );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      System.err.println( "Error in doAction: " + e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
-  @SuppressWarnings( "unchecked" )
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject evaluateFormulaAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     try {
@@ -386,7 +369,7 @@ public class Formula extends BaseStep implements StepInterface {
     return response;
   }
 
-  @SuppressWarnings( "unchecked" )
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject formulaTreeDataAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     try {

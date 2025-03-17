@@ -15,14 +15,11 @@ package org.pentaho.di.trans.steps.salesforceinput;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -34,14 +31,14 @@ import mondrian.util.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -66,11 +63,20 @@ public class SalesforceInput extends SalesforceStep {
   private SalesforceInputMeta meta;
   private SalesforceInputData data;
 
-  private String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'.000'XXX";
-  private String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+  private static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'.000'XXX";
+  private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+  private static final String VALUE_NULL = "null";
+  private static final String VALUE_STRING = "string";
+  private static final String VALUE_DATETIME = "datetime";
+  private static final String VALUE_DATE = "date";
+  private static final String VALUE_INT = "int";
+  private static final String VALUE_DOUBLE = "double";
+  private static final String VALUE_BOOLEAN = "boolean";
+  private static final String VALUE_TRUE = "true";
+  private static final String VALUE_FALSE = "false";
 
   public SalesforceInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-                          Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -209,10 +215,10 @@ public class SalesforceInput extends SalesforceStep {
       }
       for ( int i = 0; i < data.nrfields; i++ ) {
         String value =
-          data.connection.getRecordValue( srvalue.getRecordValue(), meta.getInputFields()[ i ].getField() );
+          data.connection.getRecordValue( srvalue.getRecordValue(), meta.getInputFields()[i].getField() );
 
         // DO Trimming!
-        switch ( meta.getInputFields()[ i ].getTrimType() ) {
+        switch ( meta.getInputFields()[i].getTrimType() ) {
           case SalesforceInputField.TYPE_TRIM_LEFT:
             value = Const.ltrim( value );
             break;
@@ -229,9 +235,9 @@ public class SalesforceInput extends SalesforceStep {
         doConversions( outputRowData, i, value );
 
         // Do we need to repeat this field if it is null?
-        if ( meta.getInputFields()[ i ].isRepeated() ) {
+        if ( meta.getInputFields()[i].isRepeated() ) {
           if ( data.previousRow != null && Utils.isEmpty( value ) ) {
-            outputRowData[ i ] = data.previousRow[ i ];
+            outputRowData[i] = data.previousRow[i];
           }
         }
 
@@ -241,31 +247,31 @@ public class SalesforceInput extends SalesforceStep {
 
       // See if we need to add the url to the row...
       if ( meta.includeTargetURL() && !Utils.isEmpty( meta.getTargetURLField() ) ) {
-        outputRowData[ rowIndex++ ] = data.connection.getURL();
+        outputRowData[rowIndex++] = data.connection.getURL();
       }
 
       // See if we need to add the module to the row...
       if ( meta.includeModule() && !Utils.isEmpty( meta.getModuleField() ) ) {
-        outputRowData[ rowIndex++ ] = data.connection.getModule();
+        outputRowData[rowIndex++] = data.connection.getModule();
       }
 
       // See if we need to add the generated SQL to the row...
       if ( meta.includeSQL() && !Utils.isEmpty( meta.getSQLField() ) ) {
-        outputRowData[ rowIndex++ ] = data.connection.getSQL();
+        outputRowData[rowIndex++] = data.connection.getSQL();
       }
 
       // See if we need to add the server timestamp to the row...
       if ( meta.includeTimestamp() && !Utils.isEmpty( meta.getTimestampField() ) ) {
-        outputRowData[ rowIndex++ ] = data.connection.getServerTimestamp();
+        outputRowData[rowIndex++] = data.connection.getServerTimestamp();
       }
 
       // See if we need to add the row number to the row...
       if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
-        outputRowData[ rowIndex++ ] = new Long( data.rownr );
+        outputRowData[rowIndex++] = new Long( data.rownr );
       }
 
       if ( meta.includeDeletionDate() && !Utils.isEmpty( meta.getDeletionDateField() ) ) {
-        outputRowData[ rowIndex++ ] = srvalue.getDeletionDate();
+        outputRowData[rowIndex++] = srvalue.getDeletionDate();
       }
 
       RowMetaInterface irow = getInputRowMeta();
@@ -285,7 +291,7 @@ public class SalesforceInput extends SalesforceStep {
     ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta( i );
 
     if ( ValueMetaInterface.TYPE_BINARY != targetValueMeta.getType() ) {
-      outputRowData[ i ] = targetValueMeta.convertData( sourceValueMeta, value );
+      outputRowData[i] = targetValueMeta.convertData( sourceValueMeta, value );
     } else {
       // binary type of salesforce requires specific conversion
       if ( value != null ) {
@@ -306,7 +312,7 @@ public class SalesforceInput extends SalesforceStep {
     switch ( meta.getRecordsFilter() ) {
       case SalesforceConnectionUtils.RECORDS_FILTER_UPDATED:
         for ( int i = 0; i < data.nrfields; i++ ) {
-          SalesforceInputField field = fields[ i ];
+          SalesforceInputField field = fields[i];
           sql += environmentSubstitute( field.getField() );
           if ( i < data.nrfields - 1 ) {
             sql += ",";
@@ -316,7 +322,7 @@ public class SalesforceInput extends SalesforceStep {
       case SalesforceConnectionUtils.RECORDS_FILTER_DELETED:
         sql += "SELECT ";
         for ( int i = 0; i < data.nrfields; i++ ) {
-          SalesforceInputField field = fields[ i ];
+          SalesforceInputField field = fields[i];
           sql += environmentSubstitute( field.getField() );
           if ( i < data.nrfields - 1 ) {
             sql += ",";
@@ -327,7 +333,7 @@ public class SalesforceInput extends SalesforceStep {
       default:
         sql += "SELECT ";
         for ( int i = 0; i < data.nrfields; i++ ) {
-          SalesforceInputField field = fields[ i ];
+          SalesforceInputField field = fields[i];
           sql += environmentSubstitute( field.getField() );
           if ( i < data.nrfields - 1 ) {
             sql += ",";
@@ -461,24 +467,6 @@ public class SalesforceInput extends SalesforceStep {
     super.dispose( smi, sdi );
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = SalesforceInput.class.getDeclaredMethod( fieldName + "Action" );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException e ) {
-      return super.doAction( fieldName, stepMetaInterface, transMeta, trans, queryParamToValues );
-    } catch ( InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject getFieldsAction() {
     JSONObject response = new JSONObject();
@@ -507,7 +495,7 @@ public class SalesforceInput extends SalesforceStep {
   public FieldsResponse getFields() throws Exception {
     SalesforceConnection connection = null;
     try {
-      SalesforceInputMeta meta = (SalesforceInputMeta) getStepMetaInterface();
+      meta = (SalesforceInputMeta) getStepMetaInterface();
       String realURL = getTransMeta().environmentSubstitute( meta.getTargetURL() );
       String realUsername = getTransMeta().environmentSubstitute( meta.getUsername() );
       String realPassword = Utils.resolvePassword( getTransMeta(), meta.getPassword() );
@@ -537,18 +525,17 @@ public class SalesforceInput extends SalesforceStep {
           fieldsResponse.fieldDTOList.add( addField( field ) );
         }
       }
-      return fieldsResponse;
 
+      return fieldsResponse;
     } finally {
       if ( connection != null ) {
         try {
           connection.close();
-        } catch ( Exception e ) {
-          // Ignore errors
+        } catch ( Exception e ) { // Ignore errors
+          logError( e.getMessage() );
         }
       }
     }
-
   }
 
   private boolean isNullIdField( XmlObject field ) {
@@ -563,23 +550,23 @@ public class SalesforceInput extends SalesforceStep {
       return null;
     }
     List<FieldDTO> fieldDTOList = new ArrayList<>();
-    String fieldname = prefix + field.getName().getLocalPart();
+    String fieldName = ( prefix == null ? "" : prefix ) + field.getName().getLocalPart();
     if ( field instanceof SObject ) {
       SObject sobject = (SObject) field;
       for ( XmlObject element : SalesforceConnection.getChildren( sobject ) ) {
-        List<FieldDTO> fields = addFields( fieldname + ".", fieldNames, element );
+        List<FieldDTO> fields = addFields( fieldName + ".", fieldNames, element );
         if ( CollectionUtils.isNotEmpty( fields ) ) {
           fieldDTOList.addAll( fields );
         }
       }
     } else {
-      FieldDTO fieldDTO = addField( fieldname, fieldNames, (String) field.getValue() );
+      FieldDTO fieldDTO = addField( fieldName, fieldNames, (String) field.getValue() );
       if ( Objects.nonNull( fieldDTO ) ) {
         fieldDTOList.add( fieldDTO );
       }
     }
-    return fieldDTOList;
 
+    return fieldDTOList;
   }
 
 
@@ -588,7 +575,8 @@ public class SalesforceInput extends SalesforceStep {
 
     String fieldLength = null;
     String fieldPrecision = null;
-    if ( !fieldType.equals( "boolean" ) && !fieldType.equals( "datetime" ) && !fieldType.equals( "date" ) ) {
+    if ( !fieldType.equals( VALUE_BOOLEAN ) && !fieldType.equals( VALUE_DATETIME ) && !fieldType.equals(
+      VALUE_DATE ) ) {
       fieldLength = Integer.toString( field.getLength() );
       fieldPrecision = Integer.toString( field.getPrecision() );
     }
@@ -600,9 +588,8 @@ public class SalesforceInput extends SalesforceStep {
     fieldDTO.setLength( fieldLength );
     fieldDTO.setName( field.getLabel() );
     fieldDTO.setPrecision( fieldPrecision );
+
     return fieldDTO;
-
-
   }
 
   private FieldDTO addField( String fieldName, Set<String> fieldNames, String firstValue ) {
@@ -617,22 +604,22 @@ public class SalesforceInput extends SalesforceStep {
     final String fieldType;
     String fieldLength = null;
     String fieldPrecision = null;
-    if ( Const.NVL( firstValue, "null" ).equals( "null" ) ) {
-      fieldType = "string";
+    if ( Const.NVL( firstValue, VALUE_NULL ).equals( VALUE_NULL ) ) {
+      fieldType = VALUE_STRING;
     } else {
       if ( StringUtil.IsDate( firstValue, DEFAULT_DATE_TIME_FORMAT ) ) {
-        fieldType = "datetime";
+        fieldType = VALUE_DATETIME;
       } else if ( StringUtil.IsDate( firstValue, DEFAULT_DATE_FORMAT ) ) {
-        fieldType = "date";
+        fieldType = VALUE_DATE;
       } else if ( StringUtil.IsInteger( firstValue ) ) {
-        fieldType = "int";
+        fieldType = VALUE_INT;
         fieldLength = Integer.toString( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       } else if ( StringUtil.IsNumber( firstValue ) ) {
-        fieldType = "double";
-      } else if ( firstValue.equals( "true" ) || firstValue.equals( "false" ) ) {
-        fieldType = "boolean";
+        fieldType = VALUE_DOUBLE;
+      } else if ( firstValue.equals( VALUE_TRUE ) || firstValue.equals( VALUE_FALSE ) ) {
+        fieldType = VALUE_BOOLEAN;
       } else {
-        fieldType = "string";
+        fieldType = VALUE_STRING;
       }
     }
     fieldDTO.setType( fieldType );
@@ -641,8 +628,8 @@ public class SalesforceInput extends SalesforceStep {
     fieldDTO.setLength( fieldLength );
     fieldDTO.setName( fieldName );
     fieldDTO.setPrecision( fieldPrecision );
-    return fieldDTO;
 
+    return fieldDTO;
   }
 
 }

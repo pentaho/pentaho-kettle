@@ -422,4 +422,14 @@ public class ScriptValuesModDummy implements StepInterface {
     // TODO Auto-generated method stub
 
   }
+
+  @Override
+  public StepMetaInterface getStepMetaInterface() {
+    return null;
+  }
+
+  @Override
+  public void setStepMetaInterface( StepMetaInterface stepMetaInterface ) {
+    // TODO Auto-generated method stub
+  }
 }

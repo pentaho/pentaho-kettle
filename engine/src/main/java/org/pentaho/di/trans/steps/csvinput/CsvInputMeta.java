@@ -21,11 +21,10 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -33,6 +32,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -330,12 +330,17 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     }
   }
 
+  /**
+   * Sets the input fields for the CSV input step.
+   *
+   * @param fieldNames an array of field names to be set as input fields
+   */
   public void setFields( String[] fieldNames ) {
     inputFields = new TextFileInputField[ fieldNames.length ];
     for ( int i = 0; i < fieldNames.length; i++ ) {
       TextFileInputField field = new TextFileInputField();
       field.setName( fieldNames[ i ] );
-      inputFields[i] = field;
+      inputFields[ i ] = field;
     }
   }
 
