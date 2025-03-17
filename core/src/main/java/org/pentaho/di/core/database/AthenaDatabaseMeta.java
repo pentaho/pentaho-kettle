@@ -15,6 +15,7 @@ package org.pentaho.di.core.database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -243,5 +244,19 @@ public class AthenaDatabaseMeta extends BaseDatabaseMeta {
   @Override
   public String getEndQuote(){
     return "`";
+  }
+
+  @Override
+  public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    AuthType authType = AuthType.parse( attributes.get( Attributes.AUTH_TYPE ) );
+    this.setAuthType( authType );
+    if ( authType == AuthType.ProfileCredentials ) {
+      this.setProfileName( attributes.get( Attributes.PROFILE_NAME ) );
+    }
+
+    this.setWorkGroup( attributes.get( Attributes.WORKGROUP ) );
+    this.setRegion( attributes.get( Attributes.REGION ) );
+    this.setCatalog( attributes.get( Attributes.CATALOG ) );
+    this.setOutputLocation( attributes.get( Attributes.OUTPUT_LOCATION ) );
   }
 }
