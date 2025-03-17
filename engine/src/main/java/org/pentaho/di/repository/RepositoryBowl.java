@@ -26,6 +26,7 @@ import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.bowl.BaseBowl;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.shared.RepositorySharedObjectsIO;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
@@ -34,6 +35,8 @@ import org.pentaho.metastore.api.IMetaStore;
 import java.util.Objects;
 
 public class RepositoryBowl extends BaseBowl {
+
+  private static Class<?> PKG = RepositoryBowl.class;
 
   private final Repository repository;
   private final RepositorySharedObjectsIO sharedObjectsIO;
@@ -61,4 +64,8 @@ public class RepositoryBowl extends BaseBowl {
     return space;
   }
 
+  @Override
+  public String getLevelDisplayName() {
+    return BaseMessages.getString(PKG, "Repository.Level.Name");
+  }
 }

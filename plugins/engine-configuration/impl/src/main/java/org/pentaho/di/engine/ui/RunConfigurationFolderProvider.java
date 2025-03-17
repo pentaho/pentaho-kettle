@@ -50,7 +50,7 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
     Set<String> bowlNames = new HashSet<>();
     Bowl currentBowl = Spoon.getInstance().getBowl();
     Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
-
+    String levelName;
     if ( !currentBowl.equals( globalBowl ) ) {
       RunConfigurationDelegate bowlDelegate =
         RunConfigurationDelegate.getInstance( () -> currentBowl.getMetastore() );
@@ -64,7 +64,7 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
         bowlNames.add( runConfiguration.getName() );
         String imageFile = runConfiguration.isReadOnly() ? "images/run_tree_disabled.svg" : "images/run_tree.svg";
         TreeNode childTreeNode = createChildTreeNode( treeNode, runConfiguration.getName(), getRunConfigurationImage(
-                guiResource, imageFile ), LeveledTreeNode.LEVEL.PROJECT, false );
+                guiResource, imageFile ), LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         if ( runConfiguration.isReadOnly() ) {
           childTreeNode.setForeground( getDisabledColor() );
         }
@@ -79,12 +79,16 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
         continue;
       }
       LeveledTreeNode.LEVEL level = LeveledTreeNode.LEVEL.GLOBAL;
+      levelName = globalBowl.getLevelDisplayName();
+
       if ( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME.equals( runConfiguration.getName() ) ) {
         level = LeveledTreeNode.LEVEL.DEFAULT;
+        levelName = LeveledTreeNode.LEVEL_DEFAULT_DISPLAY_NAME;
       }
+
       String imageFile = runConfiguration.isReadOnly() ? "images/run_tree_disabled.svg" : "images/run_tree.svg";
       TreeNode childTreeNode = createChildTreeNode( treeNode, runConfiguration.getName(), getRunConfigurationImage(
-              guiResource, imageFile ), level, containsIgnoreCase( bowlNames, runConfiguration.getName() ) );
+              guiResource, imageFile ), level, levelName, containsIgnoreCase( bowlNames, runConfiguration.getName() ) );
       if ( runConfiguration.isReadOnly() ) {
         childTreeNode.setForeground( getDisabledColor() );
       }
@@ -111,9 +115,9 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
     return RunConfiguration.class;
   }
 
-  public TreeNode createChildTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level,
+  public TreeNode createChildTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
                                        boolean overridden ) {
-    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, overridden );
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, levelDisplayName, overridden );
     childTreeNode.setImage( image );
 
     parent.addChild( childTreeNode );

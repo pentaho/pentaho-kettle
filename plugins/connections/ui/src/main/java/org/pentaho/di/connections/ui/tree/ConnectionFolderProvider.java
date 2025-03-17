@@ -60,7 +60,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
           }
           bowlNames.add( name );
           createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree(),
-                          LeveledTreeNode.LEVEL.PROJECT, false );
+                          LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         }
       }
 
@@ -70,7 +70,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
           continue;
         }
         createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree(), LeveledTreeNode.LEVEL.GLOBAL,
-                        containsIgnoreCase( bowlNames, name ) );
+                globalBowl.getLevelDisplayName(), containsIgnoreCase( bowlNames, name ) );
       }
     } catch ( KettleException e ) {
       new ErrorDialog( Spoon.getInstance().getShell(),
@@ -102,9 +102,9 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
 
   }
 
-  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level,
+  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
                                   boolean overridden ) {
-    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, overridden );
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, levelDisplayName, overridden );
     childTreeNode.setImage( image );
 
     parent.addChild( childTreeNode );

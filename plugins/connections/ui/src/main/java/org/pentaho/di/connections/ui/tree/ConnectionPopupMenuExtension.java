@@ -116,14 +116,16 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
     // customize menu for specific item
     if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
       MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
-      moveMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.MoveToGlobal" ) );
+      moveMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.MoveToGlobal",
+              spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
       moveMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
           vfsConnectionDelegate.moveToGlobal( vfsConnectionTreeItem.getName() );
         }
       } );
       MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
-      copyMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.CopyToGlobal" ) );
+      copyMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.CopyToGlobal",
+              spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
       copyMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
           vfsConnectionDelegate.copyToGlobal( vfsConnectionTreeItem.getName() );
@@ -150,7 +152,8 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
 
     MenuItem duplicateMenuItem = new MenuItem( itemMenu, SWT.NONE );
     if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-      duplicateMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.DuplicateGlobal" ) );
+      duplicateMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.DuplicateGlobal",
+              spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
     } else {
       duplicateMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.DuplicateProject" ) );
     }

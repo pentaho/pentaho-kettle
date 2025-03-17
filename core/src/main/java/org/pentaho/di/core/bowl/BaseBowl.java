@@ -61,5 +61,10 @@ public abstract class BaseBowl implements Bowl {
   public synchronized void clearManagers() {
     managerInstances.clear();
   }
+
+  @Override
+  public String getLevelDisplayName() {
+    return "";
+  }
 }
 

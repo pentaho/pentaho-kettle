@@ -191,7 +191,6 @@ import org.pentaho.di.pkg.JarfileGenerator;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -205,7 +204,6 @@ import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.shared.DatabaseManagementInterface;
-import org.pentaho.di.shared.RepositorySharedObjectsIO;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsManagementInterface;
 import org.pentaho.di.shared.SharedObjectUtil;
@@ -343,7 +341,6 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -3162,7 +3159,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return managementBowl.getManager( clazz );
     } else if ( level == LeveledTreeNode.LEVEL.GLOBAL ) {
       return globalManagementBowl.getManager( clazz );
-    } else if ( level == LeveledTreeNode.LEVEL.LOCAL ) {
+    } else if ( level == LeveledTreeNode.LEVEL.FILE ) {
       AbstractMeta meta = getActiveAbstractMeta();
       return meta != null ? meta.getSharedObjectManager( clazz ) : null;
     } else {
@@ -3301,12 +3298,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           moveGlobalItem.setVisible( false );
         }
       }
-      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.FILE ) {
         if ( getBowl() == getGlobalManagementBowl() ) {
           moveGlobalItem.setVisible( true );
+          moveGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.MoveTo",
+                  globalManagementBowl.getLevelDisplayName() ) );
           moveProjectItem.setVisible( false );
         } else {
           moveGlobalItem.setVisible( true );
+          moveGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.MoveTo",
+                  globalManagementBowl.getLevelDisplayName() ) );
           moveProjectItem.setVisible( true );
         }
 
@@ -3330,13 +3331,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           copyProjectItem.setVisible( false );
         }
       }
-      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.FILE ) {
         if ( getBowl() == getGlobalManagementBowl() ) {
           copyGlobalItem.setVisible( true );
+          copyGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CopyTo",
+                  globalManagementBowl.getLevelDisplayName() ));
           copyProjectItem.setVisible( false );
         } else {
-          // If the connection is global, no need to show the menuitem
           copyGlobalItem.setVisible( true );
+          copyGlobalItem.setLabel( BaseMessages.getString( PKG,"Spoon.Menu.Popup.CopyTo",
+                                                          globalManagementBowl.getLevelDisplayName() ));
           copyProjectItem.setVisible( true );
         }
       }
@@ -3351,9 +3355,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
         dupItem.setVisible( true );
-        dupItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.DuplicateInGlobal" ) );
+        String label = getGlobalManagementBowl().getLevelDisplayName();
+        dupItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.DuplicateIn" , label ) );
       }
-      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
+
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.FILE ) {
        // If the connection is local, no need to show the menuitem
         dupItem.setVisible( false );
       }
