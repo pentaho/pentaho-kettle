@@ -35,10 +35,11 @@ import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * The interface that any transformation step or plugin needs to implement.
- * <p>
+ *
  * Created on 12-AUG-2004
  *
  * @author Matt
+ *
  */
 
 public interface StepInterface extends VariableSpace, HasLogChannelInterface {
@@ -507,6 +508,16 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
     getOutputRowSets().add( rowSet );
   }
 
+  /**
+   * Dynamically invokes a method in the Step class based on the `fieldName` parameter using java reflection
+   *
+   * @param fieldName         the name of the field to be used to determine the method to invoke
+   * @param stepMetaInterface the step metadata interface
+   * @param transMeta         the transformation metadata
+   * @param trans             the transformation
+   * @param queryParams       the query parameters to be passed to the invoked method
+   * @return a `JSONObject` containing the response of the invoked method and the action status
+   */
   default JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
                                Trans trans, Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();

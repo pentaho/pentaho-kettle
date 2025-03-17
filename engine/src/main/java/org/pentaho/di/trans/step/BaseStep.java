@@ -16,6 +16,8 @@ package org.pentaho.di.trans.step;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -35,11 +37,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ExtensionDataInterface;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -60,6 +61,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
@@ -4410,5 +4412,28 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
   }
+
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                               Trans trans, Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = this.getClass().getDeclaredMethod( fieldName + "Action", Map.class );
+      actionMethod.setAccessible( true );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParams );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
+      if ( ex.getCause() instanceof KettleException ) {
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+      } else {
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+      }
+      getLogChannel().logError( ex.getMessage() );
+    }
+    return response;
+  }
+
 }
 

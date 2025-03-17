@@ -1207,7 +1207,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Initialize all the threads...
     //
-    if( !skipInit ) {
+    if ( !skipInit ) {
       for ( int i = 0; i < steps.size(); i++ ) {
         final StepMetaDataCombi sid = steps.get( i );
 
@@ -1226,10 +1226,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         threads[ i ].start();
       }
     }
-    if( !skipInit ) {
+
+    if ( !skipInit ) {
       for ( int i = 0; i < threads.length; i++ ) {
         try {
-
           threads[ i ].join();
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.StepAfterInitialize.id, initThreads[ i ] );
         } catch ( Exception ex ) {
@@ -1245,7 +1245,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     // All step are initialized now: see if there was one that didn't do it
     // correctly!
     //
-    if( !skipInit ) {
+    if ( !skipInit ) {
       for ( int i = 0; i < initThreads.length; i++ ) {
         StepMetaDataCombi combi = initThreads[ i ].getCombi();
         if ( !initThreads[ i ].isOk() ) {
@@ -1270,7 +1270,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       // Halt the other threads as well, signal end-of-the line to the outside world...
       // Also explicitly call dispose() to clean up resources opened during init();
       //
-      if( !skipInit ) {
+      if ( !skipInit ) {
         for ( int i = 0; i < initThreads.length; i++ ) {
           StepMetaDataCombi combi = initThreads[ i ].getCombi();
           // Dispose will overwrite the status, but we set it back right after

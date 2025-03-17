@@ -15,8 +15,6 @@ package org.pentaho.di.trans.steps.fileinput.text;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -60,9 +58,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 import org.pentaho.di.trans.steps.file.BaseFileInputStep;
 import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
@@ -122,23 +119,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return true;
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = TextFileInput.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
-
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();
     JSONArray textFileFields = new JSONArray();
@@ -146,7 +127,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     for ( TextFileInputFieldDTO textFileInputFieldDTO : getUpdatedTextFields() ) {
       textFileFields.add( objectMapper.readTree( objectMapper.writeValueAsString( textFileInputFieldDTO ) ) );
     }
-    jsonObject.put( "updatedData",textFileFields );
+    jsonObject.put( "updatedData", textFileFields );
     return jsonObject;
   }
 
@@ -188,6 +169,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return textFileFields;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject getFieldsAction( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
@@ -242,30 +224,30 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     RowMetaInterface convertRowMeta = outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
 
     // How many null values?
-    int[] nrnull = new int[nrfields]; // How many times null value?
+    int[] nrnull = new int[ nrfields ]; // How many times null value?
 
     // String info
-    String[] minstr = new String[nrfields]; // min string
-    String[] maxstr = new String[nrfields]; // max string
-    boolean[] firststr = new boolean[nrfields]; // first occ. of string?
+    String[] minstr = new String[ nrfields ]; // min string
+    String[] maxstr = new String[ nrfields ]; // max string
+    boolean[] firststr = new boolean[ nrfields ]; // first occ. of string?
 
     // Date info
-    boolean[] isDate = new boolean[nrfields]; // is the field perhaps a Date?
-    int[] dateFormatCount = new int[nrfields]; // How many date formats work?
-    boolean[][] dateFormat = new boolean[nrfields][Const.getDateFormats().length]; // What are the date formats that
+    boolean[] isDate = new boolean[ nrfields ]; // is the field perhaps a Date?
+    int[] dateFormatCount = new int[ nrfields ]; // How many date formats work?
+    boolean[][] dateFormat = new boolean[ nrfields ][ Const.getDateFormats().length ]; // What are the date formats that
     // work?
-    Date[][] minDate = new Date[nrfields][Const.getDateFormats().length]; // min date value
-    Date[][] maxDate = new Date[nrfields][Const.getDateFormats().length]; // max date value
+    Date[][] minDate = new Date[ nrfields ][ Const.getDateFormats().length ]; // min date value
+    Date[][] maxDate = new Date[ nrfields ][ Const.getDateFormats().length ]; // max date value
 
     // Number info
-    boolean[] isNumber = new boolean[nrfields]; // is the field perhaps a Number?
-    int[] numberFormatCount = new int[nrfields]; // How many number formats work?
-    boolean[][] numberFormat = new boolean[nrfields][Const.getNumberFormats().length]; // What are the number format
+    boolean[] isNumber = new boolean[ nrfields ]; // is the field perhaps a Number?
+    int[] numberFormatCount = new int[ nrfields ]; // How many number formats work?
+    boolean[][] numberFormat = new boolean[ nrfields ][ Const.getNumberFormats().length ]; // What are the number format
     // that work?
-    double[][] minValue = new double[nrfields][Const.getDateFormats().length]; // min number value
-    double[][] maxValue = new double[nrfields][Const.getDateFormats().length]; // max number value
-    int[][] numberPrecision = new int[nrfields][Const.getNumberFormats().length]; // remember the precision?
-    int[][] numberLength = new int[nrfields][Const.getNumberFormats().length]; // remember the length?
+    double[][] minValue = new double[ nrfields ][ Const.getDateFormats().length ]; // min number value
+    double[][] maxValue = new double[ nrfields ][ Const.getDateFormats().length ]; // max number value
+    int[][] numberPrecision = new int[ nrfields ][ Const.getNumberFormats().length ]; // remember the precision?
+    int[][] numberLength = new int[ nrfields ][ Const.getNumberFormats().length ]; // remember the length?
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols();
 
@@ -274,7 +256,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     for ( int i = 0; i < nrfields; i++ ) {
       BaseFileField field = new BaseFileField();
 
-      field.setName( fieldNames[i] );
+      field.setName( fieldNames[ i ] );
       field.setType( "0" );
       field.setFormat( "" );
       field.setLength( -1 );
@@ -285,37 +267,37 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
       field.setNullString( "-" );
       field.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
 
-      nrnull[i] = 0;
-      minstr[i] = "";
-      maxstr[i] = "";
-      firststr[i] = true;
+      nrnull[ i ] = 0;
+      minstr[ i ] = "";
+      maxstr[ i ] = "";
+      firststr[ i ] = true;
 
       // Init data guess
-      isDate[i] = true;
+      isDate[ i ] = true;
       for ( int j = 0; j < Const.getDateFormats().length; j++ ) {
-        dateFormat[i][j] = true;
-        minDate[i][j] = Const.MAX_DATE;
-        maxDate[i][j] = Const.MIN_DATE;
+        dateFormat[ i ][ j ] = true;
+        minDate[ i ][ j ] = Const.MAX_DATE;
+        maxDate[ i ][ j ] = Const.MIN_DATE;
       }
-      dateFormatCount[i] = Const.getDateFormats().length;
+      dateFormatCount[ i ] = Const.getDateFormats().length;
 
       // Init number guess
-      isNumber[i] = true;
+      isNumber[ i ] = true;
       for ( int j = 0; j < Const.getNumberFormats().length; j++ ) {
-        numberFormat[i][j] = true;
-        minValue[i][j] = Double.MAX_VALUE;
-        maxValue[i][j] = -Double.MAX_VALUE;
-        numberPrecision[i][j] = -1;
-        numberLength[i][j] = -1;
+        numberFormat[ i ][ j ] = true;
+        minValue[ i ][ j ] = Double.MAX_VALUE;
+        maxValue[ i ][ j ] = -Double.MAX_VALUE;
+        numberPrecision[ i ][ j ] = -1;
+        numberLength[ i ][ j ] = -1;
       }
-      numberFormatCount[i] = Const.getNumberFormats().length;
+      numberFormatCount[ i ] = Const.getNumberFormats().length;
 
-      tfii.inputFields[i] = field;
+      tfii.inputFields[ i ] = field;
     }
 
     TextFileInputMeta strinfo = (TextFileInputMeta) tfii.clone();
     for ( int i = 0; i < nrfields; i++ ) {
-      strinfo.inputFields[i].setType( ValueMetaInterface.TYPE_STRING );
+      strinfo.inputFields[ i ].setType( ValueMetaInterface.TYPE_STRING );
     }
 
     StringBuilder lineBuffer = new StringBuilder( 256 );
@@ -323,10 +305,11 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
 
     if ( tfii.content.header ) {
       fileLineNumber = TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType, lineBuffer,
-              tfii.content.nrHeaderLines, tfii.getEnclosure(), tfii.getEscapeCharacter(), fileLineNumber );
+        tfii.content.nrHeaderLines, tfii.getEnclosure(), tfii.getEscapeCharacter(), fileLineNumber );
     }
     //Reading the first line of data
-    line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, tfii.getEnclosure(), tfii.getEscapeCharacter() );
+    line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, tfii.getEnclosure(),
+      tfii.getEscapeCharacter() );
     int linenr = 1;
 
     List<StringEvaluator> evaluators = new ArrayList<StringEvaluator>();
@@ -351,11 +334,11 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
       String enclosure = transMeta.environmentSubstitute( tfii.content.enclosure );
       String escapeCharacter = transMeta.environmentSubstitute( tfii.content.escapeCharacter );
       Object[] r =
-              TextFileInputUtils.convertLineToRow( log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0,
-                      outputRowMeta, convertRowMeta, FileInputList.createFilePathList( transMeta, tfii.inputFiles.fileName,
-                              tfii.inputFiles.fileMask, tfii.inputFiles.excludeFileMask, tfii.inputFiles.fileRequired, tfii
-                                      .inputFiles.includeSubFolderBoolean() )[0], rownumber, delimiter, enclosure, escapeCharacter, null,
-                      new BaseFileInputAdditionalField(), null, null, false, null, null, null, null, null, failOnParseError );
+        TextFileInputUtils.convertLineToRow( log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0,
+          outputRowMeta, convertRowMeta, FileInputList.createFilePathList( transMeta, tfii.inputFiles.fileName,
+            tfii.inputFiles.fileMask, tfii.inputFiles.excludeFileMask, tfii.inputFiles.fileRequired, tfii
+              .inputFiles.includeSubFolderBoolean() )[ 0 ], rownumber, delimiter, enclosure, escapeCharacter, null,
+          new BaseFileInputAdditionalField(), null, null, false, null, null, null, null, null, failOnParseError );
 
       if ( r == null ) {
         errorFound = true;
@@ -381,7 +364,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
 
       // Grab another line...
       TextFileLine textFileLine = TextFileInputUtils
-              .getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, escapeCharacter, fileLineNumber );
+        .getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, escapeCharacter, fileLineNumber );
       line = textFileLine.getLine();
       fileLineNumber = textFileLine.getLineNumber();
     }
@@ -391,7 +374,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     StringBuilder message = new StringBuilder();
     if ( Boolean.parseBoolean( isSampleSummary ) ) {
       message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.ResultAfterScanning", ""
-              + ( linenr - 1 ) ) );
+        + ( linenr - 1 ) ) );
       message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.HorizontalLine" ) );
     }
     if ( nrfields == evaluators.size() ) {
@@ -427,106 +410,108 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
 
         if ( Boolean.parseBoolean( isSampleSummary ) ) {
           message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.FieldNumber", "" + ( i
-                  + 1 ) ) );
+            + 1 ) ) );
 
           message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.FieldName", field
-                  .getName() ) );
+            .getName() ) );
           message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.FieldType", field
-                  .getTypeDesc() ) );
+            .getTypeDesc() ) );
 
           switch ( field.getType() ) {
             case ValueMetaInterface.TYPE_NUMBER:
-              message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.EstimatedLength", ( field
-                      .getLength() < 0 ? "-" : "" + field.getLength() ) ) );
+              message.append(
+                BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.EstimatedLength", ( field
+                  .getLength() < 0 ? "-" : "" + field.getLength() ) ) );
               message
-                      .append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.EstimatedPrecision", field
-                              .getPrecision() < 0 ? "-" : "" + field.getPrecision() ) );
+                .append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.EstimatedPrecision", field
+                  .getPrecision() < 0 ? "-" : "" + field.getPrecision() ) );
               message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.NumberFormat", field
-                      .getFormat() ) );
+                .getFormat() ) );
 
               if ( !evaluationResults.isEmpty() ) {
                 if ( evaluationResults.size() > 1 ) {
                   message
-                          .append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.WarnNumberFormat" ) );
+                    .append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.WarnNumberFormat" ) );
                 }
 
                 for ( StringEvaluationResult seResult : evaluationResults ) {
                   String mask = seResult.getConversionMeta().getConversionMask();
 
                   message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.NumberFormat2",
-                          mask ) );
+                    mask ) );
                   message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.TrimType", seResult
-                          .getConversionMeta().getTrimType() ) );
+                    .getConversionMeta().getTrimType() ) );
                   message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.NumberMinValue",
-                          seResult.getMin() ) );
+                    seResult.getMin() ) );
                   message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.NumberMaxValue",
-                          seResult.getMax() ) );
+                    seResult.getMax() ) );
 
                   try {
                     df2.applyPattern( mask );
                     df2.setDecimalFormatSymbols( dfs2 );
                     double mn = df2.parse( seResult.getMin().toString() ).doubleValue();
                     message
-                            .append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.NumberExample", mask,
-                                    seResult.getMin(), Double.toString( mn ) ) );
+                      .append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.NumberExample", mask,
+                        seResult.getMin(), Double.toString( mn ) ) );
                   } catch ( Exception e ) {
                     if ( log.isDetailed() ) {
                       log.logDetailed( "This is unexpected: parsing [" + seResult.getMin() + "] with format [" + mask
-                              + "] did not work." );
+                        + "] did not work." );
                     }
                   }
                 }
               }
               message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.NumberNrNullValues", ""
-                      + nrnull[ i ] ) );
+                + nrnull[ i ] ) );
               break;
             case ValueMetaInterface.TYPE_STRING:
               message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.StringMaxLength", ""
-                      + field.getLength() ) );
+                + field.getLength() ) );
               message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.StringMinValue",
-                      minstr[ i ] ) );
+                minstr[ i ] ) );
               message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.StringMaxValue",
-                      maxstr[ i ] ) );
+                maxstr[ i ] ) );
               message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.StringNrNullValues", ""
-                      + nrnull[ i ] ) );
+                + nrnull[ i ] ) );
               break;
             case ValueMetaInterface.TYPE_DATE:
               message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.DateMaxLength", field
-                      .getLength() < 0 ? "-" : "" + field.getLength() ) );
+                .getLength() < 0 ? "-" : "" + field.getLength() ) );
               message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.DateFormat", field
-                      .getFormat() ) );
+                .getFormat() ) );
               if ( dateFormatCount[ i ] > 1 ) {
                 message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.WarnDateFormat" ) );
               }
               if ( !Utils.isEmpty( minstr[ i ] ) ) {
                 for ( int x = 0; x < Const.getDateFormats().length; x++ ) {
                   if ( dateFormat[ i ][ x ] ) {
-                    message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.DateFormat2", Const
-                            .getDateFormats()[ x ] ) );
+                    message.append(
+                      BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.DateFormat2", Const
+                        .getDateFormats()[ x ] ) );
                     Date mindate = minDate[ i ][ x ];
                     Date maxdate = maxDate[ i ][ x ];
                     message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.DateMinValue",
-                            mindate.toString() ) );
+                      mindate.toString() ) );
                     message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.DateMaxValue",
-                            maxdate.toString() ) );
+                      maxdate.toString() ) );
 
                     daf2.applyPattern( Const.getDateFormats()[ x ] );
                     try {
                       Date md = daf2.parse( minstr[ i ] );
                       message
-                              .append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.DateExample", Const
-                                      .getDateFormats()[ x ], minstr[ i ], md.toString() ) );
+                        .append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.DateExample", Const
+                          .getDateFormats()[ x ], minstr[ i ], md.toString() ) );
                     } catch ( Exception e ) {
                       if ( log.isDetailed() ) {
                         log.logDetailed( "This is unexpected: parsing [" + minstr[ i ] + "] with format [" + Const
-                                .getDateFormats()[ x ] + "] did not work." );
+                          .getDateFormats()[ x ] + "] did not work." );
                       }
                     }
                   }
                 }
               }
               message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.DateNrNullValues", ""
-                      + nrnull[ i ] ) );
+                + nrnull[ i ] ) );
               break;
             default:
               break;
@@ -627,7 +612,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     int dummynr = 1;
 
     for ( int i = 0; i < info.inputFields.length; i++ ) {
-      BaseFileField f = info.inputFields[i];
+      BaseFileField f = info.inputFields[ i ];
 
       // See if positions are skipped, if this is the case, add dummy fields...
       if ( f.getPosition() != prevEnd ) { // gap
@@ -660,7 +645,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
       fields.add( field );
     } else {
       // Take the last field and see if it reached until the maximum...
-      BaseFileField f = info.inputFields[info.inputFields.length - 1];
+      BaseFileField f = info.inputFields[ info.inputFields.length - 1 ];
 
       int pos = f.getPosition();
       int len = f.getLength();
@@ -677,6 +662,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return fields;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject getFieldNamesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
@@ -688,6 +674,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject showFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
 
@@ -696,9 +683,9 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
 
     TextFileInputMeta tfii = (TextFileInputMeta) getStepMetaInterface();
     String[] files =
-            FileInputList.createFilePathList( getTransMeta().getBowl(), getTransMeta(), tfii.inputFiles.fileName,
-                    tfii.inputFiles.fileMask, tfii.inputFiles.excludeFileMask, tfii.inputFiles.fileRequired,
-                    tfii.inputFiles.includeSubFolderBoolean() );
+      FileInputList.createFilePathList( getTransMeta().getBowl(), getTransMeta(), tfii.inputFiles.fileName,
+        tfii.inputFiles.fileMask, tfii.inputFiles.excludeFileMask, tfii.inputFiles.fileRequired,
+        tfii.inputFiles.includeSubFolderBoolean() );
 
     JSONArray filteredFiles = new JSONArray();
 
@@ -711,7 +698,8 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
           if ( matcher.matches() ) {
             filteredFiles.add( file );
           }
-        } else if ( StringUtils.isBlank( filter ) || StringUtils.contains( file.toUpperCase(), filter.toUpperCase() ) ) {
+        } else if ( StringUtils.isBlank( filter ) || StringUtils.contains( file.toUpperCase(),
+          filter.toUpperCase() ) ) {
           filteredFiles.add( file );
         }
       }
@@ -720,6 +708,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject validateShowContentAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     TextFileInputMeta meta = (TextFileInputMeta) getStepMetaInterface();
@@ -733,15 +722,16 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject showContentAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
     List<String> content = getFirst( Integer.valueOf( Objects.toString( queryParams.get( "nrlines" ), "0" ) ),
-            Boolean.valueOf( Objects.toString( queryParams.get( "skipHeaders" ) , "false" ) ) );
+      Boolean.valueOf( Objects.toString( queryParams.get( "skipHeaders" ), "false" ) ) );
     content.forEach( str -> {
       jsonArray.add( str );
     } );
-    response.put ( "firstFileContent", jsonArray );
+    response.put( "firstFileContent", jsonArray );
     return response;
   }
 
@@ -763,7 +753,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
         fi = KettleVFS.getInputStream( file );
 
         CompressionProvider provider =
-                CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.content.fileCompression );
+          CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.content.fileCompression );
         f = provider.createInputStream( fi );
 
         BufferedInputStreamReader reader;
@@ -782,25 +772,28 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
           // Skip the header lines first if more then one, it helps us position
           if ( meta.content.layoutPaged && meta.content.nrLinesDocHeader > 0 ) {
             TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType,
-                    lineStringBuilder,  meta.content.nrLinesDocHeader - 1, meta.getEnclosure(), meta.getEscapeCharacter(), 0 );
+              lineStringBuilder, meta.content.nrLinesDocHeader - 1, meta.getEnclosure(), meta.getEscapeCharacter(), 0 );
           }
 
           // Skip the header lines first if more then one, it helps us position
           if ( meta.content.header && meta.content.nrHeaderLines > 0 ) {
             TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType,
-                    lineStringBuilder,  meta.content.nrHeaderLines - 1, meta.getEnclosure(), meta.getEscapeCharacter(), 0 );
+              lineStringBuilder, meta.content.nrHeaderLines - 1, meta.getEnclosure(), meta.getEscapeCharacter(), 0 );
           }
         }
 
-        String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder, meta.getEnclosure(), meta.getEscapeCharacter() );
+        String line =
+          TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder, meta.getEnclosure(),
+            meta.getEscapeCharacter() );
         while ( line != null && ( linenr < maxnr || nrlines == 0 ) ) {
           retval.add( line );
           linenr++;
-          line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder, meta.getEnclosure(), meta.getEscapeCharacter() );
+          line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder,
+            meta.getEnclosure(), meta.getEscapeCharacter() );
         }
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString( PKG, "TextFileInputDialog.Exception.ErrorGettingFirstLines",
-                "" + nrlines, file.getName().getURI() ), e );
+          "" + nrlines, file.getName().getURI() ), e );
       } finally {
         try {
           if ( f != null ) {
@@ -834,7 +827,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
       FileObject fileObject = meta.getHeaderFileObject( getTransMeta() );
       fileInputStream = KettleVFS.getInputStream( fileObject );
       CompressionProvider provider = CompressionProviderFactory.getInstance().createCompressionProviderInstance(
-              ( (TextFileInputMeta) meta ).content.fileCompression );
+        ( (TextFileInputMeta) meta ).content.fileCompression );
       inputStream = provider.createInputStream( fileInputStream );
     } catch ( final Exception e ) {
       logError( BaseMessages.getString( "FileInputDialog.ErrorGettingFileDesc.DialogMessage" ), e );
