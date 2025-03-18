@@ -22,6 +22,7 @@ import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -208,7 +209,7 @@ public class ChangedSharedObjectsDialog {
       sorted.putAll( changes );
       for ( Map.Entry<String, ComparedState> entry : sorted.entrySet() ) {
         TreeItem child = new TreeItem( root, SWT.NONE );
-        String level = "File"; // TODO get from i18n
+        String level = LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME;
         // NOTE: no image for "new" items
         if ( entry.getValue() == ComparedState.MODIFIED ) {
           child.setData( guiResource.getSwtImageSharedOverwrite() );
