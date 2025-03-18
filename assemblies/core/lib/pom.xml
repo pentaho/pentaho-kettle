@@ -35,8 +35,6 @@
         <jt400.version>6.1</jt400.version>
         <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
         <sapdbc.version>7.4.4</sapdbc.version>
-        <webservices-api.version>2.3.1</webservices-api.version>
-        <webservices-rt.version>2.3.1</webservices-rt.version>
         <asm.version>3.2</asm.version>
         <blueprints-core.version>2.6.0</blueprints-core.version>
         <commons-configuration.version>1.9</commons-configuration.version>
@@ -348,7 +346,7 @@
         <dependency>
             <groupId>org.glassfish.metro</groupId>
             <artifactId>webservices-api</artifactId>
-            <version>${webservices-api.version}</version>
+            <version>${webservices.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -359,7 +357,7 @@
         <dependency>
             <groupId>org.glassfish.metro</groupId>
             <artifactId>webservices-rt</artifactId>
-            <version>${webservices-rt.version}</version>
+            <version>${webservices.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
