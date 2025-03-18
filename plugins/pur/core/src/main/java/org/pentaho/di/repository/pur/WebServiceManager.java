@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
+import com.sun.xml.ws.developer.JAXWSProperties;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.Service;
 import jakarta.xml.ws.handler.MessageContext;
@@ -137,9 +138,8 @@ public class WebServiceManager implements ServiceManager {
               ( (BindingProvider) port ).getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
               // support streaming binary data
               // TODO mlowery this is not portable between JAX-WS implementations (uses com.sun)
-              Client client = ClientBuilder.newBuilder()
-                      .property( ClientProperties.CHUNKED_ENCODING_SIZE, 8192 )
-                      .build();
+              ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE,
+                      8192 );
               SOAPBinding binding = (SOAPBinding) ( (BindingProvider) port ).getBinding();
               binding.setMTOMEnabled( true );
               return port;
