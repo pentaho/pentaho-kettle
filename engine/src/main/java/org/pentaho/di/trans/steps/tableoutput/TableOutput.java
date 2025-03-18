@@ -43,8 +43,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -613,22 +611,6 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
       }
       super.dispose( smi, sdi );
     }
-  }
-
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = TableOutput.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked

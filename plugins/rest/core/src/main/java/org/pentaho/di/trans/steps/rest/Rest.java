@@ -13,32 +13,6 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider;
-import org.glassfish.jersey.client.RequestEntityProcessing;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.glassfish.jersey.uri.UriComponent;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.encryption.Encr;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.util.HttpClientManager;
-
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -54,8 +28,6 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -65,6 +37,30 @@ import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
+import org.glassfish.jersey.client.RequestEntityProcessing;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.uri.UriComponent;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.util.HttpClientManager;
 
 /**
  * @author Samatar
@@ -631,27 +627,7 @@ public class Rest extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = Rest.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
-      log.logError( ex.getMessage() );
-      if ( ex.getCause() instanceof KettleException ) {
-        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_RESPONSE );
-      } else {
-        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_METHOD_NOT_RESPONSE );
-      }
-      response.put( JobEntryInterface.ERROR_DETAILS, ExceptionUtils.getRootCauseMessage( ex ) );
-    }
-    return response;
-  }
-
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject applicationTypesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray applicationTypes = new JSONArray();
@@ -660,6 +636,7 @@ public class Rest extends BaseStep implements StepInterface {
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject httpMethodsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray httpMethods = new JSONArray();

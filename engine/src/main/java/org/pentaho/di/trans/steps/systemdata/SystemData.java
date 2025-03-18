@@ -15,8 +15,6 @@ package org.pentaho.di.trans.steps.systemdata;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +28,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -771,34 +768,16 @@ public class SystemData extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
-  @Override
-  public JSONObject doAction(String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                             Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = SystemData.class.getDeclaredMethod( fieldName + "Action" );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException e ) {
-      return super.doAction( fieldName, stepMetaInterface, transMeta, trans, queryParamToValues );
-    } catch ( InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject typeAction() {
+  private JSONObject typeAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
     try {
       JSONArray jsonArray = new JSONArray();
-      for(int i=1;i<SystemDataTypes.values().length; i++) {
+      for ( int i = 1; i < SystemDataTypes.values().length; i++ ) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put( "id", SystemDataTypes.values()[i].name() );
-        jsonObject.put( "name", SystemDataTypes.values()[i].getDescription() );
+        jsonObject.put( "id", SystemDataTypes.values()[ i ].name() );
+        jsonObject.put( "name", SystemDataTypes.values()[ i ].getDescription() );
         jsonArray.add( jsonObject );
       }
       response.put( "types", jsonArray );

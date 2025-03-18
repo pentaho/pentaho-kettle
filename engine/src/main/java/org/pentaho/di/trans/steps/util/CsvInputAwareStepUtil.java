@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2025 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,10 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.util;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -35,16 +39,13 @@ import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.DecimalFormat;
-
 public interface CsvInputAwareStepUtil {
 
   /**
+   * Retrieves the field names from the CSV input metadata.
    *
-   * @param meta
-   * @return
+   * @param meta the CSV input metadata
+   * @return an array of field names
    */
   default String[] getFieldNames( final CsvInputAwareMeta meta ) {
     String[] fieldNames = new String[] {};
@@ -64,8 +65,16 @@ public interface CsvInputAwareStepUtil {
     return fieldNames;
   }
 
+  /**
+   * Retrieves the field names from the CSV input metadata using the provided reader.
+   *
+   * @param reader the buffered input stream reader for reading the CSV file
+   * @param meta   the CSV input metadata
+   * @return an array of field names
+   * @throws KettleException if an error occurs while retrieving the field names
+   */
   default String[] getFieldNamesImpl( final BufferedInputStreamReader reader, final CsvInputAwareMeta meta )
-          throws KettleException {
+    throws KettleException {
 
     String[] fieldNames = new String[] {};
     if ( reader == null || meta == null ) {
@@ -80,14 +89,14 @@ public interface CsvInputAwareStepUtil {
 
     // Read a line of data to determine the number of rows...
     final String line = TextFileInputUtils.getLine( logChannel(), reader, encodingType, meta.getFileFormatTypeNr(),
-            new StringBuilder( 1000 ), enclosure, escapeCharacter );
+      new StringBuilder( 1000 ), enclosure, escapeCharacter );
     if ( !StringUtils.isBlank( line ) ) {
       if ( meta instanceof TextFileInputMeta ) {
         fieldNames = TextFileInputUtils.guessStringsFromLine( getTransMeta().getParentVariableSpace(), logChannel(),
-                line, (TextFileInputMeta) meta,  delimiter, enclosure, meta.getEscapeCharacter() );
+          line, (TextFileInputMeta) meta, delimiter, enclosure, meta.getEscapeCharacter() );
       } else {
         fieldNames = CsvInput.guessStringsFromLine( logChannel(), line, delimiter, enclosure,
-                meta.getEscapeCharacter() );
+          meta.getEscapeCharacter() );
       }
     }
     if ( Utils.isEmpty( fieldNames ) ) {
@@ -102,7 +111,7 @@ public interface CsvInputAwareStepUtil {
         final DecimalFormat df = new DecimalFormat( "000" );
         fieldNames[ i ] = "Field_" + df.format( i );
       } else if ( !Utils.isEmpty( meta.getEnclosure() ) && fieldNames[ i ].startsWith( meta.getEnclosure() )
-              && fieldNames[ i ].endsWith( meta.getEnclosure() ) && fieldNames[ i ].length() > 1 ) {
+        && fieldNames[ i ].endsWith( meta.getEnclosure() ) && fieldNames[ i ].length() > 1 ) {
         fieldNames[ i ] = fieldNames[ i ].substring( 1, fieldNames[ i ].length() - 1 );
       }
       // trim again, now that the enclosure characters have been removed
@@ -139,14 +148,32 @@ public interface CsvInputAwareStepUtil {
     return reader;
   }
 
+  /**
+   * Creates a buffered input stream reader for the given CSV input metadata and input stream.
+   *
+   * @param meta        the CSV input metadata
+   * @param inputStream the input stream to read from
+   * @return a BufferedInputStreamReader for reading the CSV file
+   */
   default BufferedInputStreamReader getBufferedReader( final CsvInputAwareMeta meta, final InputStream inputStream ) {
     return new BufferedInputStreamReader( getReader( meta, inputStream ) );
   }
 
+  /**
+   * Logs an error message along with an exception.
+   *
+   * @param message   the error message to log
+   * @param exception the exception to log
+   */
   default void logError( final String message, final Exception exception ) {
     logChannel().logError( message, exception );
   }
 
+  /**
+   * Logs an error message.
+   *
+   * @param message the error message to log
+   */
   default void logError( final String message ) {
     logChannel().logError( message );
   }
