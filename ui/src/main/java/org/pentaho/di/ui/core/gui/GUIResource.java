@@ -212,6 +212,10 @@ public class GUIResource {
 
   private SwtUniversalImage imageJobRepo;
 
+  private SwtUniversalImage imageSharedOverwrite;
+
+  private SwtUniversalImage imageSharedIdentical;
+
   private Image imageWizard;
 
   private Image imageCredits;
@@ -621,6 +625,8 @@ public class GUIResource {
       imageMainConfigurations.dispose();
       imageTransRepo.dispose();
       imageJobRepo.dispose();
+      imageSharedOverwrite.dispose();
+      imageSharedIdentical.dispose();
       imageWizard.dispose();
       imageCredits.dispose();
       imageStart.dispose();
@@ -1296,6 +1302,13 @@ public class GUIResource {
     imageJobRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "JobRepo_image" ) );
 
+    // "ui/images/overwrite.svg"
+    imageSharedOverwrite = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "SharedOverwrite_image" ) );
+
+    // "ui/images/identical.svg"
+    imageSharedIdentical = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "SharedIdentical_image" ) );
 
     // Makes transparent images "on the fly"
     //
@@ -2002,6 +2015,20 @@ public class GUIResource {
 
   public SwtUniversalImage getSwtImageJobRepo() {
     return imageJobRepo;
+  }
+
+  /**
+   * @return the imageSharedOverwrite
+   */
+  public SwtUniversalImage getSwtImageSharedOverwrite() {
+    return imageSharedOverwrite;
+  }
+
+  /**
+   * @return the imageSharedIdentical
+   */
+  public SwtUniversalImage getSwtImageSharedIdentical() {
+    return imageSharedIdentical;
   }
 
   /**

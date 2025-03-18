@@ -208,7 +208,9 @@ import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.RepositorySharedObjectsIO;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsManagementInterface;
+import org.pentaho.di.shared.SharedObjectsIO.SharedObjectType;
 import org.pentaho.di.shared.SharedObjectUtil;
+import org.pentaho.di.shared.SharedObjectUtil.ComparedState;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
@@ -231,6 +233,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.auth.AuthProviderDialog;
 import org.pentaho.di.ui.core.dialog.AboutDialog;
 import org.pentaho.di.ui.core.dialog.BrowserEnvironmentWarningDialog;
+import org.pentaho.di.ui.core.dialog.ChangedSharedObjectsDialog;
 import org.pentaho.di.ui.core.dialog.CheckResultDialog;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterOptionsDialog;
@@ -3458,7 +3461,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           }
           delegates.db.editConnection( dbManager, databaseMeta );
         }
-        // TODO: other shared object types should move in here in their respective stories
         if ( STRING_SLAVES.equals( leveledSelection.getType() ) ) {
           editSlaveServer( leveledSelection );
         }
@@ -5831,9 +5833,24 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
 
       if ( meta instanceof AbstractMeta ) {
-        // TODO BACKLOG-41787: prompt for user to accept changes
         AbstractMeta ameta = (AbstractMeta) meta;
-        SharedObjectUtil.moveAllSharedObjects( ameta, rep.getBowl() );
+        // prompt for user to accept changes
+        Map<SharedObjectType, Map<String, ComparedState>> changes =
+          SharedObjectUtil.collectChangedSharedObjects( ameta, rep.getBowl(), rep.getImporter() );
+        boolean empty = true;
+        for ( Map<String, ComparedState> changed : changes.values() ) {
+          if ( !changed.isEmpty() ) {
+            empty = false;
+            break;
+          }
+        }
+        if ( !empty ) {
+          ChangedSharedObjectsDialog dialog = new ChangedSharedObjectsDialog( shell, GUIResource.getInstance(), changes );
+          if ( !dialog.open() ) {
+            return false;
+          }
+          SharedObjectUtil.moveAllSharedObjects( ameta, rep.getBowl() );
+        }
         // refresh the dbs in the meta
         DatabaseManagementInterface dbMgr = rep.getBowl().getManager( DatabaseManagementInterface.class );
         for ( DatabaseMeta storedDB : dbMgr.getAll() ) {

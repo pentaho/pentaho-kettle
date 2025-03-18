@@ -87,7 +87,7 @@ public class PurRepositoryImporter extends RepositoryImporter implements java.io
   }
 
   @Override
-  protected boolean equals( DatabaseMeta databaseMeta, DatabaseMeta databaseMeta2 ) {
+  public boolean equals( DatabaseMeta databaseMeta, DatabaseMeta databaseMeta2 ) {
     return rep.getDatabaseMetaTransformer().equals( databaseMeta, databaseMeta2 );
   }
 
