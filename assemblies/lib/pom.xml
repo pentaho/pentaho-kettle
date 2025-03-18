@@ -29,6 +29,12 @@
     <pentaho-reporting.version>11.0.0.0-SNAPSHOT</pentaho-reporting.version>
     <pdi-osgi-bridge.version>11.0.0.0-SNAPSHOT</pdi-osgi-bridge.version>
     <pentaho-hadoop-shims.version>11.0.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
+    <jakarta.xml.bind-osgi.version>2.3.3</jakarta.xml.bind-osgi.version>
+    <jaxb-api-osgi.version>2.3.3</jaxb-api-osgi.version>
+    <jakarta.activation-osgi.version>1.2.1</jakarta.activation-osgi.version>
+    <jakarta.transaction-api-osgi.version>1.3.3</jakarta.transaction-api-osgi.version>
+    <istack-osgi.version>3.0.2</istack-osgi.version>
+    <xmlsec-osgi.version>4.0.3</xmlsec-osgi.version>
 
     <!-- third party -->
     <hsqldb.version>2.3.2</hsqldb.version>
@@ -36,8 +42,6 @@
     <jt400.version>6.1</jt400.version>
     <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
     <sapdbc.version>7.4.4</sapdbc.version>
-    <webservices-api.version>2.3.1</webservices-api.version>
-    <webservices-rt.version>2.3.1</webservices-rt.version>
     <asm.version>3.2</asm.version>
     <blueprints-core.version>2.6.0</blueprints-core.version>
     <commons-configuration.version>1.9</commons-configuration.version>
@@ -477,7 +481,7 @@
     <dependency>
       <groupId>org.glassfish.metro</groupId>
       <artifactId>webservices-api</artifactId>
-      <version>${webservices-api.version}</version>
+      <version>${webservices.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -488,7 +492,7 @@
     <dependency>
       <groupId>org.glassfish.metro</groupId>
       <artifactId>webservices-rt</artifactId>
-      <version>${webservices-rt.version}</version>
+      <version>${webservices.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -506,6 +510,48 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!--
+         Dependencies for Javax XML Binding API, JAXB Runtime, Javax Activation API, Javax Transaction API and IStack Commons Runtime
+         These dependencies are required for OSGi environment and Felix directly depends on javax.xml.bind (Javax XML Bind API and Javax JAXB runtime) and we are making these available to OSGi through jre.properties.
+        -->
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>${jakarta.xml.bind-osgi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>${jaxb-api-osgi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>${jakarta.activation-osgi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.transaction</groupId>
+      <artifactId>jakarta.transaction-api</artifactId>
+      <version>${jakarta.transaction-api-osgi.version}</version>
+    </dependency>
+    <!--
+     Dependency for IStack Commons Runtime.
+     This includes common runtime utilities used by JAXB.
+    -->
+    <dependency>
+      <groupId>com.sun.istack</groupId>
+      <artifactId>istack-commons-runtime</artifactId>
+      <version>${istack-osgi.version}</version>
+    </dependency>
+    <!--
+     Dependency for Apache Santuario XML Security.
+     This library provides security functionality for XML.
+    -->
+    <dependency>
+      <groupId>org.apache.santuario</groupId>
+      <artifactId>xmlsec</artifactId>
+      <version>${xmlsec-osgi.version}</version>
     </dependency>
     <dependency>
       <groupId>com.tinkerpop.blueprints</groupId>
@@ -550,6 +596,11 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-jaxb</artifactId>
+      <version>${jersey.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jvnet.mimepull</groupId>
