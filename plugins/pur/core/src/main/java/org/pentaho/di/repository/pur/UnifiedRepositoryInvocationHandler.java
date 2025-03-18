@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.ConnectException;
 
-import jakarta.xml.ws.WebServiceException;
+import com.sun.xml.ws.client.ClientTransportException;
 import org.pentaho.di.repository.KettleAuthenticationException;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 
@@ -62,7 +62,7 @@ class UnifiedRepositoryInvocationHandler<T> implements InvocationHandler {
 
   private boolean lookupAuthenticationException( Throwable root ) {
     while ( root != null ) {
-      if ( root instanceof WebServiceException ) {
+      if ( root instanceof ClientTransportException ) {
         return true;
       } else {
         root = root.getCause();
