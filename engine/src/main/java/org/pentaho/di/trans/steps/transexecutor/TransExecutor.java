@@ -15,12 +15,12 @@ package org.pentaho.di.trans.steps.transexecutor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.Arrays;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +28,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -37,6 +36,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -596,8 +596,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
   }
 
   @Override
-  public JSONObject doAction(String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                             Trans trans, Map<String, String> queryParamToValues ) {
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     try {
       Method actionMethod = TransExecutor.class.getDeclaredMethod( fieldName + "Action", Map.class );
@@ -608,13 +608,14 @@ public class TransExecutor extends BaseStep implements StepInterface {
       this.setTransMeta( transMeta );
       response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
 
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
       log.logError( e.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
     }
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
     TransExecutorMeta transExecutorMeta = (TransExecutorMeta) getStepMetaInterface();
 
@@ -622,8 +623,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
     JSONArray parameterArray = new JSONArray();
     try {
       String filename = transExecutorMeta.getDirectoryPath() + "/" + transExecutorMeta.getTransName();
-      TransMeta inputTransMeta =  loadTransformation( filename, transExecutorMeta.getSpecificationMethod() );
-      if( inputTransMeta != null ) {
+      TransMeta inputTransMeta = loadTransformation( filename, transExecutorMeta.getSpecificationMethod() );
+      if ( inputTransMeta != null ) {
         String[] parameters = inputTransMeta.listParameters();
         for ( int i = 0; i < parameters.length; i++ ) {
           JSONObject parameter = new JSONObject();
@@ -646,7 +647,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
     return response;
   }
 
-  public TransMeta loadTransformation( String filename, ObjectLocationSpecificationMethod specificationMethod ) throws KettleException {
+  public TransMeta loadTransformation( String filename, ObjectLocationSpecificationMethod specificationMethod )
+    throws KettleException {
     TransMeta executorTransMeta = null;
     if ( repository != null ) {
       specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
@@ -678,12 +680,12 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
         if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realTransname ) ) {
           throw new KettleException(
-                  BaseMessages.getString( PKG, "TransExecutor.Exception.NoValidMappingDetailsFound" ) );
+            BaseMessages.getString( PKG, "TransExecutor.Exception.NoValidMappingDetailsFound" ) );
         }
         RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
         if ( repdir == null ) {
           throw new KettleException( BaseMessages.getString(
-                  PKG, "TransExecutor.Exception.UnableToFindRepositoryDirectory" ) );
+            PKG, "TransExecutor.Exception.UnableToFindRepositoryDirectory" ) );
         }
         executorTransMeta = loadRepositoryTrans( realTransname, repdir );
         break;
@@ -699,9 +701,11 @@ public class TransExecutor extends BaseStep implements StepInterface {
     return executorTransMeta;
   }
 
-  private TransMeta loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
+  private TransMeta loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir )
+    throws KettleException {
     TransMeta executorTransMeta =
-            repository.loadTransformation( loadExecutorTransMeta().environmentSubstitute( transName ), repdir, null, false, null );
+      repository.loadTransformation( loadExecutorTransMeta().environmentSubstitute( transName ), repdir, null, false,
+        null );
     executorTransMeta.clearChanged();
     return executorTransMeta;
   }

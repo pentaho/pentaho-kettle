@@ -13,8 +13,15 @@
 
 package org.pentaho.di.trans.steps.selectvalues;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
@@ -34,16 +41,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Select, re-order, remove or change the meta-data of the fields in the inputstreams.
@@ -452,23 +449,7 @@ public class SelectValues extends BaseStep implements StepInterface {
     }
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = SelectValues.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-      response.put( "errorDetails", ExceptionUtils.getRootCauseMessage( e ) );
-    }
-    return response;
-  }
-
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject localesAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     try {
@@ -482,6 +463,7 @@ public class SelectValues extends BaseStep implements StepInterface {
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject timezonesAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     try {
@@ -495,6 +477,7 @@ public class SelectValues extends BaseStep implements StepInterface {
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject encodingsAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     try {

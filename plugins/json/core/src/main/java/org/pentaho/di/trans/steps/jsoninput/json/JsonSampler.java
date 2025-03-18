@@ -13,6 +13,14 @@
 
 package org.pentaho.di.trans.steps.jsoninput.json;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -26,14 +34,6 @@ import org.pentaho.di.trans.steps.jsoninput.json.node.ArrayNode;
 import org.pentaho.di.trans.steps.jsoninput.json.node.Node;
 import org.pentaho.di.trans.steps.jsoninput.json.node.ObjectNode;
 import org.pentaho.di.trans.steps.jsoninput.json.node.ValueNode;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Samples a set value of a JSON file and allows for deduplication
@@ -73,6 +73,14 @@ public class JsonSampler {
     return node;
   }
 
+  /**
+   * Parses the JSON content using the provided `JsonParser` and returns the root node.
+   * The method processes JSON arrays and objects, and deduplicates the node if configured.
+   *
+   * @param jsonParser the JSON parser to read the JSON content
+   * @return the root node of the parsed JSON content
+   * @throws IOException if an I/O error occurs during parsing
+   */
   public Node getNode( JsonParser jsonParser ) throws IOException {
     jsonParser.enable( JsonParser.Feature.ALLOW_COMMENTS );
     Node node = null;

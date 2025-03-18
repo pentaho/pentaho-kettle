@@ -14,8 +14,6 @@
 package org.pentaho.di.trans.steps.concatfields;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -401,22 +399,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     // sdi.setStatus(StepExecutionStatus.STATUS_DISPOSED);
     // but we try to avoid
   }
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = ConcatFields.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();
     JSONArray concatFields = new JSONArray();
