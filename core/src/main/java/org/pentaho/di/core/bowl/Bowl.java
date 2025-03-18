@@ -88,4 +88,9 @@ public interface Bowl {
    */
   VariableSpace getADefaultVariableSpace();
 
+  /**
+   * Return the display name of the level. This string should be read from resource file
+   * @return level name
+   */
+  String getLevelDisplayName();
 }

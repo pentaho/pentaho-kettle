@@ -70,7 +70,7 @@ public class ClustersFolderProvider extends TreeFolderProvider {
           }
           projectClusterNames.add( sharedObject.getName() );
           TreeNode childTreeNode = createTreeNode( treeNode, sharedObject.getName(), guiResource.getImageClusterMedium(),
-                                                   LeveledTreeNode.LEVEL.PROJECT, false );
+                                                   LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         }
       }
 
@@ -86,7 +86,7 @@ public class ClustersFolderProvider extends TreeFolderProvider {
 
         globalClusterNames.add( clusterSchema.getName() );
         TreeNode childTreeNode = createTreeNode( treeNode, clusterSchema.getName(), guiResource.getImageClusterMedium(),
-          LeveledTreeNode.LEVEL.GLOBAL, containsIgnoreCase( projectClusterNames, clusterSchema.getName() ) );
+          LeveledTreeNode.LEVEL.GLOBAL, globalBowl.getLevelDisplayName(), containsIgnoreCase( projectClusterNames, clusterSchema.getName() ) );
       }
 
       // Local ClusterSchemas
@@ -102,7 +102,7 @@ public class ClustersFolderProvider extends TreeFolderProvider {
             }
 
             TreeNode childTreeNode = createTreeNode( treeNode, sharedObjectInterface.getName(),
-              guiResource.getImageClusterMedium(), LeveledTreeNode.LEVEL.LOCAL,
+              guiResource.getImageClusterMedium(), LeveledTreeNode.LEVEL.FILE, LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME,
               containsIgnoreCase( projectClusterNames, sharedObjectInterface.getName() ) ||
                 containsIgnoreCase( globalClusterNames, sharedObjectInterface.getName() ) );
           }
@@ -117,9 +117,9 @@ public class ClustersFolderProvider extends TreeFolderProvider {
 
   }
 
-  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level,
+  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
       boolean overridden ) {
-    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, overridden );
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, levelDisplayName, overridden );
     childTreeNode.setImage( image );
 
     parent.addChild( childTreeNode );

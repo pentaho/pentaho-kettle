@@ -118,7 +118,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
 
     if ( runConfigurationTreeItem.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
       MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
-      moveMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.MoveToGlobal" ) );
+      moveMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.MoveTo",
+              spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
       moveMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
           Bowl bowl = getEventBowl();
@@ -130,7 +131,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
       } );
 
       MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
-      copyMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.CopyToGlobal" ) );
+      copyMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.CopyTo",
+              spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
       copyMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
           Bowl bowl = getEventBowl();
@@ -170,7 +172,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
 
     MenuItem duplicateMenuItem = new MenuItem( itemMenu, SWT.NONE );
     if ( runConfigurationTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-      duplicateMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.DuplicateGlobal" ) );
+      duplicateMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.Duplicate",
+              spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
     } else {
       duplicateMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.DuplicateProject" ) );
     }

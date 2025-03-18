@@ -67,7 +67,7 @@ public class SlavesFolderProvider extends TreeFolderProvider {
           }
           projectSlaveServerNames.add( sharedObject.getName() );
           TreeNode childTreeNode = createTreeNode( treeNode, sharedObject.getName(), guiResource.getImageSlaveTree(),
-                                  LeveledTreeNode.LEVEL.PROJECT, false );
+                  LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         }
       }
 
@@ -82,7 +82,7 @@ public class SlavesFolderProvider extends TreeFolderProvider {
 
         globalServerNames.add( slaveServer.getName() );
         TreeNode childTreeNode = createTreeNode( treeNode, slaveServer.getName(), guiResource.getImageSlaveTree(),
-          LeveledTreeNode.LEVEL.GLOBAL, containsIgnoreCase( projectSlaveServerNames, slaveServer.getName() ) );
+          LeveledTreeNode.LEVEL.GLOBAL, globalBowl.getLevelDisplayName(), containsIgnoreCase( projectSlaveServerNames, slaveServer.getName() ) );
       }
 
       // Local SlaveServers
@@ -95,7 +95,7 @@ public class SlavesFolderProvider extends TreeFolderProvider {
           }
 
           TreeNode childTreeNode = createTreeNode( treeNode, sharedObjectInterface.getName(), guiResource.getImageSlaveTree(),
-            LeveledTreeNode.LEVEL.LOCAL, containsIgnoreCase( projectSlaveServerNames, sharedObjectInterface.getName() ) ||
+            LeveledTreeNode.LEVEL.FILE, LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME, containsIgnoreCase( projectSlaveServerNames, sharedObjectInterface.getName() ) ||
                     containsIgnoreCase( globalServerNames, sharedObjectInterface.getName() ) );
         }
       }
@@ -117,9 +117,9 @@ public class SlavesFolderProvider extends TreeFolderProvider {
     return SlaveServer.class;
   }
 
-  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level,
+  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
                                  boolean overridden ) {
-    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, overridden );
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, levelDisplayName, overridden );
     childTreeNode.setImage( image );
 
     parent.addChild( childTreeNode );

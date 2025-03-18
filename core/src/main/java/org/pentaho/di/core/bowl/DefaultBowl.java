@@ -13,10 +13,12 @@
 package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.shared.VfsSharedObjectsIO;
@@ -31,6 +33,8 @@ import java.util.function.Supplier;
  *
  */
 public class DefaultBowl extends BaseBowl {
+  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
+
   private static final DefaultBowl INSTANCE = new DefaultBowl();
 
   // for testing
@@ -93,6 +97,11 @@ public class DefaultBowl extends BaseBowl {
 
   public void setSharedObjectsIO( SharedObjectsIO sharedObjectsIO ) {
     this.sharedObjectsIO = sharedObjectsIO;
+  }
+
+  @Override
+  public String getLevelDisplayName() {
+    return BaseMessages.getString( PKG, "Default.Level.Name" );
   }
 
 }

@@ -72,7 +72,7 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
           }
           projectSchemaNames.add( partitionSchema.getName() );
           TreeNode childTreeNode = createTreeNode( treeNode, partitionSchema.getName(), guiResource.getImagePartitionSchema(),
-            LeveledTreeNode.LEVEL.PROJECT, false );
+            LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         }
       }
 
@@ -86,7 +86,7 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
         }
         globalSchemaNames.add( partitionSchema.getName() );
         TreeNode childTreeNode = createTreeNode( treeNode, partitionSchema.getName(), guiResource.getImagePartitionSchema(),
-          LeveledTreeNode.LEVEL.GLOBAL, containsIgnoreCase( projectSchemaNames, partitionSchema.getName() ) );
+          LeveledTreeNode.LEVEL.GLOBAL, globalBowl.getLevelDisplayName(), containsIgnoreCase( projectSchemaNames, partitionSchema.getName() ) );
       }
 
       // Local
@@ -99,7 +99,7 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
               continue;
             }
             TreeNode childTreeNode = createTreeNode( treeNode, partitionSchema.getName(), guiResource.getImagePartitionSchema(),
-              LeveledTreeNode.LEVEL.LOCAL,
+              LeveledTreeNode.LEVEL.FILE, LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME,
               containsIgnoreCase( projectSchemaNames, partitionSchema.getName() ) || containsIgnoreCase( globalSchemaNames, partitionSchema.getName() ) );
           }
         }
@@ -127,9 +127,9 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
     return transMeta.getPartitionSchemas();
   }
 
-  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level,
+  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
                                   boolean overridden ) {
-    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, overridden );
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, levelDisplayName, overridden );
     childTreeNode.setImage( image );
 
     parent.addChild( childTreeNode );

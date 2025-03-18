@@ -19,7 +19,6 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.shared.DatabaseConnectionManager;
 import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -71,7 +70,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
           DatabaseMeta databaseMeta = collector.getMetaFor( databaseName );
           projectDbNames.add( databaseMeta.getDisplayName() );
           TreeNode childTreeNode = createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource
-            .getImageConnectionTree(), LeveledTreeNode.LEVEL.PROJECT, false );
+            .getImageConnectionTree(), LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         }
       }
       // Global
@@ -85,7 +84,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
         DatabaseMeta databaseMeta = collector.getMetaFor( name );
         globalDbNames.add( databaseMeta.getDisplayName() );
         createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree(), LeveledTreeNode.LEVEL.GLOBAL,
-          containsIgnoreCase( projectDbNames, name ) );
+                globalBowl.getLevelDisplayName(), containsIgnoreCase( projectDbNames, name ) );
       }
 
       // Local Db connection
@@ -97,8 +96,8 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
             continue;
           }
           DatabaseMeta databaseMeta = collector.getMetaFor( name );
-          createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree(), LeveledTreeNode.LEVEL.LOCAL,
-            containsIgnoreCase( projectDbNames, name ) || containsIgnoreCase( globalDbNames, name ) );
+          createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree(), LeveledTreeNode.LEVEL.FILE,
+            LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME, containsIgnoreCase( projectDbNames, name ) || containsIgnoreCase( globalDbNames, name ) );
         }
       }
     } catch ( KettleException e ) {
@@ -120,9 +119,9 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
     return DatabaseMeta.class;
   }
 
-  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level,
+  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
                                  boolean overridden ) {
-    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, overridden );
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, levelDisplayName, overridden );
     childTreeNode.setImage( image );
 
     parent.addChild( childTreeNode );

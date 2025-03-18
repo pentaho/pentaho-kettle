@@ -54,12 +54,16 @@ public class TreePopupMenuProvider {
           moveGlobalItem.setVisible( false );
         }
       }
-      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.FILE ) {
         if ( currentBowl == globalBowl ) {
           moveGlobalItem.setVisible( true );
+          moveGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.MoveTo",
+                  globalBowl.getLevelDisplayName() )  );
           moveProjectItem.setVisible( false );
         } else {
           moveGlobalItem.setVisible( true );
+          moveGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.MoveTo",
+                  globalBowl.getLevelDisplayName() )  );
           moveProjectItem.setVisible( true );
         }
       }
@@ -84,13 +88,17 @@ public class TreePopupMenuProvider {
           copyProjectItem.setVisible( false );
         }
       }
-      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.LOCAL ) {
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.FILE ) {
         if ( currentBowl == globalBowl ) {
           copyGlobalItem.setVisible( true );
+          copyGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CopyTo",
+                  globalBowl.getLevelDisplayName() )  );
           copyProjectItem.setVisible( false );
         } else {
           // If the connection is global, no need to show the menuitem
           copyGlobalItem.setVisible( true );
+          copyGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CopyTo",
+                  globalBowl.getLevelDisplayName() )  );
           copyProjectItem.setVisible( true );
         }
       }
@@ -108,6 +116,13 @@ public class TreePopupMenuProvider {
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
         dupGlobalItem.setVisible( true );
+        dupProjectItem.setVisible( false );
+        dupGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.DuplicateIn",
+                  globalBowl.getLevelDisplayName() )  );
+      }
+
+      if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.FILE ) {
+        dupGlobalItem.setVisible( false );
         dupProjectItem.setVisible( false );
       }
     }

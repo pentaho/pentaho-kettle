@@ -18,32 +18,40 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TreeItem;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.spoon.Spoon;
 
 public class LeveledTreeNode extends TreeNode {
   public enum LEVEL {
-    DEFAULT( "Default" ),
-    PROJECT( "Project" ),
-    GLOBAL( "Global" ),
-    LOCAL( "Local" );
+    DEFAULT( 1 ),
+    PROJECT( 2 ),
+    GLOBAL( 3 ),
+    FILE( 4 );
+
 
     // will this need to be localized?
-    private final String name;
+    private final int displayOrder;
 
-    LEVEL( String name ) {
-      this.name = name;
+    LEVEL( int displayOrder  ) {
+      this.displayOrder = displayOrder;
     }
-    public String getName() {
-      return name;
+
+    public int getDisplayOrder() {
+      return displayOrder;
     }
   }
 
+  private static Class<?> PKG = Spoon.class;  // for i18n purposes, needed by Translator2!!
   private static final String NAME_KEY = "name";
   private static final String LEVEL_KEY = "level";
+  public static final String LEVEL_FILE_DISPLAY_NAME = BaseMessages.getString( PKG, "Spoon.Tree.Level.File.Name" );
+  public static final String LEVEL_DEFAULT_DISPLAY_NAME = BaseMessages.getString( PKG, "Spoon.Tree.Level.Default.Name" );
 
-  public LeveledTreeNode( String name, LEVEL level, boolean overridden ) {
+  //public LeveledTreeNode( String name, LEVEL level, boolean overridden ) {
+  public LeveledTreeNode( String name, LEVEL level, String levelDisplayName, boolean overridden ) {
     setData( NAME_KEY, name );
     setData( LEVEL_KEY, level );
-    setLabel( name + " [" + level.getName() + "]" );
+    setLabel( name + " [" + levelDisplayName + "]" );
     if ( overridden ) {
       setForeground( getDisabledColor() );
     }
@@ -63,7 +71,7 @@ public class LeveledTreeNode extends TreeNode {
 
               .thenComparing( t -> (String)t.getData().get( NAME_KEY ),
                               String.CASE_INSENSITIVE_ORDER )
-              .thenComparing( t -> (LEVEL)t.getData().get( LEVEL_KEY ) );
+              .thenComparing( t ->((LEVEL) t.getData().get( LEVEL_KEY ) ).getDisplayOrder() );
   @Override
   public int compareTo( TreeNode other ) {
     return COMPARATOR.compare( this, other );
@@ -81,7 +89,6 @@ public class LeveledTreeNode extends TreeNode {
   public static LEVEL getLevel( TreeItem treeItem ) {
     return (LeveledTreeNode.LEVEL) treeItem.getData( LeveledTreeNode.LEVEL_KEY );
   }
-
 
 }
 
