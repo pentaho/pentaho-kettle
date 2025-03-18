@@ -359,7 +359,8 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     return result;
   }
 
-  private boolean equals( Object obj1, Object obj2 ) {
+  @Override
+  public boolean equals( Object obj1, Object obj2 ) {
     if ( obj1 == null ) {
       if ( obj2 == null ) {
         return true;

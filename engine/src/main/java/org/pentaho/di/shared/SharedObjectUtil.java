@@ -28,10 +28,15 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.partition.PartitionSchemaManagementInterface;
+import org.pentaho.di.repository.IRepositoryImporter;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.shared.SharedObjectsIO.SharedObjectType;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -40,12 +45,69 @@ import java.util.Set;
  */
 public class SharedObjectUtil {
 
+  public enum ComparedState {
+    NEW,
+    MODIFIED,
+    UNMODIFIED;
+  }
+
+  /**
+   * Collects the changes that would be made by moveAllSharedObjects(). This method makes no changes.
+   *
+   *
+   * @param sourceMeta File we are moving objects out of
+   * @param targetBowl bowl we are moving objects into
+   *
+   * @return Map&lt;SharedObjectType,Map&lt;String,ComparedState&gt;&gt; results of comparison. Inner map key is the
+   *         name of the object
+   */
+  public static Map<SharedObjectType, Map<String, ComparedState>> collectChangedSharedObjects( AbstractMeta sourceMeta,
+      Bowl targetBowl, IRepositoryImporter importer ) throws KettleException{
+    Map<SharedObjectType, Map<String, ComparedState>> retMap = new HashMap<>();
+    retMap.put( SharedObjectType.CLUSTERSCHEMA,
+      collectChangedSharedObjects( sourceMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class ),
+        targetBowl.getManager( ClusterSchemaManagementInterface.class ), importer ) );
+    retMap.put( SharedObjectType.CONNECTION,
+      collectChangedSharedObjects( sourceMeta.getSharedObjectManager( DatabaseManagementInterface.class ),
+        targetBowl.getManager( DatabaseManagementInterface.class ), importer ) );
+    retMap.put( SharedObjectType.PARTITIONSCHEMA,
+      collectChangedSharedObjects( sourceMeta.getSharedObjectManager( PartitionSchemaManagementInterface.class ),
+        targetBowl.getManager( PartitionSchemaManagementInterface.class ), importer ) );
+    retMap.put( SharedObjectType.SLAVESERVER,
+      collectChangedSharedObjects( sourceMeta.getSharedObjectManager( SlaveServerManagementInterface.class ),
+        targetBowl.getManager( SlaveServerManagementInterface.class ), importer ) );
+    return retMap;
+  }
+
+  public static <T extends SharedObjectInterface<T> & RepositoryElementInterface>
+    Map<String, ComparedState> collectChangedSharedObjects( SharedObjectsManagementInterface<T> sourceManager,
+      SharedObjectsManagementInterface<T> targetManager, IRepositoryImporter importer ) throws KettleException {
+    if ( sourceManager == null ) {
+      return Collections.emptyMap();
+    }
+    Map<String, ComparedState> retMap = new HashMap<>();
+    List<T> all = sourceManager.getAll();
+    for ( T object : all ) {
+      T destObject = targetManager.get( object.getName() );
+      if ( destObject == null ) {
+        retMap.put( object.getName(), ComparedState.NEW );
+      } else {
+        if ( importer.equals( object, destObject ) ) {
+          retMap.put( object.getName(), ComparedState.UNMODIFIED );
+        } else {
+          retMap.put( object.getName(), ComparedState.MODIFIED );
+        }
+      }
+    }
+    return retMap;
+  }
+
   /**
    * Moves all shared objects from the source to the target
    */
   public static void moveAllSharedObjects( AbstractMeta sourceMeta, Bowl targetBowl ) throws KettleException {
     moveAll( sourceMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class ),
-             targetBowl.getManager(ClusterSchemaManagementInterface.class ) );
+             targetBowl.getManager( ClusterSchemaManagementInterface.class ) );
     moveAll( sourceMeta.getSharedObjectManager( DatabaseManagementInterface.class ),
              targetBowl.getManager( DatabaseManagementInterface.class ) );
     moveAll( sourceMeta.getSharedObjectManager( PartitionSchemaManagementInterface.class ),
