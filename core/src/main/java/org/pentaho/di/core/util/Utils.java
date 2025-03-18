@@ -13,10 +13,13 @@
 
 package org.pentaho.di.core.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.variables.VariableSpace;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /* Levenshtein in Java, originally from Josh Drew's code at
  * http://joshdrew.com/
@@ -299,4 +302,12 @@ public class Utils {
     return rtn;
   }
 
+  public static String setStringValueFromMap( Map<String, String> map, String key ) {
+    return map.getOrDefault( key, StringUtils.EMPTY );
+  }
+
+  public static Boolean setBooleanValueFromMap( Map<String, String> map, String key ) {
+    String value = map.getOrDefault( key, "N" );
+    return value.equalsIgnoreCase( "Y" );
+  }
 }

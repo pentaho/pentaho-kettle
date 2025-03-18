@@ -23,6 +23,10 @@ import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageSAPR3;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.wizard.WizardPageFactory;
 
+import java.util.Map;
+
+import static org.pentaho.di.core.util.Utils.setStringValueFromMap;
+
 /**
  * Contains SAP ERP system specific information through static final members
  *
@@ -168,5 +172,12 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override public WizardPage createWizardPage( PropsUI props, DatabaseMeta info ) {
     return new CreateDatabaseWizardPageSAPR3( SAPR3, props, info );
+  }
+
+  @Override
+  public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    addAttribute( ATTRIBUTE_SAP_LANGUAGE, setStringValueFromMap( attributes, ATTRIBUTE_SAP_LANGUAGE ) );
+    addAttribute( ATTRIBUTE_SAP_SYSTEM_NUMBER, setStringValueFromMap( attributes, ATTRIBUTE_SAP_SYSTEM_NUMBER ) );
+    addAttribute( ATTRIBUTE_SAP_CLIENT, setStringValueFromMap( attributes, ATTRIBUTE_SAP_CLIENT ) );
   }
 }
