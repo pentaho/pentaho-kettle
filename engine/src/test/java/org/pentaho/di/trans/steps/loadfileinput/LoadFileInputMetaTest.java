@@ -77,7 +77,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
     meta.setFileRequired( new String[] { "N" } );
     meta.setIncludeSubFolders( new String[] { "N" } );
     meta.setRowLimit( 0 );
-    meta.setIsInFields( false );
+    meta.setFileInFields( false );
     meta.setDynamicFilenameField( null );
     meta.setShortFileNameField( null );
     meta.setPathField( null );
@@ -123,7 +123,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
             "uriNameFieldName", "rootUriNameFieldName", "extensionFieldName", "includeSubFolders", "fileName",
             "fileMask", "excludeFileMask", "fileRequired", "inputFields" );
 
-    Map<String, String> getterMap = new HashMap<String, String>() {
+    Map<String, String> getterMap = new HashMap<>() {
       {
         put( "includeFilename", "getIncludeFilename" );
         put( "filenameField", "getFilenameField" );
@@ -152,7 +152,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
       }
     };
 
-    Map<String, String> setterMap = new HashMap<String, String>() {
+    Map<String, String> setterMap = new HashMap<>() {
       {
         put( "includeFilename", "setIncludeFilename" );
         put( "filenameField", "setFilenameField" );
@@ -180,14 +180,15 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
         put( "inputFields", "setInputFields" );
       }
     };
+
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+        new ArrayLoadSaveValidator<>( new StringLoadSaveValidator(), 5 );
 
     FieldLoadSaveValidator<LoadFileInputField[]> lfifArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<LoadFileInputField>( new LoadFileInputFieldLoadSaveValidator(), 5 );
+        new ArrayLoadSaveValidator<>( new LoadFileInputFieldLoadSaveValidator(), 5 );
 
     FieldLoadSaveValidator<String[]> YNArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new YNLoadSaveValidator(), 5 );
+        new ArrayLoadSaveValidator<>( new YNLoadSaveValidator(), 5 );
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
     attrValidatorMap.put( "includeSubFolders", stringArrayLoadSaveValidator );
@@ -213,7 +214,6 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
     }
   }
 
-
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
@@ -221,6 +221,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
 
   public class LoadFileInputFieldLoadSaveValidator implements FieldLoadSaveValidator<LoadFileInputField> {
     final Random rand = new Random();
+
     @Override
     public LoadFileInputField getTestObject() {
       LoadFileInputField rtn = new LoadFileInputField();
@@ -237,6 +238,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
       rtn.setLength( rand.nextInt( 50 ) );
       return rtn;
     }
+
     @Override
     public boolean validateTestObject( LoadFileInputField testObject, Object actualObj ) {
       if ( !( actualObj instanceof LoadFileInputField ) ) {
@@ -249,5 +251,4 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
       return ( tst1 && tst2 );
     }
   }
-
 }

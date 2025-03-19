@@ -188,7 +188,6 @@ public class LoadFileInputTest {
     assertTrue( stepLoadFileInput.openNextFile() );
     assertTrue( stepLoadFileInput.openNextFile() );
     assertFalse( stepLoadFileInput.openNextFile() );
-
   }
 
   @Test
@@ -224,7 +223,6 @@ public class LoadFileInputTest {
     assertTrue( stepLoadFileInput.openNextFile() );
     assertFalse( stepLoadFileInput.openNextFile() );
   }
-
 
   @Test
   public void testOpenNextFile_01() {
@@ -375,36 +373,35 @@ public class LoadFileInputTest {
   public void testCopyOrCloneArrayFromLoadFileWithSmallerSizedReadRowArray() {
     int size = 5;
     Object[] rowData = new Object[ size ];
-    Object[] readrow = new Object[ size - 1 ];
+    Object[] readRow = new Object[ size - 1 ];
     LoadFileInput loadFileInput = mock( LoadFileInput.class );
 
-    Mockito.when( loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ) ).thenCallRealMethod();
+    Mockito.when( loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readRow ) ).thenCallRealMethod();
 
-    assertEquals( 5,  loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ).length );
+    assertEquals( 5,  loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readRow ).length );
   }
 
   @Test
   public void testCopyOrCloneArrayFromLoadFileWithBiggerSizedReadRowArray() {
     int size = 5;
     Object[] rowData = new Object[ size ];
-    Object[] readrow = new Object[ size + 1 ];
+    Object[] readRow = new Object[ size + 1 ];
     LoadFileInput loadFileInput = mock( LoadFileInput.class );
 
-    Mockito.when( loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ) ).thenCallRealMethod();
+    Mockito.when( loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readRow ) ).thenCallRealMethod();
 
-    assertEquals( 6,  loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ).length );
+    assertEquals( 6,  loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readRow ).length );
   }
 
   @Test
   public void testCopyOrCloneArrayFromLoadFileWithSameSizedReadRowArray() {
     int size = 5;
     Object[] rowData = new Object[ size ];
-    Object[] readrow = new Object[ size ];
+    Object[] readRow = new Object[ size ];
     LoadFileInput loadFileInput = mock( LoadFileInput.class );
 
-    Mockito.when( loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ) ).thenCallRealMethod();
+    Mockito.when( loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readRow ) ).thenCallRealMethod();
 
-    assertEquals( 5,  loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ).length );
+    assertEquals( 5,  loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readRow ).length );
   }
-
 }

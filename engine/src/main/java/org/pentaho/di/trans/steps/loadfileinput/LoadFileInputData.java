@@ -28,7 +28,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class LoadFileInputData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
   public RowMetaInterface convertRowMeta;
-  public String thisline, nextline, lastline;
   public Object[] previousRow;
   public int nr_repeats;
 
@@ -71,7 +70,5 @@ public class LoadFileInputData extends BaseStepData implements StepDataInterface
 
     readrow = null;
     fileSize = 0;
-
   }
-
 }
