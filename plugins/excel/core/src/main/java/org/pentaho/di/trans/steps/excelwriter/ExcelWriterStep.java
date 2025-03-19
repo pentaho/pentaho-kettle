@@ -1037,7 +1037,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
+  private JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();
     JSONArray excelFileFields = new JSONArray();
     ObjectMapper objectMapper = new ObjectMapper();

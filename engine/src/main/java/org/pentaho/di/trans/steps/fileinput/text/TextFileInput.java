@@ -120,7 +120,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
+  private JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();
     JSONArray textFileFields = new JSONArray();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -170,7 +170,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getFieldsAction( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
+  private JSONObject getFieldsAction( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -190,7 +190,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
-  public JSONObject populateMeta( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
+  private JSONObject populateMeta( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
     JSONObject response = new JSONObject();
     String isSampleSummary = queryParams.get( "isSampleSummary" );
     int samples = Integer.parseInt( Objects.toString( queryParams.get( "noOfFields" ), "0" ) );
@@ -663,7 +663,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getFieldNamesAction( Map<String, String> queryParams ) {
+  private JSONObject getFieldNamesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
     String[] fieldNames = getFieldNames( (CsvInputAwareMeta) getStepMetaInterface() );
@@ -709,7 +709,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject validateShowContentAction( Map<String, String> queryParams ) {
+  private JSONObject validateShowContentAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     TextFileInputMeta meta = (TextFileInputMeta) getStepMetaInterface();
 
@@ -723,7 +723,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject showContentAction( Map<String, String> queryParams ) throws KettleException {
+  private JSONObject showContentAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
     List<String> content = getFirst( Integer.valueOf( Objects.toString( queryParams.get( "nrlines" ), "0" ) ),

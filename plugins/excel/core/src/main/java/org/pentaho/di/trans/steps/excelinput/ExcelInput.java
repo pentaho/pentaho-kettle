@@ -969,7 +969,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getFieldsAction( Map<String, String> queryParams ) {
+  private JSONObject getFieldsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     RowMetaInterface fields = new RowMeta();
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
