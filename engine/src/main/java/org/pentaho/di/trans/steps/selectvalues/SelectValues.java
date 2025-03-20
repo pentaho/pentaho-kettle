@@ -54,8 +54,6 @@ public class SelectValues extends BaseStep implements StepInterface {
   private SelectValuesMeta meta;
   private SelectValuesData data;
 
-  private String[] charsets = null;
-
   public SelectValues( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
                        Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -450,55 +448,38 @@ public class SelectValues extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject localesAction( Map<String, String> queryParams ) throws KettleException {
+  private JSONObject localesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
-    try {
-      JSONArray locales = new JSONArray();
-      locales.addAll( Arrays.asList( EnvUtil.getLocaleList() ) );
-      response.put( "locales", locales );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
+    JSONArray locales = new JSONArray();
+    locales.addAll( Arrays.asList( EnvUtil.getLocaleList() ) );
+    response.put( "locales", locales );
     return response;
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject timezonesAction( Map<String, String> queryParams ) throws KettleException {
+  private JSONObject timezonesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
-    try {
-      JSONArray timezones = new JSONArray();
-      timezones.addAll( Arrays.asList( EnvUtil.getTimeZones() ) );
-      response.put( "timezones", timezones );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
+    JSONArray timezones = new JSONArray();
+    timezones.addAll( Arrays.asList( EnvUtil.getTimeZones() ) );
+    response.put( "timezones", timezones );
     return response;
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject encodingsAction( Map<String, String> queryParams ) throws KettleException {
+  private JSONObject encodingsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
-    try {
-      JSONArray encodings = new JSONArray();
-      encodings.addAll( Arrays.asList( getCharsets() ) );
-      response.put( "encodings", encodings );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
+    JSONArray encodings = new JSONArray();
+    encodings.addAll( Arrays.asList( getCharsets() ) );
+    response.put( "encodings", encodings );
     return response;
   }
 
   public String[] getCharsets() {
-    if ( charsets == null ) {
-      Collection<Charset> charsetCol = Charset.availableCharsets().values();
-      charsets = new String[ charsetCol.size() ];
-      int i = 0;
-      for ( Charset charset : charsetCol ) {
-        charsets[ i++ ] = charset.displayName();
-      }
+    Collection<Charset> charsetCol = Charset.availableCharsets().values();
+    String[] charsets = new String[ charsetCol.size() ];
+    int i = 0;
+    for ( Charset charset : charsetCol ) {
+      charsets[ i++ ] = charset.displayName();
     }
     return charsets;
   }

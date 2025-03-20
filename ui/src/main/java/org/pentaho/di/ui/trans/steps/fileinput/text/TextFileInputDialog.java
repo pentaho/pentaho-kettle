@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -80,9 +79,10 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.file.BaseFileField;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileInput;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileFilter;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInput;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -99,7 +99,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.ui.trans.step.common.CsvInputAwareImportProgressDialog;
 import org.pentaho.di.ui.trans.step.common.CsvInputAwareStepDialog;
 import org.pentaho.di.ui.trans.step.common.GetFieldsCapableStepDialog;
@@ -2738,8 +2737,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     Trans trans = new Trans( transMeta, null );
     trans.rowsets = new ArrayList<>();
     getInfo( input, true );
-    TextFileInput step = (TextFileInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
-    return step;
+    return (TextFileInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
   }
 
   private void getFixed() {

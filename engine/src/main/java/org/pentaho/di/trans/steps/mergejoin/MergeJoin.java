@@ -14,6 +14,7 @@
 package org.pentaho.di.trans.steps.mergejoin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -470,9 +471,7 @@ public class MergeJoin extends BaseStep implements StepInterface {
       JSONArray keysList = new JSONArray();
       String[] keys = getPreviousStepKeys( Integer.parseInt( stepIndex ) );
       if ( keys != null ) {
-        for ( String key : keys ) {
-          keysList.add( key );
-        }
+        keysList.addAll( Arrays.asList( keys ) );
       }
       response.put( "keys", keysList );
     } catch ( Exception e ) {
@@ -484,7 +483,7 @@ public class MergeJoin extends BaseStep implements StepInterface {
 
   private String[] getPreviousStepKeys( Integer stepIndex ) throws KettleException {
     MergeJoinMeta joinMeta = (MergeJoinMeta) getStepMetaInterface();
-
+    String[] fields = null;
     try {
       List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
 
@@ -492,14 +491,14 @@ public class MergeJoin extends BaseStep implements StepInterface {
       if ( stepMeta != null ) {
         RowMetaInterface prev = getTransMeta().getStepFields( stepMeta );
         if ( prev != null ) {
-          return prev.getFieldNames();
+          fields = prev.getFieldNames();
         }
       }
     } catch ( KettleException e ) {
       log.logError( e.getMessage() );
       throw new KettleException( BaseMessages.getString( PKG, "MergeJoin.Exception.ErrorGettingFields" ) );
     }
-    return null;
+    return fields;
   }
 
 }
