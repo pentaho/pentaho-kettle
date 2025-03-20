@@ -78,7 +78,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.junit.rules.RestorePDIEnvironment;
-import org.springframework.mock.jndi.SimpleNamingContextBuilder;
+//import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 
 @SuppressWarnings( "deprecation" )
 public class DatabaseTest {
@@ -126,8 +126,8 @@ public class DatabaseTest {
       System.setProperty( Context.INITIAL_CONTEXT_FACTORY,
         "org.osjava.sj.memory.MemoryContextFactory" ); // pentaho#simple-jndi;1.0.0
       System.setProperty( "org.osjava.sj.jndi.shared", "true" );
-      InitialContextFactoryBuilder simpleBuilder = new SimpleNamingContextBuilder();
-      NamingManager.setInitialContextFactoryBuilder( simpleBuilder );
+//      InitialContextFactoryBuilder simpleBuilder = new SimpleNamingContextBuilder();
+//      NamingManager.setInitialContextFactoryBuilder( simpleBuilder );
     }
   }
 
