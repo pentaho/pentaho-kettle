@@ -583,6 +583,11 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -595,8 +600,9 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -606,7 +612,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
       //
       // In case the name of the file comes from previous steps, forget about this!
       if ( !fileNameInField ) {
-        FileObject fileObject = KettleVFS.getInstance( bowl )
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
           .getFileObject( space.environmentSubstitute( fileName ), space );
 
         // If the file doesn't exist, forget about this effort too!
@@ -614,7 +620,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
         if ( fileObject.exists() ) {
           // Convert to an absolute path...
           //
-          fileName = resourceNamingInterface.nameResource( fileObject, space, true );
+          fileName = namingInterface.nameResource( fileObject, space, true );
           return fileName;
         }
       }

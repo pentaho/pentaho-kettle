@@ -1182,6 +1182,11 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   /**
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1194,21 +1199,22 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
       //
       if ( !Utils.isEmpty( fileName ) ) {
-        FileObject fileObject = KettleVFS.getInstance( bowl )
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
           .getFileObject( space.environmentSubstitute( fileName ), space );
-        fileName = resourceNamingInterface.nameResource( fileObject, space, true );
+        fileName = namingInterface.nameResource( fileObject, space, true );
       }
       if ( !Utils.isEmpty( templateFileName ) ) {
-        FileObject fileObject = KettleVFS.getInstance( bowl )
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
           .getFileObject( space.environmentSubstitute( templateFileName ), space );
-        templateFileName = resourceNamingInterface.nameResource( fileObject, space, true );
+        templateFileName = namingInterface.nameResource( fileObject, space, true );
       }
 
       return null;

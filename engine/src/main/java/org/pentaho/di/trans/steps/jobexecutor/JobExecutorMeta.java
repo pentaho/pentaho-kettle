@@ -699,8 +699,9 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // Try to load the transformation from repository or file.
       // Modify this recursively too...
@@ -710,14 +711,15 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       //
       // First load the executor job metadata...
       //
-      JobMeta executorJobMeta = loadJobMetaProxy( bowl, this, repository, space );
+      JobMeta executorJobMeta = loadJobMetaProxy( executionBowl, this, repository, space );
 
       // Also go down into the mapping transformation and export the files
       // there. (mapping recursively down)
       //
       String proposedNewFilename =
         executorJobMeta.exportResources(
-          bowl, executorJobMeta, definitions, resourceNamingInterface, repository, metaStore );
+          executionBowl, globalManagementBowl, executorJobMeta, definitions, resourceNamingInterface, repository,
+          metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Entry.Current.Directory}

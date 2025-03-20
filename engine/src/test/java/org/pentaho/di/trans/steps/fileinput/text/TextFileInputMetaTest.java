@@ -73,8 +73,8 @@ public class TextFileInputMetaTest {
     inputMeta.inputFiles.fileMask =
       new String[] { StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING };
 
-    inputMeta.exportResources( DefaultBowl.getInstance(), variableSpace, null, mock( ResourceNamingInterface.class ),
-      null, null );
+    inputMeta.exportResources( DefaultBowl.getInstance(), null, variableSpace, null,
+      mock( ResourceNamingInterface.class ), null, null );
 
     verify( inputMeta ).getFileObject( DefaultBowl.getInstance(), FILE_NAME_VALID_PATH, variableSpace );
     verify( inputMeta, never() ).getFileObject( DefaultBowl.getInstance(), FILE_NAME_NULL, variableSpace );

@@ -4352,8 +4352,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         TransExecutionConfiguration clonedConfiguration = (TransExecutionConfiguration) executionConfiguration.clone();
         clonedConfiguration.setRepository( null );
         TopLevelResource topLevelResource =
-          ResourceUtil.serializeResourceExportInterface( transMeta.getBowl(), tempFile.getName().toString(), transMeta,
-            transMeta, repository, metaStore, clonedConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
+          ResourceUtil.serializeResourceExportInterface( transMeta.getBowl(), null, tempFile.getName().toString(),
+            transMeta, transMeta, repository, metaStore, clonedConfiguration.getXML(),
+            CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
         //

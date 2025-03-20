@@ -495,7 +495,7 @@ public class XMLOutputMetaTest {
     Variables space = new Variables();
     when( resourceNamingInterface.nameResource( any( FileObject.class ), eq( space ), eq( true ) ) ).thenReturn(
         "exportFile" );
-    xmlOutputMeta.exportResources( DefaultBowl.getInstance(), space, null, resourceNamingInterface, null, null );
+    xmlOutputMeta.exportResources( DefaultBowl.getInstance(), null, space, null, resourceNamingInterface, null, null );
     assertEquals( "exportFile", xmlOutputMeta.getFileName() );
   }
 
