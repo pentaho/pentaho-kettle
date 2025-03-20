@@ -1129,7 +1129,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     final int FieldsRows = input.getOutputFields().length;
     Trans trans = new Trans( transMeta, null );
     trans.rowsets = new ArrayList<>();
-    ExcelWriterStep step = (ExcelWriterStep) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+    ExcelWriterStep step = input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
     step.setStepMetaInterface( input );
 
     String[] formats = step.getFormats();
@@ -1707,7 +1707,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
       trans.rowsets = new ArrayList<>();
 
       getInfo( input );
-      ExcelWriterStep step = (ExcelWriterStep) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+      ExcelWriterStep step = input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
       step.setStepMetaInterface( input );
 
       String formatTypeResponse = step.formatType( type );

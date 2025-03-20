@@ -598,7 +598,7 @@ public class SalesforceDeleteDialog extends SalesforceStepDialog {
         step.setStepMetaInterface( meta );
         String selectedField = wModule.getText();
         wModule.removeAll();
-        wModule.setItems( step.getModules() );
+        wModule.setItems( step.getModules( "false" ) );
 
         if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );
