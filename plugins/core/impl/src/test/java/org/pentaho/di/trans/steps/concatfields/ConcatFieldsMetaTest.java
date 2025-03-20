@@ -98,9 +98,8 @@ public class ConcatFieldsMetaTest {
     // 'exportResources' will always return 'null'
     concatFieldsMeta = new ConcatFieldsMeta();
     concatFieldsMeta.setOutputFields( new TextFileField[] {} );
-    assertNull( concatFieldsMeta.exportResources( mock( Bowl.class ), mock( VariableSpace.class ), new HashMap<>(),
-      mock( ResourceNamingInterface.class ), mock( Repository.class ), mock(
-        IMetaStore.class ) ) );
+    assertNull( concatFieldsMeta.exportResources( mock( Bowl.class ), mock( Bowl.class ), mock( VariableSpace.class ),
+      new HashMap<>(), mock( ResourceNamingInterface.class ), mock( Repository.class ), mock( IMetaStore.class ) ) );
 
 
     // Saving the StepMeta, will always ignore the filename

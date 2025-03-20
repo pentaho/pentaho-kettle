@@ -85,6 +85,7 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsIO;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
@@ -2589,8 +2590,9 @@ public class JobMeta extends AbstractMeta
   }
 
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space, Map<String,
+      ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository,
+      IMetaStore metaStore ) throws KettleException {
     String resourceName = null;
     try {
       // Handle naming for both repository and XML bases resources...
@@ -2610,7 +2612,7 @@ public class JobMeta extends AbstractMeta
       } else {
         // Assume file
         //
-        FileObject fileObject = KettleVFS.getInstance( bowl ).
+        FileObject fileObject = KettleVFS.getInstance( executionBowl ).
           getFileObject( space.environmentSubstitute( getFilename() ), space );
         originalPath = fileObject.getParent().getName().getPath();
         baseName = fileObject.getName().getBaseName();
@@ -2641,7 +2643,14 @@ public class JobMeta extends AbstractMeta
         for ( JobEntryCopy jobEntry : jobMeta.jobcopies ) {
           compatibleJobEntryExportResources( jobEntry.getEntry(), jobMeta, definitions, namingInterface, repository,
                                              metaStore );
-          jobEntry.getEntry().exportResources( bowl, jobMeta, definitions, namingInterface, repository, metaStore );
+          jobEntry.getEntry().exportResources( executionBowl, globalManagementBowl, jobMeta, definitions,
+            namingInterface, repository, metaStore );
+        }
+
+        // copy databases from global management bowl.
+        if ( globalManagementBowl != null ) {
+          SharedObjectUtil.copySharedObjects( globalManagementBowl, jobMeta,
+            Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
         }
 
         // Set a number of parameters for all the data files referenced so far...

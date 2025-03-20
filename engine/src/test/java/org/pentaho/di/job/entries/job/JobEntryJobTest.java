@@ -845,11 +845,11 @@ public class JobEntryJobTest {
 
       doReturn( meta ).when( jej ).getJobMeta(
         nullable( Repository.class ), nullable( IMetaStore.class ), nullable( VariableSpace.class ) );
-      doReturn( JOB_ENTRY_JOB_NAME ).when( meta ).exportResources( nullable( Bowl.class ),
+      doReturn( JOB_ENTRY_JOB_NAME ).when( meta ).exportResources( nullable( Bowl.class ), nullable( Bowl.class ),
         nullable( JobMeta.class ), nullable( Map.class ), nullable( ResourceNamingInterface.class ),
         nullable( Repository.class ), nullable( IMetaStore.class ) );
 
-      jej.exportResources( null, null, null, null, null, null );
+      jej.exportResources( null, null, null, null, null, null, null );
 
       verify( meta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + JOB_ENTRY_JOB_NAME );
       verify( jej ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );

@@ -673,11 +673,15 @@ public interface StepMetaInterface {
   default String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
       throws KettleException {
-    return exportResources( DefaultBowl.getInstance(), space, definitions, resourceNamingInterface, repository,
+    return exportResources( DefaultBowl.getInstance(), null, space, definitions, resourceNamingInterface, repository,
       metaStore );
   }
 
   /**
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config
    * @param space
    *          the variable space to use
    * @param definitions
@@ -689,9 +693,9 @@ public interface StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
-  default String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-      throws KettleException {
+  default String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     return exportResources( space, definitions, resourceNamingInterface, repository, metaStore );
   }
 

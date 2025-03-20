@@ -208,7 +208,7 @@ public class JobMetaTest {
     };
     jobMeta.setRepositoryDirectory( directoryJob );
     jobMeta.setName( JOB_META_NAME );
-    jobMeta.exportResources( DefaultBowl.getInstance(), null, new HashMap<String, ResourceDefinition>( 4 ),
+    jobMeta.exportResources( DefaultBowl.getInstance(), null, null, new HashMap<String, ResourceDefinition>( 4 ),
       mock( ResourceNamingInterface.class ), null, null );
 
     // assert
