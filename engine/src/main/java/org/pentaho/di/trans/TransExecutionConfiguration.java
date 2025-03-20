@@ -358,6 +358,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
       sp.put( keys[i], space.getVariable( keys[i] ) );
     }
 
+    variables.clear();
     List<String> vars = transMeta.getUsedVariables();
     if ( vars != null && vars.size() > 0 ) {
       HashMap<String, String> newVariables = new HashMap<String, String>();
