@@ -769,7 +769,7 @@ public class SystemData extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject typeAction( Map<String, String> queryParams ) throws KettleException {
+  private JSONObject typeAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
     try {

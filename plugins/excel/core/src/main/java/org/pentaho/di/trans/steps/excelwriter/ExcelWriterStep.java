@@ -1023,7 +1023,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     String[] formats = BuiltinFormats.getAll();
 
     List<String> allFormats = Arrays.asList( formats );
-    List<String> nonReservedFormats = new ArrayList<String>( allFormats.size() );
+    List<String> nonReservedFormats = new ArrayList<>( allFormats.size() );
 
     for ( String format : allFormats ) {
       if ( !format.startsWith( "reserved" ) ) {

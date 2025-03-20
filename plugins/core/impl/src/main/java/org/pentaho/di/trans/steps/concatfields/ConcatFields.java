@@ -400,6 +400,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     // but we try to avoid
   }
 
+  @Override
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();

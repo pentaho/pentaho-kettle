@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -62,13 +61,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.tableoutput.TableOutput;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
@@ -905,7 +902,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       } catch ( KettleException ke ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-            .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+          .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -1042,33 +1039,37 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     }
   }
   private void getSchemaNames() {
-    try {
-      TableOutputMeta info = new TableOutputMeta();
-      getInfo( info );
-      Trans trans = new Trans( transMeta, null );
-      trans.rowsets = new ArrayList<>();
-      TableOutput step = (TableOutput) info.getStep( stepMeta, info.getStepData(), 0, transMeta, trans );
-      step.setStepMetaInterface( info );
-      String[] schemas = step.getSchemaNames( wConnection.getText() );
-      if ( null != schemas && schemas.length > 0 ) {
-        EnterSelectionDialog dialog =
-          new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
-            PKG, "TableOutputDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
-            .getString( PKG, "TableOutputDialog.AvailableSchemas.Message", wConnection.getText() ) );
-        String d = dialog.open();
-        if ( d != null ) {
-          wSchema.setText( Const.NVL( d, "" ) );
-          setTableFieldCombo();
+    DatabaseMeta databaseMeta = transMeta.findDatabase( wConnection.getText() );
+    if ( databaseMeta != null ) {
+      Database database = new Database( loggingObject, databaseMeta );
+      try {
+        database.connect();
+        String[] schemas = database.getSchemas();
+
+        if ( null != schemas && schemas.length > 0 ) {
+          schemas = Const.sortStrings( schemas );
+          EnterSelectionDialog dialog =
+            new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+              PKG, "TableOutputDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
+              .getString( PKG, "TableOutputDialog.AvailableSchemas.Message", wConnection.getText() ) );
+          String d = dialog.open();
+          if ( d != null ) {
+            wSchema.setText( Const.NVL( d, "" ) );
+            setTableFieldCombo();
+          }
+
+        } else {
+          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+          mb.setMessage( BaseMessages.getString( PKG, "TableOutputDialog.NoSchema.Error" ) );
+          mb.setText( BaseMessages.getString( PKG, "TableOutputDialog.GetSchemas.Error" ) );
+          mb.open();
         }
-      } else {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "TableOutputDialog.NoSchema.Error" ) );
-        mb.setText( BaseMessages.getString( PKG, "TableOutputDialog.GetSchemas.Error" ) );
-        mb.open();
+      } catch ( Exception e ) {
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+          .getString( PKG, "TableOutputDialog.ErrorGettingSchemas" ), e );
+      } finally {
+        database.disconnect();
       }
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-        .getString( PKG, "TableOutputDialog.ErrorGettingSchemas" ), e );
     }
   }
 
@@ -1427,7 +1428,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     } catch ( KettleException ke ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-          .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+        .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -1439,19 +1440,53 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     try {
       TableOutputMeta info = new TableOutputMeta();
       getInfo( info );
-      Trans trans = new Trans( transMeta, null );
-      trans.rowsets = new ArrayList<>();
-      TableOutput step = (TableOutput) info.getStep( stepMeta, info.getStepData(), 0, transMeta, trans );
-      step.setStepMetaInterface( info );
+      RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
+      if ( info.isTableNameInField() && !info.isTableNameInTable() && info.getTableNameField().length() > 0 ) {
+        int idx = prev.indexOfValue( info.getTableNameField() );
+        if ( idx >= 0 ) {
+          prev.removeValueMeta( idx );
+        }
+      }
+      StepMeta stepMeta = transMeta.findStep( stepname );
 
-      SQLStatement sql = step.sql( stepname, wConnection.getText() );
+      if ( info.specifyFields() ) {
+        // Only use the fields that were specified.
+        RowMetaInterface prevNew = new RowMeta();
 
-      if ( Objects.nonNull(sql)) {
+        for ( int i = 0; i < info.getFieldDatabase().length; i++ ) {
+          ValueMetaInterface insValue = prev.searchValueMeta( info.getFieldStream()[i] );
+          if ( insValue != null ) {
+            ValueMetaInterface insertValue = insValue.clone();
+            insertValue.setName( info.getFieldDatabase()[i] );
+            prevNew.addValueMeta( insertValue );
+          } else {
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "TableOutputDialog.FailedToFindField.Message", info.getFieldStream()[i] ) );
+          }
+        }
+        prev = prevNew;
+      }
+
+      boolean autoInc = false;
+      String pk = null;
+
+      // Add the auto-increment field too if any is present.
+      //
+      if ( info.isReturningGeneratedKeys() && !Utils.isEmpty( info.getGeneratedKeyField() ) ) {
+        ValueMetaInterface valueMeta = new ValueMetaInteger( info.getGeneratedKeyField() );
+        valueMeta.setLength( 15 );
+        prev.addValueMeta( 0, valueMeta );
+        autoInc = true;
+        pk = info.getGeneratedKeyField();
+      }
+
+      if ( isValidRowMeta( prev ) ) {
+        SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, pk, autoInc, pk );
         if ( !sql.hasError() ) {
           if ( sql.hasSQL() ) {
             SQLEditor sqledit =
-                    new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
-                            .getSQL() );
+              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
+                .getSQL() );
             sqledit.open();
           } else {
             String message = getBaseMessage( "TableOutputDialog.NoSQL.DialogMessage" );
@@ -1470,7 +1505,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     } catch ( KettleException ke ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "TableOutputDialog.BuildSQLError.DialogTitle" ), BaseMessages
-          .getString( PKG, "TableOutputDialog.BuildSQLError.DialogMessage" ), ke );
+        .getString( PKG, "TableOutputDialog.BuildSQLError.DialogMessage" ), ke );
     }
   }
 
@@ -1479,6 +1514,16 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     mb.setMessage( message );
     mb.setText( text );
     mb.open();
+  }
+
+  private static boolean isValidRowMeta( RowMetaInterface rowMeta ) {
+    for ( ValueMetaInterface value : rowMeta.getValueMetaList() ) {
+      String name = value.getName();
+      if ( name == null || name.isEmpty() ) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private static String getBaseMessage( String str ) {
