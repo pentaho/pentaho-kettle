@@ -111,7 +111,12 @@ public class RowMetaAndData implements Cloneable {
   @Override
   public boolean equals( Object obj ) {
     try {
-      return rowMeta.compare( data, ( (RowMetaAndData) obj ).getData() ) == 0;
+      if(! (obj instanceof RowMetaAndData)){
+        return false;
+      }
+      else{
+        return rowMeta.compare( data, ( (RowMetaAndData) obj ).getData() ) == 0;
+      }
     } catch ( KettleValueException e ) {
       throw new RuntimeException(
         "Row metadata and data: unable to compare rows because of a data conversion problem", e );
