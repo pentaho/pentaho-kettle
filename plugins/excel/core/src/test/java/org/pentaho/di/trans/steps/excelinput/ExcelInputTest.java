@@ -32,8 +32,9 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.lang.reflect.Method;
 
+import static org.mockito.ArgumentMatchers.any;
 
-public class ExcelInputDialogTest {
+public class ExcelInputTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Test
@@ -41,7 +42,7 @@ public class ExcelInputDialogTest {
    * http://jira.pentaho.com/browse/PDI-13930
    */
   public void getFieldsTest() throws Exception {
-    ExcelInputDialog dialog = Mockito.mock( ExcelInputDialog.class );
+    ExcelInput excelInput = Mockito.mock( ExcelInput.class );
     RowMeta fields = new RowMeta();
 
     ExcelInputMeta info = Mockito.mock( ExcelInputMeta.class );
@@ -72,13 +73,12 @@ public class ExcelInputDialogTest {
             loadClass( stringPlugin, ValueMetaInterface.class );
     ValueMetaFactory.pluginRegistry = pluginRegistry;
 
-
-    Method processingWorkbookMethod = ExcelInputDialog.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+    Method processingWorkbookMethod = ExcelInput.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
             ExcelInputMeta.class, KWorkbook.class );
     processingWorkbookMethod.setAccessible( true );
-    processingWorkbookMethod.invoke( dialog, fields, info, workbook );
+    processingWorkbookMethod.invoke( excelInput, fields, info, workbook );
 
     Assert.assertEquals( fieldCount, fields.size() );
   }
-
 }

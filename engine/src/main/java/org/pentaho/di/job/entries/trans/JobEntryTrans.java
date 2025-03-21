@@ -14,6 +14,8 @@
 package org.pentaho.di.job.entries.trans;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
@@ -1729,5 +1731,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     if ( parentJob != null ) {
       parentJob.callAfterLog();
     }
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    TransMeta inputTransMeta = this.getTransMeta( this.rep, this.metaStore, this.parentJobMeta );
+    String[] parametersList = inputTransMeta.listParameters();
+
+    JSONArray parameters = new JSONArray();
+    parameters.addAll( Arrays.asList( parametersList ) );
+    response.put( "parameters", parameters );
+    return response;
   }
 }

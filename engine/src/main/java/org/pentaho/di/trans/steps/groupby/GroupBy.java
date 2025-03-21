@@ -24,10 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map;
 import java.util.Collections;
 
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.apache.commons.vfs2.FileObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
@@ -939,5 +942,22 @@ public class GroupBy extends BaseStep implements StepInterface {
 
   public GroupByMeta getMeta() {
     return meta;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject typeGroupCodeAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    try {
+      String[] typeGroupCode = GroupByMeta.typeGroupCode;
+      JSONArray typeValuesList = new JSONArray();
+      for ( String typeValue: typeGroupCode ) {
+        typeValuesList.add( typeValue );
+      }
+      response.put( "typeGroupCode", typeValuesList );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
   }
 }

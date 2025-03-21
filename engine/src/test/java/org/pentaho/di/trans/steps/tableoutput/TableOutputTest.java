@@ -13,21 +13,23 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.util.Map;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
-
-import java.sql.Connection;
-import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -51,6 +53,10 @@ public class TableOutputTest {
   private TableOutputMeta tableOutputMeta, tableOutputMetaSpy;
   private TableOutputData tableOutputData, tableOutputDataSpy;
   private Database db;
+
+  private static RowMetaInterface filled;
+  private static RowMetaInterface empty;
+  private static String[] sample = { "1", "2", "3" };
 
   @Before
   public void setUp() throws Exception {
@@ -86,11 +92,14 @@ public class TableOutputTest {
     doReturn( false ).when( tableOutputSpy ).isDebug();
     doNothing().when( tableOutputSpy ).logDetailed( anyString() );
     doReturn( "1" ).when( tableOutputSpy ).getStepExecutionId();
+
+    filled = createRowMeta( sample, false );
+    empty = createRowMeta( sample, true );
   }
 
   @Test
   public void testWriteToTable() throws Exception {
-    tableOutputSpy.writeToTable( mock( RowMetaInterface.class ), new Object[]{} );
+    tableOutputSpy.writeToTable( mock( RowMetaInterface.class ), new Object[] {} );
   }
 
   @Test
@@ -151,7 +160,7 @@ public class TableOutputTest {
   @Test
   public void testProcessRow_truncatesOnFirstRow() throws Exception {
     when( tableOutputMeta.truncateTable() ).thenReturn( true );
-    Object[] row = new Object[]{};
+    Object[] row = new Object[] {};
     doReturn( row ).when( tableOutputSpy ).getRow();
 
     try {
@@ -165,7 +174,7 @@ public class TableOutputTest {
   @Test
   public void testProcessRow_doesNotTruncateOnOtherRows() throws Exception {
     when( tableOutputMeta.truncateTable() ).thenReturn( true );
-    Object[] row = new Object[]{};
+    Object[] row = new Object[] {};
     doReturn( row ).when( tableOutputSpy ).getRow();
     tableOutputSpy.first = false;
     doNothing().when( tableOutputSpy ).putRow( any(), any() );
@@ -180,7 +189,7 @@ public class TableOutputTest {
   @Test
   public void testInit_unsupportedConnection() {
 
-    TableOutputMeta meta =  mock( TableOutputMeta.class );
+    TableOutputMeta meta = mock( TableOutputMeta.class );
     TableOutputData data = mock( TableOutputData.class );
 
     DatabaseInterface dbInterface = mock( DatabaseInterface.class );
@@ -201,5 +210,26 @@ public class TableOutputTest {
 
     KettleException ke = new KettleException( unsupportedTableOutputMessage );
     verify( tableOutputSpy, times( 1 ) ).logError( "An error occurred intialising this step: " + ke.getMessage() );
+  }
+
+  @Test
+  public void validationRowMetaTest() throws Exception {
+    Method m = TableOutput.class.getDeclaredMethod( "isValidRowMeta", RowMetaInterface.class );
+    m.setAccessible( true );
+    Object result1 = m.invoke( null, filled );
+    Object result2 = m.invoke( null, empty );
+    assertTrue( Boolean.parseBoolean( result1 + "" ) );
+    assertFalse( Boolean.parseBoolean( result2 + "" ) );
+  }
+
+  private RowMetaInterface createRowMeta( String[] args, boolean hasEmptyFields ) {
+    RowMetaInterface result = new RowMeta();
+    if ( hasEmptyFields ) {
+      result.addValueMeta( new ValueMetaString( "" ) );
+    }
+    for ( String s : args ) {
+      result.addValueMeta( new ValueMetaString( s ) );
+    }
+    return result;
   }
 }

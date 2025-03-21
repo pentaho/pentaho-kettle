@@ -17,6 +17,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
+
+import static org.pentaho.di.core.util.Utils.setStringValueFromMap;
 
 /**
  * @author patitapaban19
@@ -96,5 +99,13 @@ public class AzureSqlDataBaseMeta extends MSSQLServerDatabaseMeta {
   @Override
   public String getXulOverlayFile() {
     return "azuresqldb";
+  }
+
+  @Override
+  public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    addAttribute( JDBC_AUTH_METHOD, setStringValueFromMap( attributes, JDBC_AUTH_METHOD ) );
+    addAttribute( CLIENT_ID, setStringValueFromMap( attributes, CLIENT_ID ) );
+    addAttribute( CLIENT_SECRET_KEY, setStringValueFromMap( attributes, CLIENT_SECRET_KEY ) );
+    addAttribute( IS_ALWAYS_ENCRYPTION_ENABLED, setStringValueFromMap( attributes, IS_ALWAYS_ENCRYPTION_ENABLED ) );
   }
 }

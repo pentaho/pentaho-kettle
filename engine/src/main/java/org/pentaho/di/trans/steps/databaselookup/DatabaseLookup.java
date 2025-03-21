@@ -14,23 +14,32 @@
 package org.pentaho.di.trans.steps.databaselookup;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.row.value.ValueMetaBase;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -40,8 +49,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
-
-import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Looks up values in a database using keys from input streams.
@@ -677,6 +684,110 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
     if ( log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "DatabaseLookup.Log.ConnectedToDatabase" ) );
+    }
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getTableFieldAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    String connectionName = queryParams.get( "connection" );
+    String schema = queryParams.get( "schema" );
+    String table = queryParams.get( "table" );
+    String[] columns = getTableFields( connectionName, schema, table );
+    JSONArray columnsList = new JSONArray();
+    Collections.addAll( columnsList, columns );
+    response.put( "columns", columnsList );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  private String[] getTableFields( String connection, String schema, String table ) {
+    DatabaseMeta databaseMeta = getTransMeta().findDatabase( connection );
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Database Lookup Step", LoggingObjectType.STEP, null );
+    Database db = new Database( loggingObject, databaseMeta );
+    try {
+      db.connect();
+      RowMetaInterface r =
+        db.getTableFieldsMeta( schema, table );
+      if ( null != r ) {
+        String[] fieldNames = r.getFieldNames();
+        if ( null != fieldNames ) {
+          return fieldNames;
+        }
+      }
+    } catch ( Exception e ) {
+      // ignore any errors here. drop downs will not be
+      // filled, but no problem for the user
+    } finally {
+      try {
+        if ( db != null ) {
+          db.disconnect();
+        }
+      } catch ( Exception ignored ) {
+        // ignore any errors here. Nothing we can do if
+        // connection fails to close properly
+        db = null;
+      }
+    }
+    return null;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject getTableFieldAndTypeAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+
+    String connectionName = queryParams.get( "connection" );
+    String schema = queryParams.get( "schema" );
+    String table = queryParams.get( "table" );
+
+    if ( connectionName == null || connectionName.isBlank() ||
+      schema == null || schema.isBlank() ||
+      table == null || table.isBlank() ) {
+      response.put( "error", "Missing or invalid parameters: connection, schema, or table." );
+      return response;
+    }
+    try {
+      JSONArray columnsList = getTableFieldsAndType( connectionName, schema, table );
+      response.put( "columns", columnsList );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    } catch ( Exception e ) {
+      log.logError( "Error fetching table fields and types: " + e.getMessage(), e );
+      response.put( "error", "An unexpected error occurred." );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONArray getTableFieldsAndType( String connection, String schema, String table ) {
+    DatabaseMeta databaseMeta = Optional.ofNullable( getTransMeta().findDatabase( connection ) )
+      .orElseThrow( () -> new IllegalArgumentException( "Database connection not found: " + connection ) );
+
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "DB Lookup Step", LoggingObjectType.STEP, null );
+
+    try ( Database db = new Database( loggingObject, databaseMeta ) ) {
+      db.connect();
+      RowMetaInterface rowMeta = db.getTableFieldsMeta( schema, table );
+
+      if ( rowMeta == null ) {
+        log.logDebug( "No metadata found for schema: " + schema + ", table: " + table );
+        return new JSONArray();
+      }
+
+      return rowMeta.getValueMetaList()
+        .stream()
+        .map( valueMeta -> {
+          JSONObject jsonObject = new JSONObject();
+          jsonObject.put( "columnName", valueMeta.getName() );
+          jsonObject.put( "columnType", valueMeta.getTypeDesc() );
+          return jsonObject;
+        } )
+        .collect( JSONArray::new, JSONArray::add, JSONArray::addAll );
+    } catch ( Exception e ) {
+      log.logError( "Error fetching fields and types for table: " + table, e );
+      return new JSONArray();
     }
   }
 }

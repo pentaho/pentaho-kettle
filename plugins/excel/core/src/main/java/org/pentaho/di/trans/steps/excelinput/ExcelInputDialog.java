@@ -1961,7 +1961,15 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         KWorkbook workbook =
           WorkbookFactory.getWorkbook( info.getSpreadSheetType(), KettleVFS.getFilename( file ), info
             .getEncoding(), wPassword.getText() );
-        processingWorkbook( fields, info, workbook );
+
+        Trans trans = new Trans( transMeta, null );
+        trans.rowsets = new ArrayList<>();
+
+        getInfo( input );
+        ExcelInput step = (ExcelInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+        step.setStepMetaInterface( input );
+        step.processingWorkbook( fields, info, workbook );
+
         workbook.close();
       } catch ( Exception e ) {
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
@@ -1988,98 +1996,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       mb.open();
     }
     checkAlerts();
-  }
-
-  /**
-   * Processing excel workbook, filling fields
-   *
-   * @param fields   RowMetaInterface for filling fields
-   * @param info     ExcelInputMeta
-   * @param workbook excel workbook for processing
-   * @throws KettlePluginException
-   */
-  private void processingWorkbook( RowMetaInterface fields, ExcelInputMeta info, KWorkbook workbook )
-    throws KettlePluginException {
-    int nrSheets = workbook.getNumberOfSheets();
-    for ( int j = 0; j < nrSheets; j++ ) {
-      KSheet sheet = workbook.getSheet( j );
-
-      // See if it's a selected sheet:
-      int sheetIndex;
-      if ( info.readAllSheets() ) {
-        sheetIndex = 0;
-      } else {
-        sheetIndex = Const.indexOfString( sheet.getName(), info.getSheetName() );
-      }
-      if ( sheetIndex >= 0 ) {
-        // We suppose it's the complete range we're looking for...
-        //
-        int rownr = 0;
-        int startcol = 0;
-
-        if ( info.readAllSheets() ) {
-          if ( info.getStartColumn().length == 1 ) {
-            startcol = info.getStartColumn()[ 0 ];
-          }
-          if ( info.getStartRow().length == 1 ) {
-            rownr = info.getStartRow()[ 0 ];
-          }
-        } else {
-          rownr = info.getStartRow()[ sheetIndex ];
-          startcol = info.getStartColumn()[ sheetIndex ];
-        }
-
-        boolean stop = false;
-        for ( int colnr = startcol; !stop; colnr++ ) {
-          try {
-            String fieldname = null;
-            int fieldtype = ValueMetaInterface.TYPE_NONE;
-
-            KCell cell = sheet.getCell( colnr, rownr );
-            if ( cell == null ) {
-              stop = true;
-            } else {
-              if ( cell.getType() != KCellType.EMPTY ) {
-                // We found a field.
-                fieldname = cell.getContents();
-              }
-
-              // System.out.println("Fieldname = "+fieldname);
-
-              KCell below = sheet.getCell( colnr, rownr + 1 );
-
-              if ( below != null ) {
-                if ( below.getType() == KCellType.BOOLEAN ) {
-                  fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
-                } else if ( below.getType() == KCellType.DATE ) {
-                  fieldtype = ValueMetaInterface.TYPE_DATE;
-                } else if ( below.getType() == KCellType.LABEL ) {
-                  fieldtype = ValueMetaInterface.TYPE_STRING;
-                } else if ( below.getType() == KCellType.NUMBER ) {
-                  fieldtype = ValueMetaInterface.TYPE_NUMBER;
-                } else {
-                  fieldtype = ValueMetaInterface.TYPE_STRING;
-                }
-              } else {
-                fieldtype = ValueMetaInterface.TYPE_STRING;
-              }
-
-              if ( Utils.isEmpty( fieldname ) ) {
-                stop = true;
-              } else {
-                if ( fieldtype != ValueMetaInterface.TYPE_NONE ) {
-                  ValueMetaInterface field = ValueMetaFactory.createValueMeta( fieldname, fieldtype );
-                  fields.addValueMeta( field );
-                }
-              }
-            }
-          } catch ( ArrayIndexOutOfBoundsException aioobe ) {
-            // System.out.println("index out of bounds at column "+colnr+" : "+aioobe.toString());
-            stop = true;
-          }
-        }
-      }
-    }
   }
 
   private void showFiles() {

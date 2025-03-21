@@ -13,14 +13,18 @@
 
 package org.pentaho.di.trans.steps.selectvalues;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleConversionException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -28,6 +32,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -48,6 +53,8 @@ public class SelectValues extends BaseStep implements StepInterface {
 
   private SelectValuesMeta meta;
   private SelectValuesData data;
+
+  private String[] charsets = null;
 
   public SelectValues( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
                        Trans trans ) {
@@ -440,6 +447,60 @@ public class SelectValues extends BaseStep implements StepInterface {
     } else {
       return false;
     }
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject localesAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    try {
+      JSONArray locales = new JSONArray();
+      locales.addAll( Arrays.asList( EnvUtil.getLocaleList() ) );
+      response.put( "locales", locales );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject timezonesAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    try {
+      JSONArray timezones = new JSONArray();
+      timezones.addAll( Arrays.asList( EnvUtil.getTimeZones() ) );
+      response.put( "timezones", timezones );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject encodingsAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    try {
+      JSONArray encodings = new JSONArray();
+      encodings.addAll( Arrays.asList( getCharsets() ) );
+      response.put( "encodings", encodings );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
+
+  public String[] getCharsets() {
+    if ( charsets == null ) {
+      Collection<Charset> charsetCol = Charset.availableCharsets().values();
+      charsets = new String[ charsetCol.size() ];
+      int i = 0;
+      for ( Charset charset : charsetCol ) {
+        charsets[ i++ ] = charset.displayName();
+      }
+    }
+    return charsets;
   }
 
 }

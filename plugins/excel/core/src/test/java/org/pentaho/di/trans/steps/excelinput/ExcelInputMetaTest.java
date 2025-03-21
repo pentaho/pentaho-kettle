@@ -300,8 +300,6 @@ public class ExcelInputMetaTest {
         + "    <sheetfield/>" + SystemUtils.LINE_SEPARATOR
         + "    <sheetrownumfield/>" + SystemUtils.LINE_SEPARATOR
         + "    <rownumfield/>" + SystemUtils.LINE_SEPARATOR
-        + "    <sheetfield/>" + SystemUtils.LINE_SEPARATOR
-        + "    <filefield/>" + SystemUtils.LINE_SEPARATOR
         + "    <limit>0</limit>" + SystemUtils.LINE_SEPARATOR
         + "    <encoding/>" + SystemUtils.LINE_SEPARATOR
         + "    <add_to_result_filenames>N</add_to_result_filenames>" + SystemUtils.LINE_SEPARATOR
