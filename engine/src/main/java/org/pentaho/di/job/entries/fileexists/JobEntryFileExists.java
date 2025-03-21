@@ -186,6 +186,11 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -202,8 +207,9 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
    *           in case something goes wrong during the export
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

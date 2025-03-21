@@ -551,6 +551,11 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -563,9 +568,9 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -573,7 +578,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
       // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.txt
       // To : /home/matt/test/files/foo/bar.txt
       //
-      FileObject fileObject = KettleVFS.getInstance( bowl )
+      FileObject fileObject = KettleVFS.getInstance( executionBowl )
         .getFileObject( space.environmentSubstitute( filename ), space );
 
       // If the file doesn't exist, forget about this effort too!
@@ -581,7 +586,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
       if ( fileObject.exists() ) {
         // Convert to an absolute path...
         //
-        filename = resourceNamingInterface.nameResource( fileObject, space, true );
+        filename = namingInterface.nameResource( fileObject, space, true );
 
         return filename;
       }

@@ -668,8 +668,10 @@ public interface JobEntryInterface {
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
    *
-   * @param Bowl
-   *          Context for file operations
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -685,8 +687,9 @@ public interface JobEntryInterface {
    * @throws KettleException
    *           in case something goes wrong during the export
    */
-  String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException;
+  String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+    Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository,
+    IMetaStore metaStore ) throws KettleException;
 
   /**
    * Checks whether the job entry defines one or more references to a repository object

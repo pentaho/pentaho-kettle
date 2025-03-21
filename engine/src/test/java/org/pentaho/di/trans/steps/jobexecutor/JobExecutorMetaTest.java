@@ -115,11 +115,11 @@ public class JobExecutorMetaTest {
 
     doReturn( jobMeta ).when( jobExecutorMeta ).loadJobMetaProxy( nullable( Bowl.class ),
             nullable( JobExecutorMeta.class ), nullable( Repository.class ), nullable( VariableSpace.class ) );
-    when( jobMeta.exportResources( any( Bowl.class ), any( JobMeta.class ), nullable( Map.class ),
-      nullable( ResourceNamingInterface.class ), nullable( Repository.class ), nullable( IMetaStore.class ) ) )
-      .thenReturn( testName );
+    when( jobMeta.exportResources( any( Bowl.class ), nullable( Bowl.class ), any( JobMeta.class ),
+      nullable( Map.class ), nullable( ResourceNamingInterface.class ), nullable( Repository.class ),
+      nullable( IMetaStore.class ) ) ).thenReturn( testName );
 
-    jobExecutorMeta.exportResources( DefaultBowl.getInstance(), null, null, null, null, null );
+    jobExecutorMeta.exportResources( DefaultBowl.getInstance(), null, null, null, null, null, null );
 
     verify( jobMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( jobExecutorMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );

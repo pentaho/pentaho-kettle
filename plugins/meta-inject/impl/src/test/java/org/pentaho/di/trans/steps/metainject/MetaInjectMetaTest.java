@@ -138,18 +138,18 @@ public class MetaInjectMetaTest {
     MetaInjectMeta injectMetaSpy = spy( metaInjectMeta );
     TransMeta transMeta = mock( TransMeta.class );
     Map<String, ResourceDefinition> definitions = Collections.<String, ResourceDefinition>emptyMap();
-    doReturn( TEST_FILE_NAME ).when( transMeta ).exportResources( DefaultBowl.getInstance(), transMeta, definitions,
-        resourceNamingInterface, repository, metaStore );
+    doReturn( TEST_FILE_NAME ).when( transMeta ).exportResources( DefaultBowl.getInstance(), null, transMeta,
+        definitions, resourceNamingInterface, repository, metaStore );
     doReturn( transMeta ).when( injectMetaSpy ).loadTransformationMeta( DefaultBowl.getInstance(), repository,
         variableSpace );
 
     String actualExportedFileName =
-        injectMetaSpy.exportResources( DefaultBowl.getInstance(), variableSpace, definitions, resourceNamingInterface,
-          repository, metaStore );
+        injectMetaSpy.exportResources( DefaultBowl.getInstance(), null, variableSpace, definitions,
+          resourceNamingInterface, repository, metaStore );
     assertEquals( TEST_FILE_NAME, actualExportedFileName );
     assertEquals( EXPORTED_FILE_NAME, injectMetaSpy.getFileName() );
-    verify( transMeta ).exportResources( DefaultBowl.getInstance(), transMeta, definitions, resourceNamingInterface,
-         repository, metaStore );
+    verify( transMeta ).exportResources( DefaultBowl.getInstance(), null, transMeta, definitions,
+      resourceNamingInterface, repository, metaStore );
   }
 
   @Test

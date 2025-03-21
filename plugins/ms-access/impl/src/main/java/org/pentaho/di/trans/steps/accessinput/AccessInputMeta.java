@@ -1190,6 +1190,11 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1202,9 +1207,9 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -1212,9 +1217,9 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
       // Replace the filename ONLY (folder or filename)
       //
       for ( int i = 0; i < fileName.length; i++ ) {
-        FileObject fileObject = KettleVFS.getInstance( bowl )
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
           .getFileObject( space.environmentSubstitute( fileName[i] ), space );
-        fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
+        fileName[i] = namingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
       }
       return null;
     } catch ( Exception e ) {

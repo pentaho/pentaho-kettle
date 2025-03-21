@@ -63,8 +63,10 @@ public interface ResourceExportInterface {
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
    *
-   * @param bowl
+   * @param executionBowl
    *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -80,8 +82,9 @@ public interface ResourceExportInterface {
    * @throws KettleException
    *           in case something goes wrong during the export
    */
-  default String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  default String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository,
+      IMetaStore metaStore ) throws KettleException {
     return exportResources( space, definitions, namingInterface, repository, metaStore );
   }
 }

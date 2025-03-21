@@ -103,7 +103,7 @@ public class SharedObjectUtil {
   }
 
   /**
-   * Moves all shared objects from the source to the target
+   * Moves all shared objects from the source to the target, overwriting on conflict (case insensitive)
    */
   public static void moveAllSharedObjects( AbstractMeta sourceMeta, Bowl targetBowl ) throws KettleException {
     moveAll( sourceMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class ),
@@ -117,39 +117,66 @@ public class SharedObjectUtil {
   }
 
   /**
-   * Copies used database connections plus all other shared objects from the source bowl to the target AbstractMeta.
+   * Copies shared objects from the source bowl to the target AbstractMeta if they aren't already there. If onlyUsedDbs
+   * is true, the only database connections that will be copied will be those used by the target meta.
    *
    *
    * @param sourceBowl
    * @param targetMeta
    */
-  public static void copySharedObjects( Bowl sourceBowl, AbstractMeta targetMeta ) throws KettleException {
+  public static void copySharedObjects( Bowl sourceBowl, AbstractMeta targetMeta, boolean onlyUsedDbs )
+      throws KettleException {
     copyAll( sourceBowl.getManager( ClusterSchemaManagementInterface.class ),
-             targetMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class ) );
+             targetMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class ), false );
     copyAll( sourceBowl.getManager( PartitionSchemaManagementInterface.class ),
-             targetMeta.getSharedObjectManager( PartitionSchemaManagementInterface.class ) );
+             targetMeta.getSharedObjectManager( PartitionSchemaManagementInterface.class ), false );
     copyAll( sourceBowl.getManager( SlaveServerManagementInterface.class ),
-             targetMeta.getSharedObjectManager( SlaveServerManagementInterface.class ) );
+             targetMeta.getSharedObjectManager( SlaveServerManagementInterface.class ), false );
 
-    copyUsedDbConnections( sourceBowl, targetMeta );
-
+    if ( onlyUsedDbs ) {
+      copyUsedDbConnections( sourceBowl, targetMeta );
+    } else {
+      copyAll( sourceBowl.getManager( DatabaseManagementInterface.class ),
+               targetMeta.getSharedObjectManager( DatabaseManagementInterface.class ), false );
+    }
   }
 
+  /**
+   * Moves all shared objects from the source manager to the target manager, overwriting existing objects (case
+   * insensitive)
+   *
+   *
+   * @param <T>
+   * @param sourceManager
+   * @param targetManager
+   */
   public static <T extends SharedObjectInterface<T> & RepositoryElementInterface>
     void moveAll( SharedObjectsManagementInterface<T> sourceManager, SharedObjectsManagementInterface<T> targetManager )
       throws KettleException {
     if ( sourceManager != null && targetManager != null ) {
-      copyAll( sourceManager, targetManager );
+      copyAll( sourceManager, targetManager, true );
       sourceManager.clear();
     }
   }
 
+  /**
+   * Copies all the shared objects from the source manager to the target manager. If overwrite is true, copy will
+   * happen whether or not the target manager already has the object (case insensitive). If overwrite is false, copy
+   * will not happen if the target manager already has the object
+   *
+   *
+   * @param sourceManager
+   * @param targetManager
+   * @param overwrite
+   */
   public static <T extends SharedObjectInterface<T> & RepositoryElementInterface>
-    void copyAll( SharedObjectsManagementInterface<T> sourceManager, SharedObjectsManagementInterface<T> targetManager )
-      throws KettleException {
+    void copyAll( SharedObjectsManagementInterface<T> sourceManager, SharedObjectsManagementInterface<T> targetManager,
+      boolean overwrite ) throws KettleException {
     if ( sourceManager != null && targetManager != null ) {
       for ( T object : sourceManager.getAll() ) {
-        targetManager.add( object );
+        if ( overwrite || targetManager.get( object.getName() ) == null ) {
+          targetManager.add( object );
+        }
       }
     }
   }
@@ -162,8 +189,10 @@ public class SharedObjectUtil {
     for ( String name : usedNames ) {
       DatabaseMeta db = sourceManager.get( name );
       if ( db != null ) {
-        targetManager.add( db );
-        targetMeta.databaseUpdated( name );
+        if ( targetManager.get( name ) == null ){
+          targetManager.add( db );
+          targetMeta.databaseUpdated( name );
+        }
       }
     }
   }

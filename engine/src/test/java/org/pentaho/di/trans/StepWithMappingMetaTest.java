@@ -135,10 +135,10 @@ public class StepWithMappingMetaTest {
             mockConstruction( MetaFileLoaderImpl.class, ( m,c ) -> when( m.getMetaForStep( any(), any(), any(), any() ) )
                               .thenReturn( transMeta ) ) ) {
 
-      when( transMeta.exportResources( any(), any(), any(), nullable( ResourceNamingInterface.class ),
+      when( transMeta.exportResources( any(), any(), any(), any(), nullable( ResourceNamingInterface.class ),
         nullable( Repository.class ), nullable( IMetaStore.class ) ) ).thenReturn( testName );
 
-      stepWithMappingMeta.exportResources( null, null, null, null, null, null );
+      stepWithMappingMeta.exportResources( null, null, null, null, null, null, null );
       verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
       verify( stepWithMappingMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     }

@@ -171,8 +171,8 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       try {
         // Export the resources linked to the currently loaded file...
         TopLevelResource topLevelResource =
-          ResourceUtil.serializeResourceExportInterface( getBowl(), params.getExportRepo(),
-            job.getJobMeta(), job, repository, getMetaStore() );
+          ResourceUtil.serializeResourceExportInterface( getBowl(), repository == null ? null : repository.getBowl(),
+            params.getExportRepo(), job.getJobMeta(), job, repository, getMetaStore() );
         String launchFile = topLevelResource.getResourceName();
         String message = ResourceUtil.getExplanation( params.getExportRepo(), launchFile, job.getJobMeta() );
         System.out.println();

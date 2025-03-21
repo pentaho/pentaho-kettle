@@ -255,9 +255,9 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
   }
 
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
-                                 IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // Try to load the transformation from repository or file.
       // Modify this recursively too...
@@ -267,14 +267,14 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
       //
       // First load the mapping transformation...
       //
-      TransMeta mappingTransMeta = loadMappingMeta( bowl, this, repository, metaStore, space );
+      TransMeta mappingTransMeta = loadMappingMeta( executionBowl, this, repository, metaStore, space );
 
       // Also go down into the mapping transformation and export the files
       // there. (mapping recursively down)
       //
       String proposedNewFilename =
-              mappingTransMeta.exportResources( bowl, mappingTransMeta, definitions, resourceNamingInterface,
-                repository, metaStore );
+              mappingTransMeta.exportResources( executionBowl, globalManagementBowl, mappingTransMeta, definitions,
+                resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Entry.Current.Directory}

@@ -6106,8 +6106,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if (!Utils.isEmpty(zipFilename)) {
           // Export the resources linked to the currently loaded file...
           TopLevelResource topLevelResource =
-                  ResourceUtil.serializeResourceExportInterface( executionBowl,
-                          zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStoreSupplier.get() );
+                  ResourceUtil.serializeResourceExportInterface( executionBowl, globalManagementBowl,
+                    zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep,
+                    metaStoreSupplier.get() );
           String message =
                   ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(), resourceExportInterface);
 
@@ -6179,7 +6180,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Export the resources linked to the currently loaded file...
       //
       TopLevelResource topLevelResource =
-        ResourceUtil.serializeResourceExportInterface( executionBowl,
+        ResourceUtil.serializeResourceExportInterface( executionBowl, globalManagementBowl,
           zipFilename, resourceExportInterface, (VariableSpace) resourceExportInterface, rep, metaStoreSupplier.get() );
       String message =
         ResourceUtil.getExplanation( zipFilename, topLevelResource.getResourceName(), resourceExportInterface );

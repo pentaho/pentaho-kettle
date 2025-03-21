@@ -1439,8 +1439,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
    * @throws KettleException in case something goes wrong during the export
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository,
+      IMetaStore metaStore ) throws KettleException {
     // Try to load the transformation from repository or file.
     // Modify this recursively too...
     //
@@ -1454,7 +1455,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // Also go down into the transformation and export the files there. (mapping recursively down)
     //
     String proposedNewFilename =
-      transMeta.exportResources( bowl, transMeta, definitions, namingInterface, repository, metaStore );
+      transMeta.exportResources( executionBowl, globalManagementBowl, transMeta, definitions, namingInterface,
+        repository, metaStore );
 
     // To get a relative path to it, we inject ${Internal.Entry.Current.Directory}
     //

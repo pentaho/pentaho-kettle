@@ -98,6 +98,7 @@ import org.pentaho.di.shared.PassthroughClusterSchemaManager;
 import org.pentaho.di.shared.PassthroughPartitionSchemaManager;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsIO;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -6075,8 +6076,9 @@ public class TransMeta extends AbstractMeta
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space, Map<String,
+      ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository,
+      IMetaStore metaStore ) throws KettleException {
 
     try {
       // Handle naming for both repository and XML bases resources...
@@ -6097,7 +6099,7 @@ public class TransMeta extends AbstractMeta
       } else {
         // Assume file
         //
-        FileObject fileObject = KettleVFS.getInstance( bowl )
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
           .getFileObject( space.environmentSubstitute( getFilename() ), space );
         originalPath = fileObject.getParent().getURL().toString();
         baseName = fileObject.getName().getBaseName();
@@ -6124,7 +6126,14 @@ public class TransMeta extends AbstractMeta
         // loop over steps, databases will be exported to XML anyway.
         //
         for ( StepMeta stepMeta : transMeta.getSteps() ) {
-          stepMeta.exportResources( bowl, space, definitions, resourceNamingInterface, repository, metaStore );
+          stepMeta.exportResources( executionBowl, globalManagementBowl, space, definitions, resourceNamingInterface,
+            repository, metaStore );
+        }
+
+        // copy databases from global management bowl.
+        if ( globalManagementBowl != null ) {
+          SharedObjectUtil.copySharedObjects( globalManagementBowl, transMeta,
+            Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
         }
 
         // Change the filename, calling this sets internal variables

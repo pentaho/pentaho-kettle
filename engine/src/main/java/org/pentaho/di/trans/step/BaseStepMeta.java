@@ -476,9 +476,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     return null;
   }
 
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
-                                 IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     return null;
   }
 

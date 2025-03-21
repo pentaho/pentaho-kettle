@@ -221,11 +221,11 @@ public class JobEntryTransTest {
 
     doReturn( transMeta ).when( jobEntryTrans ).getTransMeta( any( Repository.class ),
             any( VariableSpace.class ) );
-    when( transMeta.exportResources( any( Bowl.class ), any( TransMeta.class ), any( Map.class ),
+    when( transMeta.exportResources( any( Bowl.class ), any( Bowl.class ), any( TransMeta.class ), any( Map.class ),
             any( ResourceNamingInterface.class ), any( Repository.class ), any( IMetaStore.class ) ) )
               .thenReturn( testName );
 
-    jobEntryTrans.exportResources( null, null, null, null, null, null );
+    jobEntryTrans.exportResources( null, null, null, null, null, null, null );
 
     verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( jobEntryTrans ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );

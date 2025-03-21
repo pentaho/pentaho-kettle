@@ -1073,6 +1073,11 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
    * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively. So
    * what this does is turn the name of the base path into an absolute path.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1085,9 +1090,9 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -1096,9 +1101,9 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
       if ( !fileNameInField ) {
 
         if ( !Utils.isEmpty( fileName ) ) {
-          FileObject fileObject = KettleVFS.getInstance( bowl )
+          FileObject fileObject = KettleVFS.getInstance( executionBowl )
             .getFileObject( space.environmentSubstitute( fileName ), space );
-          fileName = resourceNamingInterface.nameResource( fileObject, space, true );
+          fileName = namingInterface.nameResource( fileObject, space, true );
         }
       }
 

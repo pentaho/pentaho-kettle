@@ -116,7 +116,7 @@ public class StreamToTransNodeConverter implements Converter {
     if ( transMeta == null ) {
       return null;
     }
-    SharedObjectUtil.copySharedObjects( repository.getBowl(), transMeta );
+    SharedObjectUtil.copySharedObjects( repository.getBowl(), transMeta, true );
     SharedObjectUtil.stripObjectIds( transMeta );
     String xml = XMLHandler.getXMLHeader() + transMeta.getXML();
     return new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );

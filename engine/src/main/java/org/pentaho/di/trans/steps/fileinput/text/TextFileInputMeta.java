@@ -1220,6 +1220,11 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1232,9 +1237,9 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-        throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -1250,7 +1255,7 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
             continue;
           }
 
-          FileObject fileObject = getFileObject( bowl, space.environmentSubstitute( fileName ), space );
+          FileObject fileObject = getFileObject( executionBowl, space.environmentSubstitute( fileName ), space );
 
           inputFiles.fileName[i] =
               resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( inputFiles.fileMask[i] ) );

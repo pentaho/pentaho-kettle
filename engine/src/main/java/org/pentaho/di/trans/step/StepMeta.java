@@ -973,13 +973,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   @Override
   @SuppressWarnings( "deprecation" )
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-        throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
 
     // Compatibility with previous release...
     //
-    String resources = stepMetaInterface.exportResources( bowl, space, definitions, resourceNamingInterface, repository );
+    String resources = stepMetaInterface.exportResources( executionBowl, space, definitions,
+      resourceNamingInterface, repository );
     if ( resources != null ) {
       return resources;
     }
@@ -988,7 +989,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     // These can in turn add anything to the map in terms of resources, etc.
     // Even reference files, etc. For now it's just XML probably...
     //
-    return stepMetaInterface.exportResources( bowl, space, definitions, resourceNamingInterface, repository, metaStore );
+    return stepMetaInterface.exportResources( executionBowl, globalManagementBowl, space, definitions,
+      resourceNamingInterface, repository, metaStore );
   }
 
   /**

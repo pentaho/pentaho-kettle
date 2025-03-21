@@ -1080,6 +1080,11 @@ public class JsonInputMeta extends
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1092,8 +1097,9 @@ public class JsonInputMeta extends
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -1102,7 +1108,7 @@ public class JsonInputMeta extends
       List<String> newFilenames = new ArrayList<String>();
 
       if ( !isInFields() ) {
-        FileInputList fileList = getFiles( bowl, space );
+        FileInputList fileList = getFiles( executionBowl, space );
         if ( fileList.getFiles().size() > 0 ) {
           for ( FileObject fileObject : fileList.getFiles() ) {
             // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.xml

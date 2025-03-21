@@ -643,10 +643,9 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   }
 
   @Override
-  public String exportResources( Bowl bowl, VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
-                                 IMetaStore metaStore )
-    throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // Try to load the transformation from repository or file.
       // Modify this recursively too...
@@ -656,14 +655,14 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       //
       // First load the executor transformation metadata...
       //
-      TransMeta executorTransMeta = loadTransformationMeta( bowl, repository, space );
+      TransMeta executorTransMeta = loadTransformationMeta( executionBowl, repository, space );
 
       // Also go down into the mapping transformation and export the files
       // there. (mapping recursively down)
       //
       String proposedNewFilename =
-        executorTransMeta.exportResources( bowl, executorTransMeta, definitions, resourceNamingInterface, repository,
-          metaStore );
+        executorTransMeta.exportResources( executionBowl, globalManagementBowl, executorTransMeta, definitions,
+          resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Entry.Current.Directory}
