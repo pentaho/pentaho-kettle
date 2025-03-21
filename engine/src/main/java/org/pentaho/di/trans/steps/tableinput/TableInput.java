@@ -341,47 +341,48 @@ public class TableInput extends BaseDatabaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getColumnsAction( Map<String, String> queryParams ) {
+  private JSONObject getColumnsAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
     String sql =
-      getColumnsSQL( queryParams.get( "connection" ), queryParams.get( "schema" ), queryParams.get( "table" ) );
+      String.valueOf(
+        getColumnsSQL( queryParams.get( "connection" ), queryParams.get( "schema" ), queryParams.get( "table" ) ) );
     response.put( "sql", sql );
     response.put( "actionStatus", StepInterface.SUCCESS_RESPONSE );
     return response;
   }
 
-  private String getColumnsSQL( String connection, String schema, String table ) {
+  private StringBuilder getColumnsSQL( String connection, String schema, String table ) throws KettleException {
     DatabaseMeta databaseMeta = getTransMeta().findDatabase( connection );
     LoggingObjectInterface loggingObject = new SimpleLoggingObject(
       "Table Output Step", LoggingObjectType.STEP, null );
     Database db = new Database( loggingObject, databaseMeta );
-    String sql =
-      "SELECT *"
+    StringBuilder sql =
+      new StringBuilder( "SELECT *"
         + Const.CR + "FROM "
-        + databaseMeta.getQuotedSchemaTableCombination( schema, table ) + Const.CR;
+        + databaseMeta.getQuotedSchemaTableCombination( schema, table ) + Const.CR );
     try {
       db.connect();
 
-      RowMetaInterface fields = db.getQueryFields( sql, false );
+      RowMetaInterface fields = db.getQueryFields( String.valueOf( sql ), false );
       if ( fields != null ) {
-        sql = "SELECT" + Const.CR;
+        sql = new StringBuilder( "SELECT" + Const.CR );
         for ( int i = 0; i < fields.size(); i++ ) {
           ValueMetaInterface field = fields.getValueMeta( i );
           if ( i == 0 ) {
-            sql += "  ";
+            sql.append( "  " );
           } else {
-            sql += ", ";
+            sql.append( ", " );
           }
-          sql += databaseMeta.quoteField( field.getName() ) + Const.CR;
+          sql.append( databaseMeta.quoteField( field.getName() ) ).append( Const.CR );
         }
-        sql +=
-          "FROM "
-            + databaseMeta.getQuotedSchemaTableCombination( schema, table )
-            + Const.CR;
+        sql.append( "FROM " ).append( databaseMeta.getQuotedSchemaTableCombination( schema, table ) )
+          .append( Const.CR );
       }
     } catch ( KettleDatabaseException e ) {
-      throw new RuntimeException( e );
+      throw new KettleException(  e );
+    } finally {
+      db.close();
     }
     return sql;
   }

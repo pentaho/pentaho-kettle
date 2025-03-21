@@ -13,8 +13,6 @@
 
 package org.pentaho.di.trans.steps.salesforce;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
@@ -139,24 +137,8 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
     return value;
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = SalesforceStep.class.getDeclaredMethod( fieldName + "Action" );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject testButtonAction() {
+  protected JSONObject testButtonAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     boolean successConnection = testConnection();
     response.put( "connectionStatus", successConnection );
@@ -166,18 +148,8 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
   public boolean testConnection() {
     boolean successConnection = true;
     SalesforceConnection connection = null;
-
     try {
-      SalesforceStepMeta salesforceStepMeta = (SalesforceStepMeta) getStepMetaInterface();
-      String realURL = getTransMeta().environmentSubstitute( salesforceStepMeta.getTargetURL() );
-      String realUsername = getTransMeta().environmentSubstitute( salesforceStepMeta.getUsername() );
-      String realPassword = Utils.resolvePassword( getTransMeta(), salesforceStepMeta.getPassword() );
-      int realTimeOut = Const.toInt( getTransMeta().environmentSubstitute( salesforceStepMeta.getTimeout() ), 0 );
-
-      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
-      connection.setTimeOut( realTimeOut );
-      connection.connect();
-
+      connection = getConnection();
     } catch ( Exception e ) {
       successConnection = false;
       logError( e.getMessage() );
@@ -187,6 +159,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
           connection.close();
         } catch ( Exception e ) {
           //Ignore
+          logError( e.getMessage() );
         }
       }
     }
@@ -194,10 +167,10 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject modulesAction() {
+  protected JSONObject modulesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     try {
-      String[] modules = getModules();
+      String[] modules = getModules( queryParams.get( "moduleFlag" ) );
       JSONArray modulesList = new JSONArray();
       Collections.addAll( modulesList, modules );
       response.put( "modules", modulesList );
@@ -208,8 +181,12 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
     return response;
   }
 
-  public String[] getModules() throws KettleException {
+  public String[] getModules( String moduleFlag ) throws KettleException {
+    SalesforceConnection connection = getConnection();
+    return connection.getAllAvailableObjects( Boolean.parseBoolean( moduleFlag ) );
+  }
 
+  protected SalesforceConnection getConnection() throws KettleException {
     SalesforceConnection connection = null;
     try {
       SalesforceStepMeta salesforceStepMeta = (SalesforceStepMeta) getStepMetaInterface();
@@ -221,9 +198,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
       connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
       connection.setTimeOut( realTimeOut );
       connection.connect();
-
-      return connection.getAllAvailableObjects( false );
-
+      return connection;
     } catch ( Exception e ) {
       throw new KettleException( e );
     } finally {
@@ -231,6 +206,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
         try {
           connection.close();
         } catch ( Exception e ) { /* Ignore */
+          logError( e.getMessage() );
         }
       }
     }

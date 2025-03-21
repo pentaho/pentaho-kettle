@@ -1735,7 +1735,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
 
         gotModule = true;
         getModulesListError = false;
-        String[] modules = step.getModules();
+        String[] modules = step.getModules( "true" );
         if ( modules != null && modules.length > 0 ) {
           // populate Combo
           wModule.setItems( modules );

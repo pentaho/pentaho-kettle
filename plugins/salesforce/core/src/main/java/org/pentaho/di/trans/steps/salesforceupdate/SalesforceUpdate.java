@@ -310,65 +310,13 @@ public class SalesforceUpdate extends SalesforceStep {
   }
 
   @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = SalesforceUpdate.class.getDeclaredMethod( fieldName + "Action" );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException e ) {
-      return super.doAction( fieldName, stepMetaInterface, transMeta, trans, queryParamToValues );
-    } catch ( InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
+  protected JSONObject testButtonAction( Map<String, String> queryParams ) {
+    return super.testButtonAction( queryParams );
   }
 
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getModuleFieldsAction() {
-    JSONObject response = new JSONObject();
-    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    try {
-      String[] moduleFields = getModuleFields();
-      JSONArray moduleFieldsList = new JSONArray();
-      moduleFieldsList.addAll( Arrays.asList( moduleFields ) );
-      response.put( "moduleFields", moduleFieldsList );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
-    return response;
-  }
-
-  public String[] getModuleFields() throws Exception {
-    SalesforceConnection connection = null;
-    try {
-      SalesforceStepMeta salesforceStepMeta = (SalesforceStepMeta) getStepMetaInterface();
-      String realURL = getTransMeta().environmentSubstitute( salesforceStepMeta.getTargetURL() );
-      String realUsername = getTransMeta().environmentSubstitute( salesforceStepMeta.getUsername() );
-      String realPassword = Utils.resolvePassword( getTransMeta(), salesforceStepMeta.getPassword() );
-      int realTimeOut = Const.toInt( getTransMeta().environmentSubstitute( salesforceStepMeta.getTimeout() ), 0 );
-
-      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
-      connection.setTimeOut( realTimeOut );
-      connection.connect();
-
-      return connection.getFields( salesforceStepMeta.getModule() );
-    } catch ( Exception e ) {
-      throw new Exception( e );
-    } finally {
-      if ( connection != null ) {
-        try {
-          connection.close();
-        } catch ( Exception e ) { /* Ignore */
-          logError( e.getMessage() );
-        }
-      }
-    }
+  protected JSONObject modulesAction( Map<String, String> queryParams ) {
+    queryParams.put( "moduleFlag", "false" );
+    return super.modulesAction( queryParams );
   }
 
 }
