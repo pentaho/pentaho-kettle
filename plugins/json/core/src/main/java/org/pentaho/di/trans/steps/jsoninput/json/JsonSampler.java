@@ -44,7 +44,7 @@ public class JsonSampler {
 
   private int start = 0;
   private Configuration configuration;
-  public JsonFactory jsonFactory = new MappingJsonFactory();
+  private JsonFactory jsonFactory = new MappingJsonFactory();
 
   /**
    * The constructor that takes are configuration object as a parameter

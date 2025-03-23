@@ -22,7 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -31,6 +33,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -325,10 +328,11 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       FileInputList fileInputList = jsonInputMeta.getFiles( getTransMeta() );
       String[] files = fileInputList.getFileStrings();
 
-      InputStream inputStream = KettleVFS.getInputStream( files[ 0 ] );
+      InputStream inputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getInputStream( files[ 0 ] );
       // Parse the JSON file
       JsonSampler jsonSampler = new JsonSampler();
-      JsonParser jsonParser = jsonSampler.jsonFactory.createParser( inputStream );
+      JsonFactory jsonFactory = new MappingJsonFactory();
+      JsonParser jsonParser = jsonFactory.createParser( inputStream );
       Node rootNode = jsonSampler.getNode( jsonParser );
 
       JSONObject jsonObject = convertToJsonObject( rootNode );
@@ -343,6 +347,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject getFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
 

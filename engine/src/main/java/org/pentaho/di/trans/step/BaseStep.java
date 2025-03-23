@@ -4422,7 +4422,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       actionMethod.setAccessible( true );
       this.setStepMetaInterface( stepMetaInterface );
       response = (JSONObject) actionMethod.invoke( this, queryParams );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      if ( !isFailedResponse( response ) ) {
+        response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      }
 
     } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
       if ( ex.getCause() instanceof KettleException ) {
@@ -4435,5 +4437,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     return response;
   }
 
+  private boolean isFailedResponse( JSONObject response ) {
+    if ( response != null && response.get( StepInterface.ACTION_STATUS ) != null ) {
+      return StepInterface.FAILURE_RESPONSE.equalsIgnoreCase( (String) response.get( StepInterface.ACTION_STATUS ) );
+    }
+
+    return false;
+  }
 }
 
