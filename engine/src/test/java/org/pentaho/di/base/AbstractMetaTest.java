@@ -800,6 +800,10 @@ public class AbstractMetaTest {
     }
 
     @Override
+    public void allDatabasesUpdated() {
+    }
+
+    @Override
     public void databasesUpdated( String name, Optional<DatabaseMeta> database ) {
 
     }

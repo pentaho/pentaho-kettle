@@ -431,6 +431,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   public void setBowl( Bowl bowl ) {
     this.bowl = Objects.requireNonNull( bowl );
     initializeNonLocalSharedObjects();
+    // now that the bowl has changed, make sure we have up-to-date DatabaseMetas.
+    allDatabasesUpdated();
   }
 
   /**
@@ -499,16 +501,20 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   public DatabaseMeta findDatabase( String name ) {
     try {
       List<DatabaseMeta> databases = readDbManager.getAll();
-      for ( DatabaseMeta db : databases) {
-        if ( ( db != null ) && ( db.getName().equalsIgnoreCase( name ) )
-             || ( db.getDisplayName().equalsIgnoreCase( name ) ) ) {
-          return db;
-        }
-      }
-      return null;
+      return findMatchingDb( databases, name );
     } catch ( KettleException ex ) {
       return null;
     }
+  }
+
+  protected DatabaseMeta findMatchingDb( List<DatabaseMeta> databases, String name ) {
+    for ( DatabaseMeta db : databases) {
+      if ( ( db != null ) && ( db.getName().equalsIgnoreCase( name ) )
+           || ( db.getDisplayName().equalsIgnoreCase( name ) ) ) {
+        return db;
+      }
+    }
+    return null;
   }
 
   /*
@@ -1283,6 +1289,13 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   }
 
   /**
+   * use the latest version of all databases used in the meta. Should be the equivalent of calling databaseUpdated( name
+   * ) with every name returned from getUsedDatabaseConnectionNames(), but may be more efficient.
+   *
+   */
+  public abstract void allDatabasesUpdated();
+
+  /**
    * Propagate a change to a database to all parts of the transformation or job. Update steps or entries that have their
    * own copies of the database.
    * <p/>
@@ -1295,7 +1308,13 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   // helper method for databasesUpdated()
   protected void updateFields( DatabaseMeta existing, Optional<DatabaseMeta> newDb ) {
-    newDb.ifPresentOrElse( db -> existing.replaceMeta( db ), () -> existing.replaceMeta( new DatabaseMeta() ) );
+    newDb.ifPresentOrElse( db -> existing.replaceMeta( db ),
+      // remember the name.
+      () -> {
+        DatabaseMeta newMeta = new DatabaseMeta();
+        newMeta.setName( existing.getName() );
+        existing.replaceMeta( newMeta );
+      } );
   }
 
 
