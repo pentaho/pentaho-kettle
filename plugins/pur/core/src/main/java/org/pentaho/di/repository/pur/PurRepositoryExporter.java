@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -38,6 +39,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.IRepositoryExporter;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
@@ -222,6 +224,9 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
         try {
           // Validate against the import rules first!
           if ( toExport( trans ) ) {
+            // Copy the config objects in transMeta
+            SharedObjectUtil.copySharedObjects( repository.getBowl(), trans,
+                    Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
             writer.write( trans.getXML() + Const.CR );
           }
         } catch ( Exception ex ) {
@@ -276,6 +281,9 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
         try {
           // Validate against the import rules first!
           if ( toExport( meta ) ) {
+            // Copy the config objects in meta
+            SharedObjectUtil.copySharedObjects( repository.getBowl(), meta,
+                    Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
             writer.write( meta.getXML() + Const.CR );
           }
         } catch ( Exception ex ) {
