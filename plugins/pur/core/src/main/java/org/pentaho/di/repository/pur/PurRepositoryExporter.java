@@ -227,6 +227,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
             // Copy the config objects in transMeta
             SharedObjectUtil.copySharedObjects( repository.getBowl(), trans,
                     Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
+            SharedObjectUtil.stripObjectIds( trans );
             writer.write( trans.getXML() + Const.CR );
           }
         } catch ( Exception ex ) {
@@ -284,6 +285,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
             // Copy the config objects in meta
             SharedObjectUtil.copySharedObjects( repository.getBowl(), meta,
                     Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
+            SharedObjectUtil.stripObjectIds( meta );
             writer.write( meta.getXML() + Const.CR );
           }
         } catch ( Exception ex ) {
