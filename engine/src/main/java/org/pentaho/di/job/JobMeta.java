@@ -2652,6 +2652,7 @@ public class JobMeta extends AbstractMeta
           SharedObjectUtil.copySharedObjects( globalManagementBowl, jobMeta,
             Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
         }
+        SharedObjectUtil.stripObjectIds( jobMeta );
 
         // Set a number of parameters for all the data files referenced so far...
         //

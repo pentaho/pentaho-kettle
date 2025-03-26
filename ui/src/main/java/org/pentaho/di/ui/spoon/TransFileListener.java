@@ -183,6 +183,7 @@ public class TransFileListener implements FileListener, ConnectionListener {
         lmeta = tmeta;
         SharedObjectUtil.copySharedObjects( spoon.getGlobalManagementBowl(), tmeta,
           Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
+        SharedObjectUtil.stripObjectIds( tmeta );
       } else {
         lmeta = meta;
       }

@@ -6135,6 +6135,7 @@ public class TransMeta extends AbstractMeta
           SharedObjectUtil.copySharedObjects( globalManagementBowl, transMeta,
             Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
         }
+        SharedObjectUtil.stripObjectIds( transMeta );
 
         // Change the filename, calling this sets internal variables
         // inside of the transformation.
