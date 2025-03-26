@@ -29,12 +29,6 @@
     <pentaho-reporting.version>10.3.0.0-SNAPSHOT</pentaho-reporting.version>
     <pdi-osgi-bridge.version>10.3.0.0-SNAPSHOT</pdi-osgi-bridge.version>
     <pentaho-hadoop-shims.version>10.3.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
-    <jakarta.xml.bind-osgi.version>2.3.3</jakarta.xml.bind-osgi.version>
-    <jaxb-api-osgi.version>2.3.3</jaxb-api-osgi.version>
-    <jakarta.activation-osgi.version>1.2.1</jakarta.activation-osgi.version>
-    <jakarta.transaction-api-osgi.version>1.3.3</jakarta.transaction-api-osgi.version>
-    <istack-osgi.version>3.0.2</istack-osgi.version>
-    <xmlsec-osgi.version>4.0.3</xmlsec-osgi.version>
 
     <!-- third party -->
     <hsqldb.version>2.3.2</hsqldb.version>
@@ -512,39 +506,6 @@
       </exclusions>
     </dependency>
     <!--
-         Dependencies for Javax XML Binding API, JAXB Runtime, Javax Activation API, Javax Transaction API and IStack Commons Runtime
-         These dependencies are required for OSGi environment and Felix directly depends on javax.xml.bind (Javax XML Bind API and Javax JAXB runtime) and we are making these available to OSGi through jre.properties.
-        -->
-    <dependency>
-      <groupId>jakarta.xml.bind</groupId>
-      <artifactId>jakarta.xml.bind-api</artifactId>
-      <version>${jakarta.xml.bind-osgi.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jaxb</groupId>
-      <artifactId>jaxb-runtime</artifactId>
-      <version>${jaxb-api-osgi.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.activation</groupId>
-      <artifactId>jakarta.activation-api</artifactId>
-      <version>${jakarta.activation-osgi.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.transaction</groupId>
-      <artifactId>jakarta.transaction-api</artifactId>
-      <version>${jakarta.transaction-api-osgi.version}</version>
-    </dependency>
-    <!--
-     Dependency for IStack Commons Runtime.
-     This includes common runtime utilities used by JAXB.
-    -->
-    <dependency>
-      <groupId>com.sun.istack</groupId>
-      <artifactId>istack-commons-runtime</artifactId>
-      <version>${istack-osgi.version}</version>
-    </dependency>
-    <!--
      Dependency for Apache Santuario XML Security.
      This library provides security functionality for XML.
     -->
@@ -891,6 +852,67 @@
             <configuration>
               <includeScope>compile</includeScope>
               <outputDirectory>${assembly.dir}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <!--
+              Dependencies for Javax XML Binding API, JAXB Runtime, Javax Activation API, Javax Transaction API and IStack Commons Runtime
+              These dependencies are required for OSGi environment and Felix directly depends on javax.xml.bind (Javax XML Bind API and Javax JAXB runtime) and we are making these available to OSGi through jre.properties.
+              Even if these dependencies are added to pom.xml dependencies section, maven is trying to add the latest version of artifacts instead of adding jars with both versions.
+              So, Following configuration helps to copy the both versions of jars to the lib.
+             -->
+            <id>copy-extra-dependencies</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${assembly.dir}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>jakarta.xml.bind</groupId>
+                  <artifactId>jakarta.xml.bind-api</artifactId>
+                  <version>${jakarta.xml.bind-api.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>jakarta.xml.bind</groupId>
+                  <artifactId>jakarta.xml.bind-api</artifactId>
+                  <version>${jakarta.xml.bind-osgi.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+
+                <artifactItem>
+                  <groupId>org.glassfish.jaxb</groupId>
+                  <artifactId>jaxb-runtime</artifactId>
+                  <version>${jakarta.xml.bind-api.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.glassfish.jaxb</groupId>
+                  <artifactId>jaxb-runtime</artifactId>
+                  <version>${jaxb-api-osgi.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+
+                <artifactItem>
+                  <groupId>jakarta.transaction</groupId>
+                  <artifactId>jakarta.transaction-api</artifactId>
+                  <version>${jakarta.transaction-api-osgi.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>jakarta.transaction</groupId>
+                  <artifactId>jakarta.transaction-api</artifactId>
+                  <version>${jakarta.transaction.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.sun.istack</groupId>
+                  <artifactId>istack-commons-runtime</artifactId>
+                  <version>${istack-osgi.version}</version>
+                </artifactItem>
+              </artifactItems>
             </configuration>
           </execution>
         </executions>
