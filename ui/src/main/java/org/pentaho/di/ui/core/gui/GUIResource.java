@@ -212,6 +212,8 @@ public class GUIResource {
 
   private SwtUniversalImage imageJobRepo;
 
+  private SwtUniversalImage imageSharedNew;
+
   private SwtUniversalImage imageSharedOverwrite;
 
   private SwtUniversalImage imageSharedIdentical;
@@ -625,6 +627,7 @@ public class GUIResource {
       imageMainConfigurations.dispose();
       imageTransRepo.dispose();
       imageJobRepo.dispose();
+      imageSharedNew.dispose();
       imageSharedOverwrite.dispose();
       imageSharedIdentical.dispose();
       imageWizard.dispose();
@@ -1301,6 +1304,10 @@ public class GUIResource {
     // "ui/images/jobrepo.png"
     imageJobRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "JobRepo_image" ) );
+
+    // "ui/images/shared_new.svg"
+    imageSharedNew = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "SharedNew_image" ) );
 
     // "ui/images/overwrite.svg"
     imageSharedOverwrite = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
@@ -2015,6 +2022,13 @@ public class GUIResource {
 
   public SwtUniversalImage getSwtImageJobRepo() {
     return imageJobRepo;
+  }
+
+  /**
+   * @return the imageSharedNew
+   */
+  public SwtUniversalImage getSwtImageSharedNew() {
+    return imageSharedNew;
   }
 
   /**
