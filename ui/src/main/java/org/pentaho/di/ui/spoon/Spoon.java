@@ -3289,6 +3289,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( moveProjectItem != null && moveGlobalItem != null ) {
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
         moveGlobalItem.setVisible( true );
+        moveGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.MoveTo",
+                globalManagementBowl.getLevelDisplayName() ) );
         moveProjectItem.setVisible( false );
       }
 
@@ -3322,6 +3324,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( copyGlobalItem != null && copyProjectItem != null ) {
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
         copyGlobalItem.setVisible( true );
+        copyGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CopyTo",
+                globalManagementBowl.getLevelDisplayName() ));
         copyProjectItem.setVisible( false );
       }
 
