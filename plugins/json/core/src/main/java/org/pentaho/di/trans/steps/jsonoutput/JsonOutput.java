@@ -13,8 +13,6 @@
 
 package org.pentaho.di.trans.steps.jsonoutput;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -167,23 +165,8 @@ public class JsonOutput extends BaseStep implements StepInterface {
     }
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = JsonOutput.class.getDeclaredMethod( fieldName, Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = ( JSONObject ) actionMethod.invoke( this, queryParamToValues );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
   @SuppressWarnings("java:S1144")
-  private JSONObject getOperationTypes( Map<String, String> queryParamToValues ) {
+  private JSONObject getOperationTypesAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     JSONArray operationTypes = new JSONArray();
 
@@ -199,7 +182,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
     return response;
   }
 
-  private JSONObject getEncodingTypes( Map<String, String> queryParamToValues) {
+  private JSONObject getEncodingTypesAction( Map<String, String> queryParamToValues) {
     JSONObject response = new JSONObject();
     JSONArray encodingsArray = new JSONArray();
 
@@ -213,7 +196,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
     return response;
   }
 
-  private JSONObject showFileName( Map<String, String> queryParams ) {
+  private JSONObject showFileNameAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JsonOutputMeta jsonOutputMeta = ( JsonOutputMeta ) getStepMetaInterface();
 
