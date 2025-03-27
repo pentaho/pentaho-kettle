@@ -42,6 +42,8 @@ public class TreePopupMenuProvider {
     if ( moveProjectItem != null && moveGlobalItem != null ) {
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
         moveGlobalItem.setVisible( true );
+        moveGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.MoveTo",
+                globalBowl.getLevelDisplayName() )  );
         moveProjectItem.setVisible( false );
       }
 
@@ -76,6 +78,8 @@ public class TreePopupMenuProvider {
     if ( copyGlobalItem != null && copyProjectItem != null ) {
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
         copyGlobalItem.setVisible( true );
+        copyGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CopyTo",
+                globalBowl.getLevelDisplayName() )  );
         copyProjectItem.setVisible( false );
       }
 
