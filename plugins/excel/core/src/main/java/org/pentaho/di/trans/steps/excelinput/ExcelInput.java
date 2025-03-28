@@ -830,88 +830,44 @@ public class ExcelInput extends BaseStep implements StepInterface {
    * @param workbook excel workbook for processing
    * @throws KettlePluginException
    */
-  public void processingWorkbook( RowMetaInterface fields, ExcelInputMeta info, KWorkbook workbook )
-    throws KettlePluginException {
+  public void processingWorkbook( RowMetaInterface fields, ExcelInputMeta info, KWorkbook workbook ) throws KettlePluginException {
+    int nrSheets = workbook.getNumberOfSheets();
+    for ( int sheetNumber = 0; sheetNumber < nrSheets; sheetNumber++ ) {
+      KSheet sheet = workbook.getSheet( sheetNumber );
+
+      // See if it's a selected sheet:
+      int sheetIndex = getSheetNumber( info, sheet );
+      if ( sheetIndex < 0 ) {
+        continue;
+      }
+
+      // We suppose it's the complete range we're looking for...
+      int startColumn;
+      int rowNumber;
+      if ( info.readAllSheets() ) {
+        startColumn = info.getStartColumn().length == 1 ? info.getStartColumn()[0] : 0;
+        rowNumber = info.getStartRow().length == 1 ? info.getStartRow()[0] : 0;
+      } else {
+        startColumn = info.getStartColumn()[sheetIndex];
+        rowNumber = info.getStartRow()[sheetIndex];
+      }
+
+      addFieldsFromSheet( startColumn, rowNumber, sheet, fields );
+    }
+  }
+
+  public static void getSheetNames( List<String> sheetNames, KWorkbook workbook ) {
     int nrSheets = workbook.getNumberOfSheets();
     for ( int j = 0; j < nrSheets; j++ ) {
       KSheet sheet = workbook.getSheet( j );
+      String sheetName = sheet.getName();
 
-      // See if it's a selected sheet:
-      int sheetIndex;
-      if ( info.readAllSheets() ) {
-        sheetIndex = 0;
-      } else {
-        sheetIndex = Const.indexOfString( sheet.getName(), info.getSheetName() );
-      }
-      if ( sheetIndex >= 0 ) {
-        // We suppose it's the complete range we're looking for...
-        //
-        int rownr = 0;
-        int startcol = 0;
-
-        if ( info.readAllSheets() ) {
-          if ( info.getStartColumn().length == 1 ) {
-            startcol = info.getStartColumn()[ 0 ];
-          }
-          if ( info.getStartRow().length == 1 ) {
-            rownr = info.getStartRow()[ 0 ];
-          }
-        } else {
-          rownr = info.getStartRow()[ sheetIndex ];
-          startcol = info.getStartColumn()[ sheetIndex ];
-        }
-
-        boolean stop = false;
-        for ( int colnr = startcol; !stop; colnr++ ) {
-          try {
-            String fieldname = null;
-            int fieldtype = ValueMetaInterface.TYPE_NONE;
-
-            KCell cell = sheet.getCell( colnr, rownr );
-            if ( cell == null ) {
-              stop = true;
-            } else {
-              if ( cell.getType() != KCellType.EMPTY ) {
-                // We found a field.
-                fieldname = cell.getContents();
-              }
-
-              // System.out.println("Fieldname = "+fieldname);
-
-              KCell below = sheet.getCell( colnr, rownr + 1 );
-
-              if ( below != null ) {
-                if ( below.getType() == KCellType.BOOLEAN ) {
-                  fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
-                } else if ( below.getType() == KCellType.DATE ) {
-                  fieldtype = ValueMetaInterface.TYPE_DATE;
-                } else if ( below.getType() == KCellType.LABEL ) {
-                  fieldtype = ValueMetaInterface.TYPE_STRING;
-                } else if ( below.getType() == KCellType.NUMBER ) {
-                  fieldtype = ValueMetaInterface.TYPE_NUMBER;
-                } else {
-                  fieldtype = ValueMetaInterface.TYPE_STRING;
-                }
-              } else {
-                fieldtype = ValueMetaInterface.TYPE_STRING;
-              }
-
-              if ( Utils.isEmpty( fieldname ) ) {
-                stop = true;
-              } else {
-                if ( fieldtype != ValueMetaInterface.TYPE_NONE ) {
-                  ValueMetaInterface field = ValueMetaFactory.createValueMeta( fieldname, fieldtype );
-                  fields.addValueMeta( field );
-                }
-              }
-            }
-          } catch ( ArrayIndexOutOfBoundsException aioobe ) {
-            // System.out.println("index out of bounds at column "+colnr+" : "+aioobe.toString());
-            stop = true;
-          }
-        }
+      if ( Const.indexOfString( sheetName, sheetNames ) < 0 ) {
+        sheetNames.add( sheetName );
       }
     }
+
+    workbook.close();
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
@@ -940,17 +896,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
     for ( FileObject fileObject : fileList.getFiles() ) {
       try {
         KWorkbook workbook = getWorkBook( excelInputMeta, fileObject );
-        int nrSheets = workbook.getNumberOfSheets();
-        for ( int j = 0; j < nrSheets; j++ ) {
-          KSheet sheet = workbook.getSheet( j );
-          String sheetName = sheet.getName();
-
-          if ( Const.indexOfString( sheetName, sheetNames ) < 0 ) {
-            sheetNames.add( sheetName );
-          }
-        }
-
-        workbook.close();
+        getSheetNames( sheetNames, workbook );
         response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
       } catch ( Exception ex ) {
         errorResponse( response, ex, fileObject );
@@ -1004,6 +950,63 @@ public class ExcelInput extends BaseStep implements StepInterface {
       excelInputMeta.getPassword() );
   }
 
+  private int getSheetNumber(  ExcelInputMeta info, KSheet sheet ) {
+    return info.readAllSheets() ? 0 : Const.indexOfString( sheet.getName(), info.getSheetName() );
+  }
+
+  private void addFieldsFromSheet( int startCol, int rowNumber, KSheet sheet, RowMetaInterface fields ) throws KettlePluginException {
+    boolean stop = false;
+    for ( int colnr = startCol; !stop; colnr++ ) {
+      try {
+        String fieldname = null;
+
+        KCell cell = sheet.getCell( colnr, rowNumber );
+        if ( cell == null ) {
+          stop = true;
+        } else {
+          if ( cell.getType() != KCellType.EMPTY ) {
+            // We found a field.
+            fieldname = cell.getContents();
+          }
+
+          KCell below = sheet.getCell( colnr, rowNumber + 1 );
+          int fieldType = getFieldType( below );
+
+          if ( Utils.isEmpty( fieldname ) ) {
+            stop = true;
+          } else {
+            ValueMetaInterface field = ValueMetaFactory.createValueMeta( fieldname, fieldType );
+            fields.addValueMeta( field );
+          }
+        }
+      } catch ( ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException ) {
+        stop = true;
+      }
+    }
+  }
+
+  private int getFieldType( KCell cell ) {
+    int fieldType;
+
+    if ( cell != null ) {
+      if ( cell.getType() == KCellType.BOOLEAN ) {
+        fieldType = ValueMetaInterface.TYPE_BOOLEAN;
+      } else if ( cell.getType() == KCellType.DATE ) {
+        fieldType = ValueMetaInterface.TYPE_DATE;
+      } else if ( cell.getType() == KCellType.LABEL ) {
+        fieldType = ValueMetaInterface.TYPE_STRING;
+      } else if ( cell.getType() == KCellType.NUMBER ) {
+        fieldType = ValueMetaInterface.TYPE_NUMBER;
+      } else {
+        fieldType = ValueMetaInterface.TYPE_STRING;
+      }
+    } else {
+      fieldType = ValueMetaInterface.TYPE_STRING;
+    }
+
+    return fieldType;
+  }
+
   private void errorResponse( JSONObject response, Exception ex, FileObject file ) {
     response.put( "errorLabel", BaseMessages
       .getString( PKG, "ExcelInputDialog.ErrorReadingFile.DialogMessage", KettleVFS.getFilename( file ) ) );
@@ -1041,5 +1044,4 @@ public class ExcelInput extends BaseStep implements StepInterface {
 
     return stepJSON;
   }
-
 }

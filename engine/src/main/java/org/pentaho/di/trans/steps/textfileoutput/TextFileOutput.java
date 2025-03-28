@@ -1092,7 +1092,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     JSONArray filteredFiles = new JSONArray();
     for ( String file : tfoi.getFiles( getTransMeta() ) ) {
-      if ( Boolean.TRUE.equals( isRegex ) ) {
+      if ( Boolean.parseBoolean( isRegex ) ) {
         Matcher matcher = Pattern.compile( filter ).matcher( file );
         if ( matcher.matches() ) {
           filteredFiles.add( file );

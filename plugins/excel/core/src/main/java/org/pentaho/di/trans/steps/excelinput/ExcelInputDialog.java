@@ -1900,17 +1900,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
           WorkbookFactory.getWorkbook( info.getSpreadSheetType(), KettleVFS.getFilename( fileObject ), info
             .getEncoding(), wPassword.getText() );
 
-        int nrSheets = workbook.getNumberOfSheets();
-        for ( int j = 0; j < nrSheets; j++ ) {
-          KSheet sheet = workbook.getSheet( j );
-          String sheetname = sheet.getName();
-
-          if ( Const.indexOfString( sheetname, sheetnames ) < 0 ) {
-            sheetnames.add( sheetname );
-          }
-        }
-
-        workbook.close();
+        ExcelInput.getSheetNames( sheetnames, workbook );
       } catch ( Exception e ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
