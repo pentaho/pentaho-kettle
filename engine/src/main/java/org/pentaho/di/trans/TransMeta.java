@@ -5403,6 +5403,27 @@ public class TransMeta extends AbstractMeta
     }
   }
 
+  @Override
+  public void allDatabasesUpdated() {
+    List<DatabaseMeta> allDbs = getDatabases();
+    if ( maxDateConnection != null ) {
+      Optional<DatabaseMeta> newDatabaseMeta =
+        Optional.ofNullable( findMatchingDb( allDbs, maxDateConnection.getName() ) );
+      updateFields( maxDateConnection, newDatabaseMeta );
+    }
+
+    for ( StepMeta step : getSteps() ) {
+      DatabaseMeta[] dbs = step.getStepMetaInterface().getUsedDatabaseConnections();
+      if ( dbs != null ) {
+        for ( DatabaseMeta db : dbs ) {
+          Optional<DatabaseMeta> newDatabaseMeta =
+            Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
+          updateFields( db, newDatabaseMeta );
+        }
+      }
+    }
+  }
+
   /**
    * Gets a list of all the strings used in this transformation. The parameters indicate which collections to search and
    * which to exclude.

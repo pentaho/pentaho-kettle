@@ -5862,10 +5862,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           SharedObjectUtil.moveAllSharedObjects( ameta, rep.getBowl() );
         }
         // refresh the dbs in the meta
-        DatabaseManagementInterface dbMgr = rep.getBowl().getManager( DatabaseManagementInterface.class );
-        for ( DatabaseMeta storedDB : dbMgr.getAll() ) {
-          ameta.databaseUpdated( storedDB.getName() );
-        }
+        ameta.allDatabasesUpdated();
         forceRefreshTree();
       }
 

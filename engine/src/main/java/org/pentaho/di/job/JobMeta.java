@@ -516,6 +516,23 @@ public class JobMeta extends AbstractMeta
     }
   }
 
+  @Override
+  public void allDatabasesUpdated() {
+    List<DatabaseMeta> allDbs = getDatabases();
+    for ( JobEntryCopy jobEntryCopy : getJobCopies() ) {
+      DatabaseMeta[] dbs = jobEntryCopy.getEntry().getUsedDatabaseConnections();
+      if ( dbs != null ) {
+        for ( DatabaseMeta db : dbs ) {
+          if ( db != null ) {
+            Optional<DatabaseMeta> newDatabaseMeta =
+              Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
+            updateFields( db, newDatabaseMeta );
+          }
+        }
+      }
+    }
+  }
+
   private Set<DatabaseMeta> getUsedDatabaseMetas() {
     Set<DatabaseMeta> databaseMetas = new HashSet<DatabaseMeta>();
     for ( JobEntryCopy jobEntryCopy : getJobCopies() ) {
