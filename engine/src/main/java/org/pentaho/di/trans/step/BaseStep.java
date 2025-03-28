@@ -4422,8 +4422,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       actionMethod.setAccessible( true );
       this.setStepMetaInterface( stepMetaInterface );
       response = (JSONObject) actionMethod.invoke( this, queryParams );
-      if ( !isFailedResponse( response ) ) {
-        response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+
+      if ( isFailedResponse( response ) ) {
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
       }
 
     } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
