@@ -117,6 +117,8 @@ public class TreeManager {
 
   public void setFilter( String filter ) {
     this.filter = filter;
+    // if we are filtering, everything needs to be updated. Will be cleared by Spoon.showMetaTree()
+    updateAll();
   }
 
   public void reset() {
