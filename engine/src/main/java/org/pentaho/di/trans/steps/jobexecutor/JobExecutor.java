@@ -19,11 +19,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -42,7 +40,6 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -506,25 +503,20 @@ public class JobExecutor extends BaseStep implements StepInterface {
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
-    JobExecutorMeta jobExecutorMeta = (JobExecutorMeta) getStepMetaInterface();
-
     JSONObject response = new JSONObject();
     JSONArray parameterArray = new JSONArray();
     try {
-      String filename = jobExecutorMeta.getDirectoryPath() + "/" + jobExecutorMeta.getJobName();
-      JobMeta inputTransMeta =  loadJob( filename, jobExecutorMeta.getSpecificationMethod() );
-      if( inputTransMeta != null ) {
+      JobMeta inputTransMeta = JobExecutorMeta.loadJobMeta( meta, meta.getRepository(), this );
+      if ( inputTransMeta != null ) {
         String[] parameters = inputTransMeta.listParameters();
         for ( int i = 0; i < parameters.length; i++ ) {
           JSONObject parameter = new JSONObject();
           String name = parameters[ i ];
           String desc = inputTransMeta.getParameterDescription( name );
           String str = inputTransMeta.getParameterDefault( name );
-          str = ( StringUtils.isNotBlank( str ) ? str : ( desc != null ? desc : "" ) );
-
           parameter.put( "variable", Const.NVL( name, "" ) );
           parameter.put( "field", "" );
-          parameter.put( "input", Const.NVL( str, "" ) );
+          parameter.put( "input", Const.NVL( str, Const.NVL( desc, "" ) ) );
           parameterArray.add( parameter );
         }
       }
@@ -536,62 +528,4 @@ public class JobExecutor extends BaseStep implements StepInterface {
     return response;
   }
 
-  private JobMeta loadJob( String filename, ObjectLocationSpecificationMethod specificationMethod ) throws KettleException {
-   JobMeta executorJobMeta = null;
-    if ( repository != null ) {
-      specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-    } else {
-      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-    }
-    switch ( specificationMethod ) {
-      case FILENAME:
-        if ( Utils.isEmpty( filename ) ) {
-          return executorJobMeta;
-        }
-        if ( !filename.endsWith( ".kjb" ) ) {
-          filename = filename + ".kjb";
-        }
-        executorJobMeta = loadFileJob( filename );
-        break;
-      case REPOSITORY_BY_NAME:
-        if ( Utils.isEmpty( filename ) ) {
-          return executorJobMeta;
-        }
-        String transPath = getTransMeta().environmentSubstitute( filename );
-        String realJobname = transPath;
-        String realDirectory = "";
-        int index = transPath.lastIndexOf( "/" );
-        if ( index != -1 ) {
-          realJobname = transPath.substring( index + 1 );
-          realDirectory = transPath.substring( 0, index );
-        }
-
-        if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realJobname ) ) {
-          throw new KettleException(
-                  BaseMessages.getString( PKG, "JobExecutor.Exception.NoValidMappingDetailsFound" ) );
-        }
-        RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
-        if ( repdir == null ) {
-          throw new KettleException( BaseMessages.getString(
-                  PKG, "JobExecutor.Exception.UnableToFindRepositoryDirectory" ) );
-        }
-        executorJobMeta = loadRepositoryJob( realJobname, repdir );
-        break;
-      default:
-        break;
-    }
-    return executorJobMeta;
-  }
-
-  private JobMeta loadRepositoryJob( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
-    JobMeta executorJobMeta = repository.loadJob(  getTransMeta().environmentSubstitute( transName ), repdir, null, null );
-    executorJobMeta.clearChanged();
-    return executorJobMeta;
-  }
-
-  private JobMeta loadFileJob( String fname ) throws KettleException {
-    JobMeta executorJobMeta =  new JobMeta( getTransMeta().environmentSubstitute( fname ), repository );
-    executorJobMeta.clearChanged();
-    return executorJobMeta;
-  }
 }

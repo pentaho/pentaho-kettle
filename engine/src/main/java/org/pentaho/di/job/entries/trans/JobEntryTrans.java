@@ -13,6 +13,13 @@
 
 package org.pentaho.di.job.entries.trans;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -77,13 +84,6 @@ import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This is the job entry that defines a transformation to be run.
  *
@@ -93,6 +93,7 @@ import java.util.Map;
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories, JobEntryRunConfigurableInterface {
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
   public static final int IS_PENTAHO = 1;
+  private static final String PARAMETERS = "parameters";
 
   private String transname;
 
@@ -338,7 +339,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
 
     if ( parameters != null ) {
-      retval.append( "      " ).append( XMLHandler.openTag( "parameters" ) ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.openTag( PARAMETERS ) ).append( Const.CR );
 
       retval.append( "        " ).append( XMLHandler.addTagValue( "pass_all_parameters", passingAllParameters ) );
 
@@ -352,7 +353,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
         retval.append( "        " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
       }
-      retval.append( "      " ).append( XMLHandler.closeTag( "parameters" ) ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.closeTag( PARAMETERS ) ).append( Const.CR );
     }
 
     return retval.toString();
@@ -440,7 +441,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         arguments[ a ] = XMLHandler.getTagValue( entrynode, "argument" + a );
       }
 
-      Node parametersNode = XMLHandler.getSubNode( entrynode, "parameters" );
+      Node parametersNode = XMLHandler.getSubNode( entrynode, PARAMETERS );
 
       String passAll = XMLHandler.getTagValue( parametersNode, "pass_all_parameters" );
       passingAllParameters = Utils.isEmpty( passAll ) || "Y".equalsIgnoreCase( passAll );
@@ -1739,9 +1740,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     TransMeta inputTransMeta = this.getTransMeta( this.rep, this.metaStore, this.parentJobMeta );
     String[] parametersList = inputTransMeta.listParameters();
 
-    JSONArray parameters = new JSONArray();
-    parameters.addAll( Arrays.asList( parametersList ) );
-    response.put( "parameters", parameters );
+    JSONArray parametersData = new JSONArray();
+    parametersData.addAll( Arrays.asList( parametersList ) );
+    response.put( PARAMETERS, parametersData );
     return response;
   }
 }
