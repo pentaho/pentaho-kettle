@@ -16,9 +16,11 @@ package org.pentaho.di.trans.steps.checksum;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.VFS;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -37,18 +39,23 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RowAdapter;
+import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 public class CheckSumTest {
   @ClassRule
@@ -762,4 +769,30 @@ public class CheckSumTest {
       throw new RuntimeException( "fail. " + e.getMessage(), e );
     }
   }
+
+  @Test
+  public void testGetCheckSumTypesAction() {
+    StepMeta stepMeta = new StepMeta();
+    String name = "test";
+    stepMeta.setName( name );
+    StepDataInterface stepDataInterface = Mockito.mock( StepDataInterface.class );
+    int copyNr = 0;
+    TransMeta transMeta = Mockito.mock( TransMeta.class );
+    Trans trans = Mockito.mock( Trans.class );
+    Mockito.when( transMeta.findStep( Mockito.eq( name ) ) ).thenReturn( stepMeta );
+
+    CheckSum checkSum = new CheckSum( stepMeta, stepDataInterface, 0, transMeta, trans );
+
+    Map<String, String> queryParams = new HashMap<>();
+    CheckSumMeta meta = new CheckSumMeta();
+    JSONObject response = checkSum.doAction("getCheckSumTypes", meta, transMeta, trans, queryParams);
+    assertEquals(  response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+
+    response = checkSum.doAction("getEvaluationMethods", meta, transMeta, trans, queryParams);
+    assertEquals(  response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+
+    response = checkSum.doAction("getResultTypes", meta, transMeta, trans, queryParams);
+    assertEquals(  response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+  }
+
 }
