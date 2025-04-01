@@ -182,11 +182,12 @@ public class JsonOutput extends BaseStep implements StepInterface {
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject getEncodingTypesAction( Map<String, String> queryParamToValues) {
     JSONObject response = new JSONObject();
     JSONArray encodingsArray = new JSONArray();
 
-    List<Charset> availableCharsets = new ArrayList<Charset>( Charset.availableCharsets().values() );
+    List<Charset> availableCharsets = new ArrayList<>( Charset.availableCharsets().values() );
     for ( Charset charset : availableCharsets ) {
       encodingsArray.add( charset.displayName() );
     }
@@ -196,6 +197,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject showFileNameAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JsonOutputMeta jsonOutputMeta = ( JsonOutputMeta ) getStepMetaInterface();
