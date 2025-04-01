@@ -13,21 +13,26 @@
 
 package org.pentaho.di.trans.steps.salesforce;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -38,6 +43,7 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -46,6 +52,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class SalesforceStepTest {
@@ -151,6 +159,84 @@ public class SalesforceStepTest {
     DateFormat minutesDateFormat = new SimpleDateFormat( "mm:ss" );
     //check not missing minutes and seconds
     Assert.assertEquals( minutesDateFormat.format( date ), minutesDateFormat.format( ( (Calendar) value ).getTime() ) );
+
+  }
+
+  @Test
+  public void test_testButtonAction() {
+    Map<String, String> queryParams = new HashMap<>();
+    SalesforceStep step = spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
+    JSONObject response = step.testButtonAction( queryParams );
+    assert ( response.containsKey( "connectionStatus" ) );
+  }
+
+  @Test
+  public void testModulesAction() {
+    Map<String, String> queryParams = new HashMap<>();
+    SalesforceStep step = spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
+    JSONObject response = step.modulesAction(queryParams);
+    assert(response.containsKey( "actionStatus" ));
+  }
+
+
+  @Test
+  public void test_testConnection() throws KettleException {
+    SalesforceStep salesforceStep = spy(new MockSalesforceStep(smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans));
+    SalesforceStepMeta stepMeta = mock(SalesforceStepMeta.class);
+    SalesforceStepData data = mock(SalesforceStepData.class);
+    salesforceStep.init( stepMeta, data );
+    when(salesforceStep.getStepMetaInterface()).thenReturn( stepMeta );
+
+    try (MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction(SalesforceConnection.class, (mock, context) -> {
+      doNothing().when(mock).connect();
+
+    })) {
+      boolean connection = salesforceStep.testConnection();
+      assertTrue( connection );
+    }
+  }
+
+  @Test
+  public void test_testConnection_failure() throws KettleException {
+    SalesforceStep salesforceStep = spy(new MockSalesforceStep(smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans));
+    SalesforceStepMeta stepMeta = mock(SalesforceStepMeta.class);
+    SalesforceStepData data = mock(SalesforceStepData.class);
+    salesforceStep.init( stepMeta, data );
+    boolean connection = salesforceStep.testConnection();
+    assertFalse( connection );
+  }
+
+
+  @Test
+  public void getModulesActionTest() throws KettleException {
+    SalesforceStep salesforceStep = spy(new MockSalesforceStep(smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans));
+    SalesforceStepMeta stepMeta = mock(SalesforceStepMeta.class);
+    SalesforceStepData data = mock(SalesforceStepData.class);
+    salesforceStep.init( stepMeta, data );
+    when(salesforceStep.getStepMetaInterface()).thenReturn( stepMeta );
+
+    try (MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction(SalesforceConnection.class, (mock, context) -> {
+      doNothing().when(mock).connect();
+      when(mock.getAllAvailableObjects(anyBoolean())).thenReturn(new String[]{"Account", "Contact"});
+    })) {
+      JSONObject response = salesforceStep.modulesAction( null );
+      assert(response.containsKey( "actionStatus" ));
+      assertEquals(  StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+
+      Map<String, String> queryParams = new HashMap<>();
+      queryParams.put( "moduleFlag", "true");
+      response = salesforceStep.modulesAction( queryParams );
+      assertNotNull(response);
+      assert(response.containsKey( "modules" ));
+    }
+  }
+
+  @Test
+  public void testGetConnection() {
+
+    SalesforceStepMeta salesforceStepMeta = spy( SalesforceStepMeta.class );
+
+    when(smh.stepMeta.getStepMetaInterface()).thenReturn( salesforceStepMeta );
 
   }
 
