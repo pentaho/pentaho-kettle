@@ -13,6 +13,11 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,9 +45,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
-
-import java.util.Arrays;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -723,6 +727,34 @@ public class TransExecutorUnitTest {
 
   }
 
+  @Test
+  public void testParametersActionReturnsParametersData() throws KettleException {
+    Trans trans = mock( Trans.class );
+    Repository repositoryMock = mock( Repository.class );
+    StepMetaInterface stepMetaInterfaceMock = mock( StepMetaInterface.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    when( executor.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
+    when( executor.loadExecutorTransMeta() ).thenReturn( transMeta );
+    when( trans.getRepository() ).thenReturn( repositoryMock );
+    when( transMeta.listParameters() ).thenReturn( new String[] { "param1", "param2" } );
+    when( transMeta.getParameterDescription( "param1" ) ).thenReturn( "desc1" );
+    when( transMeta.getParameterDescription( "param2" ) ).thenReturn( "desc2" );
+    when( transMeta.getParameterDefault( "param1" ) ).thenReturn( "default1" );
+    when( transMeta.getParameterDefault( "param2" ) ).thenReturn( "default2" );
+    executor.init( meta, data );
 
+    JSONObject response = executor.doAction( "parameters", meta, transMeta, trans, new HashMap<>() );
+    JSONArray parameters = (JSONArray) response.get( "parameters" );
+
+    assertEquals( 2, parameters.size() );
+    JSONObject param1 = (JSONObject) parameters.get( 0 );
+    assertEquals( "param1", param1.get( "variable" ) );
+    assertEquals( "", param1.get( "field" ) );
+    assertEquals( "default1", param1.get( "input" ) );
+    JSONObject param2 = (JSONObject) parameters.get( 1 );
+    assertEquals( "param2", param2.get( "variable" ) );
+    assertEquals( "", param2.get( "field" ) );
+    assertEquals( "default2", param2.get( "input" ) );
+  }
 
 }
