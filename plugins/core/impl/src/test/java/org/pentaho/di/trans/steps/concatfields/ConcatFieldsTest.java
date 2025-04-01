@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -51,7 +52,6 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.ConstTest.assertEquals;
 
 /**
  * User: Dzmitry Stsiapanau Date: 2/11/14 Time: 11:00 AM
@@ -194,7 +194,7 @@ public class ConcatFieldsTest {
     String headerString =
         new String( ( (ConcatFieldsOutputStream) stepMockHelper.processRowsStepDataInterface.writer ).read() );
 
-    Assert.assertEquals( "one;two", headerString );
+    assertEquals( "one;two", headerString );
 
   }
 
@@ -204,7 +204,7 @@ public class ConcatFieldsTest {
     processStep( false );
 
     String result =  new String( ( (ConcatFieldsOutputStream) stepMockHelper.processRowsStepDataInterface.writer ).read() );
-    Assert.assertEquals( expected, result );
+    assertEquals( expected, result );
   }
 
   @Test
@@ -213,7 +213,7 @@ public class ConcatFieldsTest {
     processStep( true );
 
     String result =  new String( ( (ConcatFieldsOutputStream) stepMockHelper.processRowsStepDataInterface.writer ).read() );
-    Assert.assertEquals( expected, result );
+    assertEquals( expected, result );
   }
 
   private void processStep( boolean enableHeaderOffsetForSplitRows ) throws KettleException {
