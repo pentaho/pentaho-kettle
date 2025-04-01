@@ -328,7 +328,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       FileInputList fileInputList = jsonInputMeta.getFiles( getTransMeta() );
       String[] files = fileInputList.getFileStrings();
 
-      InputStream inputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getInputStream( files[ 0 ] );
+      InputStream inputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getInputStream( files[ 0 ], getTransMeta() );
       // Parse the JSON file
       JsonSampler jsonSampler = new JsonSampler();
       JsonFactory jsonFactory = new MappingJsonFactory();

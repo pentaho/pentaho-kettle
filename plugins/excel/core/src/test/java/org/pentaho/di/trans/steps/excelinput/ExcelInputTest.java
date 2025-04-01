@@ -13,10 +13,18 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
+import org.apache.commons.vfs2.FileObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
@@ -28,57 +36,370 @@ import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.trans.step.StepInterface;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 
 public class ExcelInputTest {
-  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+  @ClassRule
+  public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
-  @Test
-  /**
-   * http://jira.pentaho.com/browse/PDI-13930
-   */
-  public void getFieldsTest() throws Exception {
-    ExcelInput excelInput = Mockito.mock( ExcelInput.class );
-    RowMeta fields = new RowMeta();
+  ExcelInput excelInput;
+  ExcelInputMeta excelInputMeta;
+  KWorkbook workbook;
+  KSheet sheet;
+  RowMeta fields;
+  KCell cell;
+  PluginRegistry pluginRegistry;
+  PluginInterface plugin;
+  int fieldCount;
 
-    ExcelInputMeta info = Mockito.mock( ExcelInputMeta.class );
-    Mockito.doReturn( true ).when( info ).readAllSheets();
-    int[] startColumn = {0};
-    Mockito.doReturn( startColumn ).when( info ).getStartColumn();
-    int[] startRow = {0};
-    Mockito.doReturn( startRow ).when( info ).getStartRow();
+  @Before
+  public void setUp() throws KettlePluginException {
+    excelInput = Mockito.mock( ExcelInput.class );
+    excelInputMeta = Mockito.mock( ExcelInputMeta.class );
+    workbook = Mockito.mock( KWorkbook.class );
+    sheet = Mockito.mock( KSheet.class );
+    pluginRegistry = Mockito.mock( PluginRegistry.class );
+    plugin = Mockito.mock( PluginInterface.class );
 
-
-    KWorkbook workbook =  Mockito.mock( KWorkbook.class );
+    Mockito.doReturn( excelInputMeta ).when( excelInput ).getStepMetaInterface();
     Mockito.doReturn( 1 ).when( workbook ).getNumberOfSheets();
-    KSheet sheet = Mockito.mock( KSheet.class );
     Mockito.doReturn( sheet ).when( workbook ).getSheet( 0 );
-    KCell cell  = Mockito.mock( KCell.class );
-    int fieldCount = 400;
+
+    cell = Mockito.mock( KCell.class );
+    fields = new RowMeta();
+    fieldCount = 400;
+
     for ( int i = 0; i <= fieldCount - 1; i++ ) {
       Mockito.doReturn( cell ).when( sheet ).getCell( i, 0 );
       Mockito.doReturn( cell ).when( sheet ).getCell( i, 1 );
     }
-    Mockito.doReturn( "testValue" ).when( cell ).getContents();
+
+    Mockito.doReturn( "1" ).when( cell ).getContents();
     Mockito.doReturn( KCellType.NUMBER ).when( cell ).getType();
 
-    PluginRegistry pluginRegistry = Mockito.mock( PluginRegistry.class );
-    PluginInterface stringPlugin = Mockito.mock( PluginInterface.class );
-    Mockito.doReturn( stringPlugin ).when( pluginRegistry ).getPlugin( ValueMetaPluginType.class, "1" );
+    Mockito.doReturn( true ).when( excelInputMeta ).readAllSheets();
+    int[] startColumn = {0};
+    Mockito.doReturn( startColumn ).when( excelInputMeta ).getStartColumn();
+    int[] startRow = {0};
+    Mockito.doReturn( startRow ).when( excelInputMeta ).getStartRow();
+
+    Mockito.doReturn( plugin ).when( pluginRegistry ).getPlugin( ValueMetaPluginType.class, "1" );
     Mockito.doReturn( Mockito.mock( ValueMetaInterface.class ) ).when( pluginRegistry ).
-            loadClass( stringPlugin, ValueMetaInterface.class );
+        loadClass( plugin, ValueMetaInterface.class );
     ValueMetaFactory.pluginRegistry = pluginRegistry;
+  }
+
+  @Test
+  public void processingWorkbookTest() throws Exception {
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+    Method processingWorkbookMethod = ExcelInput.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
+        ExcelInputMeta.class, KWorkbook.class );
+    processingWorkbookMethod.setAccessible( true );
+    processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
+
+    Assert.assertEquals( fieldCount, fields.size() );
+  }
+
+  @Test
+  public void processingWorkbookForInvalidSheetSelectedTest() throws Exception {
+    Mockito.doReturn( false ).when( excelInputMeta ).readAllSheets();
+
+    Mockito.doReturn( "sheet1" ).when( sheet ).getName();
+    Mockito.doReturn( new String[]{"sheet0"} ).when( excelInputMeta ).getSheetName();
 
     Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
     Method processingWorkbookMethod = ExcelInput.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
-            ExcelInputMeta.class, KWorkbook.class );
+        ExcelInputMeta.class, KWorkbook.class );
     processingWorkbookMethod.setAccessible( true );
-    processingWorkbookMethod.invoke( excelInput, fields, info, workbook );
+    processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
+
+    Assert.assertEquals( 0, fields.size() );
+  }
+
+  @Test
+  public void processingWorkbookForValidSheetSelectedWithoutReadingAllSheetsTest() throws Exception {
+    Mockito.doReturn( false ).when( excelInputMeta ).readAllSheets();
+
+    Mockito.doReturn( "sheet1" ).when( sheet ).getName();
+    Mockito.doReturn( new String[]{"sheet1"} ).when( excelInputMeta ).getSheetName();
+
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+    Method processingWorkbookMethod = ExcelInput.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
+        ExcelInputMeta.class, KWorkbook.class );
+    processingWorkbookMethod.setAccessible( true );
+    processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
+
+    Assert.assertEquals( 400, fields.size() );
+  }
+
+  @Test
+  public void processingWorkbookWithEmptyContentsTest() throws Exception {
+    Mockito.doReturn( "" ).when( cell ).getContents();
+
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+    Method processingWorkbookMethod = ExcelInput.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
+        ExcelInputMeta.class, KWorkbook.class );
+    processingWorkbookMethod.setAccessible( true );
+    processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
+
+    Assert.assertEquals( 0, fields.size() );
+  }
+
+  @Test
+  public void processingWorkbookForLabelCellTest() throws Exception {
+    Mockito.doReturn( plugin ).when( pluginRegistry ).getPlugin( ValueMetaPluginType.class, "2" );
+    Mockito.doReturn( Mockito.mock( ValueMetaInterface.class ) ).when( pluginRegistry ).
+        loadClass( plugin, ValueMetaInterface.class );
+    ValueMetaFactory.pluginRegistry = pluginRegistry;
+
+    Mockito.doReturn( "test" ).when( cell ).getContents();
+    Mockito.doReturn( KCellType.LABEL ).when( cell ).getType();
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+    Method processingWorkbookMethod = ExcelInput.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
+        ExcelInputMeta.class, KWorkbook.class );
+    processingWorkbookMethod.setAccessible( true );
+    processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
 
     Assert.assertEquals( fieldCount, fields.size() );
+  }
+
+  @Test
+  public void processingWorkbookForBooleanCellTest() throws Exception {
+    Mockito.doReturn( plugin ).when( pluginRegistry ).getPlugin( ValueMetaPluginType.class, "4" );
+    Mockito.doReturn( Mockito.mock( ValueMetaInterface.class ) ).when( pluginRegistry ).
+        loadClass( plugin, ValueMetaInterface.class );
+    ValueMetaFactory.pluginRegistry = pluginRegistry;
+
+    Mockito.doReturn( "false" ).when( cell ).getContents();
+    Mockito.doReturn( KCellType.BOOLEAN ).when( cell ).getType();
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+    Method processingWorkbookMethod = ExcelInput.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
+        ExcelInputMeta.class, KWorkbook.class );
+    processingWorkbookMethod.setAccessible( true );
+    processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
+
+    Assert.assertEquals( fieldCount, fields.size() );
+  }
+
+  @Test
+  public void processingWorkbookForDateCellTest() throws Exception {
+    Mockito.doReturn( plugin ).when( pluginRegistry ).getPlugin( ValueMetaPluginType.class, "3" );
+    Mockito.doReturn( Mockito.mock( ValueMetaInterface.class ) ).when( pluginRegistry ).
+        loadClass( plugin, ValueMetaInterface.class );
+    ValueMetaFactory.pluginRegistry = pluginRegistry;
+
+    Mockito.doReturn( "28/03/2025" ).when( cell ).getContents();
+    Mockito.doReturn( KCellType.DATE ).when( cell ).getType();
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+    Method processingWorkbookMethod = ExcelInput.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
+        ExcelInputMeta.class, KWorkbook.class );
+    processingWorkbookMethod.setAccessible( true );
+    processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
+
+    Assert.assertEquals( fieldCount, fields.size() );
+  }
+
+  @Test
+  public void processingWorkbookForInvalidCellTest() throws Exception {
+    cell = null;
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+    Method processingWorkbookMethod = ExcelInput.class.getDeclaredMethod( "processingWorkbook", RowMetaInterface.class,
+        ExcelInputMeta.class, KWorkbook.class );
+    processingWorkbookMethod.setAccessible( true );
+    processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
+
+    Assert.assertEquals( fieldCount, fields.size() );
+  }
+
+  @Test
+  public void getFilesActionTest() throws Exception {
+    Mockito.doReturn( new String[]{"testFile"} ).when( excelInputMeta ).getFilePaths( any() );
+    Method getFilesMethod = ExcelInput.class.getDeclaredMethod( "getFilesAction", Map.class );
+    getFilesMethod.setAccessible( true );
+    JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( excelInput, new HashMap<>() );
+
+    Assert.assertNotNull( jsonObject );
+    Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    Assert.assertNotNull( jsonObject.get( "files" ) );
+  }
+
+  @Test
+  public void getEmptyFilesActionTest() throws Exception {
+    Mockito.doReturn( new String[]{} ).when( excelInputMeta ).getFilePaths( any() );
+    Method getFilesMethod = ExcelInput.class.getDeclaredMethod( "getFilesAction", Map.class );
+    getFilesMethod.setAccessible( true );
+    JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( excelInput, new HashMap<>() );
+
+    Assert.assertNotNull( jsonObject );
+    Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.NoFilesFound.DialogMessage" ), jsonObject.get( "message" ) );
+    Assert.assertNull( jsonObject.get( "files" ) );
+  }
+
+  @Test
+  public void getSheetsActionTest() throws Exception {
+    FileInputList fileList = Mockito.mock( FileInputList.class );
+    FileObject fileObject = Mockito.mock( FileObject.class );
+
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    List<FileObject> fileInputListList = new ArrayList<>();
+    fileInputListList.add( fileObject );
+    Mockito.doReturn( fileInputListList ).when( fileList ).getFiles();
+    Mockito.doReturn( 1 ).when( workbook ).getNumberOfSheets();
+    Mockito.doReturn( "Sheet 1"  ).when( sheet ).getName();
+
+    try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
+      try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenReturn( workbook );
+        kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
+        Method getSheetsMethod = ExcelInput.class.getDeclaredMethod( "getSheetsAction", Map.class );
+        getSheetsMethod.setAccessible( true );
+        JSONObject jsonObject = (JSONObject) getSheetsMethod.invoke( excelInput, new HashMap<>() );
+
+        Assert.assertNotNull( jsonObject );
+        Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        Assert.assertNotNull( jsonObject.get( "sheets" ) );
+      }
+    }
+  }
+
+  @Test
+  public void getEmptySheetsActionTest() throws Exception {
+    FileInputList fileList = Mockito.mock( FileInputList.class );
+
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    Mockito.doReturn( new ArrayList<>() ).when( fileList ).getFiles();
+
+    try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
+      try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenReturn( workbook );
+        kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
+        Method getSheetsMethod = ExcelInput.class.getDeclaredMethod( "getSheetsAction", Map.class );
+        getSheetsMethod.setAccessible( true );
+        JSONObject jsonObject = (JSONObject) getSheetsMethod.invoke( excelInput, new HashMap<>() );
+
+        Assert.assertNotNull( jsonObject );
+        Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.UnableToFindSheets.DialogMessage" ), jsonObject.get( "message" ) );
+      }
+    }
+  }
+
+  @Test
+  public void getFailedSheetsActionTest() throws Exception {
+    FileInputList fileList = Mockito.mock( FileInputList.class );
+    FileObject fileObject = Mockito.mock( FileObject.class );
+
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    List<FileObject> fileInputListList = new ArrayList<>();
+    fileInputListList.add( fileObject );
+    Mockito.doReturn( fileInputListList ).when( fileList ).getFiles();
+
+    try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
+      try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenThrow( new KettleException( BaseMessages
+            .getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage" ) ) );
+        kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
+        Method getSheetsMethod = ExcelInput.class.getDeclaredMethod( "getSheetsAction", Map.class );
+        getSheetsMethod.setAccessible( true );
+        JSONObject jsonObject = (JSONObject) getSheetsMethod.invoke( excelInput, new HashMap<>() );
+
+        Assert.assertNotNull( jsonObject );
+        Assert.assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        String errorMessage = (String) jsonObject.get( "errorMessage" );
+        Assert.assertNotNull( errorMessage );
+        Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage" ), errorMessage.trim() );
+      }
+    }
+  }
+
+  @Test
+  public void getFieldsActionTest() throws Exception {
+    FileInputList fileList = Mockito.mock( FileInputList.class );
+    FileObject fileObject = Mockito.mock( FileObject.class );
+
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    List<FileObject> fileInputListList = new ArrayList<>();
+    fileInputListList.add( fileObject );
+    Mockito.doReturn( fileInputListList ).when( fileList ).getFiles();
+
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+
+    try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
+      try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenReturn( workbook );
+        kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
+
+        Method getFieldsAction = ExcelInput.class.getDeclaredMethod( "getFieldsAction", Map.class );
+        getFieldsAction.setAccessible( true );
+        JSONObject jsonObject = (JSONObject) getFieldsAction.invoke( excelInput, new HashMap<>() );
+
+        Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        Assert.assertNotNull( jsonObject );
+        JSONObject fieldsObject = (JSONObject) jsonObject.get( "fields" );
+        Assert.assertNotNull( fieldsObject );
+        JSONArray rows = (JSONArray) fieldsObject.get( "rows" );
+        Assert.assertNotNull( rows );
+        Assert.assertEquals( fieldCount, rows.size() );
+      }
+    }
+  }
+
+  @Test
+  public void getEmptyFieldsActionTest() throws Exception {
+    FileInputList fileList = Mockito.mock( FileInputList.class );
+
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    Mockito.doReturn( new ArrayList<>() ).when( fileList ).getFiles();
+
+    Method getFieldsAction = ExcelInput.class.getDeclaredMethod( "getFieldsAction", Map.class );
+    getFieldsAction.setAccessible( true );
+    JSONObject jsonObject = (JSONObject) getFieldsAction.invoke( excelInput, new HashMap<>() );
+
+    Assert.assertNotNull( jsonObject );
+    Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.UnableToFindFields.DialogMessage" ), jsonObject.get( "message" ) );
+  }
+
+  @Test
+  public void getFailedFieldsActionTest() throws Exception {
+    FileInputList fileList = Mockito.mock( FileInputList.class );
+    FileObject fileObject = Mockito.mock( FileObject.class );
+
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    List<FileObject> fileInputListList = new ArrayList<>();
+    fileInputListList.add( fileObject );
+    Mockito.doReturn( fileInputListList ).when( fileList ).getFiles();
+
+    Mockito.doCallRealMethod().when( excelInput ).processingWorkbook( any(), any(), any() );
+
+    try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
+      try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenThrow( new KettleException( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage") ) );
+        kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
+
+        Method getFieldsAction = ExcelInput.class.getDeclaredMethod( "getFieldsAction", Map.class );
+        getFieldsAction.setAccessible( true );
+        JSONObject jsonObject = (JSONObject) getFieldsAction.invoke( excelInput, new HashMap<>() );
+
+        Assert.assertNotNull( jsonObject );
+        Assert.assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        String errorMessage = (String) jsonObject.get( "errorMessage" );
+        Assert.assertNotNull( errorMessage );
+        Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage" ), errorMessage.trim() );
+      }
+    }
   }
 }
