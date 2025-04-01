@@ -17,9 +17,11 @@ import com.rometools.rome.io.impl.Base64;
 import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.bind.XmlObject;
 import com.sforce.ws.wsdl.Constants;
+import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaBinary;
@@ -27,14 +29,23 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 
 import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.util.Assert.assertNotNull;
 
 
 public class SalesforceInputTest {
@@ -44,6 +55,8 @@ public class SalesforceInputTest {
 
   SalesforceInputMeta meta;
   SalesforceInputData data;
+  TransMeta transMeta;
+  Trans trans;
 
   @Before
   public void setUp() {
@@ -139,6 +152,77 @@ public class SalesforceInputTest {
     complexObject.addField( "Name", createObject( "Name", VALUE, ObjectType.XMLOBJECT ) );
     salesforceInput.addFields( "", fields, complexObject );
     assertArrayEquals( "Relational fields added", new String[] { "Module2.Id", "Module2.Name" }, fields.toArray() );
+  }
+
+  @Test
+  public void testGetFieldsActionWithException() {
+    Map<String, String> queryParams = new HashMap<>();
+    JSONObject response = salesforceInput.doAction( "getFields", meta, transMeta, trans, queryParams );
+    assertEquals( StepInterface.FAILURE_STATUS, response.get( StepInterface.STATUS ) );
+  }
+
+  @Test
+  public void testGetFieldsAction() {
+    Map<String, String> queryParams = new HashMap<>();
+    com.sforce.soap.partner.Field field = new com.sforce.soap.partner.Field();
+    field.setName( "test" );
+    field.setLength( 10 );
+    field.setPrecision( 2 );
+    com.sforce.soap.partner.Field field1 = new com.sforce.soap.partner.Field();
+    field1.setName( "test1" );
+    field1.setLength( 10 );
+    field1.setPrecision( 2 );
+    field1.setDefaultValue( field );
+    com.sforce.soap.partner.Field[] fieldList = new com.sforce.soap.partner.Field[ 10 ];
+    fieldList[ 0 ] = field;
+    fieldList[ 1 ] = field1;
+
+    try (
+      MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction(SalesforceConnection.class, ( mock, context) -> {
+        doNothing().when(mock).connect();
+        when( mock.getObjectFields( anyString() ) ).thenReturn( fieldList );
+      })) {
+      meta.setSpecifyQuery( false );
+      JSONObject response = salesforceInput.doAction( "getFields", meta, transMeta, trans, queryParams );
+      assertNotNull( response );
+    }
+
+  }
+
+  @Test
+  public void testGetFieldsActionWithSpecifiedQueryTrue() {
+    Map<String, String> queryParams = new HashMap<>();
+    XmlObject testObject = createObject( "Field1", VALUE, ObjectType.XMLOBJECT );
+    XmlObject xmlObject = new XmlObject();
+    xmlObject.setField( "Field1", testObject );
+    xmlObject.setName( new QName( Constants.PARTNER_SOBJECT_NS, "test" ) );
+    XmlObject[] fields = new XmlObject[ 10 ];
+    fields[ 0 ] = testObject;
+    fields[ 1 ] = xmlObject;
+    try (
+      MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction(SalesforceConnection.class, ( mock, context) -> {
+      doNothing().when(mock).connect();
+      when(mock.getElements()).thenReturn(fields);
+    })) {
+      meta.setSpecifyQuery( true );
+      JSONObject response = salesforceInput.doAction( "getFields", meta, transMeta, trans, queryParams );
+      assertNotNull( response );
+    }
+
+  }
+
+  @Test
+  public void testModulesAction() {
+    Map<String, String> queryParams = new HashMap<>();
+    JSONObject response = salesforceInput.modulesAction(queryParams);
+    assert(response.containsKey( "actionStatus" ));
+  }
+
+  @Test
+  public void test_testButtonAction() {
+    Map<String, String> queryParams = new HashMap<>();
+    JSONObject response = salesforceInput.testButtonAction(queryParams);
+    assert(response.containsKey( "connectionStatus" ));
   }
 
   private XmlObject createObject( String fieldName, String value, ObjectType type ) {
