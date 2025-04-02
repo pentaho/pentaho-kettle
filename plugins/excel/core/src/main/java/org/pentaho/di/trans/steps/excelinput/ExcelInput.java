@@ -1021,10 +1021,6 @@ public class ExcelInput extends BaseStep implements StepInterface {
     stepJSON.put( "columnInfo", columnInfoArray );
     stepJSON.put( "rows", rowsArray );
 
-    if ( fields.getValueMetaList() == null ) {
-      return stepJSON;
-    }
-
     for ( int i = 0; i < fields.getValueMetaList().size(); i++ ) {
       JSONArray dataArray = new JSONArray();
       JSONObject rowObject = new JSONObject();
