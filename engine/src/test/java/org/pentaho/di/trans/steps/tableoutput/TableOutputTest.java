@@ -269,12 +269,12 @@ public class TableOutputTest {
 
     JSONObject response = tableOutput.doAction( "getSQL", stepMetaInterface,
       transMeta, trans, queryParams );
-    assertEquals( response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
     when( mockValueMeta.getName() ).thenReturn( "name" );
     doNothing().when( mockValueMeta ).setName( any() );
     response = tableOutput.doAction( "getSQL", stepMetaInterface,
       transMeta, trans, queryParams );
-    assertEquals( response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
     when( prev.searchValueMeta( any() ) ).thenReturn( mockValueMeta );
     when( databaseMeta.getDatabaseInterface() ).thenReturn( mock( DatabaseInterface.class ) );
     SQLStatement sql = new SQLStatement( stepMeta.getName(), databaseMeta, null );
@@ -284,13 +284,13 @@ public class TableOutputTest {
 
     response = tableOutput.doAction( "getSQL", stepMetaInterface,
       transMeta, trans, queryParams );
-    assertEquals( response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
 
     sql.setSQL( "select * from employees" );
 
     response = tableOutput.doAction( "getSQL", stepMetaInterface,
       transMeta, trans, queryParams );
-    assertEquals( response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
     assertTrue( response.containsKey( "sqlString" ) );
   }
 }

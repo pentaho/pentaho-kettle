@@ -105,8 +105,7 @@ public class SalesforceInputTest {
   }
 
   @Test
-  public void testAddFieldsFromSOQLQuery() throws Exception {
-
+  public void testAddFieldsFromSOQLQuery() {
 
     final Set<String> fields = new LinkedHashSet<>();
     XmlObject testObject = createObject( "Field1", VALUE, ObjectType.XMLOBJECT );
@@ -120,7 +119,7 @@ public class SalesforceInputTest {
   }
 
   @Test
-  public void testAddFields_nullIdNotAdded() throws Exception {
+  public void testAddFields_nullIdNotAdded() {
     final Set<String> fields = new LinkedHashSet<>();
     XmlObject testObject = createObject( "Id", null, ObjectType.XMLOBJECT );
     salesforceInput.addFields( "", fields, testObject );
@@ -128,7 +127,7 @@ public class SalesforceInputTest {
   }
 
   @Test
-  public void testAddFields_IdAdded() throws Exception {
+  public void testAddFields_IdAdded() {
     final Set<String> fields = new LinkedHashSet<>();
     XmlObject testObject = createObject( "Id", VALUE, ObjectType.XMLOBJECT );
     salesforceInput.addFields( "", fields, testObject );
@@ -136,7 +135,7 @@ public class SalesforceInputTest {
   }
 
   @Test
-  public void testAddFields_nullRelationalIdNotAdded() throws Exception {
+  public void testAddFields_nullRelationalIdNotAdded() {
     final Set<String> fields = new LinkedHashSet<>();
     XmlObject complexObject = createObject( "Module2", null, ObjectType.SOBJECT );
     complexObject.addField( "Id", createObject( "Id", null, ObjectType.XMLOBJECT ) );
@@ -145,7 +144,7 @@ public class SalesforceInputTest {
   }
 
   @Test
-  public void testAddFields_relationalIdAdded() throws Exception {
+  public void testAddFields_relationalIdAdded() {
     final Set<String> fields = new LinkedHashSet<>();
     XmlObject complexObject = createObject( "Module2", null, ObjectType.SOBJECT );
     complexObject.addField( "Id", createObject( "Id", VALUE, ObjectType.XMLOBJECT ) );
@@ -178,10 +177,10 @@ public class SalesforceInputTest {
     fieldList[ 1 ] = field1;
 
     try (
-      MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction(SalesforceConnection.class, ( mock, context) -> {
-        doNothing().when(mock).connect();
+      MockedConstruction<SalesforceConnection> ignored = Mockito.mockConstruction( SalesforceConnection.class, ( mock, context) -> {
+        doNothing().when( mock ).connect();
         when( mock.getObjectFields( anyString() ) ).thenReturn( fieldList );
-      })) {
+      } ) ) {
       meta.setSpecifyQuery( false );
       JSONObject response = salesforceInput.doAction( "getFields", meta, transMeta, trans, queryParams );
       assertNotNull( response );
@@ -200,10 +199,10 @@ public class SalesforceInputTest {
     fields[ 0 ] = testObject;
     fields[ 1 ] = xmlObject;
     try (
-      MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction(SalesforceConnection.class, ( mock, context) -> {
-      doNothing().when(mock).connect();
-      when(mock.getElements()).thenReturn(fields);
-    })) {
+      MockedConstruction<SalesforceConnection> ignored = Mockito.mockConstruction( SalesforceConnection.class, ( mock, context) -> {
+        doNothing().when( mock ).connect();
+        when( mock.getElements() ).thenReturn( fields );
+      } ) ) {
       meta.setSpecifyQuery( true );
       JSONObject response = salesforceInput.doAction( "getFields", meta, transMeta, trans, queryParams );
       assertNotNull( response );
@@ -214,16 +213,16 @@ public class SalesforceInputTest {
   @Test
   public void testModulesAction() {
     Map<String, String> queryParams = new HashMap<>();
-    JSONObject response = salesforceInput.modulesAction(queryParams);
-    assert(response.containsKey( "actionStatus" ));
+    JSONObject response = salesforceInput.modulesAction( queryParams );
+    assert( response.containsKey( "actionStatus" ) );
     assertNotNull( response );
   }
 
   @Test
   public void test_testButtonAction() {
     Map<String, String> queryParams = new HashMap<>();
-    JSONObject response = salesforceInput.testButtonAction(queryParams);
-    assert(response.containsKey( "connectionStatus" ));
+    JSONObject response = salesforceInput.testButtonAction( queryParams );
+    assert( response.containsKey( "connectionStatus" ) );
     assertNotNull( response );
   }
 

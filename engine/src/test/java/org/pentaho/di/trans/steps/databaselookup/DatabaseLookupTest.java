@@ -17,7 +17,9 @@ import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import org.mockito.MockedConstruction;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -84,8 +86,8 @@ public class DatabaseLookupTest {
   }
 
   @Test
-  public void getTableFieldAndTypeActionTest() {
-    mockConstruction( Database.class, (mock, context) -> {
+  public void getTableFieldAndTypeActionTest() throws Exception {
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, (mock, context) -> {
       ValueMetaBase valueMetaBase1 = new ValueMetaBase( "column1", ValueMetaInterface.TYPE_STRING );
       ValueMetaBase valueMetaBase2 = new ValueMetaBase( "column2", ValueMetaInterface.TYPE_INTEGER );
       valueMetaInterfaceList.add( valueMetaBase1 );
@@ -94,45 +96,47 @@ public class DatabaseLookupTest {
       rowMeta.setValueMetaList( valueMetaInterfaceList );
       doNothing().when( mock ).connect();
       when( mock.getTableFieldsMeta( schema, table ) ).thenReturn( rowMeta );
-
+    } ) ) {
       Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
       getTableFieldAndTypeMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
 
-      Assert.assertNotNull( jsonObject );
-      Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
       JSONArray jsonArray = (JSONArray) jsonObject.get( "columns" );
-      Assert.assertEquals( 2, jsonArray.size() );
-      mock.close();
-    } );
+      assertEquals(  2, jsonArray.size() );
+    }
   }
 
   @Test
   public void getNullConnectionTest() throws Exception {
-    queryParams.put( "connection", null );
+    getNullParamTest( "connection" );
+  }
 
-    Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
-    getTableFieldAndTypeMethod.setAccessible( true );
-    JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
+  @Test
+  public void getNullSchemaTest() throws Exception {
+    getNullParamTest( "schema" );
+  }
 
-    Assert.assertNotNull( jsonObject );
-    Assert.assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-    Assert.assertNotNull( jsonObject.get( "error" ) );
+  @Test
+  public void getNullTableTest() throws Exception {
+    getNullParamTest( "table" );
   }
 
   @Test
   public void getNullRowMetaTest() throws Exception {
-    try ( Database database = mock( Database.class ) ) {
-      doNothing().when( database ).connect();
-      when( database.getTableFieldsMeta( schema, table ) ).thenReturn( null );
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, (mock, context) -> {
+      doNothing().when( mock ).connect();
+      when( mock.getTableFieldsMeta( schema, table ) ).thenReturn( null );
+    } ) ) {
       Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
       getTableFieldAndTypeMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
 
-      Assert.assertNotNull( jsonObject );
-      Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
       JSONArray jsonArray = (JSONArray) jsonObject.get( "columns" );
-      Assert.assertEquals( 0, jsonArray.size() );
+      assertEquals( 0, jsonArray.size() );
     }
   }
 
@@ -144,24 +148,34 @@ public class DatabaseLookupTest {
     getTableFieldAndTypeMethod.setAccessible( true );
     JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
 
-    Assert.assertNotNull( jsonObject );
-    Assert.assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-    Assert.assertNotNull( jsonObject.get( "error" ) );
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( jsonObject.get( "error" ) );
   }
 
   @Test
   public void expectExceptionWithDatabaseTest() throws Exception {
-    try ( Database database = mock( Database.class ) ) {
-      doThrow( new KettleDatabaseException() ).when( database ).connect();
-
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, (mock, context) -> doThrow( new KettleDatabaseException() ).when( mock ).connect() ) ) {
       Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
       getTableFieldAndTypeMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
 
-      Assert.assertNotNull( jsonObject );
-      Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
       JSONArray jsonArray = (JSONArray) jsonObject.get( "columns" );
-      Assert.assertEquals( 0, jsonArray.size() );
+      assertEquals( 0, jsonArray.size() );
     }
+  }
+
+  private void getNullParamTest( String paramKey ) throws Exception {
+    queryParams.put( paramKey, null );
+
+    Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
+    getTableFieldAndTypeMethod.setAccessible( true );
+    JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( jsonObject.get( "error" ) );
   }
 }

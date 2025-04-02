@@ -74,11 +74,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertNotNull;
 import static org.pentaho.di.core.util.Assert.assertNull;
 
 public class JsonInputTest {
@@ -1523,9 +1523,9 @@ public class JsonInputTest {
       JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );
-      Assert.assertNotNull( jsonObject );
-      Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-      Assert.assertNotNull( jsonObject.get( "files" ) );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject.get( "files" ) );
     } finally {
       deleteFiles();
     }
@@ -1550,8 +1550,8 @@ public class JsonInputTest {
       JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );
-      Assert.assertNotNull( jsonObject );
-      Assert.assertEquals( jsonObject.get( "message" ), BaseMessages.getString( JsonInputTest.class, "JsonInputDialog.NoFilesFound.DialogMessage" ) );
+      assertNotNull( jsonObject );
+      assertEquals( jsonObject.get( "message" ), BaseMessages.getString( JsonInputTest.class, "JsonInputDialog.NoFilesFound.DialogMessage" ) );
     } finally {
       deleteFiles();
     }
@@ -1566,9 +1566,9 @@ public class JsonInputTest {
       JSONObject jsonObject = (JSONObject) selectFieldsMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );
-      Assert.assertNotNull( jsonObject );
-      Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-      Assert.assertNotNull( jsonObject.get( "data" ) );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject.get( "data" ) );
     } finally {
       deleteFiles();
     }
@@ -1584,9 +1584,9 @@ public class JsonInputTest {
       JSONObject jsonObject = (JSONObject) selectFieldsMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );
-      Assert.assertNotNull( jsonObject );
-      Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-      Assert.assertNotNull( jsonObject.get( "data" ) );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject.get( "data" ) );
     } finally {
       deleteFiles();
     }
@@ -1601,9 +1601,9 @@ public class JsonInputTest {
       JSONObject jsonObject = (JSONObject) selectFieldsMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );
-      Assert.assertNotNull( jsonObject );
-      Assert.assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-      Assert.assertNotNull( jsonObject.get( "errorMessage" ) );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject.get( "errorMessage" ) );
     } finally {
       deleteFiles();
     }
