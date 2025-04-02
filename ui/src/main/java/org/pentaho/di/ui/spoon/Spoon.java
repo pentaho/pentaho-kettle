@@ -2036,7 +2036,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     fdTreeToolbar.right = new FormAttachment( 100 );
     viewTreeToolbar.setLayoutData( fdTreeToolbar );
 
-    viewTreeToolbar.setSearchTooltip( BaseMessages.getString( PKG, "Spoon.SelectionFilter.Tooltip" ) );
+    viewTreeToolbar.setSearchTooltip( BaseMessages.getString( PKG, "Spoon.ViewSelectionFilter.Tooltip" ) );
     viewTreeToolbar.setSearchPlaceholder( BaseMessages.getString( PKG, "Spoon.SelectionFilter.Placeholder" ) );
     viewTreeToolbar.addSearchModifyListener( modifyEvent -> {
       selectionTreeManager.setFilter( viewTreeToolbar.getSearchText() );
