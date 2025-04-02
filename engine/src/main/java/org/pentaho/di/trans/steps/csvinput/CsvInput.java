@@ -20,24 +20,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -48,10 +41,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringEvaluationResult;
-import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -66,11 +56,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.fileinput.text.BOMDetector;
 import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileInputFieldDTO;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileLine;
+import org.pentaho.di.trans.steps.fileinput.text.CsvFileImportProcessor;
 import org.pentaho.di.trans.steps.textfileinput.EncodingType;
-import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
@@ -773,7 +760,7 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
               }
             }
           } else {
-            outputRowData[actualFieldIndex] = null; // nothing for the header, no conversions here.
+            outputRowData[ actualFieldIndex ] = null; // nothing for the header, no conversions here.
           }
         }
 
@@ -1190,7 +1177,8 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFieldsAction( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
+  private JSONObject getFieldsAction( Map<String, String> queryParams )
+    throws KettleException, JsonProcessingException {
     return populateMeta( queryParams );
   }
 
@@ -1198,396 +1186,22 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
     JSONObject response = new JSONObject();
     String isSampleSummary = queryParams.get( "isSampleSummary" );
     int samples = Integer.parseInt( Objects.toString( queryParams.get( "noOfFields" ), "0" ) );
-    JSONArray jsonArray = new JSONArray();
-    ObjectMapper objectMapper = new ObjectMapper();
 
-    long rownumber = 1L;
-    boolean failOnParseError = false;
     TransMeta transMeta = getTransMeta();
-
     CsvInputAwareMeta csvInputAwareMeta = (CsvInputAwareMeta) getStepMetaInterface();
     final InputStream inputStream = getInputStream( csvInputAwareMeta );
     final BufferedInputStreamReader reader = getBufferedReader( csvInputAwareMeta, inputStream );
-    org.pentaho.di.trans.steps.fileinput.text.EncodingType encodingType =
-      org.pentaho.di.trans.steps.fileinput.text.EncodingType.guessEncodingType( reader.getEncoding() );
     meta = (CsvInputMeta) getStepMetaInterface();
-
-    String line = "";
-    long fileLineNumber = 0;
-
-    DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-
     String[] fieldNames = getFieldNames( csvInputAwareMeta );
-    int nrfields = fieldNames.length;
-
-    RowMetaInterface outputRowMeta = new RowMeta();
     meta.setFields( fieldNames );
-    meta.getFields( outputRowMeta, null, null, null, transMeta, null, null );
 
-    // Remove the storage meta-data (don't go for lazy conversion during scan)
-    for ( ValueMetaInterface valueMeta : outputRowMeta.getValueMetaList() ) {
-      valueMeta.setStorageMetadata( null );
-      valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    }
+    CsvFileImportProcessor processor =
+      new CsvFileImportProcessor( meta, transMeta, reader, samples, Boolean.parseBoolean( isSampleSummary ) );
+    String summary = processor.analyzeFile( true );
 
-    RowMetaInterface convertRowMeta = outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
-
-    // How many null values?
-    int[] nrnull = new int[ nrfields ]; // How many times null value?
-
-    // String info
-    String[] minstr = new String[ nrfields ]; // min string
-    String[] maxstr = new String[ nrfields ]; // max string
-    boolean[] firststr = new boolean[ nrfields ]; // first occ. of string?
-
-    // Date info
-    boolean[] isDate = new boolean[ nrfields ]; // is the field perhaps a Date?
-    int[] dateFormatCount = new int[ nrfields ]; // How many date formats work?
-    boolean[][] dateFormat = new boolean[ nrfields ][ Const.getDateFormats().length ]; // What are the date formats that
-    // work?
-    Date[][] minDate = new Date[ nrfields ][ Const.getDateFormats().length ]; // min date value
-    Date[][] maxDate = new Date[ nrfields ][ Const.getDateFormats().length ]; // max date value
-
-    // Number info
-    boolean[] isNumber = new boolean[ nrfields ]; // is the field perhaps a Number?
-    int[] numberFormatCount = new int[ nrfields ]; // How many number formats work?
-    boolean[][] numberFormat = new boolean[ nrfields ][ Const.getNumberFormats().length ]; // What are the number format
-    // that work?
-    double[][] minValue = new double[ nrfields ][ Const.getDateFormats().length ]; // min number value
-    double[][] maxValue = new double[ nrfields ][ Const.getDateFormats().length ]; // max number value
-    int[][] numberPrecision = new int[ nrfields ][ Const.getNumberFormats().length ]; // remember the precision?
-    int[][] numberLength = new int[ nrfields ][ Const.getNumberFormats().length ]; // remember the length?
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      TextFileInputField field = new TextFileInputField();
-
-      // Clear previous info...
-      field.setName( fieldNames[ i ] );
-      field.setType( 0 );
-      field.setFormat( "" );
-      field.setLength( -1 );
-      field.setPrecision( -1 );
-      field.setCurrencySymbol( dfs.getCurrencySymbol() );
-      field.setDecimalSymbol( "" + dfs.getDecimalSeparator() );
-      field.setGroupSymbol( "" + dfs.getGroupingSeparator() );
-      field.setNullString( "-" );
-      field.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
-
-      nrnull[ i ] = 0;
-      minstr[ i ] = "";
-      maxstr[ i ] = "";
-      firststr[ i ] = true;
-
-      // Init data guess
-      isDate[ i ] = true;
-      for ( int j = 0; j < Const.getDateFormats().length; j++ ) {
-        dateFormat[ i ][ j ] = true;
-        minDate[ i ][ j ] = Const.MAX_DATE;
-        maxDate[ i ][ j ] = Const.MIN_DATE;
-      }
-      dateFormatCount[ i ] = Const.getDateFormats().length;
-
-      // Init number guess
-      isNumber[ i ] = true;
-      for ( int j = 0; j < Const.getNumberFormats().length; j++ ) {
-        numberFormat[ i ][ j ] = true;
-        minValue[ i ][ j ] = Double.MAX_VALUE;
-        maxValue[ i ][ j ] = -Double.MAX_VALUE;
-        numberPrecision[ i ][ j ] = -1;
-        numberLength[ i ][ j ] = -1;
-      }
-      numberFormatCount[ i ] = Const.getNumberFormats().length;
-    }
-
-    InputFileMetaInterface strinfo = (InputFileMetaInterface) meta.clone();
-    for ( int i = 0; i < nrfields; i++ ) {
-      strinfo.getInputFields()[ i ].setType( ValueMetaInterface.TYPE_STRING );
-    }
-
-    StringBuilder lineBuffer = new StringBuilder( 256 );
-    int fileFormatType = meta.getFileFormatTypeNr();
-
-    if ( meta.hasHeader() ) {
-      fileLineNumber = TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType, lineBuffer,
-        meta.getNrHeaderLines(), meta.getEnclosure(), meta.getEscapeCharacter(), fileLineNumber );
-    }
-    //Reading the first line of data
-    line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, meta.getEnclosure(),
-      meta.getEscapeCharacter() );
-    int linenr = 1;
-
-    List<StringEvaluator> evaluators = new ArrayList<StringEvaluator>();
-
-    // Allocate number and date parsers
-    DecimalFormat df2 = (DecimalFormat) NumberFormat.getInstance();
-    DecimalFormatSymbols dfs2 = new DecimalFormatSymbols();
-    SimpleDateFormat daf2 = new SimpleDateFormat();
-
-    boolean errorFound = false;
-    while ( !errorFound && line != null && ( linenr <= samples || samples == 0 ) ) {
-
-      RowMetaInterface rowMeta = new RowMeta();
-      meta.getFields( rowMeta, "stepname", null, null, transMeta, null, null );
-      // Remove the storage meta-data (don't go for lazy conversion during scan)
-      for ( ValueMetaInterface valueMeta : rowMeta.getValueMetaList() ) {
-        valueMeta.setStorageMetadata( null );
-        valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
-      }
-
-      String delimiter = transMeta.environmentSubstitute( meta.getSeparator() );
-      String enclosure = transMeta.environmentSubstitute( meta.getEnclosure() );
-      String escapeCharacter = transMeta.environmentSubstitute( meta.getEscapeCharacter() );
-      Object[] r =
-        TextFileInput.convertLineToRow(
-          log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0, outputRowMeta,
-          convertRowMeta, meta.getFilePaths( transMeta )[ 0 ], rownumber, delimiter, enclosure, escapeCharacter,
-          null, false, false, false, false, false, false, false, false, null, null, false, null, null, null,
-          null, 0, failOnParseError );
-
-      if ( r == null ) {
-        errorFound = true;
-        continue;
-      }
-      rownumber++;
-      for ( int i = 0; i < nrfields && i < r.length; i++ ) {
-        StringEvaluator evaluator;
-        if ( i >= evaluators.size() ) {
-          evaluator = new StringEvaluator( true );
-          evaluators.add( evaluator );
-        } else {
-          evaluator = evaluators.get( i );
-        }
-
-        String string = getStringFromRow( rowMeta, r, i, failOnParseError );
-        evaluator.evaluateString( string );
-      }
-
-      if ( r != null ) {
-        linenr++;
-      }
-
-      // Grab another line...
-      TextFileLine
-        textFileLine =
-        TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, escapeCharacter,
-          fileLineNumber );
-      line = textFileLine.getLine();
-      fileLineNumber = textFileLine.getLineNumber();
-    }
-
-    // Show information on items using a dialog box
-    //
-    StringBuilder message = new StringBuilder();
-    if ( Boolean.parseBoolean( isSampleSummary ) ) {
-      message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.ResultAfterScanning", ""
-        + ( linenr - 1 ) ) );
-      message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.HorizontalLine" ) );
-    }
-    if ( nrfields == evaluators.size() ) {
-      for ( int i = 0; i < nrfields; i++ ) {
-        TextFileInputField field = meta.getInputFields()[ i ];
-        StringEvaluator evaluator = evaluators.get( i );
-        List<StringEvaluationResult> evaluationResults = evaluator.getStringEvaluationResults();
-
-        // If we didn't find any matching result, it's a String...
-        //
-        StringEvaluationResult result = evaluator.getAdvicedResult();
-        if ( evaluationResults.isEmpty() ) {
-          field.setType( ValueMetaInterface.TYPE_STRING );
-          field.setLength( evaluator.getMaxLength() );
-        }
-        if ( result != null ) {
-          // Take the first option we find, list the others below...
-          //
-          ValueMetaInterface conversionMeta = result.getConversionMeta();
-          field.setType( conversionMeta.getType() );
-          field.setTrimType( conversionMeta.getTrimType() );
-          field.setFormat( conversionMeta.getConversionMask() );
-          field.setDecimalSymbol( conversionMeta.getDecimalSymbol() );
-          field.setGroupSymbol( conversionMeta.getGroupingSymbol() );
-          field.setLength( conversionMeta.getLength() );
-          field.setPrecision( conversionMeta.getPrecision() );
-
-          nrnull[ i ] = result.getNrNull();
-          minstr[ i ] = result.getMin() == null ? "" : result.getMin().toString();
-          maxstr[ i ] = result.getMax() == null ? "" : result.getMax().toString();
-        }
-
-        if ( Boolean.parseBoolean( isSampleSummary ) ) {
-          message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.FieldNumber", ""
-            + ( i + 1 ) ) );
-
-          message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.FieldName", field
-            .getName() ) );
-          message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.FieldType", field
-            .getTypeDesc() ) );
-
-          switch ( field.getType() ) {
-            case ValueMetaInterface.TYPE_NUMBER:
-              message.append( BaseMessages.getString(
-                PKG, "CSVImportProgressDialog.Info.EstimatedLength", ( field.getLength() < 0 ? "-" : ""
-                  + field.getLength() ) ) );
-              message.append( BaseMessages.getString(
-                PKG, "CSVImportProgressDialog.Info.EstimatedPrecision", field.getPrecision() < 0 ? "-" : ""
-                  + field.getPrecision() ) );
-              message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.NumberFormat", field
-                .getFormat() ) );
-
-              if ( !evaluationResults.isEmpty() ) {
-                if ( evaluationResults.size() > 1 ) {
-                  message.append( BaseMessages
-                    .getString( PKG, "CSVImportProgressDialog.Info.WarnNumberFormat" ) );
-                }
-
-                for ( StringEvaluationResult seResult : evaluationResults ) {
-                  String mask = seResult.getConversionMeta().getConversionMask();
-
-                  message.append( BaseMessages.getString(
-                    PKG, "CSVImportProgressDialog.Info.NumberFormat2", mask ) );
-                  message.append( BaseMessages
-                    .getString( PKG, "CSVImportProgressDialog.Info.TrimType", seResult
-                      .getConversionMeta().getTrimType() ) );
-                  message.append( BaseMessages.getString(
-                    PKG, "CSVImportProgressDialog.Info.NumberMinValue", seResult.getMin() ) );
-                  message.append( BaseMessages.getString(
-                    PKG, "CSVImportProgressDialog.Info.NumberMaxValue", seResult.getMax() ) );
-
-                  try {
-                    df2.applyPattern( mask );
-                    df2.setDecimalFormatSymbols( dfs2 );
-                    double mn = df2.parse( seResult.getMin().toString() ).doubleValue();
-                    message.append( BaseMessages.getString(
-                      PKG, "CSVImportProgressDialog.Info.NumberExample", mask, seResult.getMin(), Double
-                        .toString( mn ) ) );
-                  } catch ( Exception e ) {
-                    if ( log.isDetailed() ) {
-                      log.logDetailed( "This is unexpected: parsing ["
-                        + seResult.getMin() + "] with format [" + mask + "] did not work." );
-                    }
-                  }
-                }
-              }
-              message.append( BaseMessages.getString(
-                PKG, "CSVImportProgressDialog.Info.NumberNrNullValues", "" + nrnull[ i ] ) );
-              break;
-            case ValueMetaInterface.TYPE_STRING:
-              message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.StringMaxLength", ""
-                + field.getLength() ) );
-              message.append( BaseMessages.getString(
-                PKG, "CSVImportProgressDialog.Info.StringMinValue", minstr[ i ] ) );
-              message.append( BaseMessages.getString(
-                PKG, "CSVImportProgressDialog.Info.StringMaxValue", maxstr[ i ] ) );
-              message.append( BaseMessages.getString(
-                PKG, "CSVImportProgressDialog.Info.StringNrNullValues", "" + nrnull[ i ] ) );
-              break;
-            case ValueMetaInterface.TYPE_DATE:
-              message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.DateMaxLength", field
-                .getLength() < 0 ? "-" : "" + field.getLength() ) );
-              message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.DateFormat", field
-                .getFormat() ) );
-              if ( dateFormatCount[ i ] > 1 ) {
-                message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.WarnDateFormat" ) );
-              }
-              if ( !Utils.isEmpty( minstr[ i ] ) ) {
-                for ( int x = 0; x < Const.getDateFormats().length; x++ ) {
-                  if ( dateFormat[ i ][ x ] ) {
-                    message.append( BaseMessages.getString(
-                      PKG, "CSVImportProgressDialog.Info.DateFormat2", Const.getDateFormats()[ x ] ) );
-                    Date mindate = minDate[ i ][ x ];
-                    Date maxdate = maxDate[ i ][ x ];
-                    message.append( BaseMessages.getString(
-                      PKG, "CSVImportProgressDialog.Info.DateMinValue", mindate.toString() ) );
-                    message.append( BaseMessages.getString(
-                      PKG, "CSVImportProgressDialog.Info.DateMaxValue", maxdate.toString() ) );
-
-                    daf2.applyPattern( Const.getDateFormats()[ x ] );
-                    try {
-                      Date md = daf2.parse( minstr[ i ] );
-                      message.append( BaseMessages.getString(
-                        PKG, "CSVImportProgressDialog.Info.DateExample", Const.getDateFormats()[ x ],
-                        minstr[ i ], md.toString() ) );
-                    } catch ( Exception e ) {
-                      if ( log.isDetailed() ) {
-                        log.logDetailed( "This is unexpected: parsing ["
-                          + minstr[ i ] + "] with format [" + Const.getDateFormats()[ x ] + "] did not work." );
-                      }
-                    }
-                  }
-                }
-              }
-              message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.DateNrNullValues", ""
-                + nrnull[ i ] ) );
-              break;
-            default:
-              break;
-          }
-          if ( nrnull[ i ] == linenr - 1 ) {
-            message.append( BaseMessages.getString( PKG, "CSVImportProgressDialog.Info.AllNullValues" ) );
-          }
-          message.append( Const.CR );
-        }
-
-        TextFileInputFieldDTO textFileInputFieldDTO = convertFieldToDto( field );
-        jsonArray.add( objectMapper.readTree( objectMapper.writeValueAsString( textFileInputFieldDTO ) ) );
-      }
-    }
-
-    response.put( "fields", jsonArray );
-    response.put( "summary", message.toString() );
+    response.put( "fields", convertFieldsToJsonArray( processor.getInputFieldsDto() ) );
+    response.put( "summary", summary );
     return response;
-  }
-
-  private TextFileInputFieldDTO convertFieldToDto( TextFileInputField field ) {
-    TextFileInputFieldDTO textFileInputFieldDTO = new TextFileInputFieldDTO();
-    textFileInputFieldDTO.setName( field.getName() );
-    textFileInputFieldDTO.setType( field.getTypeDesc() );
-    textFileInputFieldDTO.setFormat( field.getFormat() );
-    textFileInputFieldDTO.setPosition( field.getPosition() == -1 ? "" : String.valueOf( field.getPosition() ) );
-    textFileInputFieldDTO.setLength( field.getLength() == -1 ? "" : String.valueOf( field.getLength() ) );
-    textFileInputFieldDTO.setPrecision( field.getPrecision() == -1 ? "" : String.valueOf( field.getPrecision() ) );
-    textFileInputFieldDTO.setCurrency( field.getCurrencySymbol() );
-    textFileInputFieldDTO.setDecimal( field.getDecimalSymbol() );
-    textFileInputFieldDTO.setGroup( field.getGroupSymbol() );
-    textFileInputFieldDTO.setNullif( field.getNullString() );
-    textFileInputFieldDTO.setIfnull( field.getIfNullValue() );
-    textFileInputFieldDTO.setTrimType( field.getTrimTypeDesc() );
-    textFileInputFieldDTO.setRepeat( field.isRepeated() ? "Y" : "N" );
-    return textFileInputFieldDTO;
-  }
-
-  private String getStringFromRow( final RowMetaInterface rowMeta, final Object[] row, final int index,
-                                   final boolean failOnParseError ) throws KettleException {
-    String string = null;
-    Exception exc = null;
-    try {
-      string = rowMeta.getString( row, index );
-    } catch ( final Exception e ) {
-      exc = e;
-    }
-
-
-    // if 'failOnParseError' is true, and we caught an exception, we either re-throw the exception, or wrap its as a
-    // KettleException, if it isn't one already
-    if ( failOnParseError ) {
-      if ( exc instanceof KettleException ) {
-        throw (KettleException) exc;
-      } else if ( exc != null ) {
-        throw new KettleException( exc );
-      }
-    }
-
-    // if 'failOnParseError' is false, or there is no exceptionotherwise, we get the string value straight from the row
-    // object
-    if ( string == null ) {
-      if ( ( row.length <= index ) ) {
-        if ( failOnParseError ) {
-          throw new KettleException( new NullPointerException() );
-        }
-      }
-      string = row.length <= index || row[ index ] == null ? null : row[ index ].toString();
-    }
-
-    return string;
   }
 
   public InputStream getInputStream( final CsvInputAwareMeta meta ) {
@@ -1605,4 +1219,5 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
   public LogChannelInterface logChannel() {
     return getLogChannel();
   }
+
 }
