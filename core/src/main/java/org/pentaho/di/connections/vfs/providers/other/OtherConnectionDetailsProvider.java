@@ -13,15 +13,12 @@
 
 package org.pentaho.di.connections.vfs.providers.other;
 
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
-import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSRoot;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,11 +46,9 @@ public class OtherConnectionDetailsProvider extends BaseVFSConnectionProvider<Ot
         getVar( otherConnectionDetails.getUsername(), space ),
         getVar( otherConnectionDetails.getPassword(), space ) );
     FileSystemOptions opts = new FileSystemOptions();
-    try {
-      DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator( opts, auth );
-    } catch ( FileSystemException fse ) {
-      // Ignore and return default options
-    }
+
+    DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator( opts, auth );
+
     return opts;
   }
 
