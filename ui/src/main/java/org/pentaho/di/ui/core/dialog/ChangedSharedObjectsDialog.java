@@ -157,7 +157,8 @@ public class ChangedSharedObjectsDialog {
             // allow space between images
             int height = selectionTree.getItemHeight() - margin;
             Image image = scaleToHeight( svtImage, height );
-            event.gc.drawImage( image, event.x + event.width + margin, event.y );
+            // + margin/2 is an attempt to center this vertically on the row.
+            event.gc.drawImage( image, event.x + event.width + margin, event.y + ( margin / 2 ) );
           }
         }
       } );
@@ -210,11 +211,12 @@ public class ChangedSharedObjectsDialog {
       for ( Map.Entry<String, ComparedState> entry : sorted.entrySet() ) {
         TreeItem child = new TreeItem( root, SWT.NONE );
         String level = LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME;
-        // NOTE: no image for "new" items
         if ( entry.getValue() == ComparedState.MODIFIED ) {
           child.setData( guiResource.getSwtImageSharedOverwrite() );
         } else if ( entry.getValue() == ComparedState.UNMODIFIED ) {
           child.setData( guiResource.getSwtImageSharedIdentical() );
+        } else if ( entry.getValue() == ComparedState.NEW ) {
+          child.setData( guiResource.getSwtImageSharedNew() );
         }
         child.setText( entry.getKey() + " [" + level + "]" );
         child.setImage( childImage );
