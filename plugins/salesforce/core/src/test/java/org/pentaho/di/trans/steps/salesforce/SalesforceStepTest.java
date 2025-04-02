@@ -168,6 +168,7 @@ public class SalesforceStepTest {
     SalesforceStep step = spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
     JSONObject response = step.testButtonAction( queryParams );
     assert ( response.containsKey( "connectionStatus" ) );
+    assertNotNull( response );
   }
 
   @Test
@@ -176,6 +177,7 @@ public class SalesforceStepTest {
     SalesforceStep step = spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
     JSONObject response = step.modulesAction(queryParams);
     assert(response.containsKey( "actionStatus" ));
+    assertNotNull( response );
   }
 
 

@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.salesforceupsert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -266,6 +267,7 @@ public class SalesforceUpsertTest {
     Map<String, String> queryParams = new HashMap<>();
     JSONObject response = salesforceUpsert.modulesAction( queryParams );
     assert ( response.containsKey( "actionStatus" ) );
+    assertNotNull( response );
   }
 
   @Test
@@ -276,6 +278,7 @@ public class SalesforceUpsertTest {
 
     JSONObject response = salesforceUpsert.testButtonAction( queryParams );
     assert ( response.containsKey( "connectionStatus" ) );
+    assertNotNull( response );
   }
 
 }

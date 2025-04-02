@@ -13,18 +13,13 @@
 
 package org.pentaho.di.trans.steps.salesforceinsert;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.bind.XmlObject;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -34,12 +29,10 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
-import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
 
 /**
@@ -317,6 +310,7 @@ public class SalesforceInsert extends SalesforceStep {
     return super.testButtonAction( queryParams );
   }
 
+  @Override
   protected JSONObject modulesAction( Map<String, String> queryParams ) {
     queryParams.put( "moduleFlag", "false" );
     return super.modulesAction( queryParams );

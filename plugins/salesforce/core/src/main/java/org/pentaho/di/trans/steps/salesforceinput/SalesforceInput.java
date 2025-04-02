@@ -473,6 +473,7 @@ public class SalesforceInput extends SalesforceStep {
     return super.testButtonAction( queryParams );
   }
 
+  @Override
   protected JSONObject modulesAction( Map<String, String> queryParams ) {
     queryParams.put( "moduleFlag", "true" );
     return super.modulesAction( queryParams );

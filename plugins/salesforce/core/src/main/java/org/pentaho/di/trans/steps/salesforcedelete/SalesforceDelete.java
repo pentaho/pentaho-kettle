@@ -250,6 +250,7 @@ public class SalesforceDelete extends SalesforceStep {
     return super.testButtonAction( queryParams );
   }
 
+  @Override
   protected JSONObject modulesAction( Map<String, String> queryParams ) {
     queryParams.put( "moduleFlag", "false" );
     return super.modulesAction( queryParams );

@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.salesforceinsert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -236,6 +237,7 @@ public class SalesforceInsertTest {
     Map<String, String> queryParams = new HashMap<>();
     JSONObject response = sfInputStep.modulesAction( queryParams );
     assert ( response.containsKey( "actionStatus" ) );
+    assertNotNull( response );
   }
 
   @Test
@@ -246,6 +248,7 @@ public class SalesforceInsertTest {
 
     JSONObject response = sfInputStep.testButtonAction( queryParams );
     assert ( response.containsKey( "connectionStatus" ) );
+    assertNotNull( response );
   }
 
 
