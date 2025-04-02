@@ -18,6 +18,7 @@ import org.pentaho.di.core.util.Utils;
 
 import java.util.Map;
 
+import static org.pentaho.di.core.util.Utils.setBooleanValueFromMap;
 import static org.pentaho.di.core.util.Utils.setStringValueFromMap;
 
 public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta {
@@ -59,6 +60,7 @@ public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta {
 
   @Override
   public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    this.setUsingDoubleDecimalAsSchemaTableSeparator( setBooleanValueFromMap( attributes, ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR ) );
     addAttribute( ATTRIBUTE_USE_INTEGRATED_SECURITY, setStringValueFromMap( attributes, ATTRIBUTE_USE_INTEGRATED_SECURITY ) );
   }
 }

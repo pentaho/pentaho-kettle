@@ -21,6 +21,8 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -122,5 +124,20 @@ public class AzureSqlDataBaseMetaTest {
     ValueMetaString ts = new ValueMetaString( "AzureDB" );
     dbMeta.getValueFromResultSet( rs,ts,2 );
   }
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_setsAllAttributes() {
+    dbMeta = new AzureSqlDataBaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( AzureSqlDataBaseMeta.JDBC_AUTH_METHOD, "SQL Server Authentication" );
+    attributes.put( AzureSqlDataBaseMeta.CLIENT_ID, "testClientId"  );
+    attributes.put( AzureSqlDataBaseMeta.CLIENT_SECRET_KEY, "testClientSecret"  );
+    attributes.put( AzureSqlDataBaseMeta.IS_ALWAYS_ENCRYPTION_ENABLED, "true" );
 
+    dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+    assertEquals( "SQL Server Authentication", dbMeta.getAttribute( AzureSqlDataBaseMeta.JDBC_AUTH_METHOD, "" ) );
+    assertEquals( "testClientId", dbMeta.getAttribute( AzureSqlDataBaseMeta.CLIENT_ID, "" ) );
+    assertEquals( "testClientSecret", dbMeta.getAttribute( AzureSqlDataBaseMeta.CLIENT_SECRET_KEY, "" ) );
+    assertEquals( "true", dbMeta.getAttribute( AzureSqlDataBaseMeta.IS_ALWAYS_ENCRYPTION_ENABLED, "" ) );
+  }
 }
