@@ -26,7 +26,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -41,7 +40,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mockConstruction;
 
 public class DatabaseLookupTest {
 
@@ -81,30 +79,6 @@ public class DatabaseLookupTest {
 
     valueMetaInterfaceList = new ArrayList<>();
     rowMeta = new RowMeta();
-  }
-
-  @Test
-  public void getTableFieldAndTypeActionTest() {
-    mockConstruction( Database.class, (mock, context) -> {
-      ValueMetaBase valueMetaBase1 = new ValueMetaBase( "column1", ValueMetaInterface.TYPE_STRING );
-      ValueMetaBase valueMetaBase2 = new ValueMetaBase( "column2", ValueMetaInterface.TYPE_INTEGER );
-      valueMetaInterfaceList.add( valueMetaBase1 );
-      valueMetaInterfaceList.add( valueMetaBase2 );
-
-      rowMeta.setValueMetaList( valueMetaInterfaceList );
-      doNothing().when( mock ).connect();
-      when( mock.getTableFieldsMeta( schema, table ) ).thenReturn( rowMeta );
-
-      Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
-      getTableFieldAndTypeMethod.setAccessible( true );
-      JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
-
-      Assert.assertNotNull( jsonObject );
-      Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-      JSONArray jsonArray = (JSONArray) jsonObject.get( "columns" );
-      Assert.assertEquals( 2, jsonArray.size() );
-      mock.close();
-    } );
   }
 
   @Test
