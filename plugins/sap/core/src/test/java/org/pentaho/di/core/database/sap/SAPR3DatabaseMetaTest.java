@@ -22,6 +22,9 @@ import org.junit.Test;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SAPR3DatabaseMetaTest {
 
   DatabaseInterface db;
@@ -50,5 +53,20 @@ public class SAPR3DatabaseMetaTest {
   @Test
   public void testReleaseSavePoint() {
     assertTrue( db.releaseSavepoint() );
+  }
+
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_setsAllAttributes() {
+    SAPR3DatabaseMeta dbMeta = new SAPR3DatabaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, "SAP_LANG" );
+    attributes.put( SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, "00" );
+    attributes.put( SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, "100" );
+
+    dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+    assertEquals( "SAP_LANG", dbMeta.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE ) );
+    assertEquals( "00", dbMeta.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER ) );
+    assertEquals( "100", dbMeta.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT ) );
   }
 }
