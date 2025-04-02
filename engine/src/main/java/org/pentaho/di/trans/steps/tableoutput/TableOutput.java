@@ -702,6 +702,9 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
   }
 
   private static boolean isValidRowMeta( RowMetaInterface rowMeta ) {
+    if ( rowMeta == null ) {
+      return false;
+    }
     for ( ValueMetaInterface value : rowMeta.getValueMetaList() ) {
       String name = value.getName();
       if ( name == null || name.isEmpty() ) {

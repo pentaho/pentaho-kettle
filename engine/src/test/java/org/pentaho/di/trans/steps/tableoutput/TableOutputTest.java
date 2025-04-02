@@ -15,24 +15,32 @@ package org.pentaho.di.trans.steps.tableoutput;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
@@ -53,6 +61,7 @@ public class TableOutputTest {
   private TableOutputMeta tableOutputMeta, tableOutputMetaSpy;
   private TableOutputData tableOutputData, tableOutputDataSpy;
   private Database db;
+  private TransMeta transMeta;
 
   private static RowMetaInterface filled;
   private static RowMetaInterface empty;
@@ -80,7 +89,7 @@ public class TableOutputTest {
     tableOutputData.preparedStatements = mock( Map.class );
     tableOutputData.commitCounterMap = mock( Map.class );
 
-    TransMeta transMeta = mock( TransMeta.class );
+    transMeta = mock( TransMeta.class );
     doReturn( stepMeta ).when( transMeta ).findStep( anyString() );
 
     tableOutput = new TableOutput( stepMeta, tableOutputData, 1, transMeta, mock( Trans.class ) );
@@ -231,5 +240,57 @@ public class TableOutputTest {
       result.addValueMeta( new ValueMetaString( s ) );
     }
     return result;
+  }
+
+  @Test
+  public void testGetSQLAction() throws KettleStepException {
+
+    Trans trans = mock( Trans.class );
+    TableOutputMeta stepMetaInterface = mock( TableOutputMeta.class );
+    when( stepMetaInterface.isTableNameInField() ).thenReturn( true );
+    when( stepMetaInterface.getTableNameField() ).thenReturn( "tableNameField" );
+
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "stepName", "stepName" );
+    queryParams.put( "connection", "connection" );
+    RowMetaInterface prev = mock( RowMetaInterface.class );
+    when( transMeta.getPrevStepFields( anyString() ) ).thenReturn( prev );
+    when( stepMetaInterface.getDatabaseMeta() ).thenReturn( databaseMeta );
+    when( stepMetaInterface.specifyFields() ).thenReturn( true );
+    String[] fields = new String[] { "field1", "field2" };
+    when( stepMetaInterface.getFieldDatabase() ).thenReturn( fields );
+    when( stepMetaInterface.getFieldStream() ).thenReturn( fields );
+
+    when( stepMetaInterface.isReturningGeneratedKeys() ).thenReturn( true );
+    when( stepMetaInterface.getGeneratedKeyField() ).thenReturn( "genField" );
+
+    ValueMetaInterface mockValueMeta = mock( ValueMetaInterface.class );
+    when( mockValueMeta.clone() ).thenReturn( mockValueMeta );
+
+    JSONObject response = tableOutput.doAction( "getSQL", stepMetaInterface,
+      transMeta, trans, queryParams );
+    assertEquals( response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    when( mockValueMeta.getName() ).thenReturn( "name" );
+    doNothing().when( mockValueMeta ).setName( any() );
+    response = tableOutput.doAction( "getSQL", stepMetaInterface,
+      transMeta, trans, queryParams );
+    assertEquals( response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    when( prev.searchValueMeta( any() ) ).thenReturn( mockValueMeta );
+    when( databaseMeta.getDatabaseInterface() ).thenReturn( mock( DatabaseInterface.class ) );
+    SQLStatement sql = new SQLStatement( stepMeta.getName(), databaseMeta, null );
+    when(
+      stepMetaInterface.getSQLStatements( any(), any(), any(), anyString(), anyBoolean(), anyString() ) ).thenReturn(
+      sql );
+
+    response = tableOutput.doAction( "getSQL", stepMetaInterface,
+      transMeta, trans, queryParams );
+    assertEquals( response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+
+    sql.setSQL( "select * from employees" );
+
+    response = tableOutput.doAction( "getSQL", stepMetaInterface,
+      transMeta, trans, queryParams );
+    assertEquals( response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    assertTrue( response.containsKey( "sqlString" ) );
   }
 }
