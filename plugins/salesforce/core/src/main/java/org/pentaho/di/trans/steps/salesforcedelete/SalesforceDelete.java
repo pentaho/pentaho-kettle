@@ -245,6 +245,7 @@ public class SalesforceDelete extends SalesforceStep {
     super.dispose( smi, sdi );
   }
 
+  @SuppressWarnings( "java:S1185" ) //This is being called using reflection(doAction)
   @Override
   protected JSONObject testButtonAction( Map<String, String> queryParams ) {
     return super.testButtonAction( queryParams );
