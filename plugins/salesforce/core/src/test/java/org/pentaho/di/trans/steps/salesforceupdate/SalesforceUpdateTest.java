@@ -22,6 +22,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.util.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -212,7 +213,7 @@ public class SalesforceUpdateTest {
       new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     Map<String, String> queryParams = new HashMap<>();
     JSONObject response = salesforceUpdate.modulesAction( queryParams );
-    assert ( response.containsKey( "actionStatus" ) );
+    assertTrue( response.containsKey( "actionStatus" ) );
   }
 
   @Test
@@ -222,7 +223,7 @@ public class SalesforceUpdateTest {
     Map<String, String> queryParams = new HashMap<>();
 
     JSONObject response = salesforceUpdate.testButtonAction( queryParams );
-    assert ( response.containsKey( "connectionStatus" ) );
+    assertTrue( response.containsKey( "connectionStatus" ) );
   }
 
 }

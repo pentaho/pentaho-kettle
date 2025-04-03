@@ -46,6 +46,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertNotNull;
+import static org.pentaho.di.core.util.Assert.assertTrue;
 
 
 public class SalesforceInputTest {
@@ -177,10 +178,11 @@ public class SalesforceInputTest {
     fieldList[ 1 ] = field1;
 
     try (
-      MockedConstruction<SalesforceConnection> ignored = Mockito.mockConstruction( SalesforceConnection.class, ( mock, context) -> {
-        doNothing().when( mock ).connect();
-        when( mock.getObjectFields( anyString() ) ).thenReturn( fieldList );
-      } ) ) {
+      MockedConstruction<SalesforceConnection> ignored = Mockito.mockConstruction( SalesforceConnection.class,
+        ( mock, context ) -> {
+          doNothing().when( mock ).connect();
+          when( mock.getObjectFields( anyString() ) ).thenReturn( fieldList );
+        } ) ) {
       meta.setSpecifyQuery( false );
       JSONObject response = salesforceInput.doAction( "getFields", meta, transMeta, trans, queryParams );
       assertNotNull( response );
@@ -199,10 +201,11 @@ public class SalesforceInputTest {
     fields[ 0 ] = testObject;
     fields[ 1 ] = xmlObject;
     try (
-      MockedConstruction<SalesforceConnection> ignored = Mockito.mockConstruction( SalesforceConnection.class, ( mock, context) -> {
-        doNothing().when( mock ).connect();
-        when( mock.getElements() ).thenReturn( fields );
-      } ) ) {
+      MockedConstruction<SalesforceConnection> ignored = Mockito.mockConstruction( SalesforceConnection.class,
+        ( mock, context ) -> {
+          doNothing().when( mock ).connect();
+          when( mock.getElements() ).thenReturn( fields );
+        } ) ) {
       meta.setSpecifyQuery( true );
       JSONObject response = salesforceInput.doAction( "getFields", meta, transMeta, trans, queryParams );
       assertNotNull( response );
@@ -214,16 +217,14 @@ public class SalesforceInputTest {
   public void testModulesAction() {
     Map<String, String> queryParams = new HashMap<>();
     JSONObject response = salesforceInput.modulesAction( queryParams );
-    assert( response.containsKey( "actionStatus" ) );
-    assertNotNull( response );
+    assertTrue( response.containsKey( "actionStatus" ) );
   }
 
   @Test
   public void test_testButtonAction() {
     Map<String, String> queryParams = new HashMap<>();
     JSONObject response = salesforceInput.testButtonAction( queryParams );
-    assert( response.containsKey( "connectionStatus" ) );
-    assertNotNull( response );
+    assertTrue( response.containsKey( "connectionStatus" ) );
   }
 
   private XmlObject createObject( String fieldName, String value, ObjectType type ) {
