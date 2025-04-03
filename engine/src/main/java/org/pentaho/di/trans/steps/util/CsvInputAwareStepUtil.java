@@ -13,11 +13,15 @@
 
 package org.pentaho.di.trans.steps.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -28,6 +32,7 @@ import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.csvinput.CsvInput;
 import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInputFieldDTO;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 
@@ -41,18 +46,11 @@ public interface CsvInputAwareStepUtil {
    */
   default String[] getFieldNames( final CsvInputAwareMeta meta ) {
     String[] fieldNames = new String[] {};
-    final InputStream inputStream = getInputStream( meta );
-    final BufferedInputStreamReader reader = getBufferedReader( meta, inputStream );
-    try {
+    try ( InputStream inputStream = getInputStream( meta ) ) {
+      final BufferedInputStreamReader reader = getBufferedReader( meta, inputStream );
       fieldNames = getFieldNamesImpl( reader, meta );
-    } catch ( final KettleException e ) {
+    } catch ( final KettleException | IOException e ) {
       logError( BaseMessages.getString( "Dialog.ErrorGettingFields.Message" ), e );
-    } finally {
-      try {
-        inputStream.close();
-      } catch ( Exception e ) {
-        // Ignore close errors
-      }
     }
     return fieldNames;
   }
@@ -138,6 +136,17 @@ public interface CsvInputAwareStepUtil {
       logError( BaseMessages.getString( "Dialog.ErrorGettingFileDesc.DialogMessage" ), e );
     }
     return reader;
+  }
+
+  default JSONArray convertFieldsToJsonArray( TextFileInputFieldDTO[] textFileInputFields )
+    throws JsonProcessingException {
+    JSONArray jsonArray = new JSONArray();
+    ObjectMapper objectMapper = new ObjectMapper();
+    for ( TextFileInputFieldDTO field : textFileInputFields ) {
+      jsonArray.add( objectMapper.readTree( objectMapper.writeValueAsString( field ) ) );
+    }
+
+    return jsonArray;
   }
 
   /**
