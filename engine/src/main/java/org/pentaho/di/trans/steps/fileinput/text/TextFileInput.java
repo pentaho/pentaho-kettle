@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -548,8 +549,8 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return textFileInputFieldDTO;
   }
 
-  public List<TextFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
-    List<TextFileInputFieldInterface> fields = new ArrayList<>();
+  public Vector<TextFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
+    Vector<TextFileInputFieldInterface> fields = new Vector<>();
 
     int maxsize = 0;
     for ( String row : rows ) {
