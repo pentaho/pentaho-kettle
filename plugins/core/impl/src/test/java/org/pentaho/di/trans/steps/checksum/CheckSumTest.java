@@ -776,23 +776,22 @@ public class CheckSumTest {
     String name = "test";
     stepMeta.setName( name );
     StepDataInterface stepDataInterface = Mockito.mock( StepDataInterface.class );
-    int copyNr = 0;
     TransMeta transMeta = Mockito.mock( TransMeta.class );
     Trans trans = Mockito.mock( Trans.class );
-    Mockito.when( transMeta.findStep( Mockito.eq( name ) ) ).thenReturn( stepMeta );
+    Mockito.when( transMeta.findStep( name ) ).thenReturn( stepMeta );
 
     CheckSum checkSum = new CheckSum( stepMeta, stepDataInterface, 0, transMeta, trans );
 
     Map<String, String> queryParams = new HashMap<>();
     CheckSumMeta meta = new CheckSumMeta();
-    JSONObject response = checkSum.doAction("getCheckSumTypes", meta, transMeta, trans, queryParams);
-    assertEquals(  response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    JSONObject response = checkSum.doAction( "getCheckSumTypes", meta, transMeta, trans, queryParams );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
 
-    response = checkSum.doAction("getEvaluationMethods", meta, transMeta, trans, queryParams);
-    assertEquals(  response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    response = checkSum.doAction( "getEvaluationMethods", meta, transMeta, trans, queryParams );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
 
-    response = checkSum.doAction("getResultTypes", meta, transMeta, trans, queryParams);
-    assertEquals(  response.get( StepInterface.ACTION_STATUS ), StepInterface.SUCCESS_RESPONSE );
+    response = checkSum.doAction( "getResultTypes", meta, transMeta, trans, queryParams );
+    assertEquals(  StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
 
 }

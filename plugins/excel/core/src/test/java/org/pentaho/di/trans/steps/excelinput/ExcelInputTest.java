@@ -16,7 +16,9 @@ package org.pentaho.di.trans.steps.excelinput;
 import org.apache.commons.vfs2.FileObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -109,7 +111,7 @@ public class ExcelInputTest {
     processingWorkbookMethod.setAccessible( true );
     processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
 
-    Assert.assertEquals( fieldCount, fields.size() );
+    assertEquals( fieldCount, fields.size() );
   }
 
   @Test
@@ -125,7 +127,7 @@ public class ExcelInputTest {
     processingWorkbookMethod.setAccessible( true );
     processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
 
-    Assert.assertEquals( 0, fields.size() );
+    assertEquals( 0, fields.size() );
   }
 
   @Test
@@ -141,7 +143,7 @@ public class ExcelInputTest {
     processingWorkbookMethod.setAccessible( true );
     processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
 
-    Assert.assertEquals( 400, fields.size() );
+    assertEquals( 400, fields.size() );
   }
 
   @Test
@@ -154,7 +156,7 @@ public class ExcelInputTest {
     processingWorkbookMethod.setAccessible( true );
     processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
 
-    Assert.assertEquals( 0, fields.size() );
+    assertEquals( 0, fields.size() );
   }
 
   @Test
@@ -172,7 +174,7 @@ public class ExcelInputTest {
     processingWorkbookMethod.setAccessible( true );
     processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
 
-    Assert.assertEquals( fieldCount, fields.size() );
+    assertEquals( fieldCount, fields.size() );
   }
 
   @Test
@@ -190,7 +192,7 @@ public class ExcelInputTest {
     processingWorkbookMethod.setAccessible( true );
     processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
 
-    Assert.assertEquals( fieldCount, fields.size() );
+    assertEquals( fieldCount, fields.size() );
   }
 
   @Test
@@ -208,7 +210,7 @@ public class ExcelInputTest {
     processingWorkbookMethod.setAccessible( true );
     processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
 
-    Assert.assertEquals( fieldCount, fields.size() );
+    assertEquals( fieldCount, fields.size() );
   }
 
   @Test
@@ -220,7 +222,7 @@ public class ExcelInputTest {
     processingWorkbookMethod.setAccessible( true );
     processingWorkbookMethod.invoke( excelInput, fields, excelInputMeta, workbook );
 
-    Assert.assertEquals( fieldCount, fields.size() );
+    assertEquals( fieldCount, fields.size() );
   }
 
   @Test
@@ -230,9 +232,9 @@ public class ExcelInputTest {
     getFilesMethod.setAccessible( true );
     JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( excelInput, new HashMap<>() );
 
-    Assert.assertNotNull( jsonObject );
-    Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-    Assert.assertNotNull( jsonObject.get( "files" ) );
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( jsonObject.get( "files" ) );
   }
 
   @Test
@@ -242,10 +244,10 @@ public class ExcelInputTest {
     getFilesMethod.setAccessible( true );
     JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( excelInput, new HashMap<>() );
 
-    Assert.assertNotNull( jsonObject );
-    Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-    Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.NoFilesFound.DialogMessage" ), jsonObject.get( "message" ) );
-    Assert.assertNull( jsonObject.get( "files" ) );
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.NoFilesFound.DialogMessage" ), jsonObject.get( "message" ) );
+    assertNull( jsonObject.get( "files" ) );
   }
 
   @Test
@@ -268,9 +270,9 @@ public class ExcelInputTest {
         getSheetsMethod.setAccessible( true );
         JSONObject jsonObject = (JSONObject) getSheetsMethod.invoke( excelInput, new HashMap<>() );
 
-        Assert.assertNotNull( jsonObject );
-        Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-        Assert.assertNotNull( jsonObject.get( "sheets" ) );
+        assertNotNull( jsonObject );
+        assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        assertNotNull( jsonObject.get( "sheets" ) );
       }
     }
   }
@@ -290,9 +292,9 @@ public class ExcelInputTest {
         getSheetsMethod.setAccessible( true );
         JSONObject jsonObject = (JSONObject) getSheetsMethod.invoke( excelInput, new HashMap<>() );
 
-        Assert.assertNotNull( jsonObject );
-        Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-        Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.UnableToFindSheets.DialogMessage" ), jsonObject.get( "message" ) );
+        assertNotNull( jsonObject );
+        assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.UnableToFindSheets.DialogMessage" ), jsonObject.get( "message" ) );
       }
     }
   }
@@ -316,11 +318,11 @@ public class ExcelInputTest {
         getSheetsMethod.setAccessible( true );
         JSONObject jsonObject = (JSONObject) getSheetsMethod.invoke( excelInput, new HashMap<>() );
 
-        Assert.assertNotNull( jsonObject );
-        Assert.assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        assertNotNull( jsonObject );
+        assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
         String errorMessage = (String) jsonObject.get( "errorMessage" );
-        Assert.assertNotNull( errorMessage );
-        Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage" ), errorMessage.trim() );
+        assertNotNull( errorMessage );
+        assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage" ), errorMessage.trim() );
       }
     }
   }
@@ -346,13 +348,13 @@ public class ExcelInputTest {
         getFieldsAction.setAccessible( true );
         JSONObject jsonObject = (JSONObject) getFieldsAction.invoke( excelInput, new HashMap<>() );
 
-        Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-        Assert.assertNotNull( jsonObject );
+        assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        assertNotNull( jsonObject );
         JSONObject fieldsObject = (JSONObject) jsonObject.get( "fields" );
-        Assert.assertNotNull( fieldsObject );
+        assertNotNull( fieldsObject );
         JSONArray rows = (JSONArray) fieldsObject.get( "rows" );
-        Assert.assertNotNull( rows );
-        Assert.assertEquals( fieldCount, rows.size() );
+        assertNotNull( rows );
+        assertEquals( fieldCount, rows.size() );
       }
     }
   }
@@ -368,9 +370,9 @@ public class ExcelInputTest {
     getFieldsAction.setAccessible( true );
     JSONObject jsonObject = (JSONObject) getFieldsAction.invoke( excelInput, new HashMap<>() );
 
-    Assert.assertNotNull( jsonObject );
-    Assert.assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
-    Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.UnableToFindFields.DialogMessage" ), jsonObject.get( "message" ) );
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.UnableToFindFields.DialogMessage" ), jsonObject.get( "message" ) );
   }
 
   @Test
@@ -394,11 +396,11 @@ public class ExcelInputTest {
         getFieldsAction.setAccessible( true );
         JSONObject jsonObject = (JSONObject) getFieldsAction.invoke( excelInput, new HashMap<>() );
 
-        Assert.assertNotNull( jsonObject );
-        Assert.assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        assertNotNull( jsonObject );
+        assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
         String errorMessage = (String) jsonObject.get( "errorMessage" );
-        Assert.assertNotNull( errorMessage );
-        Assert.assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage" ), errorMessage.trim() );
+        assertNotNull( errorMessage );
+        assertEquals( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage" ), errorMessage.trim() );
       }
     }
   }

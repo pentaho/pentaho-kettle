@@ -45,8 +45,6 @@ import org.pentaho.di.version.BuildVersion;
  */
 public class SystemData extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = SystemDataMeta.class;
-
   private SystemDataMeta meta;
   private SystemDataData data;
 
