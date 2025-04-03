@@ -13,8 +13,6 @@
 
 package org.pentaho.di.trans.steps.systemdata;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;

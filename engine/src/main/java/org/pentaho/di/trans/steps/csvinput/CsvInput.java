@@ -64,6 +64,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
+import org.pentaho.di.trans.steps.common.CsvInputAwareStep;
 import org.pentaho.di.trans.steps.fileinput.text.BOMDetector;
 import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputFieldDTO;
@@ -74,7 +75,6 @@ import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-import org.pentaho.di.trans.steps.util.CsvInputAwareStepUtil;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
@@ -82,7 +82,7 @@ import org.pentaho.di.trans.steps.util.CsvInputAwareStepUtil;
  * @author Matt
  * @since 2007-07-05
  */
-public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareStepUtil {
+public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareStep {
   private static Class<?> PKG = CsvInput.class; // for i18n purposes, needed by Translator2!!
 
   private CsvInputMeta meta;
@@ -1316,7 +1316,7 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
       meta.getEscapeCharacter() );
     int linenr = 1;
 
-    List<StringEvaluator> evaluators = new ArrayList<StringEvaluator>();
+    List<StringEvaluator> evaluators = new ArrayList<>();
 
     // Allocate number and date parsers
     DecimalFormat df2 = (DecimalFormat) NumberFormat.getInstance();
@@ -1553,41 +1553,6 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
     textFileInputFieldDTO.setTrimType( field.getTrimTypeDesc() );
     textFileInputFieldDTO.setRepeat( field.isRepeated() ? "Y" : "N" );
     return textFileInputFieldDTO;
-  }
-
-  private String getStringFromRow( final RowMetaInterface rowMeta, final Object[] row, final int index,
-                                   final boolean failOnParseError ) throws KettleException {
-    String string = null;
-    Exception exc = null;
-    try {
-      string = rowMeta.getString( row, index );
-    } catch ( final Exception e ) {
-      exc = e;
-    }
-
-
-    // if 'failOnParseError' is true, and we caught an exception, we either re-throw the exception, or wrap its as a
-    // KettleException, if it isn't one already
-    if ( failOnParseError ) {
-      if ( exc instanceof KettleException ) {
-        throw (KettleException) exc;
-      } else if ( exc != null ) {
-        throw new KettleException( exc );
-      }
-    }
-
-    // if 'failOnParseError' is false, or there is no exceptionotherwise, we get the string value straight from the row
-    // object
-    if ( string == null ) {
-      if ( ( row.length <= index ) ) {
-        if ( failOnParseError ) {
-          throw new KettleException( new NullPointerException() );
-        }
-      }
-      string = row.length <= index || row[ index ] == null ? null : row[ index ].toString();
-    }
-
-    return string;
   }
 
   public InputStream getInputStream( final CsvInputAwareMeta meta ) {

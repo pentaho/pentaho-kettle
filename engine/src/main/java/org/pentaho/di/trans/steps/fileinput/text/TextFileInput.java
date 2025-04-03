@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,11 +58,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
+import org.pentaho.di.trans.steps.common.CsvInputAwareStep;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 import org.pentaho.di.trans.steps.file.BaseFileInputStep;
 import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
-import org.pentaho.di.trans.steps.util.CsvInputAwareStepUtil;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
@@ -71,7 +70,8 @@ import org.pentaho.di.trans.steps.util.CsvInputAwareStepUtil;
  * @author Matt
  * @since 4-apr-2003
  */
-public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFileInputData> implements StepInterface, CsvInputAwareStepUtil {
+public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFileInputData> implements StepInterface,
+  CsvInputAwareStep {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public TextFileInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
@@ -312,7 +312,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
       tfii.getEscapeCharacter() );
     int linenr = 1;
 
-    List<StringEvaluator> evaluators = new ArrayList<StringEvaluator>();
+    List<StringEvaluator> evaluators = new ArrayList<>();
 
     // Allocate number and date parsers
     DecimalFormat df2 = (DecimalFormat) NumberFormat.getInstance();
@@ -548,57 +548,8 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return textFileInputFieldDTO;
   }
 
-  /**
-   * When {@code failOnParseError} is set to {@code false}, returns the {@link String} value from {@link
-   * org.pentaho.di.core.row.RowMeta} at the given {@code index}, or directly from the {@code row} object, if there is a
-   * problem fetching the value from {@link org.pentaho.di.core.row.RowMeta}. When {@code failOnParseError} is {@code
-   * true}, any {@link Exception} thrown by the call to {@link org.pentaho.di.core.row.RowMeta#getString(Object[], int)}
-   * is reported back to the caller.
-   *
-   * @param rowMeta          an instance of {@link RowMetaInterface}
-   * @param row              an Object array containing row data
-   * @param index            the index representing the column in a row
-   * @param failOnParseError when true, Exceptions are reported back to the called, when false, exceptions are ignored
-   *                         and a null value is returned
-   * @return the row value at the given index
-   */
-  private String getStringFromRow( final RowMetaInterface rowMeta, final Object[] row, final int index,
-                                   final boolean failOnParseError ) throws KettleException {
-    String string = null;
-    Exception exc = null;
-    try {
-      string = rowMeta.getString( row, index );
-    } catch ( final Exception e ) {
-      exc = e;
-    }
-
-
-    // if 'failOnParseError' is true, and we caught an exception, we either re-throw the exception, or wrap its as a
-    // KettleException, if it isn't one already
-    if ( failOnParseError ) {
-      if ( exc instanceof KettleException ) {
-        throw (KettleException) exc;
-      } else if ( exc != null ) {
-        throw new KettleException( exc );
-      }
-    }
-
-    // if 'failOnParseError' is false, or there is no exceptionotherwise, we get the string value straight from the row
-    // object
-    if ( string == null ) {
-      if ( ( row.length <= index ) ) {
-        if ( failOnParseError ) {
-          throw new KettleException( new NullPointerException() );
-        }
-      }
-      string = row.length <= index || row[ index ] == null ? null : row[ index ].toString();
-    }
-
-    return string;
-  }
-
-  public Vector<TextFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
-    Vector<TextFileInputFieldInterface> fields = new Vector<>();
+  public List<TextFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
+    List<TextFileInputFieldInterface> fields = new ArrayList<>();
 
     int maxsize = 0;
     for ( String row : rows ) {
@@ -667,9 +618,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
     String[] fieldNames = getFieldNames( (CsvInputAwareMeta) getStepMetaInterface() );
-    for ( String fieldName : fieldNames ) {
-      jsonArray.add( fieldName );
-    }
+    Collections.addAll( jsonArray, fieldNames );
     response.put( "fieldNames", jsonArray );
     return response;
   }
@@ -693,7 +642,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
       response.put( "message", BaseMessages.getString( PKG, "TextFileInputDialog.NoFilesFound.DialogMessage" ) );
     } else {
       for ( String file : files ) {
-        if ( Boolean.TRUE.valueOf( isRegex ) ) {
+        if ( Boolean.parseBoolean( isRegex ) ) {
           Matcher matcher = Pattern.compile( filter ).matcher( file );
           if ( matcher.matches() ) {
             filteredFiles.add( file );
@@ -715,7 +664,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
 
     FileInputList textFileList = meta.getFileInputList( getTransMeta().getBowl(), getTransMeta() );
 
-    if ( Objects.nonNull( textFileList ) && !( textFileList.nrOfFiles() > 0 ) ) {
+    if ( Objects.nonNull( textFileList ) && textFileList.nrOfFiles() <= 0 ) {
       response.put( "message", BaseMessages.getString( PKG, "TextFileInputDialog.NoValidFileFound.DialogMessage" ) );
     }
 
@@ -728,9 +677,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     JSONArray jsonArray = new JSONArray();
     List<String> content = getFirst( Integer.valueOf( Objects.toString( queryParams.get( "nrlines" ), "0" ) ),
       Boolean.valueOf( Objects.toString( queryParams.get( "skipHeaders" ), "false" ) ) );
-    content.forEach( str -> {
-      jsonArray.add( str );
-    } );
+    content.forEach( jsonArray::add );
     response.put( "firstFileContent", jsonArray );
     return response;
   }
@@ -812,6 +759,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return true;
   }
 
+  @Override
   public String massageFieldName( final String fieldName ) {
     // Replace all spaces and hyphens (-) with underscores (_)
     String massagedFieldName = fieldName;
