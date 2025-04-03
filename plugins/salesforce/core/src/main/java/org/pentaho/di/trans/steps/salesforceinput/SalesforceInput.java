@@ -468,6 +468,7 @@ public class SalesforceInput extends SalesforceStep {
     super.dispose( smi, sdi );
   }
 
+  @SuppressWarnings( "java:S1185" ) //This is being called using reflection(doAction)
   @Override
   protected JSONObject testButtonAction( Map<String, String> queryParams ) {
     return super.testButtonAction( queryParams );
@@ -555,6 +556,7 @@ public class SalesforceInput extends SalesforceStep {
       && field.getValue() == null;
   }
 
+  @SuppressWarnings( "java:S1168" ) //The id's value is null in this case. So, do not add empty list to the fields list
   List<FieldDTO> addFields( String prefix, Set<String> fieldNames, XmlObject field ) {
     //Salesforce SOAP Api sends IDs always in the response, even if we don't request it in SOQL query and
     //the id's value is null in this case. So, do not add this Id to the fields list
