@@ -27,17 +27,13 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 
-/**
- * This class is used to process text files of File Type as CSV is selected in Content tab of TextFileInput step
- */
-public class TextFileCsvFileTypeImportProcessor extends BaseFileImportProcessor {
+public class TextFileCSVImportProcessor extends BaseFileImportProcessor {
 
   private final TextFileInputMeta meta;
 
-  public TextFileCsvFileTypeImportProcessor( TextFileInputMeta meta, TransMeta transMeta,
-                                             BufferedInputStreamReader reader,
-                                             int samples,
-                                             boolean showSummary
+  public TextFileCSVImportProcessor( TextFileInputMeta meta, TransMeta transMeta, BufferedInputStreamReader reader,
+                                     int samples,
+                                     boolean showSummary
   ) {
     super( meta, transMeta, reader, samples, showSummary );
     this.meta = meta;
