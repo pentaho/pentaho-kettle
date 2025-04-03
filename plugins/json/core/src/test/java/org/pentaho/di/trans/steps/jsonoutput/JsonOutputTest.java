@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,6 +51,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
+import java.lang.reflect.Method;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -477,4 +481,110 @@ public class JsonOutputTest extends TestCase {
 
     verify( jsonOutputMeta, times( 0 ) ).buildFilename( anyString(), any( Date.class ) );
   }
+
+  private JsonOutput setupOutput() {
+    StepMockHelper<JsonOutputMeta, JsonOutputData> mockHelper =
+            new StepMockHelper<>( "jsonOutput", JsonOutputMeta.class, JsonOutputData.class );
+
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+            .thenReturn( mockHelper.logChannelInterface );
+    when( mockHelper.trans.isRunning() ).thenReturn( true );
+    when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new JsonOutputMeta() );
+
+    return new JsonOutput( mockHelper.stepMeta, mockHelper.stepDataInterface, 0,
+            mockHelper.transMeta, mockHelper.trans );
+  }
+
+  @Test
+  public void testGetOperationTypesAction() throws Exception {
+    JsonOutput jsonOutput = setupOutput();
+    Method method = JsonOutput.class.getDeclaredMethod( "getOperationTypesAction", Map.class );
+    method.setAccessible( true );
+
+    JSONObject jsonObject = ( JSONObject ) method.invoke( jsonOutput, new HashMap<>( ) );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( jsonObject.get( "operationTypes" ) );
+
+    // Verify the operationTypes array
+    JSONArray operationTypes = ( JSONArray ) jsonObject.get( "operationTypes" );
+    assertNotNull( operationTypes );
+    assertEquals( JsonOutputMeta.operationTypeCode.length, operationTypes.size() );
+
+    for ( int i = 0; i < operationTypes.size(); i++ ) {
+      JSONObject operationType = ( JSONObject ) operationTypes.get( i );
+      assertNotNull( operationType.get( "id" ) );
+      assertNotNull( operationType.get( "name" ) );
+      assertEquals( JsonOutputMeta.operationTypeCode[ i ], operationType.get( "id" ) );
+      assertEquals( JsonOutputMeta.operationTypeDesc[ i ], operationType.get( "name" ) );
+    }
+  }
+
+  @Test
+  public void testGetEncodingTypesAction() throws Exception {
+    JsonOutput jsonOutput = setupOutput();
+
+    Method method = JsonOutput.class.getDeclaredMethod( "getEncodingTypesAction", Map.class );
+    method.setAccessible( true );
+
+    JSONObject jsonObject = ( JSONObject ) method.invoke( jsonOutput, new HashMap<>( ) );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( jsonObject.get( "encoding" ) );
+
+    JSONArray encodingsArray = ( JSONArray ) jsonObject.get( "encoding" );
+    assertNotNull( encodingsArray );
+    assertFalse( encodingsArray.isEmpty() );
+  }
+
+  @Test
+  public void testShowFileNameAction_WithFileName() throws Exception {
+    JsonOutput jsonOutput = setupOutput();
+    Method method = JsonOutput.class.getDeclaredMethod( "showFileNameAction", Map.class );
+    method.setAccessible( true );
+
+    JsonOutputMeta jsonOutputMeta = new JsonOutputMeta();
+    jsonOutputMeta.setOperationType( JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE );
+    jsonOutputMeta.setFileName( "testFile" );
+    jsonOutputMeta.setExtension( "js" );
+    jsonOutputMeta.setTimeInFilename( true );
+    jsonOutputMeta.setDateInFilename( true );
+
+    jsonOutput.setStepMetaInterface( jsonOutputMeta );
+
+    JSONObject jsonObject = ( JSONObject ) method.invoke( jsonOutput, new HashMap<>( ) );
+
+    assertNotNull( jsonObject );
+    assertTrue( jsonObject.containsKey( "files" ) );
+    assertTrue( jsonObject.containsKey( StepInterface.ACTION_STATUS ) );
+
+    JSONArray fileList = ( JSONArray ) jsonObject.get( "files" );
+    assertNotNull( fileList );
+    assertEquals( 1, fileList.size() );
+    assertTrue( fileList.get( 0 ).toString().contains( "testFile" ) );
+  }
+
+  @Test
+  public void testShowFileNameAction_NoFileName() throws Exception {
+    JsonOutput jsonOutput = setupOutput();
+
+    JsonOutputMeta jsonOutputMeta = new JsonOutputMeta();
+    jsonOutputMeta.setOperationType( JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE );
+    jsonOutputMeta.setFileName( "" );
+
+    jsonOutput.setStepMetaInterface( jsonOutputMeta );
+
+    Method method = JsonOutput.class.getDeclaredMethod( "showFileNameAction", Map.class );
+    method.setAccessible( true );
+
+    JSONObject jsonObject = ( JSONObject ) method.invoke( jsonOutput, new HashMap<>( ) );
+
+    assertNotNull( jsonObject );
+    assertTrue( jsonObject.containsKey( "message" ) );
+    assertEquals( "No files found!  Please check the filename/directory and options.",
+            jsonObject.get( "message" ) );
+  }
+
 }
