@@ -770,27 +770,16 @@ public class SystemData extends BaseStep implements StepInterface {
   private JSONObject typeAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    try {
-      JSONArray jsonArray = new JSONArray();
-      for ( int i = 1; i < SystemDataTypes.values().length; i++ ) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put( "id", SystemDataTypes.values()[ i ].name() );
-        jsonObject.put( "name", SystemDataTypes.values()[ i ].getDescription() );
-        jsonArray.add( jsonObject );
-      }
-      response.put( "types", jsonArray );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-      response.put( StepInterface.STATUS, StepInterface.SUCCESS_STATUS );
-    } catch ( Exception e ) {
-      StringBuilder details = new StringBuilder();
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter( sw );
-      e.printStackTrace( pw );
-      details.append( sw.getBuffer() );
-      response.put( "details", details.toString() );
-      log.logError( e.getMessage() );
-      response.put( StepInterface.STATUS, StepInterface.FAILURE_STATUS );
+    JSONArray jsonArray = new JSONArray();
+    for ( int i = 1; i < SystemDataTypes.values().length; i++ ) {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "id", SystemDataTypes.values()[ i ].name() );
+      jsonObject.put( "name", SystemDataTypes.values()[ i ].getDescription() );
+      jsonArray.add( jsonObject );
     }
+    response.put( "types", jsonArray );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    response.put( StepInterface.STATUS, StepInterface.SUCCESS_STATUS );
     return response;
   }
 
