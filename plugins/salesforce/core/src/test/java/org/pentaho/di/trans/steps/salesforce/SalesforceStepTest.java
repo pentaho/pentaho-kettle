@@ -165,44 +165,47 @@ public class SalesforceStepTest {
   @Test
   public void test_testButtonAction() {
     Map<String, String> queryParams = new HashMap<>();
-    SalesforceStep step = spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
+    SalesforceStep step =
+      spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
     JSONObject response = step.testButtonAction( queryParams );
-    assert ( response.containsKey( "connectionStatus" ) );
-    assertNotNull( response );
+    assertTrue( response.containsKey( "connectionStatus" ) );
   }
 
   @Test
   public void testModulesAction() {
     Map<String, String> queryParams = new HashMap<>();
-    SalesforceStep step = spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
-    JSONObject response = step.modulesAction(queryParams);
-    assert(response.containsKey( "actionStatus" ));
-    assertNotNull( response );
+    SalesforceStep step =
+      spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
+    JSONObject response = step.modulesAction( queryParams );
+    assertTrue( response.containsKey( "actionStatus" ) );
   }
 
 
   @Test
-  public void test_testConnection() throws KettleException {
-    SalesforceStep salesforceStep = spy(new MockSalesforceStep(smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans));
-    SalesforceStepMeta stepMeta = mock(SalesforceStepMeta.class);
-    SalesforceStepData data = mock(SalesforceStepData.class);
+  public void test_testConnection() {
+    SalesforceStep salesforceStep =
+      spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
+    SalesforceStepMeta stepMeta = mock( SalesforceStepMeta.class );
+    SalesforceStepData data = mock( SalesforceStepData.class );
     salesforceStep.init( stepMeta, data );
-    when(salesforceStep.getStepMetaInterface()).thenReturn( stepMeta );
+    when( salesforceStep.getStepMetaInterface() ).thenReturn( stepMeta );
 
-    try (MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction(SalesforceConnection.class, (mock, context) -> {
-      doNothing().when(mock).connect();
+    try ( MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction( SalesforceConnection.class,
+      ( mock, context ) -> {
+        doNothing().when( mock ).connect();
 
-    })) {
+      } ) ) {
       boolean connection = salesforceStep.testConnection();
       assertTrue( connection );
     }
   }
 
   @Test
-  public void test_testConnection_failure() throws KettleException {
-    SalesforceStep salesforceStep = spy(new MockSalesforceStep(smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans));
-    SalesforceStepMeta stepMeta = mock(SalesforceStepMeta.class);
-    SalesforceStepData data = mock(SalesforceStepData.class);
+  public void test_testConnection_failure() {
+    SalesforceStep salesforceStep =
+      spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
+    SalesforceStepMeta stepMeta = mock( SalesforceStepMeta.class );
+    SalesforceStepData data = mock( SalesforceStepData.class );
     salesforceStep.init( stepMeta, data );
     boolean connection = salesforceStep.testConnection();
     assertFalse( connection );
@@ -210,36 +213,29 @@ public class SalesforceStepTest {
 
 
   @Test
-  public void getModulesActionTest() throws KettleException {
-    SalesforceStep salesforceStep = spy(new MockSalesforceStep(smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans));
-    SalesforceStepMeta stepMeta = mock(SalesforceStepMeta.class);
-    SalesforceStepData data = mock(SalesforceStepData.class);
+  public void getModulesActionTest() {
+    SalesforceStep salesforceStep =
+      spy( new MockSalesforceStep( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
+    SalesforceStepMeta stepMeta = mock( SalesforceStepMeta.class );
+    SalesforceStepData data = mock( SalesforceStepData.class );
     salesforceStep.init( stepMeta, data );
-    when(salesforceStep.getStepMetaInterface()).thenReturn( stepMeta );
+    when( salesforceStep.getStepMetaInterface() ).thenReturn( stepMeta );
 
-    try (MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction(SalesforceConnection.class, (mock, context) -> {
-      doNothing().when(mock).connect();
-      when(mock.getAllAvailableObjects(anyBoolean())).thenReturn(new String[]{"Account", "Contact"});
-    })) {
+    try ( MockedConstruction<SalesforceConnection> mocked = Mockito.mockConstruction( SalesforceConnection.class,
+      ( mock, context ) -> {
+        doNothing().when( mock ).connect();
+        when( mock.getAllAvailableObjects( anyBoolean() ) ).thenReturn( new String[] { "Account", "Contact" } );
+      } ) ) {
       JSONObject response = salesforceStep.modulesAction( null );
-      assert(response.containsKey( "actionStatus" ));
-      assertEquals(  StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      assert ( response.containsKey( "actionStatus" ) );
+      assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
 
       Map<String, String> queryParams = new HashMap<>();
-      queryParams.put( "moduleFlag", "true");
+      queryParams.put( "moduleFlag", "true" );
       response = salesforceStep.modulesAction( queryParams );
-      assertNotNull(response);
-      assert(response.containsKey( "modules" ));
+      assertNotNull( response );
+      assertTrue( response.containsKey( "modules" ) );
     }
-  }
-
-  @Test
-  public void testGetConnection() {
-
-    SalesforceStepMeta salesforceStepMeta = spy( SalesforceStepMeta.class );
-
-    when(smh.stepMeta.getStepMetaInterface()).thenReturn( salesforceStepMeta );
-
   }
 
 }

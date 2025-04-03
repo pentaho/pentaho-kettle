@@ -44,7 +44,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
   public SalesforceStepData data;
 
   public SalesforceStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-                         Trans trans ) {
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

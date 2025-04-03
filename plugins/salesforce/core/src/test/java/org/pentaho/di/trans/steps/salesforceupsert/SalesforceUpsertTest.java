@@ -15,7 +15,6 @@ package org.pentaho.di.trans.steps.salesforceupsert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -23,6 +22,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.util.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -266,8 +266,7 @@ public class SalesforceUpsertTest {
       new SalesforceUpsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     Map<String, String> queryParams = new HashMap<>();
     JSONObject response = salesforceUpsert.modulesAction( queryParams );
-    assert ( response.containsKey( "actionStatus" ) );
-    assertNotNull( response );
+    assertTrue ( response.containsKey( "actionStatus" ) );
   }
 
   @Test
@@ -277,8 +276,7 @@ public class SalesforceUpsertTest {
     Map<String, String> queryParams = new HashMap<>();
 
     JSONObject response = salesforceUpsert.testButtonAction( queryParams );
-    assert ( response.containsKey( "connectionStatus" ) );
-    assertNotNull( response );
+    assertTrue ( response.containsKey( "connectionStatus" ) );
   }
 
 }
