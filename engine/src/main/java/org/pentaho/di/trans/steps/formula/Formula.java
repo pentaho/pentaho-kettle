@@ -307,7 +307,7 @@ public class Formula extends BaseStep implements StepInterface {
       String formula = queryParams.get( "formulaSyntax" );
       if ( formula == null || formula.trim().isEmpty() ) {
         response.put( ERROR, "No formula provided." );
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
         return response;
       }
 

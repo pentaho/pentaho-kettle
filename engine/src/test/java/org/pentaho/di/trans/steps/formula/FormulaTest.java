@@ -78,7 +78,7 @@ public class FormulaTest {
       stepMockHelper.trans,
       queryMap );
     assertEquals( "No formula provided.", response.get( "error" ) );
-    assertEquals( StepInterface.FAILURE_METHOD_NOT_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
 
   @Test
@@ -200,7 +200,7 @@ public class FormulaTest {
         stepMockHelper.trans,
         queryMap );
       assertEquals( "Simulated exception", response.get( "error" ) );
-      assertEquals( StepInterface.FAILURE_METHOD_NOT_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
     }
   }
 
