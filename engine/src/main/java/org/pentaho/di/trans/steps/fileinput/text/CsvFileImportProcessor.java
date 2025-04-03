@@ -23,13 +23,11 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringEvaluationResult;
 import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.steps.csvinput.CsvInput;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
-/**
- * This class is used to process CSV files in CsvInput step
- */
 public class CsvFileImportProcessor extends BaseFileImportProcessor {
 
   private final CsvInputMeta meta;
