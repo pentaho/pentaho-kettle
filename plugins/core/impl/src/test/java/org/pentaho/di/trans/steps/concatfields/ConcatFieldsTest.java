@@ -15,10 +15,8 @@ package org.pentaho.di.trans.steps.concatfields;
 
 import org.json.simple.JSONObject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -310,7 +308,7 @@ public class ConcatFieldsTest {
     int copyNr = 0;
     TransMeta transMeta = mock( TransMeta.class );
     Trans trans = mock( Trans.class );
-    when( transMeta.findStep( Mockito.eq( name ) ) ).thenReturn( stepMeta );
+    when( transMeta.findStep( name ) ).thenReturn( stepMeta );
     ConcatFields concatFields = new ConcatFields( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     assertEquals( "", concatFields.formatType( ValueMetaInterface.TYPE_STRING ) );
     assertEquals( "0", concatFields.formatType( ValueMetaInterface.TYPE_INTEGER ) );

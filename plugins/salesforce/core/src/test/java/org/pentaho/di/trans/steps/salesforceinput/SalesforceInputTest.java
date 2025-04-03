@@ -216,6 +216,7 @@ public class SalesforceInputTest {
     Map<String, String> queryParams = new HashMap<>();
     JSONObject response = salesforceInput.modulesAction(queryParams);
     assert(response.containsKey( "actionStatus" ));
+    assertNotNull( response );
   }
 
   @Test
@@ -223,6 +224,7 @@ public class SalesforceInputTest {
     Map<String, String> queryParams = new HashMap<>();
     JSONObject response = salesforceInput.testButtonAction(queryParams);
     assert(response.containsKey( "connectionStatus" ));
+    assertNotNull( response );
   }
 
   private XmlObject createObject( String fieldName, String value, ObjectType type ) {
