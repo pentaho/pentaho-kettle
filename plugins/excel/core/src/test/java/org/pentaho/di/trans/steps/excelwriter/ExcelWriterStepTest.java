@@ -19,6 +19,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +38,9 @@ import org.pentaho.di.core.row.value.ValueMetaInternetAddress;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.utils.TestUtils;
 
@@ -44,7 +49,10 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -81,6 +89,12 @@ public class ExcelWriterStepTest {
 
   private ExcelWriterStepMeta metaMock;
   private ExcelWriterStepData dataMock;
+
+  private StepMeta stepMeta;
+  private TransMeta transMeta;
+  private Trans trans;
+  private ExcelWriterStepMeta stepMetaInterface;
+  private Map<String, String> queryParams;
 
   @Before
   public void setUp() throws Exception {
@@ -361,6 +375,79 @@ public class ExcelWriterStepTest {
     doReturn( "127.0.0.1" ).when( vmi ).getString( vObj );
 
     testBaseXls( vmi, vObj, true );
+  }
+
+  private void setUpForDoActions() {
+    stepMeta = new StepMeta();
+    String name = "test";
+    stepMeta.setName( name );
+    transMeta = mock( TransMeta.class );
+    trans = mock( Trans.class );
+    stepMetaInterface = mock( ExcelWriterStepMeta.class );
+    queryParams = new HashMap<>();
+  }
+
+  @Test
+  public void testGetFilesAction() {
+    setUpForDoActions();
+
+    JSONObject response = step.doAction( "getFiles", stepMetaInterface,
+      transMeta, trans, queryParams );
+    assertNotNull( response );
+
+    String[] files = new String[ 2 ];
+    files[ 0 ] = "file1";
+    when( stepMetaInterface.getFiles( any() ) ).thenReturn( files );
+    response = step.doAction( "getFiles", stepMetaInterface,
+      transMeta, trans, queryParams );
+    assertNotNull( response );
+    assertEquals( files.length, response.size() );
+  }
+
+  @Test
+  public void testGetFormatsAction() {
+    setUpForDoActions();
+    JSONObject response = step.doAction( "getFormats", stepMetaInterface,
+      transMeta, trans, queryParams );
+    JSONArray formatList = (JSONArray) response.get( "formats" );
+    assertTrue( formatList.size() > 0 );
+
+    when(step.getFormats()).thenReturn( null );
+    response = step.doAction( "getFormats", stepMetaInterface,
+      transMeta, trans, queryParams );
+    assertNotNull( response );
+  }
+
+  @Test
+  public void testFormatType(){
+    assertEquals( "", step.formatType( ValueMetaInterface.TYPE_STRING ) );
+    assertEquals( "0", step.formatType( ValueMetaInterface.TYPE_INTEGER ) );
+    assertEquals( "0.#####", step.formatType( ValueMetaInterface.TYPE_NUMBER ) );
+    assertEquals( null, step.formatType( ValueMetaInterface.TYPE_DATE ) );
+  }
+  @Test
+  public void testSetMinimalWidthAction() {
+    setUpForDoActions();
+
+    ExcelWriterStepField[] fields = new ExcelWriterStepField[ 1 ];
+    ExcelWriterStepField field = new ExcelWriterStepField();
+    field.setName( "name" );
+    field.setType( ValueMetaInterface.TYPE_STRING );
+    field.setFormat( "format" );
+    field.setType( "typeDesc" );
+    field.setCommentField( "commentField" );
+    field.setCommentAuthorField( "commentAuthorField" );
+    field.setStyleCell( "styleCell" );
+    field.setTitleStyleCell( "titleStyleCell" );
+    field.setFormula( true );
+    field.setTitle( "title" );
+    field.setHyperlinkField( "hyperlinkField" );
+    fields[ 0 ] = field;
+    when( stepMetaInterface.getOutputFields() ).thenReturn( fields );
+
+    JSONObject response = step.doAction( "setMinimalWidth", stepMetaInterface,
+      transMeta, trans, queryParams );
+    assertNotNull( response );
   }
 
   /**

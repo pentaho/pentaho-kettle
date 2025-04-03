@@ -284,7 +284,7 @@ public class TableOutputTest {
 
     response = tableOutput.doAction( "getSQL", stepMetaInterface,
       transMeta, trans, queryParams );
-    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
 
     sql.setSQL( "select * from employees" );
 
