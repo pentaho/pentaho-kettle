@@ -51,10 +51,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
+import org.pentaho.di.trans.steps.common.CsvInputAwareStep;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputStep;
 import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
-import org.pentaho.di.trans.steps.util.CsvInputAwareStepUtil;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
@@ -62,7 +62,8 @@ import org.pentaho.di.trans.steps.util.CsvInputAwareStepUtil;
  * @author Matt
  * @since 4-apr-2003
  */
-public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFileInputData> implements StepInterface, CsvInputAwareStepUtil {
+public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFileInputData>
+  implements StepInterface, CsvInputAwareStep {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public TextFileInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
@@ -194,8 +195,8 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     String[] fieldNames = getFieldNames( csvInputAwareMeta );
     meta.setFields( fieldNames );
 
-    TextFileCSVImportProcessor processor =
-      new TextFileCSVImportProcessor( meta, transMeta, reader, samples, Boolean.parseBoolean( isSampleSummary ) );
+    TextFileCsvFileTypeImportProcessor processor =
+      new TextFileCsvFileTypeImportProcessor( meta, transMeta, reader, samples, Boolean.parseBoolean( isSampleSummary ) );
     String summary = processor.analyzeFile( true );
 
     response.put( "fields", convertFieldsToJsonArray( processor.getInputFieldsDto() ) );
