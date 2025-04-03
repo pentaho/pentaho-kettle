@@ -54,6 +54,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
+import org.pentaho.di.trans.steps.common.CsvInputAwareStep;
 import org.pentaho.di.trans.steps.fileinput.text.BOMDetector;
 import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.CsvFileImportProcessor;
@@ -61,7 +62,6 @@ import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-import org.pentaho.di.trans.steps.util.CsvInputAwareStepUtil;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
@@ -69,7 +69,7 @@ import org.pentaho.di.trans.steps.util.CsvInputAwareStepUtil;
  * @author Matt
  * @since 2007-07-05
  */
-public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareStepUtil {
+public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareStep {
   private static Class<?> PKG = CsvInput.class; // for i18n purposes, needed by Translator2!!
 
   private CsvInputMeta meta;

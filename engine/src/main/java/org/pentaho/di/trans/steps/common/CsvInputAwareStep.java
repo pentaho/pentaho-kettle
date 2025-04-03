@@ -11,7 +11,7 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.trans.steps.util;
+package org.pentaho.di.trans.steps.common;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +28,6 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.csvinput.CsvInput;
 import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
@@ -36,7 +35,7 @@ import org.pentaho.di.trans.steps.fileinput.text.TextFileInputFieldDTO;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 
-public interface CsvInputAwareStepUtil {
+public interface CsvInputAwareStep {
 
   /**
    * Retrieves the field names from the CSV input metadata.
