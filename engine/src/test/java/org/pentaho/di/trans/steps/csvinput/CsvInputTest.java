@@ -245,6 +245,10 @@ public class CsvInputTest extends CsvInputUnitTestBase {
 
     assertNotNull( response.get( "fields" ) );
     assertNotNull( response.get( "summary" ) );
+
+    kettleVFSMockedStatic.close();
+    textFileInputUtilsStatic.close();
+    textFileInputStatic.close();
   }
 
 }
