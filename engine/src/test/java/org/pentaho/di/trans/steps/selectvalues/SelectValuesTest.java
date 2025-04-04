@@ -13,14 +13,17 @@
 
 package org.pentaho.di.trans.steps.selectvalues;
 
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
@@ -33,6 +36,7 @@ import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -42,17 +46,18 @@ import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta.SelectField;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
 
 /**
  * @author Andrey Khayrutdinov
@@ -320,6 +325,36 @@ public class SelectValuesTest {
       properException = true;
     }
     assertTrue( properException );
+  }
+
+  @Test
+  public void testLocalesAction() throws Exception {
+    SelectValuesMeta meta = mock( SelectValuesMeta.class );
+    SelectValues rest = StepMockUtil.getStep( SelectValues.class, SelectValuesMeta.class, "RestTest" );
+    JSONObject response = rest.doAction( "locales", meta, null, null, new HashMap<>() );
+    JSONArray httpMethods = (JSONArray) response.get( "locales" );
+
+    assertEquals( EnvUtil.getLocaleList().length, httpMethods.size() );
+  }
+
+  @Test
+  public void testTimezonesAction() throws Exception {
+    SelectValuesMeta meta = mock( SelectValuesMeta.class );
+    SelectValues rest = StepMockUtil.getStep( SelectValues.class, SelectValuesMeta.class, "RestTest" );
+    JSONObject response = rest.doAction( "timezones", meta, null, null, new HashMap<>() );
+    JSONArray httpMethods = (JSONArray) response.get( "timezones" );
+
+    assertEquals( EnvUtil.getTimeZones().length, httpMethods.size() );
+  }
+
+  @Test
+  public void testEncodingsAction() throws Exception {
+    SelectValuesMeta meta = mock( SelectValuesMeta.class );
+    SelectValues rest = StepMockUtil.getStep( SelectValues.class, SelectValuesMeta.class, "RestTest" );
+    JSONObject response = rest.doAction( "encodings", meta, null, null, new HashMap<>() );
+    JSONArray httpMethods = (JSONArray) response.get( "encodings" );
+
+    assertEquals( Charset.availableCharsets().values().size(), httpMethods.size() );
   }
 
   public static class SelectValuesHandler extends SelectValues {

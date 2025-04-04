@@ -21,6 +21,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import java.sql.SQLException;
 import java.util.Map;
 
+import static org.pentaho.di.core.util.Utils.setStringValueFromMap;
+
 /**
  * Contains Generic Database Connection information through static final members
  *
@@ -918,5 +920,11 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
       return databaseDialect.getExtraOptionsHelpText();
     }
     return super.getExtraOptionsHelpText();
+  }
+
+  @Override
+  public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    addAttribute( ATRRIBUTE_CUSTOM_URL, setStringValueFromMap( attributes, ATRRIBUTE_CUSTOM_URL ) );
+    addAttribute( ATRRIBUTE_CUSTOM_DRIVER_CLASS, setStringValueFromMap( attributes, ATRRIBUTE_CUSTOM_DRIVER_CLASS ) );
   }
 }

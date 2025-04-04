@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -28,6 +29,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.metastore.api.IMetaStore;
 
@@ -41,6 +43,16 @@ import org.pentaho.metastore.api.IMetaStore;
  */
 
 public interface StepInterface extends VariableSpace, HasLogChannelInterface {
+
+  String ACTION_STATUS = "actionStatus";
+  String SUCCESS_RESPONSE = "Action successful";
+  String FAILURE_RESPONSE = "Action failed";
+  String FAILURE_METHOD_NOT_RESPONSE = "Action failed with method not found";
+  String STATUS = "Status";
+  int SUCCESS_STATUS = 1;
+  int FAILURE_STATUS = -1;
+  int NOT_EXECUTED_STATUS = 0;
+
   /**
    * @return the transformation that is executing this step
    */
@@ -494,6 +506,23 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   default void addRowSetToOutputRowSets( RowSet rowSet ) {
     getOutputRowSets().add( rowSet );
+  }
+
+  /**
+   * Dynamically invokes a method in the Step class based on the `fieldName` parameter using java reflection
+   *
+   * @param fieldName         the name of the field to be used to determine the method to invoke
+   * @param stepMetaInterface the step metadata interface
+   * @param transMeta         the transformation metadata
+   * @param trans             the transformation
+   * @param queryParams       the query parameters to be passed to the invoked method
+   * @return a `JSONObject` containing the response of the invoked method and the action status
+   */
+  default JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                               Trans trans, Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( ACTION_STATUS, FAILURE_METHOD_NOT_RESPONSE );
+    return response;
   }
 
 }

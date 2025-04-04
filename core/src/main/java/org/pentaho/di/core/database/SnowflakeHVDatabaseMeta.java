@@ -32,6 +32,7 @@ import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_NUMBER;
 import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_STRING;
 import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_TIMESTAMP;
 import static org.pentaho.di.core.util.Utils.isEmpty;
+import static org.pentaho.di.core.util.Utils.setStringValueFromMap;
 
 @SuppressWarnings ( "unused" )
 public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
@@ -451,5 +452,10 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
   @Override public ResultSet getTables( DatabaseMetaData databaseMetaData, DatabaseMeta dbMeta, String schemaPattern,
                                         String tableNamePattern, String[] tableTypes ) throws SQLException {
     return databaseMetaData.getTables( dbMeta.environmentSubstitute( dbMeta.getDatabaseName() ), schemaPattern, tableNamePattern, tableTypes );
+  }
+
+  @Override
+  public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    addAttribute( WAREHOUSE, setStringValueFromMap( attributes, WAREHOUSE ) );
   }
 }

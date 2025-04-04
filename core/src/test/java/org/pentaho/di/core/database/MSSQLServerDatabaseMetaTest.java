@@ -19,6 +19,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -252,4 +254,14 @@ public class MSSQLServerDatabaseMetaTest {
 
   }
 
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_handlesInvalidDoubleDecimalSeparator() {
+    MSSQLServerDatabaseMeta dbMeta = new MSSQLServerDatabaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( "MSSQL_DOUBLE_DECIMAL_SEPARATOR", "Y" );
+
+    dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+    assertTrue( dbMeta.isUsingDoubleDecimalAsSchemaTableSeparator() );
+  }
 }

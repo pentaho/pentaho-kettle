@@ -12,10 +12,13 @@
 package org.pentaho.di.core.database;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mockStatic;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.database.DatabricksDatabaseMeta.AuthMethod;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -105,4 +108,22 @@ public class DatabricksDatabaseMetaTest {
     assertEquals( "VARCHAR()", fieldDef );
   }
 
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_setsAllAttributes() {
+    DatabricksDatabaseMeta dbMeta = new DatabricksDatabaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( "AUTH_METHOD", "Token" );
+    attributes.put( "ACCESS_TOKEN", "testToken" );
+    attributes.put( "HTTP_PATH", "testHttpPath" );
+
+    try ( MockedStatic<Encr> mockedStatic = mockStatic( Encr.class ) ) {
+      mockedStatic.when( () -> Encr.encryptPassword( "testToken" ) ).thenReturn( "testToken" );
+      mockedStatic.when( () -> Encr.decryptPassword( "testToken" ) ).thenReturn( "testToken" );
+      dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+      assertEquals( DatabricksDatabaseMeta.AuthMethod.Token, dbMeta.getAuthMethod() );
+      assertEquals( "testToken", dbMeta.getToken().orElse( null ) );
+      assertEquals( "testHttpPath", dbMeta.getHttpPath().orElse( null ) );
+    }
+  }
 }

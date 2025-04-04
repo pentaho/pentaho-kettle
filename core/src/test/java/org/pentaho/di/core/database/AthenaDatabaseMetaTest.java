@@ -101,4 +101,24 @@ public class AthenaDatabaseMetaTest {
     assertEquals( "VARCHAR()", fieldDef );
   }
 
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_setsAllAttributes() {
+    AthenaDatabaseMeta dbMeta = new AthenaDatabaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( "WORKGROUP", "testWorkGroup" );
+    attributes.put( "REGION", "testRegion" );
+    attributes.put( "CATALOG", "testCatalog" );
+    attributes.put( "OUTPUT_LOCATION", "testOutputLocation" );
+    attributes.put( "AUTH_TYPE", "ProfileCredentials" );
+    attributes.put( "PROFILE_NAME", "testProfileName" );
+
+    dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+    assertEquals( "testWorkGroup", dbMeta.getWorkGroup() );
+    assertEquals( "testRegion", dbMeta.getRegion() );
+    assertEquals( "testCatalog", dbMeta.getCatalog() );
+    assertEquals( "testOutputLocation", dbMeta.getOutputLocation() );
+    assertEquals( AthenaDatabaseMeta.AuthType.ProfileCredentials, dbMeta.getAuthType() );
+    assertEquals( "testProfileName", dbMeta.getProfileName().orElse( null ) );
+  }
 }

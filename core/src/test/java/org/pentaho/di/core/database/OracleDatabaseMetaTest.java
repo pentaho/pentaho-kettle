@@ -21,6 +21,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -303,4 +305,14 @@ public class OracleDatabaseMetaTest {
       nativeMeta.getAddColumnStatement( "FOO", new ValueMetaTimestamp( "FOO" ), "", false, "", false ) );
   }
 
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_setsStrictBigNumberInterpretation() {
+    OracleDatabaseMeta dbMeta = new OracleDatabaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( "STRICT_NUMBER_38_INTERPRETATION", "Y" );
+
+    dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+    assertTrue( dbMeta.strictBigNumberInterpretation() );
+  }
 }

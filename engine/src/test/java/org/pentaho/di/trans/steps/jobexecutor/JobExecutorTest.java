@@ -13,28 +13,39 @@
 
 package org.pentaho.di.trans.steps.jobexecutor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.apache.commons.lang.ArrayUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -180,4 +191,58 @@ public class JobExecutorTest {
       .doReturn( null )
       .when( executor ).getRow();
   }
+
+  @Test
+  public void testParametersAction() throws KettleException {
+    Trans trans = mock( Trans.class );
+    Repository repositoryMock = mock( Repository.class );
+    StepMetaInterface stepMetaInterfaceMock = mock( StepMetaInterface.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    JobMeta jobMeta = mock( JobMeta.class );
+    when( executor.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
+    when( trans.getRepository() ).thenReturn( repositoryMock );
+    when( jobMeta.listParameters() ).thenReturn( new String[] { "param1", "param2" } );
+    when( jobMeta.getParameterDescription( "param1" ) ).thenReturn( "desc1" );
+    when( jobMeta.getParameterDescription( "param2" ) ).thenReturn( "desc2" );
+    when( jobMeta.getParameterDefault( "param1" ) ).thenReturn( "default1" );
+    when( jobMeta.getParameterDefault( "param2" ) ).thenReturn( "default2" );
+    executor.init( meta, data );
+
+    try ( MockedStatic<JobExecutorMeta> mocked = mockStatic( JobExecutorMeta.class ) ) {
+      when( JobExecutorMeta.loadJobMeta( meta, meta.getRepository(), executor ) ).thenReturn( jobMeta );
+      JSONObject response = executor.doAction( "parameters", meta, transMeta, trans, new HashMap<>() );
+      JSONArray parameters = (JSONArray) response.get( "parameters" );
+
+      assertEquals( 2, parameters.size() );
+      JSONObject param1 = (JSONObject) parameters.get( 0 );
+      assertEquals( "param1", param1.get( "variable" ) );
+      assertEquals( "", param1.get( "field" ) );
+      assertEquals( "default1", param1.get( "input" ) );
+      JSONObject param2 = (JSONObject) parameters.get( 1 );
+      assertEquals( "param2", param2.get( "variable" ) );
+      assertEquals( "", param2.get( "field" ) );
+      assertEquals( "default2", param2.get( "input" ) );
+    }
+  }
+
+  @Test
+  public void testDoAction_ThrowException() {
+    Trans trans = mock( Trans.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    JSONObject response = executor.doAction( "invalidMethod", meta, transMeta, trans, new HashMap<>() );
+
+    assertEquals( StepInterface.FAILURE_METHOD_NOT_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+  }
+
+  @Test
+  public void testParametersAction_ThrowException() throws KettleException {
+    Trans trans = mock( Trans.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    JobMeta inputTransMeta = mock( JobMeta.class );
+    when( inputTransMeta.getParameterDescription( anyString() ) ).thenThrow( new UnknownParamException( "Error" ) );
+    JSONObject response = executor.doAction( "parameters", meta, transMeta, trans, new HashMap<>() );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+  }
+
 }
