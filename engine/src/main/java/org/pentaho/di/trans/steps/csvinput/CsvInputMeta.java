@@ -338,6 +338,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
   public void setFields( String[] fieldNames ) {
     inputFields = new TextFileInputField[ fieldNames.length ];
     for ( int i = 0; i < fieldNames.length; i++ ) {
+      @SuppressWarnings( "java:S1874" )// CsvInput uses deprecated class TextFileInputField to store field information
       TextFileInputField field = new TextFileInputField();
       field.setName( fieldNames[ i ] );
       inputFields[ i ] = field;
