@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -33,11 +34,13 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -220,6 +223,26 @@ public class JobExecutorTest {
       assertEquals( "", param2.get( "field" ) );
       assertEquals( "default2", param2.get( "input" ) );
     }
+  }
+
+  @Test
+  public void testDoAction_ThrowException() {
+    Trans trans = mock( Trans.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    JSONObject response = executor.doAction( "invalidMethod", meta, transMeta, trans, new HashMap<>() );
+
+    assertEquals( StepInterface.FAILURE_METHOD_NOT_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+  }
+
+  @Test
+  public void testParametersAction_ThrowException() throws KettleException {
+    Trans trans = mock( Trans.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    JobMeta inputTransMeta = mock( JobMeta.class );
+    when( inputTransMeta.getParameterDescription( anyString() ) ).thenThrow( new UnknownParamException( "Error" ) );
+    JSONObject response = executor.doAction( "parameters", meta, transMeta, trans, new HashMap<>() );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
 
 }

@@ -93,7 +93,7 @@ import org.w3c.dom.Node;
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories, JobEntryRunConfigurableInterface {
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
   public static final int IS_PENTAHO = 1;
-  private static final String PARAMETERS = "parameters";
+  private static final String PARAMETERS_DATA = "parameters";
 
   private String transname;
 
@@ -339,7 +339,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
 
     if ( parameters != null ) {
-      retval.append( "      " ).append( XMLHandler.openTag( PARAMETERS ) ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.openTag( "parameters" ) ).append( Const.CR );
 
       retval.append( "        " ).append( XMLHandler.addTagValue( "pass_all_parameters", passingAllParameters ) );
 
@@ -353,7 +353,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
         retval.append( "        " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
       }
-      retval.append( "      " ).append( XMLHandler.closeTag( PARAMETERS ) ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.closeTag( "parameters" ) ).append( Const.CR );
     }
 
     return retval.toString();
@@ -441,7 +441,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         arguments[ a ] = XMLHandler.getTagValue( entrynode, "argument" + a );
       }
 
-      Node parametersNode = XMLHandler.getSubNode( entrynode, PARAMETERS );
+      Node parametersNode = XMLHandler.getSubNode( entrynode, "parameters" );
 
       String passAll = XMLHandler.getTagValue( parametersNode, "pass_all_parameters" );
       passingAllParameters = Utils.isEmpty( passAll ) || "Y".equalsIgnoreCase( passAll );
@@ -1742,7 +1742,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     JSONArray parametersData = new JSONArray();
     parametersData.addAll( Arrays.asList( parametersList ) );
-    response.put( PARAMETERS, parametersData );
+    response.put( PARAMETERS_DATA, parametersData );
     return response;
   }
 }

@@ -177,10 +177,8 @@ public interface CsvInputAwareStep {
     // if 'failOnParseError' is false, or there is no exception otherwise, we get the string value straight from the row
     // object
     if ( string == null ) {
-      if ( ( row.length <= index ) ) {
-        if ( failOnParseError ) {
-          throw new KettleException( new NullPointerException() );
-        }
+      if ( ( row.length <= index ) && failOnParseError ) {
+        throw new KettleException( new NullPointerException() );
       }
       string = row.length <= index || row[ index ] == null ? null : row[ index ].toString();
     }
