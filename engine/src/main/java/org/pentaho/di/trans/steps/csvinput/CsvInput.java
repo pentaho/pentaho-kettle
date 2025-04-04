@@ -1190,10 +1190,14 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFieldsAction( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
+  private JSONObject getFieldsAction( Map<String, String> queryParams )
+    throws KettleException, JsonProcessingException {
     return populateMeta( queryParams );
   }
 
+  @SuppressWarnings( { "javaL194", "java:S3776", "java:S6541" } )
+  // this method contains code extracted from textfileinput/TextFileCSVImportProgressDialog class
+  // to get Fields data and Fields summary statistics
   private JSONObject populateMeta( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
     JSONObject response = new JSONObject();
     String isSampleSummary = queryParams.get( "isSampleSummary" );
@@ -1259,6 +1263,7 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
     int[][] numberLength = new int[ nrfields ][ Const.getNumberFormats().length ]; // remember the length?
 
     for ( int i = 0; i < nrfields; i++ ) {
+      @SuppressWarnings( "java:S1874" )// CsvInput uses deprecated class TextFileInputField to store field information
       TextFileInputField field = new TextFileInputField();
 
       // Clear previous info...
@@ -1298,7 +1303,7 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
       }
       numberFormatCount[ i ] = Const.getNumberFormats().length;
     }
-
+    @SuppressWarnings( "java:S1874" )// CsvInput uses deprecated interface InputFileMetaInterface
     InputFileMetaInterface strinfo = (InputFileMetaInterface) meta.clone();
     for ( int i = 0; i < nrfields; i++ ) {
       strinfo.getInputFields()[ i ].setType( ValueMetaInterface.TYPE_STRING );
@@ -1337,6 +1342,7 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
       String delimiter = transMeta.environmentSubstitute( meta.getSeparator() );
       String enclosure = transMeta.environmentSubstitute( meta.getEnclosure() );
       String escapeCharacter = transMeta.environmentSubstitute( meta.getEscapeCharacter() );
+      @SuppressWarnings( "java:S1874" )// CsvInput uses deprecated class TextFileInput for reading data from csv
       Object[] r =
         TextFileInput.convertLineToRow(
           log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0, outputRowMeta,
@@ -1385,6 +1391,7 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
     }
     if ( nrfields == evaluators.size() ) {
       for ( int i = 0; i < nrfields; i++ ) {
+        @SuppressWarnings( "java:S1874" )// CsvInput uses deprecated class TextFileInputField to store field information
         TextFileInputField field = meta.getInputFields()[ i ];
         StringEvaluator evaluator = evaluators.get( i );
         List<StringEvaluationResult> evaluationResults = evaluator.getStringEvaluationResults();
@@ -1537,6 +1544,7 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
     return response;
   }
 
+  @SuppressWarnings( "java:S1874" )// CsvInput uses deprecated class TextFileInputField to store field information
   private TextFileInputFieldDTO convertFieldToDto( TextFileInputField field ) {
     TextFileInputFieldDTO textFileInputFieldDTO = new TextFileInputFieldDTO();
     textFileInputFieldDTO.setName( field.getName() );
