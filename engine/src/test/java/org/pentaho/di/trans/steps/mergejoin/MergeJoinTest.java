@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -76,9 +77,12 @@ public class MergeJoinTest {
 
     JSONObject response =
       mergeJoin.doAction( "previousKeys", meta, null, null, queryParams );
-
     assertNotNull( response.get( "keys" ) );
     assertEquals( 2, ( (JSONArray) response.get( "keys" ) ).size() );
+
+    when( mockHelper.transMeta.getStepFields( any( StepMeta.class ) ) ).thenThrow( new KettleStepException( "Error" ) );
+    response = mergeJoin.doAction( "previousKeys", meta, null, null, queryParams );
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
 
   @Test
@@ -91,7 +95,12 @@ public class MergeJoinTest {
 
     JSONObject response =
       mergeJoin.doAction( "previousKeys", meta, null, null, new HashMap<>() );
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
 
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "stepIndex", "InvalidIndex" );
+    mergeJoin.doAction( "previousKeys", meta, null, null, queryParams );
     assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
+
 }
