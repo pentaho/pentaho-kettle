@@ -1101,12 +1101,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         filteredFiles.add( file );
       }
     }
-    try {
-      response.put( "files", filteredFiles );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
+
+    response.put( "files", filteredFiles );
+
     return response;
   }
 
