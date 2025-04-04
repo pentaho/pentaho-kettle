@@ -634,6 +634,7 @@
       <groupId>org.ehcache</groupId>
       <artifactId>ehcache</artifactId>
       <version>${ehcache-core.version}</version>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>javax.cache</groupId>
