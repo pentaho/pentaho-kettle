@@ -885,7 +885,7 @@
                 <artifactItem>
                   <groupId>org.glassfish.jaxb</groupId>
                   <artifactId>jaxb-runtime</artifactId>
-                  <version>${jakarta.xml.bind-api.version}</version>
+                  <version>${jaxb-runtime.version}</version>
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
