@@ -13,6 +13,6 @@ jobs:
     name: Run Merge Compliance Checks
     uses: pentaho/actions-common/.github/workflows/merge_compliance.yml@compliance
     with:
-      scpId: 3ef4b1f1-778b-4204-94ae-5c7e360f13ab
+      scpId: ${{ vars.THREATRIX_PDIA_SCP_ID }}
     secrets: inherit
 

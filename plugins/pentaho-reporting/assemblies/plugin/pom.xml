@@ -141,6 +141,7 @@
                 commons-digester,
                 commons-lang3,
                 commons-xul-core,
+                ehcache-core,
                 flute,
                 groovy-all,
                 openpdf,
