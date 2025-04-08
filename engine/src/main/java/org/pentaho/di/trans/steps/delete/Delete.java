@@ -14,7 +14,6 @@
 package org.pentaho.di.trans.steps.delete;
 
 import java.sql.SQLException;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
