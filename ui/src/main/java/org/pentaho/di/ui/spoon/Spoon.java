@@ -6349,7 +6349,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           shell, SWT.NONE, rep, dialog.getFilterPath(), filenames, baseDirectory, versionComment, importRules );
       ripd.open();
 
-      refreshTree();
+      forceRefreshTree();
     }
   }
 
