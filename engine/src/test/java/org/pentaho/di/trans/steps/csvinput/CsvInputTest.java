@@ -186,7 +186,7 @@ public class CsvInputTest extends CsvInputUnitTestBase {
     valueMetaList.add( ValueMetaFactory.createValueMeta( "field1", ValueMetaInterface.TYPE_STRING ) );
     valueMetaList.add( ValueMetaFactory.createValueMeta( "field2", ValueMetaInterface.TYPE_NUMBER ) );
     String[] fieldsData = { "field1", "field2", "field3" };
-    String sampleData = "1,name,3.14159,city,1954/02/07,145.00,ALASKA";
+    String sampleData = "1,name,3.14159,city,1954/02/07,145.00,'1,111,111.1',1.234E0,+123,ALASKA";
     TextFileLine textFileLine = new TextFileLine( sampleData, 1, null );
     @SuppressWarnings( "java:S1874" )// CsvInput uses deprecated class TextFileInput to read data from file
     TextFileInputField[] inputFileFields = createInputFileFields( "f1", "f2", "f3" );
@@ -194,24 +194,27 @@ public class CsvInputTest extends CsvInputUnitTestBase {
     File tmpFile = createTestFile( ENCODING, fileContents );
 
     CsvInputAwareStep csvInputAwareStep = mock( CsvInputAwareStep.class );
+    CsvInputData data = mock( CsvInputData.class );
     CsvInputMeta meta = createMeta( tmpFile, inputFileFields );
     meta.setDefault();
-    CsvInputData data = mock( CsvInputData.class );
-    InputStream inputStream = Mockito.mock( InputStream.class );
-    InputStreamReader inputStreamReader =
-      new InputStreamReader( new ByteArrayInputStream( sampleData.getBytes() ) );
-    BufferedInputStreamReader bufferedInputStreamReader = new BufferedInputStreamReader( inputStreamReader );
-    FileObject fileObject = Mockito.mock( FileObject.class );
-    RowMetaInterface outputRowMeta = Mockito.mock( RowMeta.class );
+    meta.setEnclosure( "'" );
 
     CsvInput csvInput = spy(
       new CsvInput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans ) );
     csvInput.init( meta, data );
 
+    FileObject fileObject = Mockito.mock( FileObject.class );
+    RowMetaInterface outputRowMeta = Mockito.mock( RowMeta.class );
+    InputStream inputStream = Mockito.mock( InputStream.class );
+    InputStreamReader inputStreamReader =
+      new InputStreamReader( new ByteArrayInputStream( sampleData.getBytes() ) );
+    BufferedInputStreamReader bufferedInputStreamReader = new BufferedInputStreamReader( inputStreamReader );
+
     try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = Mockito.mockStatic( KettleVFS.class );
           MockedStatic<TextFileInputUtils> textFileInputUtilsStatic = Mockito.mockStatic(
             TextFileInputUtils.class ) ) {
+
       kettleVFSMockedStatic.when( () -> KettleVFS.getFileObject( anyString() ) )
         .thenReturn( fileObject );
       kettleVFSMockedStatic.when( () -> KettleVFS.getInputStream( any( FileObject.class ) ) )
