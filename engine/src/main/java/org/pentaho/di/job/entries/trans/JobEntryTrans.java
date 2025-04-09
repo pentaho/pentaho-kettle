@@ -1735,7 +1735,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
+  public JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     TransMeta inputTransMeta = this.getTransMeta( this.rep, this.metaStore, this.parentJobMeta );
     String[] parametersList = inputTransMeta.listParameters();

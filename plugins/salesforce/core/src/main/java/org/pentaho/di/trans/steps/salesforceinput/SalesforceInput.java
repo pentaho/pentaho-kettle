@@ -470,18 +470,18 @@ public class SalesforceInput extends SalesforceStep {
 
   @SuppressWarnings( "java:S1185" ) //This is being called using reflection(doAction)
   @Override
-  protected JSONObject testButtonAction( Map<String, String> queryParams ) {
+  public JSONObject testButtonAction( Map<String, String> queryParams ) {
     return super.testButtonAction( queryParams );
   }
 
   @Override
-  protected JSONObject modulesAction( Map<String, String> queryParams ) {
+  public JSONObject modulesAction( Map<String, String> queryParams ) {
     queryParams.put( "moduleFlag", "true" );
     return super.modulesAction( queryParams );
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFieldsAction( Map<String, String> queryParams ) {
+  public JSONObject getFieldsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
     try {

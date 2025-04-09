@@ -139,7 +139,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  protected JSONObject testButtonAction( Map<String, String> queryParams ) {
+  public JSONObject testButtonAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     boolean successConnection = testConnection();
     response.put( "connectionStatus", successConnection );
@@ -168,7 +168,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  protected JSONObject modulesAction( Map<String, String> queryParams ) {
+  public JSONObject modulesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     try {
       String[] modules = getModules( queryParams.get( "moduleFlag" ) );

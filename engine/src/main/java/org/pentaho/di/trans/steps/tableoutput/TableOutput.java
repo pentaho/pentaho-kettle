@@ -609,7 +609,7 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getSQLAction( Map<String, String> queryParams ) {
+  public JSONObject getSQLAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
     try {

@@ -28,7 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -39,6 +41,7 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class RestTest {
@@ -194,10 +197,9 @@ public class RestTest {
 
   @Test
   public void testApplicationTypesAction() {
-    RestMeta meta = new RestMeta();
-    Rest rest = mock( Rest.class );
-    doCallRealMethod().when( rest ).doAction( any(), any(), any(), any(), any() );
-    JSONObject response = rest.doAction( "applicationTypes", meta, null, null, new HashMap<>() );
+    StepMockHelper<RestMeta, RestData> mockHelper = new StepMockHelper<>( "excelInput", RestMeta.class, RestData.class );
+    Rest rest = setupInput( mockHelper );
+    JSONObject response = rest.doAction( "applicationTypes", mockHelper.processRowsStepMetaInterface, null, null, new HashMap<>() );
     JSONArray applicationTypes = (JSONArray) response.get( "applicationTypes" );
 
     assertEquals( RestMeta.APPLICATION_TYPES.length, applicationTypes.size() );
@@ -205,13 +207,19 @@ public class RestTest {
 
   @Test
   public void testHttpMethodsAction() {
-    RestMeta meta = new RestMeta();
-    Rest rest = mock( Rest.class );
-    doCallRealMethod().when( rest ).doAction( any(), any(), any(), any(), any() );
-    JSONObject response = rest.doAction( "httpMethods", meta, null, null, new HashMap<>() );
+    StepMockHelper<RestMeta, RestData> mockHelper = new StepMockHelper<>( "excelInput", RestMeta.class, RestData.class );
+    Rest rest = setupInput( mockHelper );
+    JSONObject response = rest.doAction( "httpMethods", mockHelper.processRowsStepMetaInterface, null, null, new HashMap<>() );
     JSONArray httpMethods = (JSONArray) response.get( "httpMethods" );
 
     assertEquals( RestMeta.HTTP_METHODS.length, httpMethods.size() );
   }
 
+  private Rest setupInput( StepMockHelper<RestMeta, RestData> mockHelper ) {
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+        .thenReturn( mockHelper.logChannelInterface );
+
+    return new Rest( mockHelper.stepMeta, mockHelper.stepDataInterface, 0,
+        mockHelper.transMeta, mockHelper.trans );
+  }
 }

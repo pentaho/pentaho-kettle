@@ -448,7 +448,7 @@ public class SelectValues extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject localesAction( Map<String, String> queryParams ) {
+  public JSONObject localesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray locales = new JSONArray();
     locales.addAll( Arrays.asList( EnvUtil.getLocaleList() ) );
@@ -457,7 +457,7 @@ public class SelectValues extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject timezonesAction( Map<String, String> queryParams ) {
+  public JSONObject timezonesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray timezones = new JSONArray();
     timezones.addAll( Arrays.asList( EnvUtil.getTimeZones() ) );
@@ -466,7 +466,7 @@ public class SelectValues extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject encodingsAction( Map<String, String> queryParams ) {
+  public JSONObject encodingsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray encodings = new JSONArray();
     encodings.addAll( Arrays.asList( getCharsets() ) );

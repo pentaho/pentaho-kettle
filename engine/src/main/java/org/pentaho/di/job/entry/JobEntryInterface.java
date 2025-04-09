@@ -765,7 +765,6 @@ public interface JobEntryInterface {
     JSONObject response = new JSONObject();
     try {
       Method actionMethod = this.getClass().getDeclaredMethod( fieldName + "Action", Map.class );
-      actionMethod.setAccessible( true );
       this.setRepository( job.getRep() );
       response = (JSONObject) actionMethod.invoke( this, queryParams );
       response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.SUCCESS_RESPONSE );

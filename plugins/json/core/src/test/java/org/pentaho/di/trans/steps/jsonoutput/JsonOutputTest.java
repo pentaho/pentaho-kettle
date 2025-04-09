@@ -499,7 +499,6 @@ public class JsonOutputTest extends TestCase {
   public void testGetOperationTypesAction() throws Exception {
     JsonOutput jsonOutput = setupOutput();
     Method method = JsonOutput.class.getDeclaredMethod( "getOperationTypesAction", Map.class );
-    method.setAccessible( true );
 
     JSONObject jsonObject = ( JSONObject ) method.invoke( jsonOutput, new HashMap<>( ) );
 
@@ -526,7 +525,6 @@ public class JsonOutputTest extends TestCase {
     JsonOutput jsonOutput = setupOutput();
 
     Method method = JsonOutput.class.getDeclaredMethod( "getEncodingTypesAction", Map.class );
-    method.setAccessible( true );
 
     JSONObject jsonObject = ( JSONObject ) method.invoke( jsonOutput, new HashMap<>( ) );
 
@@ -543,7 +541,6 @@ public class JsonOutputTest extends TestCase {
   public void testShowFileNameAction_WithFileName() throws Exception {
     JsonOutput jsonOutput = setupOutput();
     Method method = JsonOutput.class.getDeclaredMethod( "showFileNameAction", Map.class );
-    method.setAccessible( true );
 
     JsonOutputMeta jsonOutputMeta = new JsonOutputMeta();
     jsonOutputMeta.setOperationType( JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE );
@@ -577,7 +574,6 @@ public class JsonOutputTest extends TestCase {
     jsonOutput.setStepMetaInterface( jsonOutputMeta );
 
     Method method = JsonOutput.class.getDeclaredMethod( "showFileNameAction", Map.class );
-    method.setAccessible( true );
 
     JSONObject jsonObject = ( JSONObject ) method.invoke( jsonOutput, new HashMap<>( ) );
 

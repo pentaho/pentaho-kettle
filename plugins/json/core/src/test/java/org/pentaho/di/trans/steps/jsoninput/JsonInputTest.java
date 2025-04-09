@@ -1519,7 +1519,6 @@ public class JsonInputTest {
     try {
       JsonInput jsonInput = getInputForDoActions( getBasicTestJson(), false );
       Method getFilesMethod = JsonInput.class.getDeclaredMethod( "getFilesAction", Map.class );
-      getFilesMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );
@@ -1546,7 +1545,6 @@ public class JsonInputTest {
       Mockito.doReturn( new String[]{} ).when( helper.transMeta ).environmentSubstitute( (String[]) any() );
 
       Method getFilesMethod = JsonInput.class.getDeclaredMethod( "getFilesAction", Map.class );
-      getFilesMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );
@@ -1562,7 +1560,6 @@ public class JsonInputTest {
     try {
       JsonInput jsonInput = getInputForDoActions( getBasicTestJson(), true );
       Method selectFieldsMethod = JsonInput.class.getDeclaredMethod( "selectFieldsAction", Map.class );
-      selectFieldsMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) selectFieldsMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );
@@ -1580,7 +1577,6 @@ public class JsonInputTest {
     try {
       JsonInput jsonInput = getInputForDoActions( input, true );
       Method selectFieldsMethod = JsonInput.class.getDeclaredMethod( "selectFieldsAction", Map.class );
-      selectFieldsMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) selectFieldsMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );
@@ -1597,7 +1593,6 @@ public class JsonInputTest {
     try {
       JsonInput jsonInput = getInputForDoActions( "{{", true );
       Method selectFieldsMethod = JsonInput.class.getDeclaredMethod( "selectFieldsAction", Map.class );
-      selectFieldsMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) selectFieldsMethod.invoke( jsonInput, new HashMap<>() );
 
       disposeJsonInput( jsonInput );

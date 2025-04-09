@@ -1023,7 +1023,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
+  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();
     JSONArray textFileFields = new JSONArray();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -1070,7 +1070,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFormatsAction( Map<String, String> queryParams ) {
+  public JSONObject getFormatsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray array = new JSONArray();
     for ( String format : TextFileOutputMeta.formatMapperLineTerminator ) {
@@ -1082,7 +1082,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject showFilesAction( Map<String, String> queryParams ) {
+  public JSONObject showFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
 
     String filter = queryParams.get( "filter" );

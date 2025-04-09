@@ -4419,7 +4419,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     JSONObject response = new JSONObject();
     try {
       Method actionMethod = this.getClass().getDeclaredMethod( fieldName + "Action", Map.class );
-      actionMethod.setAccessible( true );
       this.setStepMetaInterface( stepMetaInterface );
       response = (JSONObject) actionMethod.invoke( this, queryParams );
       if ( isFailedResponse( response ) ) {

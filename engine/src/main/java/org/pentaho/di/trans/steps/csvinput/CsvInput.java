@@ -1190,7 +1190,7 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFieldsAction( Map<String, String> queryParams )
+  public JSONObject getFieldsAction( Map<String, String> queryParams )
     throws KettleException, JsonProcessingException {
     return populateMeta( queryParams );
   }

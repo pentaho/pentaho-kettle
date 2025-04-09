@@ -249,7 +249,7 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getCheckSumTypesAction( Map<String, String> queryParamToValues ) {
+  public JSONObject getCheckSumTypesAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     JSONArray checkSumTypes = new JSONArray();
     for ( int i = 0; i < CheckSumMeta.checksumtypeDescs.length; i++ ) {
@@ -265,7 +265,7 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getEvaluationMethodsAction( Map<String, String> queryParamToValues ) {
+  public JSONObject getEvaluationMethodsAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     JSONArray evaluationMethods = new JSONArray();
     for ( int i = 0; i < CheckSumMeta.EVALUATION_METHOD_DESCS.length; i++ ) {
@@ -281,7 +281,7 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getResultTypesAction( Map<String, String> queryParamToValues ) {
+  public JSONObject getResultTypesAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     JSONArray resultTypes = new JSONArray();
     for ( int i = 0; i < CheckSumMeta.resultTypeCode.length; i++ ) {
