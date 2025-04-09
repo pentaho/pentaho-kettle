@@ -12,6 +12,10 @@
 
 package org.pentaho.di.trans.steps.formula;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.After;
@@ -26,10 +30,6 @@ import org.pentaho.libformula.editor.FormulaMessage;
 import org.pentaho.libformula.editor.function.FunctionDescription;
 import org.pentaho.libformula.editor.function.FunctionLib;
 import org.pentaho.reporting.libraries.formula.lvalues.ParsePosition;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -98,6 +98,52 @@ public class FormulaTest {
     Map<String, String> queryMap = new HashMap<>();
     queryMap.put( "formulaSyntax", "dummy formula" );
     queryMap.put( "inputFields", "fieldA, fieldB" );
+
+    try ( MockedConstruction<FormulaEvaluator> mockedEvaluator =
+            Mockito.mockConstruction( FormulaEvaluator.class, ( mock, context ) -> {
+              FormulaMessage dummyMsg = new FormulaMessage(
+                FormulaMessage.TYPE_MESSAGE,
+                new DummyParsePosition( 1, 1, 1, 1 ),
+                "Test subject",
+                "Detailed message"
+              );
+              Map<String, FormulaMessage> dummyMessages = new HashMap<>();
+              dummyMessages.put( "dummy", dummyMsg );
+              when( mock.evaluateFormula( any() ) ).thenReturn( dummyMessages );
+            } ) ) {
+
+      JSONObject response = formulaStep.doAction(
+        "evaluateFormula",
+        stepMockHelper.initStepMetaInterface,
+        stepMockHelper.transMeta,
+        stepMockHelper.trans,
+        queryMap );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray messagesArray = (JSONArray) response.get( "messages" );
+      assertNotNull( messagesArray );
+      assertFalse( messagesArray.isEmpty() );
+      JSONObject msgObj = (JSONObject) messagesArray.get( 0 );
+      assertTrue( msgObj.get( "message" ).toString().contains( "Test subject" ) );
+      assertTrue( msgObj.get( "message" ).toString().contains( "Detailed message" ) );
+    }
+  }
+
+  @Test
+  public void testEvaluateFormulaAction_NoInputFields() {
+    // Stub the meta so that getFormula() returns an empty array to avoid NPE in init()
+    FormulaMeta meta = stepMockHelper.initStepMetaInterface;
+    when( meta.getFormula() ).thenReturn( new FormulaMetaFunction[ 0 ] );
+
+    Formula formulaStep = new Formula(
+      stepMockHelper.stepMeta,
+      stepMockHelper.stepDataInterface,
+      0,
+      stepMockHelper.transMeta,
+      stepMockHelper.trans );
+    formulaStep.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+
+    Map<String, String> queryMap = new HashMap<>();
+    queryMap.put( "formulaSyntax", "dummy formula" );
 
     try ( MockedConstruction<FormulaEvaluator> mockedEvaluator =
             Mockito.mockConstruction( FormulaEvaluator.class, ( mock, context ) -> {
