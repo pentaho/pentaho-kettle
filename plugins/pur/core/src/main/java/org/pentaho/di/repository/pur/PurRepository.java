@@ -1953,6 +1953,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   protected Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects(
     final boolean deepCopy ) throws KettleException {
     if ( sharedObjectsByType == null ) {
+      readWriteLock.readLock().lock();
       sharedObjectsLock.writeLock().lock();
       try {
         sharedObjectsByType =
@@ -1966,6 +1967,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         throw new KettleException( "Unable to read shared objects from repository", e ); //$NON-NLS-1$
       } finally {
         sharedObjectsLock.writeLock().unlock();
+        readWriteLock.readLock().unlock();
       }
     }
     return deepCopy ? deepCopy( sharedObjectsByType ) : sharedObjectsByType;
