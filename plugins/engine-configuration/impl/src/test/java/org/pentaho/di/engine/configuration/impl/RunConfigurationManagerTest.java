@@ -52,8 +52,8 @@ public class RunConfigurationManagerTest {
       new DefaultRunConfigurationProvider( metastoreSupplier );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
+    runConfigurationProviders.add( defaultRunConfigurationProvider );
     executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
-    executionConfigurationManager.setDefaultRunConfigurationProvider( defaultRunConfigurationProvider );
 
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
     defaultRunConfiguration.setName( "Default Configuration" );
@@ -144,9 +144,8 @@ public class RunConfigurationManagerTest {
 
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
-
+    runConfigurationProviders.add( defaultRunConfigurationProvider );
     executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
-    executionConfigurationManager.setDefaultRunConfigurationProvider( defaultRunConfigurationProvider );
 
     DefaultRunConfiguration defaultRunConfiguration1 = new DefaultRunConfiguration();
     defaultRunConfiguration1.setName( "z" );

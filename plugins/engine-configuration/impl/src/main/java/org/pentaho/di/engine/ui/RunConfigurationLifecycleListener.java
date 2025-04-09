@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 /**
  * Created by bmorrise on 7/6/18.
  */
-@LifecyclePlugin( id = "RunConfigurationLifecycleListener" )
+@LifecyclePlugin( id = "RunConfigurationLifecycleListener", classLoaderGroup = "RunConfiguration" )
 public class RunConfigurationLifecycleListener implements LifecycleListener {
 
   private RunConfigurationDelegate runConfigurationDelegate;
@@ -39,9 +39,9 @@ public class RunConfigurationLifecycleListener implements LifecycleListener {
     Spoon spoon = spoonSupplier.get();
     if ( spoon != null ) {
       spoon.getTreeManager().addTreeProvider( Spoon.STRING_TRANSFORMATIONS, new RunConfigurationFolderProvider(
-              runConfigurationDelegate ) );
+        runConfigurationDelegate ) );
       spoon.getTreeManager().addTreeProvider( Spoon.STRING_JOBS, new RunConfigurationFolderProvider(
-              runConfigurationDelegate ) );
+        runConfigurationDelegate ) );
     }
   }
 
