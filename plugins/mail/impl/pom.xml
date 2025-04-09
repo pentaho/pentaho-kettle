@@ -14,7 +14,7 @@
   <name> PDI Mail Plugins Impl</name>
 
   <properties>
-    <javax.mail.version>1.4</javax.mail.version>
+    <mail.version>1.6.1</mail.version>
   </properties>
 
   <dependencies>
@@ -60,9 +60,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-      <version>${javax.mail.version}</version>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
+      <version>${mail.version}</version>
     </dependency>
   </dependencies>
 </project>
