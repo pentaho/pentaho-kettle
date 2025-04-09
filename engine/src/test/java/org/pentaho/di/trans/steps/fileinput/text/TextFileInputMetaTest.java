@@ -31,6 +31,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 
@@ -107,6 +108,17 @@ public class TextFileInputMetaTest {
 
     assertEquals( cloned.inputFields.length, inputMeta.inputFields.length );
     assertEquals( cloned.getFilter().length, inputMeta.getFilter().length );
+  }
+
+  @Test
+  public void testSetFields() {
+    inputMeta.inputFiles = new BaseFileInputFiles();
+    inputMeta.inputFiles.fileName = new String[] { FILE_NAME_VALID_PATH };
+    BaseFileField[] expectedInputFields = new BaseFileField[ 2 ];
+
+    inputMeta.setFields(new String[]{"field1", "field2"});
+
+    assertEquals( expectedInputFields.length, inputMeta.inputFields.length );
   }
 
 }

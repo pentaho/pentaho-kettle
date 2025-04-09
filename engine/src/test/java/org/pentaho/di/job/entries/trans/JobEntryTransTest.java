@@ -55,6 +55,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.test.util.InternalState;
@@ -493,6 +494,36 @@ public class JobEntryTransTest {
     assertNotNull( parameters );
     assertEquals( "param1", parameters.get( 0 ) );
     assertEquals( "param2", parameters.get( 1 ) );
+  }
+
+  @Test
+  public void testParametersAction_ThrowsException() throws KettleException {
+    JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
+    LogChannelInterface logMock = mock( LogChannelInterface.class );
+    InternalState.setInternalState( jobEntryTrans, "log", logMock );
+    JobEntryInterface jobEntryInterface = mock( JobEntryInterface.class );
+    JobMeta jobMeta = mock( JobMeta.class );
+    TransMeta transMetaMock = mock( TransMeta.class );
+    Job job = mock( Job.class );
+
+    doThrow( new KettleException() ).when( jobEntryTrans ).getTransMeta( null, null, null );
+    doReturn( new String[] { "param1", "param2" } ).when( transMetaMock ).listParameters();
+
+    JSONObject response = jobEntryTrans.doAction( "parameters", jobEntryInterface, jobMeta, job, new HashMap<>() );
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+  }
+
+  @Test
+  public void testInvalidAction() {
+    JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
+    LogChannelInterface logMock = mock( LogChannelInterface.class );
+    InternalState.setInternalState( jobEntryTrans, "log", logMock );
+    JobEntryInterface jobEntryInterface = mock( JobEntryInterface.class );
+    JobMeta jobMeta = mock( JobMeta.class );
+    Job job = mock( Job.class );
+
+    JSONObject response = jobEntryTrans.doAction( "InvalidMethod", jobEntryInterface, jobMeta, job, new HashMap<>() );
+    assertEquals( StepInterface.FAILURE_METHOD_NOT_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
 
   private void updateResultTest( int previousRowsResult, int newRowsResult ) {
