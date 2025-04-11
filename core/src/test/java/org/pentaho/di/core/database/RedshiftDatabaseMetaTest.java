@@ -119,4 +119,31 @@ public class RedshiftDatabaseMetaTest {
     assertEquals( 1, libs.length );
     assertEquals( "RedshiftJDBC4_1.0.10.1010.jar", libs[0] );
   }
+
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_setsAllAttributes() {
+    dbMeta = new RedshiftDatabaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( RedshiftDatabaseMeta.JDBC_AUTH_METHOD, "IAM Credentials" );
+    attributes.put( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID, "testAccessKeyId" );
+    attributes.put( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY, "testSecretAccessKey" );
+    attributes.put( RedshiftDatabaseMeta.IAM_SESSION_TOKEN, "testSessionToken" );
+    attributes.put( RedshiftDatabaseMeta.IAM_PROFILE_NAME, "testProfileName" );
+    attributes.put( RedshiftDatabaseMeta.AUTHENTICATION_METHOD, "testAuthMethod" );
+    attributes.put( RedshiftDatabaseMeta.IAM_ROLE, "testIamRole" );
+    attributes.put( RedshiftDatabaseMeta.AWS_ACCESS_KEY, "testAwsAccessKey" );
+    attributes.put( RedshiftDatabaseMeta.AWS_ACCESS_KEY_ID, "testAwsAccessKeyId" );
+
+    dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+    assertEquals( "IAM Credentials", dbMeta.getAttributes().getProperty( RedshiftDatabaseMeta.JDBC_AUTH_METHOD ) );
+    assertEquals( "testAccessKeyId", dbMeta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_ACCESS_KEY_ID ) );
+    assertEquals( "testSecretAccessKey", dbMeta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SECRET_ACCESS_KEY ) );
+    assertEquals( "testSessionToken", dbMeta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_SESSION_TOKEN ) );
+    assertEquals( "testProfileName", dbMeta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_PROFILE_NAME ) );
+    assertEquals( "testAuthMethod", dbMeta.getAttributes().getProperty( RedshiftDatabaseMeta.AUTHENTICATION_METHOD ) );
+    assertEquals( "testIamRole", dbMeta.getAttributes().getProperty( RedshiftDatabaseMeta.IAM_ROLE ) );
+    assertEquals( "testAwsAccessKey", dbMeta.getAttributes().getProperty( RedshiftDatabaseMeta.AWS_ACCESS_KEY ) );
+    assertEquals( "testAwsAccessKeyId", dbMeta.getAttributes().getProperty( RedshiftDatabaseMeta.AWS_ACCESS_KEY_ID ) );
+  }
 }

@@ -770,6 +770,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException in case the transformation could not be prepared (initialized)
    */
   public void prepareExecution( String[] arguments ) throws KettleException {
+    prepareExecution( arguments, false );
+  }
+
+  public void prepareExecution( String[] arguments, boolean skipInit ) throws KettleException {
     setPreparing( true );
     startDate = null;
     setRunning( false );
@@ -1203,32 +1207,35 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Initialize all the threads...
     //
-    for ( int i = 0; i < steps.size(); i++ ) {
-      final StepMetaDataCombi sid = steps.get( i );
+    if ( !skipInit ) {
+      for ( int i = 0; i < steps.size(); i++ ) {
+        final StepMetaDataCombi sid = steps.get( i );
 
-      // Do the init code in the background!
-      // Init all steps at once, but ALL steps need to finish before we can
-      // continue properly!
-      //
-      initThreads[ i ] = new StepInitThread( sid, log );
+        // Do the init code in the background!
+        // Init all steps at once, but ALL steps need to finish before we can
+        // continue properly!
+        //
+        initThreads[ i ] = new StepInitThread( sid, log );
 
-      // Put it in a separate thread!
-      //
-      threads[ i ] = new Thread( initThreads[ i ] );
-      threads[ i ].setName( "init of " + sid.stepname + "." + sid.copy + " (" + threads[ i ].getName() + ")" );
+        // Put it in a separate thread!
+        //
+        threads[ i ] = new Thread( initThreads[ i ] );
+        threads[ i ].setName( "init of " + sid.stepname + "." + sid.copy + " (" + threads[ i ].getName() + ")" );
 
-      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.StepBeforeInitialize.id, initThreads[ i ] );
-
-      threads[ i ].start();
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.StepBeforeInitialize.id, initThreads[ i ] );
+        threads[ i ].start();
+      }
     }
 
-    for ( int i = 0; i < threads.length; i++ ) {
-      try {
-        threads[ i ].join();
-        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.StepAfterInitialize.id, initThreads[ i ] );
-      } catch ( Exception ex ) {
-        log.logError( "Error with init thread: " + ex.getMessage(), ex.getMessage() );
-        log.logError( Const.getStackTracker( ex ) );
+    if ( !skipInit ) {
+      for ( int i = 0; i < threads.length; i++ ) {
+        try {
+          threads[ i ].join();
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.StepAfterInitialize.id, initThreads[ i ] );
+        } catch ( Exception ex ) {
+          log.logError( "Error with init thread: " + ex.getMessage(), ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
       }
     }
 
@@ -1238,17 +1245,19 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     // All step are initialized now: see if there was one that didn't do it
     // correctly!
     //
-    for ( int i = 0; i < initThreads.length; i++ ) {
-      StepMetaDataCombi combi = initThreads[ i ].getCombi();
-      if ( !initThreads[ i ].isOk() ) {
-        log.logError( BaseMessages.getString( PKG, "Trans.Log.StepFailedToInit", combi.stepname + "." + combi.copy ) );
-        combi.data.setStatus( StepExecutionStatus.STATUS_STOPPED );
-        ok = false;
-      } else {
-        combi.data.setStatus( StepExecutionStatus.STATUS_IDLE );
-        if ( log.isDetailed() ) {
-          log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.StepInitialized", combi.stepname + "."
-            + combi.copy ) );
+    if ( !skipInit ) {
+      for ( int i = 0; i < initThreads.length; i++ ) {
+        StepMetaDataCombi combi = initThreads[ i ].getCombi();
+        if ( !initThreads[ i ].isOk() ) {
+          log.logError( BaseMessages.getString( PKG, "Trans.Log.StepFailedToInit", combi.stepname + "." + combi.copy ) );
+          combi.data.setStatus( StepExecutionStatus.STATUS_STOPPED );
+          ok = false;
+        } else {
+          combi.data.setStatus( StepExecutionStatus.STATUS_IDLE );
+          if ( log.isDetailed() ) {
+            log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.StepInitialized", combi.stepname + "."
+                + combi.copy ) );
+          }
         }
       }
     }
@@ -1261,17 +1270,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       // Halt the other threads as well, signal end-of-the line to the outside world...
       // Also explicitly call dispose() to clean up resources opened during init();
       //
-      for ( int i = 0; i < initThreads.length; i++ ) {
-        StepMetaDataCombi combi = initThreads[ i ].getCombi();
+      if ( !skipInit ) {
+        for ( int i = 0; i < initThreads.length; i++ ) {
+          StepMetaDataCombi combi = initThreads[ i ].getCombi();
+          // Dispose will overwrite the status, but we set it back right after
+          // this.
+          combi.step.dispose( combi.meta, combi.data );
 
-        // Dispose will overwrite the status, but we set it back right after
-        // this.
-        combi.step.dispose( combi.meta, combi.data );
-
-        if ( initThreads[ i ].isOk() ) {
-          combi.data.setStatus( StepExecutionStatus.STATUS_HALTED );
-        } else {
-          combi.data.setStatus( StepExecutionStatus.STATUS_STOPPED );
+          if ( initThreads[ i ].isOk() ) {
+            combi.data.setStatus( StepExecutionStatus.STATUS_HALTED );
+          } else {
+            combi.data.setStatus( StepExecutionStatus.STATUS_STOPPED );
+          }
         }
       }
 

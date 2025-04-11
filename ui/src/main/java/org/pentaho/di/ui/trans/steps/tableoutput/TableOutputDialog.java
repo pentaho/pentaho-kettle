@@ -902,7 +902,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       } catch ( KettleException ke ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-            .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+          .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -1428,7 +1428,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     } catch ( KettleException ke ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-          .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+        .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -1485,8 +1485,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         if ( !sql.hasError() ) {
           if ( sql.hasSQL() ) {
             SQLEditor sqledit =
-                    new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
-                            .getSQL() );
+              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
+                .getSQL() );
             sqledit.open();
           } else {
             String message = getBaseMessage( "TableOutputDialog.NoSQL.DialogMessage" );
@@ -1505,7 +1505,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     } catch ( KettleException ke ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "TableOutputDialog.BuildSQLError.DialogTitle" ), BaseMessages
-          .getString( PKG, "TableOutputDialog.BuildSQLError.DialogMessage" ), ke );
+        .getString( PKG, "TableOutputDialog.BuildSQLError.DialogMessage" ), ke );
     }
   }
 

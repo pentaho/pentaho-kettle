@@ -16,7 +16,11 @@ package org.pentaho.di.trans.steps.jsonoutput;
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.json.simple.JSONArray;
@@ -159,6 +163,61 @@ public class JsonOutput extends BaseStep implements StepInterface {
     } else {
       compatibilityFactory = new FixedMode();
     }
+  }
+
+  @SuppressWarnings( "java:S1144" )
+  public JSONObject getOperationTypesAction( Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    JSONArray operationTypes = new JSONArray();
+
+    for ( int i = 0; i < JsonOutputMeta.operationTypeCode.length; i++ ) {
+      JSONObject operationType = new JSONObject();
+      operationType.put( "id", JsonOutputMeta.operationTypeCode[i] );
+      operationType.put( "name", JsonOutputMeta.operationTypeDesc[i] );
+      operationTypes.add( operationType );
+    }
+
+    response.put( "operationTypes", operationTypes );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public  JSONObject getEncodingTypesAction( Map<String, String> queryParamToValues) {
+    JSONObject response = new JSONObject();
+    JSONArray encodingsArray = new JSONArray();
+
+    List<Charset> availableCharsets = new ArrayList<>( Charset.availableCharsets().values() );
+    for ( Charset charset : availableCharsets ) {
+      encodingsArray.add( charset.displayName() );
+    }
+
+    response.put( "encoding", encodingsArray );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject showFileNameAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    JsonOutputMeta jsonOutputMeta = ( JsonOutputMeta ) getStepMetaInterface();
+
+    JSONArray fileList = new JSONArray();
+    startProcessingDate = new Date();
+
+    if ( jsonOutputMeta.getFileName() != null && !jsonOutputMeta.getFileName().isEmpty() ) {
+      String fileName = jsonOutputMeta.buildFilename( jsonOutputMeta.getFileName(), startProcessingDate );
+      fileList.add( fileName );
+    }
+
+    if ( fileList.isEmpty() ) {
+      response.put( "message", BaseMessages.getString( PKG, "JsonOutputDialog.NoFilesFound.DialogMessage" ) );
+    } else {
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    }
+
+    response.put( "files", fileList );
+    return response;
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {

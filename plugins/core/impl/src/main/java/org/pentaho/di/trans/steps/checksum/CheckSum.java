@@ -15,11 +15,14 @@ package org.pentaho.di.trans.steps.checksum;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Map;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
 import org.apache.commons.codec.binary.Hex;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -243,6 +246,54 @@ public class CheckSum extends BaseStep implements StepInterface {
     }
 
     return hexString.toString();
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getCheckSumTypesAction( Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    JSONArray checkSumTypes = new JSONArray();
+    for ( int i = 0; i < CheckSumMeta.checksumtypeDescs.length; i++ ) {
+      JSONObject checkSumType = new JSONObject();
+      checkSumType.put( "id", CheckSumMeta.checksumtypeCodes[ i ] );
+      checkSumType.put( "name", CheckSumMeta.checksumtypeDescs[ i ] );
+      checkSumTypes.add( checkSumType );
+    }
+
+    response.put( "checkSumTypes", checkSumTypes );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getEvaluationMethodsAction( Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    JSONArray evaluationMethods = new JSONArray();
+    for ( int i = 0; i < CheckSumMeta.EVALUATION_METHOD_DESCS.length; i++ ) {
+      JSONObject evaluationMethod = new JSONObject();
+      evaluationMethod.put( "id", CheckSumMeta.EVALUATION_METHOD_CODES[ i ] );
+      evaluationMethod.put( "name", CheckSumMeta.EVALUATION_METHOD_DESCS[ i ] );
+      evaluationMethods.add( evaluationMethod );
+    }
+
+    response.put( "evaluationMethods", evaluationMethods );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getResultTypesAction( Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    JSONArray resultTypes = new JSONArray();
+    for ( int i = 0; i < CheckSumMeta.resultTypeCode.length; i++ ) {
+      JSONObject resultType = new JSONObject();
+      resultType.put( "id", CheckSumMeta.resultTypeCode[ i ] );
+      resultType.put( "name", CheckSumMeta.resultTypeCode[ i ] );
+      resultTypes.add( resultType );
+    }
+
+    response.put( "resultTypes", resultTypes );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
   }
 
   @SuppressWarnings( "deprecation" )

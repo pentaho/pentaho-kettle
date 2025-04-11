@@ -14,7 +14,10 @@
 package org.pentaho.di.core.database;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -42,4 +45,16 @@ public class MSSQLServerNativeDatabaseMetaTest extends MSSQLServerDatabaseMetaTe
 
   }
 
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_setsAllAttributes() {
+    MSSQLServerNativeDatabaseMeta dbMeta = new MSSQLServerNativeDatabaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( MSSQLServerNativeDatabaseMeta.ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR, "Y" );
+    attributes.put( MSSQLServerNativeDatabaseMeta.ATTRIBUTE_USE_INTEGRATED_SECURITY, "Y" );
+
+    dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+    assertTrue( dbMeta.isUsingDoubleDecimalAsSchemaTableSeparator() );
+    assertEquals( "Y", dbMeta.getAttributes().getProperty( MSSQLServerNativeDatabaseMeta.ATTRIBUTE_USE_INTEGRATED_SECURITY ) );
+  }
 }

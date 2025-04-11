@@ -14,12 +14,15 @@
 package org.pentaho.di.core.database;
 
 import java.sql.ResultSet;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+
+import static org.pentaho.di.core.util.Utils.setBooleanValueFromMap;
 
 /**
  * Contains Oracle specific information through static final members
@@ -653,4 +656,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     getAttributes().setProperty( STRICT_BIGNUMBER_INTERPRETATION, strictBigNumberInterpretation ? "Y" : "N" );
   }
 
+  @Override
+  public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    this.setStrictBigNumberInterpretation( setBooleanValueFromMap( attributes, STRICT_BIGNUMBER_INTERPRETATION ) );
+  }
 }

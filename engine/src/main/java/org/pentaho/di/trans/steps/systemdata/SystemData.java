@@ -17,6 +17,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -38,6 +42,7 @@ import org.pentaho.di.version.BuildVersion;
  * @since 4-aug-2003
  */
 public class SystemData extends BaseStep implements StepInterface {
+
   private SystemDataMeta meta;
   private SystemDataData data;
 
@@ -757,6 +762,23 @@ public class SystemData extends BaseStep implements StepInterface {
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     super.dispose( smi, sdi );
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject typeAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    JSONArray jsonArray = new JSONArray();
+    for ( int i = 1; i < SystemDataTypes.values().length; i++ ) {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "id", SystemDataTypes.values()[ i ].name() );
+      jsonObject.put( "name", SystemDataTypes.values()[ i ].getDescription() );
+      jsonArray.add( jsonObject );
+    }
+    response.put( "types", jsonArray );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    response.put( StepInterface.STATUS, StepInterface.SUCCESS_STATUS );
+    return response;
   }
 
 }

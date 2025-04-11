@@ -22,10 +22,14 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.util.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.sforce.ws.bind.XmlObject;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -255,4 +259,24 @@ public class SalesforceUpsertTest {
     Assert.assertEquals( parentValue, sobjPass.getField( parentParam ) );
     Assert.assertEquals( childValue, ( (SObject) sobjPass.getField( child ) ).getField( childParam ) );
   }
+
+  @Test
+  public void testModulesAction() {
+    SalesforceUpsert salesforceUpsert =
+      new SalesforceUpsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    Map<String, String> queryParams = new HashMap<>();
+    JSONObject response = salesforceUpsert.modulesAction( queryParams );
+    assertTrue ( response.containsKey( "actionStatus" ) );
+  }
+
+  @Test
+  public void test_testButtonAction() {
+    SalesforceUpsert salesforceUpsert =
+      new SalesforceUpsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    Map<String, String> queryParams = new HashMap<>();
+
+    JSONObject response = salesforceUpsert.testButtonAction( queryParams );
+    assertTrue ( response.containsKey( "connectionStatus" ) );
+  }
+
 }

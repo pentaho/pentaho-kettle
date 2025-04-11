@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static org.pentaho.di.core.util.Utils.isEmpty;
+import static org.pentaho.di.core.util.Utils.setStringValueFromMap;
 
 /**
  * @author mbatchelor
@@ -136,5 +137,18 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
       return "&" + param + "=" + val;
     }
     return "";
+  }
+
+  @Override
+  public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    addAttribute( JDBC_AUTH_METHOD, setStringValueFromMap( attributes, JDBC_AUTH_METHOD ) );
+    addAttribute( IAM_ACCESS_KEY_ID, setStringValueFromMap( attributes, IAM_ACCESS_KEY_ID ) );
+    addAttribute( IAM_SECRET_ACCESS_KEY, setStringValueFromMap( attributes, IAM_SECRET_ACCESS_KEY ) );
+    addAttribute( IAM_SESSION_TOKEN, setStringValueFromMap( attributes, IAM_SESSION_TOKEN ) );
+    addAttribute( IAM_PROFILE_NAME, setStringValueFromMap( attributes, IAM_PROFILE_NAME ) );
+    addAttribute( AUTHENTICATION_METHOD, setStringValueFromMap( attributes, AUTHENTICATION_METHOD ) );
+    addAttribute( IAM_ROLE, setStringValueFromMap( attributes, IAM_ROLE ) );
+    addAttribute( AWS_ACCESS_KEY, setStringValueFromMap( attributes, AWS_ACCESS_KEY ) );
+    addAttribute( AWS_ACCESS_KEY_ID, setStringValueFromMap( attributes, AWS_ACCESS_KEY_ID ) );
   }
 }

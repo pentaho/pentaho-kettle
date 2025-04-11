@@ -16,6 +16,7 @@ package org.pentaho.di.core.database;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -71,5 +72,16 @@ public class SnowflakeHVDatabaseMetaTest {
     String expected = "SELECT SCHEMA_NAME AS \"name\" FROM " + databaseNameSubstitute + ".INFORMATION_SCHEMA.SCHEMATA";
 
     assertEquals( expected, result );
+  }
+
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_setsWarehouseAttribute() {
+    SnowflakeHVDatabaseMeta dbMeta = new SnowflakeHVDatabaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( SnowflakeHVDatabaseMeta.WAREHOUSE, "testWarehouse" );
+
+    dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+    assertEquals( "testWarehouse", dbMeta.getAttributes().getProperty( SnowflakeHVDatabaseMeta.WAREHOUSE ) );
   }
 }

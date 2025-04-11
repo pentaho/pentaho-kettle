@@ -13,11 +13,21 @@
 
 package org.pentaho.di.trans.steps.addsequence;
 
+import java.util.Arrays;
+import java.util.Map;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
@@ -250,6 +260,33 @@ public class AddSequence extends BaseStep implements StepInterface {
     }
 
     super.dispose( smi, sdi );
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getSequenceAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+
+    DatabaseMeta databaseMeta = getTransMeta().findDatabase( queryParams.get( "connection" ) );
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Add Sequence Step", LoggingObjectType.STEP, null );
+
+    if ( databaseMeta != null ) {
+      try ( Database database = new Database( loggingObject, databaseMeta ) ) {
+        database.connect();
+        String[] sequences = database.getSequences();
+        if ( null != sequences && sequences.length > 0 ) {
+          sequences = Const.sortStrings( sequences );
+          JSONArray sequenceNames = new JSONArray();
+          sequenceNames.addAll( Arrays.asList( sequences ) );
+          response.put( "sequences", sequenceNames );
+          response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+        }
+      } catch ( KettleDatabaseException e ) {
+        log.logError( e.getMessage() );
+      }
+    }
+    return response;
   }
 
 }
