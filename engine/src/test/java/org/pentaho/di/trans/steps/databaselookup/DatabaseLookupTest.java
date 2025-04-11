@@ -98,7 +98,6 @@ public class DatabaseLookupTest {
       when( mock.getTableFieldsMeta( schema, table ) ).thenReturn( rowMeta );
     } ) ) {
       Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
-      getTableFieldAndTypeMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
 
       assertNotNull( jsonObject );
@@ -130,7 +129,6 @@ public class DatabaseLookupTest {
       when( mock.getTableFieldsMeta( schema, table ) ).thenReturn( null );
     } ) ) {
       Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
-      getTableFieldAndTypeMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
 
       assertNotNull( jsonObject );
@@ -145,7 +143,6 @@ public class DatabaseLookupTest {
     when( helper.transMeta.findDatabase( connection ) ).thenReturn( null );
 
     Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
-    getTableFieldAndTypeMethod.setAccessible( true );
     JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
 
     assertNotNull( jsonObject );
@@ -157,7 +154,6 @@ public class DatabaseLookupTest {
   public void expectExceptionWithDatabaseTest() throws Exception {
     try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, (mock, context) -> doThrow( new KettleDatabaseException() ).when( mock ).connect() ) ) {
       Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
-      getTableFieldAndTypeMethod.setAccessible( true );
       JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
 
       assertNotNull( jsonObject );
@@ -171,7 +167,6 @@ public class DatabaseLookupTest {
     queryParams.put( paramKey, null );
 
     Method getTableFieldAndTypeMethod = DatabaseLookup.class.getDeclaredMethod( "getTableFieldAndTypeAction", Map.class );
-    getTableFieldAndTypeMethod.setAccessible( true );
     JSONObject jsonObject = (JSONObject) getTableFieldAndTypeMethod.invoke( databaseLookup, queryParams );
 
     assertNotNull( jsonObject );

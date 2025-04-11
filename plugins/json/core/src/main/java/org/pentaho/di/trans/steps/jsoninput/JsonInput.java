@@ -320,7 +320,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject selectFieldsAction( Map<String, String> queryParamToValues ) {
+  public JSONObject selectFieldsAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
 
     try {
@@ -348,7 +348,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFilesAction( Map<String, String> queryParams ) {
+  public JSONObject getFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
 
     JsonInputMeta jsonInputMeta = (JsonInputMeta) getStepMetaInterface();

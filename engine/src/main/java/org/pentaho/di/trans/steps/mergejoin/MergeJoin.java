@@ -460,7 +460,7 @@ public class MergeJoin extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject previousKeysAction( Map<String, String> queryParams ) throws KettleException {
+  public JSONObject previousKeysAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
 
     String stepIndex = queryParams.get( "stepIndex" );

@@ -871,7 +871,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFilesAction( Map<String, String> queryParams ) {
+  public JSONObject getFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
     String[] files = excelInputMeta.getFilePaths( getTransMeta() );
@@ -887,7 +887,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getSheetsAction( Map<String, String> queryParams ) {
+  public JSONObject getSheetsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     List<String> sheetNames = new ArrayList<>();
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
@@ -915,7 +915,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFieldsAction( Map<String, String> queryParams ) {
+  public JSONObject getFieldsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     RowMetaInterface fields = new RowMeta();
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();

@@ -946,7 +946,7 @@ public class GroupBy extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject typeGroupCodeAction( Map<String, String> queryParams ) {
+  public JSONObject typeGroupCodeAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray typeValues = new JSONArray();
     typeValues.addAll( Arrays.asList( GroupByMeta.typeGroupCode ) );

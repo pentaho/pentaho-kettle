@@ -401,7 +401,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
+  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();
     JSONArray concatFields = new JSONArray();
     ObjectMapper objectMapper = new ObjectMapper();

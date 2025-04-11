@@ -482,7 +482,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
   }
 
   @Override
-  public JSONObject doAction(String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
                              Trans trans, Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     try {
@@ -494,7 +494,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
       this.setTransMeta( transMeta );
       response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
 
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
       log.logError( e.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
     }

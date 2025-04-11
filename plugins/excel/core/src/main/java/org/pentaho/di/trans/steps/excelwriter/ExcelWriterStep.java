@@ -984,7 +984,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFilesAction( Map<String, String> queryParams ) {
+  public JSONObject getFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     ExcelWriterStepMeta excelWriterStepMeta = (ExcelWriterStepMeta) getStepMetaInterface();
     String[] files = excelWriterStepMeta.getFiles( getTransMeta() );
@@ -1000,7 +1000,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFormatsAction( Map<String, String> queryParams ) {
+  public JSONObject getFormatsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     try {
       String[] formats = getFormats();
@@ -1037,7 +1037,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
+  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();
     JSONArray excelFileFields = new JSONArray();
     ObjectMapper objectMapper = new ObjectMapper();

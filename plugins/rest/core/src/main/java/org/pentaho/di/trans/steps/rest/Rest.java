@@ -628,7 +628,7 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject applicationTypesAction( Map<String, String> queryParams ) {
+  public JSONObject applicationTypesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray applicationTypes = new JSONArray();
     applicationTypes.addAll( Arrays.asList( RestMeta.APPLICATION_TYPES ) );
@@ -637,7 +637,7 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject httpMethodsAction( Map<String, String> queryParams ) {
+  public JSONObject httpMethodsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray httpMethods = new JSONArray();
     httpMethods.addAll( Arrays.asList( RestMeta.HTTP_METHODS ) );

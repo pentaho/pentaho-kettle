@@ -165,8 +165,8 @@ public class JsonOutput extends BaseStep implements StepInterface {
     }
   }
 
-  @SuppressWarnings("java:S1144")
-  private JSONObject getOperationTypesAction( Map<String, String> queryParamToValues ) {
+  @SuppressWarnings( "java:S1144" )
+  public JSONObject getOperationTypesAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     JSONArray operationTypes = new JSONArray();
 
@@ -183,7 +183,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getEncodingTypesAction( Map<String, String> queryParamToValues) {
+  public  JSONObject getEncodingTypesAction( Map<String, String> queryParamToValues) {
     JSONObject response = new JSONObject();
     JSONArray encodingsArray = new JSONArray();
 
@@ -198,7 +198,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject showFileNameAction( Map<String, String> queryParams ) {
+  public JSONObject showFileNameAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JsonOutputMeta jsonOutputMeta = ( JsonOutputMeta ) getStepMetaInterface();
 

@@ -307,12 +307,12 @@ public class SalesforceInsert extends SalesforceStep {
 
   @SuppressWarnings( "java:S1185" ) //This is being called using reflection(doAction)
   @Override
-  protected JSONObject testButtonAction( Map<String, String> queryParams ) {
+  public JSONObject testButtonAction( Map<String, String> queryParams ) {
     return super.testButtonAction( queryParams );
   }
 
   @Override
-  protected JSONObject modulesAction( Map<String, String> queryParams ) {
+  public JSONObject modulesAction( Map<String, String> queryParams ) {
     queryParams.put( "moduleFlag", "false" );
     return super.modulesAction( queryParams );
   }

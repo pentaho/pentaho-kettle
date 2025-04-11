@@ -301,7 +301,7 @@ public class Formula extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject evaluateFormulaAction( Map<String, String> queryParams ) {
+  public JSONObject evaluateFormulaAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     try {
       String formula = queryParams.get( "formulaSyntax" );
@@ -335,7 +335,7 @@ public class Formula extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject formulaTreeDataAction( Map<String, String> queryParams ) {
+  public JSONObject formulaTreeDataAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     try {
       // Load the function library from functions.xml.
