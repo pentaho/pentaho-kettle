@@ -181,6 +181,8 @@ public class CsvInputTest extends CsvInputUnitTestBase {
   }
 
   @Test
+  @SuppressWarnings( "java:S1874" )
+  // CsvInput uses deprecated class TextFileInput & KettleVFS.getFileObject to read data from file
   public void testGetFieldsAction() throws Exception {
     List<ValueMetaInterface> valueMetaList = new ArrayList<>();
     valueMetaList.add( ValueMetaFactory.createValueMeta( "field1", ValueMetaInterface.TYPE_STRING ) );
@@ -188,7 +190,6 @@ public class CsvInputTest extends CsvInputUnitTestBase {
     String[] fieldsData = { "field1", "field2", "field3" };
     String sampleData = "1,name,3.14159,city,1954/02/07,145.00,'1,111,111.1',1.234E0,+123,ALASKA";
     TextFileLine textFileLine = new TextFileLine( sampleData, 1, null );
-    @SuppressWarnings( "java:S1874" )// CsvInput uses deprecated class TextFileInput to read data from file
     TextFileInputField[] inputFileFields = createInputFileFields( "f1", "f2", "f3" );
     String fileContents = "Something" + DELIMITER + DELIMITER + "The former was empty!";
     File tmpFile = createTestFile( ENCODING, fileContents );

@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.salesforceinput;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings( "java:S1104" )
 public class FieldsResponse {
 
   public List<FieldDTO> fieldDTOList;
