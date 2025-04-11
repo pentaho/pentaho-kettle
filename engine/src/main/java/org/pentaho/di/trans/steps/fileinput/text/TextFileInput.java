@@ -171,7 +171,8 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getFieldsAction( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
+  private JSONObject getFieldsAction( Map<String, String> queryParams )
+    throws KettleException, JsonProcessingException {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -191,6 +192,9 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
+  @SuppressWarnings( { "javaL194", "java:S3776", "java:S6541" } )
+  // this method contains code extracted from fileinput/text/TextFileCSVImportProgressDialog class
+  // to get Fields data and Fields summary statistics
   private JSONObject populateMeta( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
     JSONObject response = new JSONObject();
     String isSampleSummary = queryParams.get( "isSampleSummary" );
@@ -334,6 +338,8 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
       String delimiter = transMeta.environmentSubstitute( tfii.content.separator );
       String enclosure = transMeta.environmentSubstitute( tfii.content.enclosure );
       String escapeCharacter = transMeta.environmentSubstitute( tfii.content.escapeCharacter );
+      @SuppressWarnings( "java:S1874" )
+      // CsvInput uses deprecated method from TextFileInputUtils for reading data from file
       Object[] r =
         TextFileInputUtils.convertLineToRow( log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0,
           outputRowMeta, convertRowMeta, FileInputList.createFilePathList( transMeta, tfii.inputFiles.fileName,
@@ -549,6 +555,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return textFileInputFieldDTO;
   }
 
+  @SuppressWarnings( "java:S1149" ) // Logic to extract getField is moved from TextFileInputDialog to step class
   public Vector<TextFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
     Vector<TextFileInputFieldInterface> fields = new Vector<>();
 
@@ -683,6 +690,8 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
+  @SuppressWarnings( { "java:S2093", "java:S3776" } )
+  // Logic to Get the first x lines is moved from TextFileInputDialog to step class
   public List<String> getFirst( int nrlines, boolean skipHeaders ) throws KettleException {
     TextFileInputMeta meta = (TextFileInputMeta) getStepMetaInterface();
 

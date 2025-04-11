@@ -676,6 +676,8 @@ public class TextFileInputTest {
   }
 
   @Test
+  @SuppressWarnings( "java:S1874" )
+  // TextFileInput uses deprecated class FileInputList.createFilePathList to create file path
   public void testGetFieldsAction() throws Exception {
     List<ValueMetaInterface> valueMetaList = new ArrayList<>();
     valueMetaList.add( ValueMetaFactory.createValueMeta( "field1", ValueMetaInterface.TYPE_STRING ) );
