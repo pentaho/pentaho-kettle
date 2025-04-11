@@ -418,7 +418,7 @@ NOT(ISTEXT(X))</semantics>
     <category>%Category.Text</category>
     <name>DOLLAR</name>
     <description>Convert the parameters to Text formatted as currency.</description>
-    <syntax>DOLLAR( Text text, Integer decimalPlaces )</syntax>
+    <syntax>DOLLAR( Text text; Integer decimalPlaces )</syntax>
     <returns>Text</returns>
     <constraints>None</constraints>
     <semantics>Text is the incoming string or number to format, decimalPlaces is the number of decimal places to use.  If i2 is not provided defaults to 2.</semantics>
@@ -432,7 +432,7 @@ NOT(ISTEXT(X))</semantics>
     <category>%Category.Text</category>
     <name>FIXED</name>
     <description>Round the number to a specified number of decimals and format the result as a text.</description>
-    <syntax>FIXED( Text text, Integer decimalPlaces, Boolean omitGroupChar )</syntax>
+    <syntax>FIXED( Text text; Integer decimalPlaces; Boolean omitGroupChar )</syntax>
     <returns>Text</returns>
     <constraints>None</constraints>
     <semantics>Text is the incoming string or number to format, decimalPlaces is the number of decimal places to use.  If decimalPlaces is not provided defaults to 3. omitGroupChar indicates if the grouping character (for example ",") should be omitted from the result.  Defaults to false.</semantics>
@@ -461,7 +461,7 @@ NOT(ISTEXT(X))</semantics>
     <category>%Category.Text</category>
     <name>SEARCH</name>
     <description>Looks for a string of text within another (NOT case sensitive)</description>
-    <syntax>SEARCH( Text findText, Text text, Integer startPosition )</syntax>
+    <syntax>SEARCH( Text findText; Text text, Integer startPosition )</syntax>
     <returns>Text</returns>
     <constraints>startPosition > 0</constraints>
     <semantics>findText is the text to search for, text is the String to search in, startPosition is the integer position within the string to start searching</semantics>
@@ -475,7 +475,7 @@ NOT(ISTEXT(X))</semantics>
     <category>%Category.Text</category>
     <name>STRINGCOUNT</name>
     <description>Counts the occurrences of text in a string.</description>
-    <syntax>SEARCH( Text text, Text findText )</syntax>
+    <syntax>STRINGCOUNT( Text text; Text findText )</syntax>
     <returns>Text</returns>
     <constraints>None</constraints>
     <semantics>text is the String to search in, findText is the text to search for.</semantics>
@@ -489,7 +489,7 @@ NOT(ISTEXT(X))</semantics>
     <category>%Category.Text</category>
     <name>URLENCODE</name>
     <description>Applies URL-Encoding to a text given in the first parameter using the encoding specified in the second parameter. If no encoding is given, UTF-8 is assumed.</description>
-    <syntax>URLENCODE( Text text, Text encoding )</syntax>
+    <syntax>URLENCODE( Text text; Text encoding )</syntax>
     <returns>Text</returns>
     <constraints>Encoding must be a valid character set.</constraints>
     <semantics>text is the string to encode, encoding is the character set to use when encoding.</semantics>
@@ -903,12 +903,12 @@ Portable Contraints: The result of this function may change across locales. If s
     <category>%Category.Mathematical</category>
     <name>MOD</name>
     <description>Calculates the remainder of a division.</description>
-    <syntax>MOD( Number divisor, Number dividend )</syntax>
+    <syntax>MOD( Number divisor; Number dividend )</syntax>
     <returns>Integer</returns>
     <constraints>Dividend must not be 0</constraints>
     <semantics>Returns the remainder of divisor/dividend</semantics>
     <examples>
-      <example>   <expression>MOD(10,3)</expression>   <result>1</result>    <level>1</level>    <comment>3 goes into 10 three times with a remainder of 1</comment>    </example>
+      <example>   <expression>MOD(10;3)</expression>   <result>1</result>    <level>1</level>    <comment>3 goes into 10 three times with a remainder of 1</comment>    </example>
     </examples>
   </function>
 
@@ -944,7 +944,7 @@ Portable Contraints: The result of this function may change across locales. If s
     <category>%Category.Mathematical</category>
     <name>POWER</name>
     <description>Computes a number raised to the power by another number.</description>
-    <syntax>POWER( Number number, Number power )</syntax>
+    <syntax>POWER( Number number; Number power )</syntax>
     <returns>Number</returns>
     <constraints>None</constraints>
     <semantics>Returns number ^ power</semantics>
