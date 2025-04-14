@@ -192,8 +192,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
-  @SuppressWarnings( { "javaL194", "java:S3776", "java:S6541" } )
-  // this method contains code extracted from fileinput/text/TextFileCSVImportProgressDialog class
+  // This method contains code extracted from fileinput/text/TextFileCSVImportProgressDialog class
   // to get Fields data and Fields summary statistics
   private JSONObject populateMeta( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
     JSONObject response = new JSONObject();
@@ -555,7 +554,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return textFileInputFieldDTO;
   }
 
-  @SuppressWarnings( "java:S1149" ) // Logic to extract getField is moved from TextFileInputDialog to step class
+  // Logic to extract getField is moved from TextFileInputDialog to step class
   public Vector<TextFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
     Vector<TextFileInputFieldInterface> fields = new Vector<>();
 

@@ -1195,8 +1195,7 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
     return populateMeta( queryParams );
   }
 
-  @SuppressWarnings( { "javaL194", "java:S3776", "java:S6541" } )
-  // this method contains code extracted from textfileinput/TextFileCSVImportProgressDialog class
+  // This method contains code extracted from textfileinput/TextFileCSVImportProgressDialog class
   // to get Fields data and Fields summary statistics
   private JSONObject populateMeta( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
     JSONObject response = new JSONObject();
