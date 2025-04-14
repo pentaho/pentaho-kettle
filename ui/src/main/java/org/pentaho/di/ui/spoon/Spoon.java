@@ -90,8 +90,6 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.AddUndoPositionInterface;
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -105,6 +103,8 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.XmlExportHelper;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -205,10 +205,10 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjectsManagementInterface;
-import org.pentaho.di.shared.SharedObjectsIO.SharedObjectType;
 import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.shared.SharedObjectUtil.ComparedState;
+import org.pentaho.di.shared.SharedObjectsIO.SharedObjectType;
+import org.pentaho.di.shared.SharedObjectsManagementInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
@@ -226,6 +226,7 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.FileDialogOperation;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PrintSpool;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.auth.AuthProviderDialog;
@@ -291,6 +292,8 @@ import org.pentaho.di.ui.spoon.tree.TreeManager;
 import org.pentaho.di.ui.spoon.tree.TreePopupMenuProvider;
 import org.pentaho.di.ui.spoon.tree.extension.TreePaneExtension;
 import org.pentaho.di.ui.spoon.tree.extension.TreePaneManager;
+import org.pentaho.di.ui.spoon.tree.extension.UIExtension;
+import org.pentaho.di.ui.spoon.tree.extension.UIExtensionManager;
 import org.pentaho.di.ui.spoon.tree.provider.ClustersFolderProvider;
 import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 import org.pentaho.di.ui.spoon.tree.provider.PartitionsFolderProvider;
@@ -333,7 +336,6 @@ import org.w3c.dom.Node;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.DataOutputStream;
@@ -358,6 +360,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
@@ -369,7 +372,6 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.Objects;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -477,7 +479,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private Composite designTreeComposite;
   private TreeToolbar viewTreeToolbar;
   private TreeToolbar designTreeToolbar;
-
+  private Composite treeHeaderComposite;
   // THE HANDLERS
   public SpoonDelegates delegates = new SpoonDelegates( this );
 
@@ -638,6 +640,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public Text selectionFilter;
 
   private TreePaneManager viewTabPanes = new TreePaneManager();
+  private UIExtensionManager uiExtensionMgr = new UIExtensionManager();
 
   // licensing related property so that Revenera can properly identify execution is triggered by spoon
   private static final String EXECUTION_TYPE_PROP = "system-property.pentaho.execution.type";
@@ -2025,6 +2028,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     viewTabPanes.addPane( extension );
   }
 
+  // Add UI extension
+  public void registerUIExtension( UIExtension extension ) {
+    uiExtensionMgr.addUIExtension( extension );
+  }
+
+
   private Composite addViewTree( Composite parent ) {
     Composite viewComposite = new Composite( parent, SWT.NONE );
     viewComposite.setLayout( new FormLayout()  );
@@ -2176,13 +2185,25 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     mainComposite = new Composite( sashform, SWT.BORDER );
     mainComposite.setLayout( new FormLayout() );
     props.setLook( mainComposite, Props.WIDGET_STYLE_TOOLBAR );
+    // Composite for adding UI controls on the top of the tree
+    treeHeaderComposite = new Composite( mainComposite, SWT.NONE );
+    treeHeaderComposite.setLayout( new FormLayout() );
 
+    treeHeaderComposite.setLayoutData( new FormDataBuilder().left( 0,  Const.MARGIN ).right( 100, - Const.MARGIN ).top( 0, Const.MARGIN ).result() );
+    // Add any UI extensions added by plugins
+    try{
+      uiExtensionMgr.buildUIExtensions( treeHeaderComposite );
+    } catch( KettleException e ) {
+      // should never happen here
+      log.logError( e.getLocalizedMessage(), e );
+    }
     tabFolder = new CTabFolder( mainComposite, SWT.HORIZONTAL );
     props.setLook( tabFolder, Props.WIDGET_STYLE_TAB );
 
     FormData fdTab = new FormData();
     fdTab.left = new FormAttachment( 0 );
-    fdTab.top = new FormAttachment( mainComposite, 0 );
+    fdTab.top = new FormAttachment( treeHeaderComposite, 0 );
+
     fdTab.right = new FormAttachment( 100 );
     fdTab.bottom = new FormAttachment( 100 );
     tabFolder.setLayoutData( fdTab );
@@ -9955,4 +9976,5 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     enableMenuItem( "edit-copy-steps" );
     enableMenuItem( "edit-paste-steps" );
   }
+
 }
