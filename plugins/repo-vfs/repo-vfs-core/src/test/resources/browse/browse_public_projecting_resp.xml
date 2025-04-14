@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<repositoryFileTreeDto>
+	<children>
+		<file>
+			<aclNode>false</aclNode>
+			<createdDate>1744640451401</createdDate>
+			<deletedDate></deletedDate>
+			<fileSize>-1</fileSize>
+			<folder>true</folder>
+			<hidden>false</hidden>
+			<id>37c81de7-a430-4efd-a4ee-d95404867237</id>
+			<lastModifiedDate></lastModifiedDate>
+			<locale>en</locale>
+			<lockDate></lockDate>
+			<locked>false</locked>
+			<name>something</name>
+			<notSchedulable>false</notSchedulable>
+			<ownerType>-1</ownerType>
+			<path>/public/projecting/something</path>
+			<title>something</title>
+			<versionCommentEnabled>false</versionCommentEnabled>
+			<versioned>false</versioned>
+			<versioningEnabled>false</versioningEnabled>
+		</file>
+	</children>
+	<file>
+		<aclNode>false</aclNode>
+		<createdDate>1744640443012</createdDate>
+		<deletedDate></deletedDate>
+		<fileSize>-1</fileSize>
+		<folder>true</folder>
+		<hidden>false</hidden>
+		<id>d61ccf41-c998-4af9-8213-7b8409cad6d3</id>
+		<lastModifiedDate></lastModifiedDate>
+		<locale>en</locale>
+		<lockDate></lockDate>
+		<locked>false</locked>
+		<name>projecting</name>
+		<notSchedulable>false</notSchedulable>
+		<ownerType>-1</ownerType>
+		<path>/public/projecting</path>
+		<title>projecting</title>
+		<versionCommentEnabled>false</versionCommentEnabled>
+		<versioned>false</versioned>
+		<versioningEnabled>false</versioningEnabled>
+	</file>
+</repositoryFileTreeDto>
