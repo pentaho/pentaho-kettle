@@ -18,8 +18,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.impl.CheckedMetaStoreSupplier;
+import org.pentaho.di.core.runconfiguration.api.RunConfiguration;
+import org.pentaho.di.core.runconfiguration.impl.CheckedMetaStoreSupplier;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationExecutor;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationProvider;
 
 import static org.junit.Assert.assertEquals;
 

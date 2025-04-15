@@ -20,11 +20,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
+import org.pentaho.di.core.runconfiguration.impl.extension.RunConfigurationRunExtensionPoint;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
-import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
+import org.pentaho.di.core.runconfiguration.api.RunConfiguration;
+import org.pentaho.di.core.runconfiguration.api.RunConfigurationExecutor;
+import org.pentaho.di.core.runconfiguration.impl.RunConfigurationManager;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 
 import static org.junit.Assert.fail;

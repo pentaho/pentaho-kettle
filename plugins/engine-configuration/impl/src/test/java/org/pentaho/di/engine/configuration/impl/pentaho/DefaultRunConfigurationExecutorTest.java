@@ -20,6 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfiguration;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationExecutor;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.repository.Repository;
@@ -31,7 +33,6 @@ import org.pentaho.di.ui.spoon.Spoon;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by bmorrise on 3/22/17.

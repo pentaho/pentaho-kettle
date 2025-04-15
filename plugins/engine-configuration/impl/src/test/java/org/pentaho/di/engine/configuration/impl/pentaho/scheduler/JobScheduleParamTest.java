@@ -15,6 +15,7 @@ package org.pentaho.di.engine.configuration.impl.pentaho.scheduler;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.scheduler.JobScheduleParam;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;

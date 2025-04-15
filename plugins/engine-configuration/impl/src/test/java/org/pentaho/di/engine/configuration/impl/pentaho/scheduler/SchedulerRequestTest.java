@@ -17,6 +17,7 @@ import org.apache.http.entity.StringEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.scheduler.SchedulerRequest;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.job.JobMeta;

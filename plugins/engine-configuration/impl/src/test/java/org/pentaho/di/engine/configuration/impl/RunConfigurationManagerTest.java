@@ -18,11 +18,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationExecutor;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.di.core.runconfiguration.api.RunConfiguration;
+import org.pentaho.di.core.runconfiguration.api.RunConfigurationProvider;
+import org.pentaho.di.core.runconfiguration.impl.CheckedMetaStoreSupplier;
+import org.pentaho.di.core.runconfiguration.impl.RunConfigurationManager;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfiguration;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationExecutor;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.util.ArrayList;

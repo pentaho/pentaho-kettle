@@ -4,8 +4,10 @@ import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProviderFactory;
+import org.pentaho.di.core.runconfiguration.api.RunConfigurationProvider;
+import org.pentaho.di.core.runconfiguration.impl.CheckedMetaStoreSupplier;
+import org.pentaho.di.core.runconfiguration.impl.RunConfigurationProviderFactoryManager;
+import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationProviderFactory;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.util.List;
