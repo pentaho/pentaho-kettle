@@ -11,7 +11,7 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.ui.core.runconfiguration;
+package org.pentaho.di.ui.core.runconfiguration.impl.pentaho;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -33,6 +33,8 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.runconfiguration.api.IRunConfigurationDialog;
+import org.pentaho.di.ui.core.runconfiguration.api.RunConfigurationUI;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.function.Supplier;

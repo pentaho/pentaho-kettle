@@ -1,6 +1,4 @@
-package org.pentaho.di.core.runconfiguration.impl;
-
-import org.pentaho.di.core.runconfiguration.api.RunConfigurationProvider;
+package org.pentaho.di.core.runconfiguration.api;
 
 public interface RunConfigurationProviderFactory {
   RunConfigurationProvider getProvider( CheckedMetaStoreSupplier metaStoreSupplier );

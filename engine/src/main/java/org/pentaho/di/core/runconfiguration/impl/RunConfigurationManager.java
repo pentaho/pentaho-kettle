@@ -15,6 +15,7 @@ package org.pentaho.di.core.runconfiguration.impl;
 
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.runconfiguration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.runconfiguration.api.RunConfiguration;

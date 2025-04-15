@@ -11,11 +11,16 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.ui.core.runconfiguration;
+package org.pentaho.di.core.runconfiguration.api;
 
-/**
- * Created by bmorrise on 8/22/17.
- */
-public interface RunConfigurationUI {
-  void attach( IRunConfigurationDialog runConfigurationDialog );
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.api.IMetaStore;
+
+
+
+@FunctionalInterface
+public interface CheckedMetaStoreSupplier {
+
+  IMetaStore get() throws MetaStoreException;
+
 }

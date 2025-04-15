@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.runconfiguration.api.RunConfiguration;
 import org.pentaho.di.core.runconfiguration.api.RunConfigurationProvider;
-import org.pentaho.di.core.runconfiguration.impl.CheckedMetaStoreSupplier;
+import org.pentaho.di.core.runconfiguration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.core.runconfiguration.impl.RunConfigurationManager;
 import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationExecutor;

@@ -31,10 +31,10 @@ import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfiguration
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
-import org.pentaho.di.ui.core.runconfiguration.RunConfigurationDelegate;
-import org.pentaho.di.ui.core.runconfiguration.RunConfigurationDeleteDialog;
-import org.pentaho.di.ui.core.runconfiguration.RunConfigurationDialog;
-import org.pentaho.di.ui.core.runconfiguration.RunConfigurationFolderProvider;
+import org.pentaho.di.ui.core.runconfiguration.impl.RunConfigurationDelegate;
+import org.pentaho.di.ui.core.runconfiguration.impl.RunConfigurationDeleteDialog;
+import org.pentaho.di.ui.core.runconfiguration.impl.RunConfigurationDialog;
+import org.pentaho.di.ui.core.runconfiguration.impl.RunConfigurationFolderProvider;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.ArrayList;

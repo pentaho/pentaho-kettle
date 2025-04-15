@@ -11,7 +11,7 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.ui.core.runconfiguration;
+package org.pentaho.di.ui.core.runconfiguration.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
@@ -43,6 +43,7 @@ import org.pentaho.di.core.runconfiguration.api.RunConfigurationService;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.runconfiguration.api.IRunConfigurationDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
@@ -267,7 +268,7 @@ public class RunConfigurationDialog extends Dialog
     }
 
     clearOptions();
-    runConfiguration.getUI().attach( this );
+    RunConfigurationUIFactoryManager.getInstance().generateUI( runConfiguration ).attach( this );
     gOptions.layout();
     shell.pack();
 

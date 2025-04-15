@@ -13,6 +13,7 @@
 
 package org.pentaho.di.core.runconfiguration.impl;
 
+import org.pentaho.di.core.runconfiguration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.core.runconfiguration.api.RunConfiguration;
 import org.pentaho.di.core.runconfiguration.api.RunConfigurationFactory;
 import org.pentaho.metastore.api.IMetaStore;

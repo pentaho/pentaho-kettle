@@ -11,7 +11,7 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.ui.core.runconfiguration;
+package org.pentaho.di.ui.core.runconfiguration.impl;
 
 import org.pentaho.di.core.annotations.LifecyclePlugin;
 import org.pentaho.di.core.lifecycle.LifeEventHandler;

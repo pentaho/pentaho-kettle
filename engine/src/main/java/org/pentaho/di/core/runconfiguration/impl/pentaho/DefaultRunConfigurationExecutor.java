@@ -15,6 +15,7 @@ package org.pentaho.di.core.runconfiguration.impl.pentaho;
 import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.runconfiguration.api.RunConfiguration;
@@ -27,7 +28,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.DefaultTransSupplier;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.spoon.Spoon;
+//import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  * Created by bmorrise on 3/16/17.
@@ -120,9 +121,9 @@ public class DefaultRunConfigurationExecutor implements RunConfigurationExecutor
   private void sendNow( Repository repository, AbstractMeta meta ) {
     try {
       if ( meta instanceof TransMeta ) {
-        Spoon.getInstance().getActiveTransGraph().handleTransMetaChanges( (TransMeta) meta );
+        //Spoon.getInstance().getActiveTransGraph().handleTransMetaChanges( (TransMeta) meta );
       } else {
-        Spoon.getInstance().getActiveJobGraph().handleJobMetaChanges( (JobMeta) meta );
+        //Spoon.getInstance().getActiveJobGraph().handleJobMetaChanges( (JobMeta) meta );
       }
     } catch ( Exception e ) {
       // Ignore an exception if occurs

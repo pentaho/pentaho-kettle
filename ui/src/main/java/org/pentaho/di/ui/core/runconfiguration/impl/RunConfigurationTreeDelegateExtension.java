@@ -11,7 +11,7 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.ui.core.runconfiguration;
+package org.pentaho.di.ui.core.runconfiguration.impl;
 
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.runconfiguration.api.RunConfiguration;

@@ -11,7 +11,7 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.ui.core.runconfiguration;
+package org.pentaho.di.ui.core.runconfiguration.api;
 
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Group;

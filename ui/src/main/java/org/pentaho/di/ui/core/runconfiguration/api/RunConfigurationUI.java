@@ -11,16 +11,13 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.core.runconfiguration.impl;
+package org.pentaho.di.ui.core.runconfiguration.api;
 
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.di.ui.core.runconfiguration.api.IRunConfigurationDialog;
 
-
-
-@FunctionalInterface
-public interface CheckedMetaStoreSupplier {
-
-  IMetaStore get() throws MetaStoreException;
-
+/**
+ * Created by bmorrise on 8/22/17.
+ */
+public interface RunConfigurationUI {
+  void attach( IRunConfigurationDialog runConfigurationDialog );
 }

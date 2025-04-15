@@ -5,7 +5,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.pentaho.di.core.runconfiguration.api.RunConfigurationProvider;
-import org.pentaho.di.core.runconfiguration.impl.CheckedMetaStoreSupplier;
+import org.pentaho.di.core.runconfiguration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.core.runconfiguration.impl.RunConfigurationProviderFactoryManager;
 import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationProviderFactory;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;

@@ -12,11 +12,15 @@
 
 package org.pentaho.di.core.runconfiguration.impl;
 
+import org.pentaho.di.core.runconfiguration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.core.runconfiguration.api.RunConfigurationProvider;
+import org.pentaho.di.core.runconfiguration.api.RunConfigurationProviderFactory;
 import org.pentaho.di.core.runconfiguration.impl.pentaho.DefaultRunConfigurationProviderFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The RunConfigurationProviderFactoryManager is used to manage the registration of RunConfiguration types and
@@ -31,7 +35,7 @@ import java.util.List;
 public class RunConfigurationProviderFactoryManager {
   private static RunConfigurationProviderFactoryManager instance;
 
-  private List<RunConfigurationProviderFactory> factories;
+  private Set<RunConfigurationProviderFactory> factories;
 
   public static RunConfigurationProviderFactoryManager getInstance() {
     if ( null == instance ) {
@@ -41,7 +45,7 @@ public class RunConfigurationProviderFactoryManager {
   }
 
   public RunConfigurationProviderFactoryManager() {
-    factories = new ArrayList<>();
+    factories = new HashSet<>();
     factories.add( new DefaultRunConfigurationProviderFactory() );
   }
 

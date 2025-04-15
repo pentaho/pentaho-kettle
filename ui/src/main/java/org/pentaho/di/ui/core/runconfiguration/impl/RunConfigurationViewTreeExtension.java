@@ -11,7 +11,7 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.ui.core.runconfiguration;
+package org.pentaho.di.ui.core.runconfiguration.impl;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
