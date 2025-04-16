@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -127,12 +128,17 @@ public class SchedulerRequest {
   }
 
   StringEntity buildSchedulerRequestEntity( AbstractMeta meta )
-          throws UnsupportedEncodingException, UnknownParamException {
+          throws UnsupportedEncodingException, KettleException {
 
     String filename = getFullPath( meta );
 
     JobScheduleRequest jobScheduleRequest = new JobScheduleRequest();
     jobScheduleRequest.setInputFile( filename );
+
+    // BACKLOG-43739
+    // Set the output file path for the job schedule request.
+    // This specifies the directory where the output file will be saved ( current session user home directory).
+    jobScheduleRequest.setOutputFile( meta.getRepository().getUserHomeDirectory().getPath() );
 
     // Set the log level
     if ( meta.getLogLevel() != null ) {
