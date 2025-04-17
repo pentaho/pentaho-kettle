@@ -11,15 +11,17 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.engine.configuration.impl;
+package org.pentaho.di.engine.configuration.api;
 
-import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.RunConfigurationFactory;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.persist.MetaStoreFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,10 +32,22 @@ import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
  */
 public abstract class MetaStoreRunConfigurationFactory implements RunConfigurationFactory {
 
+  Logger logger = LoggerFactory.getLogger( MetaStoreRunConfigurationFactory.class );
+
   protected CheckedMetaStoreSupplier metastoreSupplier;
 
   public MetaStoreRunConfigurationFactory( CheckedMetaStoreSupplier metastoreSupplier ) {
-    this.metastoreSupplier = metastoreSupplier;
+    if( metastoreSupplier == null){
+      try {
+        Collection<MetastoreLocator> metastoreLocators = PluginServiceLoader.loadServices( MetastoreLocator.class );
+        MetastoreLocator metastoreLocator = metastoreLocators.stream().findFirst().get();
+        this.metastoreSupplier = metastoreLocator::getMetastore;
+      } catch ( Exception e ) {
+        logger.warn( "Error getting MetastoreLocator", e );
+      }
+    } else {
+      this.metastoreSupplier = metastoreSupplier;
+    }
   }
 
   private <T extends RunConfiguration> MetaStoreFactory<T> getMetastoreFactory( Class<T> clazz,
