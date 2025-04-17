@@ -384,6 +384,8 @@ public class TransMeta extends AbstractMeta
   /** The transformation type. */
   protected TransformationType transformationType;
 
+  protected TransSupplier transSupplier;
+
   // //////////////////////////////////////////////////////////////////////////
 
   /** A list of localized strings corresponding to string descriptions of the undo/redo actions. */
@@ -698,6 +700,14 @@ public class TransMeta extends AbstractMeta
     transformationType = TransformationType.Normal;
 
     log = LogChannel.GENERAL;
+  }
+
+  public TransSupplier getTransSupplier() {
+    return transSupplier;
+  }
+
+  public void setTransSupplier( TransSupplier transSupplier ) {
+    this.transSupplier = transSupplier;
   }
 
   /**

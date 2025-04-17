@@ -17,46 +17,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-core</artifactId>
-      <version>${pdi.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-engine</artifactId>
-      <version>${pdi.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-ui-swt</artifactId>
-      <version>${pdi.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>metastore</artifactId>
-      <version>${pdi.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>pdi-engine-api</artifactId>
-      <version>${pdi.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>pentaho-metastore-locator-api</artifactId>
+      <artifactId>pdi-engine-configuration-api</artifactId>
       <version>${pdi.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>${mockito.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>

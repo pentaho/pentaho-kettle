@@ -406,14 +406,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     this.bowl = bowl;
   }
 
-  public TransSupplier getTransSupplier() {
-    return transSupplier;
-  }
-
-  public void setTransSupplier( TransSupplier transSupplier ) {
-    this.transSupplier = transSupplier;
-  }
-
   /**
    * Gets the repository.
    *

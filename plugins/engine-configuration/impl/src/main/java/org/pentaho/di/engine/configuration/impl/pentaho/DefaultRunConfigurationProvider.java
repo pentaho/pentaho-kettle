@@ -13,26 +13,19 @@
 
 package org.pentaho.di.engine.configuration.impl.pentaho;
 
-import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
-import org.pentaho.di.engine.configuration.impl.CheckedMetaStoreSupplier;
-import org.pentaho.di.engine.configuration.impl.MetaStoreRunConfigurationFactory;
+import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
+import org.pentaho.di.engine.configuration.api.MetaStoreRunConfigurationFactory;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.locator.api.MetastoreLocator;
 import org.pentaho.metastore.persist.MetaStoreFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,7 +35,6 @@ import java.util.List;
 public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFactory
   implements RunConfigurationProvider {
 
-  private Logger logger = LoggerFactory.getLogger( DefaultRunConfigurationProvider.class );
   public static final String DEFAULT_CONFIG_NAME = "Pentaho local";
   private static String TYPE = "Pentaho";
   private List<String> supported = Arrays.asList( TransMeta.XML_TAG, JobMeta.XML_TAG );
@@ -55,18 +47,6 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
     defaultRunConfiguration.setName( DEFAULT_CONFIG_NAME );
     defaultRunConfiguration.setReadOnly( true );
     defaultRunConfiguration.setLocal( true );
-  }
-
-  public DefaultRunConfigurationProvider() {
-    super( null );
-    try {
-      Collection<MetastoreLocator> metastoreLocators = PluginServiceLoader.loadServices( MetastoreLocator.class );
-      MetastoreLocator metastoreLocator = metastoreLocators.stream().findFirst().get();
-      super.setMetastoreSupplier( () -> metastoreLocator.getMetastore() );
-    } catch ( Exception e ) {
-      logger.warn( "Error getting MetastoreLocator", e );
-    }
-    this.defaultRunConfigurationExecutor = DefaultRunConfigurationExecutor.getInstance();
   }
 
   public DefaultRunConfigurationProvider( CheckedMetaStoreSupplier metastoreSupplier ) {

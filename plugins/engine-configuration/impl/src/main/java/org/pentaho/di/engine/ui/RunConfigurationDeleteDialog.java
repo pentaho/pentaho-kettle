@@ -86,7 +86,7 @@ public class RunConfigurationDeleteDialog extends Dialog {
 
     Text wlMessage = new Text( wcMessage, SWT.MULTI | SWT.WRAP );
     props.setLook( wlMessage );
-    wlMessage.setText(  BaseMessages.getString( PKG, "RunConfigurationDeleteDialog.Label.Confirmation" ) );
+    wlMessage.setText( BaseMessages.getString( PKG, "RunConfigurationDeleteDialog.Label.Confirmation" ) );
     GridData gdlLocal = new GridData( GridData.FILL_HORIZONTAL );
     gdlLocal.widthHint = 300;
     wlMessage.setLayoutData( gdlLocal );

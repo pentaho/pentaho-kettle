@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>engine-configuration</artifactId>
@@ -17,10 +18,64 @@
 
   <properties>
     <pdi.version>10.3.0.0-SNAPSHOT</pdi.version>
+    <mockito.version>4.0.0</mockito.version>
   </properties>
 
   <modules>
+    <module>api</module>
     <module>impl</module>
     <module>assemblies</module>
   </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${pdi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-engine</artifactId>
+      <version>${pdi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-ui-swt</artifactId>
+      <version>${pdi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>metastore</artifactId>
+      <version>${pdi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pdi-engine-api</artifactId>
+      <version>${pdi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-metastore-locator-api</artifactId>
+      <version>${pdi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-inline</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
