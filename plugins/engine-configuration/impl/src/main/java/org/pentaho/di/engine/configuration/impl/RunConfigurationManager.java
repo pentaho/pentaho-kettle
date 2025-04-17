@@ -15,6 +15,7 @@ package org.pentaho.di.engine.configuration.impl;
 
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
@@ -23,7 +24,6 @@ import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationP
 
 import java.util.ArrayList;
 import java.util.Collections;
-
 import java.util.List;
 
 /**
@@ -31,8 +31,7 @@ import java.util.List;
  */
 public class RunConfigurationManager implements RunConfigurationService {
 
-  private RunConfigurationProvider defaultRunConfigurationProvider;
-  private List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
+  private List<RunConfigurationProvider> runConfigurationProviders;
   private static RunConfigurationManager instance;
 
   public static RunConfigurationManager getInstance() {
@@ -43,11 +42,10 @@ public class RunConfigurationManager implements RunConfigurationService {
   }
 
   public static RunConfigurationManager getInstance( Bowl bowl ) {
-
-    CheckedMetaStoreSupplier bowlSupplier = () -> bowl != null ? bowl.getMetastore() :
-        DefaultBowl.getInstance().getMetastore();
-    RunConfigurationProvider provider = new DefaultRunConfigurationProvider( bowlSupplier );
-    return  new RunConfigurationManager( Collections.singletonList( provider ) );
+    CheckedMetaStoreSupplier bowlSupplier =
+      () -> bowl != null ? bowl.getMetastore() : DefaultBowl.getInstance().getMetastore();
+    return new RunConfigurationManager(
+      RunConfigurationProviderFactoryManagerImpl.getInstance().generateProviders( bowlSupplier ) );
   }
 
   public RunConfigurationManager( List<RunConfigurationProvider> runConfigurationProviders ) {
@@ -55,9 +53,14 @@ public class RunConfigurationManager implements RunConfigurationService {
   }
 
   private RunConfigurationManager() {
-    this.defaultRunConfigurationProvider = new DefaultRunConfigurationProvider();
+    runConfigurationProviders = RunConfigurationProviderFactoryManagerImpl.getInstance().generateProviders();
   }
 
+  /**
+   * Load the RunConfigurations present in each RunConfigurationProvider
+   *
+   * @return
+   */
   @Override public List<RunConfiguration> load() {
     List<RunConfiguration> runConfigurations = new ArrayList<>();
     for ( RunConfigurationProvider runConfigurationProvider : getRunConfigurationProviders() ) {
@@ -84,7 +87,8 @@ public class RunConfigurationManager implements RunConfigurationService {
 
   @Override
   public boolean save( RunConfiguration runConfiguration ) {
-    RunConfigurationProvider runConfigurationProvider = runConfiguration != null ? getProvider( runConfiguration.getType() ) : null;
+    RunConfigurationProvider runConfigurationProvider =
+      runConfiguration != null ? getProvider( runConfiguration.getType() ) : null;
     return runConfigurationProvider != null && runConfigurationProvider.save( runConfiguration );
   }
 
@@ -169,9 +173,6 @@ public class RunConfigurationManager implements RunConfigurationService {
 
   public List<RunConfigurationProvider> getRunConfigurationProviders( String type ) {
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
-    if ( defaultRunConfigurationProvider != null ) {
-      runConfigurationProviders.add( defaultRunConfigurationProvider );
-    }
     for ( RunConfigurationProvider runConfigurationProvider : this.runConfigurationProviders ) {
       if ( runConfigurationProvider.isSupported( type ) ) {
         runConfigurationProviders.add( runConfigurationProvider );
@@ -182,19 +183,7 @@ public class RunConfigurationManager implements RunConfigurationService {
 
   public List<RunConfigurationProvider> getRunConfigurationProviders() {
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
-    if ( defaultRunConfigurationProvider != null ) {
-      runConfigurationProviders.add( defaultRunConfigurationProvider );
-    }
     runConfigurationProviders.addAll( this.runConfigurationProviders );
     return runConfigurationProviders;
-  }
-
-  public RunConfigurationProvider getDefaultRunConfigurationProvider() {
-    return defaultRunConfigurationProvider;
-  }
-
-  public void setDefaultRunConfigurationProvider(
-    RunConfigurationProvider defaultRunConfigurationProvider ) {
-    this.defaultRunConfigurationProvider = defaultRunConfigurationProvider;
   }
 }
