@@ -75,7 +75,8 @@ public class RunConfigurationDelegate {
           if ( jet.getRunConfiguration() != null ) {
             if ( jet.getRunConfiguration().equals( key ) ) {
               try {
-                ExtensionPointHandler.callExtensionPoint( job.getLogChannel(), KettleExtensionPoint.JobEntryTransSave.id,
+                ExtensionPointHandler.callExtensionPoint( job.getLogChannel(),
+                  KettleExtensionPoint.JobEntryTransSave.id,
                   new Object[] { job, runConfig.getName() } );
               } catch ( KettleException e ) {
                 spoonSupplier.get().getLog().logBasic( "Unable to set run configuration in job " + job.getName() );
