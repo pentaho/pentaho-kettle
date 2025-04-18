@@ -15,7 +15,6 @@ package org.pentaho.di.shared;
 
 import org.pentaho.di.core.exception.KettleException;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Node;

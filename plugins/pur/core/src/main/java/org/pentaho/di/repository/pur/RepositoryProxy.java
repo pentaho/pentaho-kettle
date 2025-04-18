@@ -45,7 +45,6 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.pur.model.ObjectAcl;
 import org.pentaho.di.repository.pur.model.RepositoryLock;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.repository.pur.services.ILockService;
 import org.pentaho.metastore.api.IMetaStore;

@@ -72,10 +72,8 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
-import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
+
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.ComboVar;

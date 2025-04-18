@@ -31,7 +31,6 @@ import org.pentaho.di.ui.spoon.Spoon;
 import java.util.function.Supplier;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.swt.SWT;
 

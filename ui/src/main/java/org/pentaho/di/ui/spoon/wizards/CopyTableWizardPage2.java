@@ -122,7 +122,7 @@ public class CopyTableWizardPage2 extends WizardPage {
       input = null;
       return false;
     } finally {
-      sourceDb.disconnect();
+      sourceDb.close();
     }
     return true;
   }

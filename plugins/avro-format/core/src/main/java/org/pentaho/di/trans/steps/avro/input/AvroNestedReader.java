@@ -26,7 +26,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.avro.AvroSpec;
 import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
-import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
 
 import com.fasterxml.jackson.databind.node.NullNode;
 

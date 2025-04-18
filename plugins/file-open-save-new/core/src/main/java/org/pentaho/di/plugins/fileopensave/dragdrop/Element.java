@@ -102,7 +102,7 @@ public class Element {
     entityType = ( (Entity) genericObject ).getEntityType();
     if ( entityType == EntityType.TREE ) {
       //Tree's have no parent
-      Tree tree = (Tree) genericObject;
+      Tree<?> tree = (Tree<?>) genericObject;
       name = tree.getName();
       path = ""; //No path for these, they are all attached to root
       provider = tree.getProvider();

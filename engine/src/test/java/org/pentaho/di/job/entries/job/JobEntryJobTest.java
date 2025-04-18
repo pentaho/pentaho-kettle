@@ -15,7 +15,6 @@ package org.pentaho.di.job.entries.job;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -41,7 +40,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;

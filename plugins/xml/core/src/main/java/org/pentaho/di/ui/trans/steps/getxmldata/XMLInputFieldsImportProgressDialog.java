@@ -142,7 +142,6 @@ public class XMLInputFieldsImportProgressDialog {
     return fields;
   }
 
-  @SuppressWarnings( "unchecked" )
   private RowMetaAndData[] doScan( Bowl bowl, IProgressMonitor monitor ) throws Exception {
     monitor.beginTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ScanningFile",
         filename ), 1 );
@@ -231,7 +230,6 @@ public class XMLInputFieldsImportProgressDialog {
 
   }
 
-  @SuppressWarnings( "unchecked" )
   private void setNodeField( Node node, IProgressMonitor monitor ) {
     Element e = (Element) node;
     // get all attributes

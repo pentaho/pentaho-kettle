@@ -156,7 +156,7 @@ public class TextFileInputTextCSVImportProgressDialogTest {
 
   private void fileContentTest( String fileContent, BaseFileField[] baseFileFields, int fileFormat ) throws Exception {
     initiateVariables( fileContent, baseFileFields, fileFormat );
-    String result = textFileCSVImportProgressDialog.doScan( monitor );
+    textFileCSVImportProgressDialog.doScan( monitor );
 
     assertEquals( baseFileFields[0].getName(), ValueMetaFactory.getValueMetaName( meta.getInputFields()[0].getType() ) );
     assertEquals( baseFileFields[1].getName(), ValueMetaFactory.getValueMetaName( meta.getInputFields()[1].getType() ) );

@@ -316,7 +316,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
       db.connect();
       db.truncateTable( this.meta.getTargetTable().getValue() );
       db.commit();
-      db.disconnect();
+      db.close();
     }
     startFastLoad();
 

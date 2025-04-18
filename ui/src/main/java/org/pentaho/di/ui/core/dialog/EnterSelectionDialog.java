@@ -13,7 +13,6 @@
 
 package org.pentaho.di.ui.core.dialog;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,8 +47,6 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.delegates.SpoonDBDelegate;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 

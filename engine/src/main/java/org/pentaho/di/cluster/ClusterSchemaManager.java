@@ -19,7 +19,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.shared.BaseSharedObjectsManager;
 
-import java.util.List;
 import org.w3c.dom.Node;
 
 /**

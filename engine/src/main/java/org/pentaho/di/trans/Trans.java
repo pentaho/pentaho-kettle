@@ -54,7 +54,6 @@ import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.ConnectionPoolUtil;
 import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
@@ -2330,7 +2329,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ErrorConnectingToDatabase",
                 "" + transMeta.getMaxDateConnection() ), e );
             } finally {
-              maxdb.disconnect();
+              maxdb.close();
             }
           } else {
             throw new KettleTransException( BaseMessages.getString( PKG,
@@ -2394,7 +2393,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ErrorInDatabase", "" + td
                   .getDatabase() ), e );
               } finally {
-                depdb.disconnect();
+                depdb.close();
               }
             } else {
               throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ConnectionCouldNotBeFound",
@@ -2755,7 +2754,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     if ( !db.isAutoCommit() ) {
       db.commit( true );
     }
-    db.disconnect();
+    db.close();
   }
 
   /**
@@ -2889,7 +2888,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           transMeta.getTransLogTable().getActualTableName() ), e );
       } finally {
         if ( intervalInSeconds <= 0 || ( status.equals( LogStatus.END ) || status.equals( LogStatus.STOP ) ) ) {
-          ldb.disconnect();
+          ldb.close();
           transLogTableDatabaseConnection = null; // disconnected
         }
       }
@@ -2961,7 +2960,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         "Trans.Exception.ErrorWritingStepPerformanceLogRecordToTable" ), e );
     } finally {
       if ( ldb != null ) {
-        ldb.disconnect();
+        ldb.close();
       }
     }
 

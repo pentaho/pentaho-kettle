@@ -15,7 +15,6 @@ package org.pentaho.di.core.bowl;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -33,7 +32,7 @@ import java.util.function.Supplier;
  *
  */
 public class DefaultBowl extends BaseBowl {
-  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
 
   private static final DefaultBowl INSTANCE = new DefaultBowl();
 

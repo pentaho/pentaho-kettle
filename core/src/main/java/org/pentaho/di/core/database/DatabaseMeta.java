@@ -15,11 +15,10 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -33,6 +32,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.ExecutorUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -2646,7 +2646,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    *          The name of the database connection
    * @return The database object if one was found, null otherwise.
    */
-  public static final DatabaseMeta findDatabase( List<? extends SharedObjectInterface> databases, String dbname ) {
+  public static final DatabaseMeta findDatabase( List<? extends SharedObjectInterface<?>> databases, String dbname ) {
     if ( databases == null || dbname == null ) {
       return null;
     }

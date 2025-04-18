@@ -66,7 +66,7 @@ public class JobEntriesFolderProvider extends AutomaticTreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return JobEntryCopy.class;
   }
 }

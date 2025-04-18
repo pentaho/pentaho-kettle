@@ -23,7 +23,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.logging.JobLogTable;

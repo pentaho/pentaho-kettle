@@ -378,7 +378,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String dtype;
       String csize;
@@ -743,7 +743,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingConnectionError" );
@@ -782,7 +782,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         logError( BaseMessages.getString( PKG, "DatabaseLookupMeta.ERROR0004.ErrorGettingTableFields" )
             + dbe.getMessage() );
       } finally {
-        db.disconnect();
+        db.close();
       }
     }
     return fields;

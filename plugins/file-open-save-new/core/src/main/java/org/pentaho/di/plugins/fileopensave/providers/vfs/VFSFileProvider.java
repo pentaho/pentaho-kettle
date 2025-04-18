@@ -34,7 +34,6 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
-import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileNotFoundException;
@@ -139,7 +138,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
    * @return Unfiltered Tree
    */
   @Override
-  public Tree getTree( Bowl bowl ) {
+  public VFSTree getTree( Bowl bowl ) {
     return getTree( bowl, new ArrayList<>() );
   }
 

@@ -1032,7 +1032,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         if ( !ldb.isAutoCommit() ) {
           ldb.commitLog( true, jobMeta.getJobLogTable() );
         }
-        ldb.disconnect();
+        ldb.close();
 
         // If we need to do periodic logging, make sure to install a timer for
         // this...
@@ -1084,7 +1084,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         throw new KettleJobException( BaseMessages.getString( PKG, "Job.Log.UnableToProcessLoggingStart", ""
             + tableName ), dbe );
       } finally {
-        ldb.disconnect();
+        ldb.close();
       }
     }
 
@@ -1198,7 +1198,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if ( !ldb.isAutoCommit() ) {
         ldb.commitLog( true, jobLogTable );
       }
-      ldb.disconnect();
+      ldb.close();
     }
   }
 
@@ -1244,7 +1244,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if ( !db.isAutoCommit() ) {
         db.commit( true );
       }
-      db.disconnect();
+      db.close();
     }
   }
 
@@ -1275,7 +1275,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if ( !db.isAutoCommit() ) {
         db.commitLog( true, jobEntryLogTable );
       }
-      db.disconnect();
+      db.close();
     }
   }
 
@@ -1704,24 +1704,27 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if ( executionConfiguration.isPassingExport() ) {
         // First export the job... slaveServer.getVariable("MASTER_HOST")
         //
-        FileObject tempFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
-            .createTempFile( "jobExport", ".zip", System.getProperty( "java.io.tmpdir" ), jobMeta );
+        try ( FileObject tempFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
+            .createTempFile( "jobExport", ".zip", System.getProperty( "java.io.tmpdir" ), jobMeta ) ) {
+            // Use tempFile within this block
+        
 
-        TopLevelResource topLevelResource =
-            ResourceUtil.serializeResourceExportInterface( jobMeta.getBowl(), null, tempFile.getName().toString(),
+          TopLevelResource topLevelResource =
+              ResourceUtil.serializeResourceExportInterface( jobMeta.getBowl(), null, tempFile.getName().toString(),
                 jobMeta, jobMeta, repository, metaStore, executionConfiguration.getXML(),
-                CONFIGURATION_IN_EXPORT_FILENAME );
+                 CONFIGURATION_IN_EXPORT_FILENAME );
 
-        // Send the zip file over to the slave server...
-        String result =
-            slaveServer.sendExport( topLevelResource.getArchiveName(), RegisterPackageServlet.TYPE_JOB, topLevelResource
-                .getBaseResourceName() );
-        WebResult webResult = WebResult.fromXMLString( result );
-        if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error passing the exported job to the remote server: " + Const.CR
-              + webResult.getMessage() );
+          // Send the zip file over to the slave server...
+          String result =
+              slaveServer.sendExport( topLevelResource.getArchiveName(), RegisterPackageServlet.TYPE_JOB, topLevelResource
+                  .getBaseResourceName() );
+          WebResult webResult = WebResult.fromXMLString( result );
+          if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
+            throw new KettleException( "There was an error passing the exported job to the remote server: " + Const.CR
+                + webResult.getMessage() );
+          }
+          carteObjectId = webResult.getId();
         }
-        carteObjectId = webResult.getId();
       } else {
         String xml = new JobConfiguration( jobMeta, executionConfiguration ).getXML();
 

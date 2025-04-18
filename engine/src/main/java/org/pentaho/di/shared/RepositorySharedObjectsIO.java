@@ -52,7 +52,7 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
   @Override
   public Map<String, Node> getSharedObjects( String type ) throws KettleException {
     SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
-    List<? extends SharedObjectInterface> objects = null;
+    List<? extends SharedObjectInterface<?>> objects = null;
     if ( repository instanceof RepositoryExtended ) {
       // use the methods that support caching
       RepositoryExtended extended = (RepositoryExtended) repository;
@@ -80,7 +80,7 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
             break;
           case PARTITIONSCHEMA:
             ObjectId[] psids = repository.getPartitionSchemaIDs( false );
-            List<PartitionSchema> pss = new ArrayList<PartitionSchema>();
+            List<PartitionSchema> pss = new ArrayList<>();
             if ( psids != null ) {
               for ( ObjectId id : psids ) {
                 pss.add( repository.loadPartitionSchema( id, null ) );
@@ -90,7 +90,7 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
             break;
           case CLUSTERSCHEMA:
             ObjectId[] csids = repository.getClusterIDs( false );
-            List<ClusterSchema> css = new ArrayList<ClusterSchema>();
+            List<ClusterSchema> css = new ArrayList<>();
             if ( csids != null ) {
               List<SlaveServer> sss = slaveServerSupplier.get();
               for ( ObjectId id : csids ) {
@@ -103,7 +103,7 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
     }
     if ( objects != null ) {
       Map<String, Node> result = new HashMap<>();
-      for ( SharedObjectInterface object : objects ) {
+      for ( SharedObjectInterface<?> object : objects ) {
         result.put( object.getName(), object.toNode() );
       }
       return result;

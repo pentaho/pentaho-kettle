@@ -12,9 +12,7 @@
 
 package org.pentaho.di.core.bowl;
 
-import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;

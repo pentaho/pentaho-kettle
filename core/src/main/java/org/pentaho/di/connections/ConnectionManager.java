@@ -208,16 +208,6 @@ public class ConnectionManager {
   }
 
   /**
-   * Construct a meta store factory for a specific class using the default meta store supplier
-   *
-   * @param clazz Type of meta store object on which the factory will operate
-   * @return Meta store factory for specified type
-   */
-  private <T extends ConnectionDetails> MetaStoreFactory<T> getMetaStoreFactory( Class<T> clazz ) {
-    return new MetaStoreFactory<>( clazz, metaStoreSupplier.get(), NAMESPACE );
-  }
-
-  /**
    * Construct a meta store factory for a specific class using the supplied meta store
    *
    * @param metaStore The meta store from which to operate
@@ -328,7 +318,6 @@ public class ConnectionManager {
    * @param connectionDetails The named connection details to save
    * @return A boolean signifying the success of the save operation
    */
-  @SuppressWarnings( "unchecked" )
   public <T extends ConnectionDetails> boolean save( IMetaStore metaStore, T connectionDetails ) {
     return save( metaStore, connectionDetails, true );
   }
@@ -371,6 +360,7 @@ public class ConnectionManager {
    * @param connectionDetails The named connection details to save
    * @return A boolean signifying the success of the save operation
    */
+  @SuppressWarnings("unchecked")
   public <T extends ConnectionDetails> boolean save( T connectionDetails ) {
     initialize();
     IMetaStore metaStore = metaStoreSupplier.get();
@@ -508,19 +498,6 @@ public class ConnectionManager {
       logger.error( "Error calling metastore getElementNames()", mse );
       return Collections.emptyList();
     }
-  }
-
-  /**
-   * Get the names of named connections by provider from default meta store
-   *
-   * @param provider A provider
-   * @return A list of named connection names
-   */
-  private List<String> loadNames( ConnectionProvider<? extends ConnectionDetails> provider ) {
-    if ( metaStoreSupplier == null || metaStoreSupplier.get() == null ) {
-      return Collections.emptyList();
-    }
-    return getNames( metaStoreSupplier.get(), provider );
   }
 
   /**

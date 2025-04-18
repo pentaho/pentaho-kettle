@@ -12,10 +12,8 @@
 
 package org.pentaho.di.repository.pur;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -30,7 +28,6 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
@@ -40,7 +37,6 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -54,7 +50,6 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.ui.repository.pur.services.IConnectionAclService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
-import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNodeRef;
 import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
@@ -819,11 +814,10 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     AttributesMapUtil.saveAttributesMap( rootNode, transMeta );
   }
 
-  @SuppressWarnings( "unchecked" )
   @Override
   @Deprecated // Shared Object reads should now go through a SharedObjectsIO
   public void loadSharedObjects( final RepositoryElementInterface element,
-      final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType )
+      final Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjectsByType )
     throws KettleException {
     // NO-OP
   }

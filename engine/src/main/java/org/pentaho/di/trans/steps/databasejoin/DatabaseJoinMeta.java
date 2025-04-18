@@ -314,7 +314,7 @@ public class DatabaseJoinMeta extends BaseDatabaseStepMeta implements StepMetaIn
           v.setOrigin( name );
         }
         row.addRowMeta( add );
-        db.disconnect();
+        db.close();
       } catch ( KettleDatabaseException dbe ) {
         throw new KettleStepException( BaseMessages.getString(
           PKG, "DatabaseJoinMeta.Exception.ErrorObtainingFields" ), dbe );
@@ -488,7 +488,7 @@ public class DatabaseJoinMeta extends BaseDatabaseStepMeta implements StepMetaIn
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "DatabaseJoinMeta.CheckResult.InvalidConnection" );
@@ -538,7 +538,7 @@ public class DatabaseJoinMeta extends BaseDatabaseStepMeta implements StepMetaIn
       } catch ( KettleDatabaseException dbe ) {
         logError( BaseMessages.getString( PKG, "DatabaseJoinMeta.Log.DatabaseErrorOccurred" ) + dbe.getMessage() );
       } finally {
-        db.disconnect();
+        db.close();
       }
     }
     return fields;

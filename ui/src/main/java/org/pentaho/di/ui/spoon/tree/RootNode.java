@@ -67,7 +67,7 @@ public class RootNode extends TreeNode {
     return null;
   }
 
-  public String getNameByType( Class clazz ) {
+  public String getNameByType( Class<?> clazz ) {
     TreeFolderProvider treeFolderProvider = treeFolderProviders.stream()
             .filter( treeFolderProvider1 -> treeFolderProvider1.getType().equals( clazz ) )
             .findFirst()

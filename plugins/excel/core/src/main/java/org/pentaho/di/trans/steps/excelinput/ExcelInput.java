@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
@@ -34,7 +33,6 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;

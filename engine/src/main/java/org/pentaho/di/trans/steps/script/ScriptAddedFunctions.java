@@ -515,7 +515,7 @@ public class ScriptAddedFunctions {
             }
             Object[][] resultArr = new Object[list.size()][];
             list.toArray( resultArr );
-            db.disconnect();
+            db.close();
             return resultArr;
           }
         } catch ( Exception er ) {

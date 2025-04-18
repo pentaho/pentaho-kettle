@@ -29,7 +29,6 @@ import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -203,7 +202,7 @@ public interface Repository {
    */
   public TransMeta loadTransformation( ObjectId id_transformation, String versionLabel ) throws KettleException;
 
-  @Deprecated
+  @Deprecated( since = "10.3" )
   public void readTransSharedObjects( TransMeta transMeta ) throws KettleException;
 
   /**
@@ -279,7 +278,7 @@ public interface Repository {
    */
   public JobMeta loadJob( ObjectId id_job, String versionLabel ) throws KettleException;
 
-  @Deprecated
+  @Deprecated( since = "10.3" )
   public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException;
 
   /**

@@ -13,13 +13,10 @@
 package org.pentaho.di.repository.pur;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
@@ -30,7 +27,6 @@ import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.missing.MissingEntry;
@@ -45,10 +41,8 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.ui.repository.pur.services.IConnectionAclService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
-import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNodeRef;
 
@@ -178,7 +172,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
   @Override
   @Deprecated // Shared Object reads should now go through a SharedObjectsIO
   public void loadSharedObjects( final RepositoryElementInterface element,
-      final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType )
+      final Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjectsByType )
     throws KettleException {
     // NO-OP
   }

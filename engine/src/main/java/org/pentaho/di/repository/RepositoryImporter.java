@@ -349,9 +349,9 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   }
 
   @SuppressWarnings( "unchecked" )
-  protected <T extends SharedObjectInterface> List<T> getSharedObjects( Class<T> clazz ) {
+  protected <T extends SharedObjectInterface<T>> List<T> getSharedObjects( Class<T> clazz ) {
     List<T> result = new ArrayList<T>();
-    for ( SharedObjectInterface sharedObject : sharedObjects.getObjectsMap().values() ) {
+    for ( SharedObjectInterface<?> sharedObject : sharedObjects.getObjectsMap().values() ) {
       if ( clazz.isInstance( sharedObject ) ) {
         result.add( (T) sharedObject );
       }
@@ -492,9 +492,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
 
     for ( T srcObject : srcManager.getAll() ) {
       T destObject = tgtManager.get( srcObject.getName() );
-      if ( destObject == null ) {
-        continue;
-      } else {
+      if ( destObject != null ) {
         if ( equals( srcObject, destObject )
              || !getPromptResult( BaseMessages.getString( PKG, message, srcObject.getName() ), BaseMessages
                  .getString( PKG, "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),

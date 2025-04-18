@@ -46,7 +46,6 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;

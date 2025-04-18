@@ -69,7 +69,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
           }
           DatabaseMeta databaseMeta = collector.getMetaFor( databaseName );
           projectDbNames.add( databaseMeta.getDisplayName() );
-          TreeNode childTreeNode = createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource
+          createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource
             .getImageConnectionTree(), LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         }
       }
@@ -115,7 +115,7 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return DatabaseMeta.class;
   }
 

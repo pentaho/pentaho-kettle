@@ -366,7 +366,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
       setOutputDone();
 
       if ( data.db != null ) {
-        data.db.disconnect();
+        data.db.close();
       }
       super.dispose( smi, sdi );
     }

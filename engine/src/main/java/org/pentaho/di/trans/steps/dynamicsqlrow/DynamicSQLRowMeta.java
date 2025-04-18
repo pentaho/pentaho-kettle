@@ -252,7 +252,7 @@ public class DynamicSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaI
           v.setOrigin( name );
         }
         row.addRowMeta( add );
-        db.disconnect();
+        db.close();
       } catch ( KettleDatabaseException dbe ) {
         throw new KettleStepException( BaseMessages.getString(
           PKG, "DynamicSQLRowMeta.Exception.ErrorObtainingFields" ), dbe );
@@ -377,7 +377,7 @@ public class DynamicSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaI
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "DynamicSQLRowMeta.CheckResult.InvalidConnection" );

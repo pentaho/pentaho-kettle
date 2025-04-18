@@ -2338,7 +2338,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   private void getFieldsData( TextFileInputMeta in, boolean insertAtTop, final boolean reloadAllFields,
                               final Set<String> newFieldNames ) {
-    final List<String> lowerCaseNewFieldNames = newFieldNames == null ? new ArrayList()
+    final List<String> lowerCaseNewFieldNames = newFieldNames == null ? new ArrayList<>()
       : newFieldNames.stream().map( String::toLowerCase ).collect( Collectors.toList() );
     for ( int i = 0; i < in.inputFields.length; i++ ) {
       BaseFileField field = in.inputFields[i];

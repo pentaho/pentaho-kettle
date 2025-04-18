@@ -16,8 +16,6 @@ package org.pentaho.di.base;
 
 import org.junit.BeforeClass;
 import org.junit.matchers.JUnitMatchers;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -25,18 +23,15 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.MemorySharedObjectsIO;
-import org.pentaho.di.shared.SharedObjectInterface;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**

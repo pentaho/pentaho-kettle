@@ -366,7 +366,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
     return 0;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
 
       String lookupFromStepname = XMLHandler.getTagValue( stepnode, "from" );

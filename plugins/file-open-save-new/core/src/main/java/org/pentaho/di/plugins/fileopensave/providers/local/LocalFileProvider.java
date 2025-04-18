@@ -80,7 +80,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
   }
 
   @Override
-  public Tree getTree( Bowl bowl ) {
+  public Tree<LocalFile> getTree( Bowl bowl ) {
     return getTree( bowl, new ArrayList<>() );
   }
 
@@ -89,7 +89,7 @@ public class LocalFileProvider extends BaseFileProvider<LocalFile> {
    * @return
    */
   @Override
-  public Tree getTree( Bowl bowl, List<String> connectionTypes ) {
+  public Tree<LocalFile> getTree( Bowl bowl, List<String> connectionTypes ) {
     LocalTree localTree = new LocalTree( NAME );
     List<LocalFile> rootFiles = new ArrayList<>();
     ArrayList<Path> paths = new ArrayList<>();

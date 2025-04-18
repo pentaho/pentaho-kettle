@@ -34,7 +34,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -224,7 +223,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       valuename = XMLHandler.getTagValue( stepnode, "valuename" );
 
@@ -389,7 +388,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
             PKG, "AddSequenceMeta.CheckResult.UnableToConnectDB.Title" )
             + Const.CR + e.getMessage(), stepMeta );
       } finally {
-        db.disconnect();
+        db.close();
       }
       remarks.add( cr );
     }
@@ -429,7 +428,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
           retval.setError( BaseMessages.getString( PKG, "AddSequenceMeta.ErrorMessage.UnableToConnectDB" )
             + Const.CR + e.getMessage() );
         } finally {
-          db.disconnect();
+          db.close();
         }
       } else {
         retval.setError( BaseMessages.getString( PKG, "AddSequenceMeta.ErrorMessage.NoConnectionDefined" ) );

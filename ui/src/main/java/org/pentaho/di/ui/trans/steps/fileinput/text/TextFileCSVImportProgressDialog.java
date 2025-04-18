@@ -168,7 +168,6 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     }
 
     String line = "";
-    StringBuilder sbLine = new StringBuilder();
     long fileLineNumber = 0;
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols();

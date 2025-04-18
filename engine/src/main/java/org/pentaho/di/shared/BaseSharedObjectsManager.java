@@ -17,8 +17,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.RepositoryElementInterface;
 
 import org.w3c.dom.Node;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,13 +34,11 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
 
   protected SharedObjectsIO sharedObjectsIO;
 
-  private static final Logger log = LoggerFactory.getLogger( BaseSharedObjectsManager.class );
-
   private Map<String, T> sharedObjectsMap = new HashMap<>();
   private volatile boolean initialized = false;
   String sharedObjectType;
 
-  public BaseSharedObjectsManager( String type, SharedObjectsIO sharedObjectsIO ) {
+  protected BaseSharedObjectsManager( String type, SharedObjectsIO sharedObjectsIO ) {
     this.sharedObjectType = type;
     this.sharedObjectsIO = sharedObjectsIO;
   }

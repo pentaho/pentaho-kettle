@@ -233,7 +233,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
             ) {
           Properties properties = new Properties();
           properties.load( reader );
-          for ( Map.Entry entry : properties.entrySet() ) {
+          for ( Map.Entry<Object, Object> entry : properties.entrySet() ) {
             variables.add( (String) entry.getKey() );
             variableValues.add( (String) entry.getValue() );
             variableTypes.add( fileVariableType );

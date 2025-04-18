@@ -175,7 +175,7 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       filenamefield = XMLHandler.getTagValue( stepnode, "filenamefield" );
       resultfieldname = XMLHandler.getTagValue( stepnode, "resultfieldname" );

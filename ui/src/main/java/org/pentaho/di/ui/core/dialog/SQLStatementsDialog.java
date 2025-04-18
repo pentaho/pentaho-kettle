@@ -342,7 +342,7 @@ public class SQLStatementsDialog extends Dialog {
               shell, BaseMessages.getString( PKG, "SQLStatementDialog.Error.Title" ), BaseMessages.getString(
                 PKG, "SQLStatementDialog.Error.CouldNotConnect", ( di == null ? "" : di.getName() ) ), dbe );
           } finally {
-            db.disconnect();
+            db.close();
           }
         }
       }

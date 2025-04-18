@@ -24,7 +24,7 @@ import org.w3c.dom.Node;
 public class PassthroughDbConnectionManager extends PassthroughManager<DatabaseMeta> implements DatabaseManagementInterface {
 
   public PassthroughDbConnectionManager( SharedObjectsIO sharedObjectsIO ) {
-    super( sharedObjectsIO, DatabaseMeta.class, DatabaseConnectionManager.DB_TYPE );
+    super( sharedObjectsIO, DatabaseConnectionManager.DB_TYPE );
   }
 
   protected DatabaseMeta createSharedObjectUsingNode( Node node ) throws KettleException {

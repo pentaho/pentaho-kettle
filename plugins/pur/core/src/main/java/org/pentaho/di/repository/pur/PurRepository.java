@@ -17,7 +17,6 @@ package org.pentaho.di.repository.pur;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -69,7 +68,6 @@ import org.pentaho.di.repository.pur.model.EETransMeta;
 import org.pentaho.di.repository.pur.model.EEUserInfo;
 import org.pentaho.di.repository.pur.model.RepositoryLock;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider;
 import org.pentaho.di.ui.repository.pur.services.IAclService;
@@ -209,13 +207,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   private UnifiedRepositoryLockService unifiedRepositoryLockService;
 
-  private Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType = null;
+  private Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjectsByType = null;
 
   private boolean connected = false;
 
   private String connectMessage = null;
 
-  private ConnectionManager connectionManager = ConnectionManager.getInstance();
   private IMetaStore metaStore;
 
   // The servers (DI Server, BA Server) that a user can authenticate to
@@ -1381,7 +1378,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
    * @throws KettleException
    */
   protected void readSharedObjects(
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType,
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjectsByType,
     RepositoryObjectType... types ) throws KettleException {
     // Overview:
     // 1) We will fetch RepositoryFile, NodeRepositoryFileData, and VersionSummary for all types provided.
@@ -1413,7 +1410,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         }
         // For all files of this type, assemble them from the pieces of data pulled from the repository
         Iterator<RepositoryFile> filesIter = entry.getValue().iterator();
-        List<SharedObjectInterface> sharedObjects = new ArrayList<SharedObjectInterface>( entry.getValue().size() );
+        List<SharedObjectInterface<?>> sharedObjects = new ArrayList<>( entry.getValue().size() );
         // Exceptions are thrown during lookup if data or versions aren't found so all the lists should be the same size
         // (no need to check for next on all iterators)
         while ( filesIter.hasNext() ) {
@@ -1700,7 +1697,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     if ( cached ) {
       return loadAndCacheSharedObjects( true ).get( repositoryObjectType );
     } else {
-      Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjects = new EnumMap<>(
+      Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjects = new EnumMap<>(
         RepositoryObjectType.class );
       readSharedObjects( sharedObjects, repositoryObjectType );
       return deepCopy( sharedObjects ).get( repositoryObjectType );
@@ -1942,14 +1939,14 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     }
   }
 
-  protected Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects(
+  protected Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> loadAndCacheSharedObjects(
     final boolean deepCopy ) throws KettleException {
     if ( sharedObjectsByType == null ) {
       readWriteLock.readLock().lock();
       sharedObjectsLock.writeLock().lock();
       try {
         sharedObjectsByType =
-          new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
+          new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>( RepositoryObjectType.class );
         // Slave Servers are referenced by Cluster Schemas so they must be loaded first
         readSharedObjects( sharedObjectsByType, RepositoryObjectType.DATABASE, RepositoryObjectType.PARTITION_SCHEMA,
           RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.CLUSTER_SCHEMA );
@@ -1965,25 +1962,25 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return deepCopy ? deepCopy( sharedObjectsByType ) : sharedObjectsByType;
   }
 
-  protected Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects()
+  protected Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>  loadAndCacheSharedObjects()
     throws KettleException {
     return loadAndCacheSharedObjects( true );
   }
 
-  private Map<RepositoryObjectType, List<? extends SharedObjectInterface>> deepCopy(
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> orig ) throws KettleException {
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>>
+  private Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> deepCopy(
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> orig ) throws KettleException {
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>
       copy =
-      new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
+      new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>( RepositoryObjectType.class );
     sharedObjectsLock.writeLock().lock();
     try {
-      for ( Entry<RepositoryObjectType, List<? extends SharedObjectInterface>> entry : orig.entrySet() ) {
+      for ( Entry<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> entry : orig.entrySet() ) {
         RepositoryObjectType type = entry.getKey();
-        List<? extends SharedObjectInterface> value = entry.getValue();
+        List<? extends SharedObjectInterface<?>> value = entry.getValue();
 
-        List<SharedObjectInterface> newValue = new ArrayList<SharedObjectInterface>( value.size() );
-        for ( SharedObjectInterface obj : value ) {
-          SharedObjectInterface newValueItem;
+        List<SharedObjectInterface<?>> newValue = new ArrayList<>( value.size() );
+        for ( SharedObjectInterface<?> obj : value ) {
+          SharedObjectInterface<?> newValueItem;
           if ( obj instanceof DatabaseMeta ) {
             DatabaseMeta databaseMeta = (DatabaseMeta) ( (DatabaseMeta) obj ).deepClone( true );
             databaseMeta.setObjectId( ( (DatabaseMeta) obj ).getObjectId() );
@@ -2828,7 +2825,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     ObjectId idToFind = element != null ? element.getObjectId() : id;
     RepositoryObjectType typeToUpdate = element != null ? element.getRepositoryElementType() : type;
     RepositoryElementInterface elementToUpdate = null;
-    List<? extends SharedObjectInterface> origSharedObjects = null;
+    List<? extends SharedObjectInterface<?>> origSharedObjects = null;
     sharedObjectsLock.writeLock().lock();
     try {
       switch ( typeToUpdate ) {
@@ -2860,7 +2857,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           throw new KettleException( "unknown type [" + typeToUpdate + "]" );
       }
 
-      List<SharedObjectInterface> newSharedObjects = new ArrayList<SharedObjectInterface>( origSharedObjects );
+      List<SharedObjectInterface<?>> newSharedObjects = new ArrayList<>( origSharedObjects );
       // if there's a match on id, replace the element
       boolean found = false;
       for ( int i = 0; i < origSharedObjects.size(); i++ ) {
@@ -2874,7 +2871,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
             newSharedObjects.remove( i );
           } else {
             elementToUpdate.setObjectId( idToFind ); // because some clones don't clone the ID!!!
-            newSharedObjects.set( i, (SharedObjectInterface) elementToUpdate );
+            newSharedObjects.set( i, (SharedObjectInterface<?>) elementToUpdate );
           }
           found = true;
         }
@@ -2882,7 +2879,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       // otherwise, add it
       if ( !remove && !found ) {
         elementToUpdate.setObjectId( idToFind ); // because some clones don't clone the ID!!!
-        newSharedObjects.add( (SharedObjectInterface) elementToUpdate );
+        newSharedObjects.add( (SharedObjectInterface<?>) elementToUpdate );
       }
       sharedObjectsByType.put( typeToUpdate, newSharedObjects );
     } finally {

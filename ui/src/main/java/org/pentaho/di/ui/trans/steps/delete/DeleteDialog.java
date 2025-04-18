@@ -500,7 +500,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.
@@ -591,7 +591,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
                 .getString( PKG, "DeleteDialog.ErrorGettingSchemas" ), e );
       } finally {
-        database.disconnect();
+        database.close();
       }
     }
   }

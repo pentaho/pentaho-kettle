@@ -36,7 +36,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -208,7 +207,7 @@ public class DeleteMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String csize;
       int nrkeys;
@@ -465,7 +464,7 @@ public class DeleteMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "DeleteMeta.CheckResult.InvalidConnection" );

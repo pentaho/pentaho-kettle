@@ -28,7 +28,7 @@ public class PassthroughClusterSchemaManager extends PassthroughManager<ClusterS
   private SlaveServersSupplier slaveServerSupplier;
 
   public PassthroughClusterSchemaManager( SharedObjectsIO sharedObjectsIO, SlaveServersSupplier slaveServerSupplier ) {
-    super( sharedObjectsIO, ClusterSchema.class, ClusterSchemaManager.CLUSTERSCHEMA_TYPE );
+    super( sharedObjectsIO, ClusterSchemaManager.CLUSTERSCHEMA_TYPE );
     this.slaveServerSupplier = slaveServerSupplier;
   }
 

@@ -46,7 +46,6 @@ import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
-import org.pentaho.di.shared.SharedObjects;
 
 public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositoryBaseDelegate {
 

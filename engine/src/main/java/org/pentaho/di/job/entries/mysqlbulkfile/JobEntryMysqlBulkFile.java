@@ -378,7 +378,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
                 ps.execute();
 
                 // Everything is OK...we can disconnect now
-                db.disconnect();
+                db.close();
 
                 if ( isAddFileToResult() ) {
                   // Add filename to output files
@@ -392,7 +392,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
                 result.setResult( true );
 
               } catch ( SQLException je ) {
-                db.disconnect();
+                db.close();
                 result.setNrErrors( 1 );
                 logError( BaseMessages.getString( PKG, "JobMysqlBulkFile.Error.Label" ) + " " + je.getMessage() );
               } catch ( KettleFileException e ) {
@@ -402,7 +402,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
             } else {
               // Of course, the table should have been created already before the bulk load operation
-              db.disconnect();
+              db.close();
               result.setNrErrors( 1 );
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.TableNotExists1.Label" )
@@ -411,7 +411,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
             }
 
           } catch ( KettleDatabaseException dbe ) {
-            db.disconnect();
+            db.close();
             result.setNrErrors( 1 );
             logError( BaseMessages.getString( PKG, "JobMysqlBulkFile.Error.Label" ) + " " + dbe.getMessage() );
           }

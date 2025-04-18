@@ -1068,7 +1068,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
           .getString( PKG, "TableOutputDialog.ErrorGettingSchemas" ), e );
       } finally {
-        database.disconnect();
+        database.close();
       }
     }
   }
@@ -1141,7 +1141,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here. Nothing we can do if

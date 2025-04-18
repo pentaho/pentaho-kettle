@@ -35,7 +35,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
@@ -52,7 +51,7 @@ import org.w3c.dom.Node;
 public class ExecSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private List<? extends SharedObjectInterface> databasesList;
+  private List<DatabaseMeta> databasesList;
 
   private DatabaseMeta databaseMeta;
 
@@ -218,11 +217,11 @@ public class ExecSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaInte
     return updateField;
   }
 
-  public List<? extends SharedObjectInterface> getDatabasesList() {
+  public List<DatabaseMeta> getDatabasesList() {
     return databasesList;
   }
 
-  public void setDatabasesList( List<? extends SharedObjectInterface> dbList ) {
+  public void setDatabasesList( List<DatabaseMeta> dbList ) {
     this.databasesList = dbList;
   }
 
@@ -243,7 +242,7 @@ public class ExecSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaInte
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     this.databasesList = databases;
     try {
       String csize;
@@ -389,7 +388,7 @@ public class ExecSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaInte
             + e.getMessage(), stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       cr =

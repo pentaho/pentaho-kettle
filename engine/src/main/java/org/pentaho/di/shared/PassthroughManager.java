@@ -31,9 +31,8 @@ public abstract class PassthroughManager<T extends SharedObjectInterface<T> & Re
 
   private final SharedObjectsIO sharedObjectsIO;
   private final String type;
-  private Class<T> clazz;
 
-  public PassthroughManager( SharedObjectsIO sharedObjectsIO, Class<T> clazz, String type ) {
+  protected PassthroughManager( SharedObjectsIO sharedObjectsIO, String type ) {
     this.sharedObjectsIO = sharedObjectsIO;
     this.type = type;
   }

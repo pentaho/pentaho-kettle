@@ -50,7 +50,6 @@ import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by bmorrise on 3/15/17.

@@ -84,7 +84,6 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryTransDele
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryValueDelegate;
 import org.pentaho.di.repository.kdr.delegates.metastore.KettleDatabaseRepositoryMetaStore;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
 /**

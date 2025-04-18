@@ -1266,7 +1266,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
       Collections.sort( databases, DatabaseMeta.comparator );
       return databases;
     } catch ( KettleException ex ) {
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -1308,7 +1308,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   // helper method for databasesUpdated()
   protected void updateFields( DatabaseMeta existing, Optional<DatabaseMeta> newDb ) {
-    newDb.ifPresentOrElse( db -> existing.replaceMeta( db ),
+    newDb.ifPresentOrElse( existing::replaceMeta,
       // remember the name.
       () -> {
         DatabaseMeta newMeta = new DatabaseMeta();
@@ -1766,18 +1766,18 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     //
     String soFile = environmentSubstitute( sharedObjectsFile );
     SharedObjects sharedObjects = new SharedObjects( soFile );
-    Map<?, SharedObjectInterface> objectsMap = sharedObjects.getObjectsMap();
+    Map<?, SharedObjectInterface<?>> objectsMap = sharedObjects.getObjectsMap();
 
     // This is basically only used for Steps now, and since those can no longer be shared, it's really just for
     // backwards compatibility. All other shared object types are handled through the DefaultBowl instead.
-    for ( SharedObjectInterface object : objectsMap.values() ) {
+    for ( SharedObjectInterface<?> object : objectsMap.values() ) {
       loadSharedObject( object );
     }
 
     return sharedObjects;
   }
 
-  public boolean loadSharedObject( SharedObjectInterface object ) {
+  public boolean loadSharedObject( SharedObjectInterface<?> object ) {
     return false;
   }
 

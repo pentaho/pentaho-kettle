@@ -31,7 +31,6 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -72,7 +71,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       parentIdFieldName = XMLHandler.getTagValue( stepnode, "parent_id_field" );
       childIdFieldName = XMLHandler.getTagValue( stepnode, "child_id_field" );

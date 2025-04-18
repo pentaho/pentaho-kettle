@@ -19,7 +19,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
 
 public interface ISharedObjectsTransformer extends ITransformer {
 
@@ -29,7 +28,7 @@ public interface ISharedObjectsTransformer extends ITransformer {
    */
   @Deprecated
   void loadSharedObjects( final RepositoryElementInterface element,
-      final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType )
+      final Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjectsByType )
     throws KettleException;
 
   /**

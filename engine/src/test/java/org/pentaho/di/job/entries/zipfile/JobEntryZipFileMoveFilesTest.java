@@ -20,7 +20,6 @@ import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import java.io.File;
 import java.io.IOException;

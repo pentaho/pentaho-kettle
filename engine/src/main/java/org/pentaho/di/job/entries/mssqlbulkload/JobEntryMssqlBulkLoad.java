@@ -552,7 +552,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                   db.execStatement( SQLBULKLOAD );
 
                   // Everything is OK...we can disconnect now
-                  db.disconnect();
+                  db.close();
 
                   if ( isAddFileToResult() ) {
                     // Add filename to output files
@@ -572,18 +572,18 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                   result.setNrErrors( 1 );
                 } finally {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                     db = null;
                   }
                 }
               } else {
                 // Of course, the table should have been created already before the bulk load operation
-                db.disconnect();
+                db.close();
                 result.setNrErrors( 1 );
                 logError( BaseMessages.getString( PKG, "JobMssqlBulkLoad.Error.TableNotExists", realTablename ) );
               }
             } catch ( KettleDatabaseException dbe ) {
-              db.disconnect();
+              db.close();
               result.setNrErrors( 1 );
               logError( "An error occurred executing this entry: " + dbe.getMessage() );
             }

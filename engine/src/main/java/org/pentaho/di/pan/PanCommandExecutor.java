@@ -19,7 +19,6 @@ import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;

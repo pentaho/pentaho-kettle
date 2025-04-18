@@ -42,7 +42,7 @@ public interface FileProvider<T extends File> {
    *
    * @return
    */
-  Tree getTree( Bowl bowl );
+  Tree<? extends T> getTree( Bowl bowl );
 
   /**
    * Optional method to get a filtered tree based on the connection type
@@ -50,7 +50,7 @@ public interface FileProvider<T extends File> {
    * @param connectionTypes
    * @return filteredTree
    */
-  default Tree getTree( Bowl bowl, List<String> connectionTypes ) {
+  default Tree<? extends T> getTree( Bowl bowl, List<String> connectionTypes ) {
     return getTree( bowl );
   }
 

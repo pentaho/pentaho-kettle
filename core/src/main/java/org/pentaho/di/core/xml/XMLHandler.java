@@ -521,7 +521,7 @@ public class XMLHandler {
    * @return the Document if all went well, null if an error occurred!
    * @deprecated use the version with the Bowl
    */
-  @Deprecated
+  @Deprecated(since = "10.3")
   public static Document loadXMLFile( String filename ) throws KettleXMLException {
     return loadXMLFile( DefaultBowl.getInstance(), filename );
   }

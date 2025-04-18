@@ -31,7 +31,7 @@ public abstract class TreeFolderProvider {
 
   public abstract void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter );
 
-  public Class getType() {
+  public Class<?> getType() {
     return Object.class;
   }
 

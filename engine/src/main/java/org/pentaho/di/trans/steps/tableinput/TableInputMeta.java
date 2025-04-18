@@ -38,7 +38,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -63,7 +62,7 @@ import java.util.List;
 public class TableInputMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private List<? extends SharedObjectInterface> databases;
+  private List<DatabaseMeta> databases;
 
   private DatabaseMeta databaseMeta;
 
@@ -167,7 +166,7 @@ public class TableInputMeta extends BaseDatabaseStepMeta implements StepMetaInte
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     this.databases = databases;
     try {
       databaseMeta = DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "connection" ) );
@@ -262,7 +261,7 @@ public class TableInputMeta extends BaseDatabaseStepMeta implements StepMetaInte
       } catch ( KettleException ke ) {
         throw new KettleStepException( "Unable to get queryfields for SQL: " + Const.CR + sNewSQL, ke );
       } finally {
-        db.disconnect();
+        db.close();
       }
     }
     if ( isLazyConversionActive() ) {
@@ -425,7 +424,7 @@ public class TableInputMeta extends BaseDatabaseStepMeta implements StepMetaInte
             CheckResultInterface.TYPE_RESULT_ERROR, "An error occurred: " + e.getMessage(), stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       cr =

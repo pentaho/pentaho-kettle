@@ -15,7 +15,6 @@ package org.pentaho.di.ui.spoon.delegates;
 
 
 import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 
-public abstract class SpoonSharedObjectDelegate<T extends SharedObjectInterface<T> & RepositoryElementInterface & ChangedFlagInterface> extends SpoonDelegate {
+public abstract class SpoonSharedObjectDelegate<T extends SharedObjectInterface<T> & RepositoryElementInterface> extends SpoonDelegate {
   protected static final Class<?> PKG = Spoon.class;
 
   public SpoonSharedObjectDelegate( Spoon spoon ) {

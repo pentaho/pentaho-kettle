@@ -36,7 +36,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -212,7 +211,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
@@ -471,7 +470,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "GPBulkLoaderMeta.CheckResult.InvalidConnection" );
@@ -608,7 +607,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
         throw new KettleException(
           BaseMessages.getString( PKG, "GPBulkLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString( PKG, "GPBulkLoaderMeta.Exception.ConnectionNotDefined" ) );

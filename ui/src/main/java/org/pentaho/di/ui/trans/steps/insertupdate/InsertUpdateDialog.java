@@ -799,7 +799,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.
@@ -862,7 +862,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
           .getString( PKG, "InsertUpDateDialog.ErrorGettingSchemas" ), e );
       } finally {
-        database.disconnect();
+        database.close();
       }
     }
   }

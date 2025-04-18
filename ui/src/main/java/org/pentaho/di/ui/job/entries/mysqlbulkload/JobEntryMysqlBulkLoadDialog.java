@@ -803,7 +803,7 @@ public class JobEntryMysqlBulkLoadDialog extends JobEntryDialog implements JobEn
           new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
             .getString( PKG, "JobMysqlBulkLoad.ConnectionError2.DialogMessage" ), e );
         } finally {
-          database.disconnect();
+          database.close();
         }
       }
     }

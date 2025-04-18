@@ -32,8 +32,8 @@ import org.pentaho.di.repository.IRepositoryImporter;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.shared.SharedObjectsIO.SharedObjectType;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +63,7 @@ public class SharedObjectUtil {
    */
   public static Map<SharedObjectType, Map<String, ComparedState>> collectChangedSharedObjects( AbstractMeta sourceMeta,
       Bowl targetBowl, IRepositoryImporter importer ) throws KettleException{
-    Map<SharedObjectType, Map<String, ComparedState>> retMap = new HashMap<>();
+    Map<SharedObjectType, Map<String, ComparedState>> retMap = new EnumMap<>( SharedObjectType.class );
     retMap.put( SharedObjectType.CLUSTERSCHEMA,
       collectChangedSharedObjects( sourceMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class ),
         targetBowl.getManager( ClusterSchemaManagementInterface.class ), importer ) );
@@ -188,11 +188,9 @@ public class SharedObjectUtil {
     Set<String> usedNames = targetMeta.getUsedDatabaseConnectionNames();
     for ( String name : usedNames ) {
       DatabaseMeta db = sourceManager.get( name );
-      if ( db != null ) {
-        if ( targetManager.get( name ) == null ){
-          targetManager.add( db );
-          targetMeta.databaseUpdated( name );
-        }
+      if ( db != null && targetManager.get( name ) == null ) {
+        targetManager.add( db );
+        targetMeta.databaseUpdated( name );
       }
     }
   }

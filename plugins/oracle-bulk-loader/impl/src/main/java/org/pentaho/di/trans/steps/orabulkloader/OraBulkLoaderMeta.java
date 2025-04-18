@@ -37,7 +37,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -76,7 +75,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
   /** database connection */
   private DatabaseMeta databaseMeta;
-  private List<? extends SharedObjectInterface> databases;
+  private List<DatabaseMeta> databases;
 
   /** what's the schema for the target? */
   @Injection( name = "SCHEMA_NAME", group = "FIELDS" )
@@ -364,7 +363,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       // String csize, bsize, rsize, serror;
       // int nrvalues;
@@ -729,7 +728,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "OraBulkLoaderMeta.CheckResult.InvalidConnection" );
@@ -881,7 +880,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
         throw new KettleException(
           BaseMessages.getString( PKG, "OraBulkLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString( PKG, "OraBulkLoaderMeta.Exception.ConnectionNotDefined" ) );

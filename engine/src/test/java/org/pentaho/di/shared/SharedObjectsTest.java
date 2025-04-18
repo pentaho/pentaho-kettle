@@ -32,9 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 import org.junit.Assert;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -82,7 +80,7 @@ public class SharedObjectsTest {
       final String fileName = dirName + "/shared.xml";
       SharedObjects sharedObjects = new SharedObjects( fileName );
 
-      SharedObjectInterface shared1 = new TestSharedObject( "shared1", "<shared1>shared1</shared1>" );
+      SharedObjectInterface<?> shared1 = new TestSharedObject( "shared1", "<shared1>shared1</shared1>" );
       sharedObjects.storeObject( shared1 );
       sharedObjects.saveToFile();
       final String backupFileName = fileName + ".backup";
@@ -92,7 +90,7 @@ public class SharedObjectsTest {
       String contents = KettleVFS.getInstance( DefaultBowl.getInstance() ).getTextFileContent( fileName, "utf8" );
       Assert.assertTrue( contents.contains( shared1.getXML() ) );
 
-      SharedObjectInterface shared2 = new TestSharedObject( "shared2", "<shared2>shared2</shared2>" );
+      SharedObjectInterface<?> shared2 = new TestSharedObject( "shared2", "<shared2>shared2</shared2>" );
       sharedObjects.storeObject( shared2 );
       sharedObjects.saveToFile();
       Assert.assertTrue( backup.exists() );
