@@ -20,7 +20,6 @@ import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -45,7 +44,7 @@ public class VfsSharedObjectsIOTest {
   private String db_type;
 
   @BeforeClass
-  public static void setUpOnce() throws KettlePluginException, KettleException {
+  public static void setUpOnce() throws KettleException {
     // Register Natives to create a default DatabaseMeta
     DatabasePluginType.getInstance().searchPlugins();
     ValueMetaPluginType.getInstance().searchPlugins();
@@ -53,7 +52,7 @@ public class VfsSharedObjectsIOTest {
   }
 
   @Before
-  public void setup() throws Exception {
+  public void setup()  {
     db_type = String.valueOf( SharedObjectsIO.SharedObjectType.CONNECTION );
   }
 
@@ -111,7 +110,6 @@ public class VfsSharedObjectsIOTest {
     //Get the key
     Map.Entry<String, Node> entry = nodesMap.entrySet().iterator().next();
     String key = entry.getKey();
-    Node node = entry.getValue();
     assertEquals( connectionName, key );
 
   }
@@ -137,7 +135,6 @@ public class VfsSharedObjectsIOTest {
     //Get the key
     Map.Entry<String, Node> entry = nodesMap.entrySet().iterator().next();
     String key = entry.getKey();
-    Node node = entry.getValue();
     assertEquals( newConnectionName, key );
   }
 
@@ -174,7 +171,7 @@ public class VfsSharedObjectsIOTest {
     FileObject projectDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( ROOT_FILE_PATH );
     projectDirectory.createFolder();
 
-    return new VfsSharedObjectsIO( ROOT_FILE_PATH );
+    return new VfsSharedObjectsIO( rootPath );
   }
 
   private DatabaseMeta createDatabaseMeta( String name ) {

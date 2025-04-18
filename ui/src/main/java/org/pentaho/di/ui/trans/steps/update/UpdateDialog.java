@@ -644,7 +644,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.
@@ -925,7 +925,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
           BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
           BaseMessages.getString( PKG, "UpdateDialog.ErrorGettingSchemas" ), e );
       } finally {
-        database.disconnect();
+        database.close();
       }
     }
   }

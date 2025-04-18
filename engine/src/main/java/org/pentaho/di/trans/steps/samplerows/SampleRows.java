@@ -13,7 +13,6 @@
 
 package org.pentaho.di.trans.steps.samplerows;
 
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.util.Utils;

@@ -520,7 +520,7 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface {
       }
       // And finally, release the database connection
       if ( data.db != null ) {
-        data.db.disconnect();
+        data.db.close();
         data.db = null;
       }
     } catch ( Exception e ) {

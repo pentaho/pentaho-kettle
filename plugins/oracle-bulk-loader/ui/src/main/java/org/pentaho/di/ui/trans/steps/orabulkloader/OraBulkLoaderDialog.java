@@ -1135,7 +1135,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.

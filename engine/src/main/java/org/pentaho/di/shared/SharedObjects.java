@@ -62,7 +62,7 @@ public class SharedObjects {
 
   private String filename;
 
-  private Map<SharedEntry, SharedObjectInterface> objectsMap;
+  private Map<SharedEntry, SharedObjectInterface<?>> objectsMap;
 
   private class SharedEntry {
     public String className;
@@ -91,7 +91,7 @@ public class SharedObjects {
   public SharedObjects( String sharedObjectsFile ) throws KettleXMLException {
     try {
       this.filename = createFilename( sharedObjectsFile );
-      this.objectsMap = new Hashtable<SharedEntry, SharedObjectInterface>();
+      this.objectsMap = new Hashtable<SharedEntry, SharedObjectInterface<?>>();
 
       LogChannel log = new LogChannel( this );
 
@@ -113,7 +113,7 @@ public class SharedObjects {
             Node node = childNodes.item( i );
             String nodeName = node.getNodeName();
 
-            SharedObjectInterface isShared = null;
+            SharedObjectInterface<?> isShared = null;
 
             if ( nodeName.equals( DatabaseMeta.XML_TAG ) ) {
               try {
@@ -154,7 +154,7 @@ public class SharedObjects {
             Node node = childNodes.item( i );
             String nodeName = node.getNodeName();
 
-            SharedObjectInterface isShared = null;
+            SharedObjectInterface<?> isShared = null;
 
             if ( nodeName.equals( StepMeta.XML_TAG ) ) {
               StepMeta stepMeta = new StepMeta( node, privateDatabases, (IMetaStore) null );
@@ -200,11 +200,11 @@ public class SharedObjects {
     this( null );
   }
 
-  public Map<SharedEntry, SharedObjectInterface> getObjectsMap() {
+  public Map<SharedEntry, SharedObjectInterface<?>> getObjectsMap() {
     return objectsMap;
   }
 
-  public void setObjectsMap( Map<SharedEntry, SharedObjectInterface> objects ) {
+  public void setObjectsMap( Map<SharedEntry, SharedObjectInterface<?>> objects ) {
     this.objectsMap = objects;
   }
 
@@ -214,7 +214,7 @@ public class SharedObjects {
    *
    * @param sharedObject
    */
-  public void storeObject( SharedObjectInterface sharedObject ) {
+  public void storeObject( SharedObjectInterface<?> sharedObject ) {
     SharedEntry key = new SharedEntry( sharedObject.getClass().getName(), sharedObject.getName() );
     objectsMap.put( key, sharedObject );
   }
@@ -224,7 +224,7 @@ public class SharedObjects {
    *
    * @param sharedObject
    */
-  public void removeObject( SharedObjectInterface sharedObject ) {
+  public void removeObject( SharedObjectInterface<?> sharedObject ) {
     SharedEntry key = new SharedEntry( sharedObject.getClass().getName(), sharedObject.getName() );
     objectsMap.remove( key );
   }
@@ -242,7 +242,7 @@ public class SharedObjects {
    * @param objectName the name of the object
    * @return The shared object or null if none was found.
    */
-  public SharedObjectInterface getSharedObject( Class<SharedObjectInterface> clazz, String objectName ) {
+  public SharedObjectInterface<?> getSharedObject( Class<SharedObjectInterface<?>> clazz, String objectName ) {
     return getSharedObject( clazz.getName(), objectName );
   }
 
@@ -253,7 +253,7 @@ public class SharedObjects {
    * @param objectName the name of the object
    * @return The shared object or null if none was found.
    */
-  public SharedObjectInterface getSharedObject( String className, String objectName ) {
+  public SharedObjectInterface<?> getSharedObject( String className, String objectName ) {
     SharedEntry entry = new SharedEntry( className, objectName );
     return objectsMap.get( entry );
   }
@@ -302,8 +302,8 @@ public class SharedObjects {
       out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
       out.println( "<" + XML_TAG + ">" );
 
-      Collection<SharedObjectInterface> collection = objectsMap.values();
-      for ( SharedObjectInterface sharedObject : collection ) {
+      Collection<SharedObjectInterface<?>> collection = objectsMap.values();
+      for ( SharedObjectInterface<?> sharedObject : collection ) {
         String xmlContent = sharedObject.getXML();
         out.println( xmlContent );
       }

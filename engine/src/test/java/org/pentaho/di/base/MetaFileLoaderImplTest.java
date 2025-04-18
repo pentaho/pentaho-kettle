@@ -21,7 +21,6 @@ import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -34,7 +33,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
-import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
@@ -53,9 +51,6 @@ public class MetaFileLoaderImplTest {
   private final Repository repository = mock( Repository.class );
   private final IMetaStore store = mock( IMetaStore.class );
   private VariableSpace space;
-  private CurrentDirectoryResolver resolver = mock( CurrentDirectoryResolver.class );
-  private RepositoryDirectoryInterface directory = mock( RepositoryDirectoryInterface.class );
-  private final NamedClusterEmbedManager namedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
 
   private String targetMetaName;
   private MetaFileCacheImpl metaFileCache;

@@ -55,8 +55,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.www.RegisterTransServlet;
 
-import static org.pentaho.di.core.util.Utils.isEmpty;
-
 /**
  *
  * Dialog that allows you to edit the settings of the security service connection

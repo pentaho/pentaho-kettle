@@ -45,10 +45,9 @@ public class DialogUtils {
     return null;
   }
 
-  public static boolean objectWithTheSameNameExists( SharedObjectInterface object,
-      Collection<? extends SharedObjectInterface> scope ) {
+  public static <T extends SharedObjectInterface<T>> boolean objectWithTheSameNameExists( T object, Collection<T> scope ) {
     String objectName = object.getName().trim();
-    for ( SharedObjectInterface element : scope ) {
+    for ( SharedObjectInterface<T> element : scope ) {
       String elementName = element.getName().trim();
       if ( elementName != null && elementName.equalsIgnoreCase( objectName ) && object != element ) {
         return true;
@@ -57,11 +56,11 @@ public class DialogUtils {
     return false;
   }
 
-  public static void removeMatchingObject( String nameToRemove, Collection<? extends SharedObjectInterface> objects ) {
+  public static <T extends SharedObjectInterface<T>> void removeMatchingObject( String nameToRemove, Collection<? extends SharedObjectInterface<T>> objects ) {
     if ( nameToRemove == null ) {
       return;
     }
-    Iterator<? extends SharedObjectInterface> iter = objects.iterator();
+    Iterator<? extends SharedObjectInterface<T>> iter = objects.iterator();
     while ( iter.hasNext() ) {
       if ( nameToRemove.equals( iter.next().getName() ) ) {
         iter.remove();

@@ -78,9 +78,6 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
-import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
@@ -786,7 +783,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     wFormat.setText( Const.NVL( inputMeta.getFileFormat(), "" ) );
     wEncoding.setText( Const.NVL( inputMeta.getEncoding(), "" ) );
 
-    final List<String> fieldName = newFieldNames == null ? new ArrayList()
+    final List<String> fieldName = newFieldNames == null ? new ArrayList<>()
       : newFieldNames.stream().map( String::toString ).collect( Collectors.toList() );
     for ( int i = 0; i < inputMeta.getInputFields().length; i++ ) {
       TextFileInputField field = inputMeta.getInputFields()[i];

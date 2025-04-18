@@ -32,7 +32,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -221,7 +220,7 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       gpglocation = XMLHandler.getTagValue( stepnode, "gpglocation" );
       passhrase = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "passhrase" ) );

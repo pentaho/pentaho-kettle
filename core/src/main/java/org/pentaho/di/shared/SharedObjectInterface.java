@@ -18,7 +18,7 @@ import java.util.Date;
 import org.pentaho.di.core.exception.KettleException;
 import org.w3c.dom.Node;
 
-public interface SharedObjectInterface<T extends SharedObjectInterface> {
+public interface SharedObjectInterface<T extends SharedObjectInterface<T>> {
 
   static final String OBJECT_ID = "object_id";
 
@@ -26,14 +26,15 @@ public interface SharedObjectInterface<T extends SharedObjectInterface> {
    * @deprecated
    *
    */
-  @Deprecated
+  @Deprecated(since = "10.3")
   public void setShared( boolean shared );
 
   /**
    * @deprecated
    *
    */
-  @Deprecated
+  @Deprecated(since = "10.3")
+
   public boolean isShared();
 
   public String getName();

@@ -13,7 +13,6 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.NotePadMeta;
@@ -41,7 +39,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.shared.DatabaseManagementInterface;
-import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -63,7 +60,7 @@ import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
 import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 
-public class SpoonDBDelegate extends SpoonSharedObjectDelegate {
+public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
   private DatabaseDialog databaseDialog;
 
@@ -144,7 +141,7 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate {
         selectedName = selectedName.trim();
         // check if the selectedName already exist
         if ( selectedName.equals( originalName )
-            && databaseMeta.findDatabase( dbManager.getAll(), selectedName ) != null ) {
+            && DatabaseMeta.findDatabase( dbManager.getAll(), selectedName ) != null ) {
           databaseMetaCopy.setName( selectedName );
           DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMetaCopy );
           return;
@@ -210,7 +207,6 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate {
   public String[] exploreDB( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager, boolean aLook ) {
     try {
       List<DatabaseMeta> databases = null;
-      List<DatabaseMeta> databaseMetas = dbManager.getAll();
 
       DatabaseExplorerDialog std =
         new DatabaseExplorerDialog( spoon.getShell(), SWT.NONE, databaseMeta, databases, aLook );
@@ -451,7 +447,7 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate {
         spoon.refreshGraph();
         refreshTree();
       } finally {
-        sourceDB.disconnect();
+        sourceDB.close();
       }
     } catch ( Exception e ) {
       new ErrorDialog(
@@ -475,7 +471,7 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate {
         databaseMeta.setDisplayName( con_name );
         databaseMeta = getDatabaseDialog().getDatabaseMeta();
 
-        if ( databaseMeta.findDatabase( databaseManagementInterface.getAll(), con_name ) == null ) {
+        if ( DatabaseMeta.findDatabase( databaseManagementInterface.getAll(), con_name ) == null ) {
           databaseManagementInterface.add( databaseMeta );
           spoon.refreshDbConnection( con_name );
           refreshTree();

@@ -585,7 +585,6 @@ public class RssOutput extends BaseStep implements StepInterface {
    * @param desc
    *          : The event's description
    */
-  @SuppressWarnings( "unchecked" )
   public boolean createEntry( String author, String title, String link, Date date, String desc,
     String geopointLat, String geopointLong ) {
     boolean retval = false;

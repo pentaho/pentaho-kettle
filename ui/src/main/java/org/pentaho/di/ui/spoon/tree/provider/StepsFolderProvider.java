@@ -76,7 +76,7 @@ public class StepsFolderProvider extends AutomaticTreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return StepMeta.class;
   }
 }

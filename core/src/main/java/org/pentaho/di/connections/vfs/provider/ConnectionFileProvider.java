@@ -27,7 +27,6 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFSFileSystemException;
 import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.util.Arrays;
 import java.util.Collection;

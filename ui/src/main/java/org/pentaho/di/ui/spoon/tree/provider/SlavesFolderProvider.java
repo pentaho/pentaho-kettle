@@ -20,7 +20,6 @@ import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
@@ -61,12 +60,12 @@ public class SlavesFolderProvider extends TreeFolderProvider {
         SlaveServerManagementInterface slaveServerManager = currentBowl.getManager( SlaveServerManagementInterface.class );
         List<SlaveServer> slaveServers = slaveServerManager.getAll();
 
-        for ( SharedObjectInterface sharedObject : slaveServers ) {
+        for ( SlaveServer sharedObject : slaveServers ) {
           if ( !filterMatch( sharedObject.getName(), filter ) ) {
             continue;
           }
           projectSlaveServerNames.add( sharedObject.getName() );
-          TreeNode childTreeNode = createTreeNode( treeNode, sharedObject.getName(), guiResource.getImageSlaveTree(),
+          createTreeNode( treeNode, sharedObject.getName(), guiResource.getImageSlaveTree(),
                   LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         }
       }
@@ -75,13 +74,13 @@ public class SlavesFolderProvider extends TreeFolderProvider {
       SlaveServerManagementInterface globalServerMgr = globalBowl.getManager( SlaveServerManagementInterface.class );
       Set<String> globalServerNames = new HashSet<>();
       List<SlaveServer> servers = globalServerMgr.getAll();
-      for ( SharedObjectInterface slaveServer : servers ) {
+      for ( SlaveServer slaveServer : servers ) {
         if ( !filterMatch( slaveServer.getName(), filter ) ) {
           continue;
         }
 
         globalServerNames.add( slaveServer.getName() );
-        TreeNode childTreeNode = createTreeNode( treeNode, slaveServer.getName(), guiResource.getImageSlaveTree(),
+        createTreeNode( treeNode, slaveServer.getName(), guiResource.getImageSlaveTree(),
           LeveledTreeNode.LEVEL.GLOBAL, globalBowl.getLevelDisplayName(), containsIgnoreCase( projectSlaveServerNames, slaveServer.getName() ) );
       }
 
@@ -89,12 +88,12 @@ public class SlavesFolderProvider extends TreeFolderProvider {
       if ( meta.isPresent() ) {
         SlaveServerManagementInterface localServerMgr = meta.get().getSlaveServerManagementInterface();
         List<SlaveServer> localServers = localServerMgr.getAll();
-        for ( SharedObjectInterface sharedObjectInterface : localServers ) {
+        for ( SlaveServer sharedObjectInterface : localServers ) {
           if ( !filterMatch( sharedObjectInterface.getName(), filter ) ) {
             continue;
           }
 
-          TreeNode childTreeNode = createTreeNode( treeNode, sharedObjectInterface.getName(), guiResource.getImageSlaveTree(),
+          createTreeNode( treeNode, sharedObjectInterface.getName(), guiResource.getImageSlaveTree(),
             LeveledTreeNode.LEVEL.FILE, LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME, containsIgnoreCase( projectSlaveServerNames, sharedObjectInterface.getName() ) ||
                     containsIgnoreCase( globalServerNames, sharedObjectInterface.getName() ) );
         }
@@ -113,7 +112,7 @@ public class SlavesFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return SlaveServer.class;
   }
 

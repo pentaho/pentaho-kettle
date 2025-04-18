@@ -407,7 +407,7 @@ public class DatabaseMetaInformation {
         monitor.subTask( BaseMessages.getString( PKG, "DatabaseMeta.Info.ClosingDbConnection" ) );
       }
 
-      db.disconnect();
+      db.close();
       if ( monitor != null ) {
         monitor.worked( 1 );
       }

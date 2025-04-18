@@ -12,7 +12,6 @@
 
 package org.pentaho.di.plugins.fileopensave.dragdrop;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;

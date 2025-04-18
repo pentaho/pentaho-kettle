@@ -17,7 +17,6 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.steps.loadsave.MemoryRepository;
 import org.pentaho.di.trans.steps.loadsave.MemoryRepositoryExtended;
 

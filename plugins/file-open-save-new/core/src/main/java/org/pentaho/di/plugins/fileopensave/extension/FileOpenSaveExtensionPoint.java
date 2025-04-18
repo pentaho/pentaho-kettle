@@ -81,7 +81,7 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
 
     if ( !Utils.isEmpty( fileOpenSaveDialog.getProvider() ) ) {
       try {
-        FileProvider fileProvider = providerService.get( fileOpenSaveDialog.getProvider() );
+        FileProvider<?> fileProvider = providerService.get( fileOpenSaveDialog.getProvider() );
         fileProvider.setFileProperties( fileOpenSaveDialog, fileDialogOperation );
       } catch ( InvalidFileProviderException e ) {
         throw new KettleException( e );

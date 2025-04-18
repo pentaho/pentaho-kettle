@@ -33,7 +33,7 @@ public class RunConfigurationExtensionPoint implements ExtensionPointInterface {
   @SuppressWarnings( "unchecked" )
   @Override
   public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
-    List<String> runConfigurations = (ArrayList) ( (Object[]) o )[ 0 ];
+    List<String> runConfigurations = (ArrayList<String>) ( (Object[]) o )[ 0 ];
     String type = (String) ( (Object[]) o )[ 1 ];
 
     RunConfigurationManager runConfigurationManager =

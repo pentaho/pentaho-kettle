@@ -240,7 +240,6 @@ public class DatabaseJoin extends BaseDatabaseStep implements StepInterface {
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    final DatabaseJoinData data = (DatabaseJoinData) sdi;
     dbLock.lock();
     try {
       super.dispose( smi, sdi );

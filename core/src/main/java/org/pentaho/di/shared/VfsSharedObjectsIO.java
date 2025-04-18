@@ -49,7 +49,7 @@ import org.w3c.dom.NodeList;
  *
  */
 public class VfsSharedObjectsIO implements SharedObjectsIO {
-  private static Class<?> PKG = VfsSharedObjectsIO.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = VfsSharedObjectsIO.class; // for i18n purposes, needed by Translator2!!
   private static final Logger log = LoggerFactory.getLogger( VfsSharedObjectsIO.class );
 
   String sharedObjectFile;
@@ -140,7 +140,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   private void addNodeToMap( String type, Node node ) throws KettleXMLException {
     String tagName = XMLHandler.getTagValue( node, "name" );
     if ( !Utils.isEmpty( tagName ) ) {
-      log.info( " Checking if connection exist  " + SharedObjectType.valueOf( type.toUpperCase() ) );
+      log.info( "Checking if connection exist {}", SharedObjectType.valueOf( type.toUpperCase() ) );
       getNodesMapForType( type ).put( tagName, node );
     }
   }
@@ -349,7 +349,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   }
 
   private Map<String, Node> getNodesMapForType( SharedObjectType type ) throws KettleXMLException {
-    Map<String, Node> nodeMap = new HashMap();
+    Map<String, Node> nodeMap = new HashMap<>();
     switch ( type ) {
       case CONNECTION:
         nodeMap = connectionsNodes;

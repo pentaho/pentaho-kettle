@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 public class PassthroughSlaveServerManager extends PassthroughManager<SlaveServer> implements SlaveServerManagementInterface {
 
   public PassthroughSlaveServerManager( SharedObjectsIO sharedObjectsIO ) {
-    super( sharedObjectsIO, SlaveServer.class, SlaveServerManager.SLAVESERVER_TYPE );
+    super( sharedObjectsIO, SlaveServerManager.SLAVESERVER_TYPE );
   }
 
   protected SlaveServer createSharedObjectUsingNode( Node node ) throws KettleException {

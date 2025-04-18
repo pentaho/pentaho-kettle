@@ -18,12 +18,9 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
-import org.pentaho.di.metastore.MetaStoreConst;
-import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.function.Supplier;
 import java.util.List;
 
 /**

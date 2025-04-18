@@ -533,7 +533,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             }
             Object[][] resultArr = new Object[list.size()][];
             list.toArray( resultArr );
-            db.disconnect();
+            db.close();
             return resultArr;
           }
         } catch ( Exception er ) {

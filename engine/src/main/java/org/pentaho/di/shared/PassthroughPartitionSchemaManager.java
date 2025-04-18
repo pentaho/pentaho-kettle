@@ -23,7 +23,7 @@ public class PassthroughPartitionSchemaManager extends PassthroughManager<Partit
   public static final String PARTITIONSCHEMA_TYPE = SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName();
 
   public PassthroughPartitionSchemaManager( SharedObjectsIO sharedObjectsIO ) {
-    super( sharedObjectsIO, PartitionSchema.class, PARTITIONSCHEMA_TYPE );
+    super( sharedObjectsIO, PARTITIONSCHEMA_TYPE );
   }
 
   @Override

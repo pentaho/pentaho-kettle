@@ -13,7 +13,6 @@
 
 package org.pentaho.di.trans.steps.stringcut;
 
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;

@@ -44,7 +44,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -71,7 +70,7 @@ public class CombinationLookupMeta extends BaseDatabaseStepMeta implements StepM
    */
   public static final int DEFAULT_CACHE_SIZE = 9999;
 
-  private List<? extends SharedObjectInterface> databases;
+  private List<DatabaseMeta> databases;
 
   /**
    * what's the lookup schema?
@@ -401,7 +400,7 @@ public class CombinationLookupMeta extends BaseDatabaseStepMeta implements StepM
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     this.databases = databases;
     try {
       String commit, csize;
@@ -752,7 +751,7 @@ public class CombinationLookupMeta extends BaseDatabaseStepMeta implements StepM
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "CombinationLookupMeta.CheckResult.InvalidConnection" );

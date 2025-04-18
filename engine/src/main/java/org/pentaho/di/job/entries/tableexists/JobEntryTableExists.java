@@ -180,7 +180,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
       } finally {
         if ( db != null ) {
           try {
-            db.disconnect();
+            db.close();
           } catch ( Exception e ) { /* Ignore */
           }
         }

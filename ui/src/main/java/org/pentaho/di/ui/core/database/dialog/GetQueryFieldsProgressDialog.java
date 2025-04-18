@@ -66,7 +66,7 @@ public class GetQueryFieldsProgressDialog {
         } catch ( Exception e ) {
           throw new InvocationTargetException( e, "Problem encountered determining query fields: " + e.toString() );
         } finally {
-          db.disconnect();
+          db.close();
         }
       }
     };

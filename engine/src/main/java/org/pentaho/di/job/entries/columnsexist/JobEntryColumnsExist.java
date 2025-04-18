@@ -267,7 +267,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
       } finally {
         if ( db != null ) {
           try {
-            db.disconnect();
+            db.close();
           } catch ( Exception e ) { /* Ignore */
           }
         }

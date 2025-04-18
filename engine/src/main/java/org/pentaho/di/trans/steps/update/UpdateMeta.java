@@ -56,7 +56,7 @@ import java.util.List;
 public class UpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = UpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private List<? extends SharedObjectInterface> databases;
+  private List<DatabaseMeta> databases;
 
   /** The lookup table name */
   @Injection( name = "SCHEMA_NAME" )
@@ -362,7 +362,7 @@ public class UpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String csize;
       int nrkeys, nrvalues;
@@ -752,7 +752,7 @@ public class UpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "UpdateMeta.CheckResult.InvalidConnection" );

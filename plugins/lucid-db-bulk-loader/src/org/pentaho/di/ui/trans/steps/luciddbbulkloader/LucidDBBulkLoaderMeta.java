@@ -223,7 +223,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
@@ -479,7 +479,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.InvalidConnection" );
@@ -619,7 +619,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         throw new KettleException( BaseMessages.getString(
           PKG, "LucidDBBulkLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString(

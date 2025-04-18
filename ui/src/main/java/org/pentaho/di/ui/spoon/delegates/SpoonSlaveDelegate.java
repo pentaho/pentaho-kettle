@@ -16,14 +16,11 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.widget.TreeUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonSlave;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -32,10 +29,6 @@ import org.pentaho.di.ui.spoon.tree.provider.SlavesFolderProvider;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 
@@ -43,7 +36,7 @@ import org.eclipse.swt.widgets.MessageBox;
  * Spoon delegate class that handles all the right click popup menu actions in the Slave Server node in configuration
  * tree
  */
-public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
+public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate<SlaveServer> {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   public SpoonSlaveDelegate( Spoon spoon ) {
@@ -165,17 +158,10 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
     ShowEditDialog<SlaveServer> sed = ( ss, servers ) -> {
       SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), ss, servers );
       if ( dialog.open() ) {
-        String newServerName = ss.getName().trim();
         slaveServerManager.add( ss );
       }
     };
     dupeSharedObject( slaveServerManager, slaveServer, sed );
-  }
-
-  private void showSaveErrorDialog( SlaveServer slaveServer, Exception e ) {
-    new ErrorDialog(
-        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ),
-        BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Message", slaveServer.getName() ), e );
   }
 
   @Override

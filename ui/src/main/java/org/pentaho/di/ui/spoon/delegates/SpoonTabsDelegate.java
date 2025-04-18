@@ -58,7 +58,6 @@ import org.pentaho.ui.util.Launch;
 import org.pentaho.ui.util.Launch.Status;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 

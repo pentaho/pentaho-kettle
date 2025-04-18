@@ -345,7 +345,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       dbchecked.connect( parentJob.getTransactionId(), null );
     } finally {
       if ( dbchecked != null ) {
-        dbchecked.disconnect();
+        dbchecked.close();
       }
     }
   }
@@ -568,7 +568,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
         if ( isAddRowsResult && iscustomSQL && ar != null ) {
           rowMeta = db.getQueryFields( countStatement, false );
         }
-        db.disconnect();
+        db.close();
       }
     }
 

@@ -37,7 +37,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.avro.AvroSpec;
-import org.pentaho.di.trans.steps.avro.AvroSpec;
 import org.pentaho.di.trans.steps.avro.AvroTypeConverter;
 import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;

@@ -122,7 +122,6 @@ public class LoopNodesImportProgressDialog {
     return Xpaths;
   }
 
-  @SuppressWarnings( "unchecked" )
   private String[] doScan( Bowl bowl, IProgressMonitor monitor ) throws Exception {
     monitor.beginTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ScanningFile",
         filename ), 1 );

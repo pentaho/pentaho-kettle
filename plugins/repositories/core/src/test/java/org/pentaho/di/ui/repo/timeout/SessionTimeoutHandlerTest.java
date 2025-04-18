@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 
 import java.lang.reflect.Method;
@@ -61,7 +60,6 @@ public class SessionTimeoutHandlerTest {
     verify( sessionTimeoutHandler, never() ).showLoginScreen( any() );
   }
 
-  @SuppressWarnings( "unchecked" )
   @Test
   public void handleSecondExecutionFailed() throws Throwable {
     when( repository.getDatabaseIDs( anyBoolean() ) ).thenThrow( KettleRepositoryLostException.class ).thenReturn( new ObjectId[0] );

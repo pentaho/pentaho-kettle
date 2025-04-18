@@ -68,7 +68,7 @@ public class HopsFolderProvider extends AutomaticTreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return TransHopMeta.class;
   }
 }

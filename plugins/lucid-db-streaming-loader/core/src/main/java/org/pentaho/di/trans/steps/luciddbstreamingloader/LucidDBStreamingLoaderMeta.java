@@ -196,7 +196,7 @@ public class LucidDBStreamingLoaderMeta extends BaseDatabaseStepMeta implements 
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
@@ -845,7 +845,7 @@ public class LucidDBStreamingLoaderMeta extends BaseDatabaseStepMeta implements 
         throw new KettleException( BaseMessages.getString(
           PKG, "LucidDBStreamingLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString(
@@ -971,7 +971,7 @@ public class LucidDBStreamingLoaderMeta extends BaseDatabaseStepMeta implements 
             retval.setError( BaseMessages.getString( PKG, "LucidDBStreamingLoaderMeta.Error.ErrorConnecting", dbe
               .getMessage() ) );
           } finally {
-            db.disconnect();
+            db.close();
           }
         } else {
           retval.setError( BaseMessages.getString( PKG, "LucidDBStreamingLoaderMeta.Error.NoTable" ) );

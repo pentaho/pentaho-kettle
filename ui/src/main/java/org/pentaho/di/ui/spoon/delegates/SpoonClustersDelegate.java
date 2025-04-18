@@ -19,7 +19,6 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -28,7 +27,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.provider.ClustersFolderProvider;
 
-public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
+public class SpoonClustersDelegate extends SpoonSharedObjectDelegate<ClusterSchema> {
 
   public SpoonClustersDelegate( Spoon spoon ) {
     super( spoon );
@@ -62,12 +61,6 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
         spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingCluster.Title" ), BaseMessages
           .getString( PKG, "Spoon.Dialog.ErrorSavingCluster.Message" ), e );
     }
-  }
-
-  private void showSaveError( ClusterSchema clusterSchema, KettleException e ) {
-    new ErrorDialog(
-      spoon.getShell(), getMessage( "Spoon.Dialog.ErrorSavingCluster.Title" ),
-      getMessage( "Spoon.Dialog.ErrorSavingCluster.Message", clusterSchema.getName() ), e );
   }
 
   public void editClusterSchema( TransMeta transMeta, ClusterSchemaManagementInterface manager, ClusterSchema clusterSchema ) {
@@ -145,7 +138,6 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
 
       ClusterSchemaDialog dialog = new ClusterSchemaDialog( spoon.getShell(), cs, clusters, slaveServers );
       if ( dialog.open() ) {
-        String newServerName = cs.getName().trim();
         clusterSchemaManager.add( cs );
       }
     };

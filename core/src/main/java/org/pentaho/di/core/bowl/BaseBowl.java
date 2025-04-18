@@ -14,14 +14,13 @@ package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.core.exception.KettleException;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public abstract class BaseBowl implements Bowl {
 
-  private final Map<Class<?>, Object> managerInstances = new ConcurrentHashMap();
+  private final Map<Class<?>, Object> managerInstances = new ConcurrentHashMap<>();
   private final Set<Bowl> parentBowls = ConcurrentHashMap.newKeySet();
 
   @Override

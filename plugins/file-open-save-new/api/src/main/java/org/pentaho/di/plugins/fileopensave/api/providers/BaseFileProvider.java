@@ -14,7 +14,6 @@
 package org.pentaho.di.plugins.fileopensave.api.providers;
 
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;

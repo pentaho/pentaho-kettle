@@ -565,14 +565,14 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
 
   @Override
   public List<MappingIODefinition> getInputMappings() {
-    final List<MappingIODefinition> inputMappings = new ArrayList();
+    final List<MappingIODefinition> inputMappings = new ArrayList<>();
     inputMappings.add( inputMapping );
     return inputMappings;
   }
 
   @Override
   public List<MappingIODefinition> getOutputMappings() {
-    final List<MappingIODefinition> outputMappings = new ArrayList();
+    final List<MappingIODefinition> outputMappings = new ArrayList<>();
     outputMappings.add( outputMapping );
     return outputMappings;
   }

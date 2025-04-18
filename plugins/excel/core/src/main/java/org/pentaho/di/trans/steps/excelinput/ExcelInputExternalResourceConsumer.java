@@ -22,8 +22,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.excelinput.ExcelInput;
-import org.pentaho.di.trans.steps.excelinput.ExcelInputMeta;
 import org.pentaho.metaverse.api.IAnalysisContext;
 import org.pentaho.metaverse.api.analyzer.kettle.step.BaseStepExternalResourceConsumer;
 import org.pentaho.metaverse.api.model.ExternalResourceInfoFactory;

@@ -83,7 +83,6 @@ import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
@@ -685,7 +684,7 @@ public class JobMeta extends AbstractMeta
     //
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
     try {
-      for ( SharedObjectInterface slaveServer : localSlaveServerMgr.getAll() ) {
+      for ( SlaveServer slaveServer : localSlaveServerMgr.getAll() ) {
         retval.append( slaveServer.getXML() );
       }
     } catch ( KettleException exception ) {
@@ -1026,11 +1025,6 @@ public class JobMeta extends AbstractMeta
    */
   public void loadXML( Node jobnode, String fname, Repository rep, IMetaStore metaStore,
       boolean ignoreRepositorySharedObjects, OverwritePrompter prompter ) throws KettleXMLException {
-    Props props = null;
-    if ( Props.isInitialized() ) {
-      props = Props.getInstance();
-    }
-
     try {
       // clear the jobs;
       clear();
@@ -2173,7 +2167,7 @@ public class JobMeta extends AbstractMeta
             BaseMessages.getString( PKG, "JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo" ) + dbe.getMessage() );
         stats.add( stat );
       } finally {
-        db.disconnect();
+        db.close();
       }
     }
     if ( monitor != null ) {

@@ -418,7 +418,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
         logError( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Error.RunningEntry", dbe.getMessage() ) );
       } finally {
         if ( db != null ) {
-          db.disconnect();
+          db.close();
         }
       }
     } else {

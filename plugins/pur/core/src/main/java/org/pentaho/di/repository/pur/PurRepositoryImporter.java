@@ -43,7 +43,7 @@ public class PurRepositoryImporter extends RepositoryImporter implements java.io
   }
 
   @Override
-  protected <T extends SharedObjectInterface> List<T> getSharedObjects( Class<T> clazz ) {
+  protected <T extends SharedObjectInterface<T>> List<T> getSharedObjects( Class<T> clazz ) {
     List<T> result = new ArrayList<T>();
     List<?> typeList = sharedObjectsByType.get( clazz );
     if ( typeList != null ) {
@@ -56,7 +56,7 @@ public class PurRepositoryImporter extends RepositoryImporter implements java.io
 
   private void populateSharedObjectsMap() throws KettleException {
     sharedObjectsByType = new HashMap<Class<?>, List<?>>();
-    for ( Entry<RepositoryObjectType, List<? extends SharedObjectInterface>> entry : rep.loadAndCacheSharedObjects()
+    for ( Entry<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> entry : rep.loadAndCacheSharedObjects()
         .entrySet() ) {
       Class<?> clazz = null;
       switch ( entry.getKey() ) {

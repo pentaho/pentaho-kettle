@@ -615,11 +615,11 @@ public class TableCompare extends BaseStep implements StepInterface {
     data = (TableCompareData) sdi;
 
     if ( data.referenceDb != null ) {
-      data.referenceDb.disconnect();
+      data.referenceDb.close();
     }
 
     if ( data.compareDb != null ) {
-      data.compareDb.disconnect();
+      data.compareDb.close();
     }
 
     super.dispose( smi, sdi );

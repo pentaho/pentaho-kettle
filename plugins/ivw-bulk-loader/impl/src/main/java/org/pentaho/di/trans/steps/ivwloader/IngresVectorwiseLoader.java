@@ -669,7 +669,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
           log.logError( "Error truncating table", e );
           return false;
         } finally {
-          db.disconnect();
+          db.close();
         }
 
       }

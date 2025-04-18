@@ -300,7 +300,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
         logError( BaseMessages.getString( PKG, "JobEntryTruncateTables.Error.RunningEntry", dbe.getMessage() ) );
       } finally {
         if ( db != null ) {
-          db.disconnect();
+          db.close();
         }
       }
     } else {

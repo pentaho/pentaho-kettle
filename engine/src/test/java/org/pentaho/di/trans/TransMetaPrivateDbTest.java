@@ -20,12 +20,10 @@ import org.pentaho.di.base.PrivateDatabasesTestTemplate;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
-import org.pentaho.di.shared.SharedObjects;
 import org.w3c.dom.Document;
 
 import java.io.ByteArrayInputStream;
 
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 
 /**

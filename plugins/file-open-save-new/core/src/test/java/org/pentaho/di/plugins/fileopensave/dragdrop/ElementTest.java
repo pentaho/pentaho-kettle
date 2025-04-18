@@ -24,7 +24,6 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
-import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;

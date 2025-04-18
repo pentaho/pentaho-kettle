@@ -19,11 +19,8 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
-import java.util.function.Supplier;
 
 /**
  * Created by bmorrise on 2/13/19.
@@ -49,6 +46,7 @@ public class VFSHelper {
       ConnectionManager connectionManager = bowl.getManager( ConnectionManager.class );
       VFSConnectionDetails vfsConnectionDetails =
         (VFSConnectionDetails) connectionManager.getConnectionDetails( file, connection );
+      @SuppressWarnings("unchecked")
       VFSConnectionProvider<VFSConnectionDetails> vfsConnectionProvider =
         (VFSConnectionProvider<VFSConnectionDetails>) connectionManager.getConnectionProvider( file );
       if ( vfsConnectionDetails != null && vfsConnectionProvider != null ) {

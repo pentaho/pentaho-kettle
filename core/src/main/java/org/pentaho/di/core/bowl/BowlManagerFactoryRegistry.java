@@ -15,8 +15,6 @@ package org.pentaho.di.core.bowl;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ConnectionUpdateSubscriber;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +39,7 @@ public class BowlManagerFactoryRegistry {
     public ConnectionManager apply( Bowl bowl ) throws KettleException {
       ConnectionManager connectionManager = ConnectionManager.getInstance( bowl );
       if ( !bowl.getParentBowls().isEmpty() ) {
-        ConnectionUpdateSubscriber subscriber = () -> connectionManager.reset();
+        ConnectionUpdateSubscriber subscriber = connectionManager::reset;
         for ( Bowl parentBowl : bowl.getParentBowls() ) {
           parentBowl.getManager( ConnectionManager.class ).addSubscriber( subscriber );
         }

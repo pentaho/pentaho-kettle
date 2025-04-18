@@ -355,7 +355,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
         } finally {
           if ( db != null ) {
             try {
-              db.disconnect();
+              db.close();
               db = null;
             } catch ( Exception e ) { /* Ignore */
             }

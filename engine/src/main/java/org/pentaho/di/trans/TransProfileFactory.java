@@ -209,7 +209,7 @@ public class TransProfileFactory {
       database.connect();
       return database.getTableFields( schemaTable );
     } finally {
-      database.disconnect();
+      database.close();
     }
 
   }

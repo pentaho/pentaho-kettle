@@ -316,7 +316,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       // the targetFilePath holds the absolute repo path that is the requested destination of this generated
       // transformation, extract the file name (no extension) and the containing directory and adjust the generated
       // transformation properties accordingly
-      List<String> targetPath = new ArrayList( Arrays.asList( Const.splitPath( targetFilePath,
+      List<String> targetPath = new ArrayList<>( Arrays.asList( Const.splitPath( targetFilePath,
         RepositoryDirectory.DIRECTORY_SEPARATOR  ) ) );
       final String fileName = targetPath.get( targetPath.size() - 1 ).replace( ".ktr", "" );
       generatedTrans.setName( fileName );

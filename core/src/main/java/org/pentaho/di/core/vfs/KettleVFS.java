@@ -519,8 +519,5 @@ public class KettleVFS {
       return ext;
     }
   }
-
-  private void serializeVariableSpace( VariableSpace space ) {
-    space.listVariables();
-  }
+  
 }

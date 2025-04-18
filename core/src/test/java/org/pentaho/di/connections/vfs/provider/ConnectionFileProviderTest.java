@@ -27,7 +27,6 @@ import org.pentaho.di.connections.common.domain.TestFileWithDomainProvider;
 import org.pentaho.di.connections.common.domainbuckets.TestConnectionWithDomainAndBucketsDetails;
 import org.pentaho.di.connections.common.domainbuckets.TestConnectionWithDomainAndBucketsProvider;
 import org.pentaho.di.connections.common.domainbuckets.TestFileWithDomainAndBucketsProvider;
-import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.bowl.BaseBowl;
 import org.pentaho.di.core.bowl.Bowl;
@@ -319,6 +318,7 @@ public class ConnectionFileProviderTest {
 
     TestBasicConnectionDetails connectionDetails = (TestBasicConnectionDetails) connectionManager
       .getConnectionDetails( "Basic Connection Variable Substitution" );
+    connectionDetails.setRootPath( "${my_var_root_path}" );
 
     Variables myVariableSpace = new Variables();
     myVariableSpace.setVariable( "my_var_root_path",  "/some/magical/dir" );
@@ -350,6 +350,7 @@ public class ConnectionFileProviderTest {
 
     TestConnectionWithBucketsDetails connectionDetails = (TestConnectionWithBucketsDetails)
       connectionManager.getConnectionDetails( "Connection Variable Substitution With Buckets" );
+    connectionDetails.setRootPath( "${my_var_root_path}" );
 
     Variables myVariableSpace = new Variables();
     myVariableSpace.setVariable( "my_var_root_path",  "/some/magical/dir" );
@@ -381,6 +382,7 @@ public class ConnectionFileProviderTest {
 
     TestConnectionWithDomainDetails connectionDetails = (TestConnectionWithDomainDetails)
       connectionManager.getConnectionDetails( "Connection Variable Substitution With Domain" );
+    connectionDetails.setRootPath( "${my_var_root_path}" );
 
     Variables myVariableSpace = new Variables();
     myVariableSpace.setVariable( "my_var_root_path",  "/some/magical/dir" );
@@ -414,6 +416,7 @@ public class ConnectionFileProviderTest {
 
     TestConnectionWithDomainAndBucketsDetails connectionDetails = (TestConnectionWithDomainAndBucketsDetails)
       connectionManager.getConnectionDetails( "Connection Variable Substitution With Domain And Buckets" );
+    connectionDetails.setRootPath( "${my_var_root_path}" );
 
     Variables myVariableSpace = new Variables();
     myVariableSpace.setVariable( "my_var_root_path",  "/some/magical/dir" );

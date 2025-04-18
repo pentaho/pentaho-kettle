@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -30,7 +29,7 @@ import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.provider.PartitionsFolderProvider;
 
-public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
+public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<PartitionSchema> {
   public SpoonPartitionsDelegate( Spoon spoon ) {
     super( spoon );
   }
@@ -152,7 +151,6 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
       PartitionSchemaDialog dialog = new PartitionSchemaDialog( spoon.getShell(), ps, servers,
          databaseManagementInterface.getAll(), spoon.getBowl().getADefaultVariableSpace() );
       if ( dialog.open() ) {
-        String newServerName = ps.getName().trim();
         partitionSchemaManager.add( ps );
       }
     };

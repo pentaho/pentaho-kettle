@@ -40,7 +40,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -57,7 +56,7 @@ import org.w3c.dom.Node;
 public class InsertUpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterface, ProvidesModelerMeta {
   private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private List<? extends SharedObjectInterface> databases;
+  private List<DatabaseMeta> databases;
 
   /**
    * what's the lookup schema?
@@ -220,7 +219,7 @@ public class InsertUpdateMeta extends BaseDatabaseStepMeta implements StepMetaIn
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     this.databases = databases;
     try {
       String csize;
@@ -603,7 +602,7 @@ public class InsertUpdateMeta extends BaseDatabaseStepMeta implements StepMetaIn
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.InvalidConnection" );
@@ -807,7 +806,7 @@ public class InsertUpdateMeta extends BaseDatabaseStepMeta implements StepMetaIn
         throw new KettleException(
           BaseMessages.getString( PKG, "InsertUpdateMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString( PKG, "InsertUpdateMeta.Exception.ConnectionNotDefined" ) );

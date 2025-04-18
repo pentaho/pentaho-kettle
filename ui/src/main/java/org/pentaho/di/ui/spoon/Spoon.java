@@ -3399,16 +3399,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return getSharedObjectManager( level, DatabaseManagementInterface.class );
   }
 
-  private DatabaseMeta getDatabaseMeta( SpoonTreeLeveledSelection leveledSelection ) throws KettleException {
-    DatabaseManagementInterface dbManager = null;
-    DatabaseMeta databaseMeta = null;
-
-    dbManager = getDbManager( leveledSelection.getLevel() );
-    databaseMeta = dbManager.get( leveledSelection.getName() );
-
-    return databaseMeta;
-
-  }
 
   /**
    * Reaction to double click
@@ -9676,7 +9666,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
 
       withDatabase( ( dbManager, databaseMeta ) -> {
-        SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
 
         String[] jobList = rep.getJobsUsingDatabase( databaseMeta.getObjectId() );
         String[] transList = rep.getTransformationsUsingDatabase( databaseMeta.getObjectId() );

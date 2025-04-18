@@ -19,7 +19,6 @@ import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -64,13 +63,13 @@ public class ClustersFolderProvider extends TreeFolderProvider {
           currentBowl.getManager( ClusterSchemaManagementInterface.class );
         List<ClusterSchema> clusterSchemas = clusterSchemaManager.getAll();
 
-        for ( SharedObjectInterface sharedObject : clusterSchemas ) {
+        for ( ClusterSchema sharedObject : clusterSchemas ) {
           if ( !filterMatch( sharedObject.getName(), filter ) ) {
             continue;
           }
           projectClusterNames.add( sharedObject.getName() );
-          TreeNode childTreeNode = createTreeNode( treeNode, sharedObject.getName(), guiResource.getImageClusterMedium(),
-                                                   LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
+          createTreeNode( treeNode, sharedObject.getName(), guiResource.getImageClusterMedium(),
+            LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         }
       }
 
@@ -79,13 +78,13 @@ public class ClustersFolderProvider extends TreeFolderProvider {
         globalBowl.getManager( ClusterSchemaManagementInterface.class );
       Set<String> globalClusterNames = new HashSet<>();
       List<ClusterSchema> clusters = globalClusterMgr.getAll();
-      for ( SharedObjectInterface clusterSchema : clusters ) {
+      for ( ClusterSchema clusterSchema : clusters ) {
         if ( !filterMatch( clusterSchema.getName(), filter ) ) {
           continue;
         }
 
         globalClusterNames.add( clusterSchema.getName() );
-        TreeNode childTreeNode = createTreeNode( treeNode, clusterSchema.getName(), guiResource.getImageClusterMedium(),
+        createTreeNode( treeNode, clusterSchema.getName(), guiResource.getImageClusterMedium(),
           LeveledTreeNode.LEVEL.GLOBAL, globalBowl.getLevelDisplayName(), containsIgnoreCase( projectClusterNames, clusterSchema.getName() ) );
       }
 
@@ -96,12 +95,12 @@ public class ClustersFolderProvider extends TreeFolderProvider {
           ClusterSchemaManagementInterface localClusterMgr =
             realMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class );
           List<ClusterSchema> localClusters = localClusterMgr.getAll();
-          for ( SharedObjectInterface sharedObjectInterface : localClusters ) {
+          for ( ClusterSchema sharedObjectInterface : localClusters ) {
             if ( !filterMatch( sharedObjectInterface.getName(), filter ) ) {
               continue;
             }
 
-            TreeNode childTreeNode = createTreeNode( treeNode, sharedObjectInterface.getName(),
+            createTreeNode( treeNode, sharedObjectInterface.getName(),
               guiResource.getImageClusterMedium(), LeveledTreeNode.LEVEL.FILE, LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME,
               containsIgnoreCase( projectClusterNames, sharedObjectInterface.getName() ) ||
                 containsIgnoreCase( globalClusterNames, sharedObjectInterface.getName() ) );
@@ -132,7 +131,7 @@ public class ClustersFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return ClusterSchema.class;
   }
 }

@@ -391,7 +391,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                   db.execStatement( SQLBULKLOAD );
 
                   // Everything is OK...we can deconnect now
-                  db.disconnect();
+                  db.close();
 
                   if ( isAddFileToResult() ) {
                     // Add zip filename to output files
@@ -405,7 +405,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
                   result.setResult( true );
                 } catch ( KettleDatabaseException je ) {
-                  db.disconnect();
+                  db.close();
                   result.setNrErrors( 1 );
                   logError( "An error occurred executing this job entry : " + je.getMessage() );
                 } catch ( KettleFileException e ) {
@@ -414,14 +414,14 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                 }
               } else {
                 // Of course, the table should have been created already before the bulk load operation
-                db.disconnect();
+                db.close();
                 result.setNrErrors( 1 );
                 if ( log.isDetailed() ) {
                   logDetailed( "Table [" + realTablename + "] doesn't exist!" );
                 }
               }
             } catch ( KettleDatabaseException dbe ) {
-              db.disconnect();
+              db.close();
               result.setNrErrors( 1 );
               logError( "An error occurred executing this entry: " + dbe.getMessage() );
             }

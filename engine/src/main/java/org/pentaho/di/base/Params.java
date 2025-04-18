@@ -526,7 +526,7 @@ public class Params implements IParams {
   @Override
   public Map<String, String> getParams() {
     if ( this.namedParams == null ) {
-      return Collections.EMPTY_MAP;
+      return Collections.emptyMap();
     }
 
     Map<String, String> params = new HashMap<String, String>();
@@ -554,7 +554,7 @@ public class Params implements IParams {
   @Override
   public Map<String, String> getCustomParams() {
     if ( this.customNamedParams == null ) {
-      return Collections.EMPTY_MAP;
+      return Collections.emptyMap();
     }
 
     Map<String, String> customParams = new HashMap<String, String>();

@@ -16,7 +16,6 @@ package org.pentaho.di.ui.spoon;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -25,9 +24,6 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.StringObjectId;
-import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.spoon.delegates.SpoonClustersDelegate;
@@ -49,14 +45,10 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -303,21 +295,6 @@ public class SharedObjectSyncUtilTest {
     slaveServer.setName( name );
     slaveServer.setShared( shared );
     return slaveServer;
-  }
-
-  private SharedObjects saveSharedObjects( String location, SharedObjectInterface...objects ) throws Exception {
-    SharedObjects sharedObjects = createSharedObjects( location, objects );
-    sharedObjects.saveToFile();
-    return sharedObjects;
-  }
-
-  private static SharedObjects createSharedObjects( String location, SharedObjectInterface... objects )
-    throws KettleXMLException {
-    SharedObjects sharedObjects = new SharedObjects( location );
-    for ( SharedObjectInterface sharedObject : objects ) {
-      sharedObjects.storeObject( sharedObject );
-    }
-    return sharedObjects;
   }
 
 }

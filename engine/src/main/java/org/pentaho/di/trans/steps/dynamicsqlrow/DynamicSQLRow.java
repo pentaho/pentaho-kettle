@@ -13,7 +13,6 @@
 
 package org.pentaho.di.trans.steps.dynamicsqlrow;
 
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;

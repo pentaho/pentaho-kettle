@@ -75,7 +75,7 @@ public class GetTableSizeProgressDialog {
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, "Couldn't get a result because of an error :" + e.toString() );
         } finally {
-          db.disconnect();
+          db.close();
         }
       }
     };

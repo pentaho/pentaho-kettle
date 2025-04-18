@@ -40,7 +40,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -439,7 +438,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
 
       String con = XMLHandler.getTagValue( stepnode, "connection" );
@@ -691,7 +690,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
             PKG, "SQLFileOutputMeta.CheckResult.UndefinedError", e.getMessage() ), stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       CheckResult cr =
@@ -773,7 +772,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
             retval.setError( BaseMessages.getString( PKG, "SQLFileOutputMeta.Error.ErrorConnecting", dbe
               .getMessage() ) );
           } finally {
-            db.disconnect();
+            db.close();
           }
         } else {
           retval.setError( BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.TableNotSpecified" ) );
@@ -811,7 +810,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
         throw new KettleException(
           BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.ConnectionNotDefined" ) );

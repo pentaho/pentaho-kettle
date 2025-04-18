@@ -2548,7 +2548,7 @@ public class TransMeta extends AbstractMeta
     if ( includeSlaves ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
       List<SlaveServer> slaveServers = localSlaveServerMgr.getAll();
-      for ( SharedObjectInterface slaveServer : slaveServers ) {
+      for ( SlaveServer slaveServer : slaveServers ) {
         retval.append( slaveServer.getXML() );
       }
 
@@ -3232,11 +3232,6 @@ public class TransMeta extends AbstractMeta
 
     try {
 
-      Props props = null;
-      if ( Props.isInitialized() ) {
-        props = Props.getInstance();
-      }
-
       initializeVariablesFrom( parentVariableSpace );
 
       try {
@@ -3679,7 +3674,7 @@ public class TransMeta extends AbstractMeta
   }
 
   @Override
-  public boolean loadSharedObject( SharedObjectInterface object ) {
+  public boolean loadSharedObject( SharedObjectInterface<?> object ) {
     if ( !super.loadSharedObject( object ) ) {
       if ( object instanceof StepMeta ) {
         StepMeta stepMeta = (StepMeta) object;
@@ -4583,7 +4578,7 @@ public class TransMeta extends AbstractMeta
                   "Unable to connect to logging database [" + logTable.getDatabaseMeta() + "]", e );
             } finally {
               if ( db != null ) {
-                db.disconnect();
+                db.close();
               }
             }
           }
@@ -4879,7 +4874,7 @@ public class TransMeta extends AbstractMeta
           } catch ( KettleDatabaseException dbe ) {
             // Ignore errors
           } finally {
-            logdb.disconnect();
+            logdb.close();
           }
         }
         if ( monitor != null ) {
@@ -5610,7 +5605,7 @@ public class TransMeta extends AbstractMeta
       return partitionSchemas;
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -5643,7 +5638,7 @@ public class TransMeta extends AbstractMeta
       return partitionSchemas.stream().map( PartitionSchema::getName ).toArray( String[]::new );
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
-      return null;
+      return new String[0];
     }
   }
 
@@ -5716,7 +5711,7 @@ public class TransMeta extends AbstractMeta
       return clusterSchemas;
     } catch ( KettleException exception ) {
       LogChannel.GENERAL.logError( exception.getMessage(), exception );
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -5748,7 +5743,7 @@ public class TransMeta extends AbstractMeta
       Collections.sort( clusterSchemas, ClusterSchema.COMPARATOR );
       return clusterSchemas.stream().map( ClusterSchema::getName ).toArray( String[]::new );
     } catch ( KettleException ex ) {
-      return null;
+      return new String[0];
     }
   }
 

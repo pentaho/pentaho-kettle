@@ -246,7 +246,7 @@ public class ExecSQL extends BaseStep implements StepInterface {
     }
 
     if ( data.db != null ) {
-      data.db.disconnect();
+      data.db.close();
     }
 
     super.dispose( smi, sdi );
