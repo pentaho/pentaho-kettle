@@ -26,6 +26,7 @@ import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -167,7 +168,8 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     }
 
     if ( !Utils.isEmpty( params.getExportRepo() ) ) {
-
+      // For export specifically, initialize props to honor "only used db connections" setting
+      Props.init( Props.TYPE_PROPERTIES_SPOON );
       try {
         // Export the resources linked to the currently loaded file...
         TopLevelResource topLevelResource =
