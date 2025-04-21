@@ -25,12 +25,14 @@ import java.util.Map;
 
 @XmlRootElement( name = "jobScheduleRequest" )
 @XmlAccessorType( XmlAccessType.FIELD )
-@XmlType( propOrder = { "inputFile", "jobParameters", "pdiParameters" } )
+@XmlType( propOrder = { "inputFile", "outputFile", "jobParameters", "pdiParameters" } )
 public class JobScheduleRequest implements Serializable {
 
   private static final long serialVersionUID = -485489832281790257L;
 
   private String inputFile;
+
+  private String outputFile;
 
   private List<JobScheduleParam> jobParameters = new ArrayList<>();
 
@@ -60,4 +62,11 @@ public class JobScheduleRequest implements Serializable {
     this.pdiParameters = pdiParameters;
   }
 
+  public String getOutputFile() {
+    return outputFile;
+  }
+
+  public void setOutputFile( String outputFile ) {
+    this.outputFile = outputFile;
+  }
 }

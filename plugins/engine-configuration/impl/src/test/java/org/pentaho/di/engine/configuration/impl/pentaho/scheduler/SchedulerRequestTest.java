@@ -17,9 +17,11 @@ import org.apache.http.entity.StringEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
 import java.io.IOException;
@@ -61,6 +63,7 @@ public class SchedulerRequestTest {
     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
       + "<jobScheduleRequest>"
       + "<inputFile>%s/%s.%s</inputFile>"
+      + "<outputFile>%s</outputFile>"
       + "<jobParameters>"
       + "<name>%s</name>" + "<type>%s</type>" + "<stringValue>%s</stringValue>"
       + "</jobParameters>"
@@ -87,7 +90,7 @@ public class SchedulerRequestTest {
       + "</jobScheduleRequest>", TEST_REPOSITORY_DIRECTORY,
     TEST_JOB_NAME.replace( "&", "&amp;" ).replace( "<", "&lt;" )
       .replace( ">", "&gt;" ),
-    JOB_EXTENSION, LOG_LEVEL_PARAM_NAME, STRING_PARAM_TYPE, TEST_LOG_LEVEL_PARAM_VALUE,
+    JOB_EXTENSION,TEST_REPOSITORY_DIRECTORY,LOG_LEVEL_PARAM_NAME, STRING_PARAM_TYPE, TEST_LOG_LEVEL_PARAM_VALUE,
         CLEAR_LOG_PARAM_NAME, STRING_PARAM_TYPE, TEST_CLEAR_LOG_PARAM_VALUE,
         RUN_SAFE_MODE_PARAM_NAME, STRING_PARAM_TYPE, TEST_RUN_SAFE_MODE_PARAM_VALUE,
         GATHERING_METRICS_PARAM_NAME, STRING_PARAM_TYPE, TEST_GATHERING_METRICS_PARAM_VALUE,
@@ -104,11 +107,15 @@ public class SchedulerRequestTest {
 
   @Test
   @SuppressWarnings( "ResultOfMethodCallIgnored" )
-  public void testBuildSchedulerRequestEntity() throws UnknownParamException, UnsupportedEncodingException {
+  public void testBuildSchedulerRequestEntity() throws KettleException, UnsupportedEncodingException {
     AbstractMeta meta = mock( JobMeta.class );
     RepositoryDirectoryInterface repositoryDirectory = mock( RepositoryDirectoryInterface.class );
+    Repository repository = mock( Repository.class );
 
     doReturn( repositoryDirectory ).when( meta ).getRepositoryDirectory();
+    doReturn( TEST_REPOSITORY_DIRECTORY ).when( repositoryDirectory ).getPath();
+    doReturn( repository ).when( meta ).getRepository();
+    doReturn( repositoryDirectory ).when( repository ).getUserHomeDirectory();
     doReturn( TEST_REPOSITORY_DIRECTORY ).when( repositoryDirectory ).getPath();
     doReturn( TEST_JOB_NAME ).when( meta ).getName();
     doReturn( JOB_EXTENSION ).when( meta ).getDefaultExtension();
