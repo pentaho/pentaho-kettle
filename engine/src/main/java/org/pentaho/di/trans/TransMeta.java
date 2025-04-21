@@ -6151,10 +6151,13 @@ public class TransMeta extends AbstractMeta
             repository, metaStore );
         }
 
+        boolean onlyUsed = true;
+        if ( Props.isInitialized() ) {
+          onlyUsed = Props.getInstance().areOnlyUsedConnectionsSavedToXML();
+        }
         // copy databases from global management bowl.
         if ( globalManagementBowl != null ) {
-          SharedObjectUtil.copySharedObjects( globalManagementBowl, transMeta,
-            Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
+          SharedObjectUtil.copySharedObjects( globalManagementBowl, transMeta, onlyUsed );
         }
         SharedObjectUtil.stripObjectIds( transMeta );
 

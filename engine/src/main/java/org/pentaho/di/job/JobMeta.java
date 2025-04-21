@@ -2664,10 +2664,13 @@ public class JobMeta extends AbstractMeta
             namingInterface, repository, metaStore );
         }
 
+        boolean onlyUsed = true;
+        if ( Props.isInitialized() ) {
+          onlyUsed = Props.getInstance().areOnlyUsedConnectionsSavedToXML();
+        }
         // copy databases from global management bowl.
         if ( globalManagementBowl != null ) {
-          SharedObjectUtil.copySharedObjects( globalManagementBowl, jobMeta,
-            Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
+          SharedObjectUtil.copySharedObjects( globalManagementBowl, jobMeta, onlyUsed );
         }
         SharedObjectUtil.stripObjectIds( jobMeta );
 
