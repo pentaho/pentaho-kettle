@@ -105,7 +105,7 @@ public class RestInputIT {
     assertEquals( "name", fieldNames[1] );
     assertEquals( "result", fieldNames[2] );
 
-    assertEquals( 5, data[0] );
+    assertEquals( Integer.valueOf( 5 ), data[0] );
     assertEquals( "limit", data[1] );
   }
 
@@ -137,7 +137,7 @@ public class RestInputIT {
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "pageSize" ) );
     rowMeta.addValueMeta( new ValueMetaString( "name" ) );
-    rp.putRow( rowMeta, new Object[] { limit, name } );
+    rp.putRow( rowMeta, new Object[] { Integer.valueOf( limit ), name } );
 
     rp.finished();
     return trans;
