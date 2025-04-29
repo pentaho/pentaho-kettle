@@ -51,7 +51,7 @@ public class ReportExportTaskTest {
   public void setUp() {
     masterReport = mock( MasterReport.class );
     swingGuiContext = mock( PentahoReportingSwingGuiContext.class );
-    targetPath = ReportExportTask.BASE_RESOURCE_CLASS;
+    targetPath = getClass().getPackageName();
     createParentFolder = false;
   }
 
