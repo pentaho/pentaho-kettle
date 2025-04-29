@@ -15,15 +15,13 @@ package org.pentaho.di.trans.steps.pentahoreporting;
 
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.ReportProcessingException;
 import org.pentaho.reporting.engine.classic.core.layout.output.ReportProcessor;
@@ -31,19 +29,12 @@ import org.pentaho.reporting.engine.classic.core.modules.gui.common.StatusListen
 import org.pentaho.reporting.engine.classic.core.modules.gui.common.StatusType;
 import org.pentaho.reporting.engine.classic.core.modules.gui.commonswing.SwingGuiContext;
 import org.pentaho.reporting.libraries.base.util.IOUtils;
-import org.pentaho.reporting.libraries.base.util.Messages;
-import org.pentaho.reporting.libraries.base.util.ObjectUtilities;
 
 public abstract class ReportExportTask implements Runnable {
   protected static final Log logger = LogFactory.getLog( ReportExportTask.class );
 
-  public static final String BASE_RESOURCE_CLASS = "org.pentaho.di.trans.steps.pentahoreporting.messages.messages"; //$NON-NLS-1$
-
-  /**
-   * Provides access to externalized strings
-   */
-  private Messages messages;
-
+  public static final Class<?> PKG = ReportExportTask.class;
+ 
   protected MasterReport report;
   protected StatusListener statusListener;
   protected Boolean createParentFolder;
@@ -57,25 +48,12 @@ public abstract class ReportExportTask implements Runnable {
   public ReportExportTask( Bowl bowl, final MasterReport report, final SwingGuiContext swingGuiContext, String targetPath,
       Boolean createParentFolder ) {
     if ( report == null ) {
-      throw new NullPointerException( "ReportExportTask(..): Report parameter cannot be null" );
+      throw new NullPointerException( BaseMessages.getString( PKG, "ReportExportTask.ERROR.MasterReportMissing" ) );
     }
 
     this.bowl = bowl;
     this.report = report;
     this.statusListener = swingGuiContext.getStatusListener();
-
-    // Check if the current Locale is supported:
-    // If not, use the default (US) locale.
-    Locale locale = swingGuiContext.getLocale();
-    try {
-      ResourceBundle.getBundle( BASE_RESOURCE_CLASS, swingGuiContext.getLocale() );
-    } catch ( MissingResourceException e ) {
-      locale = Locale.US;
-    }
-
-    this.messages =
-        new Messages( locale, BASE_RESOURCE_CLASS,
-                ObjectUtilities.getClassLoader( ReportExportTask.class ) );
 
     this.targetPath = targetPath;
     this.createParentFolder = createParentFolder;
@@ -94,21 +72,21 @@ public abstract class ReportExportTask implements Runnable {
       targetFile = KettleVFS.getInstance( bowl ).getFileObject( targetPath );
       if ( targetFile.exists() ) {
         if ( !targetFile.delete() ) {
-          throw new ReportProcessingException( messages.getErrorString( "ReportExportTask.ERROR_0001_TARGET_EXISTS" ) ); //$NON-NLS-1$
+          throw new ReportProcessingException( BaseMessages.getString( PKG, "ReportExportTask.ERROR_0001_TARGET_EXISTS" ) );
         }
       }
 
       if ( createParentFolder ) {
         targetFile.getParent().createFolder();
       } else if ( !targetFile.getParent().exists() ) {
-        throw new ReportProcessingException( messages.getString(
+        throw new ReportProcessingException( BaseMessages.getString( PKG,
           "ReportExportTask.PARENT_FOLDER_DOES_NOT_EXIST", targetFile.getParent().getName().getPath() ) );
       }
 
       execute();
     } catch ( Exception ex ) {
-      statusListener.setStatus( StatusType.ERROR, messages.getString( "ReportExportTask.USER_EXPORT_FAILED" ), ex ); //$NON-NLS-1$
-      logger.error( "Failed" ); //$NON-NLS-1$
+      statusListener.setStatus( StatusType.ERROR, BaseMessages.getString( PKG,  "ReportExportTask.USER_EXPORT_FAILED" ), ex );
+      logger.error( BaseMessages.getString( PKG, "ReportExportTask.ERROR.GenerationFailed", targetPath ) );
     }
   }
 
@@ -119,7 +97,7 @@ public abstract class ReportExportTask implements Runnable {
       fout = new BufferedOutputStream( targetFile.getContent().getOutputStream() );
       reportProcessor = createReportProcessor( fout );
       reportProcessor.processReport();
-      statusListener.setStatus( StatusType.INFORMATION, messages.getString( "ReportExportTask.USER_EXPORT_COMPLETE" ), //$NON-NLS-1$
+      statusListener.setStatus( StatusType.INFORMATION, BaseMessages.getString( PKG, "ReportExportTask.USER_EXPORT_COMPLETE" ), 
         null );
       reportProcessor.close();
       try {
