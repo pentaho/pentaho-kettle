@@ -24,8 +24,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.DefaultTransSupplier;
+import org.pentaho.di.trans.DefaultTransFactoryManager;
 import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.trans.DefaultTransFactory;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -63,9 +64,8 @@ public class DefaultRunConfigurationExecutor implements RunConfigurationExecutor
     variableSpace.setVariable( "engine.scheme", null );
     variableSpace.setVariable( "engine.url", null );
 
-    if ( meta instanceof TransMeta ) {
-      ( (TransMeta) meta ).setTransSupplier( new DefaultTransSupplier() );
-    }
+    DefaultTransFactoryManager.getInstance().registerFactory( executionConfiguration.getRunConfiguration(),
+      new DefaultTransFactory() );
   }
 
   private void configureTransExecution( TransExecutionConfiguration transExecutionConfiguration,

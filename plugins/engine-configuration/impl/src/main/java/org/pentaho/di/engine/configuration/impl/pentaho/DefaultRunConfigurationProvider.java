@@ -36,7 +36,7 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
   implements RunConfigurationProvider {
 
   public static final String DEFAULT_CONFIG_NAME = "Pentaho local";
-  private static String TYPE = "Pentaho";
+  private static final String TYPE = "Pentaho";
   private List<String> supported = Arrays.asList( TransMeta.XML_TAG, JobMeta.XML_TAG );
 
   private static DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
