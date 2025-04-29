@@ -76,7 +76,7 @@
   <build>
     <resources>
       <resource>
-        <filtering>true</filtering>
+        <filtering>false</filtering>
         <directory>src/main/resources</directory>
       </resource>
     </resources>
