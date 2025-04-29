@@ -3861,8 +3861,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // memory
           // To be able to completely test this, we need to run it as we would normally do in pan
           //
-          trans = transMeta.getTransSupplier().get( transMeta, log, this::createLegacyTrans );
-
+          trans = DefaultTransFactoryManager.getInstance().getTransFactory( executionConfiguration.getRunConfiguration() )
+            .create( transMeta, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(),
+            transMeta.getFilename(), transMeta );
 
           trans.setRepository( spoon.getRepository() );
           trans.setMetaStore( spoon.getMetaStore() );
