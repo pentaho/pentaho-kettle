@@ -6,7 +6,7 @@
   </database-type>                                                                   
 
   <database-type id="CACHE">
-    <description>Intersystems Cache</description>
+    <description>Intersystems Cache (deprecated)</description>
     <classname>org.pentaho.di.core.database.CacheDatabaseMeta</classname>
   </database-type>                                                       
 
@@ -21,7 +21,7 @@
   </database-type>                                                         
 
   <database-type id="EXTENDB">
-    <description>ExtenDB</description>
+    <description>ExtenDB (deprecated)</description>
     <classname>org.pentaho.di.core.database.ExtenDBDatabaseMeta</classname>
   </database-type>                                                         
 
@@ -41,7 +41,7 @@
   </database-type>                                                           
 
   <database-type id="INFINIDB">
-    <description>Calpont InfiniDB</description>
+    <description>Calpont InfiniDB (deprecated)</description>
     <classname>org.pentaho.di.core.database.InfiniDbDatabaseMeta</classname>
   </database-type>
  
@@ -61,7 +61,7 @@
   </database-type>                                                            
 
   <database-type id="INFOBRIGHT">
-    <description>Infobright</description>
+    <description>Infobright (deprecated)</description>
     <classname>org.pentaho.di.core.database.InfobrightDatabaseMeta</classname>
   </database-type>                                                            
 
@@ -71,17 +71,17 @@
   </database-type>                                                          
 
   <database-type id="INGRES">
-    <description>Ingres</description>
+    <description>Ingres (deprecated)</description>
     <classname>org.pentaho.di.core.database.IngresDatabaseMeta</classname>
   </database-type>                                                        
 
   <database-type id="VECTORWISE">
-    <description>Ingres VectorWise</description>
+    <description>Ingres VectorWise (deprecated)</description>
     <classname>org.pentaho.di.core.database.VectorWiseDatabaseMeta</classname>
   </database-type>                                                        
 
   <database-type id="INTERBASE">
-    <description>Borland Interbase</description>
+    <description>Borland Interbase (deprecated)</description>
     <classname>org.pentaho.di.core.database.InterbaseDatabaseMeta</classname>
   </database-type>                                                           
 
@@ -91,7 +91,7 @@
   </database-type>                                                            
 
   <database-type id="LucidDB">
-    <description>LucidDB</description>
+    <description>LucidDB (deprecated)</description>
     <classname>org.pentaho.di.core.database.LucidDBDatabaseMeta</classname>
   </database-type>                                                         
 
@@ -126,7 +126,7 @@
   </database-type>                                                       
 
   <database-type id="NEOVIEW">
-    <description>Neoview</description>
+    <description>Neoview (deprecated)</description>
     <classname>org.pentaho.di.core.database.NeoviewDatabaseMeta</classname>
   </database-type>                                                         
 
@@ -171,12 +171,12 @@
   </database-type>
 
   <database-type id="SYBASE">
-    <description>Sybase</description>
+    <description>Sybase (deprecated)</description>
     <classname>org.pentaho.di.core.database.SybaseDatabaseMeta</classname>
   </database-type>
 
   <database-type id="SYBASEIQ">
-    <description>SybaseIQ</description>
+    <description>SybaseIQ (deprecated)</description>
     <classname>org.pentaho.di.core.database.SybaseIQDatabaseMeta</classname>
   </database-type>
 
@@ -191,7 +191,7 @@
   </database-type>
 
   <database-type id="VERTICA">
-    <description>Vertica</description>
+    <description>Vertica (deprecated)</description>
     <classname>org.pentaho.di.core.database.VerticaDatabaseMeta</classname>
   </database-type>
   
