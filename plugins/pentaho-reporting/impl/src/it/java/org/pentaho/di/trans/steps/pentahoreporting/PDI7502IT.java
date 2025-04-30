@@ -13,14 +13,6 @@
 
 package org.pentaho.di.trans.steps.pentahoreporting;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,13 +28,20 @@ import org.pentaho.di.trans.TransTestFactory;
 import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.ProcessorType;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 public class PDI7502IT {
 
-  private static File reportFile;
   private static final String INPUT_FIELD_NAME = "PRPT_Report_File";
   private static final String OUTPUT_FIELD_NAME = "Generated Report File";
   private static final String REPORTING_STEP_NAME = "PRPT Output Step";
-
+  private static File reportFile;
   private File outputFile;
   private List<RowMetaAndData> inputRows;
 
@@ -151,6 +150,8 @@ public class PDI7502IT {
     proMeta.setInputFileField( INPUT_FIELD_NAME );
     proMeta.setOutputFileField( OUTPUT_FIELD_NAME );
     proMeta.setOutputProcessorType( type );
+    proMeta.setCreateParentfolder( false );
+    proMeta.setUseValuesFromFields( true );
     return TransTestFactory.generateTestTransformation( new Variables(), proMeta, REPORTING_STEP_NAME );
   }
 
