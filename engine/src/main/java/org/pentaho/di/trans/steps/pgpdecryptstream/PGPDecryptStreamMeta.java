@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.pgpdecryptstream;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -196,8 +197,8 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   @Override
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
+    StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
     if ( !Utils.isEmpty( resultfieldname ) ) {
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( resultfieldname ) );

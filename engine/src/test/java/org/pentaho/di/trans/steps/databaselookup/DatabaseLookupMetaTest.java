@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -118,7 +119,7 @@ public class DatabaseLookupMetaTest implements InitializerInterface<StepMetaInte
     RowMetaInterface row = new RowMeta();
     row.setValueMetaList( new ArrayList<ValueMetaInterface>( Arrays.asList( r1 ) ) );
 
-    databaseLookupMeta.getFields( row, "", info, null, null, null, null );
+    databaseLookupMeta.getFields( DefaultBowl.getInstance(), row, "", info, null, null, null, null );
 
     List<ValueMetaInterface> expectedRow = Arrays.asList( new ValueMetaInterface[] { new ValueMetaString( "value" ),
       new ValueMetaString( "v1" ), new ValueMetaString( "v2" ), } );

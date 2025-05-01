@@ -1174,7 +1174,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
       getInfo( meta );
 
       // Defined a LDAP connection
-      connection = new LDAPConnection( log, transMeta, meta, null );
+      connection = new LDAPConnection( transMeta.getBowl(), log, transMeta, meta, null );
       // connect...
       if ( wusingAuthentication.getSelection() ) {
         connection.connect( transMeta.environmentSubstitute( meta.getUserName() ), Encr
@@ -1464,7 +1464,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
       LDAPOutputMeta meta = new LDAPOutputMeta();
       getInfo( meta );
       // Defined a LDAP connection
-      connection = new LDAPConnection( log, transMeta, meta, null );
+      connection = new LDAPConnection( transMeta.getBowl(), log, transMeta, meta, null );
       // connect ...
       if ( wusingAuthentication.getSelection() ) {
         String username = transMeta.environmentSubstitute( wUserName.getText() );

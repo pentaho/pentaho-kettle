@@ -14,6 +14,7 @@
 package org.pentaho.di.core.util;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -31,7 +32,8 @@ public class FileUtil {
     // Check for parent folder
     boolean isParentFolderCreated = true;
     String parentFolderName = null;
-    try ( FileObject parentFolder =  KettleVFS.getFileObject( filename, vs ).getParent() ) {
+    try ( FileObject parentFolder =  KettleVFS.getInstance( DefaultBowl.getInstance() )
+          .getFileObject( filename, vs ).getParent() ) {
       parentFolderName = parentFolder.getName().toString();
       // Get parent folder
       if ( !parentFolder.exists() ) {

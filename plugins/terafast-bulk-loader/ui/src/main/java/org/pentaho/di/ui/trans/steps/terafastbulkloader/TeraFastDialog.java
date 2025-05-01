@@ -364,19 +364,19 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     final String allFileTypes = BaseMessages.getString( PKG, "TeraFastDialog.Filetype.All" );
     this.wbControlFile
       .addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wControlFile, transMeta,
-        new SelectionAdapterOptions( SelectionOperation.FILE,
+        new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
           new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     this.wbDataFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wDataFile, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     this.wbFastLoadPath.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFastLoadPath, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE_OR_FOLDER,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     this.wbLogFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wLogFile, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     this.wDoMapping.addListener( SWT.Selection, event -> generateMappings());

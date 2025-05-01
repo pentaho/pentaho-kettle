@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
@@ -30,11 +31,11 @@ public class OdfSheetTest {
   @Before
   public void init() throws KettleException {
     ods341 =
-        WorkbookFactory.getWorkbook( SpreadSheetType.ODS, this.getClass().getResource( "files/sample-3.4.1.ods" )
-            .getPath(), null );
+        WorkbookFactory.getWorkbook( DefaultBowl.getInstance(), SpreadSheetType.ODS,
+            this.getClass().getResource( "files/sample-3.4.1.ods" ).getPath(), null );
     ods24 =
-        WorkbookFactory.getWorkbook( SpreadSheetType.ODS, this.getClass().getResource( "files/sample-2.4.ods" )
-            .getPath(), null );
+        WorkbookFactory.getWorkbook( DefaultBowl.getInstance(), SpreadSheetType.ODS,
+            this.getClass().getResource( "files/sample-2.4.ods" ).getPath(), null );
   }
 
   @Test

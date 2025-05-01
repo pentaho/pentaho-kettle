@@ -1043,7 +1043,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !isPassingThruFields() ) {
       // all incoming fields are not transmitted !
@@ -1180,9 +1180,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
   @Override
   @Deprecated
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space ) throws KettleStepException {
-    getFields( inputRowMeta, name, info, nextStep, space, null, null );
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
+    StepMeta nextStep, VariableSpace space ) throws KettleStepException {
+    getFields( bowl, inputRowMeta, name, info, nextStep, space, null, null );
   }
 
   @Override
@@ -2022,6 +2022,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -2034,8 +2039,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -2046,7 +2052,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         // Replace the filename ONLY (folder or filename)
         //
         for ( int i = 0; i < fileName.length; i++ ) {
-          FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
+          FileObject fileObject = KettleVFS.getInstance( executionBowl )
+            .getFileObject( space.environmentSubstitute( fileName[i] ), space );
           fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
         }
       }

@@ -29,6 +29,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -126,7 +127,7 @@ public class PaloCellInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   @Override
-  public void getFields( final RowMetaInterface row, final String origin, final RowMetaInterface[] info,
+  public void getFields( Bowl bowl, final RowMetaInterface row, final String origin, final RowMetaInterface[] info,
       final StepMeta nextStep, final VariableSpace space, Repository repository, IMetaStore metaStore )
     throws KettleStepException {
     if ( databaseMeta == null ) {

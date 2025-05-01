@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -97,6 +98,11 @@ public class GetXMLDataStepAnalyzerTest {
     analyzer.setRootNode( node );
     analyzer.setParentTransMeta( parentTransMeta );
     analyzer.setParentStepMeta( parentStepMeta );
+
+    when( meta.getParentStepMeta() ).thenReturn( parentStepMeta );
+    when( parentStepMeta.getParentTransMeta() ).thenReturn( parentTransMeta );
+    when( parentTransMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    when( data.getTransMeta() ).thenReturn( parentTransMeta );
   }
 
   @Test
@@ -304,7 +310,7 @@ public class GetXMLDataStepAnalyzerTest {
     when( parentTransMeta.environmentSubstitute( any( String[].class ) ) ).thenReturn( filePaths );
 
     assertFalse( consumer.isDataDriven( meta ) );
-    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( meta );
+    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta );
     assertFalse( resources.isEmpty() );
     assertEquals( 2, resources.size() );
 
@@ -312,7 +318,7 @@ public class GetXMLDataStepAnalyzerTest {
     when( meta.isInFields() ).thenReturn( true );
     when( meta.getIsAFile() ).thenReturn( true );
     assertTrue( consumer.isDataDriven( meta ) );
-    assertTrue( consumer.getResourcesFromMeta( meta ).isEmpty() );
+    assertTrue( consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta ).isEmpty() );
     when( rmi.getString( Mockito.any( Object[].class ), any(), any() ) )
       .thenReturn( "/path/to/row/file" );
     resources = consumer.getResourcesFromRow( data, rmi, new String[]{ "id", "name" } );

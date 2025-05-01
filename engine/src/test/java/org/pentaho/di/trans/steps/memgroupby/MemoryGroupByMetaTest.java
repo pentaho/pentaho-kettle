@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.Assert;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -254,7 +255,7 @@ public class MemoryGroupByMetaTest implements InitializerInterface<MemoryGroupBy
     meta.setValueField( valueFields );
 
     Variables vars = new Variables();
-    meta.getFields( rm, stepName, null, null, vars, null, null );
+    meta.getFields( DefaultBowl.getInstance(), rm, stepName, null, null, vars, null, null );
     assertNotNull( rm );
     assertEquals( 26, rm.size() );
     assertTrue( rm.indexOfValue( "myGroupField1" ) >= 0 );
@@ -314,7 +315,7 @@ public class MemoryGroupByMetaTest implements InitializerInterface<MemoryGroupBy
     // Test Compatibility
     rm = getInputRowMeta();
     vars.setVariable( Const.KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE, "Y" );
-    meta.getFields( rm, stepName, null, null, vars, null, null );
+    meta.getFields( DefaultBowl.getInstance(), rm, stepName, null, null, vars, null, null );
     assertNotNull( rm );
     assertEquals( 26, rm.size() );
     assertTrue( rm.indexOfValue( "Average(Integer)" ) >= 0 );

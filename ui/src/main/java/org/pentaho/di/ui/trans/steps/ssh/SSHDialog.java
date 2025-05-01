@@ -347,7 +347,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     wPrivateKey.setLayoutData( fdPrivateKey );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogText( log, wPrivateKey.getTextWidget(), transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.PEM, FilterType.ALL }, FilterType.PEM ) ) );
 
     // Passphraseline
@@ -856,7 +856,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     Connection conn = null;
     try {
       conn =
-        SSHData.OpenConnection(
+        SSHData.OpenConnection( transMeta.getBowl(),
           servername, nrPort, username, password, wUseKey.getSelection(), keyFilename, passphrase, timeOut,
           transMeta, proxyhost, proxyport, proxyusername, proxypassword );
       testOK = true;

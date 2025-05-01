@@ -41,6 +41,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.JobMeta;
@@ -55,6 +56,7 @@ import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -67,6 +69,7 @@ public class GetRepositoryNamesTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException, IOException {
+    KettleClientEnvironment.init();
     prepareFileRepository();
     prepareExtendedRepository();
   }
@@ -167,6 +170,7 @@ public class GetRepositoryNamesTest {
     IUser user = Mockito.mock( IUser.class );
     Mockito.when( user.isAdmin() ).thenReturn( true );
     Mockito.when( repoExtended.getUserInfo() ).thenReturn( user );
+    Mockito.when( repoExtended.getBowl() ).thenReturn( new RepositoryBowl( repoExtended ) );
   }
 
   @AfterClass

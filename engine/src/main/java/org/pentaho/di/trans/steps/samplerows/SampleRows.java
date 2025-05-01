@@ -13,6 +13,7 @@
 
 package org.pentaho.di.trans.steps.samplerows;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.util.Utils;
@@ -67,7 +68,8 @@ public class SampleRows extends BaseStep implements StepInterface {
       data.NrPrevFields = data.previousRowMeta.size();
       data.outputRowMeta = data.previousRowMeta;
       if ( data.addlineField ) {
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
       }
 
       String[] rangePart = realRange.split( "," );

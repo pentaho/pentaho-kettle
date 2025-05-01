@@ -16,10 +16,24 @@ package org.pentaho.di.shared;
 import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.w3c.dom.Node;
 
-public interface SharedObjectInterface {
+public interface SharedObjectInterface<T extends SharedObjectInterface> {
+
+  static final String OBJECT_ID = "object_id";
+
+  /**
+   * @deprecated
+   *
+   */
+  @Deprecated
   public void setShared( boolean shared );
 
+  /**
+   * @deprecated
+   *
+   */
+  @Deprecated
   public boolean isShared();
 
   public String getName();
@@ -27,4 +41,13 @@ public interface SharedObjectInterface {
   public String getXML() throws KettleException;
 
   public Date getChangedDate();
+
+  /**
+   * Wrapper method for clone() so clone() can be called from interface
+   * @return Object
+   */
+  public T makeClone();
+
+  public Node toNode() throws KettleException;
+
 }

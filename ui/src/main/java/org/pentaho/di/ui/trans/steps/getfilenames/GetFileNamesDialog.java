@@ -833,7 +833,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
       public void widgetSelected( SelectionEvent e ) {
         GetFileNamesMeta tfii = new GetFileNamesMeta();
         getInfo( tfii );
-        String[] files = tfii.getFilePaths( transMeta );
+        String[] files = tfii.getFilePaths( transMeta.getBowl(), transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd = new EnterSelectionDialog( shell, files, "Files read", "Files read:" );
           esd.setViewOnly();
@@ -849,7 +849,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE_OR_FOLDER,
         new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.CSV_TXT, FilterType.ALL }, FilterType.CSV_TXT ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...

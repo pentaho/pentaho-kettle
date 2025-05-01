@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.rest.analyzer;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.steps.rest.Rest;
@@ -55,7 +56,7 @@ public class RestClientExternalResourceConsumer extends BaseStepExternalResource
   private Logger log = LoggerFactory.getLogger( RestClientExternalResourceConsumer.class );
 
   @Override
-  public Collection<IExternalResourceInfo> getResourcesFromMeta( RestMeta meta, IAnalysisContext context ) {
+  public Collection<IExternalResourceInfo> getResourcesFromMeta( Bowl bowl, RestMeta meta, IAnalysisContext context ) {
 
     List<IExternalResourceInfo> resources = new ArrayList<>();
 

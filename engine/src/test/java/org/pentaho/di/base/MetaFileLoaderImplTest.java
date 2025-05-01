@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -81,10 +82,10 @@ public class MetaFileLoaderImplTest {
     setupJobEntryJob();
     specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<JobMeta>( jobEntryBase, specificationMethod );
-    JobMeta jobMeta = (JobMeta) metaFileLoader.getMetaForEntry( repository, store, space );
+    JobMeta jobMeta = (JobMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store, space );
 
     validateFirstJobMetaAccess( jobMeta );
-    jobMeta = (JobMeta) metaFileLoader.getMetaForEntry( repository, store, space );
+    jobMeta = (JobMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store, space );
     validateSecondJobMetaAccess( jobMeta );
   }
 
@@ -94,10 +95,10 @@ public class MetaFileLoaderImplTest {
     setupJobEntryJob();
     specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<JobMeta>( jobEntryBase, specificationMethod );
-    JobMeta jobMeta = (JobMeta) metaFileLoader.getMetaForEntry( repository, store, space );
+    JobMeta jobMeta = (JobMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store, space );
 
     validateFirstJobMetaAccess( jobMeta );
-    jobMeta = (JobMeta) metaFileLoader.getMetaForEntry( repository, store, space );
+    jobMeta = (JobMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store, space );
     validateSecondJobMetaAccess( jobMeta );
   }
 
@@ -107,10 +108,11 @@ public class MetaFileLoaderImplTest {
     setupJobEntryTrans();
     specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<TransMeta>( jobEntryBase, specificationMethod );
-    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForEntry( repository, store, space );
+    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store,
+      space );
 
     validateFirstTransMetaAccess( transMeta );
-    transMeta = (TransMeta) metaFileLoader.getMetaForEntry( repository, store, space );
+    transMeta = (TransMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store, space );
     validateSecondTransMetaAccess( transMeta );
   }
 
@@ -120,10 +122,11 @@ public class MetaFileLoaderImplTest {
     setupJobEntryTrans();
     specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<TransMeta>( jobEntryBase, specificationMethod );
-    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForEntry( repository, store, space );
+    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store,
+      space );
 
     validateFirstTransMetaAccess( transMeta );
-    transMeta = (TransMeta) metaFileLoader.getMetaForEntry( repository, store, space );
+    transMeta = (TransMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store, space );
     validateSecondTransMetaAccess( transMeta );
   }
 
@@ -133,9 +136,9 @@ public class MetaFileLoaderImplTest {
     setupJobExecutorMeta();
     specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<JobMeta>( baseStepMeta, specificationMethod );
-    JobMeta jobMeta = (JobMeta) metaFileLoader.getMetaForStep( repository, store, space );
+    JobMeta jobMeta = (JobMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
     validateFirstJobMetaAccess( jobMeta );
-    jobMeta = (JobMeta) metaFileLoader.getMetaForStep( repository, store, space );
+    jobMeta = (JobMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
     validateSecondJobMetaAccess( jobMeta );
   }
 
@@ -145,9 +148,9 @@ public class MetaFileLoaderImplTest {
     setupJobExecutorMeta();
     specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<JobMeta>( baseStepMeta, specificationMethod );
-    JobMeta jobMeta = (JobMeta) metaFileLoader.getMetaForStep( repository, store, space );
+    JobMeta jobMeta = (JobMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
     validateFirstJobMetaAccess( jobMeta );
-    jobMeta = (JobMeta) metaFileLoader.getMetaForStep( repository, store, space );
+    jobMeta = (JobMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
     validateSecondJobMetaAccess( jobMeta );
   }
 
@@ -157,9 +160,9 @@ public class MetaFileLoaderImplTest {
     setupTransExecutorMeta();
     specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<TransMeta>( baseStepMeta, specificationMethod );
-    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForStep( repository, store, space );
+    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
     validateFirstTransMetaAccess( transMeta );
-    transMeta = (TransMeta) metaFileLoader.getMetaForStep( repository, store, space );
+    transMeta = (TransMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
     validateSecondTransMetaAccess( transMeta );
   }
 
@@ -169,9 +172,9 @@ public class MetaFileLoaderImplTest {
     setupTransExecutorMeta();
     specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<TransMeta>( baseStepMeta, specificationMethod );
-    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForStep( repository, store, space );
+    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
     validateFirstTransMetaAccess( transMeta );
-    transMeta = (TransMeta) metaFileLoader.getMetaForStep( repository, store, space );
+    transMeta = (TransMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
     validateSecondTransMetaAccess( transMeta );
   }
 

@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.constant;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -314,7 +315,8 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void getFields( RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldName.length; i++ ) {
       if ( fieldName[i] != null && fieldName[i].length() != 0 ) {

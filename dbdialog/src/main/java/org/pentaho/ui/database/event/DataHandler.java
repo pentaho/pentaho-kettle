@@ -139,6 +139,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
   protected DatabaseMeta databaseMeta = null;
 
+  protected String originalName = null;
+
   protected DatabaseMeta cache = new DatabaseMeta();
 
   protected Launch launch = new Launch();
@@ -854,6 +856,7 @@ public class DataHandler extends AbstractXulEventHandler {
     if ( meta == null ) {
       return;
     }
+    originalName = meta.getName();
 
     if ( meta.getAttributes().containsKey( EXTRA_OPTION_WEB_APPLICATION_NAME ) ) {
       meta.setDBName( (String) meta.getAttributes().get( EXTRA_OPTION_WEB_APPLICATION_NAME ) );

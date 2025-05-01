@@ -464,7 +464,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
     // New class: SelectTableDialog
     try {
       String realFilename = transMeta.environmentSubstitute( meta.getFilename() );
-      FileObject fileObject = KettleVFS.getFileObject( realFilename, transMeta );
+      FileObject fileObject = KettleVFS.getInstance( transMeta.getBowl() ).getFileObject( realFilename, transMeta );
       File file = FileUtils.toFile( fileObject.getURL() );
 
       if ( !file.exists() || !file.isFile() ) {

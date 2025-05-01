@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -103,6 +104,7 @@ public class JobEntryDeleteFilesTest {
 
     jobEntry.setParentJob( parentJob );
     JobMeta mockJobMeta = mock( JobMeta.class );
+    when( mockJobMeta .getBowl() ).thenReturn( DefaultBowl.getInstance() );
     mockNamedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
     when( mockJobMeta.getNamedClusterEmbedManager() ).thenReturn( mockNamedClusterEmbedManager );
     jobEntry.setParentJobMeta( mockJobMeta );

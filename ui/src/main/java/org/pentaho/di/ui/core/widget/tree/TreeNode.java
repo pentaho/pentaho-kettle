@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ import java.util.Map;
 /**
  * Created by bmorrise on 6/27/18.
  */
-public class TreeNode {
+public class TreeNode implements Comparable<TreeNode> {
   private String label;
   private Image image;
   private List<TreeNode> children = new ArrayList<>();
@@ -52,6 +53,10 @@ public class TreeNode {
 
   public void addChild( TreeNode treeNode ) {
     children.add( treeNode );
+    Collections.sort( children );
+    for ( int i = 0; i < children.size(); i++ ) {
+      children.get( i ).setIndex( i );
+    }
   }
 
   public boolean hasChildren() {
@@ -133,4 +138,11 @@ public class TreeNode {
   public void setIndex( int index ) {
     this.index = index;
   }
+
+  // subclasses could overwrite this.
+  @Override
+  public int compareTo(TreeNode other) {
+    return String.CASE_INSENSITIVE_ORDER.compare( getLabel(), other.getLabel() );
+  }
 }
+

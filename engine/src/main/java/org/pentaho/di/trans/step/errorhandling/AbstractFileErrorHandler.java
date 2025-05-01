@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -84,7 +85,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
     } else {
       name = processingFilename + sourceAdding + "." + dateString + "." + extension;
     }
-    return KettleVFS.getFileObject( destinationDirectory + "/" + name );
+    return KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( destinationDirectory + "/" + name );
   }
 
   public static FileObject getReplayFilename( String destinationDirectory, String processingFilename, Date date,
@@ -113,9 +114,11 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
       baseStep.addResultFile( resultFile );
       try {
         if ( isBlank( encoding ) ) {
-          outputStreamWriter = new OutputStreamWriter( KettleVFS.getOutputStream( file, false ) );
+          outputStreamWriter = new OutputStreamWriter( KettleVFS.getInstance( DefaultBowl.getInstance() )
+                                                       .getOutputStream( file, false ) );
         } else {
-          outputStreamWriter = new OutputStreamWriter( KettleVFS.getOutputStream( file, false ), encoding );
+          outputStreamWriter = new OutputStreamWriter( KettleVFS.getInstance( DefaultBowl.getInstance() )
+                                                       .getOutputStream( file, false ), encoding );
         }
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString(

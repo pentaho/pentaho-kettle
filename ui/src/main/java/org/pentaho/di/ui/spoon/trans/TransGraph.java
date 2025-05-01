@@ -3543,29 +3543,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     tid.setDirectoryChangeAllowed( allowDirectoryChange );
     TransMeta ti = tid.open();
 
-    // Load shared objects
-    //
-    if ( tid.isSharedObjectsFileChanged() ) {
-      try {
-        SharedObjects sharedObjects =
-          rep != null ? rep.readTransSharedObjects( transMeta ) : transMeta.readSharedObjects();
-        spoon.sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
-      } catch ( KettleException e ) {
-        // CHECKSTYLE:LineLength:OFF
-        new ErrorDialog( spoon.getShell(),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages.getString( PKG,
-          "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTabName( transMeta, true ) ), e );
-      }
-
-      // If we added properties, add them to the variables too, so that they appear in the CTRL-SPACE variable
-      // completion.
-      //
-      spoon.setParametersAsVariablesInUI( transMeta, transMeta );
-
-      spoon.refreshTree();
-      spoon.delegates.tabs.renameTabs(); // cheap operation, might as will do it anyway
-    }
-
     spoon.setShellText();
     return ti != null;
   }
@@ -4515,7 +4492,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       } else {
         StepMetaInterface meta = stepMeta.getStepMetaInterface();
         if ( !Utils.isEmpty( meta.getReferencedObjectDescriptions() ) ) {
-          referencedMeta = meta.loadReferencedObject( index, spoon.rep, spoon.getMetaStore(), transMeta );
+          referencedMeta = meta.loadReferencedObject( transMeta.getBowl(), index, spoon.rep, spoon.getMetaStore(),
+            transMeta );
         }
       }
       if ( referencedMeta == null ) {
@@ -5084,7 +5062,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   private Trans createLegacyTrans() {
     try {
-      return new Trans( transMeta, spoon.rep, transMeta.getName(),
+      return new Trans( transMeta.getBowl(), transMeta, spoon.rep, transMeta.getName(),
         transMeta.getRepositoryDirectory().getPath(),
         transMeta.getFilename(), transMeta);
     } catch ( KettleException e ) {

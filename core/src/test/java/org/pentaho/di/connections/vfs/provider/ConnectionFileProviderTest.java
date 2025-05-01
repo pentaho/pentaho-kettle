@@ -11,16 +11,10 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.connections.vfs.provider;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs2.provider.FileNameParser;
-import org.junit.Before;
-import org.junit.Test;
-import org.pentaho.di.connections.ConnectionDetails;
-import org.pentaho.di.connections.ConnectionManager;
+package org.pentaho.di.connections.vfs.provider;
+import org.pentaho.di.connections.common.basic.TestBaseVFSConnectionDetails;
+
 import org.pentaho.di.connections.common.basic.TestBasicConnectionDetails;
 import org.pentaho.di.connections.common.basic.TestBasicConnectionProvider;
 import org.pentaho.di.connections.common.basic.TestBasicFileProvider;
@@ -33,14 +27,29 @@ import org.pentaho.di.connections.common.domain.TestFileWithDomainProvider;
 import org.pentaho.di.connections.common.domainbuckets.TestConnectionWithDomainAndBucketsDetails;
 import org.pentaho.di.connections.common.domainbuckets.TestConnectionWithDomainAndBucketsProvider;
 import org.pentaho.di.connections.common.domainbuckets.TestFileWithDomainAndBucketsProvider;
+import org.pentaho.di.connections.ConnectionDetails;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.bowl.BaseBowl;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.vfs.KettleVFSFileSystemException;
+import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import java.util.Collections;
+import java.util.Set;
+
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
+import org.apache.commons.vfs2.provider.FileNameParser;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -56,7 +65,7 @@ public class ConnectionFileProviderTest {
   @Before
   public void setup() throws Exception {
     bowl = createTestBowl();
-    connectionManager = bowl.getConnectionManager();
+    connectionManager = bowl.getManager( ConnectionManager.class );
 
     // Connection Types
 
@@ -102,7 +111,7 @@ public class ConnectionFileProviderTest {
 
     // Connection Instances
 
-    ConnectionDetails details;
+    TestBaseVFSConnectionDetails details;
 
     details = new TestConnectionWithBucketsDetails();
     details.setName( "Connection With Buckets" );
@@ -110,6 +119,7 @@ public class ConnectionFileProviderTest {
 
     details = new TestConnectionWithBucketsDetails();
     details.setName( "Connection Variable Substitution With Buckets" );
+    details.setRootPath( "${my_var_root_path}" );
     connectionManager.save( details );
 
     details = new TestConnectionWithDomainDetails();
@@ -118,6 +128,7 @@ public class ConnectionFileProviderTest {
 
     details = new TestConnectionWithDomainDetails();
     details.setName( "Connection Variable Substitution With Domain" );
+    details.setRootPath( "${my_var_root_path}" );
     connectionManager.save( details );
 
     details = new TestConnectionWithDomainAndBucketsDetails();
@@ -126,6 +137,7 @@ public class ConnectionFileProviderTest {
 
     details = new TestConnectionWithDomainAndBucketsDetails();
     details.setName( "Connection Variable Substitution With Domain And Buckets" );
+    details.setRootPath( "${my_var_root_path}" );
     connectionManager.save( details );
 
     details = new TestBasicConnectionDetails();
@@ -134,6 +146,7 @@ public class ConnectionFileProviderTest {
 
     details = new TestBasicConnectionDetails();
     details.setName( "Basic Connection Variable Substitution" );
+    details.setRootPath( "${my_var_root_path}" );
     connectionManager.save( details );
   }
 
@@ -146,10 +159,19 @@ public class ConnectionFileProviderTest {
       public IMetaStore getMetastore() {
         return memoryMetaStore;
       }
+      @Override
+      public VariableSpace getADefaultVariableSpace() {
+        return null;
+
+      }
+      @Override
+      public Set<Bowl> getParentBowls() {
+        return Collections.emptySet();
+      }
 
       @Override
-      public IMetaStore getExplicitMetastore() {
-        return memoryMetaStore;
+      public SharedObjectsIO getSharedObjectsIO() {
+        return null;
       }
     };
   }
@@ -297,7 +319,6 @@ public class ConnectionFileProviderTest {
 
     TestBasicConnectionDetails connectionDetails = (TestBasicConnectionDetails) connectionManager
       .getConnectionDetails( "Basic Connection Variable Substitution" );
-    connectionDetails.setRootPath( "${my_var_root_path}" );
 
     Variables myVariableSpace = new Variables();
     myVariableSpace.setVariable( "my_var_root_path",  "/some/magical/dir" );
@@ -329,7 +350,6 @@ public class ConnectionFileProviderTest {
 
     TestConnectionWithBucketsDetails connectionDetails = (TestConnectionWithBucketsDetails)
       connectionManager.getConnectionDetails( "Connection Variable Substitution With Buckets" );
-    connectionDetails.setRootPath( "${my_var_root_path}" );
 
     Variables myVariableSpace = new Variables();
     myVariableSpace.setVariable( "my_var_root_path",  "/some/magical/dir" );
@@ -361,7 +381,6 @@ public class ConnectionFileProviderTest {
 
     TestConnectionWithDomainDetails connectionDetails = (TestConnectionWithDomainDetails)
       connectionManager.getConnectionDetails( "Connection Variable Substitution With Domain" );
-    connectionDetails.setRootPath( "${my_var_root_path}" );
 
     Variables myVariableSpace = new Variables();
     myVariableSpace.setVariable( "my_var_root_path",  "/some/magical/dir" );
@@ -395,7 +414,6 @@ public class ConnectionFileProviderTest {
 
     TestConnectionWithDomainAndBucketsDetails connectionDetails = (TestConnectionWithDomainAndBucketsDetails)
       connectionManager.getConnectionDetails( "Connection Variable Substitution With Domain And Buckets" );
-    connectionDetails.setRootPath( "${my_var_root_path}" );
 
     Variables myVariableSpace = new Variables();
     myVariableSpace.setVariable( "my_var_root_path",  "/some/magical/dir" );

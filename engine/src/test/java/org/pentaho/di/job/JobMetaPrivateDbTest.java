@@ -41,9 +41,8 @@ public class JobMetaPrivateDbTest extends PrivateDatabasesTestTemplate<JobMeta> 
   }
 
   @Override
-  public JobMeta fromXml( String xml, final SharedObjects fakeSharedObjects ) throws Exception {
+  public JobMeta fromXml( String xml ) throws Exception {
     JobMeta meta = spy( new JobMeta() );
-    doAnswer( createInjectingAnswer( meta, fakeSharedObjects ) ).when( meta ).readSharedObjects();
 
     Document doc = XMLHandler.loadXMLFile( new ByteArrayInputStream( xml.getBytes() ), null, false, false );
     meta.loadXML( XMLHandler.getSubNode( doc, JobMeta.XML_TAG ), null, null );

@@ -165,8 +165,8 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     try {
 
       if ( xmlfilename != null && xsdfilename != null ) {
-        xmlfile = KettleVFS.getFileObject( realxmlfilename, this );
-        xsdfile = KettleVFS.getFileObject( realxsdfilename, this );
+        xmlfile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realxmlfilename, this );
+        xsdfile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realxsdfilename, this );
 
         if ( xmlfile.exists() && xsdfile.exists() ) {
 
@@ -297,8 +297,8 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notBlankValidator(), fileExistsValidator() );
-    andValidator().validate( this, "xsdFilename", remarks, ctx );
-    andValidator().validate( this, "xmlFilename", remarks, ctx );
+    andValidator().validate( jobMeta.getBowl(), this, "xsdFilename", remarks, ctx );
+    andValidator().validate( jobMeta.getBowl(), this, "xmlFilename", remarks, ctx );
   }
 
 }

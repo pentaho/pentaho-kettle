@@ -13,6 +13,7 @@
 
 package org.pentaho.di.trans.steps.xmloutput;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -37,7 +38,8 @@ public class XMLOutputExternalResourceConsumer
   }
 
   @Override
-  public Collection<IExternalResourceInfo> getResourcesFromMeta( XMLOutputMeta meta, IAnalysisContext context ) {
+  public Collection<IExternalResourceInfo> getResourcesFromMeta( Bowl bowl, XMLOutputMeta meta,
+    IAnalysisContext context ) {
     Collection<IExternalResourceInfo> resources = Collections.emptyList();
 
     // We only need to collect these resources if we're not data-driven and there are no used variables in the
@@ -56,7 +58,7 @@ public class XMLOutputExternalResourceConsumer
                 try {
 
                   IExternalResourceInfo resource = ExternalResourceInfoFactory
-                    .createFileResource( KettleVFS.getFileObject( path ), false );
+                    .createFileResource( KettleVFS.getInstance( bowl ).getFileObject( path ), false );
                   if ( resource != null ) {
                     resources.add( resource );
                   } else {

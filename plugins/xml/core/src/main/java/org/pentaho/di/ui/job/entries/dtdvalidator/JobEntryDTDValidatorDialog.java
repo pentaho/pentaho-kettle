@@ -181,7 +181,7 @@ public class JobEntryDTDValidatorDialog extends JobEntryDialog implements JobEnt
     } );
 
     wbxmlFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wxmlFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.XML, FilterType.ALL }, FilterType.XML ) ) );
 
     // DTD Intern ?
@@ -241,7 +241,7 @@ public class JobEntryDTDValidatorDialog extends JobEntryDialog implements JobEnt
     } );
 
     wbdtdFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wdtdFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.DTD, FilterType.ALL }, FilterType.DTD  ) ) );
 
     wOK = new Button( shell, SWT.PUSH );

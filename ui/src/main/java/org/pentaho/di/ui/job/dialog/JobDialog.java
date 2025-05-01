@@ -67,6 +67,7 @@ import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -80,6 +81,8 @@ import org.pentaho.di.ui.core.widget.FieldDisabledListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 
@@ -892,7 +895,17 @@ public class JobDialog extends Dialog {
         getDatabaseDialog().setDatabaseMeta( databaseMeta );
 
         if ( getDatabaseDialog().open() != null ) {
-          jobMeta.addDatabase( getDatabaseDialog().getDatabaseMeta() );
+          try {
+            DatabaseManagementInterface dbMgr =
+              Spoon.getInstance().getBowl().getManager( DatabaseManagementInterface.class );
+            dbMgr.add( getDatabaseDialog().getDatabaseMeta() );
+            // Refresh left hand tree
+            Spoon.getInstance().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
+          } catch ( KettleException dbe ) {
+            new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorAddingDatabase.Title" ), BaseMessages
+                .getString( PKG, "JobDialog.Dialog.ErrorAddingDatabase.Message" ), dbe );
+          }
           wLogconnection.add( getDatabaseDialog().getDatabaseMeta().getName() );
           wLogconnection.select( wLogconnection.getItemCount() - 1 );
         }
@@ -1446,9 +1459,6 @@ public class JobDialog extends Dialog {
     wParamFields.setRowNums();
     wParamFields.optWidth( true );
 
-    wSharedObjectsFile.setText( Const.NVL( jobMeta.getSharedObjectsFile(), "" ) );
-    sharedObjectsFileChanged = false;
-
     for ( JobDialogPluginInterface extraTab : extraTabs ) {
       extraTab.getData( jobMeta );
     }
@@ -1510,7 +1520,6 @@ public class JobDialog extends Dialog {
     jobMeta.activateParameters();
 
     jobMeta.setBatchIdPassed( wBatchTrans.getSelection() );
-    jobMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
 
     for ( JobDialogPluginInterface extraTab : extraTabs ) {
       extraTab.ok( jobMeta );

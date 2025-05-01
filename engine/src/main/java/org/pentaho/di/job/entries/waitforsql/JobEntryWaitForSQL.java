@@ -608,7 +608,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "WaitForSQL", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "WaitForSQL", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

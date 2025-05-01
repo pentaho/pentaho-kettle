@@ -50,6 +50,7 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -453,31 +454,33 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         logBasic( BaseMessages.getString( PKG, "JobShell.RunningOn", Const.getOS() ) );
       }
 
+      IKettleVFS vfs = KettleVFS.getInstance( parentJobMeta.getBowl() );
+
       if ( insertScript ) {
         realScript = environmentSubstitute( script );
       } else {
         String realFilename = environmentSubstitute( getFilename() );
-        fileObject = KettleVFS.getFileObject( realFilename, this );
+        fileObject = vfs.getFileObject( realFilename, this );
       }
 
       if ( Const.getOS().equals( "Windows 95" ) ) {
         base = new String[] { "command.com", "/C" };
         if ( insertScript ) {
           tempFile =
-            KettleVFS.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
+            vfs.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else if ( Const.getOS().startsWith( "Windows" ) ) {
         base = new String[] { "cmd.exe", "/C" };
         if ( insertScript ) {
           tempFile =
-            KettleVFS.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
+            vfs.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else {
         if ("Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE, "Y" ) )) {
           if ( insertScript ) {
-            tempFile = KettleVFS.createTempFile( KETTLE, SHELL, KettleVFS.TEMP_DIR, this );
+            tempFile = vfs.createTempFile( KETTLE, SHELL, KettleVFS.TEMP_DIR, this );
           } else {
             String realFilename = environmentSubstitute( getFilename() );
             URI uri = new URI( realFilename );
@@ -487,12 +490,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             }
             // PDI-19676 - creating a temp file in same file location to avoid script failure.
             String parentDir = Paths.get( realFilename ).getParent().toString();
-            tempFile = KettleVFS.createTempFile( KETTLE, SHELL, parentDir, this );
+            tempFile = vfs.createTempFile( KETTLE, SHELL, parentDir, this );
           }
           fileObject = createTemporaryShellFile( tempFile, realScript );
         } else {
           if ( insertScript ) {
-            tempFile = KettleVFS.createTempFile( "kettle", SHELL, KettleVFS.TEMP_DIR, this );
+            tempFile = vfs.createTempFile( "kettle", SHELL, KettleVFS.TEMP_DIR, this );
             fileObject = createTemporaryShellFile( tempFile, realScript );
           }
         }
@@ -589,7 +592,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
       if ( getWorkDirectory() != null && !Utils.isEmpty( Const.rtrim( getWorkDirectory() ) ) ) {
         String vfsFilename = environmentSubstitute( getWorkDirectory() );
-        File file = new File( KettleVFS.getFilename( KettleVFS.getFileObject( vfsFilename, this ) ) );
+        File file = new File( KettleVFS.getFilename( vfs.getFileObject( vfsFilename, this ) ) );
         procBuilder.directory( file );
       }
       Process proc = procBuilder.start();
@@ -766,12 +769,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(),
         JobEntryValidatorUtils.fileExistsValidator() );
 
-    JobEntryValidatorUtils.andValidator().validate( this, "workDirectory", remarks, ctx );
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "workDirectory", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "filename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
     if ( setLogfile ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "logfile", remarks,
+      JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "logfile", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
   }

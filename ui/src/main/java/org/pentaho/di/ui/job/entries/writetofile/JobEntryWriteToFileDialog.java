@@ -217,7 +217,7 @@ public class JobEntryWriteToFileDialog extends JobEntryDialog implements JobEntr
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.SAVE_TO,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.SAVE_TO,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     wlCreateParentFolder = new Label( wFileGroup, SWT.RIGHT );

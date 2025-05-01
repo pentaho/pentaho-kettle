@@ -14,9 +14,12 @@
 package org.pentaho.di.job;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -53,7 +56,13 @@ public class JobConfiguration {
     Node jobNode = XMLHandler.getSubNode( configNode, JobMeta.XML_TAG );
     Node trecNode = XMLHandler.getSubNode( configNode, JobExecutionConfiguration.XML_TAG );
     jobExecutionConfiguration = new JobExecutionConfiguration( trecNode );
-    jobMeta = new JobMeta( jobNode, jobExecutionConfiguration.getRepository(), null );
+
+    VariableSpace variables = new Variables();
+    for ( Map.Entry<String, String> entry : jobExecutionConfiguration.getVariables().entrySet() ) {
+      variables.setVariable( entry.getKey(), entry.getValue() );
+    }
+
+    jobMeta = new JobMeta( jobNode, jobExecutionConfiguration.getRepository(), variables );
   }
 
   public static final JobConfiguration fromXML( String xml ) throws KettleException {

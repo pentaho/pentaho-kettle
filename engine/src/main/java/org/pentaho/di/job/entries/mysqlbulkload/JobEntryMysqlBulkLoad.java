@@ -264,7 +264,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
         // As such, we're going to verify that it's a local file...
         // We're also going to convert VFS FileObject to File
         //
-        FileObject fileObject = KettleVFS.getFileObject( vfsFilename, this );
+        FileObject fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( vfsFilename, this );
         if ( !( fileObject instanceof LocalFile ) ) {
           // MySQL LOAD DATA can only use local files, so that's what we limit ourselves to.
           //
@@ -397,7 +397,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                     // Add zip filename to output files
                     ResultFile resultFile =
                       new ResultFile(
-                        ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ), parentJob
+                        ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                          .getFileObject( realFilename, this ), parentJob
                           .getJobname(), toString() );
                     result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                   }
@@ -611,9 +612,9 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     ValidatorContext ctx = new ValidatorContext();
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks, ctx );
 
-    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "tablename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

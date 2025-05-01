@@ -17,6 +17,8 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
@@ -34,13 +36,13 @@ import static org.mockito.Mockito.when;
 public class FileOpenSaveExtensionPointTest extends TestCase {
 
   private static final String FILE_OP_DUMMY_COMMAND = "testDummyCommand";
+  private Bowl bowl = DefaultBowl.getInstance();
 
   @Test
   public void testResolveProvider_AlreadySet() throws Exception {
     // SETUP
     FileOpenSaveExtensionPoint testInstance = new FileOpenSaveExtensionPoint( null, null );
-
-    FileDialogOperation opAlreadySet = new FileDialogOperation( FILE_OP_DUMMY_COMMAND  );
+    FileDialogOperation opAlreadySet = new FileDialogOperation( bowl, FILE_OP_DUMMY_COMMAND  );
     String providerNonProductionValue = "DontChangeMe"; // NON production value, just want to ensure it deosn't get overwritten
     opAlreadySet.setProvider( providerNonProductionValue );
     opAlreadySet.setPath( "/tmp/someRandomPath" );
@@ -63,7 +65,7 @@ public class FileOpenSaveExtensionPointTest extends TestCase {
 
     FileOpenSaveExtensionPoint testInstance = new FileOpenSaveExtensionPoint( mockProviderService, null );
 
-    FileDialogOperation opVfs = new FileDialogOperation( FILE_OP_DUMMY_COMMAND  );
+    FileDialogOperation opVfs = new FileDialogOperation( bowl, FILE_OP_DUMMY_COMMAND  );
     opVfs.setProvider( null );
     opVfs.setPath( vfsPath );
 
@@ -87,7 +89,7 @@ public class FileOpenSaveExtensionPointTest extends TestCase {
     when( mockSpoon.getRepository() ).thenReturn( mockRepository );
     FileOpenSaveExtensionPoint testInstance = new FileOpenSaveExtensionPoint( mockProviderService, () -> mockSpoon );
 
-    FileDialogOperation opRepository = new FileDialogOperation( FILE_OP_DUMMY_COMMAND  );
+    FileDialogOperation opRepository = new FileDialogOperation( bowl, FILE_OP_DUMMY_COMMAND  );
     opRepository.setProvider( null );
     opRepository.setPath( "//home/randomUser/randomFile.rpt" );
 
@@ -109,7 +111,7 @@ public class FileOpenSaveExtensionPointTest extends TestCase {
     when( mockSpoon.getRepository() ).thenReturn( null );
     FileOpenSaveExtensionPoint testInstance = new FileOpenSaveExtensionPoint( mockProviderService, () -> mockSpoon );
 
-    FileDialogOperation opLocal = new FileDialogOperation( FILE_OP_DUMMY_COMMAND  );
+    FileDialogOperation opLocal = new FileDialogOperation( bowl, FILE_OP_DUMMY_COMMAND  );
     opLocal.setProvider( null );
     opLocal.setPath( "/someUser/someUnixFile" );
 

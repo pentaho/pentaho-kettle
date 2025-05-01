@@ -981,11 +981,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public ObjectId getClusterID( String name ) throws KettleException {
-    try {
-      return getObjectId( name, null, RepositoryObjectType.CLUSTER_SCHEMA, false );
-    } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for cluster schema [" + name + "]", e );
-    }
+    return getObjectID( name, RepositoryObjectType.CLUSTER_SCHEMA );
   }
 
   @Override
@@ -1018,23 +1014,27 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public ObjectId getDatabaseID( final String name ) throws KettleException {
+    return getObjectID( name, RepositoryObjectType.DATABASE );
+  }
+
+  private ObjectId getObjectID( String name, RepositoryObjectType type ) throws KettleException {
     try {
-      ObjectId objectId = getObjectId( name, null, RepositoryObjectType.DATABASE, false );
+      ObjectId objectId = getObjectId( name, null, type, false );
       if ( objectId == null ) {
-        List<RepositoryFile> allDatabases = getAllFilesOfType( null, RepositoryObjectType.DATABASE, false );
-        String[] existingNames = new String[ allDatabases.size() ];
-        for ( int i = 0; i < allDatabases.size(); i++ ) {
-          RepositoryFile file = allDatabases.get( i );
+        List<RepositoryFile> allFilesOfType = getAllFilesOfType( null, type, false );
+        String[] existingNames = new String[ allFilesOfType.size() ];
+        for ( int i = 0; i < allFilesOfType.size(); i++ ) {
+          RepositoryFile file = allFilesOfType.get( i );
           existingNames[ i ] = file.getTitle();
         }
         int index = DatabaseMeta.indexOfName( existingNames, name );
         if ( index != -1 ) {
-          return new StringObjectId( allDatabases.get( index ).getId().toString() );
+          return new StringObjectId( allFilesOfType.get( index ).getId().toString() );
         }
       }
       return objectId;
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for database [" + name + "]", e );
+      throw new KettleException( "Unable to get ID for " + type + " [" + name + "]", e );
     }
   }
 
@@ -1587,11 +1587,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public ObjectId getPartitionSchemaID( String name ) throws KettleException {
-    try {
-      return getObjectId( name, null, RepositoryObjectType.PARTITION_SCHEMA, false );
-    } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for partition schema [" + name + "]", e );
-    }
+    return getObjectID( name, RepositoryObjectType.PARTITION_SCHEMA );
   }
 
   @Override
@@ -1639,11 +1635,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public ObjectId getSlaveID( String name ) throws KettleException {
-    try {
-      return getObjectId( name, null, RepositoryObjectType.SLAVE_SERVER, false );
-    } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for slave server with name [" + name + "]", e );
-    }
+    return getObjectID( name, RepositoryObjectType.SLAVE_SERVER );
   }
 
   @Override
@@ -2026,14 +2018,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return copy;
   }
 
+  @Deprecated
   @Override
-  public SharedObjects readJobMetaSharedObjects( final JobMeta jobMeta ) throws KettleException {
-    return jobDelegate.loadSharedObjects( jobMeta, loadAndCacheSharedObjects( true ) );
+  public void readJobMetaSharedObjects( final JobMeta jobMeta ) throws KettleException {
+    // NO-OP
   }
 
+  @Deprecated
   @Override
-  public SharedObjects readTransSharedObjects( final TransMeta transMeta ) throws KettleException {
-    return transDelegate.loadSharedObjects( transMeta, loadAndCacheSharedObjects( true ) );
+  public void readTransSharedObjects( final TransMeta transMeta ) throws KettleException {
+    // NO-OP
   }
 
   @Override
@@ -2499,7 +2493,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     transMeta.setRepository( this );
     transMeta.setRepositoryDirectory( parentDir );
     transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
-    readTransSharedObjects( transMeta ); // This should read from the local cache
     transDelegate.dataNodeToElement( data.getNode(), transMeta );
     transMeta.clearChanged();
     return transMeta;
@@ -2614,7 +2607,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     jobMeta.setRepository( this );
     jobMeta.setRepositoryDirectory( parentDir );
     jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
-    readJobMetaSharedObjects( jobMeta ); // This should read from the local cache
     jobDelegate.dataNodeToElement( data.getNode(), jobMeta );
     jobMeta.clearChanged();
     return jobMeta;
@@ -3207,7 +3199,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
         jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
 
-        readJobMetaSharedObjects( jobMeta );
         // Additional obfuscation through obscurity
         jobMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
 
@@ -3250,8 +3241,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         transMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
         transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
         transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
-
-        readTransSharedObjects( transMeta );
 
         transDelegate.dataNodeToElement(
           pur.getDataAtVersionForRead( idTransformation.getId(), versionLabel, NodeRepositoryFileData.class ).getNode(),
@@ -3417,10 +3406,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       // We don't have possibility to read this file via UI
       throw new KettleException( BaseMessages.getString( PKG, "PurRepository.fileCannotBeSavedInRootDirectory",
         element.getName() + element.getRepositoryElementType().getExtension() ) );
-    }
-
-    if ( saveSharedObjects ) {
-      objectTransformer.saveSharedObjects( element, versionComment );
     }
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.BeforeSaveToRepository.id, element );

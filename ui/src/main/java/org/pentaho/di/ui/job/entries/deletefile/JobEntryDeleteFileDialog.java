@@ -171,7 +171,7 @@ public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntry
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     wlAbortExists = new Label( shell, SWT.RIGHT );

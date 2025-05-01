@@ -356,7 +356,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wGpgExe.setLayoutData( fdGpgExe );
 
     wbbGpgExe.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wGpgExe, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     wlIncludeSubfolders = new Label( wSettings, SWT.RIGHT );
@@ -477,7 +477,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     } );
 
     wbSourceFileFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Destination
@@ -522,14 +522,14 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wDestinationFileFolder.setLayoutData( fdDestinationFileFolder );
 
     wbSourceDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     wbDestinationFileFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     wbDestinationDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Buttons to the right of the screen...
     wbdSourceFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
@@ -1028,7 +1028,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     } );
 
     wbDestinationFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFolder, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Create destination folder/parent folder
     wlCreateMoveToFolder = new Label( wMoveToGroup, SWT.RIGHT );

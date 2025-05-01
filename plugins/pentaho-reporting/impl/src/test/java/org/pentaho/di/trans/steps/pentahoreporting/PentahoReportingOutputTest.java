@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -80,7 +81,8 @@ public class PentahoReportingOutputTest {
   @Test
   public void testLoadLocalReport() throws Exception {
 
-    MasterReport report = PentahoReportingOutput.loadMasterReport( testResourceUrl.getPath() );
+    MasterReport report = PentahoReportingOutput.loadMasterReport( DefaultBowl.getInstance(),
+      testResourceUrl.getPath() );
 
     URL returnedUrl = report.getResourceManager().toURL( resourceKey );
 
@@ -92,7 +94,7 @@ public class PentahoReportingOutputTest {
   @Test
   public void testLocalFile() throws KettleFileException, MalformedURLException {
     Object keyValue = PentahoReportingOutput.getKeyValue(
-      PentahoReportingOutput.getFileObject( testResourceUrl.getPath(), null ) );
+      PentahoReportingOutput.getFileObject( DefaultBowl.getInstance(), testResourceUrl.getPath(), null ) );
 
     assertTrue( keyValue instanceof URL );
 

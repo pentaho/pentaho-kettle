@@ -445,7 +445,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       if ( data.outputRowMeta != null ) {
         initFieldNumbers( data.outputRowMeta, meta.getOutputFields() );
         if ( row != null ) {
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+          meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+            metaStore );
         }
         meta.calcMetaWithFieldOptions( data );
       }

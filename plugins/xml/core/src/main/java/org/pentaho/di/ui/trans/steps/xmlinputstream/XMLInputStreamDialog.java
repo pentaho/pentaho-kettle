@@ -1012,6 +1012,7 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
           wFilename,
           transMeta,
           new SelectionAdapterOptions(
+            transMeta.getBowl(),
             SelectionOperation.FILE,
             new FilterType[] { FilterType.XML, FilterType.ALL },
             FilterType.XML,

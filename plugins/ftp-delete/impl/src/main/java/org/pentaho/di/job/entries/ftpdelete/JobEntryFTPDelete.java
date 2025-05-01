@@ -978,7 +978,8 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
   private void SFTPConnect( String realservername, String realusername, int realport, String realpassword,
     String realFTPDirectory ) throws Exception {
     // Create sftp client to host ...
-    sftpclient = new SFTPClient( InetAddress.getByName( realservername ), realport, realusername );
+    sftpclient = new SFTPClient( parentJobMeta.getBowl(), InetAddress.getByName( realservername ), realport,
+      realusername );
 
     // login to ftp host ...
     sftpclient.login( realpassword );
@@ -997,7 +998,8 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     String realFTPDirectory, int realtimeout ) throws Exception {
     // Create ftps client to host ...
     ftpsclient =
-      new FTPSConnection( getFTPSConnectionType(), realservername, realport, realusername, realpassword );
+      new FTPSConnection( parentJobMeta.getBowl(), getFTPSConnectionType(), realservername, realport, realusername,
+        realpassword );
 
     if ( !Utils.isEmpty( proxyHost ) ) {
       String realProxy_host = environmentSubstitute( proxyHost );
@@ -1164,12 +1166,15 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate(
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverName", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(),
       this, "targetDirectory", remarks, AndValidator.putValidators(
           JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "userName", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "password", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
   }
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {

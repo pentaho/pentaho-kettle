@@ -42,6 +42,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 
 /**
  * Output rows to RSS feed and create a file.
@@ -527,7 +528,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
     partNrInFilename = value;
   }
 
-  public String[] getFiles( VariableSpace space ) throws KettleStepException {
+  public String[] getFiles( Bowl bowl, VariableSpace space ) throws KettleStepException {
     int copies = 1;
     int parts = 1;
 
@@ -549,7 +550,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
     int i = 0;
     for ( int copy = 0; copy < copies; copy++ ) {
       for ( int part = 0; part < parts; part++ ) {
-        retval[i] = buildFilename( space, copy );
+        retval[i] = buildFilename( bowl, space, copy );
         i++;
       }
     }
@@ -560,10 +561,10 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  private String getFilename( VariableSpace space ) throws KettleStepException {
+  private String getFilename( Bowl bowl, VariableSpace space ) throws KettleStepException {
     FileObject file = null;
     try {
-      file = KettleVFS.getFileObject( space.environmentSubstitute( getFileName() ) );
+      file = KettleVFS.getInstance( bowl ).getFileObject( space.environmentSubstitute( getFileName() ) );
       return KettleVFS.getFilename( file );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages
@@ -578,12 +579,12 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public String buildFilename( VariableSpace space, int stepnr ) throws KettleStepException {
+  public String buildFilename( Bowl bowl, VariableSpace space, int stepnr ) throws KettleStepException {
 
     SimpleDateFormat daf = new SimpleDateFormat();
 
     // Replace possible environment variables...
-    String retval = getFilename( space );
+    String retval = getFilename( bowl, space );
 
     Date now = new Date();
 

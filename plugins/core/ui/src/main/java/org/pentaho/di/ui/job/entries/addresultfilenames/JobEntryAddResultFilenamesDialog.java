@@ -310,7 +310,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     wFilename.setLayoutData( fdFilename );
 
     wbDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wFilename.addModifyListener( new ModifyListener() {
@@ -320,7 +320,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Filemask

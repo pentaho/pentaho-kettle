@@ -16,6 +16,7 @@ package org.pentaho.di.trans.cluster;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.encryption.CertificateGenEncryptUtil;
 import org.pentaho.di.core.exception.KettleException;
@@ -328,7 +329,10 @@ public class TransSplitter {
       transMeta.getClusterSchemas().add( schema.clone() );
     }
 
-    transMeta.setDatabases( originalTransformation.getDatabases() );
+    transMeta.setBowl( originalTransformation.getBowl() );
+    for ( DatabaseMeta dbMeta : originalTransformation.getDatabaseManagementInterface().getAll() ) {
+      transMeta.getDatabaseManagementInterface().add( dbMeta );
+    }
 
     // Feedback
     transMeta.setFeedbackShown( originalTransformation.isFeedbackShown() );

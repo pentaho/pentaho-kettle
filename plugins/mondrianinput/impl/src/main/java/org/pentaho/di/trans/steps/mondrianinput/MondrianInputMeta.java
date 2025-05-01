@@ -47,6 +47,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 
 /*
  * Created on 2-jun-2003
@@ -147,7 +148,8 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
     variableReplacementActive = false;
   }
 
-  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( databaseMeta == null ) {
       return; // TODO: throw an exception here
@@ -294,6 +296,11 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -305,8 +312,10 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
    *
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  @Override
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -316,14 +325,15 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
         // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.csv
         // To : /home/matt/test/files/foo/bar.csv
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( catalog ), space );
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
+          .getFileObject( space.environmentSubstitute( catalog ), space );
 
         // If the file doesn't exist, forget about this effort too!
         //
         if ( fileObject.exists() ) {
           // Convert to an absolute path...
           //
-          catalog = resourceNamingInterface.nameResource( fileObject, space, true );
+          catalog = namingInterface.nameResource( fileObject, space, true );
 
           return catalog;
         }

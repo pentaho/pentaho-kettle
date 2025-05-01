@@ -23,8 +23,11 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -52,6 +55,7 @@ public abstract class AbstractBaseCommandExecutor {
   private LogChannelInterface log;
   private Class<?> pkgClazz;
   IMetaStore metaStore = MetaStoreConst.getDefaultMetastore();
+  private Bowl bowl = DefaultBowl.getInstance();
 
   private Result result = new Result();
 
@@ -308,5 +312,13 @@ public abstract class AbstractBaseCommandExecutor {
 
   public void setResult( Result result ) {
     this.result = result;
+  }
+
+  public Bowl getBowl() {
+    return bowl;
+  }
+
+  public void setBowl( Bowl bowl ) {
+    this.bowl = Objects.requireNonNull( bowl );
   }
 }

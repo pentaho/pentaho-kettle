@@ -17,6 +17,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -175,7 +176,7 @@ public class ConcatFieldsTest {
     when( stepMockHelper.processRowsStepMetaInterface.getTargetFieldName() ).thenCallRealMethod();
 
     doCallRealMethod().when( stepMockHelper.processRowsStepMetaInterface ).getFields(
-        any( RowMetaInterface.class ), any( String.class ), any(), nullable( StepMeta.class ),
+        any( Bowl.class ), any( RowMetaInterface.class ), any( String.class ), any(), nullable( StepMeta.class ),
       nullable( VariableSpace.class ), nullable( Repository.class ), nullable( IMetaStore.class ) );
 
     stepMockHelper.processRowsStepMetaInterface.setTargetFieldName( "target_result" );
@@ -249,7 +250,7 @@ public class ConcatFieldsTest {
     when( stepMockHelper.processRowsStepMetaInterface.getTargetFieldName() ).thenCallRealMethod();
     doCallRealMethod().when( stepMockHelper.processRowsStepMetaInterface ).setTargetFieldName( any( String.class ) );
     doCallRealMethod().when( stepMockHelper.processRowsStepMetaInterface ).getFields(
-      any( RowMetaInterface.class ), any( String.class ), any(), any( StepMeta.class ),
+      any( Bowl.class ), any( RowMetaInterface.class ), any( String.class ), any(), any( StepMeta.class ),
       any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
 
     stepMockHelper.processRowsStepMetaInterface.setTargetFieldName( "target_result" );

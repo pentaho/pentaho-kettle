@@ -384,8 +384,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
                   // Add filename to output files
                   ResultFile resultFile =
                     new ResultFile(
-                      ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ), parentJob
-                        .getJobname(), toString() );
+                      ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                        .getFileObject( realFilename, this ), parentJob.getJobname(), toString() );
                   result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                 }
 
@@ -569,9 +569,9 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "tablename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

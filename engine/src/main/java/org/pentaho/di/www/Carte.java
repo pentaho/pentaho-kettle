@@ -40,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.encryption.Encr;
@@ -198,7 +199,7 @@ public class Carte {
     SlaveServerConfig config = null;
     if ( arguments.length == 1 && !Utils.isEmpty( arguments[0] ) ) {
       usingConfigFile = true;
-      FileObject file = KettleVFS.getFileObject( arguments[0] );
+      FileObject file = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( arguments[0] );
       Document document = XMLHandler.loadXMLFile( file );
       setKettleEnvironment(); // Must stand up server now to allow decryption of password
       Node configNode = XMLHandler.getSubNode( document, SlaveServerConfig.XML_TAG );

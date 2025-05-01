@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.tableexists;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -130,7 +131,8 @@ public class TableExistsMeta extends BaseDatabaseStepMeta implements StepMetaInt
     resultfieldname = "result";
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output field (String)
     if ( !Utils.isEmpty( resultfieldname ) ) {

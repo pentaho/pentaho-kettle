@@ -447,11 +447,13 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     // no op
   }
 
-  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
+  @Override
+  public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
+  @Override
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 

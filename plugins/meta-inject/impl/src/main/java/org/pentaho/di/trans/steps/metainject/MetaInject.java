@@ -281,7 +281,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         generatedTransMeta.setName( transName ); // set transname on injectedtrans to be same as filename w/o extension
       }
 
-      os = KettleVFS.getOutputStream( targetFilePath, false );
+      os = KettleVFS.getInstance( getTransMeta().getBowl() ).getOutputStream( targetFilePath, false );
       os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
       os.write( generatedTransMeta.getXML().getBytes( Const.XML_ENCODING ) );
     } catch ( IOException e ) {
@@ -834,7 +834,8 @@ public class MetaInject extends BaseStep implements StepInterface {
    * package-local visibility for testing purposes
    */
   TransMeta loadTransformationMeta() throws KettleException {
-    return MetaInjectMeta.loadTransformationMeta( meta, getTrans().getRepository(), getTrans().getMetaStore(), this );
+    return MetaInjectMeta.loadTransformationMeta( getTransMeta().getBowl(), meta, getTrans().getRepository(),
+      getTrans().getMetaStore(), this );
   }
 
 }

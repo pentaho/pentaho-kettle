@@ -184,7 +184,8 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
         data.totalpreviousfields = data.inputRowMeta.size();
       }
     }
-    meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+    meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                    metaStore );
 
     // Create convert meta-data objects that will contain Date & Number formatters
     data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );

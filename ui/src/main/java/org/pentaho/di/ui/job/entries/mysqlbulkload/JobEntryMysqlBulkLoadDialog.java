@@ -307,7 +307,7 @@ public class JobEntryMysqlBulkLoadDialog extends JobEntryDialog implements JobEn
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE, new FilterType[] { FilterType.TXT, FilterType.ALL },
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE, new FilterType[] { FilterType.TXT, FilterType.ALL },
         FilterType.TXT, new ProviderFilterType[] { ProviderFilterType.LOCAL } ) ) );
 
     // Local

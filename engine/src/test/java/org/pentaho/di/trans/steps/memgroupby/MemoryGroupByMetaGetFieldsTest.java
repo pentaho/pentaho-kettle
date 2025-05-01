@@ -17,6 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -92,8 +93,8 @@ public class MemoryGroupByMetaGetFieldsTest {
       memoryGroupByMeta.setAggregateField( new String[] { "maxDate" } );
       memoryGroupByMeta.setAggregateType( new int[] { TYPE_GROUP_MAX } );
 
-      memoryGroupByMeta.getFields( rowMeta, "Memory Group by", mockInfo, mockNextStep, mockSpace, null,
-        mockIMetaStore );
+      memoryGroupByMeta.getFields( DefaultBowl.getInstance(), rowMeta, "Memory Group by", mockInfo, mockNextStep,
+        mockSpace, null, mockIMetaStore );
 
       verify( rowMeta, times( 1 ) ).clear();
       verify( rowMeta, times( 1 ) ).addRowMeta( any() );
@@ -128,7 +129,8 @@ public class MemoryGroupByMetaGetFieldsTest {
       memoryGroupByMeta.setAggregateField( new String[] { "minDate" } );
       memoryGroupByMeta.setAggregateType( new int[] { TYPE_GROUP_MIN } );
 
-      memoryGroupByMeta.getFields( rowMeta, "Group by", mockInfo, mockNextStep, mockSpace, null, mockIMetaStore );
+      memoryGroupByMeta.getFields( DefaultBowl.getInstance(), rowMeta, "Group by", mockInfo, mockNextStep, mockSpace,
+        null, mockIMetaStore );
 
       verify( rowMeta, times( 1 ) ).clear();
       verify( rowMeta, times( 1 ) ).addRowMeta( any() );
@@ -163,7 +165,8 @@ public class MemoryGroupByMetaGetFieldsTest {
       memoryGroupByMeta.setAggregateField( new String[] { "countDate" } );
       memoryGroupByMeta.setAggregateType( new int[] { TYPE_GROUP_COUNT_ANY } );
 
-      memoryGroupByMeta.getFields( rowMeta, "Group by", mockInfo, mockNextStep, mockSpace, null, mockIMetaStore );
+      memoryGroupByMeta.getFields( DefaultBowl.getInstance(), rowMeta, "Group by", mockInfo, mockNextStep, mockSpace,
+        null, mockIMetaStore );
 
       verify( rowMeta, times( 1 ) ).clear();
       verify( rowMeta, times( 1 ) ).addRowMeta( any() );

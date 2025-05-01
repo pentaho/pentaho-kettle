@@ -105,6 +105,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node node, List<DatabaseMeta> databases, List<StepMeta> steps ) {
     connectionName = XMLHandler.getTagValue( node, "connection" );
     schemaName = XMLHandler.getTagValue( node, "schema" );

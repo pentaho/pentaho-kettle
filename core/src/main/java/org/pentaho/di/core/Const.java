@@ -12,6 +12,7 @@
  ******************************************************************************/
 
 
+
 package org.pentaho.di.core;
 
 import org.apache.commons.lang.StringEscapeUtils;

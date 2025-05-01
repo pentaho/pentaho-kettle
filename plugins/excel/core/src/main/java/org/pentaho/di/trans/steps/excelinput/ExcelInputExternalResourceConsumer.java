@@ -14,6 +14,7 @@
 package org.pentaho.di.trans.steps.excelinput;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -41,7 +42,7 @@ public class ExcelInputExternalResourceConsumer extends BaseStepExternalResource
   }
 
   @Override
-  public Collection<IExternalResourceInfo> getResourcesFromMeta( ExcelInputMeta meta, IAnalysisContext context ) {
+  public Collection<IExternalResourceInfo> getResourcesFromMeta( Bowl bowl, ExcelInputMeta meta, IAnalysisContext context ) {
     Collection<IExternalResourceInfo> resources = Collections.emptyList();
 
     // We only need to collect these resources if we're not data-driven and there are no used variables in the
@@ -51,7 +52,7 @@ public class ExcelInputExternalResourceConsumer extends BaseStepExternalResource
       if ( parentStepMeta != null ) {
         TransMeta parentTransMeta = parentStepMeta.getParentTransMeta();
         if ( parentTransMeta != null ) {
-          String[] paths = meta.getFilePaths( parentTransMeta );
+          String[] paths = meta.getFilePaths( parentTransMeta.getBowl(), parentTransMeta );
           if ( paths != null ) {
             resources = new ArrayList<IExternalResourceInfo>( paths.length );
 
@@ -60,7 +61,8 @@ public class ExcelInputExternalResourceConsumer extends BaseStepExternalResource
                 try {
 
                   IExternalResourceInfo resource = ExternalResourceInfoFactory
-                    .createFileResource( KettleVFS.getFileObject( path ), true );
+                    .createFileResource( KettleVFS.getInstance( parentTransMeta.getBowl() )
+                      .getFileObject( path ), true );
                   if ( resource != null ) {
                     resources.add( resource );
                   } else {
@@ -90,7 +92,7 @@ public class ExcelInputExternalResourceConsumer extends BaseStepExternalResource
     try {
       String filename = rowMeta.getString( row, meta.getAcceptingField(), null );
       if ( !Const.isEmpty( filename ) ) {
-        FileObject fileObject = KettleVFS.getFileObject( filename );
+        FileObject fileObject = KettleVFS.getInstance( excelInput.getTransMeta().getBowl() ).getFileObject( filename );
         resources.add( ExternalResourceInfoFactory.createFileResource( fileObject, true ) );
       }
     } catch ( KettleException kve ) {

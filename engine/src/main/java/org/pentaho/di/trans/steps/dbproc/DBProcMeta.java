@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.dbproc;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -242,7 +243,7 @@ public class DBProcMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
   }
 
   @Override
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( !Utils.isEmpty( resultName ) ) {

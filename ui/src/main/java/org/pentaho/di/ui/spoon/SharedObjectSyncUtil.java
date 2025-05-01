@@ -33,6 +33,9 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 
 /**
  * This utility provides methods for synchronization of kettle's shared objects.
+ *
+ * NOTE: this is currently only used for editing Steps and the Repository Explorer. Other uses have been replaced by
+ * Bowls and their embedded managers.
  * 
  */
 public class SharedObjectSyncUtil {
@@ -57,10 +60,6 @@ public class SharedObjectSyncUtil {
   public SharedObjectSyncUtil( Spoon spoon ) {
     this.spoonDelegates = spoon.delegates;
     this.spoon = spoon;
-    spoonDelegates.db.setSharedObjectSyncUtil( this );
-    spoonDelegates.slaves.setSharedObjectSyncUtil( this );
-    spoonDelegates.clusters.setSharedObjectSyncUtil( this );
-    spoonDelegates.partitions.setSharedObjectSyncUtil( this );
   }
 
   public synchronized void synchronizeConnections( DatabaseMeta database ) {
@@ -128,40 +127,6 @@ public class SharedObjectSyncUtil {
     synchronizeJobs( true, job -> synchronizeByObjectId( updatedObject, handler.getObjectsForSyncFromJob( job ), handler ) );
     synchronizeTransformations( true, trans ->
       synchronizeByObjectId( updatedObject, handler.getObjectsForSyncFromTransformation( trans ), handler ) );
-  }
-
-  public synchronized void reloadTransformationRepositoryObjects( boolean includeActive ) {
-    if ( spoon.rep != null ) {
-      synchronizeTransformations( includeActive, transMeta -> {
-        try {
-          spoon.rep.readTransSharedObjects( transMeta );
-        } catch ( KettleException e ) {
-          logError( e );
-        }
-      } );
-    }
-  }
-
-  public synchronized void reloadJobRepositoryObjects( boolean includeActive ) {
-    if ( spoon.rep != null ) {
-      synchronizeJobs( includeActive, jobMeta -> {
-        try {
-          spoon.rep.readJobMetaSharedObjects( jobMeta );
-        } catch ( KettleException e ) {
-          logError( e );
-        }
-      } );
-    }
-  }
-
-  public synchronized void reloadSharedObjects() {
-    synchronizeAll( false, meta -> {
-      try {
-        meta.setSharedObjects( meta.readSharedObjects() );
-      } catch ( KettleException e ) {
-        logError( e );
-      }
-    } );
   }
 
   private synchronized void synchronizeJobs( boolean includeActive, Consumer<JobMeta> synchronizeAction ) {
