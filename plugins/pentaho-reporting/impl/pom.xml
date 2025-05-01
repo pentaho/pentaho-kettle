@@ -77,5 +77,11 @@
       <version>${spring.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho.reporting.engine</groupId>
+      <artifactId>classic-extensions-kettle</artifactId>
+      <version>${pentaho-reporting.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
