@@ -4698,6 +4698,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     lastFileOpenedProvider = provider;
   }
 
+  public void setLastFileOpenedProvider( String provider ) {
+    lastFileOpenedProvider = provider;
+  }
+
   public void displayCmdLine() {
     String cmdFile = getCmdLine();
 
