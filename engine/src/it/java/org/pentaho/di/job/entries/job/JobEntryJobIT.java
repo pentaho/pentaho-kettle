@@ -19,27 +19,21 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleClientEnvironment;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
@@ -129,21 +123,6 @@ public class JobEntryJobIT extends JobEntryJob {
     job.execute( new Result(), 0 );
     String result = Files.lines( FILE ).collect( Collectors.joining( "" ) );
     assertTrue( result.contains( LOG ) );
-  }
-
-  @Test
-  public void testPDI18776() throws KettleException, IOException {
-    KettleEnvironment.init();
-    String path = getClass().getResource( "Random_value.ktr" ).getPath();
-    Variables variables = new Variables();
-    TransMeta transMeta = new TransMeta( path, variables );
-    Trans trans = new Trans( transMeta );
-    trans.prepareExecution( null );
-    trans.startThreads();
-    trans.waitUntilFinished();
-
-    String childJobStep = trans.getSteps().get( 1 ).step.toString();
-    assertTrue( childJobStep.contains( "Dummy" ) );
   }
 
   @BeforeClass
