@@ -7,7 +7,7 @@ buildProperties:
   # Maven
   MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
   MAVEN_DEFAULT_DIRECTIVES:
-    build: clean deploy -DskipTests -Drelease
+    build: clean install -DskipTests
     test: test
 
   MAVEN_PUBLIC_RELEASE_REPO_URL  : https://repo.orl.eng.hitachivantara.com/artifactory/pntpub-mvn-dev-orl/
@@ -56,14 +56,6 @@ buildProperties:
   # Reports
   BUILD_ORDER_REPORT  : false
 
-  BUILD_SLACK_CHANNEL : 'buildteam-alerts'
-  SLACK_INTEGRATION   : true
-  SLACK_CHANNEL:
-    BUILD_FAILURE     : 'tatooine,buildteam-alerts'
-    BUILD_ABORTED     : 'buildteam-alerts'
-    BUILD_UNSTABLE    : 'tatooine,buildteam-alerts'
-    BUILD_SUCCESS     : 'tatooine,buildteam-alerts'
-
   # SP specific parameters
   PREVIOUS_RELEASE_VERSION       : ''
   SP_RELEASE_VERSION             : '202006'
@@ -80,12 +72,6 @@ jobGroups:
   300:
      - jobID           :  parent-poms
        scmUrl          :  https://github.com/pentaho/maven-parent-poms.git
-       versionProperty :  pentaho.version
-
-  400:
-     - jobID           :  parent-poms-ee
-       scmUrl          :  https://github.com/pentaho/maven-parent-poms-ee.git
-       directives      :  += -Dobfuscate-version-for-license-phase=none
        versionProperty :  pentaho.version
 
   500:
@@ -108,11 +94,6 @@ jobGroups:
        directives      :  += -P lowdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
 
-     - jobID           :  oss-license-assembly
-       scmUrl          :  https://github.com/pentaho/oss-licenses.git
-       versionProperty :  oss-licenses.version
-       testable        :  false
-
      - jobID           :  database-model
        scmUrl          :  https://github.com/pentaho/pentaho-commons-database.git
        directives      :  += -pl .,model
@@ -122,19 +103,11 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-mongo-utils.git
        versionProperty :  pentaho-mongo-utils.version
 
-     - jobID           :  eula-wrap-config
-       scmUrl          :  https://github.com/pentaho/pentaho-eula-wrap-config.git
-       versionProperty :  pentaho-eula-wrap-config.version
-
      - jobID           :  reporting-libraries-lowdeps
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        versionProperty :  pentaho-reporting.version
        directives      :  += -Plowdeps -Djavadoc
        root            :  libraries
-
-     - jobID           :  encryption-support
-       scmUrl          :  https://github.com/pentaho/pentaho-encryption-support.git
-       versionProperty :  encryption-support.version
 
   700:
      - jobID           :  reporting-engine-core
@@ -225,12 +198,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-chartbeans.git
        versionProperty :  pentaho-chartbeans.version
 
-     - jobID           :  license-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-ee-license.git
-       scmBranch       :  master
-       directives      :  += -Dmaven.test.failure.ignore=true
-       versionProperty :  pentaho-ee-dsc.version
-
      - jobID           :  pdi-dataservice-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-plugin.git
        versionProperty :  pdi-dataservice-client-plugin.version
@@ -241,10 +208,6 @@ jobGroups:
        versionProperty :  pentaho-hadoop-shims.version
 
   1400:
-     - jobID           :  archetypes-ee
-       scmUrl          :  https://github.com/pentaho/maven-project-archetypes-ee.git
-       versionProperty :  archetypes.version
-
      - jobID           :  big-data-plugin-lowdeps
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -P lowdeps
@@ -265,10 +228,6 @@ jobGroups:
        versionProperty :  pentaho-hadoop-shims.version
 
   1500:
-     - jobID           :  big-data-splunk-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-splunk-plugin.git
-       versionProperty :  pentaho-splunk-plugin.version
-
      - jobID           :  big-data-cassandra-plugin
        scmUrl          :  https://github.com/pentaho/pentaho-cassandra-plugin.git
        versionProperty :  pentaho-cassandra-plugin.version
@@ -293,13 +252,6 @@ jobGroups:
        versionProperty :  mondrian.version
 
   1900:
-     - jobID           :  psw-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-schema-workbench-ee.git
-       directives      :  += -Deula-wrap
-       testable        :  false
-       archivable      :  true
-       versionProperty :  mondrian.version
-
      - jobID           :  reporting-engine-extensions
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        directives      :  += -Pextensions -Djavadoc
@@ -371,22 +323,7 @@ jobGroups:
        scmUrl          :  https://github.com/webdetails/ccc.git
        versionProperty :  pentaho-ccc-plugin.version
 
-     - jobID           :  commons-ee
-       scmUrl          :  https://github.com/pentaho/commons-ee.git
-       versionProperty :  commons-ee.version
-
-  2450:
-    - jobID           :  pdi-monitoring-plugin
-      scmUrl          :  https://github.com/pentaho/pdi-monitoring-plugin.git
-      directives      :  += -Deula-wrap
-      archivable      :  true
-      versionProperty :  pdi-monitoring-plugin.version
-
   2500:
-     - jobID           :  camel-components
-       scmUrl          :  https://github.com/pentaho/pentaho-camel-components.git
-       versionProperty :  pentaho-camel.version
-
      - jobID           :  pdi-dataservice-server-plugin
        scmUrl          :  https://github.com/pentaho/pdi-dataservice-server-plugin.git
        versionProperty :  pdi-dataservice-plugin.version
@@ -443,17 +380,6 @@ jobGroups:
        versionProperty :  pdi-data-refinery-plugin.version
 
   2800:
-     - jobID           :  pdi-plugins-ee
-       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       versionProperty :  pdi-plugins-ee.version
-
-     - jobID           :  snowflake-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-plugins-ee.git
-       directives      :  += -Deula-wrap
-       root            :  snowflake
-       archivable      :  true
-       versionProperty :  snowflake-plugin.version
-
      - jobID           :  cde-plugin
        scmUrl          :  https://github.com/webdetails/cde.git
        versionProperty :  pentaho-cde-plugin.version
@@ -477,31 +403,9 @@ jobGroups:
        versionProperty :  pentaho-reporting-plugin.version
 
   3000:
-     - jobID           :  big-data-hadoop-shims-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
-       directives      :  += -DskipDefault -P base,all -Deula-wrap
-       archivable      :  true
-       atomicScmCheckout: true
-       versionProperty :  pentaho-hadoop-shims.version
-
      - jobID           :  cda-plugin
        scmUrl          :  https://github.com/webdetails/cda.git
        versionProperty :  pentaho-cda-plugin.version
-
-  3100:
-     - jobID           :  jdbc-distribution-utility
-       scmUrl          :  https://github.com/pentaho/jdbc-distribution-utility.git
-       versionProperty :  jdbc-distribution-utility.version
-
-     - jobID           :  dashboards-chart-editor-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-dashboard-chart-editor.git
-       versionProperty :  pentaho-dashboard-chart-editor.version
-
-  3200:
-     - jobID           :  platform-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
-       directives      :  += -DskipDefault -P platform-ee
-       versionProperty :  platform.version
 
   3300:
      - jobID           :  geo-plugin
@@ -510,68 +414,18 @@ jobGroups:
        archivable      :  true
        versionProperty :  pentaho-geo-plugin.version
 
-  3400:
-     - jobID           :  analyzer-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-analyzer.git
-       directives      :  += -Dagilebi -Deula-wrap
-       archivable      :  true
-       versionProperty :  analyzer-plugin.version
-
-     - jobID           :  container-utils-internal
-       scmUrl          :  https://github.com/pentaho/container-utils.git
-       testable        :  false
-       versionProperty :  container-utils.version
-
   3500:
-     - jobID           :  platform-chart-plugin-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-ee-chart-plugin.git
-       versionProperty :  pentaho-ee-chart-plugin.version
-
-     - jobID           :  analysis-plugin-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-analysis-ee.git
-       directives      :  += -Deula-wrap
-       archivable      :  true
-       versionProperty :  analysis-ee-plugin.version
-
-     - jobID           :  pdi-yarn-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-yarn-kettle-plugin.git
-       versionProperty :  pentaho-kettle-yarn-plugin.version
-
-     - jobID           :  data-exploration
-       scmUrl          :  https://github.com/pentaho/pentaho-det.git
-       directives      :  += -Dmaven.test.failure.ignore=true
-       versionProperty :  pentaho-det.version
-
      - jobID           :  big-data-plugin-features
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
        directives      :  += -DskipDefault -DfeaturesOnly
        root            :  assemblies
        versionProperty :  big-data-plugin.version
 
-     - jobID           :  container-utils-public
-       scmUrl          :  https://github.com/pentaho/container-utils.git
-       root            :  dock-maker
-       directives      :
-                 build :  deploy -DskipTests -Drelease -Ppublic -Deula-wrap
-                 test  :  test
-       archivable      :  true
-       versionProperty :  container-utils.version
-
   3600:
-     - jobID           :  data-exploration-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-det-ee.git
-       versionProperty :  pentaho-det.version
-
      - jobID           :  karaf-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-karaf-assembly.git
        testable        :  false
        versionProperty :  pentaho-karaf.version
-
-     - jobID           :  dashboards-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-dashboards.git
-       directives      :  += -Deula-wrap
-       archivable      :  true
-       versionProperty :  dashboard-plugin.version
 
      - jobID           :  pdi-weka-plugins
        scmUrl          :  https://github.com/pentaho/pentaho-data-mining.git
@@ -579,40 +433,15 @@ jobGroups:
        versionProperty :  pentaho-data-mining.version
 
   3700:
-     - jobID           :  pdi-weka-plugins-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-data-mining-ee.git
-       directives      :  += -Djavadoc
-       versionProperty :  pentaho-data-mining.version
-
-     - jobID           :  pir-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-platform-plugin-interactive-reporting.git
-       directives      :  += -Deula-wrap
-       archivable      :  true
-       versionProperty :  pir-plugin.version
-
      - jobID           :  pdi-scheduler-plugin
        scmUrl          :  https://github.com/pentaho/pdi-scheduler-plugin.git
        versionProperty :  pdi-scheduler-plugin.version
-
-     - jobID           :  pdi-jms-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-jms-plugin.git
-       versionProperty :  pdi-jms-plugin.version
 
      - jobID           :  pdi-sdk-plugins
        scmUrl          :  https://github.com/pentaho/pdi-sdk-plugins.git
        directives      :  += -Deula-wrap
        archivable      :  true
        versionProperty :  pdi-sdk-plugins.version
-
-     - jobID           :  pdi-r-plugin
-       scmUrl          :  https://github.com/pentaho/pentaho-r-plugin.git
-       versionProperty :  pdi-r-plugin.version
-
-     - jobID           :  pdi-sap-hana-bulk-loader-plugin
-       scmUrl          :  https://github.com/pentaho/pdi-sap-hana-bulk-loader-plugin.git
-       directives      :  += -Deula-wrap
-       archivable      :  true
-       versionProperty :  pdi-sap-hana-bulk-loader-plugin.version
 
      - jobID           :  big-data-plugin-assembly
        scmUrl          :  https://github.com/pentaho/big-data-plugin.git
@@ -621,21 +450,7 @@ jobGroups:
        root            :  assemblies
        versionProperty :  big-data-plugin.version
 
-  3800:
-     - jobID           :  karaf-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-karaf-ee-assembly.git
-       testable        :  false
-       versionProperty :  pentaho-karaf.version
-
   3900:
-     - jobID           :  big-data-plugin-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
-       directives      :  += -DskipDefault -P assemblies -Deula-wrap
-       testable        :  false
-       archivable      :  true
-       atomicScmCheckout: true
-       versionProperty :  big-data-plugin.version
-
      - jobID           :  prd-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        directives      :  += -Pdesigner  -Dmaven.test.failure.ignore=true -Djavadoc
@@ -644,38 +459,11 @@ jobGroups:
        versionProperty :  pentaho-reporting.version
 
   4000:
-     - jobID           :  prd-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
-       directives      :  += -Deula-wrap
-       archivable      :  true
-       testable        :  false
-       versionProperty :  pentaho-reporting.version
-
-     - jobID           :  pdi-pur-plugin-ee
-       scmUrl          :  https://github.com/pentaho/pdi-ee-plugin.git
-       archivable      :  true
-       versionProperty :  pdi-pur-plugin.version
-
      - jobID           :  prd-assembly-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
        root            :  assemblies/prd-ce
        directives      :  += -Dosgi -Pdesigner -Dmaven.test.failure.ignore=true
        archivable      :  true
-       versionProperty :  pentaho-reporting.version
-
-  4100:
-     - jobID           :  pdi-operations-mart-ee
-       scmUrl          :  https://github.com/pentaho/pdi-operations-mart.git
-       directives      :  += -Deula-wrap
-       archivable      :  true
-       versionProperty :  pentaho-operations-mart.version
-
-     - jobID           :  prd-assembly-ee-osgi
-       scmUrl          :  https://github.com/pentaho/pentaho-reportdesigner-ee.git
-       root            :  assemblies/prd-ee
-       directives      :  += -Dosgi -Dhadoop-addon-eula-wrap
-       archivable      :  true
-       testable        :  false
        versionProperty :  pentaho-reporting.version
 
   4200:
@@ -687,13 +475,6 @@ jobGroups:
        versionProperty :  pdi.version
 
   4300:
-     - jobID           :  pdi-client-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       directives      :  += -Deula-wrap
-       testable        :  false
-       archivable      :  true
-       versionProperty :  pdi.version
-
      - jobID           :  pdi-client-assembly-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-kettle.git
        directives      :  += -Dosgi -DskipDefault -P assemblies
@@ -721,135 +502,9 @@ jobGroups:
        archivable      :  true
        versionProperty :  aggdesigner.version
 
-     - jobID           :  pdi-client-assembly-ee-osgi
-       scmUrl          :  https://github.com/pentaho/pdi-assemblies-ee.git
-       directives      :  += -Dosgi -Dhadoop-addon-eula-wrap
-       testable        :  false
-       archivable      :  true
-       versionProperty :  pdi.version
-
   4500:
-     - jobID           :  platform-server-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-platform-ee.git
-       directives      :  += -DskipDefault -P platform-ee-assemble -Deula-wrap
-       testable        :  false
-       archivable      :  true
-       versionProperty :  platform.version
-
-     - jobID           :  metadata-editor-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
-       directives      :  += -Deula-wrap
-       testable        :  false
-       archivable      :  true
-       versionProperty :  pentaho-metadata.version
-
-     - jobID           :  pad-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-aggdesigner-ee.git
-       directives      :  += -Deula-wrap
-       testable        :  false
-       archivable      :  true
-       versionProperty :  aggdesigner.version
-
-     - jobID           :  platform-sdk
-       scmUrl          :  https://github.com/pentaho/pentaho-sdk.git
-       directives      :  += -Deula-wrap
-       archivable      :  true
-       versionProperty :  pdi-sdk-plugins.version
-
      - jobID           :  metadata-editor-osgi
        scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
        directives      :  += -Dosgi
        archivable      :  true
        versionProperty :  pentaho-metadata.version
-
-  4600:
-     - jobID           :  metadata-editor-ee-osgi
-       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor-ee.git
-       directives      :  += -Dosgi -Dhadoop-addon-eula-wrap
-       archivable      :  true
-       versionProperty :  pentaho-metadata.version
-
-  4700:
-     - jobID           :  trigger-container-images-ee-pipeline
-       scmUrl          :  https://github.com/pentaho/pentaho-container-images-ee.git
-       buildFramework  :  DSL_SCRIPT
-       script          :  |
-                          { ->
-                            script {
-                              echo sh(script: 'env | sort', returnStdout: true)
-                              echo sh(script: 'pwd', returnStdout: true)
-                            }
-                            withCredentials([string(credentialsId: 'thanos-gh-token', variable: 'GITHUB_TOKEN')]) {
-                              def script2Run = """\
-                                # dispatch the github workflow
-                                curl -L \
-                                  -X POST \
-                                  -H 'Accept: application/vnd.github+json' \
-                                  -H 'Authorization: Bearer ${GITHUB_TOKEN}'\
-                                  -H 'X-GitHub-Api-Version: 2022-11-28' \
-                                  https://api.github.com/repos/pentaho/pentaho-container-images-ee/actions/workflows/build-all-products.yaml/dispatches \
-                                  -d '{ "ref":"${DEFAULT_BRANCH}", \
-                                        "inputs":{ \
-                                          "qat_triggered":"true", \
-                                          "pentaho_release_version":"${RELEASE_VERSION}", \
-                                          "pentaho_build_number":"${RELEASE_BUILD_NUMBER}", \
-                                          "docker_private_push_repo":"${DOCKER_PRIVATE_PUSH_REPO}", \
-                                          "generic_private_repo":"${GENERIC_PRIVATE_REPO}" \
-                                        } \
-                                      }'
-                              """
-                              def response = sh(script: script2Run, returnStdout: true).trim()
-                              echo response
-                            }
-                          }
-       testable        :  false
-
-  4800:
-     - jobID           :  installers
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       dockerImage     :  jenkins-build/bitrock-installbuilder-11:9.3-11.0.13
-       archivable      :  true
-       testable        :  false
-       parallelize     :  true
-       versionProperty :  pentaho.version
-
-  4900:
-     - jobID           :  installer-tool
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       dockerImage     :  jenkins-build/installanywhere-installbuilder:1.0.2
-       root            :  installer-tool
-       versionProperty :  pentaho.version
-
-  5000:
-     - jobID           :  trigger-upgrade-hash-files-generation
-       scmUrl          :  https://github.com/pentaho/pentaho-installer.git
-       buildFramework  :  DSL_SCRIPT
-       script          :  |
-                          { ->
-                            script {
-                              echo sh(script: 'env | sort', returnStdout: true)
-                              echo sh(script: 'pwd', returnStdout: true)
-                            }
-                            withCredentials([string(credentialsId: 'thanos-gh-token', variable: 'GITHUB_TOKEN')]) {
-                              def script2Run = """\
-                                # dispatch the github workflow
-                                curl -L \
-                                  -X POST \
-                                  -H 'Accept: application/vnd.github+json' \
-                                  -H 'Authorization: Bearer ${GITHUB_TOKEN}'\
-                                  -H 'X-GitHub-Api-Version: 2022-11-28' \
-                                  https://api.github.com/repos/pentaho/pentaho-installer/actions/workflows/generate-upgrades.yaml/dispatches \
-                                  -d '{ "ref":"master", \
-                                        "inputs":{ \
-                                          "arti_host":"https://repo.orl.eng.hitachivantara.com", \
-                                          "pentaho_release_version":"${RELEASE_VERSION}", \
-                                          "pentaho_build_number":"${RELEASE_BUILD_NUMBER}", \
-                                          "pentaho_deployment_folder":"${DEPLOYMENT_FOLDER}" \
-                                        } \
-                                      }'
-                              """
-                              def response = sh(script: script2Run, returnStdout: true).trim()
-                              echo response
-                            }
-                          }
-       testable        :  false
