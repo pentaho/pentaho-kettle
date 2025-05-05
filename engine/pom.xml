@@ -68,7 +68,6 @@
     <hibernate-ehcache.version>5.4.24.Final</hibernate-ehcache.version>
     <jboss-logging.version>3.4.3.Final</jboss-logging.version>
     <javax.persistence-api.version>2.2</javax.persistence-api.version>
-    <byte-buddy.version>1.12.16</byte-buddy.version>
     <cglib-nodep.version>2.2</cglib-nodep.version>
     <js.version>1.7R3</js.version>
     <mail.version>1.6.1</mail.version>
