@@ -18,6 +18,7 @@ import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -173,8 +174,8 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       try {
         // Export the resources linked to the currently loaded file...
         TopLevelResource topLevelResource =
-          ResourceUtil.serializeResourceExportInterface( getBowl(), repository == null ? null : repository.getBowl(),
-            params.getExportRepo(), job.getJobMeta(), job, repository, getMetaStore() );
+          ResourceUtil.serializeResourceExportInterface( getBowl(), repository == null ? DefaultBowl.getInstance()
+            : repository.getBowl(), params.getExportRepo(), job.getJobMeta(), job, repository, getMetaStore() );
         String launchFile = topLevelResource.getResourceName();
         String message = ResourceUtil.getExplanation( params.getExportRepo(), launchFile, job.getJobMeta() );
         System.out.println();
