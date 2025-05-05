@@ -152,7 +152,7 @@ public class GetJobStatusServletTest {
   }
 
   @Test
-  public void doGetMissingMandatoryParameterNameUseXMLTest() throws Exception {
+  public void doGetMissingMandatoryParametersNameAndIdUseXMLTest() throws Exception {
     KettleLogStore.init();
     CarteStatusCache cacheMock = mock( CarteStatusCache.class );
     getJobStatusServlet.cache = cacheMock;
@@ -162,7 +162,7 @@ public class GetJobStatusServletTest {
     PrintWriter printWriter = new PrintWriter( out );
 
     when( mockHttpServletRequest.getContextPath() ).thenReturn( GetJobStatusServlet.CONTEXT_PATH );
-    when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( "123" );
+    when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( null);
     when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "Y" );
     when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( null );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
@@ -174,7 +174,7 @@ public class GetJobStatusServletTest {
   }
 
   @Test
-  public void doGetMissingMandatoryParameterNameUseHTMLTest() throws Exception {
+  public void doGetMissingMandatoryParametersNameAndIdUseHTMLTest() throws Exception {
     KettleLogStore.init();
     CarteStatusCache cacheMock = mock( CarteStatusCache.class );
     getJobStatusServlet.cache = cacheMock;
@@ -184,7 +184,7 @@ public class GetJobStatusServletTest {
     PrintWriter printWriter = new PrintWriter( out );
 
     when( mockHttpServletRequest.getContextPath() ).thenReturn( GetJobStatusServlet.CONTEXT_PATH );
-    when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( "123" );
+    when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( null );
     when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( null );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
