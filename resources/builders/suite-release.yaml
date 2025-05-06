@@ -20,7 +20,7 @@ buildProperties:
 
   HELM_REPOSITORY_URL            : https://repo.orl.eng.hitachivantara.com/artifactory/lumadadataintegration-helm-dev-orl
 
-  BUILD_VERSIONS_FILE: version.properties
+  BUILD_VERSIONS_FILE: suite-release.versions
 
   ARCHIVING_PATH_GROUP_REGEX: '.*/target/(?:(windows|linux|mac|classes/ia/pentaho-update)(?!.*(dependencies)).*/)?'
 
