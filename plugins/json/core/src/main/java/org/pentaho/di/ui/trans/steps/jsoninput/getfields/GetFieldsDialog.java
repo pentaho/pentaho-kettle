@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.steps.jsoninput.json.JsonSampler;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
@@ -45,6 +46,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,20 +57,28 @@ import java.util.Objects;
 public class GetFieldsDialog extends Dialog {
 
   private static final Class<?> PKG = GetFieldsDialog.class;
+
   private List<String> paths = new ArrayList<>();
+  private PropsUI props;
+
   protected Button ok;
   protected Button cancel;
   protected Button clearSelection;
-  private PropsUI props;
+  protected BaseStepMeta meta;
+
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
-  public GetFieldsDialog( Shell parent ) {
+
+  public GetFieldsDialog( Shell parent, BaseStepMeta meta ) {
     super( parent, SWT.NONE );
     this.props = PropsUI.getInstance();
+    this.meta = meta;
   }
 
   public void open( String filename, List<String> paths, TableView wFields ) {
     Shell parent = getParent();
     Display display = parent.getDisplay();
+
+    this.paths.addAll( paths );
 
     if ( StringUtils.isBlank( filename ) ) {
       MessageBox mb = new MessageBox( parent, SWT.OK | SWT.ICON_ERROR );
@@ -227,6 +237,10 @@ public class GetFieldsDialog extends Dialog {
     return isSearchInvalid;
   }
 
+  private boolean hasChanged( List<String> newPaths ) {
+    return !( this.paths.size() == newPaths.size() && this.paths.containsAll( newPaths ) && newPaths.containsAll( this.paths ) );
+  }
+
   private void setExpanded( TreeItem item ) {
     item.setExpanded( true );
     for ( TreeItem child : item.getItems() ) {
@@ -234,28 +248,37 @@ public class GetFieldsDialog extends Dialog {
     }
   }
 
-  private void clearSelection( TreeItem item ) {
+  protected void clearSelection( TreeItem item ) {
     item.setChecked( false );
     for ( TreeItem child : item.getItems() ) {
       clearSelection( child );
     }
+    if ( hasChanged( Collections.emptyList() ) ) {
+      meta.setChanged();
+    }
   }
 
-  private void ok( JsonSampler jsonSampler, Tree tree, Shell shell, TableView wFields ) {
-    paths.clear();
-    paths.addAll( jsonSampler.getChecked( tree ) );
+  protected void ok( JsonSampler jsonSampler, Tree tree, Shell shell, TableView wFields ) {
+    List<String> newPaths  = jsonSampler.getChecked( tree );
 
-    wFields.table.setItemCount( paths.size() );
-    if ( !paths.isEmpty() ) {
-      for ( int i = 0; i < paths.size(); i++ ) {
-        String path = paths.get( i );
+    List<String> compNewPaths = new ArrayList<>();
+    wFields.table.setItemCount( newPaths.size() );
+    if ( !newPaths.isEmpty() ) {
+      for ( int i = 0; i < newPaths.size(); i++ ) {
+        String path = newPaths.get( i );
         String[] values = path.split( ":" );
         TableItem item = wFields.table.getItem( i );
         item.setText( 1, values[0] );
         item.setText( 2, values[1] );
         item.setText( 3, values[2] );
+        compNewPaths.add( values[1] );
       }
     }
+
+    if ( hasChanged( compNewPaths ) ) {
+      meta.setChanged();
+    }
+
     wFields.removeEmptyRows();
     wFields.setRowNums();
     wFields.optWidth( true );
