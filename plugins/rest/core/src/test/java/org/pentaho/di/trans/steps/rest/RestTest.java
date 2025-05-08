@@ -13,20 +13,25 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import org.glassfish.jersey.client.ClientConfig;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import java.util.HashMap;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -36,7 +41,6 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.StrictStubs.class )
@@ -191,4 +195,31 @@ public class RestTest {
     }
   }
 
+  @Test
+  public void testApplicationTypesAction() {
+    StepMockHelper<RestMeta, RestData> mockHelper = new StepMockHelper<>( "excelInput", RestMeta.class, RestData.class );
+    Rest rest = setupInput( mockHelper );
+    JSONObject response = rest.doAction( "applicationTypes", mockHelper.processRowsStepMetaInterface, null, null, new HashMap<>() );
+    JSONArray applicationTypes = (JSONArray) response.get( "applicationTypes" );
+
+    assertEquals( RestMeta.APPLICATION_TYPES.length, applicationTypes.size() );
+  }
+
+  @Test
+  public void testHttpMethodsAction() {
+    StepMockHelper<RestMeta, RestData> mockHelper = new StepMockHelper<>( "excelInput", RestMeta.class, RestData.class );
+    Rest rest = setupInput( mockHelper );
+    JSONObject response = rest.doAction( "httpMethods", mockHelper.processRowsStepMetaInterface, null, null, new HashMap<>() );
+    JSONArray httpMethods = (JSONArray) response.get( "httpMethods" );
+
+    assertEquals( RestMeta.HTTP_METHODS.length, httpMethods.size() );
+  }
+
+  private Rest setupInput( StepMockHelper<RestMeta, RestData> mockHelper ) {
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+        .thenReturn( mockHelper.logChannelInterface );
+
+    return new Rest( mockHelper.stepMeta, mockHelper.stepDataInterface, 0,
+        mockHelper.transMeta, mockHelper.trans );
+  }
 }

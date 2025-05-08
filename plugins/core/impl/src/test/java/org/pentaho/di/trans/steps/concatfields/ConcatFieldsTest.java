@@ -13,8 +13,8 @@
 
 package org.pentaho.di.trans.steps.concatfields;
 
+import org.json.simple.JSONObject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -37,9 +37,12 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -189,7 +192,7 @@ public class ConcatFieldsTest {
     String headerString =
         new String( ( (ConcatFieldsOutputStream) stepMockHelper.processRowsStepDataInterface.writer ).read() );
 
-    Assert.assertEquals( "one;two", headerString );
+    assertEquals( "one;two", headerString );
 
   }
 
@@ -199,7 +202,7 @@ public class ConcatFieldsTest {
     processStep( false );
 
     String result =  new String( ( (ConcatFieldsOutputStream) stepMockHelper.processRowsStepDataInterface.writer ).read() );
-    Assert.assertEquals( expected, result );
+    assertEquals( expected, result );
   }
 
   @Test
@@ -208,7 +211,7 @@ public class ConcatFieldsTest {
     processStep( true );
 
     String result =  new String( ( (ConcatFieldsOutputStream) stepMockHelper.processRowsStepDataInterface.writer ).read() );
-    Assert.assertEquals( expected, result );
+    assertEquals( expected, result );
   }
 
   private void processStep( boolean enableHeaderOffsetForSplitRows ) throws KettleException {
@@ -294,6 +297,35 @@ public class ConcatFieldsTest {
     metaWithFieldOptions[ 0 ] = valueMeta1;
     metaWithFieldOptions[ 1 ] = valueMeta2;
     return metaWithFieldOptions;
+  }
+
+  @Test
+  public void testFormat() {
+    StepMeta stepMeta = new StepMeta();
+    String name = "test";
+    stepMeta.setName( name );
+    StepDataInterface stepDataInterface = mock( StepDataInterface.class );
+    int copyNr = 0;
+    TransMeta transMeta = mock( TransMeta.class );
+    Trans trans = mock( Trans.class );
+    when( transMeta.findStep( name ) ).thenReturn( stepMeta );
+    ConcatFields concatFields = new ConcatFields( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+    assertEquals( "", concatFields.formatType( ValueMetaInterface.TYPE_STRING ) );
+    assertEquals( "0", concatFields.formatType( ValueMetaInterface.TYPE_INTEGER ) );
+    assertEquals( "0.#####", concatFields.formatType( ValueMetaInterface.TYPE_NUMBER ) );
+    assertEquals( null, concatFields.formatType( ValueMetaInterface.TYPE_DATE ) );
+
+    Map<String, String> queryParams = new HashMap<>();
+    ConcatFieldsMeta stepMetaInterface = mock( ConcatFieldsMeta.class );
+    TextFileField[] fields = new TextFileField[ 1 ];
+    TextFileField field = new TextFileField();
+    field.setName( "test" );
+    field.setType( 2 );
+    fields[ 0 ] = field;
+    when( stepMetaInterface.getOutputFields() ).thenReturn( fields );
+    JSONObject response = concatFields.doAction( "setMinimalWidth", stepMetaInterface,
+      transMeta, trans, queryParams );
+    assert ( response.containsKey( "updatedData" ) );
   }
 
   public class ConcatFieldsMetaHandler extends ConcatFieldsMeta {

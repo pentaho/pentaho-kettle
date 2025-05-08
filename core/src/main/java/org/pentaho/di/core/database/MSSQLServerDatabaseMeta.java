@@ -14,10 +14,13 @@
 package org.pentaho.di.core.database;
 
 import java.sql.ResultSet;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+
+import static org.pentaho.di.core.util.Utils.setBooleanValueFromMap;
 
 /**
  * Contains MySQL specific information through static final members
@@ -523,4 +526,8 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
     return 8000;
   }
 
+  @Override
+  public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    this.setUsingDoubleDecimalAsSchemaTableSeparator( setBooleanValueFromMap( attributes, "MSSQL_DOUBLE_DECIMAL_SEPARATOR" ) );
+  }
 }

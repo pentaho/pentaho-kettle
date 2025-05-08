@@ -15,6 +15,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -234,5 +235,17 @@ public class DatabricksDatabaseMeta extends BaseDatabaseMeta {
   @Override
   public String getEndQuote() {
     return "`";
+  }
+
+  @Override
+  public void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    AuthMethod authType = AuthMethod.parse( attributes.get( Attributes.AUTH_METHOD ) );
+    this.setAuthMethod( authType );
+
+    if ( authType == AuthMethod.Token ) {
+      this.setToken( attributes.get( Attributes.TOKEN ) );
+    }
+
+    this.setHttpPath( attributes.get( Attributes.HTTP_PATH ) );
   }
 }

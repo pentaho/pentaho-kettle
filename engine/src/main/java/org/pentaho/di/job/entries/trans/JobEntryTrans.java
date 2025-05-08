@@ -13,7 +13,16 @@
 
 package org.pentaho.di.job.entries.trans;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
@@ -75,13 +84,6 @@ import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This is the job entry that defines a transformation to be run.
  *
@@ -91,6 +93,7 @@ import java.util.Map;
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories, JobEntryRunConfigurableInterface {
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
   public static final int IS_PENTAHO = 1;
+  private static final String PARAMETERS_DATA = "parameters";
 
   private String transname;
 
@@ -1729,5 +1732,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     if ( parentJob != null ) {
       parentJob.callAfterLog();
     }
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    TransMeta inputTransMeta = this.getTransMeta( this.rep, this.metaStore, this.parentJobMeta );
+    String[] parametersList = inputTransMeta.listParameters();
+
+    JSONArray parametersData = new JSONArray();
+    parametersData.addAll( Arrays.asList( parametersList ) );
+    response.put( PARAMETERS_DATA, parametersData );
+    return response;
   }
 }
