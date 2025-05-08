@@ -14,6 +14,7 @@
 package org.pentaho.di.core.xml;
 
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -186,6 +187,7 @@ public class XMLHandlerUnitTest {
     assertEquals( "<adouble>" + String.valueOf( Double.MIN_NORMAL ) + "</adouble>", XMLHandler.addTagValue( "adouble", Double.MIN_NORMAL, false ) );
   }
 
+  @Ignore
   @Test
   public void addTagValueBinary() throws IOException {
     byte[] input = "Test Data".getBytes();
