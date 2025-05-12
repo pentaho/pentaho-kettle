@@ -226,6 +226,8 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.FileDialogOperation;
+import org.pentaho.di.ui.core.FileDialogOperation.CustomImageProvider;
+import org.pentaho.di.ui.core.FileDialogOperation.FileLoadListener;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PrintSpool;
 import org.pentaho.di.ui.core.PropsUI;
@@ -634,6 +636,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private static PrintStream originalSystemOut = System.out;
   private static PrintStream originalSystemErr = System.err;
+
+  // For decorating objects in FileOpenSaveDialog
+  private Optional<CustomImageProvider> customImageProvider = Optional.empty();
+  private Optional<FileLoadListener> fileLoadListener = Optional.empty();
 
   private TreeManager selectionTreeManager;
 
@@ -4686,6 +4692,24 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setLastFileOpenedProvider( String provider ) {
     lastFileOpenedProvider = provider;
+  }
+
+    /** To load additional images and define what files they apply to */
+  public void setCustomImageProvider( CustomImageProvider provider ) {
+    this.customImageProvider = Optional.of( provider );
+  }
+
+  public Optional<CustomImageProvider> getCustomImageProvider() {
+    return customImageProvider;
+  }
+
+  public Optional<FileLoadListener> getFileLoadListener() {
+    return fileLoadListener;
+  }
+
+  /** Add a listener to inspect files as they are loaded */
+  public void setFileLoadListener( FileLoadListener fileLoadListener ) {
+    this.fileLoadListener = Optional.of( fileLoadListener );
   }
 
   public void displayCmdLine() {
