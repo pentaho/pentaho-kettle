@@ -171,7 +171,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
    </tr>
    <tr>
    <td>400</td>
-   <td>Bad Request: Mandatory parameter name missing</td>
+   <td>Bad Request: Mandatory parameter, either id or name, is missing</td>
    </tr>
    <tr>
    <td>404</td>
@@ -217,12 +217,12 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       response.setContentType( "text/html;charset=UTF-8" );
     }
 
-    //Name is mandatory
+    //Either jobName or id is required parameter
 
-    if ( jobName == null ) {
+    if ( jobName == null && id == null ) {
       PrintWriter out = response.getWriter();
       response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-      String message = BaseMessages.getString( PKG, "GetJobStatusServlet.Error.JobNameIsMandatory" );
+      String message = BaseMessages.getString( PKG, "GetJobStatusServlet.Error.JobNameOrIdIsMandatory" );
       printResponse( response, useXML, out, message );
       return;
     }
