@@ -48,6 +48,7 @@ public class WorkbookFactory {
   }
 
   // Not Dead Code:  Used by pdi-google-docs-plugin
+  @Deprecated
   public static KWorkbook getWorkbook( SpreadSheetType type, InputStream inputStream, String encoding )
     throws KettleException {
     switch ( type ) {

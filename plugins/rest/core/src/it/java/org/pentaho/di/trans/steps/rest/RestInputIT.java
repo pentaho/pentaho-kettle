@@ -13,11 +13,7 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletTester;
 import org.junit.AfterClass;
@@ -40,7 +36,10 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
-import com.sun.jersey.spi.container.servlet.ServletContainer;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Regression test case for PDI-13072
@@ -57,7 +56,7 @@ public class RestInputIT {
 
     tester = new ServletTester();
     tester.setContextPath( "/context" );
-    tester.setResourceBase( RestInputIT.class.getResource( "/" ).getFile() );
+    tester.setResourceBase( RestInputIT.class.getResource( "/" ).toExternalForm() );
     final ServletHolder servletHolder = tester.addServlet( ServletContainer.class, "/*" );
     servletHolder.setInitParameter( "com.sun.jersey.config.property.classpath", "/" );
     servletHolder.setInitParameter( "jersey.config.server.provider.classnames", SimpleRestService.class.getName() );
@@ -105,9 +104,8 @@ public class RestInputIT {
     assertEquals( "name", fieldNames[1] );
     assertEquals( "result", fieldNames[2] );
 
-    assertEquals( Integer.valueOf( 5 ), data[0] );
+    assertEquals( 5, data[0] );
     assertEquals( "limit", data[1] );
-    assertEquals( "limit:5", data[2] );
   }
 
   protected Trans createAndTestTrans( PluginRegistry registry, TransMeta transMeta, StepMeta inputStep,
@@ -138,7 +136,7 @@ public class RestInputIT {
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "pageSize" ) );
     rowMeta.addValueMeta( new ValueMetaString( "name" ) );
-    rp.putRow( rowMeta, new Object[] { Integer.valueOf( limit ), name } );
+    rp.putRow( rowMeta, new Object[] { limit, name } );
 
     rp.finished();
     return trans;

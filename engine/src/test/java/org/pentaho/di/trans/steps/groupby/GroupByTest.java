@@ -13,6 +13,15 @@
 
 package org.pentaho.di.trans.steps.groupby;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -34,12 +43,6 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -216,4 +219,17 @@ public class GroupByTest  {
     // since path started with "file:///"
     verify( groupBySpy, times( 1 ) ).retrieveVfsPath( anyString() );
   }
+
+  @Test
+  public void testTypeGroupCodeAction() {
+    GroupByMeta meta = mock( GroupByMeta.class );
+    GroupByData groupByData = new GroupByData();
+    GroupBy groupBySpy = Mockito.spy( new GroupBy( mockHelper.stepMeta, groupByData, 0,
+      mockHelper.transMeta, mockHelper.trans ) );
+    JSONObject response = groupBySpy.doAction( "typeGroupCode", meta, null, null, new HashMap<>() );
+    JSONArray typeGroupCodes = (JSONArray) response.get( "typeGroupCode" );
+
+    assertEquals( GroupByMeta.typeGroupCode.length, typeGroupCodes.size() );
+  }
+
 }

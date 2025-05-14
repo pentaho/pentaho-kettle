@@ -38,6 +38,8 @@
     <!-- Test dependencies -->
     <se-jcr.version>0.9</se-jcr.version>
     <jcr.version>2.0</jcr.version>
+    <derby.version>10.17.1.0</derby.version>
+    <commons-database.version>10.3.0.0-SNAPSHOT</commons-database.version>
 
     <!-- Wadl2Java Settings -->
     <wadl2java.generated-class-name>Localhost_PentahoPlugin</wadl2java.generated-class-name>
@@ -375,9 +377,48 @@
       <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>${derby.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-database-model</artifactId>
+      <version>${commons-database.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>src/it/resources</directory>
+      </testResource>
+      <testResource>
+        <targetPath>${project.build.directory}/it-classes</targetPath>
+        <directory>src/test/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <targetPath>${project.build.directory}/it-classes</targetPath>
+        <directory>src/it/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>

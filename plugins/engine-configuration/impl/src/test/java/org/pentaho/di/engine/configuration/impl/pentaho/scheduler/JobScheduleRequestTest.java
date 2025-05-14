@@ -48,6 +48,24 @@ public class JobScheduleRequestTest {
   }
 
   @Test
+  public void getOutputFile() {
+    JobScheduleRequest jobScheduleRequest = mock( JobScheduleRequest.class );
+    when( jobScheduleRequest.getOutputFile() ).thenCallRealMethod();
+    String outputFile = "hitachi";
+    ReflectionTestUtils.setField( jobScheduleRequest, "outputFile", outputFile );
+    Assert.assertEquals( outputFile, jobScheduleRequest.getOutputFile() );
+  }
+
+  @Test
+  public void setOutputFile() {
+    JobScheduleRequest jobScheduleRequest = mock( JobScheduleRequest.class );
+    doCallRealMethod().when( jobScheduleRequest ).setOutputFile( any() );
+    String outputFile = "hitachi";
+    jobScheduleRequest.setOutputFile( outputFile );
+    Assert.assertEquals( outputFile, ReflectionTestUtils.getField( jobScheduleRequest, "outputFile" ) );
+  }
+
+  @Test
   public void getJobParameters() {
     JobScheduleRequest jobScheduleRequest = mock( JobScheduleRequest.class );
     when( jobScheduleRequest.getJobParameters() ).thenCallRealMethod();

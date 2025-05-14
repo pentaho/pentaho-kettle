@@ -21,11 +21,13 @@ import net.minidev.json.JSONArray;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
@@ -46,6 +48,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -57,6 +60,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,11 +74,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertNotNull;
 import static org.pentaho.di.core.util.Assert.assertNull;
 
 public class JsonInputTest {
@@ -1515,5 +1519,138 @@ public class JsonInputTest {
     jsonInput.addRowListener( new RowComparatorListener( new Object[][] { new Object[] { json, null } } ) );
     processRows( jsonInput, 2 );
     Assert.assertEquals( "error", 0, jsonInput.getErrors() );
+  }
+  @Test
+  public void getFilesActionTest() throws Exception {
+    try {
+      JsonInput jsonInput = getInputForDoActions( getBasicTestJson(), false );
+      Method getFilesMethod = JsonInput.class.getDeclaredMethod( "getFilesAction", Map.class );
+      JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( jsonInput, new HashMap<>() );
+
+      disposeJsonInput( jsonInput );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject.get( "files" ) );
+    } finally {
+      deleteFiles();
+    }
+  }
+
+  @Test
+  public void getEmptyFilesActionTest() throws Exception {
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    helper.redirectLog( err, LogLevel.ERROR );
+
+    try {
+      List<FileObject> fileList = new ArrayList<>();
+      JsonInputMeta meta = createFileListMeta( fileList );
+
+      JsonInput jsonInput = createJsonInput( meta );
+      jsonInput.setStepMetaInterface( meta );
+
+      Mockito.doReturn( new String[]{} ).when( helper.transMeta ).environmentSubstitute( (String[]) any() );
+
+      Method getFilesMethod = JsonInput.class.getDeclaredMethod( "getFilesAction", Map.class );
+      JSONObject jsonObject = (JSONObject) getFilesMethod.invoke( jsonInput, new HashMap<>() );
+
+      disposeJsonInput( jsonInput );
+      assertNotNull( jsonObject );
+      assertEquals( jsonObject.get( "message" ), BaseMessages.getString( JsonInputTest.class, "JsonInputDialog.NoFilesFound.DialogMessage" ) );
+    } finally {
+      deleteFiles();
+    }
+  }
+
+  @Test
+  public void selectFieldsActionTest() throws Exception {
+    try {
+      JsonInput jsonInput = getInputForDoActions( getBasicTestJson(), true );
+      Method selectFieldsMethod = JsonInput.class.getDeclaredMethod( "selectFieldsAction", Map.class );
+      JSONObject jsonObject = (JSONObject) selectFieldsMethod.invoke( jsonInput, new HashMap<>() );
+
+      disposeJsonInput( jsonInput );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject.get( "data" ) );
+    } finally {
+      deleteFiles();
+    }
+  }
+
+  @Test
+  public void selectFieldsForValidJSONArrayTest() throws Exception {
+    final String input = " { \"arr\": [ [ { \"a\": 1, \"b\": 1}, { \"a\": 1, \"b\": 2} ], [ {\"a\": 3, \"b\": 4 } ] ] }";
+    try {
+      JsonInput jsonInput = getInputForDoActions( input, true );
+      Method selectFieldsMethod = JsonInput.class.getDeclaredMethod( "selectFieldsAction", Map.class );
+      JSONObject jsonObject = (JSONObject) selectFieldsMethod.invoke( jsonInput, new HashMap<>() );
+
+      disposeJsonInput( jsonInput );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject.get( "data" ) );
+    } finally {
+      deleteFiles();
+    }
+  }
+
+  @Test
+  public void selectFieldsForInvalidJSONTest() throws Exception {
+    try {
+      JsonInput jsonInput = getInputForDoActions( "{{", true );
+      Method selectFieldsMethod = JsonInput.class.getDeclaredMethod( "selectFieldsAction", Map.class );
+      JSONObject jsonObject = (JSONObject) selectFieldsMethod.invoke( jsonInput, new HashMap<>() );
+
+      disposeJsonInput( jsonInput );
+      assertNotNull( jsonObject );
+      assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( jsonObject.get( "errorMessage" ) );
+    } finally {
+      deleteFiles();
+    }
+  }
+
+  private void setupInputMeta( JsonInputMeta meta ) {
+    String[] fileNames = new String[]{BASE_RAM_DIR + "test.json"};
+    String[] includeSubFolders = new String[]{"N"};
+    String[] fileRequired = new String[]{"N"};
+
+    meta.setFileName( fileNames );
+    meta.inputFiles.fileRequired =  fileRequired;
+    meta.inputFiles.includeSubFolders = includeSubFolders;
+    meta.setIsAFile( true );
+
+    Mockito.doReturn( fileNames ).when( helper.transMeta ).environmentSubstitute( (String[]) any() );
+  }
+
+  private JsonInput getInputForDoActions( String input, boolean setFields ) throws Exception {
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    helper.redirectLog( err, LogLevel.ERROR );
+
+    Mockito.doReturn( new String[]{} ).when( helper.transMeta ).listVariables();
+
+    try ( FileObject fileObj = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( BASE_RAM_DIR + "test.json", helper.transMeta ) ) {
+
+      try ( OutputStream out = fileObj.getContent().getOutputStream() ) {
+        out.write( input.getBytes() );
+      }
+
+      List<FileObject> fileList = List.of( fileObj );
+
+      JsonInputMeta meta = createFileListMeta( fileList );
+      setupInputMeta( meta );
+
+      JsonInput jsonInput = createJsonInput( meta );
+      jsonInput.setStepMetaInterface( meta );
+      if ( setFields ) {
+        JsonInputField price = new JsonInputField();
+        price.setName( "price" );
+        price.setType( ValueMetaInterface.TYPE_NUMBER );
+        price.setPath( "$..book[*].price" );
+        meta.setInputFields( new JsonInputField[] { price } );
+      }
+
+      return jsonInput;
+    }
   }
 }

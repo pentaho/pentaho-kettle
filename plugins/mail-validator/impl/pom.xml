@@ -13,6 +13,10 @@
   <artifactId>mail-validator-plugins-impl</artifactId>
   <name>PDI Mail Validator Job Plugins Impl</name>
 
+  <properties>
+    <oro.version>2.0.8</oro.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -47,6 +51,12 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <version>${oro.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

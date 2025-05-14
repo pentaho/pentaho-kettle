@@ -55,10 +55,12 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforceupdate.SalesforceUpdateMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
@@ -933,24 +935,16 @@ public class SalesforceUpdateDialog extends SalesforceStepDialog {
 
   private void getModulesList() {
     if ( !gotModule ) {
-      SalesforceConnection connection = null;
-
       try {
-        SalesforceUpdateMeta meta = new SalesforceUpdateMeta();
+        Trans trans = new Trans( transMeta, null );
+        trans.rowsets = new ArrayList<>();
+
         getInfo( meta );
-        String url = transMeta.environmentSubstitute( meta.getTargetURL() );
-
-        String selectedField = meta.getModule();
+        SalesforceStep step = (SalesforceStep) meta.getStep( stepMeta, meta.getStepData(), 0, transMeta, trans );
+        step.setStepMetaInterface( meta );
+        String selectedField = wModule.getText();
         wModule.removeAll();
-
-        // Define a new Salesforce connection
-        connection =
-          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUsername() ),
-            Utils.resolvePassword( transMeta, meta.getPassword() ) );
-        // connect to Salesforce
-        connection.connect();
-        // return
-        wModule.setItems( connection.getAllAvailableObjects( false ) );
+        wModule.setItems( step.getModules( "false" ) );
 
         if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );
@@ -964,13 +958,6 @@ public class SalesforceUpdateDialog extends SalesforceStepDialog {
           BaseMessages.getString( PKG, "SalesforceUpdateDialog.ErrorRetrieveModules.DialogTitle" ),
           BaseMessages.getString( PKG, "SalesforceUpdateDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
         getModulesListError = true;
-      } finally {
-        if ( connection != null ) {
-          try {
-            connection.close();
-          } catch ( Exception e ) { /* Ignore */
-          }
-        }
       }
     }
   }

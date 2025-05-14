@@ -13,17 +13,22 @@
 
 package org.pentaho.di.trans.steps.salesforceupsert;
 
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sforce.soap.partner.Field;
-import org.pentaho.di.core.util.Utils;
+import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.bind.XmlObject;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -33,12 +38,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.sforce.soap.partner.sobject.SObject;
-import com.sforce.ws.bind.XmlObject;
-
-import javax.xml.namespace.QName;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
@@ -434,4 +433,17 @@ public class SalesforceUpsert extends SalesforceStep {
     }
     return value;
   }
+
+  @SuppressWarnings( "java:S1185" ) //This is being called using reflection(doAction)
+  @Override
+  public JSONObject testButtonAction( Map<String, String> queryParams ) {
+    return super.testButtonAction( queryParams );
+  }
+
+  @Override
+  public JSONObject modulesAction( Map<String, String> queryParams ) {
+    queryParams.put( "moduleFlag", "false" );
+    return super.modulesAction( queryParams );
+  }
+
 }

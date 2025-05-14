@@ -25,7 +25,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.*;
+import org.pentaho.di.trans.step.BaseDatabaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Delete data in a database table.
@@ -244,5 +248,4 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
     }
     super.dispose( smi, sdi );
   }
-
 }

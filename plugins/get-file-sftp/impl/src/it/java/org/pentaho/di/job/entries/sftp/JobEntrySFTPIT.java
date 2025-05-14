@@ -27,6 +27,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.utils.TestUtils;
 
 import java.io.ByteArrayInputStream;
@@ -73,6 +74,9 @@ public class JobEntrySFTPIT {
 
     JobEntrySFTP job = new JobEntrySFTP();
     job.setVariable( myVar, localDir );
+
+    JobMeta jobMeta=mock( JobMeta.class );
+    job.setParentJobMeta( jobMeta );
 
     Job parent = mock( Job.class );
     when( parent.isStopped() ).thenReturn( false );

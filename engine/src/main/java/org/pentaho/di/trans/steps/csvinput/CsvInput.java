@@ -13,20 +13,25 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.io.BufferedInputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleConversionException;
@@ -48,7 +53,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
+import org.pentaho.di.trans.steps.common.CsvInputAwareStep;
 import org.pentaho.di.trans.steps.fileinput.text.BOMDetector;
+import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
+import org.pentaho.di.trans.steps.fileinput.text.CsvFileImportProcessor;
 import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -60,7 +69,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
  * @author Matt
  * @since 2007-07-05
  */
-public class CsvInput extends BaseStep implements StepInterface {
+public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareStep {
   private static Class<?> PKG = CsvInput.class; // for i18n purposes, needed by Translator2!!
 
   private CsvInputMeta meta;
@@ -1169,6 +1178,52 @@ public class CsvInput extends BaseStep implements StepInterface {
     } else {
       return environmentSubstitute( filename );
     }
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getFieldsAction( Map<String, String> queryParams )
+    throws KettleException, JsonProcessingException {
+    return populateMeta( queryParams );
+  }
+
+  // This method contains code extracted from textfileinput/TextFileCSVImportProgressDialog class
+  // to get Fields data and Fields summary statistics
+  private JSONObject populateMeta( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
+    JSONObject response = new JSONObject();
+    String isSampleSummary = queryParams.get( "isSampleSummary" );
+    int samples = Integer.parseInt( Objects.toString( queryParams.get( "noOfFields" ), "0" ) );
+
+    TransMeta transMeta = getTransMeta();
+    CsvInputAwareMeta csvInputAwareMeta = (CsvInputAwareMeta) getStepMetaInterface();
+    final InputStream inputStream = getInputStream( csvInputAwareMeta );
+    final BufferedInputStreamReader reader = getBufferedReader( csvInputAwareMeta, inputStream );
+    meta = (CsvInputMeta) getStepMetaInterface();
+    String[] fieldNames = getFieldNames( csvInputAwareMeta );
+    meta.setFields( fieldNames );
+
+    CsvFileImportProcessor processor =
+      new CsvFileImportProcessor( meta, transMeta, reader, samples, Boolean.parseBoolean( isSampleSummary ) );
+    String summary = processor.analyzeFile( true );
+
+    response.put( "fields", convertFieldsToJsonArray( processor.getInputFieldsDto() ) );
+    response.put( "summary", summary );
+    return response;
+  }
+
+  public InputStream getInputStream( final CsvInputAwareMeta meta ) {
+    InputStream inputStream = null;
+    try {
+      FileObject fileObject = meta.getHeaderFileObject( getTransMeta() );
+      inputStream = KettleVFS.getInputStream( fileObject );
+    } catch ( final Exception e ) {
+      logError( BaseMessages.getString( "FileInputDialog.ErrorGettingFileDesc.DialogMessage" ), e );
+    }
+    return inputStream;
+  }
+
+  @Override
+  public LogChannelInterface logChannel() {
+    return getLogChannel();
   }
 
 }

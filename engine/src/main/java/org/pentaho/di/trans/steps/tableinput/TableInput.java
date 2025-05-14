@@ -15,22 +15,33 @@ package org.pentaho.di.trans.steps.tableinput;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.*;
+import org.pentaho.di.trans.step.BaseDatabaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Reads information from a database table by using freehand SQL
@@ -328,6 +339,54 @@ public class TableInput extends BaseDatabaseStep implements StepInterface {
       dbLock.unlock();
     }
   }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getColumnsAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    String sql =
+      String.valueOf(
+        getColumnsSQL( queryParams.get( "connection" ), queryParams.get( "schema" ), queryParams.get( "table" ) ) );
+    response.put( "sql", sql );
+    response.put( "actionStatus", StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  private StringBuilder getColumnsSQL( String connection, String schema, String table ) throws KettleException {
+    DatabaseMeta databaseMeta = getTransMeta().findDatabase( connection );
+    LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Table Output Step", LoggingObjectType.STEP, null );
+    Database db = new Database( loggingObject, databaseMeta );
+    StringBuilder sql =
+      new StringBuilder( "SELECT *"
+        + Const.CR + "FROM "
+        + databaseMeta.getQuotedSchemaTableCombination( schema, table ) + Const.CR );
+    try {
+      db.connect();
+
+      RowMetaInterface fields = db.getQueryFields( String.valueOf( sql ), false );
+      if ( fields != null ) {
+        sql = new StringBuilder( "SELECT" + Const.CR );
+        for ( int i = 0; i < fields.size(); i++ ) {
+          ValueMetaInterface field = fields.getValueMeta( i );
+          if ( i == 0 ) {
+            sql.append( "  " );
+          } else {
+            sql.append( ", " );
+          }
+          sql.append( databaseMeta.quoteField( field.getName() ) ).append( Const.CR );
+        }
+        sql.append( "FROM " ).append( databaseMeta.getQuotedSchemaTableCombination( schema, table ) )
+          .append( Const.CR );
+      }
+    } catch ( KettleDatabaseException e ) {
+      throw new KettleException(  e );
+    } finally {
+      db.close();
+    }
+    return sql;
+  }
+
 
   @Override
   protected Class<?> getPKG() {

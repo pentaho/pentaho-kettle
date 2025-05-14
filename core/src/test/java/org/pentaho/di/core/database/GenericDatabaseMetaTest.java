@@ -29,6 +29,8 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -174,5 +176,17 @@ public class GenericDatabaseMetaTest {
       nativeMeta.addAttribute( "DATABASE_DIALECT_ID", dialect );
       assertEquals( mockedMeta, nativeMeta.getDatabaseDialectInternal() );
     }
+  }
+  @Test
+  public void setConnectionSpecificInfoFromAttributes_setsAllAttributes() {
+    GenericDatabaseMeta dbMeta = new GenericDatabaseMeta();
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, "jdbc:test:url" );
+    attributes.put( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, "com.test.Driver" );
+
+    dbMeta.setConnectionSpecificInfoFromAttributes( attributes );
+
+    assertEquals( "jdbc:test:url", dbMeta.getAttributes().getProperty( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL ) );
+    assertEquals( "com.test.Driver", dbMeta.getAttributes().getProperty( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS ) );
   }
 }

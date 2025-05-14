@@ -57,6 +57,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -1128,21 +1129,12 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     setButtonPositions( new Button[] { wGet, wMinWidth }, margin, null );
 
     final int FieldsRows = input.getOutputFields().length;
+    Trans trans = new Trans( transMeta, null );
+    trans.rowsets = new ArrayList<>();
+    ExcelWriterStep step = input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+    step.setStepMetaInterface( input );
 
-    // Prepare a list of possible formats, filtering reserved internal formats away
-    String[] formats = BuiltinFormats.getAll();
-
-    List<String> allFormats = Arrays.asList( BuiltinFormats.getAll() );
-    List<String> nonReservedFormats = new ArrayList<String>( allFormats.size() );
-
-    for ( String format : allFormats ) {
-      if ( !format.startsWith( "reserved" ) ) {
-        nonReservedFormats.add( format );
-      }
-    }
-
-    Collections.sort( nonReservedFormats );
-    formats = nonReservedFormats.toArray( new String[0] );
+    String[] formats = step.getFormats();
 
     colinf =
       new ColumnInfo[] {
@@ -1711,23 +1703,18 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     int nrNonEmptyFields = wFields.nrNonEmpty();
     for ( int i = 0; i < nrNonEmptyFields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
-
       int type = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
-      switch ( type ) {
-        case ValueMetaInterface.TYPE_STRING:
-          item.setText( 3, "" );
-          break;
-        case ValueMetaInterface.TYPE_INTEGER:
-          item.setText( 3, "0" );
-          break;
-        case ValueMetaInterface.TYPE_NUMBER:
-          item.setText( 3, "0.#####" );
-          break;
-        case ValueMetaInterface.TYPE_DATE:
-          break;
-        default:
-          break;
-      }
+
+      Trans trans = new Trans( transMeta, null );
+      trans.rowsets = new ArrayList<>();
+
+      getInfo( input );
+      ExcelWriterStep step = input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+      step.setStepMetaInterface( input );
+
+      String formatTypeResponse = step.formatType( type );
+      item.setText( 3, formatTypeResponse);
+
     }
     wFields.optWidth( true );
   }

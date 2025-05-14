@@ -13,16 +13,19 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.Arrays;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -31,6 +34,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.trans.StepWithMappingMeta;
@@ -589,5 +593,51 @@ public class TransExecutor extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
+  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
+                              Trans trans, Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      Method actionMethod = TransExecutor.class.getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      this.meta = (TransExecutorMeta) stepMetaInterface;
+      this.meta.setRepository( transMeta.getRepository() );
+      this.repository = transMeta.getRepository();
+      this.setTransMeta( transMeta );
+      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
+
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+    }
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    JSONArray parameterArray = new JSONArray();
+    try {
+      TransMeta inputTransMeta = loadExecutorTransMeta();
+      if ( inputTransMeta != null ) {
+        String[] parameters = inputTransMeta.listParameters();
+        for ( int i = 0; i < parameters.length; i++ ) {
+          JSONObject parameter = new JSONObject();
+          String name = parameters[ i ];
+          String desc = inputTransMeta.getParameterDescription( name );
+          String str = inputTransMeta.getParameterDefault( name );
+          parameter.put( "variable", Const.NVL( name, "" ) );
+          parameter.put( "field", "" );
+          parameter.put( "input", Const.NVL( str, Const.NVL( desc, "" ) ) );
+          parameterArray.add( parameter );
+        }
+      }
+      response.put( "parameters", parameterArray );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
 
 }

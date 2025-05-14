@@ -1026,8 +1026,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "sheetfield", sheetField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "sheetrownumfield", sheetRowNumberField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownumfield", rowNumberField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "sheetfield", sheetField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "filefield", fileField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "limit", rowLimit ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
     retval.append( "    " + XMLHandler.addTagValue( "add_to_result_filenames", isaddresult ) );

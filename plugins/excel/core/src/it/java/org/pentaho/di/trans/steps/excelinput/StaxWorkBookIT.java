@@ -29,6 +29,7 @@ import java.nio.channels.FileLock;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -84,17 +85,53 @@ public class StaxWorkBookIT {
   }
 
   @Test
-  public void testEmptySheet() throws Exception {
+  public void testEmptySheets_FirstIsNotEmpty() throws Exception {
     KWorkbook workbook = getWorkbook( SAMPLE_FILE, null );
-    int numberOfSheets = workbook.getNumberOfSheets();
-    assertEquals( 3, numberOfSheets );
-    // last two sheets are empty, check if no exception opening
-    for ( int i = 1; i< numberOfSheets; i++ ) {
-      KSheet sheet = workbook.getSheet( i );
-      for ( int j = 0; j < sheet.getRows(); j++ ) {
-        sheet.getRow( j );
-      }
+
+    // This file has 3 sheets
+    assertEquals( 3, workbook.getNumberOfSheets() );
+    KSheet sheet1 = workbook.getSheet( 0 );
+    assertNotNull( sheet1 );
+    assertNotNull( workbook.getSheet( 1 ) );
+    assertNotNull( workbook.getSheet( 2 ) );
+
+    // The first sheet is NOT empty!
+
+    for ( int j = 1; j < sheet1.getRows(); j++ ) {
+      sheet1.getRow( j );
     }
+  }
+
+  @Test( expected = ArrayIndexOutOfBoundsException.class )
+  public void testEmptySheets_SecondIsEmpty() throws Exception {
+    KWorkbook workbook = getWorkbook( SAMPLE_FILE, null );
+
+    // This file has 3 sheets
+    assertEquals( 3, workbook.getNumberOfSheets() );
+    assertNotNull( workbook.getSheet( 0 ) );
+    assertNotNull( workbook.getSheet( 1 ) );
+    assertNotNull( workbook.getSheet( 2 ) );
+
+    // The second sheet is empty!
+    workbook.getSheet( 1 ).getRow( 1 );
+
+    fail( "An exception should have been thrown!" );
+  }
+
+  @Test( expected = ArrayIndexOutOfBoundsException.class )
+  public void testEmptySheets_ThirdIsAlsoEmpty() throws Exception {
+    KWorkbook workbook = getWorkbook( SAMPLE_FILE, null );
+
+    // This file has 3 sheets
+    assertEquals( 3, workbook.getNumberOfSheets() );
+    assertNotNull( workbook.getSheet( 0 ) );
+    assertNotNull( workbook.getSheet( 1 ) );
+    assertNotNull( workbook.getSheet( 2 ) );
+
+    // The third sheet is empty!
+    workbook.getSheet( 2 ).getRow( 1 );
+
+    fail( "An exception should have been thrown!" );
   }
 
   @Test
@@ -116,7 +153,6 @@ public class StaxWorkBookIT {
     row = sheet1.getRow( 2 );
     assertEquals( "One", row[1].getValue() );
   }
-
 
   @Test
   public void testReadEmptyRow() throws Exception {

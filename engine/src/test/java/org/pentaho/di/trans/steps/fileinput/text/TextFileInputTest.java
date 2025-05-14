@@ -13,42 +13,6 @@
 
 package org.pentaho.di.trans.steps.fileinput.text;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.vfs2.FileContent;
-import org.apache.commons.vfs2.FileObject;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.bowl.DefaultBowl;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.RowSet;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.fileinput.FileInputList;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.playlist.FilePlayListAll;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaString;
-import org.pentaho.di.core.util.Assert;
-import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.TransTestingUtil;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
-import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
-import org.pentaho.di.trans.steps.StepMockUtil;
-import org.pentaho.di.trans.steps.file.BaseFileField;
-import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
-import org.pentaho.di.trans.steps.file.IBaseFileInputStepControl;
-import org.pentaho.di.utils.TestUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -56,14 +20,83 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs2.FileContent;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.json.simple.JSONObject;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.compress.CompressionInputStream;
+import org.pentaho.di.core.compress.CompressionProvider;
+import org.pentaho.di.core.compress.CompressionProviderFactory;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObject;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.playlist.FilePlayListAll;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Assert;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.IKettleVFS;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransTestingUtil;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
+import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
+import org.pentaho.di.trans.steps.StepMockUtil;
+import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
+import org.pentaho.di.trans.steps.common.CsvInputAwareStep;
+import org.pentaho.di.trans.steps.file.BaseFileField;
+import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
+import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
+import org.pentaho.di.trans.steps.file.IBaseFileInputStepControl;
+import org.pentaho.di.utils.TestUtils;
+import org.pentaho.metastore.api.IMetaStore;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class TextFileInputTest {
+  public static final String TEST_TXT = "test.txt";
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
@@ -214,6 +247,7 @@ public class TextFileInputTest {
 
     deleteVfsFile( virtualFile );
   }
+
   @Test
   public void testErrorHandlerLineNumber() throws Exception {
     final String content = new StringBuilder()
@@ -279,7 +313,7 @@ public class TextFileInputTest {
     meta.inputFiles.acceptingFilenames = true;
     TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
 
-    TextFileInput input = Mockito.spy( StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" ) );
+    TextFileInput input = spy( StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" ) );
 
     RowSet rowset = Mockito.mock( RowSet.class );
     RowMetaInterface rwi = Mockito.mock( RowMetaInterface.class );
@@ -333,7 +367,7 @@ public class TextFileInputTest {
     TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
     data.files.addFile( KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFile2 ) );
 
-    TextFileInput input = Mockito.spy( StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" ) );
+    TextFileInput input = spy( StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" ) );
 
 
     RowSet rowset = Mockito.mock( RowSet.class );
@@ -500,6 +534,7 @@ public class TextFileInputTest {
     data.filePlayList = new FilePlayListAll();
     return data;
   }
+
   private static String createVirtualFile( String filename, String... rows ) throws Exception {
     String virtualFile = TestUtils.createRamFile( filename );
 
@@ -542,4 +577,229 @@ public class TextFileInputTest {
       throw new Exception( "Can not create reader for the file object " + file );
     }
   }
+
+  @Test
+  public void testDoAction() throws Exception {
+
+    try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = Mockito.mockStatic( KettleVFS.class );
+          MockedStatic<CompressionProviderFactory> compressionProviderFactoryMockedStatic =
+            Mockito.mockStatic( CompressionProviderFactory.class );
+          MockedStatic<TextFileInputUtils> textFileInputUtilsMockedStatic = Mockito.mockStatic(
+            TextFileInputUtils.class ); ) {
+      TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+      TextFileInputMeta meta = mock( TextFileInputMeta.class );
+      BaseFileField[] fields = new BaseFileField[ 4 ];
+      fields[ 0 ] = new BaseFileField( "field1", 1, 1 );
+      fields[ 1 ] = new BaseFileField( "field2", 1, 1 );
+      fields[ 2 ] = new BaseFileField( "field3", 1, 1 );
+      fields[ 3 ] = new BaseFileField( "field4", 1, 1 );
+      fields[ 1 ].setType( ValueMetaInterface.TYPE_NUMBER );
+      fields[ 2 ].setType( ValueMetaInterface.TYPE_INTEGER );
+      fields[ 3 ].setType( ValueMetaInterface.TYPE_BOOLEAN );
+
+      when( meta.getInputFields() ).thenReturn( fields );
+      TransMeta mockTransMeta = input.getTransMeta();
+      Trans mockTrans = input.getTrans();
+      Map<String, String> queryMap = new HashMap<>();
+
+      // setMinimalWidth test case
+      JSONObject response = input.doAction( "setMinimalWidth", meta, mockTransMeta, mockTrans, queryMap );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+
+      // getFields test case
+      InputStream mockInputStream = mock( InputStream.class );
+      FileObject mockFileObject = mock( FileObject.class );
+      when( meta.getHeaderFileObject( any() ) ).thenReturn( mockFileObject );
+
+      CompressionProviderFactory mockCPFactory = mock( CompressionProviderFactory.class );
+      CompressionProvider mockCP = mock( CompressionProvider.class );
+      CompressionInputStream mockCStream = mock( CompressionInputStream.class );
+      compressionProviderFactoryMockedStatic.when( () -> CompressionProviderFactory.getInstance() )
+        .thenReturn( mockCPFactory );
+      when( mockCPFactory.createCompressionProviderInstance( any() ) ).thenReturn( mockCP );
+      when( mockCP.createInputStream( any( InputStream.class ) ) ).thenReturn( mockCStream );
+      TextFileInputMeta.Content mockContent = mock( TextFileInputMeta.Content.class );
+      meta.content = mockContent;
+      kettleVFSMockedStatic.when( () -> KettleVFS.getInputStream( any( FileObject.class ) ) )
+        .thenReturn( mockInputStream );
+
+      textFileInputUtilsMockedStatic.when( () -> TextFileInputUtils.getLine(
+          any( LogChannelInterface.class ), any( BufferedInputStreamReader.class ),
+          any( EncodingType.class ), anyInt(), any( StringBuilder.class ), anyString(), anyString() ) )
+        .thenReturn( "line" );
+
+      FileInputList mockFileList = mock( FileInputList.class );
+      when( meta.getFileInputList( any(), any() ) ).thenReturn( mockFileList );
+      when( mockFileList.nrOfFiles() ).thenReturn( 1 );
+      when( meta.getFileTypeNr() ).thenReturn( TextFileInputMeta.FILE_TYPE_FIXED );
+      when( mockFileList.getFile( 0 ) ).thenReturn( mockFileObject );
+      meta.inputFields = new BaseFileField[] { field( "field1" ) };
+
+      response = input.doAction( "getFields", meta, mockTransMeta, mockTrans, queryMap );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+
+      // getFieldNames test cases
+      response = input.doAction( "getFieldNames", meta, mockTransMeta, mockTrans, queryMap );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+
+      // showFiles test cases
+      String[] fileNames = new String[] { TEST_TXT };
+      doReturn( fileNames ).when( mockTransMeta ).environmentSubstitute( (String[]) any() );
+      BaseFileInputFiles inputFiles = mock( BaseFileInputFiles.class );
+      meta.inputFiles = inputFiles;
+      inputFiles.fileRequired = new String[] { "N" };
+      when( inputFiles.includeSubFolderBoolean() ).thenReturn( new boolean[] { false } );
+      IKettleVFS mockKettle = mock( IKettleVFS.class );
+      FileName mockFileName = mock( FileName.class );
+      when( mockFileName.getURI() ).thenReturn( TEST_TXT );
+      kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( DefaultBowl.getInstance() ) )
+        .thenReturn( mockKettle );
+      when( mockTransMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+      when( mockFileObject.exists() ).thenReturn( true );
+      when( mockFileObject.isReadable() ).thenReturn( true );
+      when( mockFileObject.getName() ).thenReturn( mockFileName );
+      when( mockKettle.getFileObject( TEST_TXT, mockTransMeta ) ).thenReturn( mockFileObject );
+
+      response = input.doAction( "showFiles", meta, mockTransMeta, mockTrans, queryMap );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+
+      // validateShowContent test cases
+      when( mockFileList.nrOfFiles() ).thenReturn( 1 );
+      response = input.doAction( "validateShowContent", meta, mockTransMeta, mockTrans, queryMap );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+
+      when( mockFileList.nrOfFiles() ).thenReturn( 0 );
+      response = input.doAction( "validateShowContent", meta, mockTransMeta, mockTrans, queryMap );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+
+      // showContent test cases
+      response = input.doAction( "showContent", meta, mockTransMeta, mockTrans, queryMap );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    }
+  }
+
+  @Test
+  @SuppressWarnings( "java:S1874" )
+  // TextFileInput uses deprecated class FileInputList.createFilePathList to create file path
+  public void testGetFieldsAction() throws Exception {
+    List<ValueMetaInterface> valueMetaList = new ArrayList<>();
+    valueMetaList.add( ValueMetaFactory.createValueMeta( "field1", ValueMetaInterface.TYPE_STRING ) );
+    valueMetaList.add( ValueMetaFactory.createValueMeta( "field2", ValueMetaInterface.TYPE_NUMBER ) );
+    BaseFileField[] fields = new BaseFileField[ 1 ];
+    fields[ 0 ] = new BaseFileField( "field1", 1, 1 );
+    String sampleData = "1,name,3.14159,city,1954/02/07,145.00,ALASKA";
+    String[] fieldsData = { "field1", "field2", "field3", "field4", "field5", "field6", "field7" };
+    TextFileLine textFileLine = new TextFileLine( sampleData, 1, null );
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "noOfFields", "10" );
+    queryParams.put( "isSampleSummary", "true" );
+
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    TextFileInputMeta meta = mock( TextFileInputMeta.class );
+    CsvInputAwareStep csvInputAwareStep = mock( CsvInputAwareStep.class );
+    TransMeta mockTransMeta = input.getTransMeta();
+    Trans mockTrans = input.getTrans();
+
+    RowMetaInterface outputRowMeta = Mockito.mock( RowMeta.class );
+    InputStream mockInputStream = mock( InputStream.class );
+    InputStreamReader inputStreamReader =
+      new InputStreamReader( new ByteArrayInputStream( sampleData.getBytes() ) );
+    BufferedInputStreamReader bufferedInputStreamReader = new BufferedInputStreamReader( inputStreamReader );
+    FileObject mockFileObject = mock( FileObject.class );
+    CompressionProviderFactory mockCPFactory = mock( CompressionProviderFactory.class );
+    CompressionProvider mockCP = mock( CompressionProvider.class );
+    CompressionInputStream mockCStream = mock( CompressionInputStream.class );
+    FileInputList mockFileList = mock( FileInputList.class );
+    BaseFileInputFiles inputFiles = mock( BaseFileInputFiles.class );
+    TextFileInputMeta.Content mockContent = mock( TextFileInputMeta.Content.class );
+    LoggingObject loggingObject = mock( LoggingObject.class );
+
+    try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class );
+          MockedStatic<FileInputList> fileInputListMock = mockStatic( FileInputList.class );
+          MockedStatic<TextFileInputUtils> textFileInputUtilsMockedStatic = mockStatic( TextFileInputUtils.class );
+          MockedStatic<CompressionProviderFactory> compressionProviderFactoryMockedStatic = mockStatic(
+            CompressionProviderFactory.class ) ) {
+      try ( MockedConstruction<LogChannel> ignored1 = Mockito.mockConstruction( LogChannel.class,
+        ( mock, context ) -> {
+          when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.GENERAL );
+          when( loggingObject.getObjectName() ).thenReturn( "Test" );
+          when( loggingObject.getFilename() ).thenReturn( "filename" );
+        } );
+            MockedConstruction<TextFileCsvFileTypeImportProcessor> ignored2 = Mockito.mockConstruction(
+              TextFileCsvFileTypeImportProcessor.class,
+              ( mock, context ) -> {
+                when( mock.analyzeFile( anyBoolean() ) ).thenReturn( "Test message" );
+                when( mock.getInputFieldsDto() ).thenReturn( new TextFileInputFieldDTO[ 0 ] );
+              } ) ) {
+
+        when( meta.getInputFields() ).thenReturn( fields );
+        when( meta.getHeaderFileObject( any() ) ).thenReturn( mockFileObject );
+        when( meta.clone() ).thenReturn( meta );
+        when( meta.getFileInputList( any(), any() ) ).thenReturn( mockFileList );
+        when( meta.getFileTypeNr() ).thenReturn( TextFileInputMeta.FILE_TYPE_CSV );
+        doCallRealMethod().when( meta ).getFields( any( RowMetaInterface.class ), anyString(),
+          any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
+          any( IMetaStore.class ) );
+        when( outputRowMeta.getValueMetaList() ).thenReturn( valueMetaList ).thenReturn( valueMetaList );
+        when( mockCPFactory.createCompressionProviderInstance( any() ) ).thenReturn( mockCP );
+        when( mockCP.createInputStream( any( InputStream.class ) ) ).thenReturn( mockCStream );
+        when( mockFileList.nrOfFiles() ).thenReturn( 1 );
+        when( mockFileList.getFile( 0 ) ).thenReturn( mockFileObject );
+        when( csvInputAwareStep.getFieldNames( any( CsvInputAwareMeta.class ) ) ).thenReturn( fieldsData );
+        when(
+          csvInputAwareStep.getBufferedReader( any( CsvInputAwareMeta.class ), any( InputStream.class ) ) ).thenReturn(
+          bufferedInputStreamReader );
+        when( mockTransMeta.environmentSubstitute( anyString() ) ).thenAnswer(
+          invocation -> invocation.getArgument( 0 ) );
+
+        meta.content = mockContent;
+        meta.setDefault();
+        meta.inputFields = new BaseFileField[] { field( "field1" ) };
+        meta.inputFiles = inputFiles;
+        meta.inputFiles.fileName = new String[] { "test.csv" };
+        meta.inputFiles.fileMask = new String[] { "" };
+        meta.inputFiles.excludeFileMask = new String[] { "" };
+        meta.inputFiles.fileRequired = new String[] { "Y" };
+        meta.inputFiles.includeSubFolders = new String[] { "false" };
+
+        compressionProviderFactoryMockedStatic.when( () -> CompressionProviderFactory.getInstance() )
+          .thenReturn( mockCPFactory );
+        kettleVFSMockedStatic.when( () -> KettleVFS.getInputStream( any( FileObject.class ) ) )
+          .thenReturn( mockInputStream );
+        fileInputListMock.when(
+          () -> FileInputList.createFilePathList( any( VariableSpace.class ), any(), any(), any(), any(), any()
+          ) ).thenReturn( new String[] { "test.csv" } );
+        textFileInputUtilsMockedStatic.when(
+            () -> TextFileInputUtils.getLine( any(), any( BufferedInputStreamReader.class ), any(), anyInt(), any(),
+              any(),
+              any() ) )
+          .thenReturn( sampleData );
+        textFileInputUtilsMockedStatic.when(
+            () -> TextFileInputUtils.getLine( any(), any( BufferedInputStreamReader.class ), any(), anyInt(), any(),
+              any(),
+              any(), anyLong() ) )
+          .thenReturn( textFileLine );
+        textFileInputUtilsMockedStatic.when(
+            () -> TextFileInputUtils.guessStringsFromLine( isNull(), any(), anyString(), any(), isNull(), isNull(),
+              isNull() ) )
+          .thenReturn( fieldsData );
+        textFileInputUtilsMockedStatic.when( () -> TextFileInputUtils.convertLineToRow(
+            any( LogChannelInterface.class ), any( TextFileLine.class ), any( TextFileInputMeta.class ), isNull(),
+            eq( 0 ),
+            any( RowMetaInterface.class ), any( RowMetaInterface.class ), anyString(), anyLong(),
+            isNull(), isNull(), isNull(), isNull(), any(), isNull(), isNull(), eq( false ), isNull(), isNull(),
+            isNull(),
+            isNull(), isNull(), anyBoolean()
+          ) ).thenReturn( new Object[] { "1", "name", "3.14159", "city", "1954/02/07", "145.00", "ALASKA" } )
+          .thenReturn( null );
+
+        JSONObject response = input.doAction( "getFields", meta, mockTransMeta, mockTrans, queryParams );
+
+        assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+        assertNotNull( response.get( "fields" ) );
+        assertNotNull( response.get( "summary" ) );
+      }
+    }
+  }
+
 }

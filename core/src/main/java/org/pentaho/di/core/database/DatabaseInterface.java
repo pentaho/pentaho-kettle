@@ -1297,4 +1297,19 @@ public interface DatabaseInterface extends Cloneable {
   default List<String> getNamedClusterList() {
     return null;
   }
+
+  /**
+   * Sets connection-specific information from the provided attributes map in the overridden methods.
+   * This method functions similarly to the
+   * {@see org.pentaho.ui.database.event.DataHandler#setConnectionSpecificInfo()} and
+   * {@see org.pentaho.ui.database.event.DbInfoHandler#saveConnectionSpecificInfo()} methods.
+   * For Webttle to interact properly with the specific database type, this method should be overridden
+   * whenever any additional attributes need to be set for the connection.
+   *
+   * @param attributes a map containing key-value pairs of connection-specific attributes.
+   *
+   */
+  default void setConnectionSpecificInfoFromAttributes( Map<String, String> attributes ) {
+    // Default implementation does nothing
+  }
 }
