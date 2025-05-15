@@ -3674,7 +3674,7 @@ public class TransMeta extends AbstractMeta
   }
 
   @Override
-  public boolean loadSharedObject( SharedObjectInterface<?> object ) {
+  public boolean loadSharedObject( SharedObjectInterface object ) {
     if ( !super.loadSharedObject( object ) ) {
       if ( object instanceof StepMeta ) {
         StepMeta stepMeta = (StepMeta) object;

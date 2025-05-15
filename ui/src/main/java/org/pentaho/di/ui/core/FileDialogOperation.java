@@ -31,6 +31,7 @@ public class FileDialogOperation {
   /** Will be called whenever files are loaded by this dialog */
   public interface FileLoadListener {
     void onFileLoaded( FileLookupInfo file );
+    void reset();
   }
 
   /** File information and lookup */
@@ -98,8 +99,6 @@ public class FileDialogOperation {
   private String connectionTypeFilter;
   private boolean useSchemaPath;
 
-  private Optional<CustomImageProvider> customImageProvider = Optional.empty();
-  private Optional<FileLoadListener> fileLoadListener = Optional.empty();
   private boolean showOnlyFolders = false;
   private Predicate<String> openCondition = any -> true;
 
@@ -285,24 +284,6 @@ public class FileDialogOperation {
     return ( command.equalsIgnoreCase( SAVE ) || command.equalsIgnoreCase( SAVE_TO )
       || command.equalsIgnoreCase( SAVE_AS ) || command.equalsIgnoreCase( SAVE_TO_FILE_FOLDER )
             || command.equalsIgnoreCase( EXPORT) || command.equalsIgnoreCase( EXPORT_ALL) );
-  }
-
-  /** To load additional images and define what files they apply to */
-  public void setCustomImageProvider( CustomImageProvider provider ) {
-    this.customImageProvider = Optional.of( provider );
-  }
-
-  public Optional<CustomImageProvider> getCustomImageProvider() {
-    return customImageProvider;
-  }
-
-  public Optional<FileLoadListener> getFileLoadListener() {
-    return fileLoadListener;
-  }
-
-  /** Add a listener to inspect files as they are loaded */
-  public void setFileLoadListener( FileLoadListener fileLoadListener ) {
-    this.fileLoadListener = Optional.of( fileLoadListener );
   }
 
   public boolean isShowOnlyFolders() {

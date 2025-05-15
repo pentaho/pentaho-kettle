@@ -113,6 +113,7 @@ import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.FileDialogOperation.CustomImage;
 import org.pentaho.di.ui.core.FileDialogOperation.CustomImageProvider;
+import org.pentaho.di.ui.core.FileDialogOperation.FileLoadListener;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -318,7 +319,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     command = fileDialogOperation.getCommand();
     this.fileController =
         new FileController( bowl, FileCacheService.INSTANCE.get(), ProviderServiceService.get(),
-                            fileDialogOperation.getFileLoadListener() );
+                            Spoon.getInstance().getFileLoadListener() );
 
     shellTitle = BaseMessages.getString( PKG, "FileOpenSaveDialog.dialog." + command + ".title" );
 
@@ -367,7 +368,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         }
         return imgDisk;
       } else if ( element instanceof Directory ) {
-        return imgFolder;
+        File file = (File) element;
+        String path = file.getPath();
+        return Spoon.getInstance().getCustomImageProvider().flatMap( provider -> provider.getImage( path ) )
+            .map( customImages::get ).filter( Objects::nonNull ).orElseGet( () -> imgFolder );
       }
       return null;
     }
@@ -1168,6 +1172,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
     FileProvider fileProvider = null;
 
+    Spoon.getInstance().getFileLoadListener().ifPresent( FileLoadListener::reset );
+
     // Refresh the current element of the treeViewer
     if ( !treeViewerSelection.isEmpty() ) {
       if ( treeViewerSelection.getFirstElement() instanceof Tree ) {
@@ -1233,7 +1239,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     imgFile = rasterImage( "img/file_icons/Doc.S_D.svg", 25, 25 );
     imgTrans = rasterImage( "img/file_icons/Transformation.S_D.svg", 25, 25 );
     imgJob = rasterImage( "img/file_icons/Job.S_D.svg", 25, 25 );
-    fileDialogOperation.getCustomImageProvider()
+    Spoon.getInstance().getCustomImageProvider()
         .ifPresent( provider -> loadCustomImages( provider, customImages, getClass().getClassLoader() ) );
     Composite browser = new Composite( parent, SWT.NONE );
     PropsUI.getInstance().setLook( browser );
@@ -1474,7 +1480,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( element instanceof File ) {
           File file = (File) element;
           String path = file.getPath();
-          return fileDialogOperation.getCustomImageProvider().flatMap( provider -> provider.getImage( path ) )
+          return Spoon.getInstance().getCustomImageProvider().flatMap( provider -> provider.getImage( path ) )
               .map( customImages::get ).filter( Objects::nonNull ).orElseGet( () -> getImageForFile( file ) );
         }
         return null;

@@ -189,6 +189,11 @@ public class FileControllerTest {
         }
       }
 
+      @Override
+      public void reset() {
+        paths.clear();
+      }
+
     };
     fileController = new FileController( DefaultBowl.getInstance(), new FileCache(), providerService,
                                          Optional.of( listener ) );
