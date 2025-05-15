@@ -1766,7 +1766,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     //
     String soFile = environmentSubstitute( sharedObjectsFile );
     SharedObjects sharedObjects = new SharedObjects( soFile );
-    Map<?, SharedObjectInterface<?>> objectsMap = sharedObjects.getObjectsMap();
+    Map<?, SharedObjectInterface> objectsMap = sharedObjects.getObjectsMap();
 
     // This is basically only used for Steps now, and since those can no longer be shared, it's really just for
     // backwards compatibility. All other shared object types are handled through the DefaultBowl instead.
@@ -1777,7 +1777,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     return sharedObjects;
   }
 
-  public boolean loadSharedObject( SharedObjectInterface<?> object ) {
+  public boolean loadSharedObject( SharedObjectInterface object ) {
     return false;
   }
 
