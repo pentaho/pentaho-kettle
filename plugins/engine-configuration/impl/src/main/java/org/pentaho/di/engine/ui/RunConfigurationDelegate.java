@@ -186,7 +186,7 @@ public class RunConfigurationDelegate {
   }
 
   public void copyToProject( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
-    moveCopy( manager, runConfiguration, spoonSupplier.get().getBowl(), false );
+    moveCopy( manager, runConfiguration, spoonSupplier.get().getManagementBowl(), false );
   }
 
   public void moveToGlobal( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
@@ -194,7 +194,7 @@ public class RunConfigurationDelegate {
   }
 
   public void moveToProject( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
-    moveCopy( manager, runConfiguration, Spoon.getInstance().getBowl(), true );
+    moveCopy( manager, runConfiguration, Spoon.getInstance().getManagementBowl(), true );
   }
 
   private void moveCopy( RunConfigurationManager srcManager, RunConfiguration runConfiguration, Bowl targetBowl,

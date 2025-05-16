@@ -31,7 +31,7 @@ public class TreePopupMenuProvider {
 
   public void createSharedObjectMenuItems( XulDomContainer mainSpoonContainer,
       SpoonTreeLeveledSelection leveledSelection, String menubarPrefix ) {
-    Bowl currentBowl = Spoon.getInstance().getBowl();
+    Bowl currentBowl = Spoon.getInstance().getManagementBowl();
     Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
 
     XulMenuitem moveProjectItem =

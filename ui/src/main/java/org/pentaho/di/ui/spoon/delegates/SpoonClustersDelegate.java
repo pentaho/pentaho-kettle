@@ -39,7 +39,7 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate<ClusterSche
 
       // management bowl for managing, checking for duplicates
       ClusterSchemaManagementInterface clusterSchemaManagementInterface =
-        spoon.getBowl().getManager( ClusterSchemaManagementInterface.class );
+        spoon.getManagementBowl().getManager( ClusterSchemaManagementInterface.class );
       // execution bowl for listing all slave servers
       SlaveServerManagementInterface slaveServerManagementInterface =
         spoon.getExecutionBowl().getManager( SlaveServerManagementInterface.class );
@@ -114,8 +114,8 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate<ClusterSche
 
   public void moveToProject( ClusterSchemaManagementInterface clusterSchemaManager, ClusterSchema clusterSchema )
       throws KettleException {
-    moveCopy( clusterSchemaManager, spoon.getBowl().getManager( ClusterSchemaManagementInterface.class ), clusterSchema, true,
-              "Spoon.Message.OverwriteClusterSchemaYN" );
+    moveCopy( clusterSchemaManager, spoon.getManagementBowl().getManager( ClusterSchemaManagementInterface.class ),
+      clusterSchema, true, "Spoon.Message.OverwriteClusterSchemaYN" );
   }
 
   public void copyToGlobal( ClusterSchemaManagementInterface clusterSchemaManager, ClusterSchema clusterSchema )
@@ -126,8 +126,8 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate<ClusterSche
 
   public void copyToProject( ClusterSchemaManagementInterface clusterSchemaManager, ClusterSchema clusterSchema )
       throws KettleException {
-    moveCopy( clusterSchemaManager, spoon.getBowl().getManager( ClusterSchemaManagementInterface.class ), clusterSchema,
-              false, "Spoon.Message.OverwriteClusterSchemaYN" );
+    moveCopy( clusterSchemaManager, spoon.getManagementBowl().getManager( ClusterSchemaManagementInterface.class ),
+      clusterSchema, false, "Spoon.Message.OverwriteClusterSchemaYN" );
   }
 
   public void dupeClusterSchema( ClusterSchemaManagementInterface clusterSchemaManager, ClusterSchema clusterSchema ) {

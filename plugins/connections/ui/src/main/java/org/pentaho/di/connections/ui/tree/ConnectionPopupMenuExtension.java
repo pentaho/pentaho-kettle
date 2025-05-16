@@ -133,7 +133,7 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
       } );
     }
     if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL
-         && spoonSupplier.get().getBowl() != spoonSupplier.get().getGlobalManagementBowl() ) {
+         && spoonSupplier.get().getManagementBowl() != spoonSupplier.get().getGlobalManagementBowl() ) {
       MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
       moveMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.MoveToProject" ) );
       moveMenuItem.addSelectionListener( new SelectionAdapter() {

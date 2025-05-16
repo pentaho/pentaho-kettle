@@ -38,16 +38,17 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<Partition
     PartitionSchema partitionSchema = new PartitionSchema();
     try {
       PartitionSchemaManagementInterface partitionSchemaManagementInterface =
-          spoon.getBowl().getManager( PartitionSchemaManagementInterface.class );
+          spoon.getManagementBowl().getManager( PartitionSchemaManagementInterface.class );
 
-      DatabaseManagementInterface databaseManagementInterface = spoon.getExecutionBowl().getManager( DatabaseManagementInterface.class );
+      DatabaseManagementInterface databaseManagementInterface =
+        spoon.getExecutionBowl().getManager( DatabaseManagementInterface.class );
 
       List<DatabaseMeta> databaseMetas = transMeta != null ? transMeta.getDatabases() :
         databaseManagementInterface.getAll();
 
       PartitionSchemaDialog dialog =
           new PartitionSchemaDialog( spoon.getShell(), partitionSchema, partitionSchemaManagementInterface.getAll(),
-                    databaseMetas, spoon.getBowl().getADefaultVariableSpace() );
+                    databaseMetas, spoon.getManagementBowl().getADefaultVariableSpace() );
       if ( dialog.open() ) {
         List<PartitionSchema> partitions = partitionSchemaManagementInterface.getAll();
         if ( isDuplicate( partitions, partitionSchema ) ) {
@@ -78,7 +79,7 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<Partition
 
       PartitionSchemaDialog dialog =
         new PartitionSchemaDialog( spoon.getShell(), partitionSchema, partitionSchemaManager.getAll(),
-                      databaseMetas, spoon.getBowl().getADefaultVariableSpace() );
+                      databaseMetas, spoon.getManagementBowl().getADefaultVariableSpace() );
       if ( dialog.open() ) {
         String newName = partitionSchema.getName().trim();
         // This should be case insensitive. We only need to remove if the name changed beyond case. The Managers handle
@@ -122,26 +123,26 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<Partition
 
   public void moveToProject( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
     throws KettleException {
-    moveCopy( partitionSchemaManager, spoon.getBowl().getManager( PartitionSchemaManagementInterface.class ), partitionSchema, true,
-      "Spoon.Message.OverwritePartitionSchemaYN" );
+    moveCopy( partitionSchemaManager, spoon.getManagementBowl().getManager( PartitionSchemaManagementInterface.class ),
+      partitionSchema, true, "Spoon.Message.OverwritePartitionSchemaYN" );
   }
 
   public void moveToGlobal( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
     throws KettleException {
-    moveCopy( partitionSchemaManager, spoon.getGlobalManagementBowl().getManager( PartitionSchemaManagementInterface.class ), partitionSchema, true,
-      "Spoon.Message.OverwritePartitionSchemaYN" );
+    moveCopy( partitionSchemaManager, spoon.getGlobalManagementBowl().getManager( PartitionSchemaManagementInterface.class ),
+      partitionSchema, true, "Spoon.Message.OverwritePartitionSchemaYN" );
   }
 
   public void copyToProject( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
     throws KettleException {
-    moveCopy( partitionSchemaManager, spoon.getBowl().getManager( PartitionSchemaManagementInterface.class ), partitionSchema, false,
-      "Spoon.Message.OverwritePartitionSchemaYN" );
+    moveCopy( partitionSchemaManager, spoon.getManagementBowl().getManager( PartitionSchemaManagementInterface.class ),
+      partitionSchema, false, "Spoon.Message.OverwritePartitionSchemaYN" );
   }
 
   public void copyToGlobal( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
     throws KettleException {
-    moveCopy( partitionSchemaManager, spoon.getGlobalManagementBowl().getManager( PartitionSchemaManagementInterface.class ), partitionSchema, false,
-      "Spoon.Message.OverwritePartitionSchemaYN" );
+    moveCopy( partitionSchemaManager, spoon.getGlobalManagementBowl().getManager( PartitionSchemaManagementInterface.class ),
+      partitionSchema, false, "Spoon.Message.OverwritePartitionSchemaYN" );
   }
 
   public void dupePartitionSchema( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema  ) {
@@ -149,7 +150,7 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<Partition
       DatabaseManagementInterface databaseManagementInterface =  spoon.getExecutionBowl().getManager( DatabaseManagementInterface.class );
 
       PartitionSchemaDialog dialog = new PartitionSchemaDialog( spoon.getShell(), ps, servers,
-         databaseManagementInterface.getAll(), spoon.getBowl().getADefaultVariableSpace() );
+         databaseManagementInterface.getAll(), spoon.getManagementBowl().getADefaultVariableSpace() );
       if ( dialog.open() ) {
         partitionSchemaManager.add( ps );
       }
