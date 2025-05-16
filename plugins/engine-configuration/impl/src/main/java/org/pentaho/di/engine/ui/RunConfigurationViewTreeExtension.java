@@ -43,7 +43,7 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
         if ( level.equals( LeveledTreeNode.LEVEL.GLOBAL ) ) {
           bowl = Spoon.getInstance().getGlobalManagementBowl();
         } else {
-          bowl = Spoon.getInstance().getBowl();
+          bowl = Spoon.getInstance().getManagementBowl();
         }
         RunConfigurationDelegate runConfigurationDelegate =
           RunConfigurationDelegate.getInstance( () -> bowl.getMetastore() );

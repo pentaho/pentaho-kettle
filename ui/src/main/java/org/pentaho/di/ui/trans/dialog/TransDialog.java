@@ -911,7 +911,7 @@ public class TransDialog extends Dialog {
         if ( getDatabaseDialog().open() != null ) {
           try {
             DatabaseManagementInterface dbMgr =
-              Spoon.getInstance().getBowl().getManager( DatabaseManagementInterface.class );
+              Spoon.getInstance().getManagementBowl().getManager( DatabaseManagementInterface.class );
             dbMgr.add( getDatabaseDialog().getDatabaseMeta() );
             // Refresh left hand tree
             Spoon.getInstance().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );

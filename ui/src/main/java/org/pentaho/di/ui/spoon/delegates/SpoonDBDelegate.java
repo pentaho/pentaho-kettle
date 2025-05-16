@@ -235,7 +235,7 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
   }
 
   public void moveToProject( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {
-    moveCopy( dbManager, spoon.getBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, true,
+    moveCopy( dbManager, spoon.getManagementBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, true,
       "Spoon.Message.OverwriteConnectionYN" );
   }
 
@@ -245,7 +245,7 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
   }
 
   public void copyToProject( DatabaseMeta databaseMeta, DatabaseManagementInterface dbManager ) throws KettleException {
-    moveCopy( dbManager, spoon.getBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, false,
+    moveCopy( dbManager, spoon.getManagementBowl().getManager( DatabaseManagementInterface.class ), databaseMeta, false,
       "Spoon.Message.OverwriteConnectionYN" );
   }
 
@@ -462,7 +462,7 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
     DatabaseMeta databaseMeta = new DatabaseMeta();
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
     try {
-      DatabaseManagementInterface databaseManagementInterface = spoon.getBowl().getManager( DatabaseManagementInterface.class );
+      DatabaseManagementInterface databaseManagementInterface = spoon.getManagementBowl().getManager( DatabaseManagementInterface.class );
       getDatabaseDialog().setDatabases( databaseManagementInterface.getAll() );
       String con_name = getDatabaseDialog().open();
       if ( !Utils.isEmpty( con_name ) ) {
@@ -523,7 +523,7 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
   public void createDatabaseWizard( ) {
     DatabaseManagementInterface dbManager = null;
     try {
-      dbManager = spoon.getBowl().getManager( DatabaseManagementInterface.class );
+      dbManager = spoon.getManagementBowl().getManager( DatabaseManagementInterface.class );
       CreateDatabaseWizard cdw = new CreateDatabaseWizard();
       DatabaseMeta newDdatabaseMeta = cdw.createAndRunDatabaseWizard( spoon.getShell(), PropsUI.getInstance(), dbManager.getAll() );
       if ( newDdatabaseMeta != null ) { // finished

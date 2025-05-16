@@ -365,7 +365,7 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
     } else {
       try {
         // Get the slave servers for the project
-        Bowl currentBowl = spoonSupplier.get().getBowl();
+        Bowl currentBowl = spoonSupplier.get().getManagementBowl();
         Bowl globalBowl = spoonSupplier.get().getGlobalManagementBowl();
 
         if ( currentBowl != globalBowl ) {

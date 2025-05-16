@@ -60,7 +60,7 @@ public class ConnectionDelegate {
   public void openDialog() {
     try {
       Spoon spoon = spoonSupplier.get();
-      Bowl bowl = spoon.getBowl();
+      Bowl bowl = spoon.getManagementBowl();
       ConnectionDialog connectionDialog = new ConnectionDialog( spoon.getShell(), WIDTH, HEIGHT,
                                                                 bowl.getManager( ConnectionManager.class ) );
       connectionDialog.open( bowl, BaseMessages.getString( PKG, "ConnectionDialog.dialog.new.title" ) );
@@ -117,19 +117,19 @@ public class ConnectionDelegate {
   }
 
   public void copyToGlobal( String name ) {
-    moveCopy( name, spoonSupplier.get().getBowl(), spoonSupplier.get().getGlobalManagementBowl(), false );
+    moveCopy( name, spoonSupplier.get().getManagementBowl(), spoonSupplier.get().getGlobalManagementBowl(), false );
   }
 
   public void copyToProject( String name ) {
-    moveCopy( name, spoonSupplier.get().getGlobalManagementBowl(), spoonSupplier.get().getBowl(), false );
+    moveCopy( name, spoonSupplier.get().getGlobalManagementBowl(), spoonSupplier.get().getManagementBowl(), false );
   }
 
   public void moveToGlobal( String name ) {
-    moveCopy( name, spoonSupplier.get().getBowl(), spoonSupplier.get().getGlobalManagementBowl(), true );
+    moveCopy( name, spoonSupplier.get().getManagementBowl(), spoonSupplier.get().getGlobalManagementBowl(), true );
   }
 
   public void moveToProject( String name ) {
-    moveCopy( name, spoonSupplier.get().getGlobalManagementBowl(), spoonSupplier.get().getBowl(), true );
+    moveCopy( name, spoonSupplier.get().getGlobalManagementBowl(), spoonSupplier.get().getManagementBowl(), true );
   }
 
   private void moveCopy( String name, Bowl sourceBowl, Bowl targetBowl, boolean deleteSource ) {
@@ -162,7 +162,7 @@ public class ConnectionDelegate {
 
   private Bowl getBowl( Spoon spoon, LeveledTreeNode.LEVEL level ) {
     if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
-      return spoon.getBowl();
+      return spoon.getManagementBowl();
     } else {
       return spoon.getGlobalManagementBowl();
     }

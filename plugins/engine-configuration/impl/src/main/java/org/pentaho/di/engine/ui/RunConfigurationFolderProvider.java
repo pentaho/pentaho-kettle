@@ -48,7 +48,7 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
   public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
     GUIResource guiResource = GUIResource.getInstance();
     Set<String> bowlNames = new HashSet<>();
-    Bowl currentBowl = Spoon.getInstance().getBowl();
+    Bowl currentBowl = Spoon.getInstance().getManagementBowl();
     Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
     String levelName;
     if ( !currentBowl.equals( globalBowl ) ) {

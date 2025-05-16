@@ -54,7 +54,7 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
 
   @Override
   public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
-    Bowl currentBowl = Spoon.getInstance().getBowl();
+    Bowl currentBowl = Spoon.getInstance().getManagementBowl();
     Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
     List<PartitionSchema> partitionSchemas;
     try {

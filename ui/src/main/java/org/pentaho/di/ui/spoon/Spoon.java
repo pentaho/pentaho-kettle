@@ -3315,7 +3315,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-        if ( getBowl() != getGlobalManagementBowl() ) {
+        if ( getManagementBowl() != getGlobalManagementBowl() ) {
           moveProjectItem.setVisible( true );
           moveGlobalItem.setVisible( false );
         } else {
@@ -3324,7 +3324,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.FILE ) {
-        if ( getBowl() == getGlobalManagementBowl() ) {
+        if ( getManagementBowl() == getGlobalManagementBowl() ) {
           moveGlobalItem.setVisible( true );
           moveGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.MoveTo",
                   globalManagementBowl.getLevelDisplayName() ) );
@@ -3350,7 +3350,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
 
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
-        if ( getBowl() != getGlobalManagementBowl() ) {
+        if ( getManagementBowl() != getGlobalManagementBowl() ) {
           copyProjectItem.setVisible( true );
           copyGlobalItem.setVisible( false );
         } else {
@@ -3359,7 +3359,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
       if ( leveledSelection.getLevel() == LeveledTreeNode.LEVEL.FILE ) {
-        if ( getBowl() == getGlobalManagementBowl() ) {
+        if ( getManagementBowl() == getGlobalManagementBowl() ) {
           copyGlobalItem.setVisible( true );
           copyGlobalItem.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CopyTo",
                   globalManagementBowl.getLevelDisplayName() ));
@@ -9857,35 +9857,42 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * Retrieves the Bowl for the Global Management context. This Bowl should be used for write operations specifically at
    * the Global level. This Bowl will only return objects directly owned by the global context.
    *
-   * @return Bowl The Bowl that should be used during execution.
+   * @return Bowl The Bowl that should be used for managing Global config, never null.
    */
   public Bowl getGlobalManagementBowl() {
     return globalManagementBowl;
   }
 
   /**
-   * Retrieves the Bowl for the Management context. This Bowl should be used for write operations. This Bowl will only
-   * return objects directly owned by the particular context. It will not include objects owned by the global context.
-   * Use getGlobalManagementBowl() to access the global context.
+   * Retrieves the Bowl for the specific Management context in use. This Bowl should be used for write operations to
+   * create new objects, and can be used for CRUD operations on config objects at this Level. This Bowl will only return
+   * objects directly owned by the particular context. Use getGlobalManagementBowl() to access the Global context.
+   * <p/>
+   * If this Bowl is the same as the Global Management Bowl, then there is no specific context in use.
    *
-   * @return Bowl The Bowl that should be used during execution.
+   * @return Bowl The Bowl that should be used for managing specific context config, never null.
    */
-  public Bowl getBowl() {
+  public Bowl getManagementBowl() {
     return managementBowl;
   }
 
   /**
-   * Sets the Bowl for the management context. This Bowl should be used for write operations.
+   * Sets the Bowl for the specific Management context in use. This Bowl should be used for write operations to
+   * create new objects, and can be used for CRUD operations on config objects at this Level. This Bowl should only
+   * return objects directly owned by the particular context.
+   * <p/>
+   * If this Bowl is the same as the Global Management Bowl, then there is no specific context in use.
    *
    */
-  public void setBowl( Bowl bowl ) {
+  public void setManagementBowl( Bowl bowl ) {
     this.managementBowl = Objects.requireNonNull( bowl );
     forceRefreshTree();
   }
 
   /**
    * Retrieves the Bowl for the Execution context. This Bowl should be used for runtime operations. This Bowl will
-   * return objects from all Spoon-wide Levels with appropriate overrides.
+   * return objects from all Spoon-wide Levels with appropriate overrides. This Bowl should be treated as Read-Only, and
+   * should not be used for any write operations.
    *
    * @return Bowl The Bowl that should be used during execution.
    */
@@ -9894,7 +9901,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   /**
-   * Sets the Bowl for the Execution context. This Bowl should be used for runtime operations.
+   * Sets the Bowl for the Execution context. This Bowl should be used for runtime operations. This Bowl should
+   * return objects from all Spoon-wide Levels with appropriate overrides. This Bowl should be treated as Read-Only, and
+   * should not be used for any write operations.
    *
    */
   public void setExecutionBowl( Bowl bowl ) {

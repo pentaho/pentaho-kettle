@@ -741,7 +741,7 @@ public class BaseStepDialog extends Dialog {
         if ( newDBInfo != null ) {
           try {
             DatabaseManagementInterface dbMgr =
-              spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
+              spoonSupplier.get().getManagementBowl().getManager( DatabaseManagementInterface.class );
             dbMgr.add( newDBInfo );
           } catch ( KettleException ex ) {
             new ErrorDialog( wbwConnection.getShell(),
@@ -1515,7 +1515,7 @@ public class BaseStepDialog extends Dialog {
       DatabaseMeta databaseMeta = new DatabaseMeta();
       try {
         DatabaseManagementInterface dbMgr =
-          spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
+          spoonSupplier.get().getManagementBowl().getManager( DatabaseManagementInterface.class );
         String connectionName = showDbDialogUnlessCancelledOrValid( databaseMeta, null, dbMgr );
         if ( connectionName != null ) {
           dbMgr.add( databaseMeta );
@@ -1552,7 +1552,7 @@ public class BaseStepDialog extends Dialog {
           // Check each database manager in precedence order (bowl, global, local) to find which one holds the
           // connection being edited.
           DatabaseManagementInterface dbMgr =
-            spoonSupplier.get().getBowl().getManager( DatabaseManagementInterface.class );
+            spoonSupplier.get().getManagementBowl().getManager( DatabaseManagementInterface.class );
           DatabaseManagementInterface globalDbMgr =
             spoonSupplier.get().getGlobalManagementBowl().getManager( DatabaseManagementInterface.class );
           DatabaseManagementInterface transDbMgr = transMeta.getDatabaseManagementInterface();

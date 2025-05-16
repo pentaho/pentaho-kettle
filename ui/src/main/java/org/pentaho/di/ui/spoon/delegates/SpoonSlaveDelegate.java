@@ -92,7 +92,7 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate<SlaveServer> {
     SlaveServer slaveServer = new SlaveServer();
     try {
       SlaveServerManagementInterface slaveServerManagementInterface =
-        spoon.getBowl().getManager( SlaveServerManagementInterface.class );
+        spoon.getManagementBowl().getManager( SlaveServerManagementInterface.class );
       SlaveServerDialog dialog =
         new SlaveServerDialog( spoon.getShell(), slaveServer, slaveServerManagementInterface.getAll() );
       if ( dialog.open() ) {
@@ -138,8 +138,8 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate<SlaveServer> {
 
   public void moveToProject( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer )
       throws KettleException {
-    moveCopy( slaveServerManager, spoon.getBowl().getManager( SlaveServerManagementInterface.class ), slaveServer, true,
-              "Spoon.Message.OverwriteSlaveServerYN" );
+    moveCopy( slaveServerManager, spoon.getManagementBowl().getManager( SlaveServerManagementInterface.class ),
+       slaveServer, true, "Spoon.Message.OverwriteSlaveServerYN" );
   }
 
   public void copyToGlobal( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer )
@@ -150,8 +150,8 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate<SlaveServer> {
 
   public void copyToProject( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer )
       throws KettleException {
-    moveCopy( slaveServerManager, spoon.getBowl().getManager( SlaveServerManagementInterface.class ), slaveServer,
-              false, "Spoon.Message.OverwriteSlaveServerYN" );
+    moveCopy( slaveServerManager, spoon.getManagementBowl().getManager( SlaveServerManagementInterface.class ),
+      slaveServer, false, "Spoon.Message.OverwriteSlaveServerYN" );
   }
 
   public void dupeSlaveServer( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer ) {

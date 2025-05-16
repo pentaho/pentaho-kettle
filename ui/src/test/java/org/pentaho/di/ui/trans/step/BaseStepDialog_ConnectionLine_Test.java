@@ -78,7 +78,7 @@ public class BaseStepDialog_ConnectionLine_Test {
     Whitebox.setInternalState( mockDialog, "spoonSupplier", mockSupplier );
     Whitebox.setInternalState( mockDialog, "shell", shell );
     when( mockSupplier.get() ).thenReturn( mockSpoon );
-    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getManagementBowl();
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getGlobalManagementBowl();
 
     dbMgr = DefaultBowl.getInstance().getManager( DatabaseManagementInterface.class );

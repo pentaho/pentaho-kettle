@@ -68,7 +68,7 @@ public class ConnectionFolderProviderTest {
   @Test
   public void create_TestAdmin(){
     doReturn( mockRepository ).when( mockSpoon ).getRepository();
-    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getManagementBowl();
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getGlobalManagementBowl();
     doReturn( mockUser ).when( mockRepository ).getUserInfo();
     doReturn( true ).when( mockUser ).isAdmin();
@@ -99,7 +99,7 @@ public class ConnectionFolderProviderTest {
   @Test
   public void create_TestNullRepo(){
     doReturn( null ).when( mockSpoon ).getRepository();
-    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getManagementBowl();
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getGlobalManagementBowl();
     connectionFolderProvider = new ConnectionFolderProvider();
     TreeNode parentTreeNode = new TreeNode();
@@ -116,7 +116,7 @@ public class ConnectionFolderProviderTest {
   @Test
   public void create_TestNullIsAdmin(){
     doReturn( mockRepository ).when( mockSpoon ).getRepository();
-    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getManagementBowl();
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getGlobalManagementBowl();
     doReturn( mockUser ).when( mockRepository ).getUserInfo();
     doReturn( null ).when( mockUser ).isAdmin();
@@ -135,7 +135,7 @@ public class ConnectionFolderProviderTest {
   @Test
   public void create_TestNullUser(){
     doReturn( mockRepository ).when( mockSpoon ).getRepository();
-    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getBowl();
+    doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getManagementBowl();
     doReturn( DefaultBowl.getInstance() ).when( mockSpoon ).getGlobalManagementBowl();
     doReturn( null ).when( mockRepository ).getUserInfo();
     connectionFolderProvider = new ConnectionFolderProvider();

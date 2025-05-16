@@ -28,7 +28,11 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.function.Supplier;
 
 /**
- * The default/global Bowl. A singleton for standard behavior when there is no custom Bowl.
+ * This Bowl will access the default local configuration for Kettle. It will not access configuration from a connected
+ * Repository, and does not include configuration from any other contexts.
+ * <p/>
+ * If available, most code that needs a Bowl should get Bowls for Management from Spoon, and for execution from
+ * TransMeta or JobMeta.
  *
  */
 public class DefaultBowl extends BaseBowl {

@@ -35,6 +35,9 @@ import java.util.Set;
  * and the managers should just build on that and not have any other Bowl-specific code.
  * <p>
  * All implementations of Bowl should implement equals() and hashcode().
+ * <p/>
+ * If available, most code that needs a Bowl should get Bowls for Management from Spoon, and for execution from
+ * TransMeta or JobMeta.
  *
  */
 public interface Bowl {
