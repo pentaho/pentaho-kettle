@@ -64,6 +64,7 @@ import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
 import org.pentaho.di.trans.steps.file.BaseFileInputMeta;
 import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.di.core.vfs.AliasedFileObject;
 import org.w3c.dom.Node;
 
 @SuppressWarnings( "deprecation" )
