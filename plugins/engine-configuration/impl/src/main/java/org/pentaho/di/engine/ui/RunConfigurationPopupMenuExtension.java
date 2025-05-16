@@ -85,7 +85,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
         @Override
         public void widgetSelected( SelectionEvent selectionEvent ) {
           // new goes to the Spoon's current bowl
-          Bowl bowl = Spoon.getInstance().getBowl();
+          Bowl bowl = Spoon.getInstance().getManagementBowl();
           CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
           runConfigurationDelegate.create();
@@ -145,7 +145,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
     }
 
     if ( runConfigurationTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL &&
-         spoonSupplier.get().getBowl() != spoonSupplier.get().getGlobalManagementBowl() ) {
+         spoonSupplier.get().getManagementBowl() != spoonSupplier.get().getGlobalManagementBowl() ) {
       MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
       moveMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.MoveToProject" ) );
       moveMenuItem.addSelectionListener( new SelectionAdapter() {
@@ -206,7 +206,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
     if ( runConfigurationTreeItem.getLevel().equals( LeveledTreeNode.LEVEL.GLOBAL ) ) {
       return spoonSupplier.get().getGlobalManagementBowl();
     } else {
-      return spoonSupplier.get().getBowl();
+      return spoonSupplier.get().getManagementBowl();
     }
   }
 }
