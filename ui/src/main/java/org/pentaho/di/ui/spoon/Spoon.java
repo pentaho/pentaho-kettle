@@ -5044,6 +5044,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           // User has not opened any file but the lastOpenProvier was repository and use is not connected to the
           // repository so set the session to the user's home folder
           defaultFileDialogOperationToUserHome( fileDialogOperation );
+        } else if ( getActiveAbstractMeta() != null && getActiveAbstractMeta().getDefaultSaveDirectory() != null ) {
+          // if the default save directory is present, set the path to this directory
+          fileDialogOperation.setPath( getActiveAbstractMeta().getDefaultSaveDirectory() );
         } else if ( !Utils.isEmpty( lastFileOpened ) ) {
           //User has opened a file previously, set the save folder be the last file opened folder
           int parentIndex = lastFileOpened.lastIndexOf('\\');
@@ -5466,6 +5469,30 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "Spoon.Exception.ErrorCreatingNewJob.Title" ), BaseMessages
           .getString( PKG, "Spoon.Exception.ErrorCreatingNewJob.Message" ), e );
+    }
+  }
+
+  /**
+   * Called when new Job is being created.
+   * @param defaultDir This directory will be default save directory in FileOpenSaveDialog when Save/Save as is called
+   */
+  public void newJobFile( String defaultDir ){
+    newJobFile();
+    JobMeta jobMeta = getActiveJob();
+    if ( jobMeta != null ) {
+      jobMeta.setDefaultSaveDirectory( defaultDir );
+    }
+  }
+
+  /**
+   * Called when new Transformation is being created.
+   * @param defaultDir This directory will be default save directory in FileOpenSaveDialog when Save/Save as is called
+   */
+  public void newTransFile( String defaultDir ){
+    newTransFile();
+    TransMeta transMeta = getActiveTransformation();
+    if ( transMeta != null ) {
+      transMeta.setDefaultSaveDirectory( defaultDir );
     }
   }
 

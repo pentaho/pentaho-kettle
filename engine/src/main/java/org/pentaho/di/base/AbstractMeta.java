@@ -187,6 +187,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   // memoized, load-once-on-demand supplier for the embedded provider key.
   private Supplier<String> embeddedMetastoreProvKeySupplier = Suppliers.memoize( this::getEmbeddedMetastoreKey );
 
+  // This is used as default directory for new jobs/transformation while saving the file
+  private String defaultSaveDirectory;
+
   private String getEmbeddedMetastoreKey() {
     if ( getMetastoreLocatorOsgi() != null ) {
       return getMetastoreLocatorOsgi().setEmbeddedMetastore( getEmbeddedMetaStore() );
@@ -2273,5 +2276,23 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
     return null;
   }
+
+  /**
+   * Return the default save directory for a transformation/Job
+   * @return directory The full path to the default directory for saving transformation/Job
+   */
+  public String getDefaultSaveDirectory() {
+    return defaultSaveDirectory;
+  }
+
+  /**
+   * Set the default save directory for transformation/Job
+   * @param defaultDir The directory displayed as default directory in FileOpenSaveDialog when this transformation/Job is
+   *                   saved
+   */
+  public void setDefaultSaveDirectory( String defaultDir ) {
+    defaultSaveDirectory = defaultDir;
+  }
+
 }
 
