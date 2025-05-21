@@ -28,10 +28,12 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.function.Supplier;
 
 /**
- * This Bowl will access the default local configuration for Kettle. It will not access configuration from a connected
- * Repository, and does not include configuration from any other contexts.
+ * This Bowl will access the default local configuration for Kettle. It does not include configuration from any other
+ * contexts.
  * <p/>
- * If available, most code that needs a Bowl should get Bowls for Management from Spoon, and for execution from
+ * This Bowl is roughly backwards-compatible with pre-Bowl behavior. It will access metastore configuration from a
+ * connected Repository if there is one, but otherwise uses all local config.
+ * <p/> If available, most code that needs a Bowl should get Bowls for Management from Spoon, and for execution from
  * TransMeta or JobMeta.
  *
  */
