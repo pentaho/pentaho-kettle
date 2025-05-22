@@ -14,6 +14,9 @@
 package org.pentaho.di.trans.steps.rest;
 
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
@@ -21,6 +24,7 @@ import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.client.RequestEntityProcessing;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.uri.UriComponent;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
@@ -56,6 +60,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Samatar
