@@ -32,6 +32,7 @@ public class EnginePluginType extends BasePluginType implements PluginTypeInterf
 
   private EnginePluginType() {
     super( EnginePlugin.class, "ENGINE_PLUGIN", "Engine Plugin" );
+    populateFolders(null);  // Register plugin folders to search for this plugin type
   }
 
   public static EnginePluginType getInstance() {
