@@ -36,6 +36,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import jakarta.ws.rs.core.MediaType;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
