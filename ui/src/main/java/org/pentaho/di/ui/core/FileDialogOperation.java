@@ -13,6 +13,8 @@
 
 package org.pentaho.di.ui.core;
 
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 
@@ -29,6 +31,7 @@ public class FileDialogOperation {
   /** Will be called whenever files are loaded by this dialog */
   public interface FileLoadListener {
     void onFileLoaded( FileLookupInfo file );
+    void reset();
   }
 
   /** File information and lookup */
@@ -78,6 +81,7 @@ public class FileDialogOperation {
   public static final String JOB = "job";
   public static final String PROVIDER_REPO = "repository";
 
+  private Bowl bowl;
   private Repository repository;
   private String command;
   private String filter;
@@ -95,18 +99,41 @@ public class FileDialogOperation {
   private String connectionTypeFilter;
   private boolean useSchemaPath;
 
-  private Optional<CustomImageProvider> customImageProvider = Optional.empty();
-  private Optional<FileLoadListener> fileLoadListener = Optional.empty();
   private boolean showOnlyFolders = false;
   private Predicate<String> openCondition = any -> true;
 
+  /**
+   * Constructs an operation that will not use Bowl VFS Connections.
+   */
   public FileDialogOperation( String command ) {
-    this.command = command;
+    this( DefaultBowl.getInstance(), command );
   }
 
+  /**
+   * Constructs an operation that will include Bowl VFS Connections.
+   */
+  public FileDialogOperation( Bowl bowl, String command ) {
+    this( bowl, command, null );
+  }
+
+  /**
+   * Constructs an operation that will not use Bowl VFS Connections.
+   */
   public FileDialogOperation( String command, String origin ) {
+    this( DefaultBowl.getInstance(), command, origin );
+  }
+
+  /**
+   * Constructs an operation that will include Bowl VFS Connections.
+   */
+  public FileDialogOperation( Bowl bowl, String command, String origin ) {
+    this.bowl = bowl;
     this.command = command;
     this.origin = origin;
+  }
+
+  public Bowl getBowl() {
+    return bowl;
   }
 
   public String getCommand() {
@@ -257,24 +284,6 @@ public class FileDialogOperation {
     return ( command.equalsIgnoreCase( SAVE ) || command.equalsIgnoreCase( SAVE_TO )
       || command.equalsIgnoreCase( SAVE_AS ) || command.equalsIgnoreCase( SAVE_TO_FILE_FOLDER )
             || command.equalsIgnoreCase( EXPORT) || command.equalsIgnoreCase( EXPORT_ALL) );
-  }
-
-  /** To load additional images and define what files they apply to */
-  public void setCustomImageProvider( CustomImageProvider provider ) {
-    this.customImageProvider = Optional.of( provider );
-  }
-
-  public Optional<CustomImageProvider> getCustomImageProvider() {
-    return customImageProvider;
-  }
-
-  public Optional<FileLoadListener> getFileLoadListener() {
-    return fileLoadListener;
-  }
-
-  /** Add a listener to inspect files as they are loaded */
-  public void setFileLoadListener( FileLoadListener fileLoadListener ) {
-    this.fileLoadListener = Optional.of( fileLoadListener );
   }
 
   public boolean isShowOnlyFolders() {

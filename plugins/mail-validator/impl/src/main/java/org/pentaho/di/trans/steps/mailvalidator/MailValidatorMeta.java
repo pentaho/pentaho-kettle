@@ -41,6 +41,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 
 /*
  * Created on 03-Juin-2008
@@ -317,7 +318,8 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
     defaultSMTPField = null;
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     String realResultFieldName = space.environmentSubstitute( resultfieldname );

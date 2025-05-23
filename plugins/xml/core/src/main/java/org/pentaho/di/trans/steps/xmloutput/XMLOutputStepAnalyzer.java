@@ -60,7 +60,7 @@ public class XMLOutputStepAnalyzer extends ExternalResourceStepAnalyzer<XMLOutpu
 
   @Override
   public IMetaverseNode createResourceNode( IExternalResourceInfo resource ) throws MetaverseException {
-    return createFileNode( resource.getName(), getDescriptor() );
+    return createFileNode( parentTransMeta.getBowl(), resource.getName(), getDescriptor() );
   }
 
   @Override

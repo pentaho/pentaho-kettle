@@ -13,6 +13,8 @@
 
 package org.pentaho.di.ui.spoon;
 
+import org.eclipse.swt.widgets.TreeItem;
+
 public class TreeSelection {
   private Object selection;
 
@@ -22,16 +24,23 @@ public class TreeSelection {
 
   private String itemText;
 
+  private TreeItem treeItem;
+
   /**
    * @param selection
    * @param parent
    * @param grandParent
    */
-  public TreeSelection( String itemText, Object selection, Object parent, Object grandParent ) {
+  public TreeSelection( TreeItem treeItem, String itemText, Object selection, Object parent, Object grandParent ) {
+    this.treeItem = treeItem;
     this.itemText = itemText;
     this.selection = selection;
     this.parent = parent;
     this.grandParent = grandParent;
+  }
+
+  public TreeSelection( String itemText, Object selection, Object parent, Object grandParent ) {
+    this( null, itemText, selection, parent, grandParent );
   }
 
   /**
@@ -46,7 +55,14 @@ public class TreeSelection {
    * @param selection
    */
   public TreeSelection( String itemText, Object selection ) {
-    this( itemText, selection, null, null );
+    this( null, itemText, selection, null, null );
+  }
+
+  /**
+   * @param selection
+   */
+  public TreeSelection( TreeItem treeItem, String itemText, Object selection ) {
+    this( treeItem, itemText, selection, null, null );
   }
 
   /**
@@ -109,4 +125,11 @@ public class TreeSelection {
     this.itemText = description;
   }
 
+  public TreeItem getTreeItem() {
+    return treeItem;
+  }
+
+  public void setTreeItem( TreeItem treeItem ) {
+    this.treeItem = treeItem;
+  }
 }

@@ -289,7 +289,7 @@ public abstract class BaseAvroStepDialog extends BaseStepDialog
       .result() );
 
     wbBrowse.addSelectionListener( new SelectionAdapterFileDialogTextVar(
-      log, wPath, transMeta, new SelectionAdapterOptions( selectionOperation() ) ) );
+      log, wPath, transMeta, new SelectionAdapterOptions( transMeta.getBowl(), selectionOperation() ) ) );
 
     return wPath;
   }

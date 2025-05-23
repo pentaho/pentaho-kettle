@@ -15,10 +15,10 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -32,6 +32,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.ExecutorUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -45,6 +46,7 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import java.sql.DatabaseMetaData;
@@ -71,7 +73,7 @@ import java.util.concurrent.Future;
  * @since 18-05-2003
  *
  */
-public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface,
+public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface<DatabaseMeta>,
   VariableSpace, RepositoryElementInterface {
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
 
@@ -82,12 +84,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   private static final String DROP_TABLE_STATEMENT = "DROP TABLE IF EXISTS ";
 
   // Comparator for sorting databases alphabetically by name
-  public static final Comparator<DatabaseMeta> comparator = new Comparator<DatabaseMeta>() {
-    @Override
-    public int compare( DatabaseMeta dbm1, DatabaseMeta dbm2 ) {
-      return dbm1.getName().compareToIgnoreCase( dbm2.getName() );
-    }
-  };
+  public static final Comparator<DatabaseMeta> comparator = Comparator.comparing( DatabaseMeta::getName,
+                                                                                  String.CASE_INSENSITIVE_ORDER);
 
   private DatabaseInterface databaseInterface;
 
@@ -587,7 +585,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public Object deepClone( boolean cloneUpdateFlag ) {
     DatabaseMeta databaseMeta = new DatabaseMeta();
     databaseMeta.replaceMeta( this, cloneUpdateFlag );
-    databaseMeta.setObjectId( null );
     return databaseMeta;
   }
 
@@ -992,6 +989,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
       setReadOnly( Boolean.valueOf( XMLHandler.getTagValue( con, "read_only" ) ) );
 
+      readObjectId( con );
+
       // Also, read the database attributes...
       Node attrsnode = XMLHandler.getSubNode( con, "attributes" );
       if ( attrsnode != null ) {
@@ -1043,6 +1042,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     retval.append( "    " ).append( XMLHandler.addTagValue( "servername", getServername() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "data_tablespace", getDataTablespace() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "index_tablespace", getIndexTablespace() ) );
+    appendObjectId( retval );
 
     // only write the tag out if it is set to true
     if ( isReadOnly() ) {
@@ -3111,5 +3111,16 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public void setNamedCluster( String namedCluster ) {
     databaseInterface.setNamedCluster( namedCluster );
+  }
+
+  @Override
+  public DatabaseMeta makeClone() {
+    return (DatabaseMeta) clone();
+  }
+
+  @Override
+  public Node toNode() throws KettleException {
+    Document doc = XMLHandler.loadXMLString( getXML() );
+    return XMLHandler.getSubNode( doc, XML_TAG );
   }
 }

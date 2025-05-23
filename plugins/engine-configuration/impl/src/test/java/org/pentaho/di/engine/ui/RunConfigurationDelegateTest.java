@@ -22,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -67,7 +69,7 @@ public class RunConfigurationDelegateTest {
     mockedSpoon = mockStatic( Spoon.class );
     when( Spoon.getInstance() ).thenReturn( spoon );
 
-    delegate = spy( new RunConfigurationDelegate() );
+    delegate = spy( RunConfigurationDelegate.getInstance( () -> DefaultBowl.getInstance().getMetastore() ) );
     service = mock( RunConfigurationManager.class );
     delegate.setRunConfigurationManager( service );
   }

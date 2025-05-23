@@ -141,7 +141,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
     String realDTDfilename = getRealDTDfilename();
 
     // Define a new DTD validator instance
-    DTDValidator validator = new DTDValidator( log );
+    DTDValidator validator = new DTDValidator( parentJobMeta.getBowl(), log );
     // Set XML filename
     validator.setXMLFilename( realxmlfilename );
     if ( dtdintern ) {
@@ -212,7 +212,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notBlankValidator(), fileExistsValidator() );
-    andValidator().validate( this, "dtdfilename", remarks, ctx );
-    andValidator().validate( this, "xmlFilename", remarks, ctx );
+    andValidator().validate( jobMeta.getBowl(), this, "dtdfilename", remarks, ctx );
+    andValidator().validate( jobMeta.getBowl(), this, "xmlFilename", remarks, ctx );
   }
 }

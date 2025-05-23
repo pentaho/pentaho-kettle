@@ -552,7 +552,7 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.XSD, FilterType.ALL }, FilterType.XSD  ) ) );
 
     wTabFolder.setSelection( 0 );

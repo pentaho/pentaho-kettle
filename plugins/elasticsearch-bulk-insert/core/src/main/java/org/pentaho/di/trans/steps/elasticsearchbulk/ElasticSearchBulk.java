@@ -149,7 +149,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     data.inputRowMeta = getInputRowMeta().clone(); // only available after first getRow();
     data.inputRowBuffer = new Object[batchSize][];
     data.outputRowMeta = data.inputRowMeta.clone();
-    meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+    meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                    metaStore );
   }
 
   private void initFieldIndexes() throws KettleStepException {

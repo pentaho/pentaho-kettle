@@ -366,7 +366,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
       // create the output metadata
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       data.db.setLookup(
         environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ),
@@ -516,7 +517,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       throw new KettleException( e );
     } finally {
       if ( db != null ) {
-        db.disconnect();
+        db.close();
       }
     }
   }
@@ -636,7 +637,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         logError( BaseMessages.getString( PKG, "DatabaseLookup.ERROR0004.UnexpectedErrorDuringInit" )
           + e.toString() );
         if ( data.db != null ) {
-          data.db.disconnect();
+          data.db.close();
         }
       }
     }
@@ -649,7 +650,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     data = (DatabaseLookupData) sdi;
 
     if ( data.db != null ) {
-      data.db.disconnect();
+      data.db.close();
     }
 
     // Recover memory immediately, allow in-memory data to be garbage collected

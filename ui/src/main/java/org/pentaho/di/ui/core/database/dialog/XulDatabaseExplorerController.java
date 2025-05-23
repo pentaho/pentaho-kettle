@@ -503,7 +503,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
     } finally {
       if ( theDatabase != null ) {
         try {
-          theDatabase.disconnect();
+          theDatabase.close();
         } catch ( Exception ignored ) {
           // Can't do anything else here...
         }
@@ -556,7 +556,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
         this.dbExplorerDialog.getShell(), BaseMessages.getString( PKG, "Dialog.Error.Header" ), BaseMessages
           .getString( PKG, "DatabaseExplorerDialog.Error.RetrieveLayout" ), dbe );
     } finally {
-      db.disconnect();
+      db.close();
     }
   }
 
@@ -598,7 +598,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
                 .getDatabaseMeta(), this.dbcache, sql );
             se.open();
           } finally {
-            targetdb.disconnect();
+            targetdb.close();
           }
         }
       } catch ( KettleDatabaseException dbe ) {

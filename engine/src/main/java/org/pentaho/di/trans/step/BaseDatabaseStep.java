@@ -86,7 +86,7 @@ public abstract class BaseDatabaseStep extends BaseStep implements StepInterface
     if ( sdi instanceof BaseDatabaseStepData ) {
       BaseDatabaseStepData data = (BaseDatabaseStepData) sdi;
       if ( data.db != null ) {
-        data.db.disconnect();
+        data.db.close();
       }
     } else {
       log.logBasic( "StepDataInterface is of type [" + sdi.getClass() + "], expected type BaseDatabaseStepData. Unable to disconnect from possible DB in use" );

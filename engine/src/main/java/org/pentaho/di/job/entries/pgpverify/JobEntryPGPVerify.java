@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
@@ -176,9 +177,9 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
         logError( BaseMessages.getString( PKG, "JobPGPVerify.FilenameMissing" ) );
         return result;
       }
-      file = KettleVFS.getFileObject( realFilename );
+      file = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilename );
 
-      GPG gpg = new GPG( environmentSubstitute( getGPGLocation() ), log );
+      GPG gpg = new GPG( parentJobMeta.getBowl(), environmentSubstitute( getGPGLocation() ), log );
 
       if ( useDetachedfilename() ) {
         String signature = environmentSubstitute( getDetachedfilename() );
@@ -187,7 +188,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
           logError( BaseMessages.getString( PKG, "JobPGPVerify.DetachedSignatureMissing" ) );
           return result;
         }
-        detachedSignature = KettleVFS.getFileObject( signature );
+        detachedSignature = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( signature );
 
         gpg.verifyDetachedSignature( detachedSignature, file );
       } else {
@@ -232,7 +233,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "gpglocation", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "gpglocation", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
@@ -241,6 +242,11 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -256,8 +262,10 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
    * @throws KettleException
    *           in case something goes wrong during the export
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  @Override
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the gpglocation from relative to absolute by grabbing the file object...
@@ -267,7 +275,8 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
         // From : ${FOLDER}/../foo/bar.csv
         // To : /home/matt/test/files/foo/bar.csv
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( gpglocation ), space );
+        FileObject fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFileObject( space.environmentSubstitute( gpglocation ), space );
 
         // If the file doesn't exist, forget about this effort too!
         //

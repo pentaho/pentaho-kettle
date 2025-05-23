@@ -16,6 +16,8 @@ package org.pentaho.di.trans.steps.mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -50,6 +52,7 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
   public final Data stepDataInterface;
   public final TransMeta transMeta;
   public final Trans trans;
+  public final Bowl bowl;
   public final Meta initStepMetaInterface;
   public final Data initStepDataInterface;
   public final Meta processRowsStepMetaInterface;
@@ -68,6 +71,8 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
     stepDataInterface = mock( stepDataClass );
     transMeta = mock( TransMeta.class );
     when( transMeta.findStep( stepName ) ).thenReturn( stepMeta );
+    bowl = DefaultBowl.getInstance();
+    Mockito.lenient().when( transMeta.getBowl() ).thenReturn( bowl );
     trans = mock( Trans.class );
     initStepMetaInterface = mock( stepMetaClass );
     initStepDataInterface = mock( stepDataClass );

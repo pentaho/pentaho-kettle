@@ -92,7 +92,7 @@ public class InfobrightLoaderData extends BaseStepData implements StepDataInterf
       loader.start();
 
     } catch ( Exception e ) {
-      db.disconnect();
+      db.close();
       db = null;
       if ( loader != null ) {
         try {
@@ -117,7 +117,7 @@ public class InfobrightLoaderData extends BaseStepData implements StepDataInterf
       loader = null;
     } finally {
       if ( db != null ) {
-        db.disconnect();
+        db.close();
       }
       db = null;
     }

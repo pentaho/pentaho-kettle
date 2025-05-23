@@ -81,7 +81,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     return usevar;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       usevar = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "usevar" ) );
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );

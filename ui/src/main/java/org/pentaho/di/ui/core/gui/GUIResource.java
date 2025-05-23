@@ -204,9 +204,19 @@ public class GUIResource {
 
   private SwtUniversalImage imageFolder;
 
+  private SwtUniversalImage imageConfigurations;
+
+  private SwtUniversalImage imageMainConfigurations;
+
   private SwtUniversalImage imageTransRepo;
 
   private SwtUniversalImage imageJobRepo;
+
+  private SwtUniversalImage imageSharedNew;
+
+  private SwtUniversalImage imageSharedOverwrite;
+
+  private SwtUniversalImage imageSharedIdentical;
 
   private Image imageWizard;
 
@@ -613,8 +623,13 @@ public class GUIResource {
       imageSlaveTree.dispose();
       imageArrow.dispose();
       imageFolder.dispose();
+      imageConfigurations.dispose();
+      imageMainConfigurations.dispose();
       imageTransRepo.dispose();
       imageJobRepo.dispose();
+      imageSharedNew.dispose();
+      imageSharedOverwrite.dispose();
+      imageSharedIdentical.dispose();
       imageWizard.dispose();
       imageCredits.dispose();
       imageStart.dispose();
@@ -1274,6 +1289,14 @@ public class GUIResource {
     imageFolder = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "Folder_image" ) );
 
+    // "ui/images/Configurations.png"
+    imageConfigurations = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "Configurations_image" ) );
+
+    // "ui/images/Main_Configurations.png"
+    imageMainConfigurations = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "Main_Configurations_image" ) );
+
     // "ui/images/transrepo.png"
     imageTransRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "TransRepo_image" ) );
@@ -1282,6 +1305,17 @@ public class GUIResource {
     imageJobRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "JobRepo_image" ) );
 
+    // "ui/images/shared_new.svg"
+    imageSharedNew = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "SharedNew_image" ) );
+
+    // "ui/images/overwrite.svg"
+    imageSharedOverwrite = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "SharedOverwrite_image" ) );
+
+    // "ui/images/identical.svg"
+    imageSharedIdentical = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "SharedIdentical_image" ) );
 
     // Makes transparent images "on the fly"
     //
@@ -1971,6 +2005,14 @@ public class GUIResource {
     return imageFolder.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
+  public Image getImageConfigurations() {
+    return imageConfigurations.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  public Image getImageMainConfigurations() {
+    return imageMainConfigurations.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
   /**
    * @return the imageJobRepo
    */
@@ -1980,6 +2022,27 @@ public class GUIResource {
 
   public SwtUniversalImage getSwtImageJobRepo() {
     return imageJobRepo;
+  }
+
+  /**
+   * @return the imageSharedNew
+   */
+  public SwtUniversalImage getSwtImageSharedNew() {
+    return imageSharedNew;
+  }
+
+  /**
+   * @return the imageSharedOverwrite
+   */
+  public SwtUniversalImage getSwtImageSharedOverwrite() {
+    return imageSharedOverwrite;
+  }
+
+  /**
+   * @return the imageSharedIdentical
+   */
+  public SwtUniversalImage getSwtImageSharedIdentical() {
+    return imageSharedIdentical;
   }
 
   /**

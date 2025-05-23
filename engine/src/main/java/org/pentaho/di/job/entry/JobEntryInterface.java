@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.SQLStatement;
@@ -669,9 +670,39 @@ public interface JobEntryInterface {
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
+   * @deprecated Use the version with the Bowl
    */
+  @Deprecated
   String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException;
+
+  /**
+   * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
+   * resource naming interface allows the object to name appropriately without worrying about those parts of the
+   * implementation specific details.
+   *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config
+   * @param space
+   *          The variable space to resolve (environment) variables with.
+   * @param definitions
+   *          The map containing the filenames and content
+   * @param namingInterface
+   *          The resource naming interface allows the object to be named appropriately
+   * @param repository
+   *          The repository to load resources from
+   * @param metaStore
+   *          the metaStore to load external metadata from
+   *
+   * @return The filename for this object. (also contained in the definitions map)
+   * @throws KettleException
+   *           in case something goes wrong during the export
+   */
+  String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+    Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository,
+    IMetaStore metaStore ) throws KettleException;
 
   /**
    * Checks whether the job entry defines one or more references to a repository object
@@ -714,7 +745,7 @@ public interface JobEntryInterface {
    * @deprecated use {@link #loadReferencedObject(int, Repository, IMetaStore, VariableSpace)}
    */
   @Deprecated
-  Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException;
+  Object loadReferencedObject( Bowl bowl, int index, Repository rep, VariableSpace space ) throws KettleException;
 
   /**
    * Load the referenced object
@@ -730,7 +761,8 @@ public interface JobEntryInterface {
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
+  Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+    throws KettleException;
 
   /**
    * At save and run time, the system will attempt to set the jobMeta so that it can be accessed by the jobEntries

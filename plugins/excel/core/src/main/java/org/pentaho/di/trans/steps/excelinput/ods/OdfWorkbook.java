@@ -21,6 +21,7 @@ import java.util.Map;
 import org.odftoolkit.odfdom.doc.OdfDocument;
 import org.odftoolkit.odfdom.doc.OdfSpreadsheetDocument;
 import org.odftoolkit.odfdom.doc.table.OdfTable;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
@@ -33,12 +34,12 @@ public class OdfWorkbook implements KWorkbook {
   private OdfDocument document;
   private Map<String, OdfSheet> openSheetsMap = new HashMap<String, OdfSheet>();
 
-  public OdfWorkbook( String filename, String encoding ) throws KettleException {
+  public OdfWorkbook( Bowl bowl, String filename, String encoding ) throws KettleException {
     this.filename = filename;
     this.encoding = encoding;
 
     try {
-      document = OdfSpreadsheetDocument.loadDocument( KettleVFS.getInputStream( filename ) );
+      document = OdfSpreadsheetDocument.loadDocument( KettleVFS.getInstance( bowl ).getInputStream( filename ) );
     } catch ( Exception e ) {
       throw new KettleException( e );
     }

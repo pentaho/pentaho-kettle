@@ -20,6 +20,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -37,6 +38,11 @@ public class ResourceUtil {
    * Serializes the referenced resource export interface (Job, Transformation, Mapping, Step, Job Entry, etc) to a ZIP
    * file.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param zipFilename
    *          The ZIP file to put the content in
    * @param resourceExportInterface
@@ -51,17 +57,22 @@ public class ResourceUtil {
    * @throws KettleException
    *           in case anything goes wrong during serialization
    */
-  public static final TopLevelResource serializeResourceExportInterface( String zipFilename,
-    ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository,
+  public static final TopLevelResource serializeResourceExportInterface( Bowl executionBowl, Bowl globalManagementBowl,
+    String zipFilename, ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository,
     IMetaStore metaStore ) throws KettleException {
-    return serializeResourceExportInterface(
-      zipFilename, resourceExportInterface, space, repository, metaStore, null, null );
+    return serializeResourceExportInterface( executionBowl, globalManagementBowl, zipFilename, resourceExportInterface,
+      space, repository, metaStore, null, null );
   }
 
   /**
    * Serializes the referenced resource export interface (Job, Transformation, Mapping, Step, Job Entry, etc) to a ZIP
    * file.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param zipFilename
    *          The ZIP file to put the content in
    * @param resourceExportInterface
@@ -78,8 +89,8 @@ public class ResourceUtil {
    * @throws KettleException
    *           in case anything goes wrong during serialization
    */
-  public static final TopLevelResource serializeResourceExportInterface( String zipFilename,
-    ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository,
+  public static final TopLevelResource serializeResourceExportInterface( Bowl executionBowl, Bowl globalManagementBowl,
+    String zipFilename, ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository,
     IMetaStore metaStore, String injectXML, String injectFilename ) throws KettleException {
 
     ZipOutputStream out = null;
@@ -97,17 +108,18 @@ public class ResourceUtil {
       ResourceNamingInterface namingInterface = new SequenceResourceNaming();
 
       String topLevelResource =
-        resourceExportInterface.exportResources( space, definitions, namingInterface, repository, metaStore );
+        resourceExportInterface.exportResources( executionBowl, globalManagementBowl, space, definitions,
+          namingInterface, repository, metaStore );
 
       if ( topLevelResource != null && !definitions.isEmpty() ) {
 
         // Create the ZIP file...
         //
-        FileObject fileObject = KettleVFS.getFileObject( zipFilename, space );
+        FileObject fileObject = KettleVFS.getInstance( executionBowl ).getFileObject( zipFilename, space );
 
         // Store the XML in the definitions in a ZIP file...
         //
-        out = new ZipOutputStream( KettleVFS.getOutputStream( fileObject, false ) );
+        out = new ZipOutputStream( KettleVFS.getInstance( executionBowl ).getOutputStream( fileObject, false ) );
 
         for ( Map.Entry<String, ResourceDefinition> entry : definitions.entrySet() ) {
           String filename = entry.getKey();

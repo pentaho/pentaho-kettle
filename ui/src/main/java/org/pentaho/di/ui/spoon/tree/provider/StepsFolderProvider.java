@@ -25,6 +25,9 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 
+import java.util.Optional;
+
+
 /**
  * Created by bmorrise on 6/26/18.
  */
@@ -39,8 +42,11 @@ public class StepsFolderProvider extends AutomaticTreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-    TransMeta transMeta = (TransMeta) meta;
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    if ( !meta.isPresent() ) {
+      return;
+    }
+    TransMeta transMeta = (TransMeta) meta.get();
     for ( int i = 0; i < transMeta.nrSteps(); i++ ) {
       StepMeta stepMeta = transMeta.getStep( i );
       if ( stepMeta.isMissing() ) {
@@ -70,7 +76,7 @@ public class StepsFolderProvider extends AutomaticTreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return StepMeta.class;
   }
 }

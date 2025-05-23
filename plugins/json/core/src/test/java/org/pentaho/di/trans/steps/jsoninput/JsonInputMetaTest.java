@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -103,7 +104,7 @@ public class JsonInputMetaTest {
 
     when( rowMeta.indexOfValue( DATA ) ).thenReturn( 0 );
 
-    jsonInputMeta.getFields( rowMeta, NAME, info, nextStep, space, repository, metaStore );
+    jsonInputMeta.getFields( DefaultBowl.getInstance(), rowMeta, NAME, info, nextStep, space, repository, metaStore );
 
     verify( rowMeta ).removeValueMeta( 0 );
   }

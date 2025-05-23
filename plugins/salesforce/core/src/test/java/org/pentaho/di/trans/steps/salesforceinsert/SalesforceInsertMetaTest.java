@@ -26,6 +26,7 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -117,13 +118,13 @@ public class SalesforceInsertMetaTest {
     SalesforceInsertMeta meta = new SalesforceInsertMeta();
     meta.setDefault();
     RowMetaInterface r = new RowMeta();
-    meta.getFields( r, "thisStep", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), r, "thisStep", null, null, new Variables(), null, null );
     assertEquals( 1, r.size() );
     assertEquals( "Id", r.getFieldNames()[0] );
 
     meta.setSalesforceIDFieldName( "id_field" );
     r.clear();
-    meta.getFields( r, "thisStep", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), r, "thisStep", null, null, new Variables(), null, null );
     assertEquals( 1, r.size() );
     assertEquals( "id_field", r.getFieldNames()[0] );
   }

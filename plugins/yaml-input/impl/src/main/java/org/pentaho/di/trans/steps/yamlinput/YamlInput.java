@@ -94,7 +94,8 @@ public class YamlInput extends BaseStep implements StepInterface {
         // Get total previous fields
         data.totalPreviousFields = data.outputRowMeta.size();
         data.totalOutFields = data.totalPreviousFields + data.nrInputFields;
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
 
         // Check is Yaml field is provided
         if ( Utils.isEmpty( meta.getYamlField() ) ) {
@@ -125,13 +126,14 @@ public class YamlInput extends BaseStep implements StepInterface {
 
         // source is a file.
 
-        data.yaml = new YamlReader();
-        data.yaml.loadFile( KettleVFS.getFileObject( Fieldvalue, getTransMeta() ) );
+        data.yaml = new YamlReader( getTransMeta().getBowl() );
+        data.yaml.loadFile( KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( Fieldvalue, getTransMeta() ) );
 
         addFileToResultFilesname( data.yaml.getFile() );
 
       } else {
-        data.yaml = new YamlReader();
+        data.yaml = new YamlReader( getTransMeta().getBowl() );
         data.yaml.loadString( Fieldvalue );
       }
     } catch ( Exception e ) {
@@ -184,7 +186,7 @@ public class YamlInput extends BaseStep implements StepInterface {
 
         // We have a file
         // define a Yaml reader and load file
-        data.yaml = new YamlReader();
+        data.yaml = new YamlReader( getTransMeta().getBowl() );
         data.yaml.loadFile( data.file );
 
         addFileToResultFilesname( data.file );
@@ -208,7 +210,7 @@ public class YamlInput extends BaseStep implements StepInterface {
     if ( first && !meta.isInFields() ) {
       first = false;
 
-      data.files = meta.getFiles( this );
+      data.files = meta.getFiles( getTransMeta().getBowl(), this );
 
       if ( !meta.isdoNotFailIfNoFile() && data.files.nrOfFiles() == 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "YamlInput.Log.NoFiles" ) );
@@ -220,7 +222,8 @@ public class YamlInput extends BaseStep implements StepInterface {
       data.outputRowMeta = new RowMeta();
       data.totalPreviousFields = 0;
       data.totalOutFields = data.totalPreviousFields + data.nrInputFields;
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
       data.totalOutStreamFields = data.outputRowMeta.size();
 
     }

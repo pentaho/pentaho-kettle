@@ -46,7 +46,6 @@ import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
-import org.pentaho.di.shared.SharedObjects;
 
 public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
@@ -101,7 +100,8 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 
       // Before saving the job, see if it's not locked by someone else...
       //
-      int nrWorks = 2 + jobMeta.nrDatabases() + jobMeta.nrNotes() + jobMeta.nrJobEntries() + jobMeta.nrJobHops();
+      int nrWorks = 2 + jobMeta.getDatabaseManagementInterface().getAll().size() + jobMeta.nrNotes()
+                      + jobMeta.nrJobEntries() + jobMeta.nrJobHops();
       if ( monitor != null ) {
         monitor.beginTask( BaseMessages.getString( PKG, "JobMeta.Monitor.SavingTransformation" )
           + jobMeta.getRepositoryDirectory() + Const.FILE_SEPARATOR + jobMeta.getName(), nrWorks );
@@ -139,12 +139,14 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "JobMeta.Log.SavingDatabaseConnections" ) );
       }
-      for ( int i = 0; i < jobMeta.nrDatabases(); i++ ) {
+      List<DatabaseMeta> jobDatabases = jobMeta.getDatabaseManagementInterface().getAll();
+      int dbi = 1;
+      for ( DatabaseMeta databaseMeta : jobDatabases ) {
         if ( monitor != null ) {
           monitor.subTask( BaseMessages.getString( PKG, "JobMeta.Monitor.SavingDatabaseTask.Title" )
-            + ( i + 1 ) + "/" + jobMeta.nrDatabases() );
+            + ( dbi++ ) + "/" + jobDatabases );
         }
-        DatabaseMeta databaseMeta = jobMeta.getDatabase( i );
+
         // Save the database connection if we're overwriting objects or (it has changed and
         // nothing was saved in the repository)
         if ( overwrite || databaseMeta.hasChanged() || databaseMeta.getObjectId() == null ) {
@@ -393,21 +395,6 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
           if ( monitor != null ) {
             monitor.subTask( BaseMessages.getString(
               PKG, "JobMeta.Monitor.ReadingAvailableDatabasesFromRepository" ) );
-          }
-          // Read objects from the shared XML file & the repository
-          try {
-            jobMeta
-              .setSharedObjectsFile( jobRow.getString( KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, null ) );
-            jobMeta.setSharedObjects( repository != null
-              ? repository.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects() );
-          } catch ( Exception e ) {
-            log
-              .logError( BaseMessages.getString( PKG, "JobMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
-            //
-            log.logError( Const.getStackTracker( e ) );
-          }
-          if ( monitor != null ) {
-            monitor.worked( 1 );
           }
 
           if ( log.isDetailed() ) {
@@ -723,7 +710,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         //
         if ( check == null || overWriteShared ) {
           if ( databaseMeta.getName() != null ) {
-            jobMeta.addOrReplaceDatabase( databaseMeta );
+            jobMeta.getDatabaseManagementInterface().add( databaseMeta );
             if ( !overWriteShared ) {
               databaseMeta.setChanged( false );
             }
@@ -773,13 +760,9 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
     }
   }
 
-  public SharedObjects readSharedObjects( JobMeta jobMeta ) throws KettleException {
-    jobMeta.setSharedObjects( jobMeta.readSharedObjects() );
-
+  public void readSharedObjects( JobMeta jobMeta ) throws KettleException {
     readDatabases( jobMeta, true );
     readSlaves( jobMeta, true );
-
-    return jobMeta.getSharedObjects();
   }
 
   public synchronized ObjectId getJobID( String name, ObjectId id_directory ) throws KettleException {
@@ -933,9 +916,6 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
     table.addValue( new ValueMetaBoolean(
       KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID ), jobMeta
       .isBatchIdPassed() );
-    table.addValue(
-      new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_SHARED_FILE ), jobMeta
-        .getSharedObjectsFile() );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
       table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB );

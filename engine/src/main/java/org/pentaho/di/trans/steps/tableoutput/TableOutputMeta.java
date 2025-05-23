@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.tableoutput;
 
 import com.google.common.base.Preconditions;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -38,7 +39,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -438,7 +438,7 @@ public class TableOutputMeta extends BaseDatabaseStepMeta implements StepMetaInt
     return useBatchUpdate;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
@@ -613,7 +613,8 @@ public class TableOutputMeta extends BaseDatabaseStepMeta implements StepMetaInt
     }
   }
 
-  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Just add the returning key field...
     if ( returningGeneratedKeys && generatedKeyField != null && generatedKeyField.length() > 0 ) {
@@ -795,7 +796,7 @@ public class TableOutputMeta extends BaseDatabaseStepMeta implements StepMetaInt
             PKG, "TableOutputMeta.CheckResult.UndefinedError", e.getMessage() ), stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       CheckResult cr =
@@ -883,7 +884,7 @@ public class TableOutputMeta extends BaseDatabaseStepMeta implements StepMetaInt
             retval.setError( BaseMessages.getString( PKG, "TableOutputMeta.Error.ErrorConnecting", dbe
               .getMessage() ) );
           } finally {
-            db.disconnect();
+            db.close();
           }
         } else {
           retval.setError( BaseMessages.getString( PKG, "TableOutputMeta.Error.NoTable" ) );
@@ -921,7 +922,7 @@ public class TableOutputMeta extends BaseDatabaseStepMeta implements StepMetaInt
         throw new KettleException(
           BaseMessages.getString( PKG, "TableOutputMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString( PKG, "TableOutputMeta.Exception.ConnectionNotDefined" ) );

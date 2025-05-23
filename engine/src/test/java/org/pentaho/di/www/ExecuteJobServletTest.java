@@ -13,11 +13,8 @@
 
 package org.pentaho.di.www;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.exception.KettleException;
@@ -52,7 +49,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
 public class ExecuteJobServletTest {
@@ -191,7 +187,8 @@ public class ExecuteJobServletTest {
       spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
 
       String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.UnableToFindRepository", "Unknown" );
-      assertTrue( out.toString().contains( message ) );
+      String output = out.toString();
+      assertTrue( output.contains( message ), "Missing message in output: " + output );
     }
   }
 

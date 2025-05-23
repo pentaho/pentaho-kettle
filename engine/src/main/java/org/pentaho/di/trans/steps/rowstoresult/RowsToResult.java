@@ -57,7 +57,8 @@ public class RowsToResult extends BaseStep implements StepInterface {
     // Add all rows to rows buffer...
     data.rows.add( new RowMetaAndData( getInputRowMeta(), r ) );
     data.outputRowMeta = getInputRowMeta().clone();
-    meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+    meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+      metaStore );
     putRow( data.outputRowMeta, r ); // copy row to possible alternate
     // rowset(s).
 

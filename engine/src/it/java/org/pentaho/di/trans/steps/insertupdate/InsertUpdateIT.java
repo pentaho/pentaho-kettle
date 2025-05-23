@@ -223,7 +223,7 @@ public class InsertUpdateIT extends TestCase {
 
     if ( db != null ) {
       db.execStatement( "DROP TABLE " + TARGET_TABLE + ";" );
-      db.disconnect();
+      db.close();
     }
 
     db = null;

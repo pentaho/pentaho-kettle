@@ -28,8 +28,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.logging.LoggingObjectType;
-import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -269,11 +267,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
             JobConfiguration jobConfiguration = getJobMap().getConfiguration( jobName );
 
             String carteObjectId = UUID.randomUUID().toString();
-            SimpleLoggingObject servletLoggingObject =
-              new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
-            servletLoggingObject.setContainerObjectId( carteObjectId );
-
-            Job newJob = new Job( job.getRep(), job.getJobMeta(), servletLoggingObject );
+            Job newJob = BaseJobServlet.createJob( this, CONTEXT_PATH, carteObjectId, jobConfiguration );
             newJob.setLogLevel( job.getLogLevel() );
 
             // Discard old log lines from the old job

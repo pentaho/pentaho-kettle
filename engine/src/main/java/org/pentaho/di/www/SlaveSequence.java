@@ -143,7 +143,7 @@ public class SlaveSequence {
       throw new KettleException( "Unable to get next value for slave sequence '"
         + name + "' on database '" + databaseMeta.getName() + "'", e );
     } finally {
-      db.disconnect();
+      db.close();
     }
   }
 

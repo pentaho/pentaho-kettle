@@ -958,7 +958,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
         try {
           LoadFileInputMeta tfii = new LoadFileInputMeta();
           getInfo( tfii );
-          FileInputList fileInputList = tfii.getFiles( transMeta );
+          FileInputList fileInputList = tfii.getFiles( transMeta.getBowl(), transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,

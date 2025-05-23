@@ -1165,7 +1165,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   private void downloadFile( FTPClient ftpclient, String filename, String realMoveToFolder, Job parentJob,
     Result result ) throws Exception {
     String localFilename = filename;
-    targetFilename = KettleVFS.getFilename( KettleVFS.getFileObject( returnTargetFilename( localFilename ) ) );
+    targetFilename = KettleVFS.getFilename( KettleVFS.getInstance( parentJobMeta.getBowl() )
+      .getFileObject( returnTargetFilename( localFilename ) ) );
 
     if ( ( !onlyGettingNewFiles ) || ( onlyGettingNewFiles && needsDownload( targetFilename ) ) ) {
       if ( isDetailed() ) {
@@ -1225,7 +1226,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     if ( isaddresult ) {
       FileObject targetFile = null;
       try {
-        targetFile = KettleVFS.getFileObject( filename, this );
+        targetFile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( filename, this );
 
         // Add to the result files...
         ResultFile resultFile =
@@ -1425,14 +1426,14 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate(
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(),
       this, "targetDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator(),
           JobEntryValidatorUtils.fileExistsValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "userName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "password", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
   }
 

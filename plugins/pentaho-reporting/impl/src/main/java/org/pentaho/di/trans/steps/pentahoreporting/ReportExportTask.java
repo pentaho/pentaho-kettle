@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.ReportProcessingException;
@@ -47,12 +48,13 @@ public abstract class ReportExportTask implements Runnable {
   protected StatusListener statusListener;
   protected Boolean createParentFolder;
   protected String targetPath;
+  protected Bowl bowl;
   protected FileObject targetFile;
 
   /**
    * Creates a new PDF export task.
    */
-  public ReportExportTask( final MasterReport report, final SwingGuiContext swingGuiContext, String targetPath,
+  public ReportExportTask( Bowl bowl, final MasterReport report, final SwingGuiContext swingGuiContext, String targetPath,
       Boolean createParentFolder ) {
     if ( report == null ) {
       throw new NullPointerException( "ReportExportTask(..): Report parameter cannot be null" );
@@ -88,7 +90,7 @@ public abstract class ReportExportTask implements Runnable {
    */
   public void run() {
     try {
-      targetFile = KettleVFS.getFileObject( targetPath );
+      targetFile = KettleVFS.getInstance( bowl ).getFileObject( targetPath );
       if ( targetFile.exists() ) {
         if ( !targetFile.delete() ) {
           throw new ReportProcessingException( messages.getErrorString( "ReportExportTask.ERROR_0001_TARGET_EXISTS" ) ); //$NON-NLS-1$

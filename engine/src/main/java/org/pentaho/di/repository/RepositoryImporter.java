@@ -13,6 +13,44 @@
 
 package org.pentaho.di.repository;
 
+import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
+import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.cluster.SlaveServerManagementInterface;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleMissingPluginsException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.LookupReferencesException;
+import org.pentaho.di.core.gui.HasOverwritePrompter;
+import org.pentaho.di.core.gui.OverwritePrompter;
+import org.pentaho.di.core.gui.SpoonFactory;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.imp.ImportRules;
+import org.pentaho.di.imp.rule.ImportValidationFeedback;
+import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.partition.PartitionSchemaManagementInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.shared.SharedObjectsManagementInterface;
+import org.pentaho.di.shared.SharedObjectUtil;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.TransMeta;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,37 +64,6 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 
-import org.pentaho.di.base.AbstractMeta;
-import org.pentaho.di.cluster.ClusterSchema;
-import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.ObjectLocationSpecificationMethod;
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleMissingPluginsException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.exception.LookupReferencesException;
-import org.pentaho.di.core.gui.HasOverwritePrompter;
-import org.pentaho.di.core.gui.OverwritePrompter;
-import org.pentaho.di.core.gui.SpoonFactory;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.imp.ImportRules;
-import org.pentaho.di.imp.rule.ImportValidationFeedback;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entry.JobEntryCopy;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXParseException;
@@ -342,9 +349,9 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   }
 
   @SuppressWarnings( "unchecked" )
-  protected <T extends SharedObjectInterface> List<T> getSharedObjects( Class<T> clazz ) {
+  protected <T extends SharedObjectInterface<T>> List<T> getSharedObjects( Class<T> clazz ) {
     List<T> result = new ArrayList<T>();
-    for ( SharedObjectInterface sharedObject : sharedObjects.getObjectsMap().values() ) {
+    for ( SharedObjectInterface<?> sharedObject : sharedObjects.getObjectsMap().values() ) {
       if ( clazz.isInstance( sharedObject ) ) {
         result.add( (T) sharedObject );
       }
@@ -352,7 +359,8 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     return result;
   }
 
-  private boolean equals( Object obj1, Object obj2 ) {
+  @Override
+  public boolean equals( Object obj1, Object obj2 ) {
     if ( obj1 == null ) {
       if ( obj2 == null ) {
         return true;
@@ -361,6 +369,15 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     }
     if ( obj2 == null ) {
       return false;
+    }
+    if ( obj1 instanceof DatabaseMeta && obj2 instanceof DatabaseMeta ) {
+      return equals( (DatabaseMeta) obj1, (DatabaseMeta) obj2 );
+    } else if ( obj1 instanceof ClusterSchema && obj2 instanceof ClusterSchema ) {
+      return equals( (ClusterSchema) obj1, (ClusterSchema) obj2 );
+    } else if ( obj1 instanceof PartitionSchema && obj2 instanceof PartitionSchema ) {
+      return equals( (PartitionSchema) obj1, (PartitionSchema) obj2 );
+    } else if ( obj1 instanceof SlaveServer && obj2 instanceof SlaveServer ) {
+      return equals( (SlaveServer) obj1, (SlaveServer) obj2 );
     }
     return obj1.equals( obj2 );
   }
@@ -464,102 +481,49 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     return true;
   }
 
-  private void replaceSharedObjects( AbstractMeta abstractMeta ) {
-    for ( DatabaseMeta databaseMeta : getSharedObjects( DatabaseMeta.class ) ) {
-      // Database...
-      int index = abstractMeta.indexOfDatabase( databaseMeta );
-      if ( index < 0 ) {
-        abstractMeta.addDatabase( databaseMeta );
-      } else {
-        DatabaseMeta imported = abstractMeta.getDatabase( index );
-        // Preserve the object id so we can update without having to look up the id
-        imported.setObjectId( databaseMeta.getObjectId() );
-        if ( equals( databaseMeta, imported )
-            || !getPromptResult( BaseMessages.getString( PKG,
-                "RepositoryImporter.Dialog.ConnectionExistsOverWrite.Message", imported.getName() ), BaseMessages
-                .getString( PKG, "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
-                IMPORT_ASK_ABOUT_REPLACE_DB ) ) {
-          imported.replaceMeta( databaseMeta );
-          // We didn't actually change anything
-          imported.clearChanged();
-        } else {
-          imported.setChanged();
-        }
-      }
-    }
+  // filters which shared objects will be imported
+  private <T extends SharedObjectInterface<T> & RepositoryElementInterface>
+    void filterSharedObjects( AbstractMeta source, Class<? extends SharedObjectsManagementInterface<T>> managerClass,
+                              String message, String importAskPref )
+    throws KettleException {
 
-    for ( SlaveServer slaveServer : getSharedObjects( SlaveServer.class ) ) {
-      int index = abstractMeta.getSlaveServers().indexOf( slaveServer );
-      if ( index < 0 ) {
-        abstractMeta.getSlaveServers().add( slaveServer );
-      } else {
-        SlaveServer imported = abstractMeta.getSlaveServers().get( index );
-        // Preserve the object id so we can update without having to look up the id
-        imported.setObjectId( slaveServer.getObjectId() );
-        if ( equals( slaveServer, imported )
-            || !getPromptResult( BaseMessages.getString( PKG,
-                "RepositoryImporter.Dialog.SlaveServerExistsOverWrite.Message", imported.getName() ), BaseMessages
-                .getString( PKG, "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
-                IMPORT_ASK_ABOUT_REPLACE_SS ) ) {
-          imported.replaceMeta( slaveServer );
-          // We didn't actually change anything
-          imported.clearChanged();
-        } else {
-          imported.setChanged();
+    SharedObjectsManagementInterface<T> srcManager = source.getSharedObjectManager( managerClass );
+    SharedObjectsManagementInterface<T> tgtManager = rep.getBowl().getManager( managerClass );
+
+    for ( T srcObject : srcManager.getAll() ) {
+      T destObject = tgtManager.get( srcObject.getName() );
+      if ( destObject != null ) {
+        if ( equals( srcObject, destObject )
+             || !getPromptResult( BaseMessages.getString( PKG, message, srcObject.getName() ), BaseMessages
+                 .getString( PKG, "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
+                 importAskPref ) ) {
+            // not overwriting, remove so we don't try to use it.
+            srcManager.remove( srcObject.getName() );
         }
       }
     }
   }
 
-  protected void replaceSharedObjects( TransMeta transMeta ) throws KettleException {
-    replaceSharedObjects( (AbstractMeta) transMeta );
-    for ( ClusterSchema clusterSchema : getSharedObjects( ClusterSchema.class ) ) {
-      int index = transMeta.getClusterSchemas().indexOf( clusterSchema );
-      if ( index < 0 ) {
-        transMeta.getClusterSchemas().add( clusterSchema );
-      } else {
-        ClusterSchema imported = transMeta.getClusterSchemas().get( index );
-        // Preserve the object id so we can update without having to look up the id
-        imported.setObjectId( clusterSchema.getObjectId() );
-        if ( equals( clusterSchema, imported )
-            || !getPromptResult( BaseMessages.getString( PKG,
-                "RepositoryImporter.Dialog.ClusterSchemaExistsOverWrite.Message", imported.getName() ), BaseMessages
-                .getString( PKG, "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
-                IMPORT_ASK_ABOUT_REPLACE_CS ) ) {
-          imported.replaceMeta( clusterSchema );
-          // We didn't actually change anything
-          imported.clearChanged();
-        } else {
-          imported.setChanged();
-        }
-      }
-    }
+  private void filterSharedObjects( AbstractMeta abstractMeta ) throws KettleException {
+    filterSharedObjects( abstractMeta, DatabaseManagementInterface.class,
+      "RepositoryImporter.Dialog.ConnectionExistsOverWrite.Message", IMPORT_ASK_ABOUT_REPLACE_DB );
 
-    for ( PartitionSchema partitionSchema : getSharedObjects( PartitionSchema.class ) ) {
-      int index = transMeta.getPartitionSchemas().indexOf( partitionSchema );
-      if ( index < 0 ) {
-        transMeta.getPartitionSchemas().add( partitionSchema );
-      } else {
-        PartitionSchema imported = transMeta.getPartitionSchemas().get( index );
-        // Preserve the object id so we can update without having to look up the id
-        imported.setObjectId( partitionSchema.getObjectId() );
-        if ( equals( partitionSchema, imported )
-            || !getPromptResult( BaseMessages.getString( PKG,
-                "RepositoryImporter.Dialog.PartitionSchemaExistsOverWrite.Message", imported.getName() ), BaseMessages
-                .getString( PKG, "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
-                IMPORT_ASK_ABOUT_REPLACE_PS ) ) {
-          imported.replaceMeta( partitionSchema );
-          // We didn't actually change anything
-          imported.clearChanged();
-        } else {
-          imported.setChanged();
-        }
-      }
-    }
+    filterSharedObjects( abstractMeta, SlaveServerManagementInterface.class,
+      "RepositoryImporter.Dialog.SlaveServerExistsOverWrite.Message", IMPORT_ASK_ABOUT_REPLACE_SS );
   }
 
-  protected void replaceSharedObjects( JobMeta transMeta ) throws KettleException {
-    replaceSharedObjects( (AbstractMeta) transMeta );
+  protected void filterSharedObjects( TransMeta transMeta ) throws KettleException {
+    filterSharedObjects( (AbstractMeta) transMeta );
+
+    filterSharedObjects( transMeta, ClusterSchemaManagementInterface.class,
+      "RepositoryImporter.Dialog.ClusterSchemaExistsOverWrite.Message", IMPORT_ASK_ABOUT_REPLACE_CS );
+
+    filterSharedObjects( transMeta, PartitionSchemaManagementInterface.class,
+      "RepositoryImporter.Dialog.PartitionSchemaExistsOverWrite.Message", IMPORT_ASK_ABOUT_REPLACE_PS );
+  }
+
+  protected void filterSharedObjects( JobMeta transMeta ) throws KettleException {
+    filterSharedObjects( (AbstractMeta) transMeta );
   }
 
   /**
@@ -574,13 +538,27 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     }
   }
 
+  void patchDatabaseConnections( AbstractMeta meta ) throws KettleException {
+    SharedObjectUtil.patchDatabaseConnections( rep.getBowl(), meta );
+  }
+
   private void patchJobEntries( JobMeta jobMeta ) {
     for ( JobEntryCopy copy : jobMeta.getJobCopies() ) {
       JobEntryInterface jobEntryInterface = copy.getEntry();
       if ( jobEntryInterface instanceof HasRepositoryDirectories ) {
         patchRepositoryDirectories( jobEntryInterface.isReferencedObjectEnabled(), (HasRepositoryDirectories) jobEntryInterface  );
       }
-    } }
+    }
+  }
+
+  private void patchPartitionSchemas( TransMeta transMeta ) throws KettleException {
+    List<PartitionSchema> partitionSchemas = transMeta.getPartitionSchemas();
+    for ( StepMeta step : transMeta.getSteps() ) {
+      if ( step.getStepPartitioningMeta() != null ) {
+        step.getStepPartitioningMeta().setPartitionSchemaAfterLoading( partitionSchemas );
+      }
+    }
+  }
 
   private void patchRepositoryDirectories( boolean[] referenceEnabled, HasRepositoryDirectories metaWithReferences ) {
     String[] repDirectories = metaWithReferences.getDirectories();
@@ -651,6 +629,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     // Load transformation from XML into a directory, possibly created!
     //
     TransMeta transMeta = createTransMetaForNode( transnode ); // ignore shared objects
+    transMeta.setRepository( rep );
     feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportTrans.Label", Integer
         .toString( transformationNumber ), transMeta.getName() ) );
 
@@ -690,10 +669,14 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     }
 
     if ( existingId == null || overwrite ) {
-      replaceSharedObjects( transMeta );
+      filterSharedObjects( transMeta );
+      SharedObjectUtil.moveAllSharedObjects( transMeta, rep.getBowl() );
+
       transMeta.setObjectId( existingId );
       transMeta.setRepositoryDirectory( targetDirectory );
       patchTransSteps( transMeta );
+      patchDatabaseConnections( transMeta );
+      patchPartitionSchemas( transMeta );
 
       try {
         // Keep info on who & when this transformation was created...
@@ -753,6 +736,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     // Load the job from the XML node.
     //
     JobMeta jobMeta = createJobMetaForNode( jobnode );
+    jobMeta.setRepository( rep );
     feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportJob.Label",
         Integer.toString( jobNumber ), jobMeta.getName() ) );
     validateImportedElement( importRules, jobMeta );
@@ -794,10 +778,13 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     jobMeta.clearCurrentDirectoryChangedListeners();
 
     if ( existintId == null || overwrite ) {
-      replaceSharedObjects( jobMeta );
+      filterSharedObjects( jobMeta );
+      SharedObjectUtil.moveAllSharedObjects( jobMeta, rep.getBowl() );
+
       jobMeta.setRepositoryDirectory( targetDirectory );
       jobMeta.setObjectId( existintId );
       patchJobEntries( jobMeta );
+      patchDatabaseConnections( jobMeta );
       try {
         saveJobMeta( jobMeta );
 

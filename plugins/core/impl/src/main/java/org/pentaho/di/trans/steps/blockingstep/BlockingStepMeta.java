@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.List;
 
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -125,8 +126,9 @@ public class BlockingStepMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore )
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
+      StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore )
     throws KettleStepException {
     // Default: no values are added to the row in the step
   }

@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.ssh;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -512,7 +513,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
         remarks.add( cr );
         boolean keyFileExists = false;
         try {
-          keyFileExists = KettleVFS.fileExists( keyfilename );
+          keyFileExists = KettleVFS.getInstance( transMeta.getBowl() ).fileExists( keyfilename );
         } catch ( Exception e ) { /* Ignore */
         }
         if ( !keyFileExists ) {
@@ -543,7 +544,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( !isDynamicCommand() ) {
@@ -580,6 +581,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    *
+   * @param bowl
    * @param serveur
    * @param port
    * @param username
@@ -598,11 +600,11 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
    * @deprecated Use {@link SSHData#OpenConnection(String, int, String, String, boolean, String, String, int, VariableSpace, String, int, String, String)} instead
    */
   @Deprecated
-  public static Connection OpenConnection( String serveur, int port, String username, String password,
+  public static Connection OpenConnection( Bowl bowl, String serveur, int port, String username, String password,
     boolean useKey, String keyFilename, String passPhrase, int timeOut, VariableSpace space, String proxyhost,
     int proxyport, String proxyusername, String proxypassword ) throws KettleException {
-    return SSHData.OpenConnection( serveur, port, username, password, useKey, keyFilename, passPhrase, timeOut,
-      space, proxyhost, proxyport, proxyusername, proxypassword );
+    return SSHData.OpenConnection( bowl, serveur, port, username,
+      password, useKey, keyFilename, passPhrase, timeOut, space, proxyhost, proxyport, proxyusername, proxypassword );
   }
 
   /**

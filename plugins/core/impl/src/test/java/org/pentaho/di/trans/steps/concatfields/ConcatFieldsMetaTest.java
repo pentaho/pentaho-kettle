@@ -17,6 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
@@ -97,9 +98,8 @@ public class ConcatFieldsMetaTest {
     // 'exportResources' will always return 'null'
     concatFieldsMeta = new ConcatFieldsMeta();
     concatFieldsMeta.setOutputFields( new TextFileField[] {} );
-    assertNull( concatFieldsMeta.exportResources( mock( VariableSpace.class ), new HashMap<>(),
-      mock( ResourceNamingInterface.class ), mock( Repository.class ), mock(
-        IMetaStore.class ) ) );
+    assertNull( concatFieldsMeta.exportResources( mock( Bowl.class ), mock( Bowl.class ), mock( VariableSpace.class ),
+      new HashMap<>(), mock( ResourceNamingInterface.class ), mock( Repository.class ), mock( IMetaStore.class ) ) );
 
 
     // Saving the StepMeta, will always ignore the filename

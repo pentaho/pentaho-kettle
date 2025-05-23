@@ -51,8 +51,9 @@ import org.pentaho.di.base.IMetaFileCache;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.ConnectionPoolUtil;
 import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
@@ -705,14 +706,41 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @param dirname  the dirname the repository directory name
    * @param filename the filename containing the transformation definition
    * @throws KettleException if any error occurs during loading, parsing, or creation of the transformation
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public <Parent extends VariableSpace & NamedParams> Trans( Parent parent, Repository rep, String name, String dirname,
-                                                                String filename ) throws KettleException {
-    this( parent, rep, name, dirname, filename, null);
+                                                             String filename ) throws KettleException {
+    this( DefaultBowl.getInstance(), parent, rep, name, dirname, filename );
   }
 
+  /**
+   * Instantiates a new transformation using any of the provided parameters including the variable bindings, a
+   * repository, a name, a repository directory name, and a filename. This is a multi-purpose method that supports
+   * loading a transformation from a file (if the filename is provided but not a repository object) or from a repository
+   * (if the repository object, repository directory name, and transformation name are specified).
+   *
+   * @param bowl     For file access to the provided file.
+   * @param parent   the parent variable space and named params
+   * @param rep      the repository
+   * @param name     the name of the transformation
+   * @param dirname  the dirname the repository directory name
+   * @param filename the filename containing the transformation definition
+   * @throws KettleException if any error occurs during loading, parsing, or creation of the transformation
+   */
+  public <Parent extends VariableSpace & NamedParams> Trans( Bowl bowl, Parent parent, Repository rep, String name,
+      String dirname, String filename ) throws KettleException {
+    this( bowl, parent, rep, name, dirname, filename, null);
+  }
+
+  @Deprecated
   public <Parent extends VariableSpace & NamedParams> Trans( Parent parent, Repository rep, String name, String dirname,
-                                                             String filename, TransMeta parentTransMeta ) throws KettleException {
+      String filename, TransMeta parentTransMeta ) throws KettleException {
+      this( DefaultBowl.getInstance(), parent, rep, name, dirname, filename, parentTransMeta );
+  }
+
+  public <Parent extends VariableSpace & NamedParams> Trans( Bowl bowl, Parent parent, Repository rep, String name,
+      String dirname, String filename, TransMeta parentTransMeta ) throws KettleException {
     this();
     try {
       if ( rep != null ) {
@@ -724,7 +752,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             dirname ) );
         }
       } else {
-        transMeta = parentTransMeta != null ? parentTransMeta : new TransMeta( filename, false );
+        transMeta = parentTransMeta != null ? parentTransMeta : new TransMeta( bowl, filename,
+          false );
       }
 
       this.log = new LogChannel( LogChannel.GENERAL_SUBJECT, false, false );
@@ -2310,7 +2339,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ErrorConnectingToDatabase",
                 "" + transMeta.getMaxDateConnection() ), e );
             } finally {
-              maxdb.disconnect();
+              maxdb.close();
             }
           } else {
             throw new KettleTransException( BaseMessages.getString( PKG,
@@ -2374,7 +2403,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ErrorInDatabase", "" + td
                   .getDatabase() ), e );
               } finally {
-                depdb.disconnect();
+                depdb.close();
               }
             } else {
               throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ConnectionCouldNotBeFound",
@@ -2735,7 +2764,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     if ( !db.isAutoCommit() ) {
       db.commit( true );
     }
-    db.disconnect();
+    db.close();
   }
 
   /**
@@ -2869,7 +2898,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           transMeta.getTransLogTable().getActualTableName() ), e );
       } finally {
         if ( intervalInSeconds <= 0 || ( status.equals( LogStatus.END ) || status.equals( LogStatus.STOP ) ) ) {
-          ldb.disconnect();
+          ldb.close();
           transLogTableDatabaseConnection = null; // disconnected
         }
       }
@@ -2941,7 +2970,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         "Trans.Exception.ErrorWritingStepPerformanceLogRecordToTable" ), e );
     } finally {
       if ( ldb != null ) {
-        ldb.disconnect();
+        ldb.close();
       }
     }
 
@@ -4324,15 +4353,17 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         // First export the job...
         //
-        FileObject tempFile = KettleVFS.createTempFile( "transExport", KettleVFS.Suffix.ZIP, transMeta );
+        FileObject tempFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
+          .createTempFile( "transExport", KettleVFS.Suffix.ZIP, transMeta );
 
         //the executionConfiguration should not include a repository here because all the resources should be
         //retrieved from the exported zip file
         TransExecutionConfiguration clonedConfiguration = (TransExecutionConfiguration) executionConfiguration.clone();
         clonedConfiguration.setRepository( null );
         TopLevelResource topLevelResource =
-          ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), transMeta, transMeta,
-            repository, metaStore, clonedConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
+          ResourceUtil.serializeResourceExportInterface( transMeta.getBowl(), null, tempFile.getName().toString(),
+            transMeta, transMeta, repository, metaStore, clonedConfiguration.getXML(),
+            CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
         //
@@ -4415,7 +4446,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     boolean hasFilename = transMeta != null && !Utils.isEmpty( transMeta.getFilename() );
     if ( hasFilename ) { // we have a finename that's defined.
       try {
-        FileObject fileObject = KettleVFS.getFileObject( transMeta.getFilename(), var );
+        FileObject fileObject = KettleVFS.getInstance( transMeta.getBowl() ).getFileObject( transMeta.getFilename(), var );
         FileName fileName = fileObject.getName();
 
         // The filename of the transformation

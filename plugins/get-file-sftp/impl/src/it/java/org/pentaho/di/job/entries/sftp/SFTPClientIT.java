@@ -24,6 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -110,9 +111,10 @@ public class SFTPClientIT {
     channel.connect();
     channel.put( new ByteArrayInputStream( data ), "downloaded.txt" );
 
-    client.get( KettleVFS.getFileObject( "ram://downloaded.txt" ), "downloaded.txt" );
+    client.get( KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( "ram://downloaded.txt" ), "downloaded.txt" );
 
-    FileObject downloaded = KettleVFS.getFileObject( "ram://downloaded.txt" );
+    FileObject downloaded = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( "ram://downloaded.txt" );
     assertTrue( downloaded.exists() );
     assertTrue( IOUtils.contentEquals( downloaded.getContent().getInputStream(), new ByteArrayInputStream( data ) ) );
   }

@@ -34,10 +34,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -70,8 +68,6 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -990,7 +986,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         try {
           AccessInputMeta tfii = new AccessInputMeta();
           getInfo( tfii );
-          FileInputList fileInputList = tfii.getFiles( transMeta );
+          FileInputList fileInputList = tfii.getFiles( transMeta.getBowl(), transMeta );
           String[] files = fileInputList.getFileStrings();
 
           if ( files.length > 0 ) {
@@ -1112,7 +1108,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         return;
       }
 
-      FileInputList inputList = meta.getFiles( transMeta );
+      FileInputList inputList = meta.getFiles( transMeta.getBowl(), transMeta );
 
       if ( inputList.getFiles().size() > 0 ) {
         // Open the file (only first file)...
@@ -1509,7 +1505,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
       AccessInputMeta meta = new AccessInputMeta();
       getInfo( meta );
 
-      FileInputList fileInputList = meta.getFiles( transMeta );
+      FileInputList fileInputList = meta.getFiles( transMeta.getBowl(), transMeta );
 
       if ( fileInputList.nrOfFiles() > 0 ) {
 

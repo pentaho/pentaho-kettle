@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -347,7 +348,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
   }
 
   @Override
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
       rowMeta.clear(); // Start with a clean slate, eats the input
@@ -757,6 +758,11 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
   }
 
   /**
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -769,8 +775,9 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -780,14 +787,15 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
         // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.csv
         // To : /home/matt/test/files/foo/bar.csv
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( filename ), space );
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
+          .getFileObject( space.environmentSubstitute( filename ), space );
 
         // If the file doesn't exist, forget about this effort too!
         //
         if ( fileObject.exists() ) {
           // Convert to an absolute path...
           //
-          filename = resourceNamingInterface.nameResource( fileObject, space, true );
+          filename = namingInterface.nameResource( fileObject, space, true );
 
           return filename;
         }
@@ -929,7 +937,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
   public FileObject getHeaderFileObject( final TransMeta transMeta ) {
     final String filename = transMeta.environmentSubstitute( getFilename() );
     try {
-      return KettleVFS.getFileObject( filename );
+      return KettleVFS.getInstance( transMeta.getBowl() ).getFileObject( filename );
     } catch ( final KettleFileException e ) {
       return null;
     }

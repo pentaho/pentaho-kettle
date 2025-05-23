@@ -20,6 +20,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.MessageBox;
+
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -35,12 +37,14 @@ import java.util.Arrays;
  * Supports dropping Elements into a tree viewer.
  */
 public class ElementTreeDropAdapter extends ViewerDropAdapter {
+  private final Bowl bowl;
   Object lastTarget;
   TreeViewer viewer;
   LogChannelInterface log;
 
-  public ElementTreeDropAdapter( TreeViewer viewer, LogChannelInterface log ) {
+  public ElementTreeDropAdapter( Bowl bowl, TreeViewer viewer, LogChannelInterface log ) {
     super( viewer );
+    this.bowl = bowl;
     this.viewer = viewer;
     this.log = log;
   }
@@ -58,7 +62,7 @@ public class ElementTreeDropAdapter extends ViewerDropAdapter {
       errorBox.open();
       return false;
     }
-    Element target = new Element( genericTarget );
+    Element target = new Element( bowl, genericTarget );
 
     log.logDebug( "TreeDrop: last target element was \"" + target.getPath() + "\" location was " + location );
     if ( location == ViewerDropAdapter.LOCATION_AFTER || location == ViewerDropAdapter.LOCATION_BEFORE
@@ -72,7 +76,7 @@ public class ElementTreeDropAdapter extends ViewerDropAdapter {
         String name = parent.replaceAll( "^.*[\\/\\\\]", "" ); //Strip off the path leaving file name
         // Making parent of target the new actual target to use.
         target =
-          new Element( name, target.calcParentEntityType(), parent, target.getProvider(), target.getRepositoryName() );
+          new Element( bowl, name, target.calcParentEntityType(), parent, target.getProvider(), target.getRepositoryName() );
       }
     }
 
@@ -115,16 +119,17 @@ public class ElementTreeDropAdapter extends ViewerDropAdapter {
    */
   public boolean validateDrop( Object target, int op, TransferData type ) {
     lastTarget = target;
-    return ElementTransfer.getInstance().isSupportedType( type ) || FileTransfer.getInstance().isSupportedType( type );
+    return ElementTransfer.getInstance( bowl ).isSupportedType( type )
+      || FileTransfer.getInstance().isSupportedType( type );
   }
 
   private Element convertExplorerFileToElement( String path ) {
     java.io.File file = new java.io.File( path );
     if ( file.exists() ) {
       if ( file.isDirectory() ) {
-        return new Element( file.getName(), EntityType.LOCAL_DIRECTORY, path, "local" );
+        return new Element( bowl, file.getName(), EntityType.LOCAL_DIRECTORY, path, "local" );
       } else {
-        return new Element( file.getName(), EntityType.LOCAL_FILE, path, "local" );
+        return new Element( bowl, file.getName(), EntityType.LOCAL_FILE, path, "local" );
       }
     }
     return null;

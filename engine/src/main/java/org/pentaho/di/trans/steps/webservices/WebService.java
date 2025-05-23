@@ -166,7 +166,8 @@ public class WebService extends BaseStep implements StepInterface {
       } else {
         data.outputRowMeta = new RowMeta();
       }
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       defineIndexList( getInputRowMeta(), vCurrentRow );
     } else {

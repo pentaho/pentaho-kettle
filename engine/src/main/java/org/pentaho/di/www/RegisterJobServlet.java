@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import org.apache.commons.io.IOUtils;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 
@@ -35,14 +36,22 @@ public class RegisterJobServlet extends BaseJobServlet {
   @Override
   WebResult generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML ) throws IOException, KettleException {
 
-    final String xml = IOUtils.toString( request.getInputStream() );
+    try {
+      final String xml = IOUtils.toString( request.getInputStream() );
 
-    // Parse the XML, create a job configuration
-    JobConfiguration jobConfiguration = JobConfiguration.fromXML( xml );
+      // Parse the XML, create a job configuration
+      JobConfiguration jobConfiguration = JobConfiguration.fromXML( xml );
 
-    Job job = createJob( jobConfiguration );
+      Job job = createJob( jobConfiguration );
 
-    String message = "Job '" + job.getJobname() + "' was added to the list with id " + job.getContainerObjectId();
-    return new WebResult( WebResult.STRING_OK, message, job.getContainerObjectId() );
+      String message = "Job '" + job.getJobname() + "' was added to the list with id " + job.getContainerObjectId();
+      return new WebResult( WebResult.STRING_OK, message, job.getContainerObjectId() );
+    } catch ( KettleXMLException ex ) {
+      response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+      return new WebResult( WebResult.STRING_ERROR, ex.getMessage(), "" );
+    } catch ( Exception ex ) {
+      response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+      return new WebResult( WebResult.STRING_ERROR, ex.getMessage(), "" );
+    }
   }
 }

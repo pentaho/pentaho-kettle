@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans.steps.avro.output;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.VariableSpace;
 
 import java.util.List;
@@ -35,6 +36,8 @@ public interface IPentahoAvroOutputFormat extends IPentahoOutputFormat {
   void setDocValue( String docValue );
 
   void setSchemaFilename( String schemaFilename );
+
+  void setBowl( Bowl bowl );
 
   @SuppressWarnings( "squid:S00112" )
   default void setVariableSpace( VariableSpace variableSpace ) {

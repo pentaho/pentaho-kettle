@@ -197,7 +197,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
       }
 
       try {
-        fileObject = KettleVFS.getFileObject( realFilename, this );
+        fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilename, this );
 
         long iMaximumTimeout = Const.toInt( getRealMaximumTimeout(), Const.toInt( DEFAULT_MAXIMUM_TIMEOUT, 0 ) );
         long iCycleTime = Const.toInt( getRealCheckCycleTime(), Const.toInt( DEFAULT_CHECK_CYCLE_TIME, 0 ) );
@@ -232,7 +232,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 
         boolean continueLoop = true;
         while ( continueLoop && !parentJob.isStopped() ) {
-          fileObject = KettleVFS.getFileObject( realFilename, this );
+          fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilename, this );
 
           if ( fileObject.exists() ) {
             // file exists, we're happy to exit
@@ -418,11 +418,11 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "filename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "maximumTimeout", remarks,
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "maximumTimeout", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "checkCycleTime", remarks,
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "checkCycleTime", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 

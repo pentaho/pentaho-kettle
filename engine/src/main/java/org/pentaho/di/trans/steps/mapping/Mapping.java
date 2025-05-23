@@ -557,7 +557,7 @@ public class Mapping extends BaseStep implements StepInterface {
       // Pass the repository down to the metadata object...
       //
       meta.setRepository( getTransMeta().getRepository() );
-      mappingData.mappingTransMeta = MappingMeta.loadMappingMeta( meta, meta.getRepository(),
+      mappingData.mappingTransMeta = MappingMeta.loadMappingMeta( getTransMeta().getBowl(), meta, meta.getRepository(),
           meta.getMetaStore(), this, meta.getMappingParameters().isInheritingAllVariables() );
 
       if ( data.mappingTransMeta == null ) {

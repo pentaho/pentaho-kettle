@@ -653,7 +653,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
                 + Const.CR + e.getMessage() );
               mb.open();
             } finally {
-              db.disconnect();
+              db.close();
             }
             break;
           default:

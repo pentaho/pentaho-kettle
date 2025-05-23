@@ -15,6 +15,7 @@ package org.pentaho.di.trans.step.errorhandling;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -54,7 +55,8 @@ public class AbstractFileErrorHandlerTest {
   private void setupErrorHandler( String encoding, Object source ) throws Exception {
     File tempFile = File.createTempFile( "test", "file.txt" );
     tempFile.deleteOnExit();
-    FileObject fileObject = KettleVFS.getFileObject( tempFile.getAbsolutePath() );
+    FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( tempFile.getAbsolutePath() );
     Date date = new Date();
     String destDirectory = tempFile.getParent();
     String fileExtension = ".txt";

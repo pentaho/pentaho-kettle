@@ -20,13 +20,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
@@ -50,15 +50,12 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
-import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.api.IMetaStoreElement;
-import org.pentaho.metastore.api.IMetaStoreElementType;
-import org.pentaho.metastore.util.PentahoDefaults;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,9 +63,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
@@ -82,7 +79,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -102,6 +98,7 @@ public class AbstractMetaTest {
   public static void setUpBeforeClass() throws Exception {
     PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
     PluginRegistry.init();
+    DefaultBowl.getInstance().setSharedObjectsIO( new MemorySharedObjectsIO() );
   }
 
   @Before
@@ -109,6 +106,7 @@ public class AbstractMetaTest {
     meta = new AbstractMetaStub();
     objectId = mock( ObjectId.class );
     repo = mock( Repository.class );
+    when( repo.getBowl() ).thenReturn( new RepositoryBowl( repo ) );
   }
 
   @Test
@@ -185,37 +183,63 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetDatabase() {
+  public void testDatabaseManagementInterface() throws Exception {
     assertEquals( 0, meta.nrDatabases() );
-    assertNull( meta.getDatabases() );
+    assertNotNull( meta.getDatabases() );
+    assertEquals( 0, meta.getDatabases().size() );
+    assertFalse( meta.haveConnectionsChanged() );
+    meta.clear();
+    assertTrue( meta.getDatabases().isEmpty() );
+    assertTrue( meta.getDatabaseManagementInterface().getAll().isEmpty() );
+    assertEquals( 0, meta.nrDatabases() );
+    assertFalse( meta.haveConnectionsChanged() );
+
+    DatabaseMeta db1 = new DatabaseMeta();
+    db1.setName( "db1" );
+    db1.setDisplayName( "db1" );
+    meta.getDatabaseManagementInterface().add( db1 );
+
+    assertEquals( 1, meta.getDatabases().size() );
+    assertEquals( 1, meta.getDatabaseManagementInterface().getAll().size() );
+    assertEquals( 1, meta.nrDatabases() );
+    assertTrue( meta.haveConnectionsChanged() );
+    assertEquals( db1, meta.getDatabaseManagementInterface().get( "db1" ) );
+    assertEquals( db1, meta.findDatabase( "db1" ) );
+  }
+
+  @Test
+  public void testGetSetDatabase() throws Exception {
+    assertEquals( 0, meta.nrDatabases() );
+    assertNotNull( meta.getDatabases() );
+    assertEquals( 0, meta.getDatabases().size() );
     assertFalse( meta.haveConnectionsChanged() );
     meta.clear();
     assertTrue( meta.getDatabases().isEmpty() );
     assertEquals( 0, meta.nrDatabases() );
     assertFalse( meta.haveConnectionsChanged() );
-    DatabaseMeta db1 = mock( DatabaseMeta.class );
-    when( db1.getName() ).thenReturn( "db1" );
-    when( db1.getDisplayName() ).thenReturn( "db1" );
-    meta.addDatabase( db1 );
+    DatabaseMeta db1 = new DatabaseMeta();
+    db1.setName( "db1" );
+    db1.setDisplayName( "db1" );
+    meta.getDatabaseManagementInterface().add( db1 );
     assertEquals( 1, meta.nrDatabases() );
     assertFalse( meta.getDatabases().isEmpty() );
     assertTrue( meta.haveConnectionsChanged() );
-    DatabaseMeta db2 = mock( DatabaseMeta.class );
-    when( db2.getName() ).thenReturn( "db2" );
-    when( db2.getDisplayName() ).thenReturn( "db2" );
-    meta.addDatabase( db2 );
+    DatabaseMeta db2 = new DatabaseMeta();
+    db2.setName( "db2" );
+    db2.setDisplayName( "db2" );
+    meta.getDatabaseManagementInterface().add( db2 );
     assertEquals( 2, meta.nrDatabases() );
     // Test replace
-    meta.addDatabase( db1, true );
+    meta.getDatabaseManagementInterface().add( db1 );
     assertEquals( 2, meta.nrDatabases() );
-    meta.addOrReplaceDatabase( db1 );
+    meta.getDatabaseManagementInterface().add( db1 );
     assertEquals( 2, meta.nrDatabases() );
     // Test duplicate
-    meta.addDatabase( db2, false );
+    meta.getDatabaseManagementInterface().add( db2 );
     assertEquals( 2, meta.nrDatabases() );
-    DatabaseMeta db3 = mock( DatabaseMeta.class );
-    when( db3.getName() ).thenReturn( "db3" );
-    meta.addDatabase( db3, false );
+    DatabaseMeta db3 = new DatabaseMeta();
+    db3.setName( "db3" );
+    meta.getDatabaseManagementInterface().add( db3 );
     assertEquals( 3, meta.nrDatabases() );
     assertEquals( db1, meta.getDatabase( 0 ) );
     assertEquals( 0, meta.indexOfDatabase( db1 ) );
@@ -223,48 +247,17 @@ public class AbstractMetaTest {
     assertEquals( 1, meta.indexOfDatabase( db2 ) );
     assertEquals( db3, meta.getDatabase( 2 ) );
     assertEquals( 2, meta.indexOfDatabase( db3 ) );
-    DatabaseMeta db4 = mock( DatabaseMeta.class );
-    meta.addDatabase( 3, db4 );
+    DatabaseMeta db4 = new DatabaseMeta();
+    db4.setName( "db4" );
+    meta.getDatabaseManagementInterface().add( db4 );
     assertEquals( 4, meta.nrDatabases() );
     assertEquals( db4, meta.getDatabase( 3 ) );
     assertEquals( 3, meta.indexOfDatabase( db4 ) );
-    meta.removeDatabase( 3 );
+    meta.getDatabaseManagementInterface().remove( db4 );
     assertEquals( 3, meta.nrDatabases() );
     assertTrue( meta.haveConnectionsChanged() );
     meta.clearChangedDatabases();
     assertFalse( meta.haveConnectionsChanged() );
-
-    List<DatabaseMeta> list = Arrays.asList( db2, db1 );
-    meta.setDatabases( list );
-    assertEquals( 2, meta.nrDatabases() );
-    assertEquals( "db1", meta.getDatabaseNames()[0] );
-    assertEquals( 0, meta.indexOfDatabase( db1 ) );
-    meta.removeDatabase( -1 );
-    assertEquals( 2, meta.nrDatabases() );
-    meta.removeDatabase( 2 );
-    assertEquals( 2, meta.nrDatabases() );
-    assertEquals( db1, meta.findDatabase( "db1" ) );
-    assertNull( meta.findDatabase( "" ) );
-  }
-
-  @Test( expected = KettlePluginException.class )
-  public void testGetSetImportMetaStore() throws Exception {
-    assertNull( meta.getMetaStore() );
-    meta.importFromMetaStore();
-    IMetaStore metastore = mock( IMetaStore.class );
-    meta.setMetaStore( metastore );
-    assertEquals( metastore, meta.getMetaStore() );
-    meta.importFromMetaStore();
-    IMetaStoreElementType elementType = mock( IMetaStoreElementType.class );
-    when( metastore.getElementTypeByName(
-      PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME ) ).thenReturn( elementType );
-    when( metastore.getElements( PentahoDefaults.NAMESPACE, elementType ) )
-      .thenReturn( new ArrayList<>() );
-    meta.importFromMetaStore();
-    IMetaStoreElement element = mock( IMetaStoreElement.class );
-    when( metastore.getElements( PentahoDefaults.NAMESPACE, elementType ) )
-      .thenReturn( Collections.singletonList( element ) );
-    meta.importFromMetaStore();
   }
 
   @Test
@@ -336,20 +329,21 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testAddOrReplaceSlaveServer() {
+  public void testAddOrReplaceSlaveServer() throws Exception {
     // meta.addOrReplaceSlaveServer() right now will fail with an NPE
-    assertNull( meta.getSlaveServers() );
+    assertEquals( 0, meta.getSlaveServers().size() );
     List<SlaveServer> slaveServers = new ArrayList<>();
     meta.setSlaveServers( slaveServers );
     assertNotNull( meta.getSlaveServers() );
-    SlaveServer slaveServer = mock( SlaveServer.class );
+    SlaveServer slaveServer = new SlaveServer();
+    slaveServer.setName("ss1");
     meta.addOrReplaceSlaveServer( slaveServer );
     assertFalse( meta.getSlaveServers().isEmpty() );
-    meta.addOrReplaceSlaveServer( slaveServer );
     assertEquals( 1, meta.getSlaveServerNames().length );
     assertNull( meta.findSlaveServer( null ) );
     assertNull( meta.findSlaveServer( "" ) );
-    when( slaveServer.getName() ).thenReturn( "ss1" );
+
+    assertEquals( slaveServer, meta.getSlaveServerManagementInterface().get( "ss1" ) );
     assertEquals( slaveServer, meta.findSlaveServer( "ss1" ) );
   }
 
@@ -577,23 +571,6 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testGetSetSharedObjectsFile() {
-    assertNull( meta.getSharedObjectsFile() );
-    meta.setSharedObjectsFile( "mySharedObjects" );
-    assertEquals( "mySharedObjects", meta.getSharedObjectsFile() );
-  }
-
-  @Test
-  public void testGetSetSharedObjects() {
-    SharedObjects sharedObjects = mock( SharedObjects.class );
-    meta.setSharedObjects( sharedObjects );
-    assertEquals( sharedObjects, meta.getSharedObjects() );
-    meta.setSharedObjects( null );
-    AbstractMeta spyMeta = spy( meta );
-    assertNotNull( spyMeta.getSharedObjects() );
-  }
-
-  @Test
   public void testGetSetCreatedDate() {
     assertNull( meta.getCreatedDate() );
     Date now = Calendar.getInstance().getTime();
@@ -656,14 +633,6 @@ public class AbstractMetaTest {
   @Test
   public void testHasMissingPlugins() {
     assertFalse( meta.hasMissingPlugins() );
-  }
-
-  @Test
-  public void testGetSetPrivateDatabases() {
-    assertNull( meta.getPrivateDatabases() );
-    Set<String> dbs = new HashSet<>();
-    meta.setPrivateDatabases( dbs );
-    assertEquals( dbs, meta.getPrivateDatabases() );
   }
 
   @Test
@@ -815,6 +784,25 @@ public class AbstractMetaTest {
     @Override
     protected void setInternalNameKettleVariable( VariableSpace var ) {
 
+    }
+
+    @Override
+    public List<String> getUsedVariables() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public void allDatabasesUpdated() {
+    }
+
+    @Override
+    public void databasesUpdated( String name, Optional<DatabaseMeta> database ) {
+
+    }
+
+    @Override
+    public Set<String> getUsedDatabaseConnectionNames() {
+      return Collections.emptySet();
     }
 
     @Override

@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.databaselookup;
 import java.util.Arrays;
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -377,7 +378,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String dtype;
       String csize;
@@ -471,7 +472,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( Utils.isEmpty( info ) || info[0] == null ) { // null or length 0 : no info from database
       for ( int i = 0; i < getReturnValueNewName().length; i++ ) {
@@ -742,7 +743,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingConnectionError" );
@@ -781,7 +782,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         logError( BaseMessages.getString( PKG, "DatabaseLookupMeta.ERROR0004.ErrorGettingTableFields" )
             + dbe.getMessage() );
       } finally {
-        db.disconnect();
+        db.close();
       }
     }
     return fields;
