@@ -89,6 +89,7 @@ import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
@@ -561,6 +562,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public static final String REFRESH_SELECTION_EXTENSION = "REFRESH_SELECTION_EXTENSION";
 
   public static final String EDIT_SELECTION_EXTENSION = "EDIT_SELECTION_EXTENSION";
+  public static final String CREATE_NEW_SELECTION_EXTENSION = "CREATE_NEW_SELECTION_EXTENSION";
 
   private static final int MISSING_RECENT_DLG_WIDTH = 465;
 
@@ -3446,6 +3448,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if ( selection.equals( SlaveServer.class ) ) {
         newSlaveServer();
       }
+      createNewSelectionTreeExtension( selection );
+
     } else {
       if ( selection instanceof TransMeta ) {
         TransGraph.editProperties( (TransMeta) selection, this, rep, true );
@@ -7038,6 +7042,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  /**
+   * Handles the double click on the top level Configuration tree nodes that are added by plugin
+   * @param selection
+   */
+  void createNewSelectionTreeExtension( Object selection ) {
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonViewTreeExtension.id,
+        new SelectionTreeExtension( null, selection, CREATE_NEW_SELECTION_EXTENSION ) );
+    } catch ( Exception e ) {
+      log.logError( "Error handling double click through extension point", e );
+    }
+  }
 
   @VisibleForTesting void createPopUpMenuExtension() {
     try {
