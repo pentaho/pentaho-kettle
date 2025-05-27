@@ -43,6 +43,10 @@ public class RepositoryFileTreeDtoProxy extends RepositoryFileTreeDto {
     return children;
   }
 
+  public void clearCache() {
+    this.dto.setChildren( null );
+  }
+
   public RepositoryFileDto getFile() {
     return dto.getFile();
   }
