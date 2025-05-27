@@ -19,6 +19,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.engine.configuration.api.RunConfiguration;
+import org.pentaho.di.engine.configuration.impl.CheckedMetaStoreSupplier;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.SelectionTreeExtension;
@@ -50,12 +52,14 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
 
         runConfigurationDelegate.edit( runConfigurationDelegate.load( name ) );
       }
+    } else if ( selectionTreeExtension.getAction().equals( Spoon.CREATE_NEW_SELECTION_EXTENSION ) ) {
+      if ( selectionTreeExtension.getSelection().equals( RunConfiguration.class ) ) {
+        // Create new RunConfiguration
+        Bowl bowl = Spoon.getInstance().getManagementBowl();
+        CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
+        RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
+        runConfigurationDelegate.create();
+      }
     }
   }
-
-  
-  
-  
-  
-  
 }

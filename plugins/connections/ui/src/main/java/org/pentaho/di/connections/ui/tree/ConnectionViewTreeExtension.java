@@ -13,6 +13,7 @@
 
 package org.pentaho.di.connections.ui.tree;
 
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.vfs.connections.ui.dialog.ConnectionDelegate;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
@@ -42,6 +43,11 @@ public class ConnectionViewTreeExtension implements ExtensionPointInterface {
         LeveledTreeNode.LEVEL level = LeveledTreeNode.getLevel( treeItem );
 
         connectionDelegate.openDialog( name, level );
+      }
+    } else if ( selectionTreeExtension.getAction().equals( Spoon.CREATE_NEW_SELECTION_EXTENSION ) ) {
+      if ( selectionTreeExtension.getSelection().equals( VFSConnectionDetails.class ) ) {
+        // Create new VFS connection
+        connectionDelegate.openDialog();
       }
     }
   }
