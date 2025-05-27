@@ -132,7 +132,7 @@ public class JCRSolutionFileProvider extends AbstractOriginatingFileProvider {
     }
 
     @Override
-    protected String extractRootName( StringBuilder uri ) throws FileSystemException {
+    protected String extractRootName( StringBuilder uri ) {
       // this searches from the begginning of the string instead of the end,
       // to deal with the fact that pvfs provider can decode encoded '!' in the path
       int pos = uri.indexOf( "!" );
