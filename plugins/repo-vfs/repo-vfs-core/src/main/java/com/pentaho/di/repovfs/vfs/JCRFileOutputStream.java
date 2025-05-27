@@ -36,6 +36,7 @@ public class JCRFileOutputStream extends ByteArrayOutputStream {
     closed = true;
     try ( ByteArrayInputStream bais = new ByteArrayInputStream( toByteArray() ) ) {
       client.writeData( name, bais );
+      log.debug( "data written" );
     } catch ( RepositoryClientException e ) {
       // VFS can save an empty file before saving with the content,
       // and that will fail for ktr/kjb but still be ok
