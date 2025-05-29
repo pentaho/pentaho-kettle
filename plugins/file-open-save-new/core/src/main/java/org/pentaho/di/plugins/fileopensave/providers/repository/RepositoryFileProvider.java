@@ -105,10 +105,13 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     RepositoryDirectoryInterface repositoryDirectoryInterface =
       findDirectory( file.getType().equalsIgnoreCase( RepositoryDirectory.DIRECTORY ) ? file.getPath() : file.getParent() );
 
+    if ( filters == null ) {
+      filters = FILTER;
+    }
     RepositoryDirectory repositoryDirectory = RepositoryDirectory.build( null, repositoryDirectoryInterface );
     populateFolders( repositoryDirectory, repositoryDirectoryInterface );
     try {
-      populateFiles( repositoryDirectory, repositoryDirectoryInterface, FILTER );
+      populateFiles( repositoryDirectory, repositoryDirectoryInterface, filters );
     } catch ( KettleException ke ) {
       ke.printStackTrace();
     }
@@ -675,13 +678,25 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
       // Don't set directory if not found
     }
     if ( fileDetails.getType() != null ) {
-      repositoryObject.setObjectType(
-        fileDetails.getType().equals( TRANSFORMATION ) ? RepositoryObjectType.TRANSFORMATION
-          : RepositoryObjectType.JOB );
+      repositoryObject.setObjectType( getRepoObjectType( fileDetails ) );
     }
     fileDialogOperation.setRepositoryObject( repositoryObject );
     fileDialogOperation.setProvider( fileDetails.getProvider() );
     fileDialogOperation.setFilename( fileDetails.getName() );
+    fileDialogOperation.setPath( fileDetails.getPath() );
+  }
+
+  private static RepositoryObjectType getRepoObjectType( FileDetails details ) {
+    // the file might be a folder but RepositoryObject was only intended for files
+    switch ( details.getType() ) {
+      case TRANSFORMATION:
+        return RepositoryObjectType.TRANSFORMATION;
+      case JOB:
+        return RepositoryObjectType.JOB;
+      case FOLDER:
+      default:
+      return RepositoryObjectType.UNKNOWN;
+    }
   }
 
   @Override
