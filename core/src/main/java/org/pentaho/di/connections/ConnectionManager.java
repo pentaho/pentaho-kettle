@@ -114,14 +114,21 @@ public class ConnectionManager {
       try {
         List<ConnectionProvider<? extends ConnectionDetails>> providers = getProviders();
         for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
-          MetaStoreFactory<? extends ConnectionDetails> factory =
-            getMetaStoreFactory( metaStoreSupplier.get(), provider.getClassType() );
-          List<String> names = new ArrayList<>();
-          for ( ConnectionDetails details : factory.getElements() ) {
-            String name = details.getName();
-            names.add( name );
-            EncryptUtils.decryptFields( details );
-            detailsByName.put( name, details );
+          List<String> names;
+          if ( provider.isStorageManaged() ) {
+            MetaStoreFactory<? extends ConnectionDetails> factory =
+              getMetaStoreFactory( metaStoreSupplier.get(), provider.getClassType() );
+            names = new ArrayList<>();
+            for ( ConnectionDetails details : factory.getElements() ) {
+              String name = details.getName();
+              names.add( name );
+              EncryptUtils.decryptFields( details );
+              detailsByName.put( name, details );
+            }
+          } else {
+            List<? extends ConnectionDetails> details = provider.getConnectionDetails( this );
+            details.forEach( d -> detailsByName.put( d.getName(), d ) );
+            names = details.stream().map( ConnectionDetails::getName ).collect( Collectors.toList() );
           }
           namesByConnectionProvider.put( provider.getName(), names );
         }
