@@ -17,12 +17,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
-import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.providers.ProviderService;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
@@ -34,6 +35,7 @@ import org.pentaho.di.plugins.fileopensave.providers.repository.model.Repository
 import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
+import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
 import org.pentaho.di.plugins.fileopensave.util.Util;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -68,28 +70,30 @@ public class ElementTest {
   private static final String OBJECT_ID = "objectid";
   private VariableSpace space = new Variables();
 
+  private Bowl bowl = DefaultBowl.getInstance();
+
   Element element1;
 
   @Before
   public void setUp() throws Exception {
-    element1 = new Element( NAME, TYPE, PATH, LOCAL_PROVIDER );
+    element1 = new Element( bowl, NAME, TYPE, PATH, LOCAL_PROVIDER );
   }
 
   @Test
   public void testEquals() {
-    Element element2 = new Element( NAME, TYPE, PATH, LOCAL_PROVIDER );
+    Element element2 = new Element( bowl, NAME, TYPE, PATH, LOCAL_PROVIDER );
     assertEquals( element1, element2 );
-    element2 = new Element( "diffname", TYPE, "/tmp/diffname", LOCAL_PROVIDER );
+    element2 = new Element( bowl, "diffname", TYPE, "/tmp/diffname", LOCAL_PROVIDER );
     assertNotEquals( element1, element2 );
-    element2 = new Element( NAME, TYPE, PATH, "diffProvider" );
+    element2 = new Element( bowl, NAME, TYPE, PATH, "diffProvider" );
     assertNotEquals( element1, element2 );
-    element2 = new Element( NAME, EntityType.REPOSITORY_FILE, PATH, LOCAL_PROVIDER );
+    element2 = new Element( bowl, NAME, EntityType.REPOSITORY_FILE, PATH, LOCAL_PROVIDER );
     // Changing the file type does not effect equals because in a map, if the path and provider are the same then
     // the files would live in the same physical space.
     assertEquals( element1, element2 );
 
     // future proofing for unexpected null values
-    assertNotEquals( new Element( null, null, null, null ), element2 );
+    assertNotEquals( new Element( bowl, null, null, null, null ), element2 );
   }
 
   @Test
@@ -109,14 +113,14 @@ public class ElementTest {
   @Test
   public void getProvider() {
     assertEquals( LOCAL_PROVIDER, element1.getProvider() );
-    Element element2 = new Element( NAME, TYPE, PATH, DUMMY_STRING );
+    Element element2 = new Element( bowl, NAME, TYPE, PATH, DUMMY_STRING );
     assertEquals( DUMMY_STRING, element2.getProvider() );
   }
 
   @Test
   public void getRepositoryName() {
     assertEquals( "", element1.getRepositoryName() );
-    Element element2 = new Element( NAME, TYPE, PATH, LOCAL_PROVIDER, DUMMY_STRING );
+    Element element2 = new Element( bowl, NAME, TYPE, PATH, LOCAL_PROVIDER, DUMMY_STRING );
     assertEquals( DUMMY_STRING, element2.getRepositoryName() );
   }
 
@@ -129,19 +133,19 @@ public class ElementTest {
 
   @Test
   public void testHashCode() {
-    Element element2 = new Element( NAME, TYPE, PATH, LOCAL_PROVIDER );
+    Element element2 = new Element( bowl, NAME, TYPE, PATH, LOCAL_PROVIDER );
     assertEquals( element1.hashCode(), element2.hashCode() );
-    element2 = new Element( "diffname", TYPE, "/tmp/diffname", LOCAL_PROVIDER );
+    element2 = new Element( bowl, "diffname", TYPE, "/tmp/diffname", LOCAL_PROVIDER );
     assertNotEquals( element1.hashCode(), element2.hashCode() );
-    element2 = new Element( NAME, TYPE, PATH, "diffProvider" );
+    element2 = new Element( bowl, NAME, TYPE, PATH, "diffProvider" );
     assertNotEquals( element1.hashCode(), element2.hashCode() );
-    element2 = new Element( NAME, EntityType.REPOSITORY_FILE, PATH, LOCAL_PROVIDER );
+    element2 = new Element( bowl, NAME, EntityType.REPOSITORY_FILE, PATH, LOCAL_PROVIDER );
     // Changing the file type does not effect equals because in a map, if the path and provider are the same then
     // the files would live in the same physical space.
     assertEquals( element1.hashCode(), element2.hashCode() );
 
     // future proofing for unexpected null values
-    assertNotEquals( new Element( null, null, null, null ).hashCode(),
+    assertNotEquals( new Element( bowl, null, null, null, null ).hashCode(),
         element2.hashCode() );
   }
 
@@ -160,7 +164,7 @@ public class ElementTest {
   @Test
   public void testLocalFileConversion() {
     //Local file
-    Element element = new Element( NAME, TYPE, adjustSlashes( PATH ), LOCAL_PROVIDER );
+    Element element = new Element( bowl, NAME, TYPE, adjustSlashes( PATH ), LOCAL_PROVIDER );
     File file = element.convertToFile( space );
     assertTrue( file instanceof LocalFile );
     assertEquals( TYPE, file.getEntityType() );
@@ -168,14 +172,14 @@ public class ElementTest {
     assertEquals( adjustSlashes( PATH ), file.getPath() );
     assertEquals( adjustSlashes( PATH_PARENT ), file.getParent() );
     assertEquals( LOCAL_ROOT, file.getRoot() );
-    assertEquals( element, new Element( file ) );
+    assertEquals( element, new Element( bowl, file ) );
     assertEquals( EntityType.LOCAL_DIRECTORY, element.calcParentEntityType() );
   }
 
   @Test
   public void testLocalDirectoryConversion() {
     //Local Directory
-    Element element = new Element( NAME, EntityType.LOCAL_DIRECTORY, adjustSlashes( PATH ), LOCAL_PROVIDER );
+    Element element = new Element( bowl, NAME, EntityType.LOCAL_DIRECTORY, adjustSlashes( PATH ), LOCAL_PROVIDER );
     File file = element.convertToFile( space );
     assertTrue( file instanceof LocalDirectory );
     assertEquals( EntityType.LOCAL_DIRECTORY, file.getEntityType() );
@@ -183,33 +187,33 @@ public class ElementTest {
     assertEquals( adjustSlashes( PATH ), file.getPath() );
     assertEquals( adjustSlashes( PATH_PARENT ), file.getParent() );
     assertEquals( LOCAL_ROOT, file.getRoot() );
-    assertEquals( element, new Element( file ) );
+    assertEquals( element, new Element( bowl, file ) );
     assertEquals( EntityType.LOCAL_DIRECTORY, element.calcParentEntityType() );
   }
 
   @Test
   public void testRecentFileConversion() {
     //Recent file - LocalFile
-    Element element = new Element( NAME, EntityType.RECENT_FILE, adjustSlashes( PATH ), RECENT_PROVIDER );
+    Element element = new Element( bowl, NAME, EntityType.RECENT_FILE, adjustSlashes( PATH ), RECENT_PROVIDER );
     checkRecentFileConversion( element, adjustSlashes( PATH ), false );
     assertEquals( EntityType.LOCAL_FILE, element.convertRecent().getEntityType() );
 
     //Recent file - RepositoryFile
     //Repository Files are still stored as RepositoryFiles in the recents instead of a RecentFile like other connections
-    element = new Element( NAME, EntityType.REPOSITORY_FILE, PATH, RECENT_PROVIDER, REPOSITORY_NAME );
+    element = new Element( bowl, NAME, EntityType.REPOSITORY_FILE, PATH, RECENT_PROVIDER, REPOSITORY_NAME );
     File file = element.convertToFile( space );
     checkRecentFileConversion( element, PATH, true );
     //Repository recents actually come in
 
     //Recent file - VFSFile
     String path = "pvfs://" + CONNECTION + PATH;
-    element = new Element( NAME, EntityType.RECENT_FILE, path, RECENT_PROVIDER );
+    element = new Element( bowl, NAME, EntityType.RECENT_FILE, path, RECENT_PROVIDER );
     checkRecentFileConversion( element, path, false );
     assertEquals( EntityType.VFS_FILE, element.convertRecent().getEntityType() );
 
     //Recent file - NamedClusterFile
     path = "hc://mycluster/tmp/filename";
-    element = new Element( NAME, EntityType.RECENT_FILE, path, RECENT_PROVIDER );
+    element = new Element( bowl, NAME, EntityType.RECENT_FILE, path, RECENT_PROVIDER );
     checkRecentFileConversion( element, path, false );
     assertEquals( EntityType.NAMED_CLUSTER_FILE, element.convertRecent().getEntityType() );
   }
@@ -219,7 +223,7 @@ public class ElementTest {
     //Repository Directory
     setupRepositoryMocks();
     Element element =
-      new Element( NAME, EntityType.REPOSITORY_DIRECTORY, PATH, REPOSITORY_PROVIDER, null );
+      new Element( bowl, NAME, EntityType.REPOSITORY_DIRECTORY, PATH, REPOSITORY_PROVIDER, null );
     File file = element.convertToFile( space );
     assertTrue( file instanceof RepositoryDirectory );
     assertEquals( EntityType.REPOSITORY_DIRECTORY, file.getEntityType() );
@@ -227,7 +231,7 @@ public class ElementTest {
     assertEquals( PATH, file.getPath() );
     assertEquals( PATH_PARENT, file.getParent() );
     assertEquals( REPOSITORY_NAME, file.getRoot() );
-    assertEquals( element, new Element( file ) );
+    assertEquals( element, new Element( bowl, file ) );
     assertEquals( EntityType.REPOSITORY_DIRECTORY, element.calcParentEntityType() );
   }
 
@@ -236,14 +240,14 @@ public class ElementTest {
     //Repository File
     setupRepositoryMocks();
     Element element =
-      new Element( NAME, EntityType.REPOSITORY_FILE, PATH, REPOSITORY_PROVIDER, null );
+      new Element( bowl, NAME, EntityType.REPOSITORY_FILE, PATH, REPOSITORY_PROVIDER, null );
     File file = element.convertToFile( space );
     assertTrue( file instanceof RepositoryFile );
     assertEquals( EntityType.REPOSITORY_FILE, file.getEntityType() );
     assertEquals( NAME, file.getName() );
     assertEquals( PATH, file.getPath() );
     assertEquals( PATH_PARENT, file.getParent() );
-    assertEquals( element, new Element( file ) );
+    assertEquals( element, new Element( bowl, file ) );
     assertEquals( EntityType.REPOSITORY_DIRECTORY, element.calcParentEntityType() );
   }
 
@@ -252,7 +256,7 @@ public class ElementTest {
     //VFS Directory
     String path = "pvfs://" + CONNECTION + PATH;
     Element element =
-      new Element( NAME, EntityType.VFS_DIRECTORY, path, VFS_PROVIDER );
+      new Element( bowl, NAME, EntityType.VFS_DIRECTORY, path, VFS_PROVIDER );
     File file = element.convertToFile( space );
     assertTrue( file instanceof VFSDirectory );
     assertEquals( EntityType.VFS_DIRECTORY, file.getEntityType() );
@@ -260,7 +264,7 @@ public class ElementTest {
     assertEquals( path, file.getPath() );
     assertEquals( Util.getFolder( path ), file.getParent() );
     assertEquals( VFS_NAME, file.getRoot() );
-    assertEquals( element, new Element( file ) );
+    assertEquals( element, new Element( bowl, file ) );
     assertEquals( EntityType.VFS_DIRECTORY, element.calcParentEntityType() );
   }
 
@@ -269,7 +273,7 @@ public class ElementTest {
     //VFS Directory
     String path = "pvfs://" + CONNECTION + PATH;
     Element element =
-      new Element( NAME, EntityType.VFS_FILE, path, VFS_PROVIDER );
+      new Element( bowl, NAME, EntityType.VFS_FILE, path, VFS_PROVIDER );
     File file = element.convertToFile( space );
     assertTrue( file instanceof VFSFile );
     assertEquals( EntityType.VFS_FILE, file.getEntityType() );
@@ -277,7 +281,7 @@ public class ElementTest {
     assertEquals( path, file.getPath() );
     assertEquals( Util.getFolder( path ), file.getParent() );
     assertEquals( VFS_NAME, file.getRoot() );
-    assertEquals( element, new Element( file ) );
+    assertEquals( element, new Element( bowl, file ) );
     assertEquals( EntityType.VFS_DIRECTORY, element.calcParentEntityType() );
   }
 
@@ -287,14 +291,14 @@ public class ElementTest {
     String path = "hc://myCluster" + CONNECTION;
     setupNamedClusterMocks( path, EntityType.NAMED_CLUSTER_DIRECTORY );
     Element element =
-      new Element( NAME, EntityType.NAMED_CLUSTER_DIRECTORY, path, NAMED_CLUSTER_PROVIDER );
+      new Element( bowl, NAME, EntityType.NAMED_CLUSTER_DIRECTORY, path, NAMED_CLUSTER_PROVIDER );
     File file = element.convertToFile( space );
     assertEquals( EntityType.NAMED_CLUSTER_DIRECTORY, file.getEntityType() );
     assertEquals( NAME, file.getName() );
     assertEquals( path, file.getPath() );
     assertEquals( Util.getFolder( path ), file.getParent() );
     assertEquals( NAMED_CLUSTER_NAME, file.getRoot() );
-    assertEquals( element, new Element( file ) );
+    assertEquals( element, new Element( bowl, file ) );
     assertEquals( EntityType.NAMED_CLUSTER_DIRECTORY, element.calcParentEntityType() );
   }
 
@@ -304,33 +308,27 @@ public class ElementTest {
     String path = "hc://myCluster" + CONNECTION;
     setupNamedClusterMocks( path, EntityType.NAMED_CLUSTER_FILE );
     Element element =
-      new Element( NAME, EntityType.NAMED_CLUSTER_FILE, path, NAMED_CLUSTER_PROVIDER );
+      new Element( bowl, NAME, EntityType.NAMED_CLUSTER_FILE, path, NAMED_CLUSTER_PROVIDER );
     File file = element.convertToFile( space );
     assertEquals( EntityType.NAMED_CLUSTER_FILE, file.getEntityType() );
     assertEquals( NAME, file.getName() );
     assertEquals( path, file.getPath() );
     assertEquals( Util.getFolder( path ), file.getParent() );
     assertEquals( NAMED_CLUSTER_NAME, file.getRoot() );
-    assertEquals( element, new Element( file ) );
+    assertEquals( element, new Element( bowl, file ) );
     assertEquals( EntityType.NAMED_CLUSTER_DIRECTORY, element.calcParentEntityType() );
   }
 
   @Test
   public void convertToFileObject() throws Exception {
-    Element element = new Element( NAME, TYPE, adjustSlashes( PATH ), LOCAL_PROVIDER );
+    Element element = new Element( bowl, NAME, TYPE, adjustSlashes( PATH ), LOCAL_PROVIDER );
     FileObject fileObject = element.convertToFileObject( space );
     assertEquals( NAME, fileObject.getName().getBaseName() );
     assertEquals( adjustSlashes( PATH ), fileObject.getPath().toString() );
   }
 
   private void setupNamedClusterMocks( String path, EntityType entityType ) {
-    //We need to get the FileController out of the Element object and use it to get the ProviderService. Both of these
-    // instance variables are private so we will get them using TestUtils.  Then we can
-    //add a mocked service for NamedClusters since the none of these classes is visible by this project. The mocked
-    //ProviderService can then deliver a mocked File object as if it came from the NamedClusterProvider.
-    FileController fileController = (FileController) TestUtils.reflectValue( element1, "FILE_CONTROLLER" );
-    ProviderService providerService = (ProviderService) TestUtils.reflectValue( fileController, "providerService" );
-
+    ProviderService providerService = ProviderServiceService.get();
     File mockedNCDirectory = mock( File.class );
     when( mockedNCDirectory.getName() ).thenReturn( NAME );
     when( mockedNCDirectory.getPath() ).thenReturn( path );
@@ -342,7 +340,7 @@ public class ElementTest {
     FileProvider mockNCProvider = mock( FileProvider.class );
     when( mockNCProvider.getType() ).thenReturn( "clusters" );
     when( mockNCProvider.isAvailable() ).thenReturn( true );
-    when( mockNCProvider.getFile( path, entityType.isDirectory() ) ).thenReturn( mockedNCDirectory );
+    when( mockNCProvider.getFile( bowl, path, entityType.isDirectory() ) ).thenReturn( mockedNCDirectory );
 
     providerService.add( mockNCProvider );
   }
@@ -386,7 +384,7 @@ public class ElementTest {
       // Cannot check equality on repo items because the repo name will be "recents" on the original element but
       // "repository" when creating a File object.  This inconsistancy is normal behavior and requires structural changes
       // to fix.
-      assertEquals( element, new Element( file ) );
+      assertEquals( element, new Element( bowl, file ) );
     }
   }
 }

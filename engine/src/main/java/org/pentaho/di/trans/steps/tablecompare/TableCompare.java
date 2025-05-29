@@ -68,7 +68,8 @@ public class TableCompare extends BaseStep implements StepInterface {
       // What's the format of the output row?
       //
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // Reference schema
       //
@@ -614,11 +615,11 @@ public class TableCompare extends BaseStep implements StepInterface {
     data = (TableCompareData) sdi;
 
     if ( data.referenceDb != null ) {
-      data.referenceDb.disconnect();
+      data.referenceDb.close();
     }
 
     if ( data.compareDb != null ) {
-      data.compareDb.disconnect();
+      data.compareDb.close();
     }
 
     super.dispose( smi, sdi );

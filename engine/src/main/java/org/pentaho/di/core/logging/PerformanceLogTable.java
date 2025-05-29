@@ -97,6 +97,7 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node node, List<DatabaseMeta> databases, List<StepMeta> steps ) {
     connectionName = XMLHandler.getTagValue( node, "connection" );
     schemaName = XMLHandler.getTagValue( node, "schema" );

@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.excelinput;
 
 import java.io.InputStream;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.trans.steps.excelinput.jxl.XLSWorkbook;
@@ -24,21 +25,22 @@ import org.pentaho.di.trans.steps.excelinput.staxpoi.StaxPoiWorkbook;
 
 public class WorkbookFactory {
 
-  public static KWorkbook getWorkbook( SpreadSheetType type, String filename, String encoding ) throws KettleException {
-    return getWorkbook( type, filename, encoding, null );
+  public static KWorkbook getWorkbook( Bowl bowl, SpreadSheetType type, String filename, String encoding )
+    throws KettleException {
+    return getWorkbook( bowl, type, filename, encoding, null );
   }
 
-  public static KWorkbook getWorkbook( SpreadSheetType type, String filename, String encoding, String password )
+  public static KWorkbook getWorkbook( Bowl bowl, SpreadSheetType type, String filename, String encoding, String password )
     throws KettleException {
     switch ( type ) {
       case JXL:
-        return new XLSWorkbook( filename, encoding );
+        return new XLSWorkbook( bowl, filename, encoding );
       case POI:
-        return new PoiWorkbook( filename, encoding, password ); // encoding is not used, perhaps detected automatically?
+        return new PoiWorkbook( bowl, filename, encoding, password ); // encoding is not used, perhaps detected automatically?
       case SAX_POI:
         return new StaxPoiWorkbook( filename, encoding );
       case ODS:
-        return new OdfWorkbook( filename, encoding ); // encoding is not used, perhaps detected automatically?
+        return new OdfWorkbook( bowl, filename, encoding ); // encoding is not used, perhaps detected automatically?
       default:
         throw new KettleException( "Sorry, spreadsheet type " + type.getDescription() + " is not yet supported" );
     }
@@ -46,6 +48,7 @@ public class WorkbookFactory {
   }
 
   // Not Dead Code:  Used by pdi-google-docs-plugin
+  @Deprecated
   public static KWorkbook getWorkbook( SpreadSheetType type, InputStream inputStream, String encoding )
     throws KettleException {
     switch ( type ) {

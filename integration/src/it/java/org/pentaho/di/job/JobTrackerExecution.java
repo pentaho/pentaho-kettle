@@ -74,7 +74,7 @@ public abstract class JobTrackerExecution {
 
     db.execStatements( "DROP SCHEMA PUBLIC CASCADE" );
     db.commit( true );
-    db.disconnect();
+    db.close();
   }
 
   public static String getCanonicalPath( String resource ) throws URISyntaxException, IOException {

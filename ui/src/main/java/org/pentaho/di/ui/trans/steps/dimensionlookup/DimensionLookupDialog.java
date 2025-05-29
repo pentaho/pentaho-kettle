@@ -1603,7 +1603,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.
@@ -1650,7 +1650,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
           + Const.CR + e.getMessage() );
         mb.open();
       } finally {
-        db.disconnect();
+        db.close();
       }
     }
   }
@@ -1871,7 +1871,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
           .getString( PKG, "DimensionLookupDialog.ErrorGettingSchemas" ), e );
       } finally {
-        database.disconnect();
+        database.close();
       }
     }
   }

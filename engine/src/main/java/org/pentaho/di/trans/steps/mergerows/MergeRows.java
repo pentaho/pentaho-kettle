@@ -135,11 +135,11 @@ public class MergeRows extends BaseStep implements StepInterface {
     if ( data.outputRowMeta == null ) {
       data.outputRowMeta = new RowMeta();
       if ( data.one != null ) {
-        meta.getFields(
+        meta.getFields( getTransMeta().getBowl(),
           data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.oneRowSet.getRowMeta() }, null, this,
           repository, metaStore );
       } else {
-        meta.getFields(
+        meta.getFields( getTransMeta().getBowl(),
           data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.twoRowSet.getRowMeta() }, null, this,
           repository, metaStore );
       }

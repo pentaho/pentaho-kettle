@@ -115,7 +115,8 @@ public class DimensionLookup extends BaseDatabaseStep implements StepInterface {
 
       data.inputRowMeta = getInputRowMeta().clone();
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // Get the fields that need conversion to normal storage...
       // Modify the storage type of the input data...

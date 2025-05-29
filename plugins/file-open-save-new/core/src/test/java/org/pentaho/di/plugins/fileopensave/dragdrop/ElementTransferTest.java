@@ -16,6 +16,8 @@ package org.pentaho.di.plugins.fileopensave.dragdrop;
 import org.eclipse.swt.dnd.TransferData;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
@@ -32,6 +34,7 @@ public class ElementTransferTest {
   private VariableSpace space = new Variables();
   ElementTransfer elementTransfer;
   private static boolean skipTests = false;
+  Bowl bowl;
 
   /**
    * To configure swt
@@ -48,8 +51,9 @@ public class ElementTransferTest {
   @Before
   public void setUp() throws Exception {
     org.junit.Assume.assumeFalse( skipTests );
+    bowl = DefaultBowl.getInstance();
     try {
-      elementTransfer = ElementTransfer.getInstance();
+      elementTransfer = ElementTransfer.getInstance( bowl );
     } catch ( UnsatisfiedLinkError e ) {
       System.out.println( "UnsatisfiedLinkError likely due to swt configuration, "
           + "os specific swt.jar needs to be added to classpath. Skipping tests" );
@@ -76,18 +80,18 @@ public class ElementTransferTest {
     // SETUP
     String testLocalFileName = "testFile.csv";
     String testLocalPath = Paths.get( System.getProperty( "java.io.tmpdir" ) ).resolve( testLocalFileName ).toString();
-    Element elementLocal = new Element( testLocalFileName, EntityType.LOCAL_FILE,
+    Element elementLocal = new Element( bowl, testLocalFileName, EntityType.LOCAL_FILE,
         testLocalPath, LocalFileProvider.TYPE );
 
     String testRepoFileName = "randomFile.rpt";
     String testRepoPath = "//home/randomUser/" + testRepoFileName;
     String testRepositoryName = "testRepositoryName";
-    Element elementRepository = new Element( testRepoFileName, EntityType.REPOSITORY_FILE, testRepoPath,
+    Element elementRepository = new Element( bowl, testRepoFileName, EntityType.REPOSITORY_FILE, testRepoPath,
         RepositoryFileProvider.TYPE, testRepositoryName );
 
     String testVfsFileName = "someFile.txt";
     String testVfsPath = "pvfs://randomConnectionName/someDir/" + testVfsFileName;
-    Element elementVfs = new Element( testVfsFileName, EntityType.VFS_FILE, testVfsPath,
+    Element elementVfs = new Element( bowl, testVfsFileName, EntityType.VFS_FILE, testVfsPath,
         VFSFileProvider.TYPE );
 
     TransferData transferData = new TransferData();

@@ -13,24 +13,26 @@
 
 package org.pentaho.di.ui.spoon;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.core.LastUsedFile;
-import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.job.entries.missing.MissingEntryDialog;
-import org.w3c.dom.Node;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.Date;
 import java.util.Locale;
+import org.w3c.dom.Node;
 
 public class JobFileListener implements FileListener, ConnectionListener {
 
@@ -174,10 +176,22 @@ public class JobFileListener implements FileListener, ConnectionListener {
     Spoon spoon = Spoon.getInstance();
 
     EngineMetaInterface lmeta;
-    if ( export ) {
-      lmeta = (JobMeta) ( (JobMeta) meta ).realClone( false );
-    } else {
-      lmeta = meta;
+    try {
+      if ( export ) {
+        JobMeta jmeta = (JobMeta) ( (JobMeta) meta ).realClone( false );
+        lmeta = jmeta;
+        SharedObjectUtil.copySharedObjects( spoon.getGlobalManagementBowl(), jmeta,
+          Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
+        SharedObjectUtil.stripObjectIds( jmeta );
+      } else {
+        lmeta = meta;
+      }
+    } catch ( KettleException e ) {
+      new ErrorDialog(
+        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingFile.Title" ), BaseMessages
+        .getString( PKG, "Spoon.Dialog.ErrorSavingFile.Message" )
+        + fname, e );
+      return false;
     }
 
     try {

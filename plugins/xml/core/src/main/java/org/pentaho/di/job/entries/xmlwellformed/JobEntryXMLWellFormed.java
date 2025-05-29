@@ -390,7 +390,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
     String realWildcard = environmentSubstitute( wildcard );
 
     try {
-      sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername, this );
+      sourcefilefolder = KettleVFS.getInstance( parentJobMeta.getBowl() )
+        .getFileObject( realSourceFilefoldername, this );
 
       if ( sourcefilefolder.exists() ) {
         if ( log.isDetailed() ) {
@@ -539,8 +540,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
   private void addFileToResultFilenames( String fileaddentry, Result result, Job parentJob ) {
     try {
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileaddentry, this ), parentJob
-              .getJobname(), toString() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+            .getFileObject( fileaddentry, this ), parentJob.getJobname(), toString() );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
       if ( log.isDetailed() ) {
@@ -638,7 +639,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
-    boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
+    boolean res = andValidator().validate( jobMeta.getBowl(), this, "arguments", remarks,
+      putValidators( notNullValidator() ) );
 
     if ( res == false ) {
       return;
@@ -649,7 +651,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
     putValidators( ctx, notNullValidator(), fileExistsValidator() );
 
     for ( int i = 0; i < source_filefolder.length; i++ ) {
-      andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      andValidator().validate( jobMeta.getBowl(), this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 

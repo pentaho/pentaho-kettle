@@ -14,7 +14,9 @@
 package org.pentaho.di.job.entries.checkfilelocked;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 public class LockFile {
@@ -30,7 +32,7 @@ public class LockFile {
    * @param filename
    * @throws KettleException
    */
-  public LockFile( String filename ) throws KettleException {
+  public LockFile( Bowl bowl, String filename ) throws KettleException {
     setFilename( filename );
     setLocked( false );
 
@@ -40,10 +42,10 @@ public class LockFile {
     FileObject dummyfile = null;
 
     try {
-
-      file = KettleVFS.getFileObject( filename );
+      IKettleVFS vfs = KettleVFS.getInstance( bowl );
+      file = vfs.getFileObject( filename );
       if ( file.exists() ) {
-        dummyfile = KettleVFS.getFileObject( filename );
+        dummyfile = vfs.getFileObject( filename );
         // move file to itself!
         file.moveTo( dummyfile );
       }

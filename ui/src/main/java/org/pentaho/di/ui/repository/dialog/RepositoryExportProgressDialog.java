@@ -25,6 +25,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
@@ -187,7 +188,7 @@ public class RepositoryExportProgressDialog {
     // check if file is exists
     try {
       // check if file is not empty
-      FileObject output = KettleVFS.getFileObject( filename );
+      FileObject output = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( filename );
       if ( output.exists() ) {
         if ( !output.isWriteable() ) {
           box = new MessageBox( shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.OK | SWT.CANCEL );

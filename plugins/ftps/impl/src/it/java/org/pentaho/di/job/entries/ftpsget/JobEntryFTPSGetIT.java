@@ -22,6 +22,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogLevel;
@@ -86,11 +87,12 @@ public class JobEntryFTPSGetIT {
     jobEntry.setVariable( myVar, outputFolder.getRoot().getAbsolutePath() );
     jobEntry.setTargetDirectory( String.format( "${%s}", myVar ) );
 
-    FileObject downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
+    FileObject downloaded = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( expectedDownloadedFilePath );
     assertFalse( downloaded.exists() );
     try {
       jobEntry.execute( new Result(), 1 );
-      downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
+      downloaded = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( expectedDownloadedFilePath );
       assertTrue( downloaded.exists() );
     } finally {
       downloaded.delete();
@@ -103,11 +105,12 @@ public class JobEntryFTPSGetIT {
 
     jobEntry.setTargetDirectory( outputFolder.getRoot().getAbsolutePath() );
 
-    FileObject downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
+    FileObject downloaded = KettleVFS.getInstance( DefaultBowl.getInstance() )
+       .getFileObject( expectedDownloadedFilePath );
     assertFalse( downloaded.exists() );
     try {
       jobEntry.execute( new Result(), 1 );
-      downloaded = KettleVFS.getFileObject( expectedDownloadedFilePath );
+      downloaded = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( expectedDownloadedFilePath );
       assertTrue( downloaded.exists() );
     } finally {
       downloaded.delete();

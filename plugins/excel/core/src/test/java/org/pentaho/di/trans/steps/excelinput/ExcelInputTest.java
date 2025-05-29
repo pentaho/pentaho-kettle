@@ -24,6 +24,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -192,7 +193,7 @@ public class ExcelInputTest {
   @Test
   public void getFilesActionTest() {
     excelInput.setStepMetaInterface( excelInputMeta );
-    Mockito.doReturn( new String[]{"testFile"} ).when( excelInputMeta ).getFilePaths( any() );
+    Mockito.doReturn( new String[]{"testFile"} ).when( excelInputMeta ).getFilePaths( any( Bowl.class ), any() );
     JSONObject jsonObject = excelInput.doAction( "getFiles", excelInputMeta,
         mockHelper.transMeta, mockHelper.trans, new HashMap<>() );
 
@@ -203,7 +204,7 @@ public class ExcelInputTest {
 
   @Test
   public void getEmptyFilesActionTest() {
-    Mockito.doReturn( new String[]{} ).when( excelInputMeta ).getFilePaths( any() );
+    Mockito.doReturn( new String[]{} ).when( excelInputMeta ).getFilePaths( any( Bowl.class ), any() );
     JSONObject jsonObject = excelInput.doAction( "getFiles", excelInputMeta,
         mockHelper.transMeta, mockHelper.trans, new HashMap<>() );
 
@@ -218,7 +219,7 @@ public class ExcelInputTest {
     FileInputList fileList = Mockito.mock( FileInputList.class );
     FileObject fileObject = Mockito.mock( FileObject.class );
 
-    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any( Bowl.class ), any() );
     List<FileObject> fileInputListList = new ArrayList<>();
     fileInputListList.add( fileObject );
     Mockito.doReturn( fileInputListList ).when( fileList ).getFiles();
@@ -227,7 +228,8 @@ public class ExcelInputTest {
 
     try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
       try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
-        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenReturn( workbook );
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any( Bowl.class ), any(), any(), any(),
+          any() ) ).thenReturn( workbook );
         kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
 
         JSONObject jsonObject = excelInput.doAction( "getSheets", excelInputMeta,
@@ -244,12 +246,13 @@ public class ExcelInputTest {
   public void getEmptySheetsActionTest() {
     FileInputList fileList = Mockito.mock( FileInputList.class );
 
-    Mockito.doReturn( fileList ).when( mockHelper.processRowsStepMetaInterface ).getFileList( any() );
+    Mockito.doReturn( fileList ).when( mockHelper.processRowsStepMetaInterface ).getFileList( any( Bowl.class ), any() );
     Mockito.doReturn( new ArrayList<>() ).when( fileList ).getFiles();
 
     try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
       try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
-        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenReturn( workbook );
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any( Bowl.class ), any(), any(), any(),
+          any() ) ).thenReturn( workbook );
         kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
 
         JSONObject jsonObject = excelInput.doAction( "getSheets", excelInputMeta,
@@ -267,14 +270,15 @@ public class ExcelInputTest {
     FileInputList fileList = Mockito.mock( FileInputList.class );
     FileObject fileObject = Mockito.mock( FileObject.class );
 
-    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any( Bowl.class ), any() );
     List<FileObject> fileInputListList = new ArrayList<>();
     fileInputListList.add( fileObject );
     Mockito.doReturn( fileInputListList ).when( fileList ).getFiles();
 
     try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
       try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
-        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenThrow( new KettleException( BaseMessages
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any( Bowl.class ), any(), any(), any(),
+          any() ) ).thenThrow( new KettleException( BaseMessages
             .getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage" ) ) );
         kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
 
@@ -295,14 +299,15 @@ public class ExcelInputTest {
     FileInputList fileList = Mockito.mock( FileInputList.class );
     FileObject fileObject = Mockito.mock( FileObject.class );
 
-    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any( Bowl.class ), any() );
     List<FileObject> fileInputListList = new ArrayList<>();
     fileInputListList.add( fileObject );
     Mockito.doReturn( fileInputListList ).when( fileList ).getFiles();
 
     try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
       try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
-        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenReturn( workbook );
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any( Bowl.class ), any(), any(), any(),
+          any() ) ).thenReturn( workbook );
         kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
 
         JSONObject jsonObject = excelInput.doAction( "getFields", excelInputMeta,
@@ -323,7 +328,7 @@ public class ExcelInputTest {
   public void getEmptyFieldsActionTest() {
     FileInputList fileList = Mockito.mock( FileInputList.class );
 
-    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any( Bowl.class ), any() );
     Mockito.doReturn( new ArrayList<>() ).when( fileList ).getFiles();
 
     JSONObject jsonObject = excelInput.doAction( "getFields", excelInputMeta,
@@ -339,14 +344,16 @@ public class ExcelInputTest {
     FileInputList fileList = Mockito.mock( FileInputList.class );
     FileObject fileObject = Mockito.mock( FileObject.class );
 
-    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any() );
+    Mockito.doReturn( fileList ).when( excelInputMeta ).getFileList( any( Bowl.class ), any() );
     List<FileObject> fileInputListList = new ArrayList<>();
     fileInputListList.add( fileObject );
     Mockito.doReturn( fileInputListList ).when( fileList ).getFiles();
 
     try ( MockedStatic<WorkbookFactory> workbookFactoryMockedStatic = mockStatic( WorkbookFactory.class ) ) {
       try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = mockStatic( KettleVFS.class ) ) {
-        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any(), any(), any(), any() ) ).thenThrow( new KettleException( BaseMessages.getString( ExcelInputTest.class, "ExcelInputDialog.ErrorReadingFile.DialogMessage" ) ) );
+        workbookFactoryMockedStatic.when( () -> WorkbookFactory.getWorkbook( any( Bowl.class ), any(), any(), any(),
+          any() ) ).thenThrow( new KettleException( BaseMessages.getString( ExcelInputTest.class,
+            "ExcelInputDialog.ErrorReadingFile.DialogMessage" ) ) );
         kettleVFSMockedStatic.when( () -> KettleVFS.getFilename( any() ) ).thenReturn( "fileObject" );
 
         JSONObject jsonObject = excelInput.doAction( "getFields", excelInputMeta,

@@ -66,7 +66,8 @@ public class FileLocked extends BaseStep implements StepInterface {
       data.previousRowMeta = getInputRowMeta().clone();
       data.NrPrevFields = data.previousRowMeta.size();
       data.outputRowMeta = data.previousRowMeta;
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // Check is filename field is provided
       if ( Utils.isEmpty( meta.getDynamicFilenameField() ) ) {
@@ -92,15 +93,15 @@ public class FileLocked extends BaseStep implements StepInterface {
       String filename = data.previousRowMeta.getString( r, data.indexOfFileename );
       if ( !Utils.isEmpty( filename ) ) {
         // Check if file
-        LockFile locked = new LockFile( filename );
+        LockFile locked = new LockFile( getTransMeta().getBowl(), filename );
         FileLocked = locked.isLocked();
 
         // add filename to result filenames?
         if ( meta.addResultFilenames() ) {
           // Add this to the result file names...
           ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename ), getTransMeta()
-              .getName(), getStepname() );
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( filename ), getTransMeta().getName(), getStepname() );
           resultFile.setComment( BaseMessages.getString( PKG, "FileLocked.Log.FileAddedResult" ) );
           addResultFile( resultFile );
 

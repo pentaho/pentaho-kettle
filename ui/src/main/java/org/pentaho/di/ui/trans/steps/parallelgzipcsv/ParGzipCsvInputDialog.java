@@ -72,10 +72,8 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
-import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
+
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.ComboVar;
@@ -745,7 +743,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 
       String filename = transMeta.environmentSubstitute( meta.getFilename() );
 
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getInstance( transMeta.getBowl() ).getFileObject( filename );
       if ( !( fileObject instanceof LocalFile ) ) {
         // We can only use NIO on local files at the moment, so that's what we limit ourselves to.
         //

@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -94,6 +95,7 @@ public class XMLOutputStepAnalyzerTest {
     lenient().when( meta.getParentStepMeta() ).thenReturn( parentStepMeta );
     lenient().when( parentStepMeta.getStepMetaInterface() ).thenReturn( meta );
     lenient().when( parentStepMeta.getParentTransMeta() ).thenReturn( mockTransMeta );
+    lenient().when( mockTransMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     lenient().when( parentStepMeta.getName() ).thenReturn( "test" );
     lenient().when( parentStepMeta.getStepID() ).thenReturn( "XmlOutputStep" );
   }
@@ -152,7 +154,7 @@ public class XMLOutputStepAnalyzerTest {
     when( this.meta.getFiles( Mockito.any( VariableSpace.class ) ) ).thenReturn( filePaths );
 
     assertFalse( consumer.isDataDriven( this.meta ) );
-    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( this.meta );
+    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( DefaultBowl.getInstance(), this.meta );
     assertFalse( resources.isEmpty() );
     assertEquals( 2, resources.size() );
 

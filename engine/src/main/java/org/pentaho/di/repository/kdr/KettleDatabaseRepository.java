@@ -84,7 +84,6 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryTransDele
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryValueDelegate;
 import org.pentaho.di.repository.kdr.delegates.metastore.KettleDatabaseRepositoryMetaStore;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
 /**
@@ -342,9 +341,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     }
   }
 
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
+  @Override
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
     try {
-      return transDelegate.readTransSharedObjects( transMeta );
+      transDelegate.readTransSharedObjects( transMeta );
     } finally {
       connectionDelegate.closeReadTransaction();
     }
@@ -390,9 +390,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     }
   }
 
-  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
+  @Override
+  public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
     try {
-      return jobDelegate.readSharedObjects( jobMeta );
+      jobDelegate.readSharedObjects( jobMeta );
     } finally {
       connectionDelegate.closeReadTransaction();
     }

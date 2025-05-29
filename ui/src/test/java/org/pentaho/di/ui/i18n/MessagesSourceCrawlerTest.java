@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.internal.verification.Times;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -158,15 +159,15 @@ public class MessagesSourceCrawlerTest {
     MessagesSourceCrawler messagesSourceCrawler = mock( MessagesSourceCrawler.class );
 
     doNothing().when( messagesSourceCrawler ).crawlSourceDirectories();
-    doNothing().when( messagesSourceCrawler ).crawlXmlFolders();
-    doCallRealMethod().when( messagesSourceCrawler ).crawl();
+    doNothing().when( messagesSourceCrawler ).crawlXmlFolders( DefaultBowl.getInstance() );
+    doCallRealMethod().when( messagesSourceCrawler ).crawl( DefaultBowl.getInstance() );
 
     // Test
-    messagesSourceCrawler.crawl();
+    messagesSourceCrawler.crawl( DefaultBowl.getInstance() );
 
     // Check results
     verify( messagesSourceCrawler ).crawlSourceDirectories();
-    verify( messagesSourceCrawler ).crawlXmlFolders();
+    verify( messagesSourceCrawler ).crawlXmlFolders( DefaultBowl.getInstance() );
   }
 
   @Test
@@ -283,7 +284,8 @@ public class MessagesSourceCrawlerTest {
 
     InputStream fileScenarios = getClass().getResourceAsStream( resourceName );
     FileUtils.copyInputStreamToFile( fileScenarios, tempFile );
-    FileObject folder = KettleVFS.getFileObject( temporaryFolder.getRoot().getAbsolutePath() );
+    FileObject folder = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( temporaryFolder.getRoot().getAbsolutePath() );
     FileObject[] javaFiles = folder.findFiles( new FileSelector() {
       @Override
       public boolean traverseDescendents( FileSelectInfo info ) throws Exception {

@@ -30,6 +30,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryRunConfigurableInterface;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.List;
 
 /**
@@ -39,7 +40,8 @@ import java.util.List;
   description = "" )
 public class RunConfigurationSaveExtensionPoint implements ExtensionPointInterface {
 
-  private RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance();
+  private Function<JobMeta, RunConfigurationManager> rcmProvider =
+    jm -> RunConfigurationManager.getInstance( () -> jm.getBowl().getMetastore() );
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     JobMeta jobMeta = (JobMeta) ( (Object[]) o )[ 0 ];
@@ -62,14 +64,14 @@ public class RunConfigurationSaveExtensionPoint implements ExtensionPointInterfa
     }
 
     if ( embedAll ) {
-      embedAllRunConfigurations( embeddedRunConfigurationManager );
+      embedAllRunConfigurations( jobMeta, embeddedRunConfigurationManager );
     } else {
-      embedRunConfigurations( embeddedRunConfigurationManager, runConfigurationNames );
+      embedRunConfigurations( jobMeta, embeddedRunConfigurationManager, runConfigurationNames );
     }
   }
 
-  private void embedAllRunConfigurations( RunConfigurationManager embeddedRunConfigurationManager ) {
-    List<RunConfiguration> runConfigurations = runConfigurationManager.load();
+  private void embedAllRunConfigurations( JobMeta jobMeta, RunConfigurationManager embeddedRunConfigurationManager ) {
+    List<RunConfiguration> runConfigurations = getRunConfigurationManager( jobMeta ).load();
     for ( RunConfiguration loadedRunConfiguration : runConfigurations ) {
       if ( !loadedRunConfiguration.isReadOnly() ) {
         embeddedRunConfigurationManager.save( loadedRunConfiguration );
@@ -77,11 +79,11 @@ public class RunConfigurationSaveExtensionPoint implements ExtensionPointInterfa
     }
   }
 
-  private void embedRunConfigurations( RunConfigurationManager embeddedRunConfigurationManager,
+  private void embedRunConfigurations( JobMeta jobMeta, RunConfigurationManager embeddedRunConfigurationManager,
                                        List<String> runConfigurationNames ) {
     for ( String runConfigurationName : runConfigurationNames ) {
       if ( !runConfigurationName.equals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
-        RunConfiguration loadedRunConfiguration = runConfigurationManager.load( runConfigurationName );
+        RunConfiguration loadedRunConfiguration = getRunConfigurationManager( jobMeta ).load( runConfigurationName );
         embeddedRunConfigurationManager.save( loadedRunConfiguration );
       }
     }
@@ -89,6 +91,10 @@ public class RunConfigurationSaveExtensionPoint implements ExtensionPointInterfa
 
   @VisibleForTesting
   void setRunConfigurationManager( RunConfigurationManager runConfigurationManager ) {
-    this.runConfigurationManager = runConfigurationManager;
+    this.rcmProvider = x -> runConfigurationManager;
+  }
+
+  private RunConfigurationManager getRunConfigurationManager( JobMeta meta) {
+    return rcmProvider.apply( meta );
   }
 }

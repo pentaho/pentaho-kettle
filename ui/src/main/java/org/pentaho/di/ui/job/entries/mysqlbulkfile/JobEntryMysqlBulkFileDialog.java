@@ -320,7 +320,8 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.SAVE_TO, new FilterType[] { FilterType.TXT, FilterType.ALL },
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.SAVE_TO,
+                                   new FilterType[] { FilterType.TXT, FilterType.ALL },
         FilterType.TXT, new ProviderFilterType[] { ProviderFilterType.LOCAL } ) ) );
 
     // High Priority ?
@@ -832,7 +833,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
           new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
             .getString( PKG, "JobMysqlBulkFile.ConnectionError2.DialogMessage" ), e );
         } finally {
-          database.disconnect();
+          database.close();
         }
       }
     }

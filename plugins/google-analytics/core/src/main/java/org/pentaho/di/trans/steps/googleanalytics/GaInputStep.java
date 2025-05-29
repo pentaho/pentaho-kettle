@@ -60,7 +60,8 @@ public class GaInputStep extends BaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                      metaStore );
 
       // stores the indices where to look for the key fields in the input rows
       data.conversionMeta = new ValueMetaInterface[ meta.getFieldsCount() ];
@@ -226,7 +227,8 @@ public class GaInputStep extends BaseStep implements StepInterface {
 
     try {
       // Create an Analytics object, and fetch what we can for later (account name, e.g.)
-      analytics = GoogleAnalyticsApiFacade.createFor( appName, serviceAccount, OAuthKeyFile ).getAnalytics();
+      analytics = GoogleAnalyticsApiFacade.createFor( getTransMeta().getBowl(),
+        appName, serviceAccount, OAuthKeyFile ).getAnalytics();
       // There is necessarily an account name associated with this, so any NPEs or other exceptions mean bail out
       accountName = analytics.management().accounts().list().execute().getItems().iterator().next().getName();
     } catch ( TokenResponseException tre ) {

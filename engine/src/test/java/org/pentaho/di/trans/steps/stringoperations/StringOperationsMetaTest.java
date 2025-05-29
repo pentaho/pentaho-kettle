@@ -113,7 +113,7 @@ public class StringOperationsMetaTest implements InitializerInterface<StepMetaIn
     rowMetaInterface.addValueMeta( valueMeta );
 
     VariableSpace space = mock( VariableSpace.class );
-    meta.getFields( rowMetaInterface, "STRING_OPERATIONS", null, null, space, null, null );
+    meta.getFields( null, rowMetaInterface, "STRING_OPERATIONS", null, null, space, null, null );
     RowMetaInterface expectedRowMeta = new RowMeta();
     expectedRowMeta.addValueMeta( new ValueMetaString( "field1" ) );
     assertEquals( expectedRowMeta.toString(), rowMetaInterface.toString() );

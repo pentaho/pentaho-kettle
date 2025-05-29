@@ -69,7 +69,7 @@ public class JsonOutputAnalyzer extends ExternalResourceStepAnalyzer<JsonOutputM
 
   @Override
   public IMetaverseNode createResourceNode( final IExternalResourceInfo resource ) throws MetaverseException {
-    return createFileNode( resource.getName(), descriptor, DictionaryConst.NODE_TYPE_FILE );
+    return createFileNode( parentTransMeta.getBowl(), resource.getName(), descriptor, DictionaryConst.NODE_TYPE_FILE );
   }
 
   @Override

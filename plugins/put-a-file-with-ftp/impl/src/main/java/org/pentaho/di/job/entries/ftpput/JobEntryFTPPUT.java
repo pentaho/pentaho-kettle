@@ -873,16 +873,16 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
                      Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate(
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(),
       this, XML_TAG_LOCAL_DIRECTORY, remarks, AndValidator.putValidators(
           JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "userName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, XML_TAG_PASSWORD, remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(),this, XML_TAG_PASSWORD, remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "serverPort", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverPort", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 

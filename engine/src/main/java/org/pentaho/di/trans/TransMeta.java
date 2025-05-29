@@ -12,6 +12,7 @@
  ******************************************************************************/
 
 
+
 package org.pentaho.di.trans;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -23,6 +24,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -38,6 +40,8 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.attributes.AttributesUtil;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -78,6 +82,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.partition.PartitionSchemaManagementInterface;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -87,7 +92,13 @@ import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.shared.ChangeTrackingClusterSchemaManager;
+import org.pentaho.di.shared.ChangeTrackingPartitionSchemaManager;
+import org.pentaho.di.shared.PassthroughClusterSchemaManager;
+import org.pentaho.di.shared.PassthroughPartitionSchemaManager;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.shared.SharedObjectsIO;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -119,6 +130,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -158,10 +170,17 @@ public class TransMeta extends AbstractMeta
   protected List<TransDependency> dependencies;
 
   /** The list of cluster schemas associated with the transformation. */
-  protected List<ClusterSchema> clusterSchemas;
+  protected ChangeTrackingClusterSchemaManager localClusterSchemaManager =
+    new ChangeTrackingClusterSchemaManager( new PassthroughClusterSchemaManager( localSharedObjects,
+      () -> readSlaveServerManager.getAll() ) );
+  protected ClusterSchemaManagementInterface readClusterSchemaManager =
+    new PassthroughClusterSchemaManager( combinedSharedObjects, () -> readSlaveServerManager.getAll() );
 
-  /** The list of partition schemas associated with the transformation. */
-  private List<PartitionSchema> partitionSchemas;
+  protected PartitionSchemaManagementInterface readPartitionSchemaManager =
+    new PassthroughPartitionSchemaManager( combinedSharedObjects );
+
+  protected ChangeTrackingPartitionSchemaManager localPartitionSchemaMgr =
+    new ChangeTrackingPartitionSchemaManager( new PassthroughPartitionSchemaManager( localSharedObjects ) );
 
   /** The version string for the transformation. */
   protected String trans_version;
@@ -563,19 +582,25 @@ public class TransMeta extends AbstractMeta
         transMeta.clear();
       } else {
         // Clear out the things we're replacing below
-        transMeta.databases = new ArrayList<>();
+        transMeta.initializeSharedObjects();
         transMeta.steps = new ArrayList<>();
         transMeta.hops = new ArrayList<>();
         transMeta.notes = new ArrayList<>();
         transMeta.dependencies = new ArrayList<>();
-        transMeta.partitionSchemas = new ArrayList<>();
-        transMeta.slaveServers = new ArrayList<>();
-        transMeta.clusterSchemas = new ArrayList<>();
         transMeta.namedParams = new NamedParamsDefault();
         transMeta.stepChangeListeners = new ArrayList<>();
       }
-      for ( DatabaseMeta db : databases ) {
-        transMeta.addDatabase( (DatabaseMeta) db.clone() );
+      // Copy the Nodes to avoid converting from/to XML.
+      String dbType = SharedObjectsIO.SharedObjectType.CONNECTION.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( dbType ).entrySet() ) {
+        // cloneNode is *probably* overkill
+        transMeta.localSharedObjects.saveSharedObject( dbType, entry.getKey(), entry.getValue().cloneNode( true ) );
+      }
+      //SlaveServers
+      String slaveServerType = SharedObjectsIO.SharedObjectType.SLAVESERVER.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( slaveServerType ).entrySet() ) {
+        // cloneNode is *probably* overkill
+        transMeta.localSharedObjects.saveSharedObject( slaveServerType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
       for ( StepMeta step : steps ) {
         transMeta.addStep( (StepMeta) step.clone() );
@@ -605,14 +630,16 @@ public class TransMeta extends AbstractMeta
       for ( TransDependency dep : dependencies ) {
         transMeta.addDependency( (TransDependency) dep.clone() );
       }
-      for ( SlaveServer slave : slaveServers ) {
-        transMeta.getSlaveServers().add( (SlaveServer) slave.clone() );
+      // ClusterSchemas
+      String clusterSchemaType = SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( clusterSchemaType ).entrySet() ) {
+        // cloneNode is *probably* overkill
+        transMeta.localSharedObjects.saveSharedObject( clusterSchemaType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
-      for ( ClusterSchema schema : clusterSchemas ) {
-        transMeta.getClusterSchemas().add( schema.clone() );
-      }
-      for ( PartitionSchema schema : partitionSchemas ) {
-        transMeta.getPartitionSchemas().add( (PartitionSchema) schema.clone() );
+      // PartitionSchema
+      String partitionSchemaType = SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( partitionSchemaType ).entrySet() ) {
+        transMeta.localSharedObjects.saveSharedObject( partitionSchemaType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
       for ( String key : listParameters() ) {
         transMeta.addParameterDefinition( key, getParameterDefault( key ), getParameterDescription( key ) );
@@ -636,8 +663,6 @@ public class TransMeta extends AbstractMeta
     steps = new ArrayList<>();
     hops = new ArrayList<>();
     dependencies = new ArrayList<>();
-    partitionSchemas = new ArrayList<>();
-    clusterSchemas = new ArrayList<>();
     namedParams = new NamedParamsDefault();
     stepChangeListeners = new ArrayList<>();
 
@@ -698,6 +723,19 @@ public class TransMeta extends AbstractMeta
     transformationType = TransformationType.Normal;
 
     log = LogChannel.GENERAL;
+  }
+
+  @Override
+  protected void initializeNonLocalSharedObjects() {
+    super.initializeNonLocalSharedObjects();
+    localClusterSchemaManager =
+      new ChangeTrackingClusterSchemaManager( new PassthroughClusterSchemaManager( localSharedObjects,
+        () -> readSlaveServerManager.getAll() ) );
+    readClusterSchemaManager = new PassthroughClusterSchemaManager( combinedSharedObjects,
+      () -> readSlaveServerManager.getAll() );
+    localPartitionSchemaMgr = new ChangeTrackingPartitionSchemaManager(
+        new PassthroughPartitionSchemaManager( localSharedObjects ) );
+    readPartitionSchemaManager = new PassthroughPartitionSchemaManager( combinedSharedObjects );
   }
 
   /**
@@ -2044,7 +2082,7 @@ public class TransMeta extends AbstractMeta
     RowMetaInterface[] clonedInfo = cloneRowMetaInterfaces( inform );
     compatibleGetStepFields( stepint, row, name, clonedInfo, nextStep, this );
     if ( !isSomethingDifferentInRow( before, row ) ) {
-      stepint.getFields( before, name, clonedInfo, nextStep, this, repository, metaStore );
+      stepint.getFields( bowl, before, name, clonedInfo, nextStep, this, repository, metaStore );
       // pass the clone object to prevent from spoiling data by other steps
       row = before;
     }
@@ -2056,7 +2094,7 @@ public class TransMeta extends AbstractMeta
   private void compatibleGetStepFields( StepMetaInterface stepint, RowMetaInterface row, String name,
       RowMetaInterface[] inform, StepMeta nextStep, VariableSpace space ) throws KettleStepException {
 
-    stepint.getFields( row, name, inform, nextStep, space );
+    stepint.getFields( bowl, row, name, inform, nextStep, space );
 
   }
 
@@ -2476,7 +2514,6 @@ public class TransMeta extends AbstractMeta
     retval.append( "    " ).append( XMLHandler.addTagValue( "feedback_shown", feedbackShown ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "feedback_size", feedbackSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "using_thread_priorities", usingThreadPriorityManagment ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "shared_objects_file", sharedObjectsFile ) );
 
     // Performance monitoring
     //
@@ -2500,8 +2537,8 @@ public class TransMeta extends AbstractMeta
     //
     if ( includePartitions ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARTITIONSCHEMAS ) ).append( Const.CR );
-      for ( int i = 0; i < partitionSchemas.size(); i++ ) {
-        PartitionSchema partitionSchema = partitionSchemas.get( i );
+      List<PartitionSchema> partitionSchemas = localPartitionSchemaMgr.getAll();
+      for ( PartitionSchema partitionSchema : partitionSchemas ) {
         retval.append( partitionSchema.getXML() );
       }
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARTITIONSCHEMAS ) ).append( Const.CR );
@@ -2510,10 +2547,11 @@ public class TransMeta extends AbstractMeta
     //
     if ( includeSlaves ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
-      for ( int i = 0; i < slaveServers.size(); i++ ) {
-        SlaveServer slaveServer = slaveServers.get( i );
+      List<SlaveServer> slaveServers = localSlaveServerMgr.getAll();
+      for ( SlaveServer slaveServer : slaveServers ) {
         retval.append( slaveServer.getXML() );
       }
+
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
     }
 
@@ -2521,8 +2559,8 @@ public class TransMeta extends AbstractMeta
     //
     if ( includeClusters ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_CLUSTERSCHEMAS ) ).append( Const.CR );
-      for ( int i = 0; i < clusterSchemas.size(); i++ ) {
-        ClusterSchema clusterSchema = clusterSchemas.get( i );
+      List<ClusterSchema> clusterSchemas = localClusterSchemaManager.getAll();
+      for ( ClusterSchema clusterSchema : clusterSchemas ) {
         retval.append( clusterSchema.getXML() );
       }
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_CLUSTERSCHEMAS ) ).append( Const.CR );
@@ -2555,8 +2593,8 @@ public class TransMeta extends AbstractMeta
 
     // The database connections...
     if ( includeDatabase ) {
-      for ( int i = 0; i < nrDatabases(); i++ ) {
-        DatabaseMeta dbMeta = getDatabase( i );
+      List<DatabaseMeta> dbMetas = localDbMgr.getAll();
+      for ( DatabaseMeta dbMeta : dbMetas ) {
         //PDI-20078 - If props == null, it means transformation is running on the slave server. For the
         // method areOnlyUsedConnectionsSavedToXMLInServer to return false, the "STRING_ONLY_USED_DB_TO_XML"
         // needs to have "N" in the server startup script file
@@ -2627,9 +2665,29 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname ) throws KettleXMLException, KettleMissingPluginsException {
-    this( fname, true );
+    this( DefaultBowl.getInstance(), fname );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation. No default connections are loaded since no
+   * repository is available at this time. Since the filename is set, internal variables are being set that relate to
+   * this.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname ) throws KettleXMLException, KettleMissingPluginsException {
+    this( bowl, fname, true );
   }
 
   /**
@@ -2645,10 +2703,33 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, VariableSpace parentVariableSpace ) throws KettleXMLException,
     KettleMissingPluginsException {
-    this( fname, null, true, parentVariableSpace );
+    this( DefaultBowl.getInstance(), fname, null, true, parentVariableSpace );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation. No default connections are loaded since no
+   * repository is available at this time. Since the filename is set, variables are set in the specified variable space
+   * that relate to this.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param parentVariableSpace
+   *          the parent variable space
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, VariableSpace parentVariableSpace ) throws KettleXMLException,
+    KettleMissingPluginsException {
+    this( bowl, fname, null, true, parentVariableSpace );
   }
 
   /**
@@ -2663,10 +2744,32 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, boolean setInternalVariables ) throws KettleXMLException,
     KettleMissingPluginsException {
-    this( fname, null, setInternalVariables );
+    this( DefaultBowl.getInstance(), fname, null, setInternalVariables );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation. No default connections are loaded since no
+   * repository is available at this time.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, boolean setInternalVariables ) throws KettleXMLException,
+    KettleMissingPluginsException {
+    this( bowl, fname, null, setInternalVariables );
   }
 
   /**
@@ -2680,9 +2783,29 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, Repository rep ) throws KettleXMLException, KettleMissingPluginsException {
-    this( fname, rep, true );
+    this( DefaultBowl.getInstance(), fname, rep, true );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, Repository rep ) throws KettleXMLException, KettleMissingPluginsException {
+    this( bowl, fname, rep, true );
   }
 
   /**
@@ -2698,10 +2821,33 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException,
     KettleMissingPluginsException {
-    this( fname, rep, setInternalVariables, null );
+    this( DefaultBowl.getInstance(), fname, rep, setInternalVariables, null );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException,
+    KettleMissingPluginsException {
+    this( bowl, fname, rep, setInternalVariables, null );
   }
 
   /**
@@ -2719,9 +2865,35 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
-  public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException {
-    this( fname, rep, setInternalVariables, parentVariableSpace, null );
+  @Deprecated
+  public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace )
+      throws KettleXMLException, KettleMissingPluginsException {
+    this( DefaultBowl.getInstance(), fname, rep, setInternalVariables, parentVariableSpace, null );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @param parentVariableSpace
+   *          the parent variable space to use during TransMeta construction
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, Repository rep, boolean setInternalVariables,
+      VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException {
+    this( bowl, fname, rep, setInternalVariables, parentVariableSpace, null );
   }
 
   /**
@@ -2741,10 +2913,38 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace,
       OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
-    this( fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
+    this( DefaultBowl.getInstance(), fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @param parentVariableSpace
+   *          the parent variable space to use during TransMeta construction
+   * @param prompter
+   *          the changed/replace listener or null if there is none
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, Repository rep, boolean setInternalVariables,
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
+    this( bowl, fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
   /**
@@ -2766,8 +2966,38 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during parsing of the specified file
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public TransMeta( String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
+                    VariableSpace parentVariableSpace, OverwritePrompter prompter )
+    throws KettleXMLException, KettleMissingPluginsException {
+    this( DefaultBowl.getInstance(), fname, metaStore, rep, setInternalVariables, parentVariableSpace, prompter );
+  }
+
+  /**
+   * Parses a file containing the XML that describes the transformation.
+   *
+   * @param bowl
+   *          For file access to the provided file.
+   * @param fname
+   *          The filename
+   * @param metaStore
+   *          the metadata store to reference (or null if there is none)
+   * @param rep
+   *          The repository to load the default set of connections from, null if no repository is available
+   * @param setInternalVariables
+   *          true if you want to set the internal variables based on this transformation information
+   * @param parentVariableSpace
+   *          the parent variable space to use during TransMeta construction
+   * @param prompter
+   *          the changed/replace listener or null if there is none
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Bowl bowl, String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
                     VariableSpace parentVariableSpace, OverwritePrompter prompter )
     throws KettleXMLException, KettleMissingPluginsException {
     // if fname is not provided, there's not much we can do, throw an exception
@@ -2786,7 +3016,7 @@ public class TransMeta extends AbstractMeta
         parentVariableSpace.initializeVariablesFrom( null );
       }
 
-      final FileObject transFile = KettleVFS.getFileObject( fname, parentVariableSpace );
+      final FileObject transFile = KettleVFS.getInstance( bowl ).getFileObject( fname, parentVariableSpace );
       if ( !transFile.exists() ) {
         throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.InvalidXMLPath", fname ) );
       }
@@ -2858,6 +3088,26 @@ public class TransMeta extends AbstractMeta
    */
   public TransMeta( Node transnode, Repository rep ) throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, rep, false );
+  }
+
+  /**
+   * Parse a file containing the XML that describes the transformation. Specify a repository to load default list of
+   * database connections from and to reference in mappings etc.
+   *
+   * @param transnode
+   *          The XML node to load from
+   * @param rep
+   *          the repository to reference.
+   * @param parentVariableSpace
+   *          the parent variable space to use during TransMeta construction
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified file
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( Node transnode, Repository rep, VariableSpace parentVariableSpace )
+      throws KettleXMLException, KettleMissingPluginsException {
+    loadXML( transnode, rep, false, parentVariableSpace );
   }
 
   /**
@@ -2982,11 +3232,6 @@ public class TransMeta extends AbstractMeta
 
     try {
 
-      Props props = null;
-      if ( Props.isInitialized() ) {
-        props = Props.getInstance();
-      }
-
       initializeVariablesFrom( parentVariableSpace );
 
       try {
@@ -3007,7 +3252,11 @@ public class TransMeta extends AbstractMeta
         //
         try {
           sharedObjectsFile = XMLHandler.getTagValue( transnode, "info", "shared_objects_file" );
-          sharedObjects = rep != null ? rep.readTransSharedObjects( this ) : readSharedObjects();
+          if ( rep != null ) {
+            rep.readTransSharedObjects( this );
+          } else {
+            readSharedObjects();
+          }
         } catch ( Exception e ) {
           log
             .logError( BaseMessages.getString( PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
@@ -3023,7 +3272,6 @@ public class TransMeta extends AbstractMeta
 
         // Handle connections
         int n = XMLHandler.countNodes( transnode, DatabaseMeta.XML_TAG );
-        Set<String> privateTransformationDatabases = new HashSet<>( n );
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.WeHaveConnections", String.valueOf( n ) ) );
         }
@@ -3035,26 +3283,10 @@ public class TransMeta extends AbstractMeta
 
           DatabaseMeta dbcon = new DatabaseMeta( nodecon );
           dbcon.shareVariablesWith( this );
-          if ( !dbcon.isShared() ) {
-            privateTransformationDatabases.add( dbcon.getName() );
-          }
-
-          DatabaseMeta exist = findDatabase( dbcon.getName() );
-          if ( exist == null ) {
-            addDatabase( dbcon );
-          } else {
-            if ( !exist.isShared() ) { // otherwise, we just keep the shared connection.
-              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
-                  "TransMeta.Message.OverwriteConnectionYN", dbcon.getName() ), BaseMessages.getString( PKG,
-                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
-                int idx = indexOfDatabase( exist );
-                removeDatabase( idx );
-                addDatabase( idx, dbcon );
-              }
-            }
-          }
+          localDbMgr.add( dbcon );
         }
-        setPrivateDatabases( privateTransformationDatabases );
+        // make a copy so we don't keep re-reading it for the calls to loadXML
+        List<DatabaseMeta> databases = getDatabases();
 
         // Read the notes...
         Node notepadsnode = XMLHandler.getSubNode( transnode, XML_TAG_NOTEPADS );
@@ -3078,7 +3310,7 @@ public class TransMeta extends AbstractMeta
             log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.LookingAtStep" ) + i );
           }
 
-          StepMeta stepMeta = new StepMeta( stepnode, databases, metaStore );
+          StepMeta stepMeta = new StepMeta( stepnode, getDatabases(), metaStore );
           stepMeta.setParentTransMeta( this ); // for tracing, retain hierarchy
 
           if ( stepMeta.isMissing() ) {
@@ -3262,7 +3494,7 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrDeps; i++ ) {
           Node depNode = XMLHandler.getSubNodeByNr( depsNode, TransDependency.XML_TAG, i );
 
-          TransDependency transDependency = new TransDependency( depNode, databases );
+          TransDependency transDependency = new TransDependency( depNode, getDatabases() );
           if ( transDependency.getDatabase() != null && transDependency.getFieldname() != null ) {
             addDependency( transDependency );
           }
@@ -3289,25 +3521,7 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrPartSchemas; i++ ) {
           Node partSchemaNode = XMLHandler.getSubNodeByNr( partSchemasNode, PartitionSchema.XML_TAG, i );
           PartitionSchema partitionSchema = new PartitionSchema( partSchemaNode );
-
-          // Check if the step exists and if it's a shared step.
-          // If so, then we will keep the shared version, not this one.
-          // The stored XML is only for backup purposes.
-          //
-          PartitionSchema check = findPartitionSchema( partitionSchema.getName() );
-          if ( check != null ) {
-            if ( !check.isShared() ) {
-              // we don't overwrite shared objects.
-              if ( shouldOverwrite( prompter, props, BaseMessages
-                  .getString( PKG, "TransMeta.Message.OverwritePartitionSchemaYN", partitionSchema.getName() ),
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
-                addOrReplacePartitionSchema( partitionSchema );
-              }
-            }
-          } else {
-            partitionSchemas.add( partitionSchema );
-          }
-
+          localPartitionSchemaMgr.add( partitionSchema );
         }
 
         // Have all step partitioning meta-data reference the correct schemas that we just loaded
@@ -3315,11 +3529,11 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrSteps(); i++ ) {
           StepPartitioningMeta stepPartitioningMeta = getStep( i ).getStepPartitioningMeta();
           if ( stepPartitioningMeta != null ) {
-            stepPartitioningMeta.setPartitionSchemaAfterLoading( partitionSchemas );
+            stepPartitioningMeta.setPartitionSchemaAfterLoading( readPartitionSchemaManager.getAll() );
           }
           StepPartitioningMeta targetStepPartitioningMeta = getStep( i ).getTargetStepPartitioningMeta();
           if ( targetStepPartitioningMeta != null ) {
-            targetStepPartitioningMeta.setPartitionSchemaAfterLoading( partitionSchemas );
+            targetStepPartitioningMeta.setPartitionSchemaAfterLoading( readPartitionSchemaManager.getAll() );
           }
         }
 
@@ -3335,23 +3549,7 @@ public class TransMeta extends AbstractMeta
             continue;
           }
           slaveServer.shareVariablesWith( this );
-
-          // Check if the object exists and if it's a shared object.
-          // If so, then we will keep the shared version, not this one.
-          // The stored XML is only for backup purposes.
-          SlaveServer check = findSlaveServer( slaveServer.getName() );
-          if ( check != null ) {
-            if ( !check.isShared() ) {
-              // we don't overwrite shared objects.
-              if ( shouldOverwrite( prompter, props,
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteSlaveServerYN", slaveServer.getName() ),
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
-                addOrReplaceSlaveServer( slaveServer );
-              }
-            }
-          } else {
-            slaveServers.add( slaveServer );
-          }
+          localSlaveServerMgr.add( slaveServer );
         }
 
         // Read the cluster schemas
@@ -3360,29 +3558,15 @@ public class TransMeta extends AbstractMeta
         int nrClusterSchemas = XMLHandler.countNodes( clusterSchemasNode, ClusterSchema.XML_TAG );
         for ( int i = 0; i < nrClusterSchemas; i++ ) {
           Node clusterSchemaNode = XMLHandler.getSubNodeByNr( clusterSchemasNode, ClusterSchema.XML_TAG, i );
-          ClusterSchema clusterSchema = new ClusterSchema( clusterSchemaNode, slaveServers );
+          ClusterSchema clusterSchema = new ClusterSchema( clusterSchemaNode, getSlaveServers() );
           clusterSchema.shareVariablesWith( this );
 
-          // Check if the object exists and if it's a shared object.
-          // If so, then we will keep the shared version, not this one.
-          // The stored XML is only for backup purposes.
-          ClusterSchema check = findClusterSchema( clusterSchema.getName() );
-          if ( check != null ) {
-            if ( !check.isShared() ) {
-              // we don't overwrite shared objects.
-              if ( shouldOverwrite( prompter, props,
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteClusterSchemaYN", clusterSchema.getName() ),
-                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
-                addOrReplaceClusterSchema( clusterSchema );
-              }
-            }
-          } else {
-            clusterSchemas.add( clusterSchema );
-          }
+          localClusterSchemaManager.add( clusterSchema );
         }
 
         // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
         //
+        List<ClusterSchema> clusterSchemas = readClusterSchemaManager.getAll();
         for ( int i = 0; i < nrSteps(); i++ ) {
           getStep( i ).setClusterSchemaAfterLoading( clusterSchemas );
         }
@@ -3495,13 +3679,6 @@ public class TransMeta extends AbstractMeta
       if ( object instanceof StepMeta ) {
         StepMeta stepMeta = (StepMeta) object;
         addOrReplaceStep( stepMeta );
-      } else if ( object instanceof PartitionSchema ) {
-        PartitionSchema partitionSchema = (PartitionSchema) object;
-        addOrReplacePartitionSchema( partitionSchema );
-      } else if ( object instanceof ClusterSchema ) {
-        ClusterSchema clusterSchema = (ClusterSchema) object;
-        clusterSchema.shareVariablesWith( this );
-        addOrReplaceClusterSchema( clusterSchema );
       } else {
         return false;
       }
@@ -3603,12 +3780,10 @@ public class TransMeta extends AbstractMeta
     for ( int i = 0; i < nrTransHops(); i++ ) {
       getTransHop( i ).setChanged( false );
     }
-    for ( int i = 0; i < partitionSchemas.size(); i++ ) {
-      partitionSchemas.get( i ).setChanged( false );
-    }
-    for ( int i = 0; i < clusterSchemas.size(); i++ ) {
-      clusterSchemas.get( i ).setChanged( false );
-    }
+
+    localPartitionSchemaMgr.clearChanged();
+
+    localClusterSchemaManager.clearChanged();
 
     super.clearChanged();
   }
@@ -3660,14 +3835,7 @@ public class TransMeta extends AbstractMeta
    * @return true if the partitioning schemas have been changed, false otherwise
    */
   public boolean havePartitionSchemasChanged() {
-    for ( int i = 0; i < partitionSchemas.size(); i++ ) {
-      PartitionSchema ps = partitionSchemas.get( i );
-      if ( ps.hasChanged() ) {
-        return true;
-      }
-    }
-
-    return false;
+    return localPartitionSchemaMgr.hasChanged();
   }
 
   /**
@@ -3676,14 +3844,7 @@ public class TransMeta extends AbstractMeta
    * @return true if the clustering schemas have been changed, false otherwise
    */
   public boolean haveClusterSchemasChanged() {
-    for ( int i = 0; i < clusterSchemas.size(); i++ ) {
-      ClusterSchema cs = clusterSchemas.get( i );
-      if ( cs.hasChanged() ) {
-        return true;
-      }
-    }
-
-    return false;
+    return localClusterSchemaManager.hasChanged();
   }
 
   /**
@@ -4417,7 +4578,7 @@ public class TransMeta extends AbstractMeta
                   "Unable to connect to logging database [" + logTable.getDatabaseMeta() + "]", e );
             } finally {
               if ( db != null ) {
-                db.disconnect();
+                db.close();
               }
             }
           }
@@ -4713,7 +4874,7 @@ public class TransMeta extends AbstractMeta
           } catch ( KettleDatabaseException dbe ) {
             // Ignore errors
           } finally {
-            logdb.disconnect();
+            logdb.close();
           }
         }
         if ( monitor != null ) {
@@ -5200,7 +5361,62 @@ public class TransMeta extends AbstractMeta
     }
 
     return transLogTable.getDatabaseMeta() != null && transLogTable.getDatabaseMeta().equals( databaseMeta );
+  }
 
+  @Override
+  public Set<String> getUsedDatabaseConnectionNames() {
+    Set<String> dbNames = new HashSet<>();
+    for ( int i = 0; i < nrSteps(); i++ ) {
+      StepMeta stepMeta = getStep( i );
+      DatabaseMeta[] dbs = stepMeta.getStepMetaInterface().getUsedDatabaseConnections();
+      for ( int d = 0; d < dbs.length; d++ ) {
+        dbNames.add( dbs[d].getName() );
+      }
+    }
+
+    if ( transLogTable.getDatabaseMeta() != null ) {
+      dbNames.add( transLogTable.getDatabaseMeta().getName() );
+    }
+    return dbNames;
+  }
+
+  @Override
+  protected void databasesUpdated( String name, Optional<DatabaseMeta> newDatabaseMeta ) {
+    // don't forget transformation-level databases.
+    if ( maxDateConnection != null && maxDateConnection.getName().equals( name ) ) {
+      updateFields( maxDateConnection, newDatabaseMeta );
+    }
+    for ( StepMeta step : getSteps() ) {
+      DatabaseMeta[] dbs = step.getStepMetaInterface().getUsedDatabaseConnections();
+      if ( dbs != null ) {
+        for ( DatabaseMeta db : dbs ) {
+          if ( db.getName().equalsIgnoreCase( name ) ) {
+            updateFields( db, newDatabaseMeta );
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public void allDatabasesUpdated() {
+    List<DatabaseMeta> allDbs = getDatabases();
+    if ( maxDateConnection != null ) {
+      Optional<DatabaseMeta> newDatabaseMeta =
+        Optional.ofNullable( findMatchingDb( allDbs, maxDateConnection.getName() ) );
+      updateFields( maxDateConnection, newDatabaseMeta );
+    }
+
+    for ( StepMeta step : getSteps() ) {
+      DatabaseMeta[] dbs = step.getStepMetaInterface().getUsedDatabaseConnections();
+      if ( dbs != null ) {
+        for ( DatabaseMeta db : dbs ) {
+          Optional<DatabaseMeta> newDatabaseMeta =
+            Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
+          updateFields( db, newDatabaseMeta );
+        }
+      }
+    }
   }
 
   /**
@@ -5238,40 +5454,44 @@ public class TransMeta extends AbstractMeta
 
     // Loop over all steps in the transformation and see what the used vars are...
     if ( searchDatabases ) {
-      for ( int i = 0; i < nrDatabases(); i++ ) {
-        DatabaseMeta meta = getDatabase( i );
-        if( isDatabaseConnectionUsed( meta ) ){
+      try {
+        List<DatabaseMeta> dbMetas = localDbMgr.getAll();
+        for ( DatabaseMeta meta : dbMetas ) {
           stringList.add( new StringSearchResult( meta.getName(), meta, this,
-                  BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
           if ( meta.getHostname() != null ) {
             stringList.add( new StringSearchResult( meta.getHostname(), meta, this,
-                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
           }
           if ( meta.getDatabaseName() != null ) {
             stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this,
-                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseName" ) ) );
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseName" ) ) );
           }
           if ( meta.getUsername() != null ) {
             stringList.add( new StringSearchResult( meta.getUsername(), meta, this,
-                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
           }
           if ( meta.getPluginId() != null ) {
             stringList.add( new StringSearchResult( meta.getPluginId(), meta, this,
-                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
           }
           if ( meta.getDatabasePortNumberString() != null ) {
             stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this,
-                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
           }
           if ( meta.getServername() != null ) {
             stringList.add( new StringSearchResult( meta.getServername(), meta, this,
-                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
           }
-          if ( meta.getPassword() != null ) {
-            stringList.add( new StringSearchResult( Strings.repeat("*", meta.getPassword().length()), meta, this,
-                    BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
+
+            if ( meta.getPassword() != null ) {
+              stringList.add( new StringSearchResult( Strings.repeat("*", meta.getPassword().length()), meta, this,
+                  BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
+
           }
         }
+      } catch ( KettleException ex ) {
+        //log?
       }
     }
 
@@ -5310,6 +5530,7 @@ public class TransMeta extends AbstractMeta
    *
    * @return a list of the used variables in this transformation.
    */
+  @Override
   public List<String> getUsedVariables() {
     // Get the list of Strings.
     List<StringSearchResult> stringList = getStringList( true, true, false, true );
@@ -5378,7 +5599,14 @@ public class TransMeta extends AbstractMeta
    * @return a list of PartitionSchemas
    */
   public List<PartitionSchema> getPartitionSchemas() {
-    return partitionSchemas;
+    try {
+      List<PartitionSchema> partitionSchemas =  readPartitionSchemaManager.getAll();
+      Collections.sort( partitionSchemas, PartitionSchema.COMPARATOR );
+      return partitionSchemas;
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
+      return Collections.emptyList();
+    }
   }
 
   /**
@@ -5388,7 +5616,14 @@ public class TransMeta extends AbstractMeta
    *          the list of PartitionSchemas to set
    */
   public void setPartitionSchemas( List<PartitionSchema> partitionSchemas ) {
-    this.partitionSchemas = partitionSchemas;
+    try {
+      localPartitionSchemaMgr.clear();
+      for ( PartitionSchema partitionSchema : partitionSchemas ) {
+        localPartitionSchemaMgr.add( partitionSchema );
+      }
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( " Error setting the list of partitionSchema ", exception );
+    }
   }
 
   /**
@@ -5397,11 +5632,14 @@ public class TransMeta extends AbstractMeta
    * @return a String array containing the available partition schema names.
    */
   public String[] getPartitionSchemasNames() {
-    String[] names = new String[partitionSchemas.size()];
-    for ( int i = 0; i < names.length; i++ ) {
-      names[i] = partitionSchemas.get( i ).getName();
+    try {
+      List<PartitionSchema> partitionSchemas = readPartitionSchemaManager.getAll();
+      Collections.sort( partitionSchemas, PartitionSchema.COMPARATOR );
+      return partitionSchemas.stream().map( PartitionSchema::getName ).toArray( String[]::new );
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
+      return new String[0];
     }
-    return names;
   }
 
   /**
@@ -5467,7 +5705,14 @@ public class TransMeta extends AbstractMeta
    * @return a list of ClusterSchemas
    */
   public List<ClusterSchema> getClusterSchemas() {
-    return clusterSchemas;
+    try {
+      List<ClusterSchema> clusterSchemas =  readClusterSchemaManager.getAll();
+      Collections.sort( clusterSchemas, ClusterSchema.COMPARATOR );
+      return clusterSchemas;
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( exception.getMessage(), exception );
+      return Collections.emptyList();
+    }
   }
 
   /**
@@ -5477,7 +5722,14 @@ public class TransMeta extends AbstractMeta
    *          the list of ClusterSchemas to set
    */
   public void setClusterSchemas( List<ClusterSchema> clusterSchemas ) {
-    this.clusterSchemas = clusterSchemas;
+    try {
+      localClusterSchemaManager.clear();
+      for ( ClusterSchema clusterSchema : clusterSchemas ) {
+        localClusterSchemaManager.add( clusterSchema );
+      }
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( exception.getMessage(), exception );
+    }
   }
 
   /**
@@ -5486,11 +5738,13 @@ public class TransMeta extends AbstractMeta
    * @return a String array containing the cluster schemas' names
    */
   public String[] getClusterSchemaNames() {
-    String[] names = new String[clusterSchemas.size()];
-    for ( int i = 0; i < names.length; i++ ) {
-      names[i] = clusterSchemas.get( i ).getName();
+    try {
+      List<ClusterSchema> clusterSchemas = readClusterSchemaManager.getAll();
+      Collections.sort( clusterSchemas, ClusterSchema.COMPARATOR );
+      return clusterSchemas.stream().map( ClusterSchema::getName ).toArray( String[]::new );
+    } catch ( KettleException ex ) {
+      return new String[0];
     }
-    return names;
   }
 
   /**
@@ -5501,13 +5755,18 @@ public class TransMeta extends AbstractMeta
    * @return the partition with the specified name of null if nothing was found
    */
   public PartitionSchema findPartitionSchema( String name ) {
-    for ( int i = 0; i < partitionSchemas.size(); i++ ) {
-      PartitionSchema schema = partitionSchemas.get( i );
-      if ( schema.getName().equalsIgnoreCase( name ) ) {
-        return schema;
+    try {
+      List<PartitionSchema> partitionSchemas = readPartitionSchemaManager.getAll();
+      for ( PartitionSchema partitionSchema : partitionSchemas ) {
+        if ( partitionSchema.getName().equalsIgnoreCase( name ) ) {
+          return partitionSchema;
+        }
       }
+      return null;
+    } catch ( Exception exception ) {
+      LogChannel.GENERAL.logError( " Error getting the list of partitionSchema ", exception );
+      return null;
     }
-    return null;
   }
 
   /**
@@ -5518,13 +5777,18 @@ public class TransMeta extends AbstractMeta
    * @return the cluster schema with the specified name of null if nothing was found
    */
   public ClusterSchema findClusterSchema( String name ) {
-    for ( int i = 0; i < clusterSchemas.size(); i++ ) {
-      ClusterSchema schema = clusterSchemas.get( i );
-      if ( schema.getName().equalsIgnoreCase( name ) ) {
-        return schema;
+    try {
+      List<ClusterSchema> clusterSchemas = readClusterSchemaManager.getAll();
+      for ( ClusterSchema clusterSchema : clusterSchemas ) {
+        if ( ( clusterSchema != null ) && ( clusterSchema.getName() != null &&
+                                            clusterSchema.getName().equalsIgnoreCase( name ) ) ) {
+          return clusterSchema;
+        }
       }
+      return null;
+    } catch ( KettleException ex ) {
+      return null;
     }
-    return null;
   }
 
   /**
@@ -5534,12 +5798,10 @@ public class TransMeta extends AbstractMeta
    *          The partition schema to be added.
    */
   public void addOrReplacePartitionSchema( PartitionSchema partitionSchema ) {
-    int index = partitionSchemas.indexOf( partitionSchema );
-    if ( index < 0 ) {
-      partitionSchemas.add( partitionSchema );
-    } else {
-      PartitionSchema previous = partitionSchemas.get( index );
-      previous.replaceMeta( partitionSchema );
+    try {
+      localPartitionSchemaMgr.add( partitionSchema );
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( " Error adding the list of partitionSchema ", exception );
     }
     setChanged();
   }
@@ -5563,22 +5825,12 @@ public class TransMeta extends AbstractMeta
    *          The cluster schema to be added.
    */
   public void addOrReplaceClusterSchema( ClusterSchema clusterSchema ) {
-    int index = clusterSchemas.indexOf( clusterSchema );
-    if ( index < 0 ) {
-      clusterSchemas.add( clusterSchema );
-    } else {
-      ClusterSchema previous = clusterSchemas.get( index );
-      previous.replaceMeta( clusterSchema );
+    try {
+      localClusterSchemaManager.add( clusterSchema );
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logBasic( exception.getMessage(), exception );
     }
     setChanged();
-  }
-
-  @Override protected List<SharedObjectInterface> getAllSharedObjects() {
-    List<SharedObjectInterface> shared = super.getAllSharedObjects();
-    shared.addAll( steps );
-    shared.addAll( partitionSchemas );
-    shared.addAll( clusterSchemas );
-    return shared;
   }
 
   /**
@@ -5704,7 +5956,7 @@ public class TransMeta extends AbstractMeta
     //
     if ( !Utils.isEmpty( filename ) ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( filename, var );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( filename, var );
         FileName fileName = fileObject.getName();
 
         // The filename of the transformation
@@ -5840,8 +6092,9 @@ public class TransMeta extends AbstractMeta
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space, Map<String,
+      ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository,
+      IMetaStore metaStore ) throws KettleException {
 
     try {
       // Handle naming for both repository and XML bases resources...
@@ -5862,7 +6115,8 @@ public class TransMeta extends AbstractMeta
       } else {
         // Assume file
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( getFilename() ), space );
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
+          .getFileObject( space.environmentSubstitute( getFilename() ), space );
         originalPath = fileObject.getParent().getURL().toString();
         baseName = fileObject.getName().getBaseName();
         fullname = fileObject.getURL().toString();
@@ -5888,8 +6142,19 @@ public class TransMeta extends AbstractMeta
         // loop over steps, databases will be exported to XML anyway.
         //
         for ( StepMeta stepMeta : transMeta.getSteps() ) {
-          stepMeta.exportResources( space, definitions, resourceNamingInterface, repository, metaStore );
+          stepMeta.exportResources( executionBowl, globalManagementBowl, space, definitions, resourceNamingInterface,
+            repository, metaStore );
         }
+
+        boolean onlyUsed = true;
+        if ( Props.isInitialized() ) {
+          onlyUsed = Props.getInstance().areOnlyUsedConnectionsSavedToXML();
+        }
+        // copy databases from global management bowl.
+        if ( globalManagementBowl != null ) {
+          SharedObjectUtil.copySharedObjects( globalManagementBowl, transMeta, onlyUsed );
+        }
+        SharedObjectUtil.stripObjectIds( transMeta );
 
         // Change the filename, calling this sets internal variables
         // inside of the transformation.
@@ -6389,7 +6654,6 @@ public class TransMeta extends AbstractMeta
         .append( this.isFeedbackShown() )
         .append( this.getFeedbackSize() )
         .append( this.isUsingThreadPriorityManagment() )
-        .append( this.getSharedObjectsFile() )
         .append( this.isCapturingStepPerformanceSnapShots() )
         .append( this.getStepPerformanceCapturingDelay() )
         .append( this.getStepPerformanceCapturingSizeLimit() )
@@ -6428,6 +6692,21 @@ public class TransMeta extends AbstractMeta
           .append( step.isDoingErrorHandling() );
     }
     return hashCodeBuilder.toHashCode();
+  }
+
+  @Override
+  public <T> T getSharedObjectManager( Class<T> clazz ) {
+    T mgr = super.getSharedObjectManager( clazz );
+    if ( mgr != null ) {
+      return mgr;
+    }
+    if ( clazz.isAssignableFrom( ClusterSchemaManagementInterface.class ) ) {
+      return clazz.cast( localClusterSchemaManager );
+    } else if ( clazz.isAssignableFrom( PartitionSchemaManagementInterface.class ) ) {
+      return clazz.cast( localPartitionSchemaMgr );
+    }
+
+    return null;
   }
 
   private static String getStepMetaCacheKey( StepMeta stepMeta, boolean info ) {

@@ -138,7 +138,8 @@ public class MappingInput extends BaseStep implements StepInterface {
       }
 
       // Fill the output row meta with the processed fields
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       if ( meta.isSelectingAndSortingUnspecifiedFields() ) {
         //

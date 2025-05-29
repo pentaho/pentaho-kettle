@@ -33,7 +33,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -201,7 +200,8 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
         data.totalpreviousfields = data.inputRowMeta.size();
       }
     }
-    meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+    meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                    metaStore );
 
     // Create convert meta-data objects that will contain Date & Number formatters
     data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
@@ -325,12 +325,12 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
 
     try {
       JsonInputMeta jsonInputMeta = (JsonInputMeta) getStepMetaInterface();
-      FileInputList fileInputList = jsonInputMeta.getFiles( getTransMeta() );
+      FileInputList fileInputList = jsonInputMeta.getFiles( getTransMeta().getBowl(), getTransMeta() );
       String[] files = fileInputList.getFileStrings();
 
-      InputStream inputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getInputStream( files[ 0 ], getTransMeta() );
+      InputStream inputStream = KettleVFS.getInstance( getTransMeta().getBowl() ).getInputStream( files[ 0 ], getTransMeta() );
       // Parse the JSON file
-      JsonSampler jsonSampler = new JsonSampler();
+      JsonSampler jsonSampler = new JsonSampler( getTransMeta().getBowl() );
       JsonFactory jsonFactory = new MappingJsonFactory();
       JsonParser jsonParser = jsonFactory.createParser( inputStream );
       Node rootNode = jsonSampler.getNode( jsonParser );
@@ -352,7 +352,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     JSONObject response = new JSONObject();
 
     JsonInputMeta jsonInputMeta = (JsonInputMeta) getStepMetaInterface();
-    FileInputList fileInputList = jsonInputMeta.getFiles( getTransMeta() );
+    FileInputList fileInputList = jsonInputMeta.getFiles( getTransMeta().getBowl(), getTransMeta() );
     String[] files = fileInputList.getFileStrings();
 
     JSONArray fileList = new JSONArray();

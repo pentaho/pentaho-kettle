@@ -18,11 +18,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -39,6 +36,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.pur.JobDelegate;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.ui.job.entries.missing.MissingEntryDialog;
 import org.pentaho.platform.api.repository2.unified.Converter;
 import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
@@ -116,7 +114,9 @@ public class StreamToJobNodeConverter implements Converter {
     if ( jobMeta == null ) {
       return null;
     }
-    String xml = XMLHandler.getXMLHeader() + filterPrivateDatabases( jobMeta ).getXML();
+    SharedObjectUtil.copySharedObjects( repository.getBowl(), jobMeta, true );
+    SharedObjectUtil.stripObjectIds( jobMeta );
+    String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
     return new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
   }
 
@@ -127,22 +127,6 @@ public class StreamToJobNodeConverter implements Converter {
     }
     logger.warn( "Reading as legacy CE job " + file.getName() + "." );
     return fileData.getInputStream();
-  }
-
-  @VisibleForTesting
-  JobMeta filterPrivateDatabases( JobMeta jobMeta ) {
-    Set<String> privateDatabases = jobMeta.getPrivateDatabases();
-    if ( privateDatabases != null ) {
-      // keep only private transformation databases
-      for ( Iterator<DatabaseMeta> it = jobMeta.getDatabases().iterator(); it.hasNext(); ) {
-        DatabaseMeta databaseMeta = it.next();
-        String databaseName = databaseMeta.getName();
-        if ( !privateDatabases.contains( databaseName ) && !jobMeta.isDatabaseConnectionUsed( databaseMeta ) ) {
-          it.remove();
-        }
-      }
-    }
-    return jobMeta;
   }
 
   // package-local visibility for testing purposes
@@ -163,6 +147,7 @@ public class StreamToJobNodeConverter implements Converter {
 
       JobMeta jobMeta = new JobMeta();
       Repository repository = connectToRepository();
+      jobMeta.setRepository( repository );
       Document doc = PDIImportUtil.loadXMLFrom( bis );
       if ( doc != null ) {
         jobMeta.loadXML( doc.getDocumentElement(), repository, null );
@@ -173,6 +158,8 @@ public class StreamToJobNodeConverter implements Converter {
           throw new ConverterException( missingPluginsException );
         }
         JobDelegate delegate = new JobDelegate( repository, this.unifiedRepository );
+        SharedObjectUtil.moveAllSharedObjects( jobMeta, repository.getBowl() );
+        SharedObjectUtil.patchDatabaseConnections( repository.getBowl(), jobMeta );
         delegate.saveSharedObjects( jobMeta, null );
         return new NodeRepositoryFileData( delegate.elementToDataNode( jobMeta ), bis.getCount() );
       } else {
@@ -222,8 +209,8 @@ public class StreamToJobNodeConverter implements Converter {
     if ( updateMeta ) {
       DatabaseMeta dbMetaToReplace = jobMeta.getDatabase( indexToReplace );
       dbMetaToReplace.setObjectId( repo.getDatabaseID( dbMetaToReplace.getName() ) );
-      jobMeta.removeDatabase( indexToReplace );
-      jobMeta.addDatabase( dbMetaToReplace );
+      jobMeta.getDatabaseManagementInterface().remove( dbMetaToReplace );
+      jobMeta.getDatabaseManagementInterface().add( dbMetaToReplace );
     }
     // Store the slave servers...
     //

@@ -110,7 +110,8 @@ public class GroupBy extends BaseStep implements StepInterface {
       }
 
       data.outputRowMeta = data.inputRowMeta.clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+         metaStore );
 
       // Do all the work we can beforehand
       // Calculate indexes, loop up fields, etc.
@@ -808,7 +809,7 @@ public class GroupBy extends BaseStep implements StepInterface {
 
   // Method is defined as public in order to be accessible by unit tests
   public String retrieveVfsPath( String pathToTmp ) throws KettleFileException {
-    FileObject vfsFile = KettleVFS.getFileObject( pathToTmp );
+    FileObject vfsFile = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( pathToTmp );
     String path = vfsFile.getName().getPath();
     return path;
   }

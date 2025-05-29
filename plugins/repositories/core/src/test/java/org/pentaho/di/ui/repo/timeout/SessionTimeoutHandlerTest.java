@@ -16,14 +16,14 @@ package org.pentaho.di.ui.repo.timeout;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.repository.KettleRepositoryLostException;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 
 import java.lang.reflect.Method;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -52,24 +52,20 @@ public class SessionTimeoutHandlerTest {
 
   @Test
   public void handle() throws Throwable {
-    when( repository.readTransSharedObjects( any() ) ).thenReturn( mock( SharedObjects.class ) );
-    Method method = Repository.class.getMethod( "readTransSharedObjects", TransMeta.class );
+    when( repository.getDatabaseIDs( anyBoolean() ) ).thenReturn( new ObjectId[0] );
+    Method method = Repository.class.getMethod( "getDatabaseIDs", boolean.class );
 
-    sessionTimeoutHandler.handle( repository, mock( Exception.class ), method, new Object[] { mock(
-        TransMeta.class ) } );
+    sessionTimeoutHandler.handle( repository, mock( Exception.class ), method, new Object[] { Boolean.FALSE } );
 
     verify( sessionTimeoutHandler, never() ).showLoginScreen( any() );
   }
 
-  @SuppressWarnings( "unchecked" )
   @Test
   public void handleSecondExecutionFailed() throws Throwable {
-    when( repository.readTransSharedObjects( any() ) ).thenThrow( KettleRepositoryLostException.class ).thenReturn(
-        mock( SharedObjects.class ) );
-    Method method = Repository.class.getMethod( "readTransSharedObjects", TransMeta.class );
+    when( repository.getDatabaseIDs( anyBoolean() ) ).thenThrow( KettleRepositoryLostException.class ).thenReturn( new ObjectId[0] );
+    Method method = Repository.class.getMethod( "getDatabaseIDs", boolean.class );
 
-    sessionTimeoutHandler.handle( repository, mock( Exception.class ), method, new Object[] { mock(
-        TransMeta.class ) } );
+    sessionTimeoutHandler.handle( repository, mock( Exception.class ), method, new Object[] { Boolean.FALSE } );
     
     verify( sessionTimeoutHandler ).showLoginScreen( any() );
   }

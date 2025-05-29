@@ -106,7 +106,7 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
       int count = XMLHandler.countNodes( fields, "field" );

@@ -1924,7 +1924,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
       try {
         mailConn =
-          new MailConnection(
+          new MailConnection( transMeta.getBowl(),
             LogChannel.UI, MailConnectionMeta.getProtocolFromString(
               wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser,
             realpass, wUseSSL.getSelection(), wUseProxy.getSelection(), realProxyUsername );

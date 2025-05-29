@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.xmljoin;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -60,7 +61,7 @@ public class XmlJoinMetaGetFieldsTest {
     rowMeta.addValueMeta( keepValueMeta );
     rowMeta.addValueMeta( removeValueMeta );
 
-    xmlJoinMeta.getFields( rowMeta, "testStepName", null, null, transMeta, null, null );
+    xmlJoinMeta.getFields( DefaultBowl.getInstance(), rowMeta, "testStepName", null, null, transMeta, null, null );
     assertEquals( 2, rowMeta.size() );
     String[] strings = rowMeta.getFieldNames();
     assertEquals( targetStepField, strings[0] );
@@ -120,7 +121,7 @@ public class XmlJoinMetaGetFieldsTest {
     rowMeta.addValueMeta( keepValueMeta2 );
 
     // Get output fields
-    xmlJoinMeta.getFields( rowMeta, "testStepName", null, null, transMeta, null, null );
+    xmlJoinMeta.getFields( DefaultBowl.getInstance(), rowMeta, "testStepName", null, null, transMeta, null, null );
     assertEquals( 3, rowMeta.size() );
     String[] strings = rowMeta.getFieldNames();
     assertEquals( "b", strings[0] );

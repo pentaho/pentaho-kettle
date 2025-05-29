@@ -516,7 +516,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
       // Load the master report...
       //
-      MasterReport report = PentahoReportingOutput.loadMasterReport( sourceFilename );
+      MasterReport report = PentahoReportingOutput.loadMasterReport( transMeta.getBowl(), sourceFilename );
 
       // Extract the definitions...
       //

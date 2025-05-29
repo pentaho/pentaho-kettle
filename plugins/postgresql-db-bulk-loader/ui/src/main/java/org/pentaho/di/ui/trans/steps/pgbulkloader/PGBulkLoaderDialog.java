@@ -925,7 +925,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.

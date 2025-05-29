@@ -111,6 +111,7 @@ public class XulDatabaseDialog {
         (XulTree) xulDialogComponent.getDocument().getRootElement().getElementById( "options-parameter-tree" );
       tree.getRootChildren().removeAll();
 
+      dataHandler.setDatabases( databases );
       dataHandler.setData( databaseMeta );
       xulDialogComponent.show(); // Attention: onload: loadConnectionData() is called here the second time, see above
                                  // for first time

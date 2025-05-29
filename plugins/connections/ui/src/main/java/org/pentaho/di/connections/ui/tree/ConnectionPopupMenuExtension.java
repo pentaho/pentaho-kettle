@@ -29,6 +29,7 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TreeSelection;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 
 import java.util.function.Supplier;
 
@@ -93,7 +94,7 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
       editMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.Edit" ) );
       editMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-          vfsConnectionDelegate.openDialog( vfsConnectionTreeItem.getLabel() );
+          vfsConnectionDelegate.openDialog( vfsConnectionTreeItem.getName(), vfsConnectionTreeItem.getLevel() );
         }
       } );
 
@@ -101,10 +102,67 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
       deleteMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.Delete" ) );
       deleteMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-          vfsConnectionDelegate.delete( vfsConnectionTreeItem.getLabel() );
+          vfsConnectionDelegate.delete( vfsConnectionTreeItem.getName(), vfsConnectionTreeItem.getLevel() );
         }
       } );
     }
+
+    // clear old items
+    MenuItem[] items = itemMenu.getItems();
+    for ( int i = 2; i < items.length; i++ ) {
+      items[i].dispose();
+    }
+
+    // customize menu for specific item
+    if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
+      MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      moveMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.MoveToGlobal",
+              spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
+      moveMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          vfsConnectionDelegate.moveToGlobal( vfsConnectionTreeItem.getName() );
+        }
+      } );
+      MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      copyMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.CopyToGlobal",
+              spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
+      copyMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          vfsConnectionDelegate.copyToGlobal( vfsConnectionTreeItem.getName() );
+        }
+      } );
+    }
+    if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL
+         && spoonSupplier.get().getManagementBowl() != spoonSupplier.get().getGlobalManagementBowl() ) {
+      MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      moveMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.MoveToProject" ) );
+      moveMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          vfsConnectionDelegate.moveToProject( vfsConnectionTreeItem.getName() );
+        }
+      } );
+      MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      copyMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.CopyToProject" ) );
+      copyMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          vfsConnectionDelegate.copyToProject( vfsConnectionTreeItem.getName() );
+        }
+      } );
+    }
+
+    MenuItem duplicateMenuItem = new MenuItem( itemMenu, SWT.NONE );
+    if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.GLOBAL ) {
+      duplicateMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.DuplicateGlobal",
+              spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
+    } else {
+      duplicateMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.DuplicateProject" ) );
+    }
+    duplicateMenuItem.addSelectionListener( new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        vfsConnectionDelegate.duplicate( vfsConnectionTreeItem.getName(), vfsConnectionTreeItem.getLevel() );
+      }
+    } );
+
     return itemMenu;
   }
 }

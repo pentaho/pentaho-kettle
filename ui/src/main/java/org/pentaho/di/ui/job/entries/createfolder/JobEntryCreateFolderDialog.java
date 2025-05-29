@@ -166,7 +166,7 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
     } );
 
     wbFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFoldername, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     wlAbortExists = new Label( shell, SWT.RIGHT );
     wlAbortExists.setText( BaseMessages.getString( PKG, "JobCreateFolder.FailIfExists.Label" ) );

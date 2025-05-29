@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -896,7 +897,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   @Override
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
     // No values are added to the row in this type of step
@@ -1181,6 +1182,11 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   /**
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1193,19 +1199,22 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
       //
       if ( !Utils.isEmpty( fileName ) ) {
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName ), space );
-        fileName = resourceNamingInterface.nameResource( fileObject, space, true );
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
+          .getFileObject( space.environmentSubstitute( fileName ), space );
+        fileName = namingInterface.nameResource( fileObject, space, true );
       }
       if ( !Utils.isEmpty( templateFileName ) ) {
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( templateFileName ), space );
-        templateFileName = resourceNamingInterface.nameResource( fileObject, space, true );
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
+          .getFileObject( space.environmentSubstitute( templateFileName ), space );
+        templateFileName = namingInterface.nameResource( fileObject, space, true );
       }
 
       return null;

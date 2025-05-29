@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -85,6 +86,9 @@ public class JsonOutputAnalyzerTest {
     analyzer = new JsonOutputAnalyzer() {};
     analyzer.setMetaverseBuilder( mockBuilder );
 
+    when( meta.getParentStepMeta() ).thenReturn( mockStepMeta );
+    when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+
     lenient().when( mockJsonOutput.getStepMetaInterface() ).thenReturn( meta );
     lenient().when( mockJsonOutput.getStepMeta() ).thenReturn( mockStepMeta );
     lenient().when( mockStepMeta.getStepMetaInterface() ).thenReturn( meta );
@@ -135,11 +139,11 @@ public class JsonOutputAnalyzerTest {
 
     assertFalse( consumer.isDataDriven( meta ) );
 
-    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( meta );
+    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta );
     assertTrue( resources.isEmpty() );
 
     when( meta.writesToFile() ).thenReturn( true );
-    resources = consumer.getResourcesFromMeta( meta );
+    resources = consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta );
     assertFalse( resources.isEmpty() );
     assertTrue( resources.stream().anyMatch( eri -> eri.getName().endsWith( outputFilePaths[0] ) ) );
     assertTrue( resources.stream().anyMatch( eri -> eri.getName().endsWith( outputFilePaths[1] ) ) );

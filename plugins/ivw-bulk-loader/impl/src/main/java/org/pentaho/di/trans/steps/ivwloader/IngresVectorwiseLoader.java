@@ -306,7 +306,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
     if ( !Utils.isEmpty( meta.getSqlPath() ) ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getSqlPath() ), getTransMeta() );
+        FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( environmentSubstitute( meta.getSqlPath() ), getTransMeta() );
         String sqlexec = Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) );
         sb.append( sqlexec );
         // sql @tc-dwh-test.timocom.net,tcp_ip,VW[ingres,pwd]::dwh
@@ -668,7 +669,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
           log.logError( "Error truncating table", e );
           return false;
         } finally {
-          db.disconnect();
+          db.close();
         }
 
       }

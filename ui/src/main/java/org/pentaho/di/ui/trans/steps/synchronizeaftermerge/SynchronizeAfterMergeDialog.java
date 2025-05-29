@@ -979,7 +979,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.
@@ -1342,7 +1342,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
           .getString( PKG, "SynchronizeAfterMergeDialog.ErrorGettingSchemas" ), e );
       } finally {
-        database.disconnect();
+        database.close();
       }
     }
   }

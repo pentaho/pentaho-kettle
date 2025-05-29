@@ -242,6 +242,8 @@ public class Variables implements VariableSpace {
   /**
    * Get a default variable space as a placeholder. Everytime you will get a new instance.
    *
+   * @see org.pentaho.di.core.bowl.Bowl#getADefaultVariableSpace()
+   *
    * @return a default variable space.
    */
   public static VariableSpace getADefaultVariableSpace() {

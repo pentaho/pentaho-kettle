@@ -350,36 +350,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
   }
 
   public void getUsedVariables( TransMeta transMeta ) {
-    Properties sp = new Properties();
-    VariableSpace space = Variables.getADefaultVariableSpace();
-
-    String[] keys = space.listVariables();
-    for ( int i = 0; i < keys.length; i++ ) {
-      sp.put( keys[i], space.getVariable( keys[i] ) );
-    }
-
-    List<String> vars = transMeta.getUsedVariables();
-    if ( vars != null && vars.size() > 0 ) {
-      HashMap<String, String> newVariables = new HashMap<String, String>();
-
-      for ( int i = 0; i < vars.size(); i++ ) {
-        String varname = vars.get( i );
-        if ( !varname.startsWith( Const.INTERNAL_VARIABLE_PREFIX ) ) {
-          newVariables.put( varname, Const.NVL( variables.get( varname ), sp.getProperty( varname, "" ) ) );
-        }
-      }
-      // variables.clear();
-      variables.putAll( newVariables );
-    }
-
-    // Also add the internal job variables if these are set...
-    //
-    for ( String variableName : Const.INTERNAL_JOB_VARIABLES ) {
-      String value = transMeta.getVariable( variableName );
-      if ( !Utils.isEmpty( value ) ) {
-        variables.put( variableName, value );
-      }
-    }
+    ExecutionConfiguration.getUsedVariables( transMeta, variables );
   }
 
   public void getUsedArguments( TransMeta transMeta, String[] commandLineArguments ) {

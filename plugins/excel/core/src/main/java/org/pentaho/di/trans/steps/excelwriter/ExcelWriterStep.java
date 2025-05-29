@@ -11,6 +11,7 @@
  ******************************************************************************/
 
 
+
 package org.pentaho.di.trans.steps.excelwriter;
 
 import java.io.BufferedInputStream;
@@ -59,6 +60,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -253,7 +255,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   private void closeOutputFile() throws KettleException {
     try ( BufferedOutputStreamWithCloseDetection out =
-        new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) ) ) {
+        new BufferedOutputStreamWithCloseDetection( KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getOutputStream( data.file, false ) ) ) {
       // may have to write a footer here
       if ( meta.isFooterEnabled() ) {
         writeHeader();
@@ -634,9 +637,10 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
    *          the destination file object
    * @throws KettleException
    */
-  public static void copyFile( FileObject in, FileObject out ) throws KettleException {
+  public static void copyFile( Bowl bowl, FileObject in, FileObject out ) throws KettleException {
     try ( BufferedInputStream fis = new BufferedInputStream( KettleVFS.getInputStream( in ) );
-        BufferedOutputStream fos = new BufferedOutputStream( KettleVFS.getOutputStream( out, false ) ) ) {
+        BufferedOutputStream fos = new BufferedOutputStream( KettleVFS.getInstance( bowl )
+          .getOutputStream( out, false ) ) ) {
       byte[] buf = new byte[1024 * 1024]; // copy in chunks of 1 MB
       int i = 0;
       while ( ( i = fis.read( buf ) ) != -1 ) {
@@ -665,7 +669,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       // build new filename
       String buildFilename = buildFilename( data.splitnr );
 
-      data.file = KettleVFS.getFileObject( buildFilename, getTransMeta() );
+      data.file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( buildFilename, getTransMeta() );
 
       if ( log.isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "ExcelWriterStep.Log.OpeningFile", buildFilename ) );
@@ -855,16 +859,18 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     if ( meta.isTemplateEnabled() ) {
       // handle template case (must have same format)
       // ensure extensions match
-      String templateExt = KettleVFS.getFileObject( data.realTemplateFileName ).getName().getExtension();
+      String templateExt = KettleVFS.getInstance( getTransMeta().getBowl() )
+        .getFileObject( data.realTemplateFileName ).getName().getExtension();
       if ( !meta.getExtension().equalsIgnoreCase( templateExt ) ) {
         throw new KettleException(
             "Template Format Mismatch: Template has extension: " + templateExt + ", but output file has extension: "
                 + meta.getExtension() + ". Template and output file must share the same format!" );
       }
 
-      if ( KettleVFS.getFileObject( data.realTemplateFileName ).exists() ) {
+      if ( KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( data.realTemplateFileName ).exists() ) {
         // if the template exists just copy the template in place
-        copyFile( KettleVFS.getFileObject( data.realTemplateFileName, getTransMeta() ), data.file );
+        copyFile( getTransMeta().getBowl(), KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( data.realTemplateFileName, getTransMeta() ), data.file );
       } else {
         // template is missing, log it and get out
         if ( log.isBasic() ) {
@@ -877,7 +883,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       // handle fresh file case, just create a fresh workbook
       try ( Workbook wb = XLSX.equalsIgnoreCase( meta.getExtension() ) ? new XSSFWorkbook() : new HSSFWorkbook();
           BufferedOutputStreamWithCloseDetection out =
-              new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) ) ) {
+              new BufferedOutputStreamWithCloseDetection( KettleVFS.getInstance( getTransMeta().getBowl() )
+                .getOutputStream( data.file, false ) ) ) {
         wb.createSheet( data.realSheetname );
         wb.write( out );
       }

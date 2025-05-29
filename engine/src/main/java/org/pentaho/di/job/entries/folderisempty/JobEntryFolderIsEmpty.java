@@ -201,7 +201,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
       String realFoldername = getRealFoldername();
       FileObject folderObject = null;
       try {
-        folderObject = KettleVFS.getFileObject( realFoldername, this );
+        folderObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFoldername, this );
         if ( folderObject.exists() ) {
           // Check if it's a folder
           if ( folderObject.getType() == FileType.FOLDER ) {
@@ -355,7 +355,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "filename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 }

@@ -898,7 +898,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     };
 
     wbLocalDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wLocalDirectory, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     wCancel.addListener( SWT.Selection, lsCancel );
     wOK.addListener( SWT.Selection, lsOK );

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -39,7 +40,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -438,7 +438,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
 
       String con = XMLHandler.getTagValue( stepnode, "connection" );
@@ -690,7 +690,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
             PKG, "SQLFileOutputMeta.CheckResult.UndefinedError", e.getMessage() ), stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       CheckResult cr =
@@ -772,7 +772,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
             retval.setError( BaseMessages.getString( PKG, "SQLFileOutputMeta.Error.ErrorConnecting", dbe
               .getMessage() ) );
           } finally {
-            db.disconnect();
+            db.close();
           }
         } else {
           retval.setError( BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.TableNotSpecified" ) );
@@ -810,7 +810,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
         throw new KettleException(
           BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.ConnectionNotDefined" ) );
@@ -850,6 +850,11 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -861,8 +866,10 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
    *
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  @Override
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -870,14 +877,15 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.data
       // To : /home/matt/test/files/foo/bar.data
       //
-      FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName ), space );
+      FileObject fileObject = KettleVFS.getInstance( executionBowl )
+        .getFileObject( space.environmentSubstitute( fileName ), space );
 
       // If the file doesn't exist, forget about this effort too!
       //
       if ( fileObject.exists() ) {
         // Convert to an absolute path...
         //
-        fileName = resourceNamingInterface.nameResource( fileObject, space, true );
+        fileName = namingInterface.nameResource( fileObject, space, true );
 
         return fileName;
       }

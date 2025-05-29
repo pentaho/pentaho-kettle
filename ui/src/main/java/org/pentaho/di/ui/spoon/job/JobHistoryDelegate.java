@@ -252,7 +252,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
             BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title" ),
             BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message" ), e );
         } finally {
-          database.disconnect();
+          database.close();
 
           refreshHistory();
           if ( model.logDisplayText != null ) {
@@ -326,7 +326,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
             }
 
           } finally {
-            db.disconnect();
+            db.close();
           }
 
           gotResults = true;
@@ -565,7 +565,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    */
   @VisibleForTesting
   Map<String, Integer> getColumnMappings( JobHistoryDelegate.JobHistoryLogTab model ) {
-    Map<String, Integer> map = new HashMap();
+    Map<String, Integer> map = new HashMap<>();
 
     for ( ColumnInfo ci : model.logDisplayTableView.getColumns() ) {
       for ( int i = 0; i < model.logTableFields.size(); i++ ) {

@@ -198,7 +198,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Listen to the Browse... button
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.CUBE, FilterType.ALL }, FilterType.CUBE ) ) );
 
     lsDef = new SelectionAdapter() {

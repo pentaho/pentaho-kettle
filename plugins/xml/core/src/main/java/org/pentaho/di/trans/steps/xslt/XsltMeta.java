@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.List;
 
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -298,8 +299,9 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
+      StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output field (String)
     ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getResultfieldname() ), ValueMeta.TYPE_STRING );
     v.setOrigin( name );

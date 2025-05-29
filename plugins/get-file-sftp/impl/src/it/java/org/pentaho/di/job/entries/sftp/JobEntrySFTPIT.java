@@ -21,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogLevel;
@@ -62,7 +63,7 @@ public class JobEntrySFTPIT {
   @Test
   public void getFile_WhenDestinationIsSetViaVariable() throws Exception {
     final String localDir = TestUtils.createTempDir();
-    KettleVFS.getFileObject( localDir ).createFolder();
+    KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( localDir ).createFolder();
 
     final String myVar = "my-var";
 
@@ -91,7 +92,8 @@ public class JobEntrySFTPIT {
 
     job.execute( new Result(), 1 );
 
-    FileObject downloaded = KettleVFS.getFileObject( localDir + "/" + fileName );
+    FileObject downloaded = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( localDir + "/" + fileName );
     assertTrue( downloaded.exists() );
     downloaded.delete();
   }
