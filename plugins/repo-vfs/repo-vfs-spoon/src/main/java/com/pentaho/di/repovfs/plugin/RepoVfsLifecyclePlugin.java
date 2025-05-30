@@ -54,6 +54,8 @@ public class RepoVfsLifecyclePlugin implements KettleLifecycleListener {
       } else {
         log.debug( "Provider already present." );
       }
+    } else {
+      log.error( "Unexpected FileSystemManager {}, provider not registered in VFS", fsm.getClass() );
     }
 
     ConnectionManager mgr = connectionManager.get();

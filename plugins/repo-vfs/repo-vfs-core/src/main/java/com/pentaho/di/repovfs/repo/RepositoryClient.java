@@ -5,6 +5,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -133,6 +134,31 @@ public class RepositoryClient {
     setRoot( tree );
   }
 
+  public void clearCache( String[] path ) {
+    try {
+      if ( loadTreePartially ) {
+        lookupNode( path ).ifPresent( treeDto -> {
+          if ( treeDto instanceof RepositoryFileTreeDtoProxy ) {
+            RepositoryFileTreeDtoProxy proxy = (RepositoryFileTreeDtoProxy) treeDto;
+            proxy.clearCache();
+            if ( log.isDebugEnabled() ) {
+              log.debug( "cache cleared for {} ", StringUtils.join( path, "/" ) );
+            }
+          } else {
+            log.warn( "No proxy on partially loaded tree at path", StringUtils.join( path, "/" ) );
+            this.root = null;
+          }
+        } );
+
+      } else {
+        this.root = null;
+        log.debug( "cache cleared at root" );
+      }
+    } catch ( RepositoryClientException e ) {
+      log.error( "Error refreshing folder: {}", StringUtils.join( path, "/" ), e );
+    }
+  }
+
   private RepositoryFileTreeDto fetchChildren( String path ) {
     String encodedPath = encodePathForRequest( path );
     String childrenUrl = cfg.getRepositoryPartialSvc( encodedPath );
@@ -185,12 +211,10 @@ public class RepositoryClient {
 
       WebResource resource = client.resource( url + service );
       ClientResponse response = resource.type( "text/plain" ).put( ClientResponse.class, null );
-      if ( response.getStatus() == 200 ) {
-        refreshRoot();
-      } else {
+      if ( response.getStatus() != 200 ) {
         throw new RepositoryClientException( response );
       }
-    } catch ( Exception e ) {
+    } catch ( UniformInterfaceException | ClientHandlerException e ) {
       throw new RepositoryClientException( "Client error creating folder", e );
     }
   }
@@ -246,7 +270,6 @@ public class RepositoryClient {
     }
   }
 
-
   public long getRefreshTime() {
     return refreshTime;
   }
@@ -260,9 +283,7 @@ public class RepositoryClient {
     final WebResource resource = client.resource( url + cfg.getDeleteFileOrFolderUrl() );
     final ClientResponse response = resource.put( ClientResponse.class, file.getId() );
 
-    if ( response != null && response.getStatus() == Response.Status.OK.getStatusCode() ) {
-      refreshRoot();
-    } else {
+    if ( response == null || response.getStatus() != Response.Status.OK.getStatusCode() ) {
       throw new RepositoryClientException( "Failed with error-code " + response.getStatus() );
     }
   }
@@ -321,9 +342,6 @@ public class RepositoryClient {
     final WebResource resource = client.resource( url + service );
     final ClientResponse response = resource.put( ClientResponse.class, data );
     throwOnError( response );
-
-    // Perhaps a New file was created. Refresh local tree model.
-    this.refreshRoot();
   }
 
   private void throwOnError( final ClientResponse response ) throws RepositoryClientException {

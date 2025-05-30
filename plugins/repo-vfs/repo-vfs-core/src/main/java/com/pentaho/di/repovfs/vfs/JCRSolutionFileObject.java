@@ -37,7 +37,7 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
 
   private static final String FILE_NOT_FOUND = "The specified file name does not exist: {0}";
 
-  private RepositoryClient repoClient;
+  private final RepositoryClient repoClient;
 
   public JCRSolutionFileObject( final AbstractFileName name,
                                  final JCRSolutionFileSystem fileSystem,
@@ -47,17 +47,6 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
     this.repoClient = repoClient;
 
     log.debug( "{}({})", getClass().getSimpleName(), name );
-  }
-
-  /**
-   * Attaches this file object to its file resource.  This method is called before any of the doBlah() or onBlah()
-   * methods.  Sub-classes can use this method to perform lazy initialisation.
-   * <p/>
-   * This implementation does nothing.
-   */
-  @Override
-  protected void doAttach() throws Exception {
-    super.doAttach();
   }
 
   @Override
@@ -229,11 +218,30 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
    * root of the file system.
    * </ul>
    * <p/>
-   * This implementation throws an exception.
    */
   @Override
   protected void doCreateFolder() throws Exception {
     repoClient.createFolder( getName().getPath() );
+  }
+
+  @Override
+  public void refresh() throws FileSystemException {
+    log.debug( "refreshing {}", getName() );
+    super.refresh();
+    clearCache();
+  }
+
+  private void clearCache() {
+    repoClient.clearCache( computeFileNames( getName() ) );
+  }
+
+  private void clearParentCache() {
+    FileName parent = getName().getParent();
+    if ( parent != null ) {
+      repoClient.clearCache( computeFileNames( parent ) );
+    } else {
+      repoClient.refreshRoot();
+    }
   }
 
   @Override
@@ -247,7 +255,7 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
   @Override
   public int delete( final FileSelector selector ) throws FileSystemException {
     if ( selector == null || selector == Selectors.SELECT_SELF || selector == Selectors.SELECT_ALL ) {
-      doDelete();
+      delete();
       return 1;
     } else {
       return super.delete( selector );
@@ -257,17 +265,29 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
   @Override
   public boolean delete() throws FileSystemException {
     doDelete();
+    try {
+      handleDelete();
+    } catch ( Exception e ) {
+      throw new FileSystemException("vfs.provider/delete.error", e, getName() );
+    }
     return true;
   }
 
   @Override
   protected void doDelete() throws FileSystemException {
+    log.debug( "deleting {}", getName() );
     final RepositoryFileDto file = getFile( getName() );
     try {
       repoClient.delete( file );
     } catch ( RepositoryClientException e ) {
       throw new FileSystemException( e );
     }
+  }
+
+  @Override
+  protected void onChildrenChanged( FileName child, FileType newType ) throws Exception {
+    super.onChildrenChanged( child, newType );
+    clearCache();
   }
 
   private RepositoryFileDto getFile( FileName name ) throws FileSystemException {
@@ -328,11 +348,13 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
 
   @Override
   public void createFile() throws FileSystemException {
+    log.debug( "new file: {}", getName() );
     if ( isKettleFile( getName().getBaseName() ) ) {
       // avoid error when trying to create empty trans/job
     } else {
       super.createFile();
     }
+    clearParentCache();
   }
 
   private boolean isKettleFile( String fileName ) {
