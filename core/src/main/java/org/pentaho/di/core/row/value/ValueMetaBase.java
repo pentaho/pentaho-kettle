@@ -1345,15 +1345,14 @@ public class ValueMetaBase implements ValueMetaInterface {
         }
       }
 
-      if ( !( number instanceof Long ) ) {
-        if ( number instanceof Double ) {
-          if ( number.doubleValue() < Long.MIN_VALUE || number.doubleValue() > Long.MAX_VALUE ) {
-            log.logBasic( "Value [" + string + "] is out of range for Integer." );
-            if ( !ignoreOutOfRange ) {
-              throw new KettleValueException( toString()
-                + " : couldn't convert String to Integer : value Out of Range [" + string + "]. Change the destination data type or round to the nearest value possible for Integer by setting KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION to \"Y\". " );
-            }
-          }
+      if ( number instanceof Double && ( number.doubleValue() < Long.MIN_VALUE
+        || number.doubleValue() > Long.MAX_VALUE ) ) {
+        log.logBasic( "Value [" + string + "] is out of range for Integer." );
+        if ( !ignoreOutOfRange ) {
+          throw new KettleValueException( toString()
+            + " : couldn't convert String to Integer : value Out of Range [" + string
+            + "]. Change the destination data type or round to the nearest value possible for Integer by setting "
+            + "property KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION to \"Y\". " );
         }
       }
 
