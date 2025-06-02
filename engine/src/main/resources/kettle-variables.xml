@@ -682,4 +682,13 @@
     <default-value>N</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>Set this variable to Y/N to configure whether to ignore out of range exceptions.
+      If set to Y, it will ignore out of range exceptions and round values to the nearest possible value.
+      If set to N, it will throw an exception when a value is out of range (Range from -9223372036854775808 to 9223372036854775807).
+    </description>
+    <variable>KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
 </kettle-variables>
