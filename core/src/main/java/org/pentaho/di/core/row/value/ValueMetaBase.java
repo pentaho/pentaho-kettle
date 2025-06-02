@@ -233,9 +233,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.dateFormatTimeZone = TimeZone.getDefault();
     this.identicalFormat = true;
     this.bigNumberFormatting = true;
-    this.lenientStringToNumber =
-      convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ),
-        "N" ) );
+    this.lenientStringToNumber ="Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ));
     this.ignoreTimezone =
       convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ),
         "N" ) );
