@@ -152,8 +152,9 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
       updatedTextFileField.setTrimType( "both" );
       updatedTextFileField.setNullif( textFileField.getNullString() );
       updatedTextFileField.setIfnull( textFileField.getIfNullValue() );
-      updatedTextFileField.setPosition( String.valueOf( textFileField.getPosition() ) );
-      updatedTextFileField.setRepeat( textFileField.isRepeated() ? "N" : "Y" );
+      int position = textFileField.getPosition();
+      updatedTextFileField.setPosition( position == -1 ? StringUtils.EMPTY : String.valueOf( position ) );
+      updatedTextFileField.setRepeat( textFileField.isRepeated() ? "Y" : "N" );
 
       textFileFields.add( updatedTextFileField );
     }
