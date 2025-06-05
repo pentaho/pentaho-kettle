@@ -64,7 +64,7 @@ public class ValueMapper extends BaseStep implements StepInterface {
 
       data.previousMeta = getInputRowMeta().clone();
       data.outputMeta = data.previousMeta.clone();
-      meta.getFields( data.outputMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputMeta, getStepname(), null, null, this, repository, metaStore );
 
       data.keynr = data.previousMeta.indexOfValue( meta.getFieldToUse() );
       if ( data.keynr < 0 ) {

@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.dynamicsqlrow;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -209,7 +210,8 @@ public class DynamicSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaI
     queryonlyonchange = false;
   }
 
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( databaseMeta == null ) {
@@ -250,7 +252,7 @@ public class DynamicSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaI
           v.setOrigin( name );
         }
         row.addRowMeta( add );
-        db.disconnect();
+        db.close();
       } catch ( KettleDatabaseException dbe ) {
         throw new KettleStepException( BaseMessages.getString(
           PKG, "DynamicSQLRowMeta.Exception.ErrorObtainingFields" ), dbe );
@@ -375,7 +377,7 @@ public class DynamicSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaI
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "DynamicSQLRowMeta.CheckResult.InvalidConnection" );
@@ -398,7 +400,8 @@ public class DynamicSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaI
     IMetaStore metaStore ) throws KettleStepException {
 
     RowMetaInterface out = prev.clone();
-    getFields( out, stepMeta.getName(), new RowMetaInterface[] { info, }, null, transMeta, repository, metaStore );
+    getFields( transMeta.getBowl(), out, stepMeta.getName(), new RowMetaInterface[] { info, }, null, transMeta,
+      repository, metaStore );
     if ( out != null ) {
       for ( int i = 0; i < out.size(); i++ ) {
         ValueMetaInterface outvalue = out.getValueMeta( i );

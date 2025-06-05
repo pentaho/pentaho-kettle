@@ -12,6 +12,9 @@
 
 package org.pentaho.di.job.entries.unzip;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -23,7 +26,9 @@ import org.apache.commons.vfs2.FileObject;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip> {
@@ -111,6 +116,9 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
   public void unzipPostProcessingTest() throws Exception {
 
     JobEntryUnZip jobEntryUnZip = new JobEntryUnZip();
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    when( mockJobMeta .getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    jobEntryUnZip.setParentJobMeta( mockJobMeta );
 
     Method unzipPostprocessingMethod = jobEntryUnZip.getClass().getDeclaredMethod( "doUnzipPostProcessing", FileObject.class, FileObject.class, String.class );
     unzipPostprocessingMethod.setAccessible( true );

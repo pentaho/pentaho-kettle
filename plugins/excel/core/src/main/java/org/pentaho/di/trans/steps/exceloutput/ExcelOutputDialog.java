@@ -1292,7 +1292,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     wImage.setLayoutData( fdImage );
 
     wbImage.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wImage, transMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.PNG, FilterType.ALL }, FilterType.PNG  ) ) );
 
     fdFontHeaderGroup = new FormData();

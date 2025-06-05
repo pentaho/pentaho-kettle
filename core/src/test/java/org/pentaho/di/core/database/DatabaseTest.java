@@ -787,7 +787,7 @@ public class DatabaseTest {
     fieldPstmt.set( db, ps );
     doThrow( new SQLException( "Test SQL exception" ) ).when( ps ).close();
 
-    db.disconnect();
+    db.close();
     verify( connection, times( 1 ) ).close();
   }
 
@@ -806,7 +806,7 @@ public class DatabaseTest {
     fieldPstmt.set( db, ps );
 
     doThrow( new SQLException( "Test SQL exception" ) ).when( conn ).commit();
-    db.disconnect();
+    db.close();
     verify( conn, times( 1 ) ).close();
   }
 
@@ -816,7 +816,7 @@ public class DatabaseTest {
     Database db = new Database( log, meta );
     db.setConnection( conn );
     db.setConnectionGroup( "1" );
-    db.disconnect();
+    db.close();
     verify( conn, never() ).close();
   }
 

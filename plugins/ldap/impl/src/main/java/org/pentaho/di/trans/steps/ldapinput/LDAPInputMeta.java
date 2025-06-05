@@ -19,6 +19,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -722,7 +723,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   }
 
   @Override
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     int i;

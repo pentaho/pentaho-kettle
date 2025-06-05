@@ -20,6 +20,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -195,7 +196,7 @@ public class LucidDBStreamingLoaderMeta extends BaseDatabaseStepMeta implements 
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
@@ -377,7 +378,8 @@ public class LucidDBStreamingLoaderMeta extends BaseDatabaseStepMeta implements 
     }
   }
 
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
@@ -843,7 +845,7 @@ public class LucidDBStreamingLoaderMeta extends BaseDatabaseStepMeta implements 
         throw new KettleException( BaseMessages.getString(
           PKG, "LucidDBStreamingLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString(
@@ -969,7 +971,7 @@ public class LucidDBStreamingLoaderMeta extends BaseDatabaseStepMeta implements 
             retval.setError( BaseMessages.getString( PKG, "LucidDBStreamingLoaderMeta.Error.ErrorConnecting", dbe
               .getMessage() ) );
           } finally {
-            db.disconnect();
+            db.close();
           }
         } else {
           retval.setError( BaseMessages.getString( PKG, "LucidDBStreamingLoaderMeta.Error.NoTable" ) );

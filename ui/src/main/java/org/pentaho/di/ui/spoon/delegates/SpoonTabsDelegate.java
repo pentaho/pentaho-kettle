@@ -58,6 +58,8 @@ import org.pentaho.ui.util.Launch;
 import org.pentaho.ui.util.Launch.Status;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SpoonTabsDelegate extends SpoonDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
@@ -254,6 +256,20 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     return addSpoonBrowser( name, urlString, isURL, listener, null, showControls );
   }
 
+
+  private void addBrowserFunctions( Map<String, Runnable> functions, SpoonBrowser browser ) {
+    if ( functions != null ) {
+      for ( String functionName : functions.keySet() ) {
+        new BrowserFunction( browser.getBrowser(), functionName ) {
+          public Object function( Object[] arguments ) {
+            functions.get( functionName ).run();
+            return null;
+          }
+        };
+      }
+    }
+  }
+
   public boolean addSpoonBrowser( String name, String urlString, boolean isURL, LocationListener listener, Map<String, Runnable> functions, boolean showControls ) {
     TabSet tabfolder = spoon.tabfolder;
 
@@ -279,16 +295,9 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           }
         } );
 
-        if ( functions != null ) {
-          for ( String functionName : functions.keySet() ) {
-            new BrowserFunction( browser.getBrowser(), functionName ) {
-              public Object function( Object[] arguments ) {
-                functions.get( functionName ).run();
-                return null;
-              }
-            };
-          }
-        }
+        Set<String> knownFunctions = new HashSet<>();
+        addBrowserFunctions( functions, browser );
+        knownFunctions.addAll( functions.keySet() );
 
         new BrowserFunction( browser.getBrowser(), "genericFunction" ) {
           public Object function( Object[] arguments ) {
@@ -299,11 +308,22 @@ public class SpoonTabsDelegate extends SpoonDelegate {
             return null;
           }
         };
+        knownFunctions.add( "genericFunction" );
 
         new BrowserFunction( browser.getBrowser(), "openURL" ) {
           public Object function( Object[] arguments ) {
             Program.launch( arguments[0].toString() );
             return null;
+          }
+        };
+        knownFunctions.add( "openURL" );
+
+        new BrowserFunction( browser.getBrowser(), "functionExists" ) {
+          @Override
+          public Boolean function( Object[] arguments ) {
+            boolean exists = knownFunctions.contains( arguments[0].toString() );
+            System.err.println( "knownFunction(" + arguments[0].toString() + "): " + exists );
+            return Boolean.valueOf( exists );
           }
         };
 
@@ -379,9 +399,9 @@ public class SpoonTabsDelegate extends SpoonDelegate {
       if ( entry != null && !entry.getTabItem().isDisposed() ) {
         if ( trans.getFilename() != null && entry.getFilename() != null ) {
           // If the entry has a file name it is the same as trans iff. they originated from the same files
-          FileObject entryFile = KettleVFS.getFileObject( entry.getFilename() );
+          FileObject entryFile = KettleVFS.getInstance( trans.getBowl() ).getFileObject( entry.getFilename() );
           if ( transFile == null ) {
-            transFile = KettleVFS.getFileObject( trans.getFilename() );
+            transFile = KettleVFS.getInstance( trans.getBowl() ).getFileObject( trans.getFilename() );
           }
           if ( entryFile.equals( transFile ) ) {
             return entry;
@@ -495,7 +515,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     }
 
     // Also refresh the tree
-    spoon.refreshTree();
+    spoon.forceRefreshTree();
     spoon.setShellText(); // calls also enableMenus() and markTabsChanged()
   }
 

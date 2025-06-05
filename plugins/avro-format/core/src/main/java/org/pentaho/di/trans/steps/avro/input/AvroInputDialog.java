@@ -125,7 +125,7 @@ public class AvroInputDialog extends BaseAvroStepDialog {
     List<? extends IAvroInputField> defaultFields;
     try {
       defaultFields = AvroInput
-        .getLeafFields( schemaFileName, avroFileName, transMeta );
+        .getLeafFields( transMeta.getBowl(), schemaFileName, avroFileName, transMeta );
       if ( defaultFields != null ) {
         wInputFields.clearAll();
         for ( IAvroInputField field : defaultFields ) {
@@ -460,7 +460,7 @@ public class AvroInputDialog extends BaseAvroStepDialog {
       .top( wlSchemaPath ).result() );
 
     wbSchemaBrowse.addSelectionListener( new SelectionAdapterFileDialogTextVar(
-      log, wSchemaPath, transMeta, new SelectionAdapterOptions( selectionOperation() ) ) );
+      log, wSchemaPath, transMeta, new SelectionAdapterOptions( transMeta.getBowl(), selectionOperation() ) ) );
 
 
     wSchemaFieldComposite = new Composite( wSchemaSettingsDynamicArea, SWT.NONE );

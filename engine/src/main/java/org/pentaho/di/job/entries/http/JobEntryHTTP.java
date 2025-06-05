@@ -506,7 +506,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         }
 
         // Create the output File...
-        outputFile = KettleVFS.getOutputStream( realTargetFile, this, fileAppended );
+        outputFile = KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getOutputStream( realTargetFile, this, fileAppended );
 
         URI uri = (new URIBuilder( urlToUse )).build();
 
@@ -529,7 +530,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           // Add to the result files...
           ResultFile resultFile =
             new ResultFile(
-              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realTargetFile, this ), parentJob
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                .getFileObject( realTargetFile, this ), parentJob
               .getJobname(), toString() );
           result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
         }
@@ -838,13 +840,13 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
                      Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "targetFilename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "targetFilename", remarks,
       AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "targetFilenameExtention", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "targetFilenameExtention", remarks,
       AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "uploadFilename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "uploadFilename", remarks,
       AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "proxyPort", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "proxyPort", remarks,
       AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 

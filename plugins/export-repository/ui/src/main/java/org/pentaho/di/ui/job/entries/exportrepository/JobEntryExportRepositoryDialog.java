@@ -428,7 +428,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     wFoldername.setLayoutData( fdFoldername );
 
     wbFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFoldername, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wFoldername.addModifyListener( new ModifyListener() {
@@ -523,11 +523,11 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     wTargetFilename.setLayoutData( fdTargetFilename );
 
     wbTargetFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL, FilterType.XML }, FilterType.XML  ) ) );
 
     wbTargetFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // create folder or parent folder?
     wlcreateFolder = new Label( wTarget, SWT.RIGHT );
@@ -1233,7 +1233,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
       if ( repos.isConnected() ) {
         try {
           FileDialogOperation fileDialogOperation =
-            new FileDialogOperation( FileDialogOperation.SELECT_FOLDER, FileDialogOperation.ORIGIN_SPOON );
+            new FileDialogOperation( jobMeta.getBowl(), FileDialogOperation.SELECT_FOLDER, FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation
             .setTitle( BaseMessages.getString( PKG, "JobExportRepository.SelectDirectoryDialog.Title" ) );
           fileDialogOperation.setFilter( null );

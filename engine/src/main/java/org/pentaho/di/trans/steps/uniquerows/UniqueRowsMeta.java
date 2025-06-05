@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.uniquerows;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -207,7 +208,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // change the case insensitive flag too
     for ( int i = 0; i < compareFields.length; i++ ) {

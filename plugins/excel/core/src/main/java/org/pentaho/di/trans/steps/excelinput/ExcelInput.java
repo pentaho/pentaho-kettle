@@ -369,7 +369,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = new RowMeta(); // start from scratch!
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                      metaStore );
 
       if ( meta.isAcceptingFilenames() ) {
         // Read the files from the specified input stream...
@@ -392,7 +393,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
           }
           String fileValue = rowSet.getRowMeta().getString( fileRow, idx );
           try {
-            data.files.addFile( KettleVFS.getFileObject( fileValue, getTransMeta() ) );
+            data.files.addFile( KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( fileValue, getTransMeta() ) );
           } catch ( KettleFileException e ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "ExcelInput.Exception.CanNotCreateFileObject", fileValue ), e );
@@ -547,7 +549,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
             + data.filenr + " : " + data.filename ) );
         }
 
-        data.workbook = WorkbookFactory.getWorkbook( meta.getSpreadSheetType(), data.filename, meta.getEncoding(), meta.getPassword() );
+        data.workbook = WorkbookFactory.getWorkbook( getTransMeta().getBowl(), meta.getSpreadSheetType(),
+          data.filename, meta.getEncoding(), meta.getPassword() );
 
         data.errorHandler.handleFile( data.file );
         // Start at the first sheet again...
@@ -741,7 +744,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       initErrorHandling();
       initReplayFactory();
-      data.files = meta.getFileList( this );
+      data.files = meta.getFileList( getTransMeta().getBowl(), this );
       if ( data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() > 0 && !meta.isAcceptingFilenames() ) {
 
         logError( BaseMessages.getString( PKG, "ExcelInput.Error.NoFileSpecified" ) );
@@ -874,7 +877,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
   public JSONObject getFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
-    String[] files = excelInputMeta.getFilePaths( getTransMeta() );
+    String[] files = excelInputMeta.getFilePaths( getTransMeta().getBowl(), getTransMeta() );
 
     if ( files == null || files.length == 0 ) {
       response.put( MESSAGE, BaseMessages.getString( PKG, "ExcelInputDialog.NoFilesFound.DialogMessage" ) );
@@ -891,7 +894,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
     JSONObject response = new JSONObject();
     List<String> sheetNames = new ArrayList<>();
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
-    FileInputList fileList = excelInputMeta.getFileList( getTransMeta() );
+    FileInputList fileList = excelInputMeta.getFileList( getTransMeta().getBowl(), getTransMeta() );
 
     for ( FileObject fileObject : fileList.getFiles() ) {
       try {
@@ -919,7 +922,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
     JSONObject response = new JSONObject();
     RowMetaInterface fields = new RowMeta();
     ExcelInputMeta excelInputMeta = (ExcelInputMeta) getStepMetaInterface();
-    FileInputList fileList = excelInputMeta.getFileList( getTransMeta() );
+    FileInputList fileList = excelInputMeta.getFileList( getTransMeta().getBowl(), getTransMeta() );
 
     for ( FileObject file : fileList.getFiles() ) {
       try {
@@ -944,7 +947,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
   }
 
   private KWorkbook getWorkBook( ExcelInputMeta excelInputMeta, FileObject fileObject ) throws KettleException {
-    return WorkbookFactory.getWorkbook( excelInputMeta.getSpreadSheetType(),
+    return WorkbookFactory.getWorkbook( getTransMeta().getBowl(), excelInputMeta.getSpreadSheetType(),
       KettleVFS.getFilename( fileObject ),
       excelInputMeta.getEncoding(),
       excelInputMeta.getPassword() );

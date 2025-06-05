@@ -43,13 +43,11 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
-import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LogTablePluginInterface;
@@ -58,7 +56,6 @@ import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -67,6 +64,7 @@ import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -80,6 +78,8 @@ import org.pentaho.di.ui.core.widget.FieldDisabledListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 
@@ -892,7 +892,17 @@ public class JobDialog extends Dialog {
         getDatabaseDialog().setDatabaseMeta( databaseMeta );
 
         if ( getDatabaseDialog().open() != null ) {
-          jobMeta.addDatabase( getDatabaseDialog().getDatabaseMeta() );
+          try {
+            DatabaseManagementInterface dbMgr =
+              Spoon.getInstance().getManagementBowl().getManager( DatabaseManagementInterface.class );
+            dbMgr.add( getDatabaseDialog().getDatabaseMeta() );
+            // Refresh left hand tree
+            Spoon.getInstance().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
+          } catch ( KettleException dbe ) {
+            new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorAddingDatabase.Title" ), BaseMessages
+                .getString( PKG, "JobDialog.Dialog.ErrorAddingDatabase.Message" ), dbe );
+          }
           wLogconnection.add( getDatabaseDialog().getDatabaseMeta().getName() );
           wLogconnection.select( wLogconnection.getItemCount() - 1 );
         }
@@ -1446,9 +1456,6 @@ public class JobDialog extends Dialog {
     wParamFields.setRowNums();
     wParamFields.optWidth( true );
 
-    wSharedObjectsFile.setText( Const.NVL( jobMeta.getSharedObjectsFile(), "" ) );
-    sharedObjectsFileChanged = false;
-
     for ( JobDialogPluginInterface extraTab : extraTabs ) {
       extraTab.getData( jobMeta );
     }
@@ -1510,7 +1517,6 @@ public class JobDialog extends Dialog {
     jobMeta.activateParameters();
 
     jobMeta.setBatchIdPassed( wBatchTrans.getSelection() );
-    jobMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
 
     for ( JobDialogPluginInterface extraTab : extraTabs ) {
       extraTab.ok( jobMeta );

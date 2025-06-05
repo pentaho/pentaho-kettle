@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.MappingJsonFactory;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.steps.jsoninput.json.node.ArrayNode;
@@ -43,6 +44,7 @@ import org.pentaho.di.trans.steps.jsoninput.json.node.ValueNode;
 public class JsonSampler {
 
   private int start = 0;
+  private Bowl bowl;
   private Configuration configuration;
   private JsonFactory jsonFactory = new MappingJsonFactory();
 
@@ -51,11 +53,13 @@ public class JsonSampler {
    *
    * @param configuration
    */
-  public JsonSampler( Configuration configuration ) {
+  public JsonSampler( Bowl bowl, Configuration configuration ) {
+    this.bowl = bowl;
     this.configuration = configuration;
   }
 
-  public JsonSampler() {
+  public JsonSampler( Bowl bowl ) {
+    this.bowl = bowl;
     this.configuration = new Configuration();
   }
 
@@ -189,7 +193,7 @@ public class JsonSampler {
    * @throws IOException
    */
   public Node sample( String file, Tree tree ) throws IOException, KettleFileException {
-    return sample( KettleVFS.getInputStream( file ), tree );
+    return sample( KettleVFS.getInstance( bowl ).getInputStream( file ), tree );
   }
 
   /**

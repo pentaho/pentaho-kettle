@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -62,7 +63,7 @@ public class SelectionAdapterFileDialogTest {
     AbstractMeta meta = mock( AbstractMeta.class );
     RepositoryUtility repositoryUtility = mock( RepositoryUtility.class );
     ExtensionPointWrapper extensionPointWrapper = mock( ExtensionPointWrapper.class );
-    SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE );
+    SelectionAdapterOptions options = new SelectionAdapterOptions( DefaultBowl.getInstance(), SelectionOperation.FILE );
     SelectionEvent event = mock( SelectionEvent.class );
 
     String testPath = "/home/devuser/some/path";
@@ -94,7 +95,7 @@ public class SelectionAdapterFileDialogTest {
     AbstractMeta meta = mock( AbstractMeta.class );
     RepositoryUtility repositoryUtility = mock( RepositoryUtility.class );
     ExtensionPointWrapper extensionPointWrapper = mock( ExtensionPointWrapper.class );
-    SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE );
+    SelectionAdapterOptions options = new SelectionAdapterOptions( DefaultBowl.getInstance(), SelectionOperation.FILE );
     File testFile = temporaryFolder.newFile( "testFileName" );
 
     String testPath = testFile.getPath();
@@ -115,19 +116,19 @@ public class SelectionAdapterFileDialogTest {
   @Test
   public void testCreateFileDialogOperation() {
     // TEST : SELECT file
-    FileDialogOperation fdo1 = testInstance.createFileDialogOperation( SelectionOperation.FILE );
+    FileDialogOperation fdo1 = testInstance.createFileDialogOperation( DefaultBowl.getInstance(), SelectionOperation.FILE );
     assertNotNull( fdo1 );
     assertEquals( FileDialogOperation.SELECT_FILE, fdo1.getCommand() );
     assertEquals( FileDialogOperation.ORIGIN_SPOON, fdo1.getOrigin() );
 
     // TEST : SELECT folder
-    FileDialogOperation fdo2 = testInstance.createFileDialogOperation( SelectionOperation.FOLDER );
+    FileDialogOperation fdo2 = testInstance.createFileDialogOperation( DefaultBowl.getInstance(), SelectionOperation.FOLDER );
     assertNotNull( fdo2 );
     assertEquals( FileDialogOperation.SELECT_FOLDER, fdo2.getCommand() );
     assertEquals( FileDialogOperation.ORIGIN_SPOON, fdo2.getOrigin() );
 
     // TEST : SELECT folder
-    FileDialogOperation fdo3 = testInstance.createFileDialogOperation( SelectionOperation.FILE_OR_FOLDER );
+    FileDialogOperation fdo3 = testInstance.createFileDialogOperation( DefaultBowl.getInstance(), SelectionOperation.FILE_OR_FOLDER );
     assertNotNull( fdo3 );
     assertEquals( FileDialogOperation.SELECT_FILE_FOLDER, fdo3.getCommand() );
     assertEquals( FileDialogOperation.ORIGIN_SPOON, fdo3.getOrigin() );
@@ -302,7 +303,7 @@ public class SelectionAdapterFileDialogTest {
     StringBuilder textVar = new StringBuilder();
     AbstractMeta meta = mock( AbstractMeta.class );
     ExtensionPointWrapper extensionPointWrapper = mock( ExtensionPointWrapper.class );
-    SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE );
+    SelectionAdapterOptions options = new SelectionAdapterOptions( DefaultBowl.getInstance(), SelectionOperation.FILE );
 
     // True case:
     RepositoryUtility repositoryUtilityTrue = mock( RepositoryUtility.class );
@@ -351,7 +352,7 @@ public class SelectionAdapterFileDialogTest {
   }
 
   protected FileDialogOperation createFileDialogOperation() {
-    return new FileDialogOperation( FileDialogOperation.SELECT_FILE, FileDialogOperation.ORIGIN_SPOON );
+    return new FileDialogOperation( DefaultBowl.getInstance(), FileDialogOperation.SELECT_FILE, FileDialogOperation.ORIGIN_SPOON );
   }
 
   protected SelectionAdapterFileDialog createTestInstance() {
@@ -360,7 +361,7 @@ public class SelectionAdapterFileDialogTest {
     AbstractMeta meta = mock( AbstractMeta.class );
     RepositoryUtility repositoryUtility = mock( RepositoryUtility.class );
     ExtensionPointWrapper extensionPointWrapper = mock( ExtensionPointWrapper.class );
-    SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE, new String[]{}, "" );
+    SelectionAdapterOptions options = new SelectionAdapterOptions( DefaultBowl.getInstance(), SelectionOperation.FILE, new String[]{}, "" );
 
     return createTestInstance( log, textWidget, meta, options, repositoryUtility, extensionPointWrapper );
   }

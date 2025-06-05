@@ -157,7 +157,8 @@ public abstract class AbstractDelegate {
 
   public boolean equals( RepositoryElementInterface first, RepositoryElementInterface second ) {
     try {
-      return elementToDataNode( first ).equals( elementToDataNode( second ) );
+      // check case. if case changes, we need to know.
+      return first.getName().equals( second.getName() ) && elementToDataNode( first ).equals( elementToDataNode( second ) );
     } catch ( KettleException e ) {
       return false;
     }

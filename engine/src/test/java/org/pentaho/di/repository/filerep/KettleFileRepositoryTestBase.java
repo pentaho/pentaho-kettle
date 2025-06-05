@@ -16,6 +16,7 @@ package org.pentaho.di.repository.filerep;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -41,7 +42,7 @@ public abstract class KettleFileRepositoryTestBase {
     KettleEnvironment.init();
 
     virtualFolder = "ram://file-repo/" + UUID.randomUUID();
-    KettleVFS.getFileObject( virtualFolder ).createFolder();
+    KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFolder ).createFolder();
 
     KettleFileRepositoryMeta repositoryMeta =
       new KettleFileRepositoryMeta( "KettleFileRepository", "FileRep", "File repository", virtualFolder );
@@ -62,7 +63,7 @@ public abstract class KettleFileRepositoryTestBase {
   @After
   public void tearDown() throws Exception {
     try {
-      KettleVFS.getFileObject( virtualFolder ).deleteAll();
+      KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFolder ).deleteAll();
       // remove residual files
       FileUtils.deleteDirectory( Paths.get( virtualFolder ).getParent().getParent().toFile() );
     } catch ( Exception ignored ) {

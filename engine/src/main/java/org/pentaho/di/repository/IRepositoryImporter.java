@@ -72,4 +72,15 @@ public interface IRepositoryImporter extends ProgressMonitorListener, Repository
    * @return
    */
   public List<Exception> getExceptions();
+
+  /**
+   * Determines whether the supplied objects are the same as far as the Repository is concerned.
+   *
+   *
+   * @param obj1 object to compare
+   * @param obj2 object to compare
+   *
+   * @return boolean whether the two objects are different from the Repository perspective
+   */
+  public boolean equals( Object obj1, Object obj2 );
 }

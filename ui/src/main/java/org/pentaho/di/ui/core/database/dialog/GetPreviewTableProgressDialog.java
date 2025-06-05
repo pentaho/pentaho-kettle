@@ -75,7 +75,7 @@ public class GetPreviewTableProgressDialog {
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, "Couldn't find any rows because of an error :" + e.toString() );
         } finally {
-          db.disconnect();
+          db.close();
         }
       }
     };

@@ -21,11 +21,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.After;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
@@ -149,8 +150,9 @@ public class StreamLookupTest {
     doReturn( new String[] { "" } ).when( meta ).getValueDefault();
     doReturn( new String[] { "Value" } ).when( meta ).getValueName();
     doReturn( new String[] { "Value" } ).when( meta ).getValue();
-    doCallRealMethod().when( meta ).getFields( any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ), any( StepMeta.class ),
-      any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
+    doCallRealMethod().when( meta ).getFields( any( Bowl.class ), any( RowMetaInterface.class ), anyString(),
+      any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
+      any( IMetaStore.class ) );
 
     return meta;
   }

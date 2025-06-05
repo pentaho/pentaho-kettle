@@ -15,6 +15,7 @@ package org.pentaho.di.job.entry.validator;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 
@@ -33,13 +34,13 @@ public class AndValidator implements JobEntryValidator {
 
   private static final String VALIDATOR_NAME = "and";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName,
+  public boolean validate( Bowl bowl, CheckResultSourceInterface source, String propertyName,
     List<CheckResultInterface> remarks, ValidatorContext context ) {
     // Object o = context.get(KEY_VALIDATORS);
 
     Object[] validators = (Object[]) context.get( KEY_VALIDATORS );
     for ( Object validator : validators ) {
-      if ( !( (JobEntryValidator) validator ).validate( source, propertyName, remarks, context ) ) {
+      if ( !( (JobEntryValidator) validator ).validate( bowl, source, propertyName, remarks, context ) ) {
         // failure remarks have already been saved
         return false;
       }

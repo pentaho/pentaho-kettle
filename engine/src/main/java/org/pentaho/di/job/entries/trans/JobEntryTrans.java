@@ -26,6 +26,7 @@ import org.json.simple.JSONObject;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -661,7 +662,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       try {
         logChannelFileWriter =
           new LogChannelFileWriter(
-            this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename, this ), setAppendLogfile );
+            this.getLogChannelId(), KettleVFS.getInstance( parentJobMeta.getBowl() )
+              .getFileObject( realLogFilename, this ), setAppendLogfile );
         logChannelFileWriter.startLogging();
       } catch ( KettleException e ) {
         logError( BaseMessages.getString( PKG, "JobTrans.Error.UnableOpenAppender", realLogFilename, e.toString() ) );
@@ -1207,7 +1209,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             if ( setLogfile ) {
               ResultFile resultFile =
                 new ResultFile(
-                  ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject( realLogFilename, this ), parentJob
+                  ResultFile.FILE_TYPE_LOG, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                    .getFileObject( realLogFilename, this ), parentJob
                   .getJobname(), toString()
                 );
               result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
@@ -1314,7 +1317,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   public TransMeta getTransMeta( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     try {
       IMetaFileLoader<TransMeta> metaFileLoader = new MetaFileLoaderImpl<>( this, specificationMethod );
-      TransMeta transMeta = metaFileLoader.getMetaForEntry( rep, metaStore, space );
+      TransMeta transMeta = metaFileLoader.getMetaForEntry( parentJobMeta.getBowl(), rep, metaStore, space );
 
       if ( transMeta != null ) {
         // set Internal.Entry.Current.Directory again because it was changed
@@ -1393,16 +1396,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
                      Repository repository, IMetaStore metaStore ) {
     if ( setLogfile ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "logfile", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "logfile", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
     if ( !Utils.isEmpty( filename ) ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     } else {
-      JobEntryValidatorUtils.andValidator().validate( this, "transname", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "transname", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-      JobEntryValidatorUtils.andValidator().validate( this, "directory", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "directory", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
     }
   }
@@ -1439,8 +1442,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
    * @throws KettleException in case something goes wrong during the export
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository,
+      IMetaStore metaStore ) throws KettleException {
     // Try to load the transformation from repository or file.
     // Modify this recursively too...
     //
@@ -1454,7 +1458,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // Also go down into the transformation and export the files there. (mapping recursively down)
     //
     String proposedNewFilename =
-      transMeta.exportResources( transMeta, definitions, namingInterface, repository, metaStore );
+      transMeta.exportResources( executionBowl, globalManagementBowl, transMeta, definitions, namingInterface,
+        repository, metaStore );
 
     // To get a relative path to it, we inject ${Internal.Entry.Current.Directory}
     //
@@ -1640,7 +1645,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
    * @throws KettleException
    */
   @Override
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+    throws KettleException {
     return getTransMeta( rep, metaStore, space );
   }
 

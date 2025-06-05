@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -81,8 +82,8 @@ public class FileInputListTest {
 
     boolean[] fileRequiredList = { true };
     String[] paths = FileInputList
-      .createFilePathList( spaceMock, folderNameList, emptyStringArray, emptyStringArray, emptyStringArray,
-        fileRequiredList );
+      .createFilePathList( DefaultBowl.getInstance(), spaceMock, folderNameList, emptyStringArray, emptyStringArray,
+        emptyStringArray, fileRequiredList );
     assertTrue( "File with spaces not found", paths[ 0 ].endsWith( fileNameWithSpaces ) );
   }
 
@@ -101,8 +102,8 @@ public class FileInputListTest {
 
     boolean[] fileRequiredList = { true };
     String[] paths = FileInputList
-      .createFilePathList( spaceMock, folderNameList, emptyStringArray, emptyStringArray, emptyStringArray,
-        fileRequiredList );
+      .createFilePathList( DefaultBowl.getInstance(), spaceMock, folderNameList, emptyStringArray, emptyStringArray,
+        emptyStringArray, fileRequiredList );
     assertFalse( "File with spaces not encoded", paths[ 0 ].endsWith( fileNameWithSpaces ) );
     System.setProperty( Const.KETTLE_RETURN_ESCAPED_URI_STRINGS, "N" );
   }
@@ -117,7 +118,7 @@ public class FileInputListTest {
       (Answer<String[]>) invocationOnMock -> (String[]) invocationOnMock.getArguments()[ 0 ] );
 
     FileInputList fileInputList = FileInputList.
-      createFolderList( spaceMock, folderNameList, folderRequiredList );
+      createFolderList( DefaultBowl.getInstance(), spaceMock, folderNameList, folderRequiredList );
 
     assertNotNull( fileInputList );
     assertEquals( TOTAL_NUMBER_OF_FOLDERS_NO_ROOT, fileInputList.nrOfFiles() );

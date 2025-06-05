@@ -51,7 +51,8 @@ public class RulesAccumulator extends BaseStep implements StepInterface {
     try {
       data.setOutputRowMeta( getInputRowMeta().clone() );
       meta.setKeepInputFields( false );
-      meta.getFields( data.getOutputRowMeta(), getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.getOutputRowMeta(), getStepname(), null, null, this, repository,
+        metaStore );
 
       data.setRuleFilePath( meta.getRuleFile() );
       data.setRuleString( meta.getRuleDefinition() );

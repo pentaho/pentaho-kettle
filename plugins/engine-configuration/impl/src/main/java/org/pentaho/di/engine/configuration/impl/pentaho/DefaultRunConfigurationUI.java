@@ -28,6 +28,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.cluster.SlaveServerManagementInterface;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.configuration.api.RunConfigurationDialog;
 import org.pentaho.di.engine.configuration.api.RunConfigurationUI;
@@ -36,6 +39,10 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -234,8 +241,9 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
       wcSlaveServer.add( CLUSTERED );
     }
 
-    for ( int i = 0; i < meta.getSlaveServers().size(); i++ ) {
-      SlaveServer slaveServer = meta.getSlaveServers().get( i );
+    List<SlaveServer> allSlaveServers = getAllSlaveServers( meta );
+    for ( int i = 0; i < allSlaveServers.size(); i++ ) {
+      SlaveServer slaveServer = allSlaveServers.get( i );
       wcSlaveServer.add( slaveServer.toString() );
     }
 
@@ -305,8 +313,11 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
         if ( Utils.isEmpty( wcSlaveServer.getText() ) ) {
           if ( meta instanceof TransMeta && !Utils.isEmpty( ( (TransMeta) meta ).getClusterSchemas() ) ) {
             wcSlaveServer.setText( CLUSTERED );
-          } else if ( meta.getSlaveServers().size() > 0 ) {
-            wcSlaveServer.setText( meta.getSlaveServers().get( 0 ).getName() );
+          } else {
+            List<SlaveServer> servers =  getAllSlaveServers( meta );
+            if ( servers.size() > 0 ) {
+              wcSlaveServer.setText( servers.get( 0 ).getName() );
+            }
           }
         }
         if ( !wcSlaveServer.getText().equals( CLUSTERED ) ) {
@@ -344,6 +355,36 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
     } else {
       runConfigurationDialog.getOKButton().setEnabled( true );
     }
+  }
+
+  private List<SlaveServer> getAllSlaveServers( AbstractMeta meta ) {
+    Comparator<SlaveServer> comparator = Comparator.comparing( SlaveServer::getName, String.CASE_INSENSITIVE_ORDER );
+    List<SlaveServer> slaveServers = new ArrayList<>();
+    if ( meta != null ) {
+      slaveServers = meta.getSlaveServers();
+    } else {
+      try {
+        // Get the slave servers for the project
+        Bowl currentBowl = spoonSupplier.get().getManagementBowl();
+        Bowl globalBowl = spoonSupplier.get().getGlobalManagementBowl();
+
+        if ( currentBowl != globalBowl ) {
+          slaveServers = currentBowl.getManager( SlaveServerManagementInterface.class ).getAll();
+        }
+
+        // Add any  global slave servers to the list
+        List<SlaveServer> globalServers = globalBowl.getManager( SlaveServerManagementInterface.class ).getAll();
+        for ( SlaveServer slaveServer : globalServers ) {
+          if ( !slaveServers.contains( slaveServer ) ) {
+            slaveServers.add( slaveServer );
+          }
+        }
+      } catch ( KettleException exception ) {
+        spoonSupplier.get().getLog().logError( "Error retrieving the slave servers ", exception );
+      }
+    }
+    Collections.sort( slaveServers, comparator );
+    return slaveServers;
   }
 
 }

@@ -1001,7 +1001,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.

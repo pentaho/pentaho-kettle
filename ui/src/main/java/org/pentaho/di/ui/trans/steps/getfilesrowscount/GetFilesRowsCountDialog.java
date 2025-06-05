@@ -810,7 +810,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
         try {
           GetFilesRowsCountMeta tfii = new GetFilesRowsCountMeta();
           getInfo( tfii );
-          FileInputList fileInputList = tfii.getFiles( transMeta );
+          FileInputList fileInputList = tfii.getFiles( transMeta.getBowl(), transMeta );
           String[] files = fileInputList.getFileStrings();
 
           if ( files.length > 0 ) {
@@ -849,7 +849,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE_OR_FOLDER,
         new FilterType[] { FilterType.ALL }, FilterType.ALL ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...

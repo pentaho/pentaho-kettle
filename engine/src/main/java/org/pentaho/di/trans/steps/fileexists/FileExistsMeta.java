@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.fileexists;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -144,7 +145,8 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
     addresultfilenames = false;
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
     if ( !Utils.isEmpty( resultfieldname ) ) {
@@ -173,7 +175,7 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       filenamefield = XMLHandler.getTagValue( stepnode, "filenamefield" );
       resultfieldname = XMLHandler.getTagValue( stepnode, "resultfieldname" );

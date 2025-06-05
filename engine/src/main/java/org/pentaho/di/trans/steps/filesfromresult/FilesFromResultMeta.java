@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.filesfromresult;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.ResultFile;
@@ -73,14 +74,16 @@ public class FilesFromResultMeta extends BaseStepMeta implements StepMetaInterfa
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // Add the fields from a ResultFile
     try {
       ResultFile resultFile =
         new ResultFile(
-          ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( "foo.bar", space ), "parentOrigin", "origin" );
+          ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( bowl )
+            .getFileObject( "foo.bar", space ), "parentOrigin", "origin" );
       RowMetaAndData add = resultFile.getRow();
 
       // Set the origin on the fields...

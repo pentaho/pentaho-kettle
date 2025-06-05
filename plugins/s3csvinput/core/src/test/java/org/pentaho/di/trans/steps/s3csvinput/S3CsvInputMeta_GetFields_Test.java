@@ -14,6 +14,7 @@
 package org.pentaho.di.trans.steps.s3csvinput;
 
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
@@ -27,14 +28,14 @@ public class S3CsvInputMeta_GetFields_Test {
   @Test
   public void getFields_PicksFields() throws Exception {
     RowMeta rowMeta = new RowMeta();
-    createSampleMeta().getFields( rowMeta, "", null, null, null, null, null );
+    createSampleMeta().getFields( DefaultBowl.getInstance(), rowMeta, "", null, null, null, null, null );
     assertFieldsArePopulated( rowMeta );
   }
 
   @Test
   public void getFields_DeprecatedAlsoPicksFields() throws Exception {
     RowMeta rowMeta = new RowMeta();
-    createSampleMeta().getFields( rowMeta, "", null, null, null );
+    createSampleMeta().getFields( DefaultBowl.getInstance(), rowMeta, "", null, null, null );
     assertFieldsArePopulated( rowMeta );
   }
 

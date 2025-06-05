@@ -12,35 +12,25 @@
 
 package org.pentaho.di.trans.steps.avro.input;
 
-import com.fasterxml.jackson.databind.node.NullNode;
-import org.pentaho.di.trans.steps.avro.AvroSpec;
-import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
-import org.apache.avro.Conversions;
-import org.apache.avro.LogicalTypes;
-import org.apache.avro.Schema;
-import org.apache.avro.file.DataFileStream;
-import org.apache.avro.generic.GenericContainer;
-import org.apache.avro.generic.GenericData;
-import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.io.Decoder;
-import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.util.Utf8;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.avro.AvroSpec;
+import org.pentaho.di.trans.steps.avro.AvroToPdiConverter;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.node.NullNode;
+
 import java.io.InputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -48,7 +38,24 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.avro.Conversions;
+import org.apache.avro.file.DataFileStream;
+import org.apache.avro.generic.GenericContainer;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.io.Decoder;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.LogicalTypes;
+import org.apache.avro.Schema;
+import org.apache.avro.util.Utf8;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 
 
 /**
@@ -104,6 +111,11 @@ public class AvroNestedReader {
   protected GenericDatumReader m_datumReader;
   protected Decoder m_decoder;
   protected InputStream m_inStream;
+
+  /**
+   * For KettleVFS usage.
+   */
+  protected Bowl m_bowl;
 
   /**
    * The schema used to write the file - will be null if the file is not a container file
@@ -1639,7 +1651,7 @@ public class AvroNestedReader {
             BaseMessages.getString( PKG, "AvroInput.Message.LoadingSchema", schemaKey ) );
         }
         try {
-          toUse = loadSchema( schemaKey );
+          toUse = loadSchema( m_bowl, schemaKey );
         } catch ( KettleException ex ) {
           // fall back to default (if possible)
           if ( m_defaultDatumReader != null ) {
@@ -1710,12 +1722,12 @@ public class AvroNestedReader {
    * @return the schema
    * @throws KettleException if a problem occurs
    */
-  protected static Schema loadSchema( String schemaFile ) throws KettleException {
+  protected static Schema loadSchema( Bowl bowl, String schemaFile ) throws KettleException {
 
     Schema s = null;
     Schema.Parser p = new Schema.Parser();
 
-    FileObject fileO = KettleVFS.getFileObject( schemaFile );
+    FileObject fileO = KettleVFS.getInstance( bowl ).getFileObject( schemaFile );
     try {
       InputStream in = KettleVFS.getInputStream( fileO );
       s = p.parse( in );
@@ -1737,10 +1749,10 @@ public class AvroNestedReader {
    * @return the schema
    * @throws KettleException if a problem occurs
    */
-  protected static Schema loadSchemaFromContainer( String containerFilename ) throws KettleException {
+  protected static Schema loadSchemaFromContainer( Bowl bowl, String containerFilename ) throws KettleException {
     Schema s = null;
 
-    FileObject fileO = KettleVFS.getFileObject( containerFilename );
+    FileObject fileO = KettleVFS.getInstance( bowl ).getFileObject( containerFilename );
     InputStream in = null;
 
     try {

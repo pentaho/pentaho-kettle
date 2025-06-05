@@ -26,6 +26,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
@@ -75,7 +76,8 @@ public class MQTTProducerTest {
     when( logChannelFactory.create( any(), any() ) ).thenReturn( logChannel );
     lenient().when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
 
-    TransMeta transMeta = new TransMeta( getClass().getResource( "/ProduceFourRows.ktr" ).getPath() );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "/ProduceFourRows.ktr" ).getPath() );
     trans = new Trans( transMeta );
     trans.setVariable( "mqttServer", "127.0.0.1:1883" );
     trans.setVariable( "clientId", "client1" );
@@ -108,7 +110,8 @@ public class MQTTProducerTest {
 
   @Test
   public void testSendBinaryToProducer() throws Exception {
-    TransMeta transMeta = new TransMeta( getClass().getResource( "/ProduceFourBinaryRows.ktr" ).getPath() );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "/ProduceFourBinaryRows.ktr" ).getPath() );
     Trans binaryTrans = new Trans( transMeta );
     binaryTrans.prepareExecution( new String[] {} );
     when( mqttClient.isConnected() ).thenReturn( true );

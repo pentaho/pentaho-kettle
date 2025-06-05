@@ -585,7 +585,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wXSLFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.XSL, FilterType.ALL }, FilterType.XSL  ) ) );
 
     wTabFolder.setSelection( 0 );

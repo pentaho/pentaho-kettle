@@ -443,7 +443,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 
     // Whenever something changes, set the tooltip to the expanded version:
     wbKeyFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wKeyFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL, FilterType.PEM  }, FilterType.PEM  ) ) );
 
     // keyfilePass line
@@ -760,7 +760,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     wTargetDirectory.setLayoutData( fdTargetDirectory );
 
     wbTargetDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetDirectory, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Create target folder if necessary...
     wlCreateTargetFolder = new Label( wTargetFiles, SWT.RIGHT );
@@ -931,7 +931,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     try {
       if ( sftpclient == null ) {
         // Create sftp client to host ...
-        sftpclient = new SFTPClient(
+        sftpclient = new SFTPClient( jobMeta.getBowl(),
           InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ),
           Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 22 ),
           jobMeta.environmentSubstitute( wUserName.getText() ),

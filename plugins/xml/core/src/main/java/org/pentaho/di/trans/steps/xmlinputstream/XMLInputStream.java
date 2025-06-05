@@ -162,7 +162,8 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     } else {
       data.previousFieldsNumber = getInputRowMeta().size();
       data.finalOutputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.finalOutputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.finalOutputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
     }
   }
 
@@ -172,7 +173,8 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       if ( data.filenr >= data.filenames.length ) {
         return false;
       }
-      data.fileObject = KettleVFS.getFileObject( data.filenames[data.filenr], getTransMeta() );
+      data.fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+        .getFileObject( data.filenames[data.filenr], getTransMeta() );
       data.inputStream = KettleVFS.getInputStream( data.fileObject );
       data.xmlEventReader = data.staxInstance.createXMLEventReader( data.inputStream, data.encoding );
     } catch ( IOException e ) {
@@ -481,7 +483,6 @@ public class XMLInputStream extends BaseStep implements StepInterface {
   }
 
   // Namespaces: put an extra row out for each namespace
-  @SuppressWarnings( "unchecked" )
   private Object[] parseNamespaces( Object[] outputRowData, XMLEvent e ) throws KettleValueException,
     KettleStepException {
     Iterator<Namespace> iter = e.asStartElement().getNamespaces();
@@ -514,7 +515,6 @@ public class XMLInputStream extends BaseStep implements StepInterface {
   }
 
   // Attributes: put an extra row out for each attribute
-  @SuppressWarnings( "unchecked" )
   private Object[] parseAttributes( Object[] outputRowData, XMLEvent e ) throws KettleValueException,
     KettleStepException {
     Iterator<Attribute> iter = e.asStartElement().getAttributes();
@@ -623,7 +623,8 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       data.encoding = this.environmentSubstitute( meta.getEncoding() );
 
       data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                      metaStore );
 
       // get and save field positions
       data.pos_xml_filename = data.outputRowMeta.indexOfValue( meta.getFilenameField() );

@@ -455,11 +455,11 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     } );
 
     wbSourceFileFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     wbSourceDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Buttons to the right of the screen...
     wbdSourceFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );

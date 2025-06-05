@@ -68,7 +68,8 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
     resolveProvider( fileDialogOperation );
 
     final FileOpenSaveDialog fileOpenSaveDialog =
-            new FileOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT, logChannelInterface );
+            new FileOpenSaveDialog( fileDialogOperation.getBowl(), spoonSupplier.get().getShell(), WIDTH, HEIGHT,
+                                    logChannelInterface );
 
     fileOpenSaveDialog.setProviderFilter( fileDialogOperation.getProviderFilter() );
     fileOpenSaveDialog.open( fileDialogOperation );
@@ -80,7 +81,7 @@ public class FileOpenSaveExtensionPoint implements ExtensionPointInterface {
 
     if ( !Utils.isEmpty( fileOpenSaveDialog.getProvider() ) ) {
       try {
-        FileProvider fileProvider = providerService.get( fileOpenSaveDialog.getProvider() );
+        FileProvider<?> fileProvider = providerService.get( fileOpenSaveDialog.getProvider() );
         fileProvider.setFileProperties( fileOpenSaveDialog, fileDialogOperation );
       } catch ( InvalidFileProviderException e ) {
         throw new KettleException( e );

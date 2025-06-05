@@ -707,7 +707,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
         try {
           XMLInputSaxMeta tfii = new XMLInputSaxMeta();
           getInfo( tfii );
-          String[] files = tfii.getFilePaths( transMeta );
+          String[] files = tfii.getFilePaths( transMeta.getBowl(), transMeta );
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
               BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.FilesRead.Title" ),
@@ -1025,7 +1025,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
       // Keep the list of positions
 
-      String[] filePaths = meta.getFilePaths( transMeta );
+      String[] filePaths = meta.getFilePaths( transMeta.getBowl(), transMeta );
 
       if ( meta.getInputPosition().length == 0 ) {
         // error

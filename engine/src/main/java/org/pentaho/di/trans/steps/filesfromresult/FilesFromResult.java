@@ -57,7 +57,8 @@ public class FilesFromResult extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       data.outputRowMeta = new RowMeta();
-      smi.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      smi.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
     }
     incrementLinesRead();
 

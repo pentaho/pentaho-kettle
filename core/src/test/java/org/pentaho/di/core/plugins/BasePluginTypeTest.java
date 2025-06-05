@@ -16,6 +16,7 @@ package org.pentaho.di.core.plugins;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -83,8 +84,10 @@ public class BasePluginTypeTest {
     KettleLogStore.init();
     LogChannel generalLog = mock( LogChannel.class );
 
-    FileObject fileObj1 = KettleVFS.getFileObject( BASE_RAM_DIR + "testJar1.jar" );
-    FileObject fileObj2 = KettleVFS.getFileObject( BASE_RAM_DIR + "testJar2.jar" );
+    FileObject fileObj1 = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( BASE_RAM_DIR + "testJar1.jar" );
+    FileObject fileObj2 = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .getFileObject( BASE_RAM_DIR + "testJar2.jar" );
     FileObject[] fileObjects = { fileObj1, fileObj2 };
 
     BasePluginType bpt = spy( DatabasePluginType.getInstance() );

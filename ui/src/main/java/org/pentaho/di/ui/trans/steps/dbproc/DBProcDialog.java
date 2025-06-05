@@ -198,7 +198,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
               BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogTitle" ),
               BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogMessage" ), dbe );
           } finally {
-            db.disconnect();
+            db.close();
           }
         }
       }

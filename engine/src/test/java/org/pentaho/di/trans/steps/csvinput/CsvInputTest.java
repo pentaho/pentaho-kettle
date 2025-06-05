@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
@@ -38,6 +39,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.KettleVFSImpl;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -216,8 +218,10 @@ public class CsvInputTest extends CsvInputUnitTestBase {
           MockedStatic<TextFileInputUtils> textFileInputUtilsStatic = Mockito.mockStatic(
             TextFileInputUtils.class ) ) {
 
-      kettleVFSMockedStatic.when( () -> KettleVFS.getFileObject( anyString() ) )
-        .thenReturn( fileObject );
+      KettleVFSImpl vfsImpl = mock( KettleVFSImpl.class );
+      kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any( Bowl.class ) ) ).thenReturn( vfsImpl );
+
+      when( vfsImpl.getFileObject( anyString() ) ).thenReturn( fileObject );
       kettleVFSMockedStatic.when( () -> KettleVFS.getInputStream( any( FileObject.class ) ) )
         .thenReturn( inputStream );
       textFileInputUtilsStatic.when(
@@ -231,7 +235,6 @@ public class CsvInputTest extends CsvInputUnitTestBase {
             any(), anyLong() ) )
         .thenReturn( textFileLine );
 
-      when( meta.getHeaderFileObject( stepMockHelper.transMeta ) ).thenReturn( fileObject );
       when( outputRowMeta.getValueMetaList() ).thenReturn( valueMetaList );
       when( csvInputAwareStep.getFieldNames( any( CsvInputAwareMeta.class ) ) ).thenReturn( fieldsData );
       when(
@@ -240,6 +243,7 @@ public class CsvInputTest extends CsvInputUnitTestBase {
       when( stepMockHelper.transMeta.environmentSubstitute( (String[]) any() ) ).thenReturn( new String[] {} );
       when( stepMockHelper.transMeta.environmentSubstitute( meta.getDelimiter() ) ).thenReturn( meta.getDelimiter() );
       when( stepMockHelper.transMeta.environmentSubstitute( meta.getEnclosure() ) ).thenReturn( meta.getEnclosure() );
+      when( stepMockHelper.transMeta.environmentSubstitute( meta.getFilename() ) ).thenReturn( meta.getFilename() );
       when( stepMockHelper.transMeta.environmentSubstitute( meta.getEscapeCharacter() ) ).thenReturn(
         meta.getEscapeCharacter() );
 

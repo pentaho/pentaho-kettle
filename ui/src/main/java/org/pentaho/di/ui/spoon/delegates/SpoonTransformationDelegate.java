@@ -38,7 +38,9 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.undo.TransAction;
+import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
@@ -360,7 +362,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         // Delete the connection at correct location:
         for ( int i = transAction.getCurrent().length - 1; i >= 0; i-- ) {
           int idx = transAction.getCurrentIndex()[i];
-          transMeta.removeDatabase( idx );
+          // TODO UNDO
+          //transMeta.removeDatabase( idx );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
@@ -432,7 +435,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         for ( int i = 0; i < transAction.getCurrent().length; i++ ) {
           DatabaseMeta ci = (DatabaseMeta) transAction.getCurrent()[i];
           int idx = transAction.getCurrentIndex()[i];
-          transMeta.addDatabase( idx, ci );
+          // TODO UNDO
+          // transMeta.addDatabase( idx, ci );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
@@ -578,7 +582,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         for ( int i = 0; i < transAction.getCurrent().length; i++ ) {
           DatabaseMeta ci = (DatabaseMeta) transAction.getCurrent()[i];
           int idx = transAction.getCurrentIndex()[i];
-          transMeta.addDatabase( idx, ci );
+          // TODO UNDO
+          //transMeta.addDatabase( idx, ci );
           spoon.refreshTree();
           spoon.refreshGraph();
         }
@@ -623,7 +628,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         // re-remove the connection at correct location:
         for ( int i = transAction.getCurrent().length - 1; i >= 0; i-- ) {
           int idx = transAction.getCurrentIndex()[i];
-          transMeta.removeDatabase( idx );
+          // TODO UNDO
+          //transMeta.removeDatabase( idx );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
@@ -839,7 +845,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
     Object[] data = spoon.variables.getData();
     String[] fields = spoon.variables.getRowMeta().getFieldNames();
     Map<String, String> variableMap = new HashMap<String, String>();
-    variableMap.putAll( executionConfiguration.getVariables() ); // the default
+
     for ( int idx = 0; idx < fields.length; idx++ ) {
       String value = executionConfiguration.getVariables().get( fields[idx] );
       if ( Utils.isEmpty( value ) ) {
@@ -848,8 +854,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       variableMap.put( fields[idx], value );
     }
 
+    // apply used variables from all loaded files
+    for ( TransMeta meta : spoon.getLoadedTransformations() ) {
+      ExecutionConfiguration.getUsedVariables( meta, variableMap );
+    }
+    for ( JobMeta meta : spoon.getLoadedJobs() ) {
+      ExecutionConfiguration.getUsedVariables( meta, variableMap );
+    }
     executionConfiguration.setVariables( variableMap );
-    executionConfiguration.getUsedVariables( transMeta );
     executionConfiguration.getUsedArguments( transMeta, spoon.getArguments() );
     executionConfiguration.setReplayDate( replayDate );
 

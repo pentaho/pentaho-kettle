@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -753,7 +754,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   @Override
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !getFileInFields() ) {
       r.clear();
@@ -978,8 +979,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public FileInputList getFiles( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
+  public FileInputList getFiles( Bowl bowl, VariableSpace space ) {
+    return FileInputList.createFileList( bowl, space, fileName, fileMask, excludeFileMask, fileRequired,
         includeSubFolderBoolean() );
   }
 
@@ -1024,7 +1025,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
         remarks.add( cr );
       }
     } else {
-      FileInputList fileInputList = getFiles( transMeta );
+      FileInputList fileInputList = getFiles( transMeta.getBowl(), transMeta );
 
       if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
         cr =
@@ -1041,6 +1042,11 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1053,15 +1059,17 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
       //
       if ( !fileInField ) {
         for ( int i = 0; i < fileName.length; i++ ) {
-          FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
+          FileObject fileObject = KettleVFS.getInstance( parentStepMeta.getParentTransMeta().getBowl() )
+            .getFileObject( space.environmentSubstitute( fileName[i] ), space );
           fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
         }
       }

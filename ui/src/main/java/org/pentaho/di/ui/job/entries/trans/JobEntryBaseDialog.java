@@ -638,7 +638,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
       String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
       FileObject file = null;
       try {
-        file = KettleVFS.getFileObject( filename );
+        file = KettleVFS.getInstance( jobMeta.getBowl() ).getFileObject( filename );
         // Set file extension ..
         wLogext.setText( file.getName().getExtension() );
         // Set filename without extension ...

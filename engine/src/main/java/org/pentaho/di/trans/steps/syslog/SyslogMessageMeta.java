@@ -222,7 +222,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       messagefieldname = XMLHandler.getTagValue( stepnode, "messagefieldname" );
       port = XMLHandler.getTagValue( stepnode, "port" );

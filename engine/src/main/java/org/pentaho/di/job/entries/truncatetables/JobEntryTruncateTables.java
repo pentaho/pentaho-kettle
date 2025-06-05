@@ -300,7 +300,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
         logError( BaseMessages.getString( PKG, "JobEntryTruncateTables.Error.RunningEntry", dbe.getMessage() ) );
       } finally {
         if ( db != null ) {
-          db.disconnect();
+          db.close();
         }
       }
     } else {
@@ -329,7 +329,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks,
+    boolean res = JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res == false ) {
@@ -342,7 +342,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
         JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < arguments.length; i++ ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 

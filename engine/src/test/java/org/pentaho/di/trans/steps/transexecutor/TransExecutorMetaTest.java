@@ -263,28 +263,28 @@ public class TransExecutorMetaTest {
     StepMeta nextStep = mock( StepMeta.class );
 
     // Test null
-    meta.getFields( null, null, null, nextStep, null, null, null );
+    meta.getFields( null, null, null, null, nextStep, null, null, null );
     verify( meta, never() ).addFieldToRow( any( RowMetaInterface.class ), anyString(), anyInt() );
 
     RowMetaInterface rowMeta = mock( RowMetaInterface.class );
-    meta.getFields( rowMeta, null, null, nextStep, null, null, null );
+    meta.getFields( null, rowMeta, null, null, nextStep, null, null, null );
     verify( rowMeta, never() ).clear();
 
     StepMeta executionResultTargetStepMeta = mock( StepMeta.class );
     meta.setExecutionResultTargetStepMeta( executionResultTargetStepMeta );
-    meta.getFields( rowMeta, null, null, nextStep, null, null, null );
+    meta.getFields( null, rowMeta, null, null, nextStep, null, null, null );
     verify( rowMeta, atMost( 1 ) ).clear();
     meta.setExecutionResultTargetStepMeta( null );
 
     StepMeta resultFilesTargetStepMeta = mock( StepMeta.class );
     meta.setResultFilesTargetStepMeta( resultFilesTargetStepMeta );
-    meta.getFields( rowMeta, null, null, nextStep, null, null, null );
+    meta.getFields( null, rowMeta, null, null, nextStep, null, null, null );
     verify( rowMeta, atMost( 1 ) ).clear();
     meta.setResultFilesTargetStepMeta( null );
 
     StepMeta outputRowsSourceStepMeta = mock( StepMeta.class );
     meta.setOutputRowsSourceStepMeta( outputRowsSourceStepMeta );
-    meta.getFields( rowMeta, null, null, nextStep, null, null, null );
+    meta.getFields( null, rowMeta, null, null, nextStep, null, null, null );
     verify( rowMeta, atMost( 1 ) ).clear();
     meta.setOutputRowsSourceStepMeta( null );
   }

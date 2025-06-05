@@ -25,6 +25,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -511,7 +512,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
     // No values are added to the row in this type of step
@@ -818,6 +820,11 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
    * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively. So
    * what this does is turn the name of the base path into an absolute path.
    * 
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -829,16 +836,18 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
    * 
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+  @Override
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
       //
       if ( !Utils.isEmpty( fileName ) ) {
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName ), space );
-        fileName = resourceNamingInterface.nameResource( fileObject, space, true );
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
+          .getFileObject( space.environmentSubstitute( fileName ), space );
+        fileName = namingInterface.nameResource( fileObject, space, true );
       }
 
       return null;

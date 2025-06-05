@@ -63,7 +63,7 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
             report.append( Const.getStackTracker( e ) + Const.CR );
             success = false;
           } finally {
-            db.disconnect();
+            db.close();
           }
 
           appendConnectionInfo( report, db.environmentSubstitute( partitioningInformation[i].getHostname() ), db
@@ -85,7 +85,7 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
           report.append( Const.getStackTracker( e ) + Const.CR );
           success = false;
         } finally {
-          db.disconnect();
+          db.close();
         }
         if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
           appendJndiConnectionInfo( report, db.environmentSubstitute( databaseMeta.getDatabaseName() ) );

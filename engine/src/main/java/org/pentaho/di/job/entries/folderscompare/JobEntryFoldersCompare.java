@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -225,12 +226,13 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
     DataInputStream in2 = null;
     try {
       // Really read the contents and do comparisons
+      IKettleVFS vfs = KettleVFS.getInstance( parentJobMeta.getBowl() );
 
       in1 =
-        new DataInputStream( new BufferedInputStream( KettleVFS.getInputStream(
+        new DataInputStream( new BufferedInputStream( vfs.getInputStream(
           KettleVFS.getFilename( file1 ), this ) ) );
       in2 =
-        new DataInputStream( new BufferedInputStream( KettleVFS.getInputStream(
+        new DataInputStream( new BufferedInputStream( vfs.getInputStream(
           KettleVFS.getFilename( file2 ), this ) ) );
 
       char ch1, ch2;
@@ -287,8 +289,9 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
             .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
         }
         // Get Folders/Files to compare
-        folder1 = KettleVFS.getFileObject( realFilename1, this );
-        folder2 = KettleVFS.getFileObject( realFilename2, this );
+        IKettleVFS vfs = KettleVFS.getInstance( parentJobMeta.getBowl() );
+        folder1 = vfs.getFileObject( realFilename1, this );
+        folder2 = vfs.getFileObject( realFilename2, this );
 
         if ( folder1.exists() && folder2.exists() ) {
           if ( !folder1.getType().equals( folder2.getType() ) ) {
@@ -371,8 +374,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
                         .getKey().toString(), realFilename2 ) );
                     }
 
-                    filefolder1 = KettleVFS.getFileObject( entree.getValue().toString(), this );
-                    filefolder2 = KettleVFS.getFileObject( collection2.get( entree.getKey() ).toString(), this );
+                    filefolder1 = vfs.getFileObject( entree.getValue().toString(), this );
+                    filefolder2 = vfs.getFileObject( collection2.get( entree.getKey() ).toString(), this );
 
                     if ( !filefolder2.getType().equals( filefolder1.getType() ) ) {
                       // The file1 exist in the folder2..but they don't have the same type
@@ -613,7 +616,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
     ValidatorContext ctx = new ValidatorContext();
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileExistsValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "filename1", remarks, ctx );
-    JobEntryValidatorUtils.andValidator().validate( this, "filename2", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename1", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename2", remarks, ctx );
   }
 }

@@ -33,12 +33,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.WeakHashMap;
 
 import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
 
@@ -54,6 +57,9 @@ public class ConnectionManager {
   private static final Logger logger = LoggerFactory.getLogger( ConnectionManager.class );
 
   private List<LookupFilter> lookupFilters = new ArrayList<>();
+
+  private final WeakHashMap<ConnectionUpdateSubscriber, Void> changeSubscribers =
+    new WeakHashMap<>();
 
   @NonNull
   private Supplier<IMetaStore> metaStoreSupplier;
@@ -74,19 +80,18 @@ public class ConnectionManager {
 
   private ConnectionManager() {
     // Must throw a RuntimeException on metastore error to not break compatibility.
-    this( getMetastoreSupplierUnchecked( DefaultBowl.getInstance() ), DefaultBowl.getInstance() );
+    this( DefaultBowl.getInstance() );
   }
 
   @VisibleForTesting
-  ConnectionManager( @NonNull Supplier<IMetaStore> metaStoreSupplier, @NonNull Bowl bowl ) {
-    this( metaStoreSupplier, bowl, VFSConnectionManagerHelper.getInstance() );
+  ConnectionManager( @NonNull Bowl bowl ) {
+    this( bowl, VFSConnectionManagerHelper.getInstance() );
   }
 
   @VisibleForTesting
-  ConnectionManager( @NonNull Supplier<IMetaStore> metaStoreSupplier,
-                    @NonNull Bowl bowl,
-                    @NonNull VFSConnectionManagerHelper vfsConnectionManagerHelper ) {
-    this.metaStoreSupplier = Objects.requireNonNull( metaStoreSupplier );
+  ConnectionManager( @NonNull Bowl bowl,
+                     @NonNull VFSConnectionManagerHelper vfsConnectionManagerHelper ) {
+    this.metaStoreSupplier = getMetastoreSupplierUnchecked( bowl );
     this.bowl = Objects.requireNonNull( bowl );
     this.vfsConnectionManagerHelper = Objects.requireNonNull( vfsConnectionManagerHelper );
   }
@@ -106,17 +111,31 @@ public class ConnectionManager {
   // public APIs that have a metastore as an argument bypass these in-memory structures
   private synchronized void initialize() {
     if ( !initialized ) {
-      List<ConnectionProvider<? extends ConnectionDetails>> providers = getProviders();
-      for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
-        List<String> names = loadNames( provider );
-        if ( names != null && !names.isEmpty() ) {
-          namesByConnectionProvider.put( provider.getName(), names );
-          for ( String name : names ) {
-            detailsByName.put( name, getConnectionDetails( metaStoreSupplier.get(), name ) );
+      try {
+        List<ConnectionProvider<? extends ConnectionDetails>> providers = getProviders();
+        for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
+          List<String> names;
+          if ( provider.isStorageManaged() ) {
+            MetaStoreFactory<? extends ConnectionDetails> factory =
+              getMetaStoreFactory( metaStoreSupplier.get(), provider.getClassType() );
+            names = new ArrayList<>();
+            for ( ConnectionDetails details : factory.getElements() ) {
+              String name = details.getName();
+              names.add( name );
+              EncryptUtils.decryptFields( details );
+              detailsByName.put( name, details );
+            }
+          } else {
+            List<? extends ConnectionDetails> details = provider.getConnectionDetails( this );
+            details.forEach( d -> detailsByName.put( d.getName(), d ) );
+            names = details.stream().map( ConnectionDetails::getName ).collect( Collectors.toList() );
           }
+          namesByConnectionProvider.put( provider.getName(), names );
         }
+        initialized = true;
+      } catch ( MetaStoreException ex ) {
+        logger.error( "Error in initialize", ex );
       }
-      initialized = true;
     }
   }
 
@@ -125,19 +144,48 @@ public class ConnectionManager {
    * metastore.
    *
    */
-  public synchronized void reset() {
+  public void reset() {
     // synchronized isn't actually enough to make this thread safe if we ever thought there would be readers at the
     // same time as something calling this method. Since this is only currently driven by user input (e.g. connecting
     // and disconnecting from a repository) just synchronized seems safe enough.
-    namesByConnectionProvider.clear();
-    detailsByName.clear();
-    initialized = false;
+    synchronized( this ) {
+      namesByConnectionProvider.clear();
+      detailsByName.clear();
+      initialized = false;
+    }
+    // don't hold the lock while calling out.
+    notifySubscribers();
+  }
+
+  /**
+   * Subscribe to changes made to this ConnectionManager instance.
+   * <p>
+   * Note that this implementation uses a WeakReference to retain the connection to the subscriber, so the caller should
+   * hold onto this object as long as it needs to be called for changes.
+   *
+   * @param subscriber
+   */
+  public synchronized void addSubscriber( ConnectionUpdateSubscriber subscriber ) {
+    changeSubscribers.put( subscriber, null );
+  }
+
+  private void notifySubscribers() {
+    // operate on a copy
+    Set<ConnectionUpdateSubscriber> subs;
+    synchronized( this ) {
+      subs = new HashSet<>( changeSubscribers.keySet() );
+    }
+    for ( ConnectionUpdateSubscriber subscriber : subs ) {
+      if ( subscriber != null ) {
+        subscriber.notifyChanged();
+      }
+    }
   }
 
   /**
    * This getter should not generally be used because it is limited to the global scope. It would be better to have
-   * almost all callers use Bowl.getConnectionManager().
-   * <p>
+   * almost all callers use Bowl.getManager( ConnectionManager.class ).
+   *
    * This instance may still be used to register ConnectionProviders and Lookup Filters.
    *
    * @return ConnectionManager
@@ -148,33 +196,22 @@ public class ConnectionManager {
   }
 
   /**
-   * Construct a new instance of a ConnectionManager associated with a given meta-store and bowl.
+   * Construct a new instance of a ConnectionManager associated with a given bowl.
    * <p>
-   * Instances returned by this will not share in-memory state with any other instances. If you need the
-   * ConnectionManager for a Bowl, use Bowl.getConnectionManager() instead.
+   * Instances returned by this will not share in-memory state with any other instannces. If you need the
+   * ConnectionManager for a Bowl, use Bowl.getManager( ConnectionManager.class ) instead.
    *
-   * @param metaStoreSupplier The meta-store supplier.
    * @param bowl              The bowl.
    * @return ConnectionManager
    */
   @NonNull
-  public static ConnectionManager getInstance( @NonNull Supplier<IMetaStore> metaStoreSupplier, @NonNull Bowl bowl ) {
-    ConnectionManager newManager = new ConnectionManager( metaStoreSupplier, bowl );
+  public static ConnectionManager getInstance( @NonNull Bowl bowl ) {
+    ConnectionManager newManager = new ConnectionManager( bowl );
     // share the same set of connection providers and lookup filters. Everyone already registers with the one
     // from getInstance()
     newManager.connectionProviders = instance.connectionProviders;
     newManager.lookupFilters = instance.lookupFilters;
     return newManager;
-  }
-
-  /**
-   * Construct a meta store factory for a specific class using the default meta store supplier
-   *
-   * @param clazz Type of meta store object on which the factory will operate
-   * @return Meta store factory for specified type
-   */
-  private <T extends ConnectionDetails> MetaStoreFactory<T> getMetaStoreFactory( Class<T> clazz ) {
-    return new MetaStoreFactory<>( clazz, metaStoreSupplier.get(), NAMESPACE );
   }
 
   /**
@@ -288,7 +325,6 @@ public class ConnectionManager {
    * @param connectionDetails The named connection details to save
    * @return A boolean signifying the success of the save operation
    */
-  @SuppressWarnings( "unchecked" )
   public <T extends ConnectionDetails> boolean save( IMetaStore metaStore, T connectionDetails ) {
     return save( metaStore, connectionDetails, true );
   }
@@ -331,6 +367,7 @@ public class ConnectionManager {
    * @param connectionDetails The named connection details to save
    * @return A boolean signifying the success of the save operation
    */
+  @SuppressWarnings("unchecked")
   public <T extends ConnectionDetails> boolean save( T connectionDetails ) {
     initialize();
     IMetaStore metaStore = metaStoreSupplier.get();
@@ -351,6 +388,7 @@ public class ConnectionManager {
       if ( !names.contains( connectionDetails.getName() ) ) {
         names.add( connectionDetails.getName() );
       }
+      notifySubscribers();
     }
     return success;
   }
@@ -420,6 +458,7 @@ public class ConnectionManager {
             if ( names != null ) {
               names.remove( connectionDetails.getName() );
             }
+            notifySubscribers();
           }
         }
       } catch ( MetaStoreException ignored ) {
@@ -466,19 +505,6 @@ public class ConnectionManager {
       logger.error( "Error calling metastore getElementNames()", mse );
       return Collections.emptyList();
     }
-  }
-
-  /**
-   * Get the names of named connections by provider from default meta store
-   *
-   * @param provider A provider
-   * @return A list of named connection names
-   */
-  private List<String> loadNames( ConnectionProvider<? extends ConnectionDetails> provider ) {
-    if ( metaStoreSupplier == null || metaStoreSupplier.get() == null ) {
-      return Collections.emptyList();
-    }
-    return getNames( metaStoreSupplier.get(), provider );
   }
 
   /**
@@ -610,6 +636,26 @@ public class ConnectionManager {
   }
 
   /**
+   * Makes defensive copies so modifications by callers don't affect the internal state before "save" is called.
+   *
+   *
+   * @param source ConnectionDetails to clone
+   *
+   * @return ConnectionDetails cloned object.
+   */
+  private static ConnectionDetails clone( ConnectionDetails source ) {
+    if ( source == null ) {
+      return null;
+    }
+    try {
+      return source.cloneDetails();
+    } catch ( MetaStoreException ex ) {
+      // should really not happen.
+      throw new RuntimeException( ex );
+    }
+  }
+
+  /**
    * Get the named connection from the default meta store
    *
    * @param key  The provider key
@@ -624,7 +670,7 @@ public class ConnectionManager {
       if ( names == null || !names.contains(name) ) {
         return null;
       }
-      return detailsByName.get( name );
+      return clone( detailsByName.get( name ) );
     }
     return null;
   }
@@ -637,7 +683,13 @@ public class ConnectionManager {
    */
   public ConnectionDetails getConnectionDetails( String name ) {
     initialize();
-    return detailsByName.get( name );
+    // Get the details in ignoring the case
+    for ( String key : detailsByName.keySet() ) {
+      if ( key.equalsIgnoreCase( name ) ) {
+        return clone( detailsByName.get( key ) );
+      }
+    }
+    return null;
   }
 
   /* The following are sugar methods: `getDetails` and `getExistingDetails`. These perform casting of the result to the
@@ -770,7 +822,7 @@ public class ConnectionManager {
       if ( names != null && !names.isEmpty() ) {
         List<ConnectionDetails> details = new ArrayList<>();
         for ( String name : names ) {
-          details.add( detailsByName.get( name ) );
+          details.add( clone( detailsByName.get( name ) ) );
         }
         return details;
       }
@@ -877,4 +929,5 @@ public class ConnectionManager {
       return (MetaStoreException) super.getCause();
     }
   }
+
 }

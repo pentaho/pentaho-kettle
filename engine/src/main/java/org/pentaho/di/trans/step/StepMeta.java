@@ -28,6 +28,7 @@ import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.attributes.AttributesUtil;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginLoaderException;
@@ -67,7 +68,7 @@ import org.w3c.dom.Node;
  *
  */
 public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface,
-    SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface,
+    SharedObjectInterface<StepMeta>, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface,
     AttributesInterface, BaseMeta {
   private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -972,13 +973,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   @Override
   @SuppressWarnings( "deprecation" )
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-        throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
 
     // Compatibility with previous release...
     //
-    String resources = stepMetaInterface.exportResources( space, definitions, resourceNamingInterface, repository );
+    String resources = stepMetaInterface.exportResources( executionBowl, space, definitions,
+      resourceNamingInterface, repository );
     if ( resources != null ) {
       return resources;
     }
@@ -987,7 +989,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     // These can in turn add anything to the map in terms of resources, etc.
     // Even reference files, etc. For now it's just XML probably...
     //
-    return stepMetaInterface.exportResources( space, definitions, resourceNamingInterface, repository, metaStore );
+    return stepMetaInterface.exportResources( executionBowl, globalManagementBowl, space, definitions,
+      resourceNamingInterface, repository, metaStore );
   }
 
   /**
@@ -1167,5 +1170,16 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   public String getSuggestion() {
     return suggestion;
+  }
+
+  @Override
+  public StepMeta makeClone() {
+    return (StepMeta) clone();
+  }
+
+  @Override
+  public Node toNode() throws KettleException {
+    Document doc = XMLHandler.loadXMLString( getXML() );
+    return XMLHandler.getSubNode( doc, XML_TAG );
   }
 }

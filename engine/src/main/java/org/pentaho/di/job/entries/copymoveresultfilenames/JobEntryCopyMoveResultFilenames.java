@@ -512,7 +512,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
   private boolean CreateDestinationFolder( String foldername ) {
     FileObject folder = null;
     try {
-      folder = KettleVFS.getFileObject( foldername, this );
+      folder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( foldername, this );
 
       if ( !folder.exists() ) {
         logError( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.Log.FolderNotExists", foldername ) );
@@ -576,7 +576,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
         String shortfilename = getDestinationFilename( sourcefile.getName().getBaseName() );
         // build full destination filename
         String destinationFilename = destinationFolder + Const.FILE_SEPARATOR + shortfilename;
-        FileObject destinationfile = KettleVFS.getFileObject( destinationFilename, this );
+        FileObject destinationfile = KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFileObject( destinationFilename, this );
         boolean filexists = destinationfile.exists();
         if ( filexists ) {
           if ( log.isDetailed() ) {
@@ -611,8 +612,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
           if ( isAddDestinationFilename() ) {
             // Add destination filename to Resultfilenames ...
             ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(
-                destinationfile.toString(), this ), parentJob.getJobname(), toString() );
+              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                              .getFileObject( destinationfile.toString(), this ), parentJob.getJobname(), toString() );
             result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString(
@@ -687,7 +688,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
     ValidatorContext ctx = new ValidatorContext();
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileDoesNotExistValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks, ctx );
   }
 
 }

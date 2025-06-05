@@ -28,6 +28,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -133,7 +134,7 @@ public class TextFileInputTest {
 
     TextFileInputData data = new TextFileInputData();
     data.setFiles( new FileInputList() );
-    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
+    data.getFiles().addFile( KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFile ) );
 
     data.outputRowMeta = new RowMeta();
     data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
@@ -172,7 +173,7 @@ public class TextFileInputTest {
 
     TextFileInputData data = new TextFileInputData();
     data.setFiles( new FileInputList() );
-    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
+    data.getFiles().addFile( KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFile ) );
 
     data.outputRowMeta = new RowMeta();
     data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
@@ -211,7 +212,7 @@ public class TextFileInputTest {
 
     TextFileInputData data = new TextFileInputData();
     data.setFiles( new FileInputList() );
-    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
+    data.getFiles().addFile( KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFile ) );
 
     data.outputRowMeta = new RowMeta();
     data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
@@ -242,7 +243,7 @@ public class TextFileInputTest {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     bos.write( content.toString().getBytes() );
 
-    OutputStream os = KettleVFS.getFileObject( virtualFile ).getContent().getOutputStream();
+    OutputStream os = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFile ).getContent().getOutputStream();
     try {
       IOUtils.copy( new ByteArrayInputStream( bos.toByteArray() ), os );
     } finally {

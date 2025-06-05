@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.singlethreader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -255,7 +256,8 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
     parameterValues = new String[0];
   }
 
-  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // First load some interesting data...
@@ -264,7 +266,7 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
     //
     TransMeta mappingTransMeta = null;
     try {
-      mappingTransMeta = loadSingleThreadedTransMeta( this, repository, space );
+      mappingTransMeta = loadSingleThreadedTransMeta( bowl, this, repository, space );
     } catch ( KettleException e ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "SingleThreaderMeta.Exception.UnableToLoadMappingTransformation" ), e );
@@ -281,14 +283,14 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
   }
 
 
-  public static final synchronized TransMeta loadSingleThreadedTransMeta( SingleThreaderMeta mappingMeta,
+  public static final synchronized TransMeta loadSingleThreadedTransMeta( Bowl bowl, SingleThreaderMeta mappingMeta,
                                                                           Repository rep, VariableSpace space ) throws KettleException {
-    return loadMappingMeta( mappingMeta, rep, null, space );
+    return loadMappingMeta( bowl, mappingMeta, rep, null, space );
   }
 
-  public static final synchronized TransMeta loadSingleThreadedTransMeta( SingleThreaderMeta mappingMeta,
+  public static final synchronized TransMeta loadSingleThreadedTransMeta( Bowl bowl, SingleThreaderMeta mappingMeta,
                                                                           Repository rep, VariableSpace space, boolean passingAllParameters  ) throws KettleException {
-    return loadMappingMeta( mappingMeta, rep, null, space, passingAllParameters );
+    return loadMappingMeta( bowl, mappingMeta, rep, null, space, passingAllParameters );
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
@@ -521,12 +523,13 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
    * @throws KettleException
    */
   @Deprecated
-  public Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException {
-    return loadSingleThreadedTransMeta( this, rep, space );
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, VariableSpace space )
+    throws KettleException {
+    return loadSingleThreadedTransMeta( bowl, this, rep, space );
   }
 
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
-    return loadMappingMeta( this, rep, metaStore, space );
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
+    return loadMappingMeta( bowl, this, rep, metaStore, space );
   }
 
   @Override
