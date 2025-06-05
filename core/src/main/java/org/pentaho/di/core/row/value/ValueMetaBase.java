@@ -233,13 +233,14 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.dateFormatTimeZone = TimeZone.getDefault();
     this.identicalFormat = true;
     this.bigNumberFormatting = true;
-    this.lenientStringToNumber = "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ) );
+    this.lenientStringToNumber =
+      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ) );
     this.ignoreTimezone =
-      convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ),
-        "N" ) );
-    this.emptyStringAndNullAreDifferent = convertStringToBoolean(
-      Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
-    this.ignoreOutOfRange = "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION, "N" ) );
+      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ) );
+    this.emptyStringAndNullAreDifferent =
+      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ) );
+    this.ignoreOutOfRange =
+      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION, "N" ) );
 
 
     this.comparator = comparator;
