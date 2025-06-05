@@ -239,7 +239,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         "N" ) );
     this.emptyStringAndNullAreDifferent = convertStringToBoolean(
       Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
-    this.ignoreOutOfRange = "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION, "N" ));
+    this.ignoreOutOfRange = "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION, "N" ) );
 
 
     this.comparator = comparator;
