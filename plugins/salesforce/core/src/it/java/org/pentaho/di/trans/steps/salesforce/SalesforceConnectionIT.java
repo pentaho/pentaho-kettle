@@ -12,21 +12,12 @@
 
 package org.pentaho.di.trans.steps.salesforce;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.rmi.RemoteException;
-import java.util.Calendar;
-import java.util.UUID;
-
+import com.sforce.soap.partner.GetServerTimestampResult;
+import com.sforce.soap.partner.GetUserInfoResult;
+import com.sforce.soap.partner.LoginResult;
+import com.sforce.soap.partner.PartnerConnection;
+import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,12 +30,20 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
 
-import com.sforce.soap.partner.GetServerTimestampResult;
-import com.sforce.soap.partner.GetUserInfoResult;
-import com.sforce.soap.partner.LoginResult;
-import com.sforce.soap.partner.PartnerConnection;
-import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
+import java.rmi.RemoteException;
+import java.util.Calendar;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SalesforceConnectionIT {
 

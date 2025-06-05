@@ -13,31 +13,50 @@
 
 package org.pentaho.di.job.entries.sftp;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
+import org.apache.sshd.scp.server.ScpCommandFactory;
+import org.apache.sshd.server.SshServer;
+import org.apache.sshd.server.auth.password.PasswordAuthenticator;
+import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
+import org.apache.sshd.server.session.ServerSession;
+import org.apache.sshd.sftp.server.SftpSubsystemFactory;
+import org.junit.rules.TemporaryFolder;
+
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.sshd.SshServer;
-import org.apache.sshd.common.NamedFactory;
-import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
-import org.apache.sshd.server.Command;
-import org.apache.sshd.server.PasswordAuthenticator;
-import org.apache.sshd.server.command.ScpCommandFactory;
-import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.apache.sshd.server.session.ServerSession;
-import org.apache.sshd.sftp.subsystem.SftpSubsystem;
-import org.junit.rules.TemporaryFolder;
-
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-
 /**
  * @author Andrey Khayrutdinov
  */
 public class SftpServer implements PasswordAuthenticator {
+
+  private final String username;
+  private final String password;
+  private final SshServer server;
+
+  /**
+   * Creates a server's instance for <tt>localhost</tt>, using supplied values for username, password, and port.
+   *
+   * @param username    The username that will be allowed for authentication
+   * @param password    The password that will be allowed for authentication
+   * @param port        The port number that the SSH Server should listen on
+   * @param homeDir     The local directory that should be the SSH Server's root directory
+   * @param hostKeyPath The file that should be used to store the SSH Host Key
+   * @return An SftpServer instance
+   * @throws IOException
+   */
+  public SftpServer( String username, String password, int port, String homeDir, String hostKeyPath ) {
+    this.username = username;
+    this.password = password;
+    this.server = createSshServer( port, homeDir, hostKeyPath );
+  }
 
   /**
    * Creates a server's instance for <tt>localhost</tt> using random values for username, password, and port.
@@ -51,42 +70,18 @@ public class SftpServer implements PasswordAuthenticator {
       folder.getRoot().getAbsolutePath(), folder.newFile( "server.key" ).getAbsolutePath() );
   }
 
-  private final String username;
-  private final String password;
-
-  private final SshServer server;
-
-  /**
-   * Creates a server's instance for <tt>localhost</tt>, using supplied values for username, password, and port.
-   * 
-   * @param username
-   *   The username that will be allowed for authentication
-   * @param password
-   *   The password that will be allowed for authentication
-   * @param port
-   *   The port number that the SSH Server should listen on
-   * @param homeDir
-   *   The local directory that should be the SSH Server's root directory
-   * @param hostKeyPath
-   *   The file that should be used to store the SSH Host Key
-   * @return
-   *   An SftpServer instance
-   * @throws IOException
-   */
-  public SftpServer( String username, String password, int port, String homeDir, String hostKeyPath ) {
-    this.username = username;
-    this.password = password;
-    this.server = createSshServer( port, homeDir, hostKeyPath );
-  }
-
-  private SshServer createSshServer( int port, String homeDir, String hostKeyPath ) {
+  private org.apache.sshd.server.SshServer createSshServer( int port, String homeDir, String hostKeyPath ) {
     SshServer server = SshServer.setUpDefaultServer();
     server.setHost( "localhost" );
     server.setPort( port );
-    server.setFileSystemFactory( new VirtualFileSystemFactory( homeDir ) );
-    server.setSubsystemFactories( Collections.<NamedFactory<Command>>singletonList( new SftpSubsystem.Factory() ) );
+    server.setFileSystemFactory( new VirtualFileSystemFactory( Paths.get( homeDir ) ) );
+    server.setSubsystemFactories( Collections.singletonList( new SftpSubsystemFactory() ) );
     server.setCommandFactory( new ScpCommandFactory() );
-    server.setKeyPairProvider( new SimpleGeneratorHostKeyProvider( hostKeyPath ) );
+
+    SimpleGeneratorHostKeyProvider keyProvider = new SimpleGeneratorHostKeyProvider( Paths.get( hostKeyPath ) );
+    keyProvider.setAlgorithm( "RSA" );
+    server.setKeyPairProvider( keyProvider );
+
     server.setPasswordAuthenticator( this );
     return server;
   }
@@ -107,7 +102,7 @@ public class SftpServer implements PasswordAuthenticator {
     server.start();
   }
 
-  public void stop() throws InterruptedException {
+  public void stop() throws Exception {
     server.stop();
   }
 
