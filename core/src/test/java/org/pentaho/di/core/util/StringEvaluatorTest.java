@@ -193,7 +193,12 @@ public class StringEvaluatorTest {
 
   @Test
   public void testExponentialInteger() {
-    testNumber( "#", "123E100" );
+    testNumber( "#", "123E16" );
+  }
+
+  @Test
+  public void testHugeExponentialInteger() {
+    testNumber( "###.#E0", "123E100" );
   }
 
   @Test
