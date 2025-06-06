@@ -69,10 +69,7 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
 
     Object[] r = getRow(); // this also waits for a previous step to be finished.
     if ( r == null ) { // no more input to be expected...
-      // truncate the table if there are no rows at all coming into this step
-      if ( first && meta.truncateTable() ) {
-        truncateTable();
-      }
+      //if the row is comming empty, then the expected behaviour should be not to truncate the table
       return false;
     }
 
