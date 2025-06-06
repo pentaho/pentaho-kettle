@@ -302,6 +302,20 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-vfs2</artifactId>
     </dependency>
+    <!-- Start of optional dependencies of org.apache.commons:commons-vfs2 -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.core5</groupId>
+      <artifactId>httpcore5</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+    </dependency>
+    <!-- End of optional dependencies of org.apache.commons:commons-vfs2 -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -334,10 +348,6 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency> <!-- this is an optional dependency of org.apache.commons:commons-vfs2 -->
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-compress</artifactId>
     </dependency>
     <dependency>
       <groupId>org.dom4j</groupId>
