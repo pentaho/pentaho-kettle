@@ -16,12 +16,19 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.plugins.Plugin;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -33,12 +40,32 @@ import static org.junit.Assert.assertTrue;
  */
 public class PentahoReportingOutputIT {
 
+  private TransMeta transMeta;
+
   @BeforeClass
   public static void setUp() throws Exception {
     KettleEnvironment.init();
-  }
 
-  private TransMeta transMeta;
+    Map<Class<?>, String> classMap = new HashMap<>();
+    classMap.put( PentahoReportingOutputMeta.class, PentahoReportingOutputMeta.class.getCanonicalName() );
+
+    PluginInterface plugin =
+      new Plugin( new String[] { "PentahoReportingOutput" },
+        StepPluginType.class,
+        PentahoReportingOutputMeta.class,
+        "Output",
+        "Pentaho Reporting Output",
+        "Generates reports",
+        "org/pentaho/di/trans/steps/pentahoreporting/images/icon.png",
+        false,
+        false,
+        classMap,
+        Collections.emptyList(),
+        null,
+        null );
+
+    PluginRegistry.getInstance().registerPlugin( StepPluginType.class, plugin );
+  }
 
   @Before
   public void prepareCommon() throws Exception {

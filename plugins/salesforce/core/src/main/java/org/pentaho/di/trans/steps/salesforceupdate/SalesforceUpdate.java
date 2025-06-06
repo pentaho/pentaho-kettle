@@ -14,7 +14,12 @@
 package org.pentaho.di.trans.steps.salesforceupdate;
 
 import java.util.ArrayList;
+import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.bind.XmlObject;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -28,10 +33,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.sforce.soap.partner.sobject.SObject;
-import com.sforce.ws.bind.XmlObject;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
@@ -298,6 +299,18 @@ public class SalesforceUpdate extends SalesforceStep {
       data.sfBuffer = null;
     }
     super.dispose( smi, sdi );
+  }
+
+  @SuppressWarnings( "java:S1185" ) //This is being called using reflection(doAction)
+  @Override
+  public JSONObject testButtonAction( Map<String, String> queryParams ) {
+    return super.testButtonAction( queryParams );
+  }
+
+  @Override
+  public JSONObject modulesAction( Map<String, String> queryParams ) {
+    queryParams.put( "moduleFlag", "false" );
+    return super.modulesAction( queryParams );
   }
 
 }

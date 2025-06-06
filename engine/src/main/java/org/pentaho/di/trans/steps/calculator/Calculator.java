@@ -15,7 +15,11 @@ package org.pentaho.di.trans.steps.calculator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileNotFoundException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -643,6 +647,50 @@ public class Calculator extends BaseStep implements StepInterface {
     // So we remove them.
     //
     return RowDataUtil.removeItems( calcData, data.getTempIndexes() );
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getCalcTypesAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    JSONArray calculatorArray = new JSONArray();
+    for ( int i = 0; i < CalculatorMetaFunction.calc_desc.length; i++ ) {
+      JSONObject calcJsonObject = new JSONObject();
+      calcJsonObject.put( "id", CalculatorMetaFunction.getCalcFunctionDesc( i ) );
+      calcJsonObject.put( "name", CalculatorMetaFunction.getCalcFunctionLongDesc( i ) );
+      calculatorArray.add( calcJsonObject );
+    }
+
+    response.put( "calculationTypes", calculatorArray );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getCalcFieldsAction( Map<String, String> queryParams ) throws KettleStepException {
+    JSONObject response = new JSONObject();
+    JSONArray fieldsArray = new JSONArray();
+    String stepName = Objects.toString( queryParams.get( "stepName" ) );
+
+    CalculatorMeta calculatorMeta = (CalculatorMeta) getStepMetaInterface();
+    CalculatorMetaFunction[] calculatorMetaFunctions = calculatorMeta.getCalculation();
+    for ( CalculatorMetaFunction calculatorMetaFunction : calculatorMetaFunctions ) {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "name", calculatorMetaFunction.getFieldName() );
+      fieldsArray.add( jsonObject );
+    }
+
+    RowMetaInterface rowMetaInterface = getTransMeta().getPrevStepFields( stepName );
+    if ( Objects.nonNull( rowMetaInterface ) ) {
+      for ( int i = 0; i < rowMetaInterface.size(); i++ ) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put( "name", rowMetaInterface.getValueMeta( i ).getName() );
+        fieldsArray.add( jsonObject );
+      }
+    }
+
+    response.put( "fields", fieldsArray );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
   }
 
   @Override

@@ -14,183 +14,154 @@
 package org.pentaho.di.www;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.util.UUIDUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 
 public class RegisterPackageServletIT {
 
-  protected RegisterPackageServlet servlet;
-
   private static final String ZIP_FILE_NAME = "jobExport.zip";
-
   private static final String ZIP_FILE_PATH = "src/it/resources/org/pentaho/di/www/" + ZIP_FILE_NAME;
 
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  protected RegisterPackageServlet servlet;
 
-  @BeforeClass
-  public static void beforeAll() throws Exception
-  {
-
-    if ( getBaseTempDir().exists() ) {
-      FileUtils.cleanDirectory(getBaseTempDir());
-    }
-
-  }
 
   @Before
   public void setup() {
-
     servlet = new RegisterPackageServlet();
-    LogChannelInterface logChannelInterface = mock( LogChannelInterface.class );
-    servlet.setup(new TransformationMap(),
-            new JobMap(),
-            new SocketRepository( logChannelInterface ) ,
-            new ArrayList<>() );
+    servlet.setup( new TransformationMap(), new JobMap(), new SocketRepository( mock( LogChannelInterface.class ) ),
+      new ArrayList<>() );
   }
 
-
   @Test
-  public void copyRequestToDirectory() throws  Exception {
-
-    File fileZip = new File(ZIP_FILE_PATH);
+  public void copyRequestToDirectory() throws Exception {
+    // Get the contents of the Zip file as an InputStream
+    File fileZip = new File( ZIP_FILE_PATH );
     InputStream inputStream = new FileInputStream( fileZip );
-    File outputDirectory = createRandomTempDir("output" );
 
-    assertTrue( outputDirectory.exists() );
-    assertTrue( outputDirectory.isDirectory() );
+    // The InputStream should not be null
+    assertNotNull( inputStream );
 
-    String archiveUrl = servlet.copyRequestToDirectory( inputStream, outputDirectory.getAbsolutePath() );
+    // Execute (save the file to the given folder)
+    String archiveUrl = servlet.copyRequestToDirectory( inputStream, temporaryFolder.getRoot().getAbsolutePath() );
 
-    // Verify
+    // Check that a file got copied
+    File copiedFile = new File( archiveUrl );
+    assertTrue( copiedFile.exists() );
+    assertTrue( copiedFile.isFile() );
 
-    // check a file got copied
-    File fileArchiveUrl = new File( archiveUrl );
-    assertTrue( fileArchiveUrl.exists() );
-    assertTrue( fileArchiveUrl.isFile() );
+    // And that it was copied into the expected folder
+    File expectedCopiedFile = new File( temporaryFolder.getRoot(), copiedFile.getName() );
+    assertTrue( expectedCopiedFile.exists() );
+    assertTrue( expectedCopiedFile.isFile() );
 
-    //check in expected directory
-    File expectedArchiveUrl = new File (outputDirectory, fileArchiveUrl.getName() );
-    assertEquals( expectedArchiveUrl.getAbsolutePath(), fileArchiveUrl.getAbsolutePath() );
-
-    // check bytes are the same
-    long delta = 10000; // a small difference
-    long diff = Math.abs( fileZip.getTotalSpace() - fileArchiveUrl.getTotalSpace() );
-    assertTrue( String.format( "diff: %d expected delta: %d", diff, delta ), diff < delta );
+    // Check that the copied file has the expected size
+    assertEquals( Files.size( fileZip.toPath() ), Files.size( copiedFile.toPath() ) );
   }
 
   @Test
   public void extract() throws Exception {
+    // Copy the test Zip file to a working temporary folder
+    FileUtils.copyFileToDirectory( new File( ZIP_FILE_PATH ), temporaryFolder.getRoot() );
+    // Check that it is there
+    File fileZip = new File( temporaryFolder.getRoot(), ZIP_FILE_NAME );
+    assertTrue( fileZip.exists() );
 
-    // Setup
-    File fileExtractDir = createRandomTempDir("extract" );
-    FileUtils.copyFileToDirectory( new File( ZIP_FILE_PATH ),  fileExtractDir );
-    File fileZip = new File( fileExtractDir, ZIP_FILE_NAME );
-    assertTrue ( fileZip.exists() );
-
+    // Execute (extract to the same folder where the file is)
     String zipBaseUrl = servlet.extract( fileZip.getAbsolutePath() );
 
-    // Verify
+    // Check that the returned folder is the same folder where the file is
     File dirZipBaseUrl = new File( zipBaseUrl );
+    assertTrue( dirZipBaseUrl.exists() );
+    assertEquals( fileZip.getParentFile().getAbsolutePath(), dirZipBaseUrl.getAbsolutePath() );
 
-    assertTrue ( dirZipBaseUrl.exists() );
-    assertEquals ( fileZip.getParentFile().getAbsolutePath(),  dirZipBaseUrl.getAbsolutePath() );
+    // The folder should contain the original zip file, and the 5 files that should have been extracted
+    // Check that the folder contains the right number of files
+    File[] listOfFiles = dirZipBaseUrl.listFiles();
+    assertNotNull( listOfFiles );
+    assertEquals( 6, listOfFiles.length );
 
-    assertEquals ( 6, dirZipBaseUrl.listFiles().length);
+    // Let's check the real file names
+    Set<String> expectedFilesNames = new HashSet<>(
+      Arrays.asList( "AddYear.ktr", "CurrentDate.kjb", "DataRowsCustomer.ktr", "GrabData.kjb", ZIP_FILE_NAME,
+        "__job_execution_configuration__.xml" ) );
 
-    Set<String> expectedFilesNames = new HashSet<>( Arrays.asList(
-        "AddYear.ktr",
-        "CurrentDate.kjb",
-        "DataRowsCustomer.ktr",
-        "GrabData.kjb",
-        ZIP_FILE_NAME,
-        "__job_execution_configuration__.xml"
-        )
-      );
-
-    for (File children : dirZipBaseUrl.listFiles() )
-    {
+    for ( File children : listOfFiles ) {
       expectedFilesNames.remove( children.getName() );
     }
 
-    assertTrue("Some files are missing: " + expectedFilesNames.toString(),  expectedFilesNames.isEmpty() );
-
+    assertTrue( "Some files are missing: " + expectedFilesNames.toString(), expectedFilesNames.isEmpty() );
   }
 
   @Test
-  public void deleteArchive() throws Exception
-  {
-    // Setup
-    File fileDeleteDir = createRandomTempDir("delete" );
-    FileUtils.copyFileToDirectory( new File( ZIP_FILE_PATH ),  fileDeleteDir );
+  public void extractTo() throws Exception {
+    // Copy the test Zip file to a working temporary folder
+    FileUtils.copyFileToDirectory( new File( ZIP_FILE_PATH ), temporaryFolder.getRoot() );
+    // Check that it is there
+    File fileZip = new File( temporaryFolder.getRoot(), ZIP_FILE_NAME );
+    assertTrue( fileZip.exists() );
 
-    File fileZip = new File( fileDeleteDir, ZIP_FILE_NAME );
-    assertTrue ( fileZip.exists() );
+    // For this test, we need a new folder
+    File outputFolder = temporaryFolder.newFolder();
+    // Make sure it exists
+    assertTrue( outputFolder.exists() );
 
-    servlet.deleteArchive( fileZip.getAbsolutePath() );
+    // Execute (extract to a different folder from where the file is)
+    servlet.extract( fileZip.getAbsolutePath(), outputFolder.getAbsolutePath() );
 
-    assertFalse( fileZip.exists() );
+    // Make sure that origin and destination folders are different
+    assertNotEquals( fileZip.getParentFile().getAbsolutePath(), outputFolder.getAbsolutePath() );
 
-  }
+    // The output folder should only contain the 5 files that should have been extracted
+    // Check that the folder contains the right number of files
+    File[] listOfFiles = outputFolder.listFiles();
+    assertNotNull( listOfFiles );
+    assertEquals( 5, listOfFiles.length );
 
+    // Let's check the real file names
+    Set<String> expectedFilesNames = new HashSet<>(
+      Arrays.asList( "AddYear.ktr", "CurrentDate.kjb", "DataRowsCustomer.ktr", "GrabData.kjb",
+        "__job_execution_configuration__.xml" ) );
 
-  @AfterClass
-  public static void afterAll() throws Exception
-  {
-
-    if ( getBaseTempDir().exists() ) {
-      FileUtils.cleanDirectory(getBaseTempDir());
+    for ( File children : listOfFiles ) {
+      expectedFilesNames.remove( children.getName() );
     }
 
+    assertTrue( "Some files are missing: " + expectedFilesNames.toString(), expectedFilesNames.isEmpty() );
   }
 
-  /**
-   * Create temporary unique directory for testing.
-   * <p>
-   * format:
-   * &nbsp; {JAVA_IO_TMPDIR}/RegisterPackageServletIT/export_4a3cfb7b-c850-11e9-9042-fd32c1018b37</p>
-   * @param directoryPrefix
-   * @return
-   * @throws IOException
-   */
-  protected File createRandomTempDir(String directoryPrefix) throws IOException
-  {
+  @Test
+  public void deleteArchive() throws Exception {
+    // We'll create a file to be deleted...
+    File fileToDelete = temporaryFolder.newFile();
+    // Check that it really exists before deleting it
+    assertTrue( fileToDelete.exists() );
 
-    File tempDir = FileUtils.getFile( getBaseTempDir(), directoryPrefix + "_" + UUIDUtil.getUUIDAsString()  );
-    if (! tempDir.mkdirs() )
-    {
-      throw new IOException( "could not create temporary directory: " + tempDir.getAbsolutePath() );
-    }
+    // Execute (delete the file)
+    servlet.deleteArchive( fileToDelete.getAbsolutePath() );
 
-    return tempDir;
-
+    // Now, it should not exist
+    assertFalse( fileToDelete.exists() );
   }
-
-  /**
-   * Get base temporary directory.
-   * @return
-   */
-  protected static File getBaseTempDir()
-  {
-    return new File( System.getProperty( "java.io.tmpdir" ),  RegisterPackageServletIT.class.getSimpleName() );
-  }
-
-
 }

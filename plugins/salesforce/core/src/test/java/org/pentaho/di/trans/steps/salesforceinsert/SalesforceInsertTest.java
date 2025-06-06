@@ -22,10 +22,14 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.util.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.sforce.ws.bind.XmlObject;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -225,4 +229,25 @@ public class SalesforceInsertTest {
     XmlObject sObject = data.sfBuffer[ 0 ].getChild( ACCOUNT_ID );
     Assert.assertEquals( sObject.getValue(), 1 );
   }
+
+  @Test
+  public void testModulesAction() {
+    SalesforceInsert sfInputStep =
+      new SalesforceInsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    Map<String, String> queryParams = new HashMap<>();
+    JSONObject response = sfInputStep.modulesAction( queryParams );
+    assertTrue( response.containsKey( "actionStatus" ) );
+  }
+
+  @Test
+  public void test_testButtonAction() {
+    SalesforceInsert sfInputStep =
+      new SalesforceInsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    Map<String, String> queryParams = new HashMap<>();
+
+    JSONObject response = sfInputStep.testButtonAction( queryParams );
+    assertTrue( response.containsKey( "connectionStatus" ) );
+  }
+
+
 }

@@ -21,15 +21,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Collections;
 
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.apache.commons.vfs2.FileObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -45,6 +48,7 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -940,4 +944,14 @@ public class GroupBy extends BaseStep implements StepInterface {
   public GroupByMeta getMeta() {
     return meta;
   }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject typeGroupCodeAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    JSONArray typeValues = new JSONArray();
+    typeValues.addAll( Arrays.asList( GroupByMeta.typeGroupCode ) );
+    response.put( "typeGroupCode", typeValues );
+    return response;
+  }
+
 }

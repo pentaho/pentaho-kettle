@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -43,20 +44,27 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 //import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
@@ -76,6 +84,7 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.utils.TestUtils;
@@ -962,6 +971,88 @@ public class TextFileOutputTest {
     TextFileOutput textFileOutput = getTextFileOutput(data, meta);
     byte[] str = new byte[1];
     assertFalse(textFileOutput.isWriteEnclosureForWriteField(str));
+  }
+
+  @Test
+  public void getFormatsActionTest() {
+    textFileOutput =
+        new TextFileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+            stepMockHelper.trans );
+    Map<String, String> queryParams = new HashMap<>();
+    JSONObject response = textFileOutput.doAction( "getFormats", stepMockHelper.processRowsStepMetaInterface, stepMockHelper.transMeta, stepMockHelper.trans, queryParams );
+
+    assertNotNull( response );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( "formats" ) );
+  }
+
+  @Test
+  public void showFilesActionTest() {
+    textFileOutput =
+        new TextFileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+            stepMockHelper.trans );
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "filter", "file" );
+    queryParams.put( "isRegex", "false" );
+    when( stepMockHelper.processRowsStepMetaInterface.getFiles( stepMockHelper.transMeta ) ).thenReturn( new String[] { "file1", "file2" } );
+    JSONObject response = textFileOutput.doAction( "showFiles", stepMockHelper.processRowsStepMetaInterface, stepMockHelper.transMeta, stepMockHelper.trans, queryParams );
+
+    assertNotNull( response );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    JSONArray files = (JSONArray) response.get( "files" );
+    assertNotNull( files );
+    assertEquals( 2, files.size() );
+  }
+
+  @Test
+  public void showFilesAction_withRegexTest() {
+    textFileOutput =
+        new TextFileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+            stepMockHelper.trans );
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "filter", "*" );
+    queryParams.put( "isRegex", "true" );
+    try ( MockedStatic<Pattern> patternMockedStatic = mockStatic( Pattern.class ) ) {
+      Pattern pattern = mock( Pattern.class );
+      Matcher matcher = mock( Matcher.class );
+      patternMockedStatic.when( () -> Pattern.compile( anyString() ) ).thenReturn( pattern );
+      when( pattern.matcher( any() ) ).thenReturn( matcher );
+      when( matcher.matches() ).thenReturn( true );
+      when( stepMockHelper.processRowsStepMetaInterface.getFiles( stepMockHelper.transMeta ) ).thenReturn( new String[]{"file1", "file2"} );
+
+      JSONObject response = textFileOutput.doAction( "showFiles", stepMockHelper.processRowsStepMetaInterface, stepMockHelper.transMeta, stepMockHelper.trans, queryParams );
+
+      assertNotNull( response );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray files = (JSONArray) response.get( "files" );
+      assertNotNull( files );
+      assertEquals( 2, files.size() );
+    }
+  }
+
+  @Test
+  public void setMinimalWidthActionTest() {
+    TextFileOutputMeta textFileOutputMeta = mock( TextFileOutputMeta.class );
+    textFileOutput =
+        new TextFileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+            stepMockHelper.trans );
+    TextFileField[] fields = new TextFileField[ 3 ];
+    setUpFields( fields, 0, "string", 2 );
+    setUpFields( fields, 1, "integer", 5 );
+    setUpFields( fields, 2, "number", 1 );
+
+    when( textFileOutputMeta.getOutputFields() ).thenReturn( fields );
+    textFileOutput.setStepMetaInterface( textFileOutputMeta );
+
+    JSONObject response = textFileOutput.doAction( "setMinimalWidth", textFileOutputMeta, stepMockHelper.transMeta,
+        stepMockHelper.trans, new HashMap<>() );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+  }
+
+  private void setUpFields( TextFileField[] textFileFields, int index, String name, int type ) {
+    textFileFields[ index ] = new TextFileField();
+    textFileFields[ index ].setName( name );
+    textFileFields[ index ].setType( type );
   }
 
   public TextFileOutput getTextFileOutput(TextFileOutputData data,TextFileOutputMeta meta) {
