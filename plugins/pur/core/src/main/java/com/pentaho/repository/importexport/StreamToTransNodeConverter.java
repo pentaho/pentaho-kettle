@@ -182,7 +182,7 @@ public class StreamToTransNodeConverter implements Converter {
         entries.append( '\n' );
       }
     }
-    return BaseMessages.getString( PKG, "MissingTransDialog.MissingTransSteps", entries.toString() );
+    return BaseMessages.getString( PKG, "MissingTransDialog.MissingTransSteps", entries.toString(), "." );
   }
 
   private void saveSharedObjects( final Repository repo, final RepositoryElementInterface element )
