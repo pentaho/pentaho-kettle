@@ -1,4 +1,4 @@
-package com.pentaho.di.repovfs.repo;
+package org.pentaho.di.repovfs.repo;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;

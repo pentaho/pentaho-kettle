@@ -1,7 +1,7 @@
-package com.pentaho.di.repovfs.plugin;
+package org.pentaho.di.repovfs.plugin;
 
-import com.pentaho.di.repovfs.plugin.vfs.RepoVfsPdiProvider;
-import com.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
+import org.pentaho.di.repovfs.plugin.vfs.RepoVfsPdiProvider;
+import org.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
 
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSLookupFilter;

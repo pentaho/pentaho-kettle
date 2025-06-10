@@ -1,4 +1,4 @@
-package com.pentaho.di.repovfs.vfs;
+package org.pentaho.di.repovfs.vfs;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -13,9 +13,9 @@ import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.pentaho.di.repovfs.cfg.JCRSolutionConfig;
-import com.pentaho.di.repovfs.repo.RepositoryClient;
-import com.pentaho.di.repovfs.repo.RepositoryClient.RepositoryClientException;
+import org.pentaho.di.repovfs.cfg.JCRSolutionConfig;
+import org.pentaho.di.repovfs.repo.RepositoryClient;
+import org.pentaho.di.repovfs.repo.RepositoryClient.RepositoryClientException;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileDto;

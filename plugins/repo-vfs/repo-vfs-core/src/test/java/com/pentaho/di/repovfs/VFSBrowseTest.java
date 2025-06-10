@@ -1,12 +1,12 @@
-package com.pentaho.di.repovfs;
+package org.pentaho.di.repovfs;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
-import com.pentaho.di.repovfs.vfs.JCRSolutionFileSystem;
-import com.pentaho.di.repovfs.vfs.JCRSolutionFileSystem.ConfigBuilder;
+import org.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
+import org.pentaho.di.repovfs.vfs.JCRSolutionFileSystem;
+import org.pentaho.di.repovfs.vfs.JCRSolutionFileSystem.ConfigBuilder;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;

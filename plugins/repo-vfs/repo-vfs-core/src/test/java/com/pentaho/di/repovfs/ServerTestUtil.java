@@ -1,4 +1,4 @@
-package com.pentaho.di.repovfs;
+package org.pentaho.di.repovfs;
 
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;

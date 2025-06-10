@@ -1,4 +1,4 @@
-package com.pentaho.di.repovfs.repo;
+package org.pentaho.di.repovfs.repo;
 
 
 import com.sun.jersey.api.client.Client;
@@ -20,7 +20,7 @@ import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.pentaho.di.repovfs.cfg.JCRSolutionConfig;
+import org.pentaho.di.repovfs.cfg.JCRSolutionConfig;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileDto;
