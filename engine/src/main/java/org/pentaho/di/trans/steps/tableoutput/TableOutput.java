@@ -240,6 +240,10 @@ public class TableOutput extends BaseDatabaseStep implements StepInterface {
       String sql =
         data.db
           .getInsertStatement( environmentSubstitute( meta.getSchemaName() ), tableName, data.insertRowMeta );
+      // if the connect URL contains the keyword "phoenix", then convert the sql statement to "UPSERT INTO..."
+      if ( meta.getDatabaseMeta().getURL().contains("phoenix") ) {
+        sql = sql.replaceFirst("INSERT", "UPSERT");
+      }
       if ( log.isDetailed() ) {
         logDetailed( "Prepared statement : " + sql );
       }
