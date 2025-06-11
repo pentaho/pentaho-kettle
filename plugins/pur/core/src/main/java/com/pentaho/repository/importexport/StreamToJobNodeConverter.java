@@ -191,7 +191,7 @@ public class StreamToJobNodeConverter implements Converter {
         entries.append( '\n' );
       }
     }
-    return BaseMessages.getString( PKG, "MissingEntryDialog.MissingJobEntries", entries.toString() );
+    return BaseMessages.getString( PKG, "MissingEntryDialog.MissingJobEntries", entries.toString(), "." );
   }
 
   public void saveSharedObjects( final Repository repo, final RepositoryElementInterface element )
