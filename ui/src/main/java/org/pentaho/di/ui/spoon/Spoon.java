@@ -2905,9 +2905,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private <M extends SharedObjectsManagementInterface<T>, T extends SharedObjectInterface<T> & RepositoryElementInterface>
-      void withSharedObject( Class<M> clazz, SharedObjectOp<M, T> sso ) {
+      void withSharedObject( Class<M> clazz, SharedObjectOp<M, T> soo ) {
     SpoonTreeLeveledSelection leveledSelection = (SpoonTreeLeveledSelection) selectionObject;
-    withSharedObject( leveledSelection, clazz, sso );
+    withSharedObject( leveledSelection, clazz, soo );
   }
 
   private <M extends SharedObjectsManagementInterface<T>, T extends SharedObjectInterface<T> & RepositoryElementInterface>
@@ -3179,6 +3179,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } );
   }
 
+  /**
+   * Get a Manager for managing (CRUD) config objects for a particular Level. The returned manager will have
+   * access to manage the specified type of config objects only for that Level.
+   * <p/>
+   * T will generally be a sub-interface of SharedObjectsManagementInterface, but that is not enforced. Spoon uses this
+   * only for SharedObjects, since the metastore types happen to be managed by plugins.
+   *
+   * @param <T> The interface for the manager as managed by BowlManagerFactoryRegistry, and/or known to the active Meta.
+   * @param level The level being managed (PROJECT/GLOBAL/FILE)
+   * @param clazz The class for T, since T will be erased at runtime.
+   *
+   * @return T a manager of the class and Level specified, or null if it is unknown.
+   */
   private <T> T getSharedObjectManager( LeveledTreeNode.LEVEL level, Class<T> clazz ) throws KettleException {
     if ( level == LeveledTreeNode.LEVEL.PROJECT ) {
       return managementBowl.getManager( clazz );
