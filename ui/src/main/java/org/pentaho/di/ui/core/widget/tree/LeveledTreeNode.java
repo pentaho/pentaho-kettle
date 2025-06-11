@@ -21,11 +21,24 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.Spoon;
 
+/**
+ * A TreeNode for the left-hand config tree that includes a Level for management. Levels represent where the config is
+ * stored, and a priority for how the config is applied. This Level concept is used in the UI to abstract the equivalent
+ * logic in back-end code.
+ *
+ */
 public class LeveledTreeNode extends TreeNode {
   public enum LEVEL {
+    /** The Default Level is for built-in objects that cannot be managed or deleted by Users. E.G. the "Pentaho
+     *  Local" Run Configuration */
     DEFAULT( 1 ),
+    /** The Project Level is for config objects that are contained in the current Project. */
     PROJECT( 2 ),
+    /** The Global Level represents exactly one of the System (DefaultBowl) or Repository Levels, depending on whether
+     *  we are connected to a Repository. */
     GLOBAL( 3 ),
+    /** The File Level is for shared objects defined inside the xml of a Transformation or Job. This level is mostly
+     *  deprecated. New Objects cannot be created at this Level. */
     FILE( 4 );
 
 
