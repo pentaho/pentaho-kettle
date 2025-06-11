@@ -1,6 +1,6 @@
-package com.pentaho.di.repovfs.plugin.vfs;
+package org.pentaho.di.repovfs.plugin.vfs;
 
-import com.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
+import org.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
 
 import org.pentaho.di.connections.annotations.Encrypted;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;

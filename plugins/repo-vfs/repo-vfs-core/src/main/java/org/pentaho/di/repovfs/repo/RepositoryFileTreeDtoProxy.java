@@ -1,4 +1,4 @@
-package com.pentaho.di.repovfs.repo;
+package org.pentaho.di.repovfs.repo;
 
 import java.util.Collections;
 import java.util.List;

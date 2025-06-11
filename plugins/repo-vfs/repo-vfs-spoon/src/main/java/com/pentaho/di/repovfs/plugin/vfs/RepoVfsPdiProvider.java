@@ -1,10 +1,10 @@
-package com.pentaho.di.repovfs.plugin.vfs;
+package org.pentaho.di.repovfs.plugin.vfs;
 
-import com.pentaho.di.repovfs.cfg.JCRSolutionConfig;
-import com.pentaho.di.repovfs.repo.BasicAuthentication;
-import com.pentaho.di.repovfs.repo.RepositoryClient;
-import com.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
-import com.pentaho.di.repovfs.vfs.JCRSolutionFileSystem;
+import org.pentaho.di.repovfs.cfg.JCRSolutionConfig;
+import org.pentaho.di.repovfs.repo.BasicAuthentication;
+import org.pentaho.di.repovfs.repo.RepositoryClient;
+import org.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
+import org.pentaho.di.repovfs.vfs.JCRSolutionFileSystem;
 
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;

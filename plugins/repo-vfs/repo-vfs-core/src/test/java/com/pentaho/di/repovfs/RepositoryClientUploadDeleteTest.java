@@ -1,13 +1,13 @@
-package com.pentaho.di.repovfs;
+package org.pentaho.di.repovfs;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-import com.pentaho.di.repovfs.cfg.JCRSolutionConfig;
-import com.pentaho.di.repovfs.repo.BasicAuthentication;
-import com.pentaho.di.repovfs.repo.RepositoryClient;
+import org.pentaho.di.repovfs.cfg.JCRSolutionConfig;
+import org.pentaho.di.repovfs.repo.BasicAuthentication;
+import org.pentaho.di.repovfs.repo.RepositoryClient;
 
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileDto;
 

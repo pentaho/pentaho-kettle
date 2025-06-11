@@ -1,4 +1,4 @@
-package com.pentaho.di.repovfs.vfs;
+package org.pentaho.di.repovfs.vfs;
 
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;
@@ -9,8 +9,8 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileSystem;
 
-import com.pentaho.di.repovfs.cfg.JCRSolutionConfig;
-import com.pentaho.di.repovfs.repo.RepositoryClient;
+import org.pentaho.di.repovfs.cfg.JCRSolutionConfig;
+import org.pentaho.di.repovfs.repo.RepositoryClient;
 
 import java.util.Collection;
 

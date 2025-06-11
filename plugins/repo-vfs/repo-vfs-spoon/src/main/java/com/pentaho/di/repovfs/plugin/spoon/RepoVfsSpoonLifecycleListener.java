@@ -1,7 +1,7 @@
-package com.pentaho.di.repovfs.plugin.spoon;
+package org.pentaho.di.repovfs.plugin.spoon;
 
-import com.pentaho.di.repovfs.plugin.vfs.RepoVfsDetails;
-import com.pentaho.di.repovfs.plugin.vfs.RepoVfsPdiProvider;
+import org.pentaho.di.repovfs.plugin.vfs.RepoVfsDetails;
+import org.pentaho.di.repovfs.plugin.vfs.RepoVfsPdiProvider;
 
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.bowl.Bowl;

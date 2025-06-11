@@ -6,12 +6,12 @@
 
     <parent>
         <artifactId>repo-vfs-plugin</artifactId>
-        <groupId>com.pentaho.di.plugins.projects</groupId>
+        <groupId>org.pentaho.di.plugins</groupId>
         <version>10.3.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>repo-vfs-spoon</artifactId>
-    <groupId>com.pentaho.di.plugins.projects</groupId>
+    <groupId>org.pentaho.di.plugins</groupId>
     <version>10.3.0.0-SNAPSHOT</version>
 
     <name>PDI Repository VFS Plugin Spoon Add-on</name>
@@ -27,7 +27,7 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.pentaho.di.plugins.projects</groupId>
+            <groupId>org.pentaho.di.plugins</groupId>
             <artifactId>repo-vfs-core</artifactId>
             <version>10.3.0.0-SNAPSHOT</version>
             <scope>provided</scope>

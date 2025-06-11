@@ -1,4 +1,4 @@
-package com.pentaho.di.repovfs.cfg;
+package org.pentaho.di.repovfs.cfg;
 
 import java.io.IOException;
 import java.io.InputStream;

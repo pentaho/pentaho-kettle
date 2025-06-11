@@ -30,7 +30,7 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>com.pentaho.di.plugins.projects:repo-vfs-spoon:jar</include>
+        <include>org.pentaho.di.plugins:repo-vfs-spoon:jar</include>
       </includes>
     </dependencySet>
     <dependencySet>
@@ -39,7 +39,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <excludes>
-        <exclude>com.pentaho.di.plugins.projects:repo-vfs-spoon:jar</exclude>
+        <exclude>org.pentaho.di.plugins:repo-vfs-spoon:jar</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>

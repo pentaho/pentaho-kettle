@@ -1,4 +1,4 @@
-package com.pentaho.di.repovfs.vfs;
+package org.pentaho.di.repovfs.vfs;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.Capability;
@@ -16,9 +16,9 @@ import org.apache.commons.vfs2.provider.VfsComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.pentaho.di.repovfs.cfg.JCRSolutionConfig;
-import com.pentaho.di.repovfs.repo.BasicAuthentication;
-import com.pentaho.di.repovfs.repo.RepositoryClient;
+import org.pentaho.di.repovfs.cfg.JCRSolutionConfig;
+import org.pentaho.di.repovfs.repo.BasicAuthentication;
+import org.pentaho.di.repovfs.repo.RepositoryClient;
 
 import java.util.Arrays;
 import java.util.Collection;

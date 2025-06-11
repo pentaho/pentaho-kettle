@@ -1,7 +1,7 @@
-package com.pentaho.di.repovfs.vfs;
+package org.pentaho.di.repovfs.vfs;
 
-import com.pentaho.di.repovfs.repo.RepositoryClient;
-import com.pentaho.di.repovfs.repo.RepositoryClient.RepositoryClientException;
+import org.pentaho.di.repovfs.repo.RepositoryClient;
+import org.pentaho.di.repovfs.repo.RepositoryClient.RepositoryClientException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
