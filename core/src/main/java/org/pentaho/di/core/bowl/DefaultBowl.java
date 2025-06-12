@@ -73,9 +73,7 @@ public class DefaultBowl extends BaseBowl {
 
   @Override
   public VariableSpace getADefaultVariableSpace() {
-    VariableSpace space = new Variables();
-    space.initializeVariablesFrom( null );
-    return space;
+    return Variables.getADefaultVariableSpace();
   }
 
   /**

@@ -241,7 +241,8 @@ public class Variables implements VariableSpace {
 
   /**
    * Get a default variable space as a placeholder. Everytime you will get a new instance.
-   *
+   * <p/>
+   * This will only include the system-level variables for the kettle engine. For other contexts
    * @see org.pentaho.di.core.bowl.Bowl#getADefaultVariableSpace()
    *
    * @return a default variable space.
