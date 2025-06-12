@@ -23,6 +23,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.Database;
@@ -182,6 +183,7 @@ public class DatabaseLookupUTest {
         return null;
       }
     } ).when( meta ).getFields(
+      any( Bowl.class ),
       any( RowMetaInterface.class ),
       anyString(),
       any( RowMetaInterface[].class ),
@@ -288,6 +290,7 @@ public class DatabaseLookupUTest {
         return null;
       }
     } ).when( meta ).getFields(
+      any( Bowl.class ),
       any( RowMetaInterface.class ),
       anyString(),
       any( RowMetaInterface[].class ),

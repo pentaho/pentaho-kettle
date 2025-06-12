@@ -13,17 +13,24 @@
 
 package org.pentaho.di.ui.spoon.tree.provider;
 
+import org.eclipse.swt.graphics.Image;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.KettleRepositoryLostException;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.DatabasesCollector;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by bmorrise on 6/28/18.
@@ -46,39 +53,59 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-    DatabasesCollector collector = new DatabasesCollector( meta, spoon.getRepository() );
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    Bowl currentBowl = Spoon.getInstance().getManagementBowl();
+    Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
     try {
-      try {
-        collector.collectDatabases();
-      } catch ( KettleException e ) {
-        if ( e.getCause() instanceof KettleRepositoryLostException ) {
-          Spoon.getInstance().handleRepositoryLost( (KettleRepositoryLostException) e.getCause() );
-          collector = new DatabasesCollector( meta, null );
-          collector.collectDatabases();
-        } else {
-          throw e;
+      Set<String> projectDbNames = new HashSet<>();
+      if ( currentBowl != globalBowl ) {
+
+        DatabaseManagementInterface dbManager = currentBowl.getManager( DatabaseManagementInterface.class );
+        DatabasesCollector collector = new DatabasesCollector( dbManager, null );
+
+        for ( String databaseName : collector.getDatabaseNames() ) {
+          if ( !filterMatch( databaseName, filter ) ) {
+            continue;
+          }
+          DatabaseMeta databaseMeta = collector.getMetaFor( databaseName );
+          projectDbNames.add( databaseMeta.getDisplayName() );
+          createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource
+            .getImageConnectionTree(), LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
+        }
+      }
+      // Global
+      DatabaseManagementInterface globalDbConnMgr = globalBowl.getManager( DatabaseManagementInterface.class );
+      DatabasesCollector collector = new DatabasesCollector( globalDbConnMgr, null );
+      Set<String> globalDbNames = new HashSet<>();
+      for ( String name : collector.getDatabaseNames() ) {
+        if ( !filterMatch( name, filter ) ) {
+          continue;
+        }
+        DatabaseMeta databaseMeta = collector.getMetaFor( name );
+        globalDbNames.add( databaseMeta.getDisplayName() );
+        createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree(), LeveledTreeNode.LEVEL.GLOBAL,
+                globalBowl.getLevelDisplayName(), containsIgnoreCase( projectDbNames, name ) );
+      }
+
+      // Local Db connection
+      if ( meta.isPresent() ) {
+        DatabaseManagementInterface dbManager = meta.get().getDatabaseManagementInterface();
+        collector = new DatabasesCollector( dbManager,  null );
+        for ( String name : collector.getDatabaseNames() ) {
+          if ( !filterMatch( name, filter ) ) {
+            continue;
+          }
+          DatabaseMeta databaseMeta = collector.getMetaFor( name );
+          createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree(), LeveledTreeNode.LEVEL.FILE,
+            LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME, containsIgnoreCase( projectDbNames, name ) || containsIgnoreCase( globalDbNames, name ) );
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog( Spoon.getInstance().getShell(),
-              BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-              BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.DbConnections" ),
-              e
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.DbConnections" ),
+        e
       );
-    }
-
-    for ( String dbName : collector.getDatabaseNames() ) {
-      if ( !filterMatch( dbName, filter ) ) {
-        continue;
-      }
-      DatabaseMeta databaseMeta = collector.getMetaFor( dbName );
-
-      TreeNode childTreeNode = createTreeNode( treeNode, databaseMeta.getDisplayName(), guiResource
-              .getImageConnectionTree() );
-      if ( databaseMeta.isShared() ) {
-        childTreeNode.setFont( guiResource.getFontBold() );
-      }
     }
   }
 
@@ -88,7 +115,16 @@ public class DBConnectionFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return DatabaseMeta.class;
+  }
+
+  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
+                                 boolean overridden ) {
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, levelDisplayName, overridden );
+    childTreeNode.setImage( image );
+
+    parent.addChild( childTreeNode );
+    return childTreeNode;
   }
 }

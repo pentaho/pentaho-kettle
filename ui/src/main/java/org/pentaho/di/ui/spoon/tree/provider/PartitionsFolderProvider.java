@@ -13,21 +13,25 @@
 
 package org.pentaho.di.ui.spoon.tree.provider;
 
+import org.eclipse.swt.graphics.Image;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.partition.PartitionSchemaManagementInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by bmorrise on 6/28/18.
@@ -49,49 +53,70 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-
-    TransMeta transMeta = (TransMeta) meta;
-
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    Bowl currentBowl = Spoon.getInstance().getManagementBowl();
+    Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
     List<PartitionSchema> partitionSchemas;
     try {
-      partitionSchemas = pickupPartitionSchemas( transMeta );
-    } catch ( KettleException e ) {
-      new ErrorDialog( Spoon.getInstance().getShell(),
-              BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-              BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.PartitioningSchemas" ),
-              e
-      );
+      Set<String> projectSchemaNames = new HashSet<>();
+      if ( currentBowl != globalBowl ) {
+        PartitionSchemaManagementInterface partitionManager = currentBowl.getManager( PartitionSchemaManagementInterface.class );
 
-      return;
-    }
+        partitionSchemas = partitionManager.getAll();
+        for ( PartitionSchema partitionSchema : partitionSchemas ) {
+          if ( !filterMatch( partitionSchema.getName(), filter ) ) {
+            continue;
+          }
+          projectSchemaNames.add( partitionSchema.getName() );
+          createTreeNode( treeNode, partitionSchema.getName(), guiResource.getImagePartitionSchema(),
+            LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
+        }
+      }
 
-    // Put the steps below it.
-    for ( PartitionSchema partitionSchema : partitionSchemas ) {
-      if ( !filterMatch( partitionSchema.getName(), filter ) ) {
-        continue;
+      // Global
+      PartitionSchemaManagementInterface globalPartitionManager = globalBowl.getManager( PartitionSchemaManagementInterface.class );
+      Set<String> globalSchemaNames = new HashSet<>();
+      partitionSchemas = globalPartitionManager.getAll();
+      for ( PartitionSchema partitionSchema : partitionSchemas ) {
+        if ( !filterMatch( partitionSchema.getName(), filter ) ) {
+          continue;
+        }
+        globalSchemaNames.add( partitionSchema.getName() );
+        createTreeNode( treeNode, partitionSchema.getName(), guiResource.getImagePartitionSchema(),
+          LeveledTreeNode.LEVEL.GLOBAL, globalBowl.getLevelDisplayName(), containsIgnoreCase( projectSchemaNames, partitionSchema.getName() ) );
       }
-      TreeNode childTreeNode = createTreeNode( treeNode, partitionSchema.getName(), guiResource
-              .getImagePartitionSchema() );
-      if ( partitionSchema.isShared() ) {
-        childTreeNode.setFont( guiResource.getFontBold() );
+
+      // Local
+      if ( meta.isPresent() ) {
+        if ( meta.get() instanceof TransMeta ) {
+          PartitionSchemaManagementInterface localPartitionManager = meta.get().getSharedObjectManager( PartitionSchemaManagementInterface.class );
+          List<PartitionSchema> localPartitionSchemas = localPartitionManager.getAll();
+          for ( PartitionSchema partitionSchema : localPartitionSchemas ) {
+            if ( !filterMatch( partitionSchema.getName(), filter ) ) {
+              continue;
+            }
+            createTreeNode( treeNode, partitionSchema.getName(), guiResource.getImagePartitionSchema(),
+              LeveledTreeNode.LEVEL.FILE, LeveledTreeNode.LEVEL_FILE_DISPLAY_NAME,
+              containsIgnoreCase( projectSchemaNames, partitionSchema.getName() ) || containsIgnoreCase( globalSchemaNames, partitionSchema.getName() ) );
+          }
+        }
       }
+
+    } catch ( KettleException exception ) {
+      new ErrorDialog( Spoon.getInstance().getShell(), BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.PartitioningSchemas" ),
+        exception );
     }
   }
 
-  private List<PartitionSchema> pickupPartitionSchemas( TransMeta transMeta ) throws KettleException {
-    Repository rep = spoon.getRepository();
-    if ( rep != null ) {
-      ObjectId[] ids = rep.getPartitionSchemaIDs( false );
-      List<PartitionSchema> result = new ArrayList<>( ids.length );
-      for ( ObjectId id : ids ) {
-        PartitionSchema schema = rep.loadPartitionSchema( id, null );
-        result.add( schema );
-      }
-      return result;
-    }
 
-    return transMeta.getPartitionSchemas();
+  public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
+                                  boolean overridden ) {
+    LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, levelDisplayName, overridden );
+    childTreeNode.setImage( image );
+
+    parent.addChild( childTreeNode );
+    return childTreeNode;
   }
 
   @Override
@@ -100,7 +125,7 @@ public class PartitionsFolderProvider extends TreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return PartitionSchema.class;
   }
 }

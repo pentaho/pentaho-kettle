@@ -291,7 +291,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     boolean isDeleted = false;
     FileObject fileFolder = null;
     try {
-      fileFolder = KettleVFS.getFileObject(path, this);
+      fileFolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject(path, this);
 
       if (fileFolder.exists()) {
         if (new TextFileSelector(fileFolder.toString(), wildcard, parentJob).hasAccess(fileFolder)) {
@@ -458,8 +458,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean isValid = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+    boolean isValid = JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "arguments",
+        remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( !isValid ) {
       return;
@@ -471,7 +471,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < arguments.length; i++ ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "arguments[" + i + "]", remarks,
+        ctx );
     }
   }
 

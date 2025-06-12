@@ -16,10 +16,10 @@ package org.pentaho.di.www;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -85,6 +85,7 @@ public class RunTransServletTest {
     }
     when( trans.getSteps() ).thenReturn( stepList );
     when( trans.getContainerObjectId() ).thenReturn( transId );
+    when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
   }
 
   @Test
@@ -142,7 +143,7 @@ public class RunTransServletTest {
     String testParameter = "testParameter";
     Mockito.when( transMeta.listVariables() ).thenReturn( new String[] { testParameter } );
     Mockito.when( transMeta.getVariable( Mockito.anyString() ) ).thenReturn( "default value" );
-
+    Mockito.when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     Mockito.when( transMeta.listParameters() ).thenReturn( new String[] { testParameter } );
     Mockito.when( request.getParameterNames() ).thenReturn( new StringTokenizer( testParameter ) );
 

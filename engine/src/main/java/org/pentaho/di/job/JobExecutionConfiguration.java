@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.ExecutionConfiguration;
@@ -37,7 +36,6 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -244,37 +242,7 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
   }
 
   public void getUsedVariables( JobMeta jobMeta ) {
-    Properties sp = new Properties();
-    VariableSpace space = Variables.getADefaultVariableSpace();
-
-    String[] keys = space.listVariables();
-    for ( int i = 0; i < keys.length; i++ ) {
-      sp.put( keys[i], space.getVariable( keys[i] ) );
-    }
-
-    List<String> vars = jobMeta.getUsedVariables();
-    if ( vars != null && vars.size() > 0 ) {
-      HashMap<String, String> newVariables = new HashMap<String, String>();
-
-      for ( int i = 0; i < vars.size(); i++ ) {
-        String varname = vars.get( i );
-        if ( !varname.startsWith( Const.INTERNAL_VARIABLE_PREFIX ) ) {
-          // add all new non-internal variables to newVariablesMap
-          newVariables.put( varname, Const.NVL( variables.get( varname ), sp.getProperty( varname, "" ) ) );
-        }
-      }
-      // variables.clear();
-      variables.putAll( newVariables );
-    }
-
-    // Also add the internal job variables if these are set...
-    //
-    for ( String variableName : Const.INTERNAL_JOB_VARIABLES ) {
-      String value = jobMeta.getVariable( variableName );
-      if ( !Utils.isEmpty( value ) ) {
-        variables.put( variableName, value );
-      }
-    }
+    ExecutionConfiguration.getUsedVariables( jobMeta, variables );
   }
 
   /**

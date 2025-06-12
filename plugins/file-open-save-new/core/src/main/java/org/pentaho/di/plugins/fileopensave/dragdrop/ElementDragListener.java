@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
@@ -27,12 +28,14 @@ import org.pentaho.di.plugins.fileopensave.providers.repository.model.Repository
  * Supports dragging elements from a structured viewer.
  */
 public class ElementDragListener extends DragSourceAdapter {
+  private final Bowl bowl;
   private StructuredViewer viewer;
   private FileOpenSaveDialog fileOpenSaveDialog;
   private LogChannelInterface log;
 
-  public ElementDragListener( StructuredViewer viewer, FileOpenSaveDialog fileOpenSaveDialog,
+  public ElementDragListener( Bowl bowl, StructuredViewer viewer, FileOpenSaveDialog fileOpenSaveDialog,
                               LogChannelInterface log ) {
+    this.bowl = bowl;
     this.viewer = viewer;
     this.fileOpenSaveDialog = fileOpenSaveDialog;
     this.log = log;
@@ -75,7 +78,7 @@ public class ElementDragListener extends DragSourceAdapter {
         }
       }
     }
-    if ( ElementTransfer.getInstance().isSupportedType( event.dataType ) ) {
+    if ( ElementTransfer.getInstance( bowl ).isSupportedType( event.dataType ) ) {
       event.data = rawElements;
     }
   }

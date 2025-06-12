@@ -39,6 +39,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
@@ -284,8 +285,9 @@ public class TeraFastMeta extends AbstractStepMeta {
    *      org.pentaho.di.core.variables.VariableSpace)
    */
   @Override
-  public void getFields( final RowMetaInterface inputRowMeta, final String name, final RowMetaInterface[] info,
-    final StepMeta nextStep, final VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+  public void getFields( Bowl bowl, final RowMetaInterface inputRowMeta, final String name,
+    final RowMetaInterface[] info, final StepMeta nextStep, final VariableSpace space, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 

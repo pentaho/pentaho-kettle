@@ -1384,7 +1384,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         RssOutputMeta tfoi = new RssOutputMeta();
         getInfo( tfoi );
         try {
-          String[] files = tfoi.getFiles( transMeta );
+          String[] files = tfoi.getFiles( transMeta.getBowl(), transMeta );
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
               BaseMessages.getString( PKG, "RssOutputDialog.SelectOutputFiles.DialogTitle" ),
@@ -1523,7 +1523,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
     wStepname.addSelectionListener( lsDef );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.SAVE_TO,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.SAVE_TO,
         new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL }, FilterType.TXT  ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...

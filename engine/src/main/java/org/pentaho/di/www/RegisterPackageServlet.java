@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,10 +26,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.www.service.zip.ZipService;
 import org.pentaho.di.www.service.zip.ZipServiceKettle;
@@ -96,7 +100,14 @@ public class RegisterPackageServlet extends BaseJobServlet {
             getConfigNode( zipBaseUrl, Job.CONFIGURATION_IN_EXPORT_FILENAME, JobExecutionConfiguration.XML_TAG );
         JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration( node );
 
-        JobMeta jobMeta = new JobMeta( fileUrl, jobExecutionConfiguration.getRepository() );
+        VariableSpace variables = Variables.getADefaultVariableSpace();
+        Map<String, String> jecVars = jobExecutionConfiguration.getVariables();
+        for ( Map.Entry<String, String> entry : jecVars.entrySet() ) {
+          variables.setVariable( entry.getKey(), entry.getValue() );
+        }
+
+        JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), variables, fileUrl,
+          jobExecutionConfiguration.getRepository(), null, null );
         JobConfiguration jobConfiguration = new JobConfiguration( jobMeta, jobExecutionConfiguration );
 
         Job job = createJob( jobConfiguration );
@@ -107,7 +118,14 @@ public class RegisterPackageServlet extends BaseJobServlet {
                 TransExecutionConfiguration.XML_TAG );
         TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration( node );
 
-        TransMeta transMeta = new TransMeta( fileUrl, transExecutionConfiguration.getRepository() );
+        VariableSpace variables = Variables.getADefaultVariableSpace();
+        Map<String, String> tecVars = transExecutionConfiguration.getVariables();
+        for ( Map.Entry<String, String> entry : tecVars.entrySet() ) {
+          variables.setVariable( entry.getKey(), entry.getValue() );
+        }
+
+        TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), fileUrl,
+            transExecutionConfiguration.getRepository(), true, variables );
         TransConfiguration transConfiguration = new TransConfiguration( transMeta, transExecutionConfiguration );
 
         Trans trans = createTrans( transConfiguration );
@@ -175,7 +193,7 @@ public class RegisterPackageServlet extends BaseJobServlet {
    */
   protected Node getConfigNode( String archiveUrl, String fileName, String xmlTag ) throws KettleXMLException {
     String configUrl = concat( archiveUrl, fileName );
-    Document configDoc = XMLHandler.loadXMLFile( configUrl );
+    Document configDoc = XMLHandler.loadXMLFile( DefaultBowl.getInstance(), configUrl );
     return XMLHandler.getSubNode( configDoc, xmlTag );
   }
 
@@ -233,12 +251,14 @@ public class RegisterPackageServlet extends BaseJobServlet {
   protected String copyRequestToDirectory( InputStream inputStream, String directory ) throws KettleException {
     String copiedFilePath;
     try {
-      FileObject foDirectory = KettleVFS.getFileObject( directory );
+      FileObject foDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( directory );
       if ( !foDirectory.exists() ) {
         foDirectory.createFolder();
       }
-      FileObject tempZipFile = KettleVFS.createTempFile( "export", ".zip", directory );
-      OutputStream outputStream = KettleVFS.getOutputStream( tempZipFile, false );
+      FileObject tempZipFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
+        .createTempFile( "export", ".zip", directory );
+      OutputStream outputStream = KettleVFS.getInstance( DefaultBowl.getInstance() )
+        .getOutputStream( tempZipFile, false );
       copyAndClose( inputStream, outputStream );
       copiedFilePath = tempZipFile.getName().getPath();
     } catch ( IOException ioe ) {

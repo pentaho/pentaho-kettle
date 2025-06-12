@@ -185,7 +185,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Maximum timeout

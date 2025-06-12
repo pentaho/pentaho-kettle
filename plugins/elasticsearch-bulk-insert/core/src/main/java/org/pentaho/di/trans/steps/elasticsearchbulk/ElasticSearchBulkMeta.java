@@ -18,6 +18,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -371,7 +372,8 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /* This function adds meta data to the rows being pushed out */
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( StringUtils.isNotBlank( this.getIdOutField() ) ) {
       ValueMetaInterface valueMeta = new ValueMetaString( space.environmentSubstitute( this.getIdOutField() ) );

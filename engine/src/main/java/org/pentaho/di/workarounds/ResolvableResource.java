@@ -13,6 +13,9 @@
 
 package org.pentaho.di.workarounds;
 
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
+
 
 /**
  * This interface represents a resource that contains data elements with variables, relative paths etc
@@ -23,6 +26,10 @@ public interface ResolvableResource {
   /**
    * Resolves resource data elements variables and temporary references.
    */
-  void resolve();
+  @Deprecated
+  default void resolve() {
+    resolve( DefaultBowl.getInstance() );
+  }
 
+  void resolve( Bowl bowl );
 }

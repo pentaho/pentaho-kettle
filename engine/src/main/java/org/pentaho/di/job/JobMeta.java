@@ -31,6 +31,8 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.attributes.AttributesUtil;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
@@ -81,6 +83,8 @@ import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.shared.SharedObjectsIO;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
@@ -93,7 +97,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The definition of a PDI job is represented by a JobMeta object. It is typically loaded from a .kjb file, a PDI
@@ -402,8 +409,7 @@ public class JobMeta extends AbstractMeta
         jobMeta.jobcopies = new ArrayList<JobEntryCopy>();
         jobMeta.jobhops = new ArrayList<JobHopMeta>();
         jobMeta.notes = new ArrayList<NotePadMeta>();
-        jobMeta.databases = new ArrayList<DatabaseMeta>();
-        jobMeta.slaveServers = new ArrayList<SlaveServer>();
+        jobMeta.initializeSharedObjects();
         jobMeta.namedParams = new NamedParamsDefault();
       }
 
@@ -416,11 +422,17 @@ public class JobMeta extends AbstractMeta
       for ( NotePadMeta entry : notes ) {
         jobMeta.notes.add( (NotePadMeta) entry.clone() );
       }
-      for ( DatabaseMeta entry : databases ) {
-        jobMeta.databases.add( (DatabaseMeta) entry.clone() );
+      // Copy the Nodes to avoid converting from/to XML.
+      String dbType = SharedObjectsIO.SharedObjectType.CONNECTION.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( dbType ).entrySet() ) {
+        // cloneNode is *probably* overkill
+        jobMeta.localSharedObjects.saveSharedObject( dbType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
-      for ( SlaveServer slave : slaveServers ) {
-        jobMeta.getSlaveServers().add( (SlaveServer) slave.clone() );
+      //SlaveServers
+      String slaveServerType = SharedObjectsIO.SharedObjectType.SLAVESERVER.getName();
+      for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( slaveServerType ).entrySet() ) {
+        // cloneNode is *probably* overkill
+        jobMeta.localSharedObjects.saveSharedObject( slaveServerType, entry.getKey(), entry.getValue().cloneNode( true ) );
       }
       for ( String key : listParameters() ) {
         jobMeta.addParameterDefinition( key, getParameterDefault( key ), getParameterDescription( key ) );
@@ -489,6 +501,37 @@ public class JobMeta extends AbstractMeta
     return false;
   }
 
+  @Override
+  protected void databasesUpdated( String name, Optional<DatabaseMeta> newDatabaseMeta ) {
+    for ( JobEntryCopy jobEntryCopy : getJobCopies() ) {
+      DatabaseMeta[] dbs = jobEntryCopy.getEntry().getUsedDatabaseConnections();
+      if ( dbs != null ) {
+        for ( DatabaseMeta db : dbs ) {
+          if ( db != null && db.getName().equalsIgnoreCase( name ) ) {
+            updateFields( db, newDatabaseMeta );
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public void allDatabasesUpdated() {
+    List<DatabaseMeta> allDbs = getDatabases();
+    for ( JobEntryCopy jobEntryCopy : getJobCopies() ) {
+      DatabaseMeta[] dbs = jobEntryCopy.getEntry().getUsedDatabaseConnections();
+      if ( dbs != null ) {
+        for ( DatabaseMeta db : dbs ) {
+          if ( db != null ) {
+            Optional<DatabaseMeta> newDatabaseMeta =
+              Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
+            updateFields( db, newDatabaseMeta );
+          }
+        }
+      }
+    }
+  }
+
   private Set<DatabaseMeta> getUsedDatabaseMetas() {
     Set<DatabaseMeta> databaseMetas = new HashSet<DatabaseMeta>();
     for ( JobEntryCopy jobEntryCopy : getJobCopies() ) {
@@ -500,13 +543,23 @@ public class JobMeta extends AbstractMeta
       }
     }
 
-    databaseMetas.add( jobLogTable.getDatabaseMeta() );
+    if ( jobLogTable.getDatabaseMeta() != null ) {
+      databaseMetas.add( jobLogTable.getDatabaseMeta() );
+    }
 
     for ( LogTableInterface logTable : getExtraLogTables() ) {
-      databaseMetas.add( logTable.getDatabaseMeta() );
+      if ( logTable.getDatabaseMeta() != null ) {
+        databaseMetas.add( logTable.getDatabaseMeta() );
+      }
     }
     return databaseMetas;
   }
+
+  @Override
+  public Set<String> getUsedDatabaseConnectionNames() {
+    return getUsedDatabaseMetas().stream().map( DatabaseMeta::getName ).collect( Collectors.toSet() );
+  }
+
 
   /**
    * This method asks all steps in the transformation whether or not the specified database connection is used. The
@@ -564,6 +617,7 @@ public class JobMeta extends AbstractMeta
    *
    * @see org.pentaho.di.core.xml.XMLInterface#getXML()
    */
+  @Override
   public String getXML() {
     //Clear the embedded named clusters.  We will be repopulating from steps that used named clusters
     getNamedClusterEmbedManager().clear();
@@ -613,22 +667,28 @@ public class JobMeta extends AbstractMeta
 
     Set<DatabaseMeta> usedDatabaseMetas = getUsedDatabaseMetas();
     // Save the database connections...
-    for ( int i = 0; i < nrDatabases(); i++ ) {
-      DatabaseMeta dbMeta = getDatabase( i );
-      //PDI-20078 - If props == null, it means transformation is running on the slave server. For the
-      // method areOnlyUsedConnectionsSavedToXMLInServer to return false, the "STRING_ONLY_USED_DB_TO_XML"
-      // needs to have "N" in the server startup script file
-      if ( usedDatabaseMetas.contains( dbMeta ) || ( props != null && !props.areOnlyUsedConnectionsSavedToXML() ) || ( props == null && !areOnlyUsedConnectionsSavedToXMLInServer() ) ) {
-        retval.append( dbMeta.getXML() );
+    try {
+      for ( DatabaseMeta dbMeta : localDbMgr.getAll() ) {
+        //PDI-20078 - If props == null, it means transformation is running on the slave server. For the
+        // method areOnlyUsedConnectionsSavedToXMLInServer to return false, the "STRING_ONLY_USED_DB_TO_XML"
+        // needs to have "N" in the server startup script file
+        if ( usedDatabaseMetas.contains( dbMeta ) || ( props != null && !props.areOnlyUsedConnectionsSavedToXML() ) || ( props == null && !areOnlyUsedConnectionsSavedToXMLInServer() ) ) {
+          retval.append( dbMeta.getXML() );
+        }
       }
+    } catch ( KettleException ex ) {
+      LogChannel.GENERAL.logError( "Error loading Databases", ex );
     }
 
     // The slave servers...
     //
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
-    for ( int i = 0; i < slaveServers.size(); i++ ) {
-      SlaveServer slaveServer = slaveServers.get( i );
-      retval.append( slaveServer.getXML() );
+    try {
+      for ( SlaveServer slaveServer : localSlaveServerMgr.getAll() ) {
+        retval.append( slaveServer.getXML() );
+      }
+    } catch ( KettleException exception ) {
+      LogChannel.GENERAL.logError( BaseMessages.getString( PKG, "JobMeta.Log.UnableToReadSlaveServersFromXML" ), exception );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
 
@@ -639,7 +699,6 @@ public class JobMeta extends AbstractMeta
     }
 
     retval.append( "   " ).append( XMLHandler.addTagValue( "pass_batchid", batchIdPassed ) );
-    retval.append( "   " ).append( XMLHandler.addTagValue( "shared_objects_file", sharedObjectsFile ) );
 
     retval.append( "  " ).append( XMLHandler.openTag( "entries" ) ).append( Const.CR );
     for ( int i = 0; i < nrJobEntries(); i++ ) {
@@ -684,9 +743,22 @@ public class JobMeta extends AbstractMeta
    * @param fname the fname
    * @param rep   the rep
    * @throws KettleXMLException the kettle xml exception
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public JobMeta( String fname, Repository rep ) throws KettleXMLException {
-    this( null, fname, rep, null );
+    this( DefaultBowl.getInstance(), fname, rep );
+  }
+
+  /**
+   * Instantiates a new job meta.
+   * @param bowl For file access to the provided file.
+   * @param fname the fname
+   * @param rep   the rep
+   * @throws KettleXMLException the kettle xml exception
+   */
+  public JobMeta( Bowl bowl, String fname, Repository rep ) throws KettleXMLException {
+    this( bowl, null, fname, rep, null );
   }
 
   /**
@@ -696,9 +768,24 @@ public class JobMeta extends AbstractMeta
    * @param rep      the rep
    * @param prompter the prompter
    * @throws KettleXMLException the kettle xml exception
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public JobMeta( String fname, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
-    this( null, fname, rep, prompter );
+    this( DefaultBowl.getInstance(), fname, rep, prompter );
+  }
+
+  /**
+   * Instantiates a new job meta.
+   *
+   * @param bowl For file access to the provided file.
+   * @param fname    the fname
+   * @param rep      the rep
+   * @param prompter the prompter
+   * @throws KettleXMLException the kettle xml exception
+   */
+  public JobMeta( Bowl bowl, String fname, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
+    this( bowl, null, fname, rep, prompter );
   }
 
   /**
@@ -707,11 +794,25 @@ public class JobMeta extends AbstractMeta
    * @param fname The filename to load as a job
    * @param rep   The repository to bind againt, null if there is no repository available.
    * @throws KettleXMLException
+   * @deprecated use the version with the Bowl
    */
   @Deprecated
   public JobMeta( VariableSpace parentSpace, String fname, Repository rep, OverwritePrompter prompter )
       throws KettleXMLException {
-    this( parentSpace, fname, rep, null, prompter );
+    this( DefaultBowl.getInstance(), parentSpace, fname, rep, prompter );
+  }
+
+  /**
+   * Load the job from the XML file specified.
+   *
+   * @param bowl For file access to the provided file.
+   * @param fname The filename to load as a job
+   * @param rep   The repository to bind againt, null if there is no repository available.
+   * @throws KettleXMLException
+   */
+  public JobMeta( Bowl bowl, VariableSpace parentSpace, String fname, Repository rep, OverwritePrompter prompter )
+      throws KettleXMLException {
+    this( bowl, parentSpace, fname, rep, null, prompter );
   }
 
   /**
@@ -720,14 +821,30 @@ public class JobMeta extends AbstractMeta
    * @param fname The filename to load as a job
    * @param rep   The repository to bind againt, null if there is no repository available.
    * @throws KettleXMLException
+   * @deprecated use the version with the Bowl
    */
+  @Deprecated
   public JobMeta( VariableSpace parentSpace, String fname, Repository rep, IMetaStore metaStore,
+      OverwritePrompter prompter ) throws KettleXMLException {
+    this( DefaultBowl.getInstance(), parentSpace, fname, rep, metaStore, prompter );
+  }
+
+  /**
+   * Load the job from the XML file specified.
+   *
+   * @param bowl For file access to the provided file.
+   * @param fname The filename to load as a job
+   * @param rep   The repository to bind againt, null if there is no repository available.
+   * @throws KettleXMLException
+   */
+  public JobMeta( Bowl bowl, VariableSpace parentSpace, String fname, Repository rep, IMetaStore metaStore,
       OverwritePrompter prompter ) throws KettleXMLException {
     this.initializeVariablesFrom( parentSpace );
     this.metaStore = metaStore;
+    this.bowl = Objects.requireNonNull( bowl );
     try {
       // OK, try to load using the VFS stuff...
-      Document doc = XMLHandler.loadXMLFile( KettleVFS.getFileObject( fname, this ) );
+      Document doc = XMLHandler.loadXMLFile( KettleVFS.getInstance( bowl ).getFileObject( fname, this ) );
       if ( doc != null ) {
         // The jobnode
         Node jobnode = XMLHandler.getSubNode( doc, XML_TAG );
@@ -768,6 +885,19 @@ public class JobMeta extends AbstractMeta
   public JobMeta( Node jobnode, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
     this();
     loadXML( jobnode, rep, false, prompter );
+  }
+
+  /**
+   * Create a new JobMeta object by loading it from a a DOM node.
+   *
+   * @param jobnode  The node to load from
+   * @param rep      The reference to a repository to load additional information from
+   * @throws KettleXMLException
+   */
+  public JobMeta( Node jobnode, Repository rep, VariableSpace parentSpace ) throws KettleXMLException {
+    this();
+    this.initializeVariablesFrom( parentSpace );
+    loadXML( jobnode, rep, false, null );
   }
 
   /**
@@ -895,11 +1025,6 @@ public class JobMeta extends AbstractMeta
    */
   public void loadXML( Node jobnode, String fname, Repository rep, IMetaStore metaStore,
       boolean ignoreRepositorySharedObjects, OverwritePrompter prompter ) throws KettleXMLException {
-    Props props = null;
-    if ( Props.isInitialized() ) {
-      props = Props.getInstance();
-    }
-
     try {
       // clear the jobs;
       clear();
@@ -960,11 +1085,10 @@ public class JobMeta extends AbstractMeta
       // Load the default list of databases
       // Read objects from the shared XML file & the repository
       try {
-        sharedObjectsFile = XMLHandler.getTagValue( jobnode, "shared_objects_file" );
         if ( rep == null || ignoreRepositorySharedObjects ) {
-          sharedObjects = readSharedObjects();
+          readSharedObjects();
         } else {
-          sharedObjects = rep.readJobMetaSharedObjects( this );
+          rep.readJobMetaSharedObjects( this );
         }
       } catch ( Exception e ) {
         LogChannel.GENERAL
@@ -997,32 +1121,14 @@ public class JobMeta extends AbstractMeta
       // Read the database connections
       //
       int nr = XMLHandler.countNodes( jobnode, "connection" );
-      Set<String> privateDatabases = new HashSet<String>( nr );
       for ( int i = 0; i < nr; i++ ) {
         Node dbnode = XMLHandler.getSubNodeByNr( jobnode, "connection", i );
         DatabaseMeta dbcon = new DatabaseMeta( dbnode );
         dbcon.shareVariablesWith( this );
-        if ( !dbcon.isShared() ) {
-          privateDatabases.add( dbcon.getName() );
-        }
-
-        DatabaseMeta exist = findDatabase( dbcon.getName() );
-        if ( exist == null ) {
-          addDatabase( dbcon );
-        } else {
-          if ( !exist.isShared() ) {
-            // skip shared connections
-            if ( shouldOverwrite( prompter, props,
-                BaseMessages.getString( PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName() ),
-                BaseMessages.getString( PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ) ) ) {
-              int idx = indexOfDatabase( exist );
-              removeDatabase( idx );
-              addDatabase( idx, dbcon );
-            }
-          }
-        }
+        localDbMgr.add( dbcon );
       }
-      setPrivateDatabases( privateDatabases );
+      // make a copy so we don't keep re-reading it for the calls to loadXML
+      List<DatabaseMeta> databases = getDatabases();
 
       // Read the slave servers...
       //
@@ -1032,23 +1138,7 @@ public class JobMeta extends AbstractMeta
         Node slaveServerNode = XMLHandler.getSubNodeByNr( slaveServersNode, SlaveServer.XML_TAG, i );
         SlaveServer slaveServer = new SlaveServer( slaveServerNode );
         slaveServer.shareVariablesWith( this );
-
-        // Check if the object exists and if it's a shared object.
-        // If so, then we will keep the shared version, not this one.
-        // The stored XML is only for backup purposes.
-        SlaveServer check = findSlaveServer( slaveServer.getName() );
-        if ( check != null ) {
-          if ( !check.isShared() ) {
-            // we don't overwrite shared objects.
-            if ( shouldOverwrite( prompter, props, BaseMessages
-                    .getString( PKG, "JobMeta.Dialog.SlaveServerExistsOverWrite.Message", slaveServer.getName() ),
-                BaseMessages.getString( PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ) ) ) {
-              addOrReplaceSlaveServer( slaveServer );
-            }
-          }
-        } else {
-          slaveServers.add( slaveServer );
-        }
+        localSlaveServerMgr.add( slaveServer );
       }
 
       /*
@@ -1091,7 +1181,7 @@ public class JobMeta extends AbstractMeta
         Node entrynode = XMLHandler.getSubNodeByNr( entriesnode, "entry", i );
         // System.out.println("Reading entry:\n"+entrynode);
 
-        JobEntryCopy je = new JobEntryCopy( entrynode, databases, slaveServers, rep, metaStore );
+        JobEntryCopy je = new JobEntryCopy( entrynode, getDatabases(), getSlaveServers(), rep, metaStore );
 
         if ( je.isSpecial() && je.isMissing() ) {
           addMissingEntry( (MissingEntry) je.getEntry() );
@@ -2077,7 +2167,7 @@ public class JobMeta extends AbstractMeta
             BaseMessages.getString( PKG, "JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo" ) + dbe.getMessage() );
         stats.add( stat );
       } finally {
-        db.disconnect();
+        db.close();
       }
     }
     if ( monitor != null ) {
@@ -2151,41 +2241,45 @@ public class JobMeta extends AbstractMeta
     // Loop over all steps in the transformation and see what the used vars
     // are...
     if ( searchDatabases ) {
-      for ( int i = 0; i < nrDatabases(); i++ ) {
-        DatabaseMeta meta = getDatabase( i );
-        stringList.add( new StringSearchResult( meta.getName(), meta, this,
-            BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseConnectionName" ) ) );
-        if ( meta.getHostname() != null ) {
-          stringList.add( new StringSearchResult( meta.getHostname(), meta, this,
-              BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseHostName" ) ) );
+      // this searches the Local databases included in the file, not all the databases available.
+      try {
+        for ( DatabaseMeta meta : localDbMgr.getAll() ) {
+          stringList.add( new StringSearchResult( meta.getName(), meta, this,
+              BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseConnectionName" ) ) );
+          if ( meta.getHostname() != null ) {
+            stringList.add( new StringSearchResult( meta.getHostname(), meta, this,
+                BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseHostName" ) ) );
+          }
+          if ( meta.getDatabaseName() != null ) {
+            stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this,
+                BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseName" ) ) );
+          }
+          if ( meta.getUsername() != null ) {
+            stringList.add( new StringSearchResult( meta.getUsername(), meta, this,
+                BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseUsername" ) ) );
+          }
+          if ( meta.getPluginId() != null ) {
+            stringList.add( new StringSearchResult( meta.getPluginId(), meta, this,
+                BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
+          }
+          if ( meta.getDatabasePortNumberString() != null ) {
+            stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this,
+                BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabasePort" ) ) );
+          }
+          if ( meta.getServername() != null ) {
+            stringList.add( new StringSearchResult( meta.getServername(), meta, this,
+                BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseServer" ) ) );
+          }
+          // if ( includePasswords )
+          // {
+          if ( meta.getPassword() != null ) {
+            stringList.add( new StringSearchResult( Strings.repeat("*", meta.getPassword().length()), meta, this,
+                BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabasePassword" ) ) );
+            // }
+          }
         }
-        if ( meta.getDatabaseName() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this,
-              BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseName" ) ) );
-        }
-        if ( meta.getUsername() != null ) {
-          stringList.add( new StringSearchResult( meta.getUsername(), meta, this,
-              BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseUsername" ) ) );
-        }
-        if ( meta.getPluginId() != null ) {
-          stringList.add( new StringSearchResult( meta.getPluginId(), meta, this,
-              BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
-        }
-        if ( meta.getDatabasePortNumberString() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this,
-              BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabasePort" ) ) );
-        }
-        if ( meta.getServername() != null ) {
-          stringList.add( new StringSearchResult( meta.getServername(), meta, this,
-              BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabaseServer" ) ) );
-        }
-        // if ( includePasswords )
-        // {
-        if ( meta.getPassword() != null ) {
-          stringList.add( new StringSearchResult( Strings.repeat("*", meta.getPassword().length()), meta, this,
-              BaseMessages.getString( PKG, "JobMeta.SearchMetadata.DatabasePassword" ) ) );
-          // }
-        }
+      } catch ( KettleException ex ) {
+        // LOG?
       }
     }
 
@@ -2209,6 +2303,7 @@ public class JobMeta extends AbstractMeta
    *
    * @return the used variables
    */
+  @Override
   public List<String> getUsedVariables() {
     // Get the list of Strings.
     List<StringSearchResult> stringList = getStringList( true, true, false );
@@ -2404,7 +2499,7 @@ public class JobMeta extends AbstractMeta
     if ( filename != null ) {
       // we have a filename that's defined.
       try {
-        FileObject fileObject = KettleVFS.getFileObject( filename, var );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( filename, var );
         FileName fileName = fileObject.getName();
 
         // The filename of the job
@@ -2505,8 +2600,10 @@ public class JobMeta extends AbstractMeta
     return resourceReferences;
   }
 
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  @Override
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space, Map<String,
+      ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository,
+      IMetaStore metaStore ) throws KettleException {
     String resourceName = null;
     try {
       // Handle naming for both repository and XML bases resources...
@@ -2526,7 +2623,8 @@ public class JobMeta extends AbstractMeta
       } else {
         // Assume file
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( getFilename() ), space );
+        FileObject fileObject = KettleVFS.getInstance( executionBowl ).
+          getFileObject( space.environmentSubstitute( getFilename() ), space );
         originalPath = fileObject.getParent().getName().getPath();
         baseName = fileObject.getName().getBaseName();
         fullname = fileObject.getName().getPath();
@@ -2554,9 +2652,21 @@ public class JobMeta extends AbstractMeta
         // loop over steps, databases will be exported to XML anyway.
         //
         for ( JobEntryCopy jobEntry : jobMeta.jobcopies ) {
-          compatibleJobEntryExportResources( jobEntry.getEntry(), jobMeta, definitions, namingInterface, repository );
-          jobEntry.getEntry().exportResources( jobMeta, definitions, namingInterface, repository, metaStore );
+          compatibleJobEntryExportResources( jobEntry.getEntry(), jobMeta, definitions, namingInterface, repository,
+                                             metaStore );
+          jobEntry.getEntry().exportResources( executionBowl, globalManagementBowl, jobMeta, definitions,
+            namingInterface, repository, metaStore );
         }
+
+        boolean onlyUsed = true;
+        if ( Props.isInitialized() ) {
+          onlyUsed = Props.getInstance().areOnlyUsedConnectionsSavedToXML();
+        }
+        // copy databases from global management bowl.
+        if ( globalManagementBowl != null ) {
+          SharedObjectUtil.copySharedObjects( globalManagementBowl, jobMeta, onlyUsed );
+        }
+        SharedObjectUtil.stripObjectIds( jobMeta );
 
         // Set a number of parameters for all the data files referenced so far...
         //
@@ -2594,11 +2704,13 @@ public class JobMeta extends AbstractMeta
     return resourceName;
   }
 
+  // calls deprecated APIs for old JobEntries that haven't updated
   @SuppressWarnings( "deprecation" )
   private void compatibleJobEntryExportResources( JobEntryInterface entry, JobMeta jobMeta,
-      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository2 )
-      throws KettleException {
-    entry.exportResources( jobMeta, definitions, namingInterface, repository );
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository2,
+      IMetaStore metaStore ) throws KettleException {
+    entry.exportResources( jobMeta, definitions, namingInterface, repository2 );
+    entry.exportResources( jobMeta, definitions, namingInterface, repository2, metaStore );
   }
 
   /**

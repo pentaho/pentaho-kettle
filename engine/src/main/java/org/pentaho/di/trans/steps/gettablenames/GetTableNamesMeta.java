@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.gettablenames;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -33,7 +34,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
@@ -94,7 +94,7 @@ public class GetTableNamesMeta extends BaseDatabaseStepMeta implements StepMetaI
   @Injection( name = "SCHEMANAMEFIELD", group = "FIELDS" )
   private String schemaNameField;
 
-  private List<? extends SharedObjectInterface> databases;
+  private List<DatabaseMeta> databases;
 
   public GetTableNamesMeta() {
     super(); // allocate BaseStepMeta
@@ -307,7 +307,8 @@ public class GetTableNamesMeta extends BaseDatabaseStepMeta implements StepMetaI
     schemaNameField = null;
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     String realtablename = space.environmentSubstitute( tablenamefieldname );
     if ( !Utils.isEmpty( realtablename ) ) {
@@ -366,7 +367,7 @@ public class GetTableNamesMeta extends BaseDatabaseStepMeta implements StepMetaI
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       this.databases = databases;
       String con = XMLHandler.getTagValue( stepnode, "connection" );

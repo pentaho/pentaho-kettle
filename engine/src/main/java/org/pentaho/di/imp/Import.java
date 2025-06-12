@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
@@ -259,7 +260,7 @@ public class Import {
 
     if ( !Utils.isEmpty( rulesFile ) ) {
       try {
-        Document document = XMLHandler.loadXMLFile( rulesFile );
+        Document document = XMLHandler.loadXMLFile( DefaultBowl.getInstance(), rulesFile );
         Node rulesNode = XMLHandler.getSubNode( document, ImportRules.XML_TAG );
         importRules.loadXML( rulesNode );
         log.logMinimal( BaseMessages.getString( PKG, "Import.Log.RulesLoaded", rulesFile, Integer.toString(

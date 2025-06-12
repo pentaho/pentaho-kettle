@@ -13,6 +13,8 @@
 
 package org.pentaho.di.trans.steps.googleanalytics;
 
+import org.pentaho.di.core.bowl.DefaultBowl;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -56,6 +58,6 @@ public class GoogleAnalyticsApiFacadeTest {
 
   @Test
   public void exceptionIsThrowsForNonExistingFiles() throws Exception {
-    GoogleAnalyticsApiFacade.createFor( "application-name", "account", path );
+    GoogleAnalyticsApiFacade.createFor( DefaultBowl.getInstance(), "application-name", "account", path );
   }
 }

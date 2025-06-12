@@ -280,11 +280,11 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     open(null, filename, true);
   }
 
-  public boolean exportFile(EngineMetaInterface meta, String filename) {
+  public boolean exportFile( Bowl bowl, EngineMetaInterface meta, String filename ) {
 
     try {
       String xml = meta.getXML();
-      OutputStream outputStream = KettleVFS.getOutputStream(filename, false);
+      OutputStream outputStream = KettleVFS.getInstance( bowl ).getOutputStream(filename, false);
       outputStream.write(xml.getBytes(Const.XML_ENCODING));
       outputStream.close();
 

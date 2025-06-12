@@ -295,7 +295,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
     } );
 
     wbDetachedFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDetachedFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
@@ -306,7 +306,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
     // Whenever something changes, set the tooltip to the expanded version:
     wGPGLocation.addModifyListener( new ModifyListener() {
@@ -316,7 +316,7 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
     } );
 
     wbGPGLocation.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wGPGLocation, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
     fdSettings = new FormData();
     fdSettings.left = new FormAttachment( 0, margin );

@@ -531,7 +531,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
       // Release the database connection
       //
       if ( data.db != null ) {
-        data.db.disconnect();
+        data.db.close();
         data.db = null;
       }
 

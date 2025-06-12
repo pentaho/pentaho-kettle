@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -121,7 +122,7 @@ public class PanCommandExecutorTest {
   public void testMetastoreFromRepoAddedIn() throws Exception {
 
     // mock Trans loading from repo
-    TransMeta t = new TransMeta( getClass().getResource( SAMPLE_KTR ).getPath() );
+    TransMeta t = new TransMeta( DefaultBowl.getInstance(), getClass().getResource( SAMPLE_KTR ).getPath() );
     when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), nullable( String.class ) ) ).thenReturn( t );
 
     // test
@@ -149,7 +150,8 @@ public class PanCommandExecutorTest {
     String fileName = "test.ktr";
     File zipFile = new File( getClass().getResource( "testKtrArchive.zip" ).toURI() );
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
-    Trans trans = mockedPanCommandExecutor.loadTransFromFilesystem( "", fileName, "", base64Zip );
+    Trans trans = mockedPanCommandExecutor.loadTransFromFilesystem( "", fileName, "",
+      base64Zip );
     assertNotNull( trans );
   }
 
@@ -266,7 +268,8 @@ public class PanCommandExecutorTest {
     when( params.getBase64Zip() ).thenReturn( BASE64_FAIL_ON_INIT_KTR );
     try {
       trans =
-        mockedPanCommandExecutor.loadTransFromFilesystem( "", FAIL_ON_INIT_KTR, "", BASE64_FAIL_ON_INIT_KTR );
+        mockedPanCommandExecutor.loadTransFromFilesystem( "", FAIL_ON_INIT_KTR, "",
+          BASE64_FAIL_ON_INIT_KTR );
     } catch ( KettleXMLException e ) {
       kettleXMLExceptionThrown = true;
     }

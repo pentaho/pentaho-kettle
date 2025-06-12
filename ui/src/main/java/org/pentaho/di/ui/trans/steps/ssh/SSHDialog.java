@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -57,7 +56,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogText;
-import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
 import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
 import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -347,7 +345,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     wPrivateKey.setLayoutData( fdPrivateKey );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogText( log, wPrivateKey.getTextWidget(), transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.PEM, FilterType.ALL }, FilterType.PEM ) ) );
 
     // Passphraseline
@@ -856,7 +854,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     Connection conn = null;
     try {
       conn =
-        SSHData.OpenConnection(
+        SSHData.OpenConnection( transMeta.getBowl(),
           servername, nrPort, username, password, wUseKey.getSelection(), keyFilename, passphrase, timeOut,
           transMeta, proxyhost, proxyport, proxyusername, proxypassword );
       testOK = true;

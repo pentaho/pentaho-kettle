@@ -17,9 +17,9 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.UnknownParamException;
 
-import java.util.Map;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Params implements IParams {
 
@@ -92,7 +92,7 @@ public class Params implements IParams {
       this( java.util.UUID.randomUUID().toString() );
     }
 
-    public Builder( String  uuid ) {
+    public Builder( String uuid ) {
       this.uuid = uuid;
     }
 
@@ -263,7 +263,8 @@ public class Params implements IParams {
       params.oldLogFile = oldLogFile;
       params.version = version;
       params.resultSetStepName = resultSetStepName;
-      params.resultSetCopyNumber = NumberUtils.isNumber( resultSetCopyNumber ) ? resultSetCopyNumber : "0" /* default */;
+      params.resultSetCopyNumber =
+        NumberUtils.isNumber( resultSetCopyNumber ) ? resultSetCopyNumber : "0" /* default */;
       params.base64Zip = base64Zip;
       params.namedParams = namedParams;
       params.customNamedParams = customNamedParams;
@@ -525,7 +526,7 @@ public class Params implements IParams {
   @Override
   public Map<String, String> getParams() {
     if ( this.namedParams == null ) {
-      return Collections.EMPTY_MAP;
+      return Collections.emptyMap();
     }
 
     Map<String, String> params = new HashMap<String, String>();
@@ -553,7 +554,7 @@ public class Params implements IParams {
   @Override
   public Map<String, String> getCustomParams() {
     if ( this.customNamedParams == null ) {
-      return Collections.EMPTY_MAP;
+      return Collections.emptyMap();
     }
 
     Map<String, String> customParams = new HashMap<String, String>();

@@ -13,17 +13,23 @@
 
 package org.pentaho.di;
 
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 public interface ExecutionConfiguration extends Cloneable {
 
@@ -103,4 +109,45 @@ public interface ExecutionConfiguration extends Cloneable {
   String getRunConfiguration();
 
   void setRunConfiguration( String runConfiguration );
+
+  /**
+   * Adds all the used variables from the meta to the Map
+   *
+   *
+   * @param meta The job or transformation to load from
+   * @param variables the Map to add the variables to
+   */
+  static void getUsedVariables( AbstractMeta meta, Map<String, String> variables ) {
+    Properties sp = new Properties();
+    VariableSpace space = meta;
+
+    String[] keys = space.listVariables();
+    for ( int i = 0; i < keys.length; i++ ) {
+      sp.put( keys[i], space.getVariable( keys[i] ) );
+    }
+
+    List<String> vars = meta.getUsedVariables();
+    if ( vars != null && vars.size() > 0 ) {
+      HashMap<String, String> newVariables = new HashMap<String, String>();
+
+      for ( int i = 0; i < vars.size(); i++ ) {
+        String varname = vars.get( i );
+        if ( !varname.startsWith( Const.INTERNAL_VARIABLE_PREFIX ) ) {
+          newVariables.put( varname, Const.NVL( variables.get( varname ), sp.getProperty( varname, "" ) ) );
+        }
+      }
+      // variables.clear();
+      variables.putAll( newVariables );
+    }
+
+    // Also add the internal job variables if these are set...
+    //
+    for ( String variableName : Const.INTERNAL_JOB_VARIABLES ) {
+      String value = meta.getVariable( variableName );
+      if ( !Utils.isEmpty( value ) ) {
+        variables.put( variableName, value );
+      }
+    }
+  }
 }
+

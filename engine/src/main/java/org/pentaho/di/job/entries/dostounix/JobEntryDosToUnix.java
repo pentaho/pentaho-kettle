@@ -539,7 +539,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     String realWildcard = environmentSubstitute( wildcard );
 
     try {
-      sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername );
+      sourcefilefolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realSourceFilefoldername );
 
       if ( sourcefilefolder.exists() ) {
         if ( isDetailed() ) {

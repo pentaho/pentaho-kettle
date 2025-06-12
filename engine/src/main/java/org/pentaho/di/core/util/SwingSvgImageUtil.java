@@ -21,6 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.SwingUniversalImage;
 import org.pentaho.di.core.SwingUniversalImageBitmap;
 import org.pentaho.di.core.SwingUniversalImageSvg;
@@ -196,7 +197,7 @@ public class SwingSvgImageUtil {
    */
   private static SwingUniversalImage loadFromSimpleVFS( String location ) {
     try {
-      InputStream s = KettleVFS.getInputStream( location );
+      InputStream s = KettleVFS.getInstance( DefaultBowl.getInstance() ).getInputStream( location );
       if ( s == null ) {
         return null;
       }

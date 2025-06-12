@@ -13,11 +13,9 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.vfs.model;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.UriParser;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
-import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -683,7 +683,7 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
     wStepname.addSelectionListener( lsDef );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.SAVE_TO,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.SAVE_TO,
         new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL }, FilterType.TXT  ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...

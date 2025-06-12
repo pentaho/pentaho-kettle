@@ -418,7 +418,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
         logError( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Error.RunningEntry", dbe.getMessage() ) );
       } finally {
         if ( db != null ) {
-          db.disconnect();
+          db.close();
         }
       }
     } else {
@@ -451,7 +451,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "WaitForSQL", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "WaitForSQL", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.csvinput;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.Variables;
@@ -65,7 +66,8 @@ public abstract class BaseCsvParsingTest extends BaseParsingTest<CsvInputMeta, C
    */
   protected void setFields( TextFileInputField... fields ) throws Exception {
     meta.setInputFields( fields );
-    meta.getFields( data.outputRowMeta, meta.getName(), null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), data.outputRowMeta, meta.getName(), null, null, new Variables(), null,
+      null );
     data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
   }
 

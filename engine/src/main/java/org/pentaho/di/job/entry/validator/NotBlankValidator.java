@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.commons.validator.GenericValidator;
 import org.apache.commons.validator.util.ValidatorUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 
@@ -31,7 +32,7 @@ public class NotBlankValidator implements JobEntryValidator {
 
   private static final String VALIDATOR_NAME = "notBlank";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName,
+  public boolean validate( Bowl bowl, CheckResultSourceInterface source, String propertyName,
     List<CheckResultInterface> remarks, ValidatorContext context ) {
     String value = ValidatorUtils.getValueAsString( source, propertyName );
     if ( GenericValidator.isBlankOrNull( value ) ) {

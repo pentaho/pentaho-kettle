@@ -32,6 +32,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
@@ -50,6 +51,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -225,10 +227,11 @@ public class JobEntryTransTest {
 
     doReturn( transMeta ).when( jobEntryTrans ).getTransMeta( any( Repository.class ),
             any( VariableSpace.class ) );
-    when( transMeta.exportResources( any( TransMeta.class ), any( Map.class ), any( ResourceNamingInterface.class ),
-            any( Repository.class ), any( IMetaStore.class ) ) ).thenReturn( testName );
+    when( transMeta.exportResources( any( Bowl.class ), any( Bowl.class ), any( TransMeta.class ), any( Map.class ),
+            any( ResourceNamingInterface.class ), any( Repository.class ), any( IMetaStore.class ) ) )
+              .thenReturn( testName );
 
-    jobEntryTrans.exportResources( null, null, null, null, null );
+    jobEntryTrans.exportResources( null, null, null, null, null, null, null );
 
     verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( jobEntryTrans ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
@@ -345,6 +348,7 @@ public class JobEntryTransTest {
     jobEntryTrans.setParentJobMeta( parentJobMeta);
 
     Repository rep = Mockito.mock( Repository.class );
+    when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
     RepositoryDirectory repositoryDirectory = Mockito.mock( RepositoryDirectory.class );
     RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
     Mockito.doReturn( repositoryDirectoryInterface ).when( rep ).loadRepositoryDirectoryTree();
@@ -394,6 +398,7 @@ public class JobEntryTransTest {
     jobEntryTrans.setParentJobMeta( parentJobMeta);
 
     Repository rep = Mockito.mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
     RepositoryDirectory repositoryDirectory = Mockito.mock( RepositoryDirectory.class );
     RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
     Mockito.doReturn( repositoryDirectoryInterface ).when( rep ).loadRepositoryDirectoryTree();

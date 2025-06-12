@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.apache.commons.validator.util.ValidatorUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -36,7 +37,7 @@ public class FileDoesNotExistValidator extends AbstractFileValidator {
 
   static final String VALIDATOR_NAME = "fileDoesNotExist";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName,
+  public boolean validate( Bowl bowl, CheckResultSourceInterface source, String propertyName,
     List<CheckResultInterface> remarks, ValidatorContext context ) {
 
     String filename = ValidatorUtils.getValueAsString( source, propertyName );
@@ -50,7 +51,7 @@ public class FileDoesNotExistValidator extends AbstractFileValidator {
     String realFileName = variableSpace.environmentSubstitute( filename );
     FileObject fileObject = null;
     try {
-      fileObject = KettleVFS.getFileObject( realFileName, variableSpace );
+      fileObject = KettleVFS.getInstance( bowl ).getFileObject( realFileName, variableSpace );
 
       if ( fileObject.exists() && failIfExists ) {
         JobEntryValidatorUtils.addFailureRemark(

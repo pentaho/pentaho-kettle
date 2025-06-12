@@ -166,7 +166,7 @@ public class DatabaseIT {
     // be a problem with a new H2 JDBC driver.
     assertTrue( db.checkTableExists( tableName.toLowerCase() ) );
 
-    db.disconnect();
+    db.close();
   }
 
   @Test
@@ -239,7 +239,7 @@ public class DatabaseIT {
 
     fillDbInBatch( tableName, db, insertSize );
 
-    db.disconnect();
+    db.close();
   }
 
   @Test

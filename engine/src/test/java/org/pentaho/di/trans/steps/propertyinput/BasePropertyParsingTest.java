@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.propertyinput;
 
 import org.junit.Before;
 import org.junit.Ignore;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.Variables;
@@ -56,7 +57,8 @@ public class BasePropertyParsingTest extends BaseParsingTest<PropertyInputMeta, 
    */
   protected void setFields( PropertyInputField... fields ) throws Exception {
     meta.setInputFields( fields );
-    meta.getFields( data.outputRowMeta, meta.getName(), null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), data.outputRowMeta, meta.getName(), null, null, new Variables(), null,
+      null );
     data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
   }
 

@@ -28,6 +28,7 @@ import java.util.UUID;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -109,12 +110,12 @@ public class SalesforceInputMetaTest {
     SalesforceInputMeta meta = new SalesforceInputMeta();
     meta.setDefault();
     RowMetaInterface r = new RowMeta();
-    meta.getFields( r, "thisStep", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), r, "thisStep", null, null, new Variables(), null, null );
     assertEquals( 0, r.size() );
 
     meta.setInputFields( new SalesforceInputField[]{ new SalesforceInputField( "field1" ) } );
     r.clear();
-    meta.getFields( r, "thisStep", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), r, "thisStep", null, null, new Variables(), null, null );
     assertEquals( 1, r.size() );
 
     meta.setIncludeDeletionDate( true );
@@ -130,7 +131,7 @@ public class SalesforceInputMetaTest {
     meta.setIncludeTimestamp( true );
     meta.setTimestampField( "TS" );
     r.clear();
-    meta.getFields( r, "thisStep", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), r, "thisStep", null, null, new Variables(), null, null );
     assertEquals( 7, r.size() );
     assertTrue( r.indexOfValue( "field1" ) >= 0 );
     assertTrue( r.indexOfValue( "DeletionDate" ) >= 0 );

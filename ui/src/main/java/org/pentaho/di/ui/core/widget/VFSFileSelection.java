@@ -108,7 +108,8 @@ public class VFSFileSelection extends Composite {
     FileObject root;
 
     try {
-      root = KettleVFS.getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
+      root = KettleVFS.getInstance( abstractMeta.getBowl() )
+        .getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
       if ( StringUtil.isEmpty( initialScheme ) ) {
         initialScheme = "file";
@@ -133,7 +134,8 @@ public class VFSFileSelection extends Composite {
     String parentFolder = null;
     try {
       parentFolder =
-        KettleVFS.getFileObject( abstractMeta.environmentSubstitute( abstractMeta.getFilename() ) ).getParent().toString();
+        KettleVFS.getInstance( abstractMeta.getBowl() )
+          .getFileObject( abstractMeta.environmentSubstitute( abstractMeta.getFilename() ) ).getParent().toString();
     } catch ( Exception e ) {
       // Take no action
     }

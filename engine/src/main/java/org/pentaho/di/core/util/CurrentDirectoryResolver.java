@@ -16,6 +16,8 @@ package org.pentaho.di.core.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -53,8 +55,31 @@ public class CurrentDirectoryResolver {
    * @param filename - is file which we use at this moment
    * @param inheritParentVar - flag which indicate should we inherit variables from parent var space to child var space
    * @return new var space if inherit was set false or child var space with updated system variables
+   * @deprecated use the version with the Bowl
    */
-  public VariableSpace resolveCurrentDirectory( VariableSpace parentVariables, RepositoryDirectoryInterface directory, String filename ) {
+  @Deprecated
+  public VariableSpace resolveCurrentDirectory( VariableSpace parentVariables, RepositoryDirectoryInterface directory,
+                                                String filename ) {
+    return resolveCurrentDirectory( DefaultBowl.getInstance(), parentVariables, directory, filename );
+  }
+
+  /**
+   * The logic of this method:
+   *
+   * if we have directory we return the child var space with directory used as system property
+   * if we have not directory we return the child var space with directory extracted from filanme
+   * if we don not have directory and filename we will return the child var space without updates
+   *
+   *
+   * @param bowl - context for the operation
+   * @param parentVariables - parent variable space which can be inherited
+   * @param directory - current path which will be used as path for start trans/job
+   * @param filename - is file which we use at this moment
+   * @param inheritParentVar - flag which indicate should we inherit variables from parent var space to child var space
+   * @return new var space if inherit was set false or child var space with updated system variables
+   */
+  public VariableSpace resolveCurrentDirectory( Bowl bowl, VariableSpace parentVariables,
+                                                RepositoryDirectoryInterface directory, String filename ) {
     Variables tmpSpace = new Variables();
     tmpSpace.setParentVariableSpace( parentVariables );
     tmpSpace.initializeVariablesFrom( parentVariables );
@@ -65,7 +90,7 @@ public class CurrentDirectoryResolver {
       tmpSpace.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, directory.toString() );
     } else if ( filename != null ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( filename, tmpSpace );
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( filename, tmpSpace );
 
         if ( !fileObject.exists() ) {
           // don't set variables if the file doesn't exist
@@ -88,7 +113,14 @@ public class CurrentDirectoryResolver {
     return tmpSpace;
   }
 
+  @Deprecated
   public VariableSpace resolveCurrentDirectory( ObjectLocationSpecificationMethod specificationMethod,
+      VariableSpace parentVariables, Repository repository, StepMeta stepMeta, String filename ) {
+    return resolveCurrentDirectory( DefaultBowl.getInstance(), specificationMethod, parentVariables, repository,
+                                    stepMeta, filename );
+  }
+
+  public VariableSpace resolveCurrentDirectory( Bowl bowl, ObjectLocationSpecificationMethod specificationMethod,
       VariableSpace parentVariables, Repository repository, StepMeta stepMeta, String filename ) {
     RepositoryDirectoryInterface directory = null;
     if ( repository != null && specificationMethod.equals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME )
@@ -104,10 +136,17 @@ public class CurrentDirectoryResolver {
     } else if ( stepMeta != null && stepMeta.getParentTransMeta() != null && filename == null ) {
       filename = stepMeta.getParentTransMeta().getFilename();
     }
-    return resolveCurrentDirectory( parentVariables, directory, filename );
+    return resolveCurrentDirectory( bowl, parentVariables, directory, filename );
   }
 
+  @Deprecated
   public VariableSpace resolveCurrentDirectory( ObjectLocationSpecificationMethod specificationMethod,
+      VariableSpace parentVariables, Repository repository, Job job, String filename ) {
+    return resolveCurrentDirectory( DefaultBowl.getInstance(), specificationMethod, parentVariables, repository, job,
+                                    filename );
+  }
+
+  public VariableSpace resolveCurrentDirectory( Bowl bowl, ObjectLocationSpecificationMethod specificationMethod,
       VariableSpace parentVariables, Repository repository, Job job, String filename ) {
     RepositoryDirectoryInterface directory = null;
     if ( repository != null && specificationMethod.equals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME )
@@ -136,7 +175,7 @@ public class CurrentDirectoryResolver {
       realParent = (JobMeta) parentVariables;
       filename = realParent.getFilename();
     }
-    return resolveCurrentDirectory( parentVariables, directory, filename );
+    return resolveCurrentDirectory( bowl, parentVariables, directory, filename );
   }
 
   public String normalizeSlashes( String str ) {

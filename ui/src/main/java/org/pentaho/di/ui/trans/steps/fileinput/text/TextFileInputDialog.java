@@ -656,7 +656,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE_OR_FOLDER,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE_OR_FOLDER,
         new FilterType[] { FilterType.TXT, FilterType.CSV, FilterType.ALL }, FilterType.TXT ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
@@ -2335,7 +2335,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   private void getFieldsData( TextFileInputMeta in, boolean insertAtTop, final boolean reloadAllFields,
                               final Set<String> newFieldNames ) {
-    final List<String> lowerCaseNewFieldNames = newFieldNames == null ? new ArrayList()
+    final List<String> lowerCaseNewFieldNames = newFieldNames == null ? new ArrayList<>()
       : newFieldNames.stream().map( String::toLowerCase ).collect( Collectors.toList() );
     for ( int i = 0; i < in.inputFields.length; i++ ) {
       BaseFileField field = in.inputFields[i];

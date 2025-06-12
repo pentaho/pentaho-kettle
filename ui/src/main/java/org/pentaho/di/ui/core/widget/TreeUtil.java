@@ -13,6 +13,8 @@
 
 package org.pentaho.di.ui.core.widget;
 
+import java.util.Set;
+
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -84,4 +86,24 @@ public class TreeUtil {
     }
     return null;
   }
+
+  /**
+   * Finds the first name of the form "baseName + ' ' + number" that is not in existingNames
+   *
+   *
+   * @param baseName name to append to
+   * @param existingNames set of existing names
+   *
+   * @return String new name
+   */
+  public static String findUniqueSuffix( String baseName, Set<String> existingNames ) {
+    int nr = 1;
+    String newName = baseName + " " + nr;
+    while ( existingNames.contains( newName ) ) {
+      nr++;
+      newName = baseName + " " + nr;
+    }
+    return newName;
+  }
+
 }

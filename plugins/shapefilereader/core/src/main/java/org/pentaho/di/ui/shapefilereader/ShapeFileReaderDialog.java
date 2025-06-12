@@ -284,6 +284,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
                     wShape,
                     transMeta,
                     new SelectionAdapterOptions(
+                            transMeta.getBowl(),
                             SelectionOperation.FILE,
                             new FilterType[] { FilterType.SHP, FilterType.ALL },
                             FilterType.SHP,
@@ -302,6 +303,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
                     wDbf,
                     transMeta,
                     new SelectionAdapterOptions(
+                            transMeta.getBowl(),
                             SelectionOperation.FILE,
                             new FilterType[] { FilterType.DBF, FilterType.ALL },
                             FilterType.DBF,

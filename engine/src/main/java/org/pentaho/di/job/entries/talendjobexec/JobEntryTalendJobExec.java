@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -145,7 +146,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
     if ( filename != null ) {
       String realFilename = getRealFilename();
       try {
-        FileObject file = KettleVFS.getFileObject( realFilename, this );
+        FileObject file = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilename, this );
         if ( file.exists() && file.isReadable() ) {
           result = executeTalenJob( file, result, nr );
         } else {
@@ -219,7 +220,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
   private URL[] prepareJarFiles( FileObject zipFile ) throws Exception {
 
     // zip:file:///tmp/foo.zip
-    FileInputList fileList = FileInputList.createFileList( this, new String[] { "zip:" + zipFile.toString(), },
+    FileInputList fileList = FileInputList.createFileList( parentJobMeta.getBowl(), this,
+        new String[] { "zip:" + zipFile.toString(), },
       new String[] { ".*\\.jar$", }, // Include mask: only jar files
       new String[] { ".*classpath\\.jar$", }, // Exclude mask: only jar files
       new String[] { "Y", }, // File required
@@ -231,7 +233,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
     //
     for ( FileObject file : fileList.getFiles() ) {
       FileObject jarfilecopy =
-        KettleVFS.createTempFile(
+        KettleVFS.getInstance( parentJobMeta.getBowl() ).createTempFile(
           file.getName().getBaseName(), ".jar", environmentSubstitute( "${java.io.tmpdir}" ) );
       jarfilecopy.copyFrom( file, new AllFileSelector() );
       files.add( jarfilecopy.getURL() );
@@ -269,7 +271,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
@@ -283,6 +285,11 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
    *
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -298,8 +305,10 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
    * @throws KettleException
    *           in case something goes wrong during the export
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  @Override
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the
@@ -311,7 +320,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
         // From : ${FOLDER}/../foo/bar.csv
         // To : /home/matt/test/files/foo/bar.csv
         //
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( filename ), space );
+        FileObject fileObject = KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFileObject( space.environmentSubstitute( filename ), space );
 
         // If the file doesn't exist, forget about this effort too!
         //

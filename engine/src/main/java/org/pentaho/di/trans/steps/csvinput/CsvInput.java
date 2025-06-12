@@ -88,7 +88,8 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
       first = false;
 
       data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       if ( data.filenames == null ) {
         // We're expecting the list of filenames from the previous step(s)...
@@ -199,7 +200,8 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
       // We'll use the same algorithm...
       //
       for ( String filename : data.filenames ) {
-        long size = KettleVFS.getFileObject( filename, getTransMeta() ).getContent().getSize();
+        long size = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getFileObject( filename, getTransMeta() ).getContent().getSize();
         data.fileSizes.add( size );
         data.totalFileSize += size;
       }
@@ -332,7 +334,8 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
       // Open the next one...
       //
       data.fieldsMapping = createFieldMapping( data.filenames[data.filenr], meta );
-      FileObject fileObject = KettleVFS.getFileObject( data.filenames[ data.filenr ], getTransMeta() );
+      FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+        .getFileObject( data.filenames[ data.filenr ], getTransMeta() );
       if ( !( fileObject instanceof LocalFile ) ) {
         // We can only use NIO on local files at the moment, so that's what we limit ourselves to.
         //
@@ -456,7 +459,8 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
     String enclosure = environmentSubstitute( csvInputMeta.getEnclosure() );
     String realEncoding = environmentSubstitute( csvInputMeta.getEncoding() );
 
-    try ( FileObject fileObject = KettleVFS.getFileObject( fileName, getTransMeta() );
+    try ( FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+            .getFileObject( fileName, getTransMeta() );
         BOMInputStream inputStream =
             new BOMInputStream( KettleVFS.getInputStream( fileObject ), ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
                 ByteOrderMark.UTF_16BE ) ) {

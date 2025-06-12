@@ -530,7 +530,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
   @VisibleForTesting
   TransMeta loadExecutorTransMeta() throws KettleException {
-    return TransExecutorMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this, meta.getParameters().isInheritingAllVariables() );
+    return TransExecutorMeta.loadMappingMeta( getTransMeta().getBowl(), meta, meta.getRepository(),
+      meta.getMetaStore(), this, meta.getParameters().isInheritingAllVariables() );
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {

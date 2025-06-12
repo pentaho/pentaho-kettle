@@ -442,7 +442,9 @@ public class ClusterSchemaDialog extends Dialog {
   public void ok() {
     getInfo();
 
+    clusterSchema.setName( clusterSchema.getName().trim() );
     if ( !clusterSchema.getName().equals( originalSchema.getName() ) ) {
+      DialogUtils.removeMatchingObject( originalSchema.getName(), existingSchemas );
       if ( DialogUtils.objectWithTheSameNameExists( clusterSchema, existingSchemas ) ) {
         String title = BaseMessages.getString( PKG, "ClusterSchemaDialog.ClusterSchemaNameExists.Title" );
         String message =

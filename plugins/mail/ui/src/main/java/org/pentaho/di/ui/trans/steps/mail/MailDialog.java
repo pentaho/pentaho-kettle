@@ -1709,10 +1709,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     wbSourceFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSourceFileFoldername, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     wbFileFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSourceFileFoldername, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
 

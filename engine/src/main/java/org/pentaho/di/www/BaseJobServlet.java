@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelFileWriter;
@@ -44,6 +45,17 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
   private static final long serialVersionUID = 8523062215275251356L;
 
   protected Job createJob( JobConfiguration jobConfiguration ) throws UnknownParamException {
+    String carteObjectId = UUID.randomUUID().toString();
+    Job job = createJob( this, getContextPath(), carteObjectId, jobConfiguration );
+
+    getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
+
+    return job;
+  }
+
+  protected static Job createJob( BaseHttpServlet servlet, String contextPath, String carteObjectId, JobConfiguration jobConfiguration )
+      throws UnknownParamException {
+
     JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
 
     JobMeta jobMeta = jobConfiguration.getJobMeta();
@@ -53,20 +65,19 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
     // If there was a repository, we know about it at this point in time.
     final Repository repository = jobConfiguration.getJobExecutionConfiguration().getRepository();
 
-    String carteObjectId = UUID.randomUUID().toString();
 
     SimpleLoggingObject servletLoggingObject =
-        getServletLogging( carteObjectId, jobExecutionConfiguration.getLogLevel() );
+        getServletLogging( contextPath, carteObjectId, jobExecutionConfiguration.getLogLevel() );
 
     // Create the transformation and store in the list...
     final Job job = new Job( repository, jobMeta, servletLoggingObject );
     // Setting variables
-    job.initializeVariablesFrom( null );
-    job.getJobMeta().setMetaStore( jobMap.getSlaveServerConfig().getMetaStore() );
+    job.initializeVariablesFrom( jobMeta.getBowl().getADefaultVariableSpace() );
+    job.getJobMeta().setMetaStore( servlet.getJobMap().getSlaveServerConfig().getMetaStore() );
     job.getJobMeta().setInternalKettleVariables( job );
     job.injectVariables( jobConfiguration.getJobExecutionConfiguration().getVariables() );
     job.setArguments( jobExecutionConfiguration.getArgumentStrings() );
-    job.setSocketRepository( getSocketRepository() );
+    job.setSocketRepository( servlet.getSocketRepository() );
     job.setGatheringMetrics( jobExecutionConfiguration.isGatheringMetrics() );
 
     copyJobParameters( job, jobExecutionConfiguration.getParams() );
@@ -82,7 +93,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
     // Do we need to expand the job when it's running?
     // Note: the plugin (Job and Trans) job entries need to call the delegation listeners in the parent job.
     if ( jobExecutionConfiguration.isExpandingRemoteJob() ) {
-      job.addDelegationListener( new CarteDelegationHandler( getTransformationMap(), getJobMap() ) );
+      job.addDelegationListener( new CarteDelegationHandler( servlet.getTransformationMap(), servlet.getJobMap() ) );
     }
 
     // Make sure to disconnect from the repository when the job finishes.
@@ -93,8 +104,6 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
         }
       } );
     }
-
-    getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
 
     final Long passedBatchId = jobExecutionConfiguration.getPassedBatchId();
     if ( passedBatchId != null ) {
@@ -128,7 +137,8 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
             .isCreateParentFolder(), trans.getLogChannel(), trans );
         final LogChannelFileWriter logChannelFileWriter =
             new LogChannelFileWriter( servletLoggingObject.getLogChannelId(),
-                KettleVFS.getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
+                KettleVFS.getInstance( DefaultBowl.getInstance() )
+                                      .getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
         logChannelFileWriter.startLogging();
 
         trans.addTransListener( new TransAdapter() {
@@ -180,7 +190,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
     }
   }
 
-  private void copyJobParameters( Job job, Map<String, String> params ) throws UnknownParamException {
+  private static void copyJobParameters( Job job, Map<String, String> params ) throws UnknownParamException {
     JobMeta jobMeta = job.getJobMeta();
     // Also copy the parameters over...
     job.copyParametersFrom( jobMeta );
@@ -198,8 +208,12 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
   }
 
   private SimpleLoggingObject getServletLogging( final String carteObjectId, final LogLevel level ) {
+    return getServletLogging( getContextPath(), carteObjectId, level );
+  }
+
+  private static SimpleLoggingObject getServletLogging( String contextPath, String carteObjectId, LogLevel level ) {
     SimpleLoggingObject servletLoggingObject =
-        new SimpleLoggingObject( getContextPath(), LoggingObjectType.CARTE, null );
+        new SimpleLoggingObject( contextPath, LoggingObjectType.CARTE, null );
     servletLoggingObject.setContainerObjectId( carteObjectId );
     servletLoggingObject.setLogLevel( level );
     servletLoggingObject.setLogChannelId( carteObjectId );

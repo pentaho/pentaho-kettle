@@ -205,7 +205,7 @@
   </menupopup>
 
   <menupopup id="partition-schema-class">
-    <menuitem id="partition-schema-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newDatabasePartitioningSchema()" />
+    <menuitem id="partition-schema-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newPartitioningSchema()" />
   </menupopup>
 
   <menupopup id="cluster-schema-class">
@@ -233,15 +233,16 @@
   </menupopup>
 
   <menupopup id="database-inst">
-    <menuitem id="database-inst-new" label="${Spoon.Menu.Popup.CONNECTIONS.New}" command="spoon.newConnection()" />
     <menuitem id="database-inst-edit" label="${Spoon.Menu.Popup.CONNECTIONS.Edit}" command="spoon.editConnection()" />
-    <menuitem id="database-inst-duplicate" label="${Spoon.Menu.Popup.CONNECTIONS.Duplicate}" command="spoon.dupeConnection()" />
-    <menuitem id="database-inst-copy" label="${Spoon.Menu.Popup.CONNECTIONS.CopyToClipboard}" command="spoon.clipConnection()" />
+    <menuitem id="database-inst-move-project" label="${Spoon.Menu.Popup.CONNECTIONS.MoveToProject}" command="spoon.moveConnectionToProject()" />
+    <menuitem id="database-inst-move-global" label="${Spoon.Menu.Popup.MoveTo}" command="spoon.moveConnectionToGlobal()" />
+    <menuitem id="database-inst-copy-project" label="${Spoon.Menu.Popup.CONNECTIONS.CopyToProject}" command="spoon.copyConnectionToProject()" />
+    <menuitem id="database-inst-copy-global" label="${Spoon.Menu.Popup.CopyTo}" command="spoon.copyConnectionToGlobal()" />
+    <menuitem id="database-inst-duplicate" label="${Spoon.Menu.Popup.DuplicateIn}" command="spoon.dupeConnection()" />
     <menuitem id="database-inst-delete" label="${Spoon.Menu.Popup.CONNECTIONS.Delete}" command="spoon.delConnection()" />
     <menuseparator />
     <menuitem id="database-inst-sql-edit" label="${Spoon.Menu.Popup.CONNECTIONS.SQLEditor}" command="spoon.sqlConnection()" />
     <menuitem id="database-inst-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCache}" command="spoon.clearDBCache('database-inst-clear-cache')"/>
-    <menuitem id="database-inst-share" label="${Spoon.Menu.Popup.CONNECTIONS.Share}" command="spoon.shareObject('database-inst-share')" />
     <menuitem id="database-inst-explore" label="${Spoon.Menu.Popup.CONNECTIONS.Explore}" command="spoon.exploreDB()" />
     <menuseparator />
     <menuitem id="database-inst-dependancy" label="${Spoon.Menu.Popup.CONNECTIONS.ShowDependancies}" command="spoon.displayDbDependancies()" />
@@ -251,7 +252,6 @@
     <menuitem id="step-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editStep()" />
     <menuitem id="step-inst-duplicate" label="${Spoon.Menu.Popup.STEPS.Duplicate}" command="spoon.dupeStep()" />
     <menuitem id="step-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delStep()" />
-    <menuitem id="step-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('step-inst-share')" />
     <menuseparator id="step-inst-separator-1"/>
     <menuitem id="step-inst-help" label="${Spoon.Menu.Popup.STEPS.Help}" command="spoon.helpStep()" />
 
@@ -273,21 +273,36 @@
 
   <menupopup id="partition-schema-inst">
     <menuitem id="partition-schema-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editPartitionSchema()" />
+    <menuitem id="partition-schema-inst-move-project" label="${Spoon.Menu.Popup.PARTITIONS.MoveToProject}" command="spoon.movePartitionSchemaToProject()" />
+    <menuitem id="partition-schema-inst-move-global" label="${Spoon.Menu.Popup.MoveTo}" command="spoon.movePartitionSchemaToGlobal()" />
+    <menuitem id="partition-schema-inst-copy-project" label="${Spoon.Menu.Popup.PARTITIONS.CopyToProject}" command="spoon.copyPartitionSchemaToProject()" />
+    <menuitem id="partition-schema-inst-copy-global" label="${Spoon.Menu.Popup.CopyTo}" command="spoon.copyPartitionSchemaToGlobal()" />
+    <menuitem id="partition-schema-inst-duplicate-project" label="${Spoon.Menu.Popup.PARTITIONS.DuplicateInProject}" command="spoon.dupePartitionSchema()" />
+    <menuitem id="partition-schema-inst-duplicate-global" label="${Spoon.Menu.Popup.DuplicateIn}" command="spoon.dupePartitionSchema()" />
     <menuitem id="partition-schema-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delPartitionSchema()" />
-    <menuitem id="partition-schema-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('partition-schema-inst-share')" />
   </menupopup>
 
   <menupopup id="cluster-schema-inst">
     <menuitem id="cluster-schema-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editClusterSchema()" />
+    <menuitem id="cluster-schema-inst-move-project" label="${Spoon.Menu.Popup.CLUSTERS.MoveToProject}" command="spoon.moveClusterSchemaToProject()" />
+    <menuitem id="cluster-schema-inst-move-global" label="${Spoon.Menu.Popup.MoveTo}" command="spoon.moveClusterSchemaToGlobal()" />
+    <menuitem id="cluster-schema-inst-copy-project" label="${Spoon.Menu.Popup.CLUSTERS.CopyToProject}" command="spoon.copyClusterSchemaToProject()" />
+    <menuitem id="cluster-schema-inst-copy-global" label="${Spoon.Menu.Popup.CopyTo}" command="spoon.copyClusterSchemaToGlobal()" />
+    <menuitem id="cluster-schema-inst-duplicate-project" label="${Spoon.Menu.Popup.CLUSTERS.DuplicateInProject}" command="spoon.dupeClusterSchema()" />
+    <menuitem id="cluster-schema-inst-duplicate-global" label="${Spoon.Menu.Popup.DuplicateIn}" command="spoon.dupeClusterSchema()" />
     <menuitem id="cluster-schema-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delClusterSchema()" />
-    <menuitem id="cluster-schema-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('cluster-schema-inst-share')" />
     <menuitem id="cluster-schema-inst-monitor" label="${Spoon.Menu.Popup.CLUSTERS.Monitor}" command="spoon.monitorClusterSchema()" />
   </menupopup>
 
   <menupopup id="slave-server-inst">
     <menuitem id="slave-server-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editSlaveServer()" />
+    <menuitem id="slave-server-inst-move-project" label="${Spoon.Menu.Popup.SLAVE_SERVER.MoveToProject}" command="spoon.moveSlaveServerToProject()" />
+    <menuitem id="slave-server-inst-move-global" label="${Spoon.Menu.Popup.MoveTo}" command="spoon.moveSlaveServerToGlobal()" />
+    <menuitem id="slave-server-inst-copy-project" label="${Spoon.Menu.Popup.SLAVE_SERVER.CopyToProject}" command="spoon.copySlaveServerToProject()" />
+    <menuitem id="slave-server-inst-copy-global" label="${Spoon.Menu.Popup.CopyTo}" command="spoon.copySlaveServerToGlobal()" />
+    <menuitem id="slave-server-inst-duplicate-project" label="${Spoon.Menu.Popup.SLAVE_SERVER.DuplicateInProject}" command="spoon.dupeSlaveServer()" />
+    <menuitem id="slave-server-inst-duplicate-global" label="${Spoon.Menu.Popup.DuplicateIn}" command="spoon.dupeSlaveServer()" />
     <menuitem id="slave-server-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delSlaveServer()" />
-    <menuitem id="slave-server-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('slave-server-inst-share')" />
     <menuitem id="slave-server-inst-monitor" label="${Spoon.Menu.Popup.SLAVE_SERVER.Monitor}" command="spoon.addSpoonSlave()" />
   </menupopup>
 

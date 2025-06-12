@@ -138,7 +138,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
       // What is the output row looking like?
       //
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // Determine the indexes of the fields used!
       //

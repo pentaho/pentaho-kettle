@@ -17,20 +17,27 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.ui.spoon.TreeSelection;
 
 import java.util.List;
+import org.eclipse.swt.widgets.TreeItem;
 
 public class SpoonTreeDelegateExtension {
 
   private AbstractMeta transMeta = null;
   private String[] path = null;
   private int caseNumber = -1;
+  private TreeItem treeItem = null;
   private List<TreeSelection> objects = null;
 
-  public SpoonTreeDelegateExtension( AbstractMeta transMeta, String[] path, int caseNumber,
+  public SpoonTreeDelegateExtension( TreeItem treeItem, AbstractMeta transMeta, String[] path, int caseNumber,
       List<TreeSelection> objects ) {
+    this.treeItem = treeItem;
     this.transMeta = transMeta;
     this.path = path;
     this.caseNumber = caseNumber;
     this.objects = objects;
+  }
+
+  public TreeItem getTreeItem() {
+    return treeItem;
   }
 
   public AbstractMeta getTransMeta() {

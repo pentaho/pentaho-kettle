@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
@@ -100,9 +101,11 @@ public class SubtransExecutorTest {
   @Test
   public void testRunsATrans() throws Exception {
     TransMeta parentMeta =
-      new TransMeta( this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(), new Variables() );
+      new TransMeta( DefaultBowl.getInstance(), this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(),
+        new Variables() );
     TransMeta subMeta =
-      new TransMeta( this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(), new Variables() );
+      new TransMeta( DefaultBowl.getInstance(), this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(),
+        new Variables() );
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
     Trans parentTrans = spy( new Trans( parentMeta, loggingObject ) );
     SubtransExecutor subtransExecutor =
@@ -151,9 +154,11 @@ public class SubtransExecutorTest {
   @Test
   public void stopsAll() throws KettleException {
     TransMeta parentMeta =
-      new TransMeta( this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(), new Variables() );
+      new TransMeta( DefaultBowl.getInstance(), this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(),
+        new Variables() );
     TransMeta subMeta =
-      new TransMeta( this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(), new Variables() );
+      new TransMeta( DefaultBowl.getInstance(), this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(),
+        new Variables() );
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
     Trans parentTrans = new Trans( parentMeta, loggingObject );
     SubtransExecutor subtransExecutor =
@@ -175,9 +180,11 @@ public class SubtransExecutorTest {
   public void doesNotExecuteWhenStopped() throws KettleException {
 
     TransMeta parentMeta =
-      new TransMeta( this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(), new Variables() );
+      new TransMeta( DefaultBowl.getInstance(), this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(),
+        new Variables() );
     TransMeta subMeta =
-      new TransMeta( this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(), new Variables() );
+      new TransMeta( DefaultBowl.getInstance(), this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(),
+        new Variables() );
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
     Trans parentTrans = new Trans( parentMeta, loggingObject );
     SubtransExecutor subtransExecutor =
@@ -228,9 +235,11 @@ public class SubtransExecutorTest {
     final ExecutorService executorService = Executors.newFixedThreadPool( 1 );
 
     TransMeta parentMeta =
-      new TransMeta( this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(), new Variables() );
+      new TransMeta( DefaultBowl.getInstance(), this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(),
+        new Variables() );
     TransMeta subMeta =
-      new TransMeta( this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(), new Variables() );
+      new TransMeta( DefaultBowl.getInstance(), this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(),
+        new Variables() );
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
     Trans parentTrans = new Trans( parentMeta, loggingObject );
     SubtransExecutor subtransExecutor =

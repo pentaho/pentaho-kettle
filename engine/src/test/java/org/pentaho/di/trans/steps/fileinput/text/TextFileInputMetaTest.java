@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.fileinput.text;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -26,6 +27,8 @@ import static org.mockito.Mockito.verify;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -61,7 +64,7 @@ public class TextFileInputMetaTest {
     doReturn( "<def>" ).when( variableSpace ).environmentSubstitute( anyString() );
     doReturn( FILE_NAME_VALID_PATH ).when( variableSpace ).environmentSubstitute( FILE_NAME_VALID_PATH );
     FileObject mockedFileObject = mock( FileObject.class );
-    doReturn( mockedFileObject ).when( inputMeta ).getFileObject( anyString(), eq( variableSpace ) );
+    doReturn( mockedFileObject ).when( inputMeta ).getFileObject( any( Bowl.class ), anyString(), eq( variableSpace ) );
   }
 
   @Test
@@ -71,11 +74,12 @@ public class TextFileInputMetaTest {
     inputMeta.inputFiles.fileMask =
       new String[] { StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING };
 
-    inputMeta.exportResources( variableSpace, null, mock( ResourceNamingInterface.class ), null, null );
+    inputMeta.exportResources( DefaultBowl.getInstance(), null, variableSpace, null,
+      mock( ResourceNamingInterface.class ), null, null );
 
-    verify( inputMeta ).getFileObject( FILE_NAME_VALID_PATH, variableSpace );
-    verify( inputMeta, never() ).getFileObject( FILE_NAME_NULL, variableSpace );
-    verify( inputMeta, never() ).getFileObject( FILE_NAME_EMPTY, variableSpace );
+    verify( inputMeta ).getFileObject( DefaultBowl.getInstance(), FILE_NAME_VALID_PATH, variableSpace );
+    verify( inputMeta, never() ).getFileObject( DefaultBowl.getInstance(), FILE_NAME_NULL, variableSpace );
+    verify( inputMeta, never() ).getFileObject( DefaultBowl.getInstance(), FILE_NAME_EMPTY, variableSpace );
   }
 
   @Test

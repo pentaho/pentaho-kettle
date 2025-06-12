@@ -826,7 +826,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     wTargetDirectory.setLayoutData( fdTargetDirectory );
 
     wbTargetDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetDirectory, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Create multi-part file?
     wlAddDate = new Label( wLocalSettings, SWT.RIGHT );

@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.parameters.UnknownParamException;
@@ -199,6 +200,8 @@ public class JobExecutorTest {
     StepMetaInterface stepMetaInterfaceMock = mock( StepMetaInterface.class );
     TransMeta transMeta = mock( TransMeta.class );
     JobMeta jobMeta = mock( JobMeta.class );
+    when( jobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     when( executor.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
     when( trans.getRepository() ).thenReturn( repositoryMock );
     when( jobMeta.listParameters() ).thenReturn( new String[] { "param1", "param2" } );
@@ -209,7 +212,8 @@ public class JobExecutorTest {
     executor.init( meta, data );
 
     try ( MockedStatic<JobExecutorMeta> mocked = mockStatic( JobExecutorMeta.class ) ) {
-      when( JobExecutorMeta.loadJobMeta( meta, meta.getRepository(), executor ) ).thenReturn( jobMeta );
+      when( JobExecutorMeta.loadJobMeta( transMeta.getBowl(), meta, meta.getRepository(), executor ) )
+        .thenReturn( jobMeta );
       JSONObject response = executor.doAction( "parameters", meta, transMeta, trans, new HashMap<>() );
       JSONArray parameters = (JSONArray) response.get( "parameters" );
 

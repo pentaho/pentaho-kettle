@@ -500,7 +500,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
   }
 
   private void loadFileTrans( String fname ) throws KettleException {
-    mappingTransMeta = new TransMeta( transMeta.environmentSubstitute( fname ) );
+    mappingTransMeta = new TransMeta( transMeta.getBowl(), transMeta.environmentSubstitute( fname ) );
     mappingTransMeta.clearChanged();
   }
 
@@ -735,7 +735,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       if ( mappingTransMeta == null ) {
         SingleThreaderMeta jet = new SingleThreaderMeta();
         getInfo( jet );
-        mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta( jet, repository, transMeta );
+        mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta( transMeta.getBowl(), jet, repository,
+          transMeta );
       }
       String[] parameters = mappingTransMeta.listParameters();
 

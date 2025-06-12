@@ -12,6 +12,7 @@
  ******************************************************************************/
 
 
+
 package org.pentaho.di.core;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -25,7 +26,6 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.IKettleVFS;

@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -62,10 +63,10 @@ public class FileLoggingEventListener implements KettleLoggingEventListener {
     this.layout = new KettleLogLayout( true );
     this.exception = null;
 
-    file = KettleVFS.getFileObject( filename );
+    file = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( filename );
     outputStream = null;
     try {
-      outputStream = KettleVFS.getOutputStream( file, append );
+      outputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getOutputStream( file, append );
     } catch ( Exception e ) {
       throw new KettleException(
         "Unable to create a logging event listener to write to file '" + filename + "'", e );

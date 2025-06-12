@@ -20,6 +20,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -175,7 +176,8 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
 
     RowMeta row = new RowMeta();
     try {
-      meta.getFields( row, "DimensionLookupMetaTest", new RowMeta[] { row }, null, null, null, null );
+      meta.getFields( DefaultBowl.getInstance(), row, "DimensionLookupMetaTest", new RowMeta[] { row }, null, null,
+        null, null );
     } catch ( Throwable e ) {
       Assert.assertTrue( e.getMessage().contains(
           BaseMessages.getString( DimensionLookupMeta.class, "DimensionLookupMeta.Error.NoTechnicalKeySpecified" ) ) );

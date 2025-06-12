@@ -55,7 +55,8 @@ public class DBProc extends BaseDatabaseStep implements StepInterface {
       // get the RowMeta for the output
       //
       data.outputMeta = data.inputRowMeta.clone();
-      meta.getFields( data.outputMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       data.argnrs = new int[meta.getArgument().length];
       for ( int i = 0; i < meta.getArgument().length; i++ ) {

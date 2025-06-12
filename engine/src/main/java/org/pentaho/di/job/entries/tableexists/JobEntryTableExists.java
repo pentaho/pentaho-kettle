@@ -180,7 +180,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
       } finally {
         if ( db != null ) {
           try {
-            db.disconnect();
+            db.close();
           } catch ( Exception e ) { /* Ignore */
           }
         }
@@ -194,7 +194,11 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
   }
 
   public DatabaseMeta[] getUsedDatabaseConnections() {
-    return new DatabaseMeta[] { connection, };
+    if ( connection != null ) {
+      return new DatabaseMeta[] { connection, };
+    } else {
+      return new DatabaseMeta[ 0 ];
+    }
   }
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
@@ -211,7 +215,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "tablename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

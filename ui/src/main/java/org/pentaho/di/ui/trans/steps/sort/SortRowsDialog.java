@@ -31,7 +31,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -180,7 +179,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     wSortDir.setLayoutData( fdSortDir );
 
     wbSortDir.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSortDir, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wSortDir.addModifyListener( new ModifyListener() {

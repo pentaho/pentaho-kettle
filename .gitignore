@@ -21,3 +21,4 @@ logs
 rebel.xml
 rebel-remote.xml
 .java-version
+plugins/avro-format/core/abc

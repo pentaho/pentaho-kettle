@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.trans.steps.jsoninput.json.Configuration;
 import org.pentaho.di.trans.steps.jsoninput.json.JsonSampler;
 import org.pentaho.di.trans.steps.jsoninput.json.node.ArrayNode;
@@ -41,7 +42,7 @@ public class JsonSamplerTest {
   @Test
   @Ignore("UI elements make this unit test unreliable.")
   public void testDedupeArray() throws Exception {
-    JsonSampler jsonSampler = new JsonSampler();
+    JsonSampler jsonSampler = new JsonSampler( DefaultBowl.getInstance() );
     InputStream inputStream =
       this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/dedupe-test.json" );
     try {
@@ -73,7 +74,7 @@ public class JsonSamplerTest {
   @Test
   @Ignore("UI elements make this unit test unreliable.")
   public void testDedupeObject() throws Exception {
-    JsonSampler jsonSampler = new JsonSampler();
+    JsonSampler jsonSampler = new JsonSampler( DefaultBowl.getInstance() );
     InputStream inputStream =
       this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/dedupe-test2.json" );
     try {
@@ -109,7 +110,7 @@ public class JsonSamplerTest {
   public void testDedupeLines() throws Exception {
     Configuration configuration = new Configuration();
     configuration.setLines( 10 );
-    JsonSampler jsonSampler = new JsonSampler( configuration );
+    JsonSampler jsonSampler = new JsonSampler( DefaultBowl.getInstance(), configuration );
     InputStream inputStream =
       this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/dedupe-test2.json" );
     try {
@@ -143,7 +144,7 @@ public class JsonSamplerTest {
   @Ignore("UI elements make this unit test unreliable.")
   public void testDedupeNestedArrays() throws Exception {
     Configuration configuration = new Configuration();
-    JsonSampler jsonSampler = new JsonSampler( configuration );
+    JsonSampler jsonSampler = new JsonSampler( DefaultBowl.getInstance(), configuration );
     InputStream inputStream =
       this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/dedupe-test3.json" );
     try {
@@ -180,7 +181,7 @@ public class JsonSamplerTest {
   @Ignore("UI elements make this unit test unreliable.")
   public void testBigIntegerNode() throws Exception {
     Configuration configuration = new Configuration();
-    JsonSampler jsonSampler = new JsonSampler( configuration );
+    JsonSampler jsonSampler = new JsonSampler( DefaultBowl.getInstance(), configuration );
     InputStream inputStream =
       this.getClass().getResourceAsStream( "/org/pentaho/di/ui/trans/steps/jsoninput/getfields/bigint-test.json" );
     try {

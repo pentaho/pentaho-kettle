@@ -13,34 +13,26 @@
 
 package org.pentaho.di.ui.trans.step;
 
-import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.shared.DatabaseManagementInterface;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.trans.step.BaseStepDialog.EditConnectionListener;
 
-import java.io.IOException;
 
 import org.eclipse.swt.custom.CCombo;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
-import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog.EditConnectionListener;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class EditConnectionListenerTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -61,7 +53,8 @@ public class EditConnectionListenerTest {
   @Before
   public void init() {
     dialog = mock( BaseStepDialog.class );
-    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) ).thenAnswer( new PropsSettingAnswer(
+    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta(), anyDbMgr() ) ).thenAnswer(
+      new PropsSettingAnswer(
         TEST_NAME, TEST_HOST ) );
     dialog.transMeta = spy( new TransMeta() );
     CCombo combo = mock( CCombo.class );
@@ -69,41 +62,6 @@ public class EditConnectionListenerTest {
 
     editConnectionListener = spy( dialog.new EditConnectionListener( combo ) );
     doNothing().when( editConnectionListener ).showErrorDialog( any( Exception.class ) );
-  }
-
-  @Test
-  public void replaceSharedConnection() throws IOException, KettleException {
-    dialog.transMeta.addDatabase( createDefaultDatabase( true ) );
-    SharedObjects sharedObjects = mock( SharedObjects.class );
-    doReturn( sharedObjects ).when( dialog.transMeta ).getSharedObjects();
-
-    editConnectionListener.widgetSelected( null );
-
-    verify( editConnectionListener ).replaceSharedConnection( any( DatabaseMeta.class ), any( DatabaseMeta.class ) );
-    verify( sharedObjects ).removeObject( any( SharedObjectInterface.class ) );
-    verify( sharedObjects ).storeObject( any( SharedObjectInterface.class ) );
-    verify( sharedObjects ).saveToFile();
-  }
-
-  @Test
-  public void replaceSharedConnectionDoesNotExecuted_for_nonshared_connection() {
-    dialog.transMeta.addDatabase( createDefaultDatabase( false ) );
-    editConnectionListener.widgetSelected( null );
-
-    verify( editConnectionListener, never() ).replaceSharedConnection( any( DatabaseMeta.class ), any(
-        DatabaseMeta.class ) );
-  }
-
-  @Test
-  public void replaceSharedConnectionReturnsFalse_on_error() throws IOException, KettleException {
-    dialog.transMeta.addDatabase( createDefaultDatabase( false ) );
-    SharedObjects sharedObjects = mock( SharedObjects.class );
-    doThrow( KettleException.class ).when( sharedObjects ).saveToFile();
-
-    boolean actualResult = editConnectionListener.replaceSharedConnection( anyDbMeta(), anyDbMeta() );
-
-    assertFalse( actualResult );
-    verify( editConnectionListener ).showErrorDialog( any( Exception.class ) );
   }
 
   private static class PropsSettingAnswer implements Answer<String> {
@@ -130,12 +88,9 @@ public class EditConnectionListenerTest {
     return any( DatabaseMeta.class );
   }
 
-  private static DatabaseMeta createDefaultDatabase( boolean sharedDb ) {
-    DatabaseMeta existing = new DatabaseMeta();
-    existing.setName( TEST_NAME );
-    existing.setHostname( TEST_HOST );
-    existing.setShared( sharedDb );
-    return existing;
+  private static DatabaseManagementInterface anyDbMgr() {
+    return any( DatabaseManagementInterface.class );
   }
+
 
 }

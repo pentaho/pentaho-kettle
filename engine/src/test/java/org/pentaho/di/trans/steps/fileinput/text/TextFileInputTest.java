@@ -365,7 +365,7 @@ public class TextFileInputTest {
     meta.inputFiles.passingThruFields = true;
     meta.inputFiles.acceptingFilenames = true;
     TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
-    data.files.addFile( KettleVFS.getFileObject( virtualFile2 ) );
+    data.files.addFile( KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( virtualFile2 ) );
 
     TextFileInput input = spy( StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" ) );
 
@@ -517,7 +517,7 @@ public class TextFileInputTest {
                                               String... outputFields ) throws Exception {
     TextFileInputData data = new TextFileInputData();
     data.files = new FileInputList();
-    data.files.addFile( KettleVFS.getFileObject( file ) );
+    data.files.addFile( KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( file ) );
 
     data.separator = separator;
 
@@ -547,7 +547,8 @@ public class TextFileInputTest {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     bos.write( content.toString().getBytes() );
 
-    try ( OutputStream os = KettleVFS.getFileObject( virtualFile ).getContent().getOutputStream() ) {
+    try ( OutputStream os = KettleVFS.getInstance( DefaultBowl.getInstance() )
+          .getFileObject( virtualFile ).getContent().getOutputStream() ) {
       IOUtils.copy( new ByteArrayInputStream( bos.toByteArray() ), os );
     }
 

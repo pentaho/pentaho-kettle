@@ -27,21 +27,16 @@ import java.util.function.Supplier;
 @LifecyclePlugin( id = "RunConfigurationLifecycleListener" )
 public class RunConfigurationLifecycleListener implements LifecycleListener {
 
-  private RunConfigurationDelegate runConfigurationDelegate;
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
   public RunConfigurationLifecycleListener() {
-    this.runConfigurationDelegate = RunConfigurationDelegate.getInstance();
   }
 
   @Override
   public void onStart( LifeEventHandler handler ) throws LifecycleException {
     Spoon spoon = spoonSupplier.get();
     if ( spoon != null ) {
-      spoon.getTreeManager().addTreeProvider( Spoon.STRING_TRANSFORMATIONS, new RunConfigurationFolderProvider(
-              runConfigurationDelegate ) );
-      spoon.getTreeManager().addTreeProvider( Spoon.STRING_JOBS, new RunConfigurationFolderProvider(
-              runConfigurationDelegate ) );
+      spoon.getTreeManager().addTreeProvider( Spoon.STRING_CONFIGURATIONS, new RunConfigurationFolderProvider() );
     }
   }
 

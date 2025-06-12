@@ -260,7 +260,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
     } );
 
     wbFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFoldername, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Create destination folder
     wlCreateDestinationFolder = new Label( shell, SWT.RIGHT );
