@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.avro.input;
 
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.plugins.ParentFirst;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -29,6 +30,7 @@ import org.pentaho.di.trans.step.StepMeta;
   "FIELD_POSITION", "FIELD_LENGTH", "FIELD_IGNORE", "FIELD_FORMAT", "FIELD_PRECISION", "FIELD_CURRENCY",
   "FIELD_DECIMAL", "FIELD_GROUP", "FIELD_REPEAT", "FIELD_TRIM_TYPE"
 } )
+@ParentFirst( patterns = { ".*" } )
 public class AvroInputMeta extends AvroInputMetaBase {
 
 
