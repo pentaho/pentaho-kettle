@@ -19,6 +19,7 @@ import java.util.Map;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.util.Utils;
@@ -235,7 +236,8 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     allowExternalEntities = Boolean.valueOf( System.getProperties().getProperty( Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION, Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT ) );
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !Utils.isEmpty( resultFieldname ) ) {
       if ( outputStringField ) {
@@ -415,6 +417,11 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
    * 
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -426,9 +433,10 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
    * 
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+  @Override
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -439,8 +447,9 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
       // To : /home/matt/test/files/foo/bar.xsd
       //
       if ( !Utils.isEmpty( xsdFilename ) ) {
-        FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( xsdFilename ), space );
-        xsdFilename = resourceNamingInterface.nameResource( fileObject, space, true );
+        FileObject fileObject = KettleVFS.getInstance( executionBowl )
+          .getFileObject( space.environmentSubstitute( xsdFilename ), space );
+        xsdFilename = namingInterface.nameResource( fileObject, space, true );
         return xsdFilename;
       }
 

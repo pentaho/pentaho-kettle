@@ -378,21 +378,21 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
                 ps.execute();
 
                 // Everything is OK...we can disconnect now
-                db.disconnect();
+                db.close();
 
                 if ( isAddFileToResult() ) {
                   // Add filename to output files
                   ResultFile resultFile =
                     new ResultFile(
-                      ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ), parentJob
-                        .getJobname(), toString() );
+                      ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                        .getFileObject( realFilename, this ), parentJob.getJobname(), toString() );
                   result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                 }
 
                 result.setResult( true );
 
               } catch ( SQLException je ) {
-                db.disconnect();
+                db.close();
                 result.setNrErrors( 1 );
                 logError( BaseMessages.getString( PKG, "JobMysqlBulkFile.Error.Label" ) + " " + je.getMessage() );
               } catch ( KettleFileException e ) {
@@ -402,7 +402,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
             } else {
               // Of course, the table should have been created already before the bulk load operation
-              db.disconnect();
+              db.close();
               result.setNrErrors( 1 );
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.TableNotExists1.Label" )
@@ -411,7 +411,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
             }
 
           } catch ( KettleDatabaseException dbe ) {
-            db.disconnect();
+            db.close();
             result.setNrErrors( 1 );
             logError( BaseMessages.getString( PKG, "JobMysqlBulkFile.Error.Label" ) + " " + dbe.getMessage() );
           }
@@ -569,9 +569,9 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "tablename", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

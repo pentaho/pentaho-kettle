@@ -717,7 +717,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.

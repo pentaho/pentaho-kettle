@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -60,7 +61,7 @@ public class DetectLastRowMetaTest {
     meta.setDefault();
     meta.setResultFieldName( "The Result" );
     RowMeta rowMeta = new RowMeta();
-    meta.getFields( rowMeta, "this step", null, null, new Variables(), null, null );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, "this step", null, null, new Variables(), null, null );
 
     assertEquals( 1, rowMeta.size() );
     assertEquals( "The Result", rowMeta.getValueMeta( 0 ).getName() );

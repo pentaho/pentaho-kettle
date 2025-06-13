@@ -109,7 +109,8 @@ public class StepsMetrics extends BaseStep implements StepInterface {
       }
 
       data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
     } // end if first
 
     data.continueLoop = true;

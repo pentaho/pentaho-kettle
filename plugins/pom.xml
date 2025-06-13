@@ -105,6 +105,7 @@
         <module>put-a-file-with-ftp</module>
         <module>email-messages</module>
         <module>mail-job</module>
+        <module>repo-vfs</module>
       </modules>
     </profile>
 

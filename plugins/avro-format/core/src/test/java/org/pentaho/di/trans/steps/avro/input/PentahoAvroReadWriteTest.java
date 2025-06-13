@@ -13,17 +13,18 @@
 
 package org.pentaho.di.trans.steps.avro.input;
 
-import org.pentaho.di.trans.steps.avro.AvroSpec;
-import org.pentaho.di.trans.steps.avro.output.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.*;
 import org.pentaho.di.core.util.Assert;
+import org.pentaho.di.trans.steps.avro.AvroSpec;
+import org.pentaho.di.trans.steps.avro.output.*;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -667,6 +668,7 @@ public class PentahoAvroReadWriteTest {
     avroOutputFormat.setRecordName( "recordName" );
     avroOutputFormat.setFields( avroOutputFields );
     avroOutputFormat.setCompression( compressionType );
+    avroOutputFormat.setBowl( DefaultBowl.getInstance() );
     avroOutputFormat.setOutputFile( filePath, overwrite );
 
     IPentahoOutputFormat.IPentahoRecordWriter avroRecordWriter = avroOutputFormat.createRecordWriter();
@@ -694,6 +696,7 @@ public class PentahoAvroReadWriteTest {
     pentahoAvroInputFormat.setInputFields( avroInputFields );
     pentahoAvroInputFormat.setInputFile( filePath );
     pentahoAvroInputFormat.setOutputRowMeta( rowMeta );
+    pentahoAvroInputFormat.setBowl( DefaultBowl.getInstance() );
     IPentahoInputFormat.IPentahoRecordReader pentahoRecordReader = pentahoAvroInputFormat.createRecordReader( null );
     for ( RowMetaAndData row : pentahoRecordReader ) {
       for ( int colNum = 0; colNum < avroInputFields.size(); colNum++ ) {
@@ -805,6 +808,7 @@ public class PentahoAvroReadWriteTest {
         avroOutputField.setDefaultValue( defaultValues[i] );
         avroOutputField.setFormatType( AvroSpec.DataType.getDataType( Integer.parseInt( DEFAULT_SCHEME_DESCRIPTION[i][2] ) ) );
         pentahoAvroOutputFormat.setFields( List.of( avroOutputField ) );
+        pentahoAvroOutputFormat.setBowl( DefaultBowl.getInstance() );
         pentahoAvroOutputFormat.createRecordWriter();
       } catch ( IllegalArgumentException e ) {
         actualThrows++;

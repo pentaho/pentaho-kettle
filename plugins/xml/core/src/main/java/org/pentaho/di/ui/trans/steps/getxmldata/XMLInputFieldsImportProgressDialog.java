@@ -32,6 +32,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -112,11 +113,11 @@ public class XMLInputFieldsImportProgressDialog {
     }
   }
 
-  public RowMetaAndData[] open() {
+  public RowMetaAndData[] open( Bowl bowl ) {
     IRunnableWithProgress op = new IRunnableWithProgress() {
       public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException {
         try {
-          fields = doScan( monitor );
+          fields = doScan( bowl, monitor );
         } catch ( Exception e ) {
           e.printStackTrace();
           throw new InvocationTargetException( e, BaseMessages.getString( PKG,
@@ -141,8 +142,7 @@ public class XMLInputFieldsImportProgressDialog {
     return fields;
   }
 
-  @SuppressWarnings( "unchecked" )
-  private RowMetaAndData[] doScan( IProgressMonitor monitor ) throws Exception {
+  private RowMetaAndData[] doScan( Bowl bowl, IProgressMonitor monitor ) throws Exception {
     monitor.beginTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ScanningFile",
         filename ), 1 );
 
@@ -170,7 +170,7 @@ public class XMLInputFieldsImportProgressDialog {
 
       Document document = null;
       if ( !Utils.isEmpty( filename ) ) {
-        is = KettleVFS.getInputStream( filename );
+        is = KettleVFS.getInstance( bowl ).getInputStream( filename );
         document = reader.read( is, encoding );
       } else {
         if ( !Utils.isEmpty( xml ) ) {
@@ -230,7 +230,6 @@ public class XMLInputFieldsImportProgressDialog {
 
   }
 
-  @SuppressWarnings( "unchecked" )
   private void setNodeField( Node node, IProgressMonitor monitor ) {
     Element e = (Element) node;
     // get all attributes

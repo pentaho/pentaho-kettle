@@ -36,6 +36,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -48,7 +49,7 @@ public class GoogleAnalyticsApiFacade {
   private Analytics analytics;
   private final HttpTransport httpTransport;
 
-  public static GoogleAnalyticsApiFacade createFor(
+  public static GoogleAnalyticsApiFacade createFor( Bowl bowl,
     String application, String oauthServiceAccount, String oauthKeyFile )
     throws GeneralSecurityException, IOException, KettleFileException {
 
@@ -57,7 +58,7 @@ public class GoogleAnalyticsApiFacade {
       JacksonFactory.getDefaultInstance(),
       application,
       oauthServiceAccount,
-      new File( KettleVFS.getFileObject( oauthKeyFile ).getURL().getPath() )
+      new File( KettleVFS.getInstance( bowl ).getFileObject( oauthKeyFile ).getURL().getPath() )
     );
   }
 

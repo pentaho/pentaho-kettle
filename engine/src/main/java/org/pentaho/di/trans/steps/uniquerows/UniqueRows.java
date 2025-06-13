@@ -68,7 +68,8 @@ public class UniqueRows extends BaseStep implements StepInterface {
       data.inputRowMeta = getInputRowMeta().clone();
       data.compareRowMeta = getInputRowMeta().clone();
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       data.previous = data.inputRowMeta.cloneRow( r ); // copy the row
 

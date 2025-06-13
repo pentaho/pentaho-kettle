@@ -407,7 +407,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     wKeyFilename.setLayoutData( fdKeyFilename );
 
     wbKeyFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wKeyFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.PEM, FilterType.ALL }, FilterType.PEM  ) ) );
 
     // keyfilePass line
@@ -1122,7 +1122,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
   SFTPClient createSFTPClient() throws UnknownHostException, KettleJobException {
     // Create sftp client to host ...
     sftpclient =
-      new SFTPClient(
+      new SFTPClient( transMeta.getBowl(),
         InetAddress.getByName(
           transMeta.environmentSubstitute( wServerName.getText() ) ),
         Const.toInt( transMeta.environmentSubstitute( wServerPort.getText() ), 22 ),

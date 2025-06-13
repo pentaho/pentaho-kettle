@@ -12,7 +12,6 @@
 
 package org.pentaho.di.plugins.fileopensave.dragdrop;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -28,8 +27,6 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class ElementDndProcessor {
-  private static final FileController
-    FILE_CONTROLLER = new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.get() );
   private static final EntityType[] DESTINATION_BLACKLIST =
     new EntityType[] { EntityType.TREE, EntityType.RECENT_FILE, EntityType.REPOSITORY_OBJECT, EntityType.LOCAL_FILE,
       EntityType.NAMED_CLUSTER_FILE, EntityType.REPOSITORY_FILE, EntityType.TEST_FILE };
@@ -66,8 +63,10 @@ public class ElementDndProcessor {
         if ( isLive ) {
           try {
             overwriteStatus.activateProgressDialog( "Copy File Progress" );
-            Result result = FILE_CONTROLLER.copyFile( sourceObject, destinationFolder,
-              toPath, overwriteStatus );
+            FileController controller = new FileController( destination.getBowl(),
+                                                            FileCacheService.INSTANCE.get(),
+                                                            ProviderServiceService.get() );
+            Result result = controller.copyFile( sourceObject, destinationFolder, toPath, overwriteStatus );
             if ( !result.getStatus().equals( Result.Status.SUCCESS ) ) {
               String onObject = result.getData() instanceof File ? ( (File) result.getData() ).getPath() : "";
               throw new KettleException( result.getStatus() + ": " + result.getMessage() + onObject );

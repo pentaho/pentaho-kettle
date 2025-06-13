@@ -87,11 +87,13 @@ public class SasInput extends BaseStep implements StepInterface {
       // Determine the output row layout
       //
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
     }
 
     String rawFilename = getInputRowMeta().getString( fileRowData, meta.getAcceptingField(), null );
-    final String filename = KettleVFS.getFilename( KettleVFS.getFileObject( rawFilename ) );
+    final String filename =
+      KettleVFS.getFilename( KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( rawFilename ) );
 
     data.helper = new SasInputHelper( filename );
     logBasic( BaseMessages.getString( PKG, "SASInput.Log.OpenedSASFile" ) + " : [" + data.helper + "]" );
@@ -143,7 +145,8 @@ public class SasInput extends BaseStep implements StepInterface {
     // Add this to the result file names...
     //
     ResultFile resultFile =
-      new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename ), getTransMeta()
+      new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( getTransMeta().getBowl() )
+                      .getFileObject( filename ), getTransMeta()
         .getName(), getStepname() );
     resultFile.setComment( BaseMessages.getString( PKG, "SASInput.ResultFile.Comment" ) );
     addResultFile( resultFile );

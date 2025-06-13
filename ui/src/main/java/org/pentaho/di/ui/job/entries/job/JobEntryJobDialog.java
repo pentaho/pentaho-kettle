@@ -423,6 +423,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
   protected void getInfo( JobEntryJob jej ) {
     String jobPath = getPath();
     jej.setName( getName() );
+    jej.setParentJobMeta( jobMeta );
     switch ( specificationMethod ) {
       case FILENAME:
         jej.setFileName( jobPath );

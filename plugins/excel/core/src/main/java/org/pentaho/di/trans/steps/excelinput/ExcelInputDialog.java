@@ -1673,7 +1673,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Listen to the Browse... button
     wbbWarningDestDir.addSelectionListener( new SelectionAdapterFileDialogText( log, wWarningDestDir, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Listen to the Variable... button
     wbvWarningDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter(
@@ -1741,7 +1741,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Listen to the Browse... button
     wbbErrorDestDir.addSelectionListener( new SelectionAdapterFileDialogText( log, wErrorDestDir, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Listen to the Variable... button
     wbvErrorDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter(
@@ -1809,7 +1809,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Listen to the Browse... button
     wbbLineNrDestDir.addSelectionListener( new SelectionAdapterFileDialogText( log, wLineNrDestDir, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Listen to the Variable... button
     wbvLineNrDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter(
@@ -1893,12 +1893,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     ExcelInputMeta info = new ExcelInputMeta();
     getInfo( info );
 
-    FileInputList fileList = info.getFileList( transMeta );
+    FileInputList fileList = info.getFileList( transMeta.getBowl(), transMeta );
     for ( FileObject fileObject : fileList.getFiles() ) {
       try {
         KWorkbook workbook =
-          WorkbookFactory.getWorkbook( info.getSpreadSheetType(), KettleVFS.getFilename( fileObject ), info
-            .getEncoding(), wPassword.getText() );
+          WorkbookFactory.getWorkbook( transMeta.getBowl(), info.getSpreadSheetType(),
+            KettleVFS.getFilename( fileObject ), info.getEncoding(), wPassword.getText() );
 
         ExcelInput.getSheetNames( sheetnames, workbook );
       } catch ( Exception e ) {
@@ -1945,12 +1945,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       }
     }
 
-    FileInputList fileList = info.getFileList( transMeta );
+    FileInputList fileList = info.getFileList( transMeta.getBowl(), transMeta );
     for ( FileObject file : fileList.getFiles() ) {
       try {
         KWorkbook workbook =
-          WorkbookFactory.getWorkbook( info.getSpreadSheetType(), KettleVFS.getFilename( file ), info
-            .getEncoding(), wPassword.getText() );
+          WorkbookFactory.getWorkbook( transMeta.getBowl(), info.getSpreadSheetType(), KettleVFS.getFilename( file ),
+            info.getEncoding(), wPassword.getText() );
 
         Trans trans = new Trans( transMeta, null );
         trans.rowsets = new ArrayList<>();
@@ -1991,7 +1991,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
   private void showFiles() {
     ExcelInputMeta eii = new ExcelInputMeta();
     getInfo( eii );
-    String[] files = eii.getFilePaths( transMeta );
+    String[] files = eii.getFilePaths( transMeta.getBowl(), transMeta );
     if ( files.length > 0 ) {
       EnterSelectionDialog esd =
         new EnterSelectionDialog( shell, files,

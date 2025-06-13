@@ -624,7 +624,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
                 + Const.CR + e.getMessage() );
               mb.open();
             } finally {
-              db.disconnect();
+              db.close();
             }
             break;
           default:

@@ -168,7 +168,6 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     }
 
     String line = "";
-    StringBuilder sbLine = new StringBuilder();
     long fileLineNumber = 0;
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols();
@@ -176,7 +175,7 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     int nrfields = meta.inputFields.length;
 
     RowMetaInterface outputRowMeta = new RowMeta();
-    meta.getFields( outputRowMeta, null, null, null, transMeta, null, null );
+    meta.getFields( transMeta.getBowl(), outputRowMeta, null, null, null, transMeta, null, null );
 
     // Remove the storage meta-data (don't go for lazy conversion during scan)
     for ( ValueMetaInterface valueMeta : outputRowMeta.getValueMetaList() ) {
@@ -298,7 +297,7 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
         debug = "convert line #" + linenr + " to row";
       }
       RowMetaInterface rowMeta = new RowMeta();
-      meta.getFields( rowMeta, "stepname", null, null, transMeta, null, null );
+      meta.getFields( transMeta.getBowl(), rowMeta, "stepname", null, null, transMeta, null, null );
       // Remove the storage meta-data (don't go for lazy conversion during scan)
       for ( ValueMetaInterface valueMeta : rowMeta.getValueMetaList() ) {
         valueMeta.setStorageMetadata( null );
@@ -310,10 +309,11 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
       String escapeCharacter = transMeta.environmentSubstitute( meta.content.escapeCharacter );
       Object[] r =
         TextFileInputUtils.convertLineToRow( log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0,
-              outputRowMeta, convertRowMeta, FileInputList.createFilePathList( transMeta, meta.inputFiles.fileName,
-                  meta.inputFiles.fileMask, meta.inputFiles.excludeFileMask, meta.inputFiles.fileRequired, meta
-                      .inputFiles.includeSubFolderBoolean() )[0], rownumber, delimiter, enclosure, escapeCharacter, null,
-              new BaseFileInputAdditionalField(), null, null, false, null, null, null, null, null, failOnParseError );
+              outputRowMeta, convertRowMeta, FileInputList.createFilePathList( transMeta.getBowl(), transMeta,
+                  meta.inputFiles.fileName, meta.inputFiles.fileMask, meta.inputFiles.excludeFileMask,
+                  meta.inputFiles.fileRequired, meta.inputFiles.includeSubFolderBoolean() )[0],
+              rownumber, delimiter, enclosure, escapeCharacter, null, new BaseFileInputAdditionalField(), null, null,
+              false, null, null, null, null, null, failOnParseError );
 
       if ( r == null ) {
         errorFound = true;

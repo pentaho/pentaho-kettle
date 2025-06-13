@@ -467,7 +467,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
             retval.setError( BaseMessages.getString( PKG, "IngresVectorWiseLoaderMeta.Error.ErrorConnecting", dbe
               .getMessage() ) );
           } finally {
-            db.disconnect();
+            db.close();
           }
         } else {
           retval.setError( BaseMessages.getString( PKG, "IngresVectorWiseLoaderMeta.Error.NoTable" ) );

@@ -691,7 +691,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
     try {
       repository.getExporter().exportAllObjects( new MockProgressMonitorListener(), exportFileName, null, "all" ); //$NON-NLS-1$
-      FileObject exportFile = KettleVFS.getFileObject( exportFileName );
+      FileObject exportFile = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( exportFileName );
       assertFalse( "file left open", exportFile.getContent().isOpen() );
       assertNotNull( exportFile );
       MockRepositoryExportParser parser = new MockRepositoryExportParser();
@@ -707,7 +707,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
       assertTrue( "log error", errorLogListener.getEvents().isEmpty() );
 
     } finally {
-      KettleVFS.getFileObject( exportFileName ).delete();
+      KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( exportFileName ).delete();
       KettleLogStore.getAppender().removeLoggingEventListener( errorLogListener );
     }
   }
@@ -1029,7 +1029,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     // export itself
     try {
       exporter.exportAllObjects( new MockProgressMonitorListener(), exportFileName, null, "all" ); //$NON-NLS-1$
-      FileObject exportFile = KettleVFS.getFileObject( exportFileName );
+      FileObject exportFile = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( exportFileName );
       assertNotNull( exportFile );
       MockRepositoryExportParser parser = new MockRepositoryExportParser();
       SAXParserFactory.newInstance().newSAXParser().parse( KettleVFS.getInputStream( exportFile ), parser );
@@ -1040,7 +1040,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
       assertEquals( "Incorrect number of transformations", 1, parser.getNodesWithName(
           RepositoryObjectType.TRANSFORMATION.getTypeDescription() ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
     } finally {
-      KettleVFS.getFileObject( exportFileName ).delete();
+      KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( exportFileName ).delete();
     }
   }
 

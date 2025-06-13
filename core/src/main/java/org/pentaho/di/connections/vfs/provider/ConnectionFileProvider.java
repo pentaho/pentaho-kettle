@@ -24,9 +24,9 @@ import org.apache.commons.vfs2.provider.FileNameParser;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFSFileSystemException;
 import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -85,8 +85,8 @@ public class ConnectionFileProvider extends AbstractOriginatingFileProvider {
   @NonNull
   protected ConnectionManager getDefaultManager( @NonNull Bowl bowl ) throws FileSystemException {
     try {
-      return bowl.getConnectionManager();
-    } catch ( MetaStoreException e ) {
+      return bowl.getManager( ConnectionManager.class );
+    } catch ( KettleException e ) {
       throw new KettleVFSFileSystemException( "ConnectionFileProvider.FailedLoadConnectionManager", e );
     }
   }

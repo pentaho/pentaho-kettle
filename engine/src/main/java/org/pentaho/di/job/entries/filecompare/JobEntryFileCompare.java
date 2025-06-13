@@ -158,10 +158,10 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
     DataInputStream in2 = null;
     try {
       in1 =
-        new DataInputStream( new BufferedInputStream( KettleVFS.getInputStream(
+        new DataInputStream( new BufferedInputStream( KettleVFS.getInstance( parentJobMeta.getBowl() ).getInputStream(
           KettleVFS.getFilename( file1 ), this ) ) );
       in2 =
-        new DataInputStream( new BufferedInputStream( KettleVFS.getInputStream(
+        new DataInputStream( new BufferedInputStream( KettleVFS.getInstance( parentJobMeta.getBowl() ).getInputStream(
           KettleVFS.getFilename( file2 ), this ) ) );
 
       char ch1, ch2;
@@ -214,8 +214,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
             .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
         }
 
-        file1 = KettleVFS.getFileObject( realFilename1, this );
-        file2 = KettleVFS.getFileObject( realFilename2, this );
+        file1 = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilename1, this );
+        file2 = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilename2, this );
 
         if ( file1.exists() && file2.exists() ) {
           if ( equalFileContents( file1, file2 ) ) {
@@ -320,8 +320,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(),
         JobEntryValidatorUtils.fileExistsValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "filename1", remarks, ctx );
-    JobEntryValidatorUtils.andValidator().validate( this, "filename2", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename1", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "filename2", remarks, ctx );
   }
 
   @Override public JobMeta getParentJobMeta() {

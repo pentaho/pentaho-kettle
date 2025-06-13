@@ -245,9 +245,9 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "maximumTimeout", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "maximumTimeout", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.longValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "scaleTime", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "scaleTime", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 

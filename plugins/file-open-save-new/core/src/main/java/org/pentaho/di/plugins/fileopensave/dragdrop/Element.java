@@ -15,6 +15,7 @@ package org.pentaho.di.plugins.fileopensave.dragdrop;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -57,6 +58,8 @@ public class Element {
   private String provider = "";
   private String repositoryName = "";//For repository types
 
+  private final Bowl bowl;
+
   /**
    * Separate VFS domain variable is no longer needed.
    * @deprecated
@@ -76,15 +79,13 @@ public class Element {
   @VisibleForTesting
   static Spoon spoonInstance = Spoon.getInstance();
 
-  private static final FileController
-    FILE_CONTROLLER = new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.get() );
-
   // Use for Local or NamedCluster items
-  public Element( String name, EntityType entityType, String path, String provider ) {
-    this( name, entityType, path, provider, "" );
+  public Element( Bowl bowl, String name, EntityType entityType, String path, String provider ) {
+    this( bowl, name, entityType, path, provider, "" );
   }
 
-  public Element( String name, EntityType entityType, String path, String provider, String repositoryName ) {
+  public Element( Bowl bowl, String name, EntityType entityType, String path, String provider, String repositoryName ) {
+    this.bowl = bowl;
     this.name = name;
     this.entityType = entityType;
     this.path = path;
@@ -92,15 +93,16 @@ public class Element {
     this.repositoryName = repositoryName;
   }
 
-  public Element( Object genericObject ) {
+  public Element( Bowl bowl, Object genericObject ) {
     if ( !( genericObject instanceof Entity ) ) {
       throw new IllegalArgumentException( "Cannot construct Element. " + genericObject.getClass() + " is not an"
         + " instance of Entity" );
     }
+    this.bowl = bowl;
     entityType = ( (Entity) genericObject ).getEntityType();
     if ( entityType == EntityType.TREE ) {
       //Tree's have no parent
-      Tree tree = (Tree) genericObject;
+      Tree<?> tree = (Tree<?>) genericObject;
       name = tree.getName();
       path = ""; //No path for these, they are all attached to root
       provider = tree.getProvider();
@@ -233,7 +235,8 @@ public class Element {
         case NAMED_CLUSTER_DIRECTORY:
         case NAMED_CLUSTER_LOCATION:
         case NAMED_CLUSTER_FILE:
-          return FILE_CONTROLLER.getFile( this );
+          return new FileController( bowl, FileCacheService.INSTANCE.get(), ProviderServiceService.get() )
+            .getFile( this );
         default: //nothing to do
       }
     } catch ( KettleFileException e ) {
@@ -259,7 +262,7 @@ public class Element {
   }
 
   public FileObject convertToFileObject( VariableSpace variables ) throws KettleFileException {
-    return KettleVFS.getFileObject( path, variables );
+    return KettleVFS.getInstance( bowl).getFileObject( path, variables );
   }
 
   public EntityType calcParentEntityType() {
@@ -355,27 +358,31 @@ public class Element {
 
       switch( scheme ) {
         case "pvfs":
-          newElement = new Element( name, EntityType.VFS_FILE, path, VFSFileProvider.TYPE );
+          newElement = new Element( bowl, name, EntityType.VFS_FILE, path, VFSFileProvider.TYPE );
           break;
         case "hc":
-          newElement = new Element( name, EntityType.NAMED_CLUSTER_FILE, path, "clusters" );
+          newElement = new Element( bowl, name, EntityType.NAMED_CLUSTER_FILE, path, "clusters" );
           break;
         default:
           if ( scheme.startsWith( "[" ) && scheme.endsWith( "]" ) ) {
             //Looks like a repo entry
-            newElement = new Element( name, EntityType.REPOSITORY_FILE, path, RepositoryFileProvider.TYPE,
+            newElement = new Element( bowl, name, EntityType.REPOSITORY_FILE, path, RepositoryFileProvider.TYPE,
               scheme.substring( 1, scheme.length() - 2 ) );
           } else {
             //no schema or other schema here.  Try local
-            newElement = new Element( name, EntityType.LOCAL_FILE, path, LocalFileProvider.TYPE );
+            newElement = new Element( bowl, name, EntityType.LOCAL_FILE, path, LocalFileProvider.TYPE );
           }
       }
 
     } catch ( URISyntaxException e ) {
       //If here we must be getting a local windows path with \
-      newElement = new Element( name, EntityType.LOCAL_FILE, path, LocalFileProvider.TYPE );
+      newElement = new Element( bowl, name, EntityType.LOCAL_FILE, path, LocalFileProvider.TYPE );
     }
     return newElement;
   }
 
+  public Bowl getBowl() {
+    return bowl;
+  }
 }
+

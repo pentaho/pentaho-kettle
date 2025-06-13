@@ -19,7 +19,6 @@ import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +40,6 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -462,7 +460,8 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
     limitErr = Const.toInt( environmentSubstitute( getNrLimit() ), 10 );
 
     try {
-      file = KettleVFS.getFileObject( realoutfilename, this );
+      file = KettleVFS.getInstance( parentJobMeta.getBowl() )
+        .getFileObject( realoutfilename, this );
       if ( file.exists() ) {
         if ( export_type.equals( Export_All )
           || export_type.equals( Export_Jobs ) || export_type.equals( Export_Trans )
@@ -481,7 +480,8 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
             String parentFolder = KettleVFS.getFilename( file.getParent() );
             String shortFilename = file.getName().getBaseName();
             shortFilename = buildUniqueFilename( shortFilename );
-            file = KettleVFS.getFileObject( parentFolder + Const.FILE_SEPARATOR + shortFilename, this );
+            file = KettleVFS.getInstance( parentJobMeta.getBowl() )
+              .getFileObject( parentFolder + Const.FILE_SEPARATOR + shortFilename, this );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobExportRepository.Log.NewFilename", file.toString() ) );
             }
@@ -687,14 +687,16 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
           String foldername = realoutfilename;
           if ( newfolder ) {
             foldername = realoutfilename + Const.FILE_SEPARATOR + filename;
-            this.file = KettleVFS.getFileObject( foldername, this );
+            this.file = KettleVFS.getInstance( parentJobMeta.getBowl() )
+              .getFileObject( foldername, this );
             if ( !this.file.exists() ) {
               this.file.createFolder();
             }
           }
 
           filename = foldername + Const.FILE_SEPARATOR + buildFilename( filename ) + ".xml";
-          this.file = KettleVFS.getFileObject( filename, this );
+          this.file = KettleVFS.getInstance( parentJobMeta.getBowl() )
+            .getFileObject( filename, this );
 
           if ( this.file.exists() ) {
             if ( iffileexists.equals( If_FileExists_Skip ) ) {
@@ -778,7 +780,8 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
   private void addFileToResultFilenames( String fileaddentry, LogChannelInterface log, Result result, Job parentJob ) {
     try {
       ResultFile resultFile =
-        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileaddentry, this ), parentJob
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+                        .getFileObject( fileaddentry, this ), parentJob
           .getJobname(), toString() );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
       if ( log.isDebug() ) {
@@ -798,18 +801,18 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "repositoryname", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "repositoryname", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
     ValidatorContext ctx = new ValidatorContext();
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(),
         JobEntryValidatorUtils.fileExistsValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "targetfilename", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "targetfilename", remarks, ctx );
 
-    JobEntryValidatorUtils.andValidator().validate( this, "username", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "username", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "password", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
   }
 }

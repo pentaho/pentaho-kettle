@@ -18,6 +18,7 @@ import java.util.Collection;
 import javax.naming.ldap.InitialLdapContext;
 
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -30,9 +31,9 @@ import org.pentaho.di.core.variables.VariableSpace;
 public class LdapMockProtocol extends LdapProtocol {
   public static InitialLdapContext mockContext;
 
-  public LdapMockProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
+  public LdapMockProtocol( Bowl bowl, LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
     Collection<String> binaryAttributes ) {
-    super( log, variableSpace, meta, binaryAttributes );
+    super( bowl, log, variableSpace, meta, binaryAttributes );
   }
 
   public static String getName() {

@@ -13,6 +13,7 @@
 package org.pentaho.di.trans.steps.mapping;
 
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -53,7 +54,7 @@ public class MappingOutputMetaTest {
     outputValueRenames.add( new MappingValueRename( "valueMeta2", "valueMeta1" ) );
     MappingOutputMeta meta = new MappingOutputMeta();
     meta.setOutputValueRenames( outputValueRenames );
-    meta.getFields( rowMeta, null, info, nextStep, space, repository, metaStore );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, null, info, nextStep, space, repository, metaStore );
 
     assertNotNull( rowMeta.getValueMetaList() );
 

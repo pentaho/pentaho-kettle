@@ -984,7 +984,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     );
 
     fileChooser.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, keyFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE, new FilterType[] { FilterType.P12, FilterType.ALL },
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
+                                   new FilterType[] { FilterType.P12, FilterType.ALL },
         FilterType.P12, new ProviderFilterType[] { ProviderFilterType.LOCAL } ) ) );
 
     // Set the shell size, based upon previous time...
@@ -1588,6 +1589,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     try {
       getInfo( getInput() );
       return GoogleAnalyticsApiFacade.createFor(
+          transMeta.getBowl(),
           transMeta.environmentSubstitute( wGaAppName.getText() ),
           transMeta.environmentSubstitute( wOauthAccount.getText() ),
           transMeta.environmentSubstitute( keyFilename.getText() )

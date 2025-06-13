@@ -25,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.util.FileObjectUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -69,6 +70,7 @@ public class SFTPClient {
   private String prvkey = null; // Private key
   private String passphrase = null; // Empty passphrase for now
   private String compression = null;
+  private Bowl bowl;
 
   private Session session;
   private ChannelSftp channel;
@@ -76,41 +78,59 @@ public class SFTPClient {
   /**
    * Init Helper Class with connection settings
    *
-   * @param serverIP   IP address of remote server
-   * @param serverPort port of remote server
-   * @param userName   username of remote server
+   * @param bowl
+   *          Bowl providing context for File operations
+   * @param serverIP
+   *          IP address of remote server
+   * @param serverPort
+   *          port of remote server
+   * @param userName
+   *          username of remote server
    * @throws KettleJobException
    */
-  public SFTPClient( InetAddress serverIP, int serverPort, String userName ) throws KettleJobException {
-    this( serverIP, serverPort, userName, null, null );
+  public SFTPClient( Bowl bowl, InetAddress serverIP, int serverPort, String userName ) throws KettleJobException {
+    this( bowl, serverIP, serverPort, userName, null, null );
   }
 
   /**
    * Init Helper Class with connection settings
    *
-   * @param serverIP           IP address of remote server
-   * @param serverPort         port of remote server
-   * @param userName           username of remote server
-   * @param privateKeyFilename filename of private key
+   * @param bowl
+   *          Bowl providing context for File operations
+   * @param serverIP
+   *          IP address of remote server
+   * @param serverPort
+   *          port of remote server
+   * @param userName
+   *          username of remote server
+   * @param privateKeyFilename
+   *          filename of private key
    * @throws KettleJobException
    */
-  public SFTPClient( InetAddress serverIP, int serverPort, String userName, String privateKeyFilename )
+  public SFTPClient( Bowl bowl, InetAddress serverIP, int serverPort, String userName, String privateKeyFilename )
     throws KettleJobException {
-    this( serverIP, serverPort, userName, privateKeyFilename, null );
+    this( bowl, serverIP, serverPort, userName, privateKeyFilename, null );
   }
 
   /**
    * Init Helper Class with connection settings
    *
-   * @param serverIP           IP address of remote server
-   * @param serverPort         port of remote server
-   * @param userName           username of remote server
-   * @param privateKeyFilename filename of private key
-   * @param passPhrase         passphrase
+   * @param bowl
+   *          Bowl providing context for File operations
+   * @param serverIP
+   *          IP address of remote server
+   * @param serverPort
+   *          port of remote server
+   * @param userName
+   *          username of remote server
+   * @param privateKeyFilename
+   *          filename of private key
+   * @param passPhrase
+   *          passphrase
    * @throws KettleJobException
    */
-  public SFTPClient( InetAddress serverIP, int serverPort, String userName, String privateKeyFilename,
-                     String passPhrase ) throws KettleJobException {
+  public SFTPClient( Bowl bowl, InetAddress serverIP, int serverPort, String userName, String privateKeyFilename,
+    String passPhrase ) throws KettleJobException {
 
     if ( serverIP == null || serverPort <= 0 || userName == null || userName.equals( "" ) ) {
       throw new KettleJobException(
@@ -120,6 +140,7 @@ public class SFTPClient {
     this.serverIP = serverIP;
     this.serverPort = serverPort;
     this.userName = userName;
+    this.bowl = bowl;
 
     JSch jsch = createJSch();
     try {
@@ -135,7 +156,7 @@ public class SFTPClient {
         } else {
           passPhraseBytes = new byte[ 0 ];
         }
-        jsch.addIdentity( getUserName(), getFileContent( prvkey ), null, passPhraseBytes );
+        jsch.addIdentity( getUserName(), getFileContent( bowl, prvkey ), null, passPhraseBytes );
       }
       session = jsch.getSession( userName, serverIP.getHostAddress(), serverPort );
       session.setConfig( PREFERRED_AUTH_CONFIG_NAME, getPreferredAuthentications() );
@@ -148,8 +169,8 @@ public class SFTPClient {
     }
   }
 
-  private static byte[] getFileContent( String vfsFileName ) throws KettleFileException, IOException {
-    return FileObjectUtils.getContentAsByteArray( KettleVFS.getFileObject( vfsFileName ) );
+  private static byte[] getFileContent( Bowl bowl, String vfsFileName ) throws KettleFileException, IOException {
+    return FileObjectUtils.getContentAsByteArray( KettleVFS.getInstance( bowl ).getFileObject( vfsFileName ) );
   }
 
   public void login( String password ) throws KettleJobException {
@@ -246,10 +267,10 @@ public class SFTPClient {
     }
   }
 
-  public void get( FileObject localFile, String remoteFile ) throws KettleJobException {
+  public void get( Bowl bowl, FileObject localFile, String remoteFile ) throws KettleJobException {
     OutputStream localStream = null;
     try {
-      localStream = KettleVFS.getOutputStream( localFile, false );
+      localStream = KettleVFS.getInstance( bowl ).getOutputStream( localFile, false );
       channel.get( remoteFile, localStream );
     } catch ( SftpException e ) {
       throw new KettleJobException( e );

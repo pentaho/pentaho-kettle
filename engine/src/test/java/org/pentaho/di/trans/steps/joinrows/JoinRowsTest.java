@@ -15,10 +15,12 @@ package org.pentaho.di.trans.steps.joinrows;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
@@ -49,6 +51,11 @@ public class JoinRowsTest {
 
   private StepMetaInterface meta;
   private JoinRowsData data;
+
+  @BeforeClass
+  public static void initKettle() throws Exception {
+    KettleEnvironment.init();
+  }
 
   @Before
   public void setUp() throws Exception {

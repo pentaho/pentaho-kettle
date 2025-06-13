@@ -16,22 +16,17 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
@@ -45,6 +40,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.pur.TransDelegate;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.ui.trans.steps.missing.MissingTransDialog;
@@ -115,7 +111,9 @@ public class StreamToTransNodeConverter implements Converter {
     if ( transMeta == null ) {
       return null;
     }
-    String xml = XMLHandler.getXMLHeader() + filterPrivateDatabases( transMeta ).getXML();
+    SharedObjectUtil.copySharedObjects( repository.getBowl(), transMeta, true );
+    SharedObjectUtil.stripObjectIds( transMeta );
+    String xml = XMLHandler.getXMLHeader() + transMeta.getXML();
     return new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
   }
 
@@ -126,22 +124,6 @@ public class StreamToTransNodeConverter implements Converter {
     }
     logger.warn( "Reading as legacy CE transformation " + file.getName() + "." );
     return fileData.getInputStream();
-  }
-
-  @VisibleForTesting
-  TransMeta filterPrivateDatabases( TransMeta transMeta ) {
-    Set<String> privateDatabases = transMeta.getPrivateDatabases();
-    if ( privateDatabases != null ) {
-      // keep only private transformation databases
-      for ( Iterator<DatabaseMeta> it = transMeta.getDatabases().iterator(); it.hasNext(); ) {
-        DatabaseMeta databaseMeta = it.next();
-        String databaseName = databaseMeta.getName();
-        if ( !privateDatabases.contains( databaseName ) && !transMeta.isDatabaseConnectionUsed( databaseMeta ) ) {
-          it.remove();
-        }
-      }
-    }
-    return transMeta;
   }
 
   // package-local visibility for testing purposes
@@ -155,6 +137,7 @@ public class StreamToTransNodeConverter implements Converter {
 
       TransMeta transMeta = new TransMeta();
       Repository repository = connectToRepository();
+      transMeta.setRepository( repository );
       Document doc = PDIImportUtil.loadXMLFrom( bis );
       transMeta.loadXML( doc.getDocumentElement(), repository, false );
 
@@ -166,6 +149,8 @@ public class StreamToTransNodeConverter implements Converter {
       }
 
       TransDelegate delegate = new TransDelegate( repository, this.unifiedRepository );
+      SharedObjectUtil.moveAllSharedObjects( transMeta, repository.getBowl() );
+      SharedObjectUtil.patchDatabaseConnections( repository.getBowl(), transMeta );
       saveSharedObjects( repository, transMeta );
       return new NodeRepositoryFileData( delegate.elementToDataNode( transMeta ), bis.getCount() );
     } catch ( IOException | KettleException e ) {
@@ -182,7 +167,7 @@ public class StreamToTransNodeConverter implements Converter {
         entries.append( '\n' );
       }
     }
-    return BaseMessages.getString( PKG, "MissingTransDialog.MissingTransSteps", entries.toString() );
+    return BaseMessages.getString( PKG, "MissingTransDialog.MissingTransSteps", entries.toString(), "." );
   }
 
   private void saveSharedObjects( final Repository repo, final RepositoryElementInterface element )

@@ -14,6 +14,7 @@
 package org.pentaho.di.engine.ui;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -47,6 +48,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,10 +82,13 @@ public class RunConfigurationDialog extends Dialog
   private RunConfiguration savedRunConfiguration;
   private Map<String, RunConfiguration> runConfigurationMap = new HashMap<>();
 
+  private List<String> existingNames;
+  private String originalName;
+
   private RunConfigurationService executionConfigurationManager;
 
   public RunConfigurationDialog( Shell parent, RunConfigurationService executionConfigurationManager,
-                                 RunConfiguration runConfiguration ) {
+                                 RunConfiguration runConfiguration, List<String> existingNames ) {
 
     super( parent, SWT.NONE );
     this.props = PropsUI.getInstance();
@@ -91,7 +96,9 @@ public class RunConfigurationDialog extends Dialog
     this.runConfiguration = runConfiguration;
     if ( runConfiguration != null ) {
       this.runConfigurationMap.put( runConfiguration.getType(), runConfiguration );
+      originalName = runConfiguration.getName();
     }
+    this.existingNames = existingNames;
   }
 
   public RunConfiguration open() {
@@ -300,6 +307,22 @@ public class RunConfigurationDialog extends Dialog
 
   private void ok() {
     if ( validated() ) {
+      runConfiguration.setName( runConfiguration.getName().trim() );
+      if ( !runConfiguration.getName().equals( originalName ) ) {
+        existingNames.remove( originalName );
+        if ( existingNames.stream().anyMatch( n -> n.equalsIgnoreCase( runConfiguration.getName().trim() ) ) ) {
+          String title = BaseMessages.getString( PKG, "RunConfigurationDialog.RunConfigurationNameExists.Title" );
+          String message =
+            BaseMessages.getString( PKG, "RunConfigurationDialog.RunConfigurationNameExists",
+              runConfiguration.getName() );
+          String okButton = BaseMessages.getString( PKG, "System.Button.OK" );
+          MessageDialog dialog =
+            new MessageDialog( shell, title, null, message, MessageDialog.ERROR, new String[] { okButton }, 0 );
+
+          dialog.open();
+          return;
+        }
+      }
       save();
       shell.dispose();
     }

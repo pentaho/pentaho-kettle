@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
@@ -82,9 +83,9 @@ public class IfNullTest {
     IfNullMeta processRowMeta = smh.processRowsStepMetaInterface;
     doReturn( createFields( "null-field", "empty-field", "space-field" ) ).when( processRowMeta ).getFields();
     doReturn( "replace-value" ).when( processRowMeta ).getReplaceAllByValue();
-    doCallRealMethod().when( processRowMeta ).getFields( any( RowMetaInterface.class ), anyString(), any(
-        RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ), any(
-            IMetaStore.class ) );
+    doCallRealMethod().when( processRowMeta ).getFields( any( Bowl.class ), any( RowMetaInterface.class ), anyString(),
+      any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
+      any( IMetaStore.class ) );
     return processRowMeta;
   }
 

@@ -70,8 +70,8 @@ public class BaseStreamStep extends BaseStep {
 
     try {
       TransMeta transMeta = TransExecutorMeta
-        .loadMappingMeta( variablizedStepMeta, getTransMeta().getRepository(), getTransMeta().getMetaStore(),
-          getParentVariableSpace() );
+        .loadMappingMeta( getTransMeta().getBowl(), variablizedStepMeta, getTransMeta().getRepository(),
+           getTransMeta().getMetaStore(), getParentVariableSpace() );
       variablizedStepMeta = (BaseStreamStepMeta) variablizedStepMeta.withVariables( this );
       subtransExecutor = new SubtransExecutor( getStepname(),
         getTrans(), transMeta, true,

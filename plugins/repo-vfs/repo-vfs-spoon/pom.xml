@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>repo-vfs-plugin</artifactId>
+        <groupId>org.pentaho.di.plugins</groupId>
+        <version>10.3.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>repo-vfs-spoon</artifactId>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <version>10.3.0.0-SNAPSHOT</version>
+
+    <name>PDI Repository VFS Plugin Spoon Add-on</name>
+
+    <properties>
+        <pentaho-platform.version>${pdi.version}</pentaho-platform.version>
+        <!-- should be in sync with one from kettle-engine -->
+        <jersey.version>1.19.1</jersey.version>
+
+        <junit-jupiter.version>5.13.0-M2</junit-jupiter.version>
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+        <maven-surefire-plugin.argLine>--add-opens=java.base/java.lang=ALL-UNNAMED</maven-surefire-plugin.argLine>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.pentaho.di.plugins</groupId>
+            <artifactId>repo-vfs-core</artifactId>
+            <version>10.3.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>pentaho-kettle</groupId>
+            <artifactId>kettle-core</artifactId>
+            <version>${pdi.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>pentaho-kettle</groupId>
+            <artifactId>kettle-engine</artifactId>
+            <version>${pdi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>pentaho-kettle</groupId>
+            <artifactId>kettle-ui-swt</artifactId>
+            <version>${pdi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

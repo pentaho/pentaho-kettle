@@ -14,7 +14,6 @@
 package org.pentaho.di.connections;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.variables.VariableSpace;
 
 import java.util.List;
 
@@ -37,7 +36,7 @@ public interface ConnectionProvider<T extends ConnectionDetails> {
   }
 
   /**
-   * @deprecated use getNames( ConnectionManager )
+   * @deprecated use getConnectionDetails( ConnectionManager )
    */
   @Deprecated
   default List<T> getConnectionDetails() {
@@ -57,4 +56,14 @@ public interface ConnectionProvider<T extends ConnectionDetails> {
   boolean test( T connectionDetails ) throws KettleException;
 
   T prepare( T connectionDetails ) throws KettleException;
+
+
+  /**
+   * If it should be loaded from the metastore by ConnectionManager ({@code true}) or if the provider
+   * has an independent implementation of {@link ConnectionProvider#getConnectionDetails(ConnectionManager)}
+   * ({@code false}, experimental).
+   */
+  default boolean isStorageManaged() {
+    return true;
+  }
 }

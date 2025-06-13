@@ -22,6 +22,9 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 
+import java.util.Optional;
+
+
 /**
  * Created by bmorrise on 7/2/18.
  */
@@ -36,8 +39,11 @@ public class JobEntriesFolderProvider extends AutomaticTreeFolderProvider {
   }
 
   @Override
-  public void refresh( AbstractMeta meta, TreeNode treeNode, String filter ) {
-    JobMeta jobMeta = (JobMeta) meta;
+  public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    if ( !( meta.isPresent() && meta.get() instanceof JobMeta ) ) {
+      return;
+    }
+    JobMeta jobMeta = (JobMeta) meta.get();
     for ( int i = 0; i < jobMeta.nrJobEntries(); i++ ) {
       JobEntryCopy jobEntry = jobMeta.getJobEntry( i );
 
@@ -60,7 +66,7 @@ public class JobEntriesFolderProvider extends AutomaticTreeFolderProvider {
   }
 
   @Override
-  public Class getType() {
+  public Class<?> getType() {
     return JobEntryCopy.class;
   }
 }

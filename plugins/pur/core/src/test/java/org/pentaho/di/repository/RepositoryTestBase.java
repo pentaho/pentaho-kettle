@@ -563,7 +563,6 @@ public abstract class RepositoryTestBase extends RepositoryTestLazySupport {
     // assertEquals(EXP_LOG_TABLE_TABLE_NAME, channelLogTable.getTableName());
     // assertEquals(EXP_LOG_TABLE_TIMEOUT_IN_DAYS, channelLogTable.getTimeoutInDays());
     assertEquals( EXP_JOB_BATCH_ID_PASSED, fetchedJob.isBatchIdPassed() );
-    assertEquals( EXP_JOB_SHARED_OBJECTS_FILE, fetchedJob.getSharedObjectsFile() );
     assertEquals( 2, fetchedJob.getJobCopies().size() );
     assertEquals( "JobEntryAttributeTester", fetchedJob.getJobEntry( 0 ).getEntry().getPluginId() );
     assertEquals( EXP_JOB_ENTRY_1_COPY_X_LOC, fetchedJob.getJobEntry( 0 ).getLocation().x );
@@ -673,7 +672,6 @@ public abstract class RepositoryTestBase extends RepositoryTestLazySupport {
     channelLogTable.setTimeoutInDays( EXP_JOB_LOG_TABLE_TIMEOUT_IN_DAYS );
     jobMeta.setChannelLogTable( channelLogTable );
     jobMeta.setBatchIdPassed( EXP_JOB_BATCH_ID_PASSED );
-    jobMeta.setSharedObjectsFile( EXP_JOB_SHARED_OBJECTS_FILE );
     DatabaseMeta entryDbMeta = createDatabaseMeta( EXP_DBMETA_NAME_JOB.concat( jobName ) );
     repository.save( entryDbMeta, VERSION_COMMENT_V1, null );
     deleteStack.push( entryDbMeta );
@@ -778,7 +776,6 @@ public abstract class RepositoryTestBase extends RepositoryTestLazySupport {
     assertEquals( EXP_TRANS_FEEDBACK_SHOWN, fetchedTrans.isFeedbackShown() );
     assertEquals( EXP_TRANS_FEEDBACK_SIZE, fetchedTrans.getFeedbackSize() );
     assertEquals( EXP_TRANS_USING_THREAD_PRIORITY_MGMT, fetchedTrans.isUsingThreadPriorityManagment() );
-    assertEquals( EXP_TRANS_SHARED_OBJECTS_FILE, fetchedTrans.getSharedObjectsFile() );
     assertEquals( EXP_TRANS_CAPTURE_STEP_PERF_SNAPSHOTS, fetchedTrans.isCapturingStepPerformanceSnapShots() );
     assertEquals( EXP_TRANS_STEP_PERF_CAP_DELAY, fetchedTrans.getStepPerformanceCapturingDelay() );
 
@@ -929,7 +926,6 @@ public abstract class RepositoryTestBase extends RepositoryTestLazySupport {
     transMeta.setFeedbackShown( EXP_TRANS_FEEDBACK_SHOWN );
     transMeta.setFeedbackSize( EXP_TRANS_FEEDBACK_SIZE );
     transMeta.setUsingThreadPriorityManagment( EXP_TRANS_USING_THREAD_PRIORITY_MGMT );
-    transMeta.setSharedObjectsFile( EXP_TRANS_SHARED_OBJECTS_FILE );
     transMeta.setCapturingStepPerformanceSnapShots( EXP_TRANS_CAPTURE_STEP_PERF_SNAPSHOTS );
     transMeta.setStepPerformanceCapturingDelay( EXP_TRANS_STEP_PERF_CAP_DELAY );
     transMeta.addDependency( new TransDependency( dbMeta, EXP_TRANS_DEP_TABLE_NAME, EXP_TRANS_DEP_FIELD_NAME ) );

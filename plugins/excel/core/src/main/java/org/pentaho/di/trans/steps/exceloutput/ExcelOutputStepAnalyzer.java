@@ -14,8 +14,6 @@
 package org.pentaho.di.trans.steps.exceloutput;
 
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.steps.exceloutput.ExcelField;
-import org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta;
 import org.pentaho.dictionary.DictionaryConst;
 import org.pentaho.metaverse.api.IMetaverseNode;
 import org.pentaho.metaverse.api.IMetaverseObjectFactory;
@@ -24,8 +22,6 @@ import org.pentaho.metaverse.api.StepField;
 import org.pentaho.metaverse.api.analyzer.kettle.step.ExternalResourceStepAnalyzer;
 import org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer;
 import org.pentaho.metaverse.api.model.IExternalResourceInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,11 +32,9 @@ import java.util.Set;
  */
 public class ExcelOutputStepAnalyzer extends ExternalResourceStepAnalyzer<ExcelOutputMeta> {
 
-  private Logger log = LoggerFactory.getLogger( ExcelOutputStepAnalyzer.class );
-
   @Override
   public IMetaverseNode createResourceNode( IExternalResourceInfo resource ) throws MetaverseException {
-    return createFileNode( resource.getName(), descriptor );
+    return createFileNode( parentTransMeta.getBowl(), resource.getName(), descriptor );
   }
 
   @Override

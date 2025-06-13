@@ -20,6 +20,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -33,7 +34,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -223,7 +223,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       valuename = XMLHandler.getTagValue( stepnode, "valuename" );
 
@@ -265,7 +265,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     ValueMetaInterface v = new ValueMetaInteger( valuename );
     // v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0); Removed for 2.5.x compatibility reasons.
@@ -388,7 +388,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
             PKG, "AddSequenceMeta.CheckResult.UnableToConnectDB.Title" )
             + Const.CR + e.getMessage(), stepMeta );
       } finally {
-        db.disconnect();
+        db.close();
       }
       remarks.add( cr );
     }
@@ -428,7 +428,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
           retval.setError( BaseMessages.getString( PKG, "AddSequenceMeta.ErrorMessage.UnableToConnectDB" )
             + Const.CR + e.getMessage() );
         } finally {
-          db.disconnect();
+          db.close();
         }
       } else {
         retval.setError( BaseMessages.getString( PKG, "AddSequenceMeta.ErrorMessage.NoConnectionDefined" ) );

@@ -14,6 +14,7 @@ package org.pentaho.di.repository.pur.provider;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -40,7 +41,6 @@ import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -178,6 +178,11 @@ public class PurRepositoryProxy implements Repository {
   }
 
   @Override
+  public Bowl getBowl() {
+    return getDelegate().getBowl();
+  }
+
+  @Override
   public boolean exists( String s, RepositoryDirectoryInterface repositoryDirectoryInterface, RepositoryObjectType repositoryObjectType ) throws KettleException {
     return getDelegate().exists( s, repositoryDirectoryInterface, repositoryObjectType );
   }
@@ -233,8 +238,9 @@ public class PurRepositoryProxy implements Repository {
   }
 
   @Override
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
-    return getDelegate().readTransSharedObjects( transMeta );
+  @Deprecated
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException {
+    getDelegate().readTransSharedObjects( transMeta );
   }
 
   @Override
@@ -263,8 +269,8 @@ public class PurRepositoryProxy implements Repository {
   }
 
   @Override
-  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
-    return getDelegate().readJobMetaSharedObjects( jobMeta );
+  public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
+    getDelegate().readJobMetaSharedObjects( jobMeta );
   }
 
   @Override

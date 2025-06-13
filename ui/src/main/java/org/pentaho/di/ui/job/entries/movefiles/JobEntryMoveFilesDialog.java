@@ -476,11 +476,11 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     } );
 
     wbSourceFileFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL}, FilterType.ALL  ) ) );
 
     wbSourceDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wSourceFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Destination
     wlDestinationFileFolder = new Label( wGeneralComp, SWT.RIGHT );
@@ -522,11 +522,11 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     wDestinationFileFolder.setLayoutData( fdDestinationFileFolder );
 
     wbDestinationFileFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FILE,
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
                     new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     wbDestinationDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFileFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Buttons to the right of the screen...
     wbdSourceFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
@@ -995,7 +995,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     } );
 
     wbDestinationFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wDestinationFolder, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Create destination folder/parent folder
     wlCreateMoveToFolder = new Label( wMoveToGroup, SWT.RIGHT );

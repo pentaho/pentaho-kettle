@@ -22,6 +22,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.exceptions.base.MockitoException;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -143,7 +144,8 @@ public class RegisterPackageServletTest {
       Node node = Mockito.mock( Node.class );
 
       // SETUP
-      xmlHandlerMockedStatic.when( () -> XMLHandler.loadXMLFile( eq( configUrl ) ) ).thenReturn( configDoc );
+      xmlHandlerMockedStatic.when( () -> XMLHandler.loadXMLFile( any( Bowl.class ), eq( configUrl ) ) )
+        .thenReturn( configDoc );
       xmlHandlerMockedStatic.when( () -> XMLHandler.getSubNode( eq( configDoc ), eq( xmlTag ) ) ).thenReturn( node );
       assertEquals( node, servlet.getConfigNode( archiveUrl, fileName, xmlTag ) );
     }
@@ -207,7 +209,9 @@ public class RegisterPackageServletTest {
 
       InputStream inputStream = Mockito.mock( InputStream.class );
 
-      kettleVFSMockedStatic.when( () -> KettleVFS.getFileObject( anyString() ) ).thenThrow( IOException.class );
+      kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any( Bowl.class ) )
+                                  .getFileObject( anyString() ) )
+        .thenThrow( IOException.class );
 
       servlet.copyRequestToDirectory( inputStream, "/tmp/path" );
     }

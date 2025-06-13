@@ -13,16 +13,18 @@
 
 package org.pentaho.di.trans.steps.orabulkloader;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
+
+import com.google.common.annotations.VisibleForTesting;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +36,8 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.commons.vfs2.FileObject;
 
 /**
  * Does the opening of the output "stream". It's either a file or inter process communication which is transparant to
@@ -58,7 +62,7 @@ public class OraBulkDataOutput {
     this.recTerm = recTerm;
   }
 
-  public void open( VariableSpace space, Process sqlldrProcess ) throws KettleException {
+  public void open( Bowl bowl, VariableSpace space, Process sqlldrProcess ) throws KettleException {
     String loadMethod = meta.getLoadMethod();
     try {
       OutputStream os;
@@ -67,7 +71,7 @@ public class OraBulkDataOutput {
         os = sqlldrProcess.getOutputStream();
       } else {
         // Else open the data file filled in.
-        String dataFilePath = getFilename( getFileObject( space.environmentSubstitute( meta.getDataFile() ), space ) );
+        String dataFilePath = getFilename( getFileObject( bowl, space.environmentSubstitute( meta.getDataFile() ), space ) );
         File dataFile = new File( dataFilePath );
         // Make sure the parent directory exists
         dataFile.getParentFile().mkdirs();
@@ -238,7 +242,7 @@ public class OraBulkDataOutput {
   }
 
   @VisibleForTesting
-  FileObject getFileObject( String vfsFilename, VariableSpace space ) throws KettleFileException {
-    return KettleVFS.getFileObject( vfsFilename, space );
+  FileObject getFileObject( Bowl bowl, String vfsFilename, VariableSpace space ) throws KettleFileException {
+    return KettleVFS.getInstance( bowl ).getFileObject( vfsFilename, space );
   }
 }

@@ -792,7 +792,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     wTargetDirectory.setLayoutData( fdTargetDirectory );
 
     wbTargetDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wTargetDirectory, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
     // Create multi-part file?
     wlAddDate = new Label( wLocalSettings, SWT.RIGHT );
     wlAddDate.setText( BaseMessages.getString( PKG, "JobFTPS.AddDate.Label" ) );
@@ -1259,7 +1259,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
         String realPassword = Utils.resolvePassword( jobMeta, wPassword.getText() );
 
         connection =
-          new FTPSConnection(
+          new FTPSConnection( jobMeta.getBowl(),
             FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername, port,
             realUsername, realPassword );
 

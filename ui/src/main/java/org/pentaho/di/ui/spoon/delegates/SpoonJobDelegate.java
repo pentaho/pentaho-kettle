@@ -38,6 +38,7 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -51,6 +52,7 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -520,7 +522,14 @@ public class SpoonJobDelegate extends SpoonDelegate {
     //
 
     final JobMeta jobMeta = new JobMeta();
-    jobMeta.setDatabases( databases );
+    DatabaseManagementInterface dbMgr = jobMeta.getDatabaseManagementInterface();
+    try {
+      for ( DatabaseMeta dbMeta : databases ) {
+        dbMgr.add( dbMeta );
+      }
+    } catch ( Exception e ) {
+      new ErrorDialog( spoon.getShell(), "Error", "An unexpected error occurred!", e );
+    }
     jobMeta.setFilename( null );
     jobMeta.setName( jobname );
 
@@ -766,9 +775,10 @@ public class SpoonJobDelegate extends SpoonDelegate {
     transMeta.addNote( ni );
   }
 
-  private void setTransMetaDatabase( DatabaseMeta sourceDbInfo, DatabaseMeta targetDbInfo, TransMeta transMeta ) {
-    transMeta.addDatabase( sourceDbInfo );
-    transMeta.addDatabase( targetDbInfo );
+  private void setTransMetaDatabase( DatabaseMeta sourceDbInfo, DatabaseMeta targetDbInfo, TransMeta transMeta )
+    throws KettleException {
+    transMeta.getDatabaseManagementInterface().add( sourceDbInfo );
+    transMeta.getDatabaseManagementInterface().add( targetDbInfo );
   }
 
   @VisibleForTesting
@@ -1335,8 +1345,14 @@ public class SpoonJobDelegate extends SpoonDelegate {
       variableMap.put( fields[idx], data[idx].toString() );
     }
 
+    // apply used variables from all loaded files
+    for ( TransMeta meta : spoon.getLoadedTransformations() ) {
+      ExecutionConfiguration.getUsedVariables( meta, variableMap );
+    }
+    for ( JobMeta meta : spoon.getLoadedJobs() ) {
+      ExecutionConfiguration.getUsedVariables( meta, variableMap );
+    }
     executionConfiguration.setVariables( variableMap );
-    executionConfiguration.getUsedVariables( jobMeta );
     executionConfiguration.setReplayDate( replayDate );
     executionConfiguration.setRepository( spoon.rep );
     executionConfiguration.setSafeModeEnabled( safe );

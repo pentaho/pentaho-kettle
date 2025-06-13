@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -262,8 +261,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
   private void addFileToResultFilenames( String fileaddentry, Result result, Job parentJob ) {
     try {
       ResultFile resultFile =
-        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileaddentry, this ), parentJob
-          .getJobname(), toString() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFileObject( fileaddentry, this ), parentJob.getJobname(), toString() );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
       if ( log.isDebug() ) {
@@ -549,7 +548,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
+    boolean res = andValidator().validate( jobMeta.getBowl(), this, "arguments", remarks, putValidators( notNullValidator() ) );
 
     if ( res == false ) {
       return;
@@ -560,7 +559,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
     putValidators( ctx, notNullValidator(), fileExistsValidator() );
 
     for ( int i = 0; i < source_filefolder.length; i++ ) {
-      andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      andValidator().validate( jobMeta.getBowl(), this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 

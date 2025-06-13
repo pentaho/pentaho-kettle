@@ -27,6 +27,7 @@ import java.util.Random;
 
 import junit.framework.ComparisonFailure;
 
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -338,7 +339,7 @@ public class TestUtilities {
   }
 
   public static Trans loadAndRunTransformation( String path, Object... parameters ) throws Exception {
-    TransMeta transMeta = new TransMeta( path );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), path );
     transMeta.setTransformationType( TransMeta.TransformationType.Normal );
 
     Trans trans = new Trans( transMeta );

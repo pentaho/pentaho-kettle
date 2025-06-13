@@ -267,7 +267,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
       } finally {
         if ( db != null ) {
           try {
-            db.disconnect();
+            db.close();
           } catch ( Exception e ) { /* Ignore */
           }
         }
@@ -308,8 +308,8 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "columnname", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "tablename", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "columnname", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
 }

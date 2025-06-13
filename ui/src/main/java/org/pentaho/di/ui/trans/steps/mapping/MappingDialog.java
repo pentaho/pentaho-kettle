@@ -401,7 +401,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   }
 
   private void loadFileTrans( String fname ) throws KettleException {
-    mappingTransMeta = new TransMeta( transMeta.environmentSubstitute( fname ) );
+    mappingTransMeta = new TransMeta( transMeta.getBowl(), transMeta.environmentSubstitute( fname ) );
     mappingTransMeta.clearChanged();
   }
 

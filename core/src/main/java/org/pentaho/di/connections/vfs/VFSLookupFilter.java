@@ -27,14 +27,20 @@ public class VFSLookupFilter implements LookupFilter {
   private ConcurrentHashMap<String, String> keyLookup = new ConcurrentHashMap<>();
 
   @Override public String filter( String input ) {
+    boolean found = false;
     Pattern pattern = Pattern.compile( "^([\\w]+)://" );
     Matcher matcher = pattern.matcher( input );
     if ( matcher.find() ) {
+      found = true;
       input = matcher.group( 1 );
     }
     String lookup = keyLookup.get( input );
     if ( lookup != null ) {
       return lookup;
+    }
+    if ( !found ) {
+      // return null to allow other filter to be called
+      return null;
     }
     return input;
   }

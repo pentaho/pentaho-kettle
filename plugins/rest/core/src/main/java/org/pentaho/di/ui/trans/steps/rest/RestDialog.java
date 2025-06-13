@@ -810,7 +810,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wTrustStoreFile.setLayoutData( fdTrustStoreFile );
 
     wbTrustStoreFile.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wTrustStoreFile, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL ) ) );
 
     // TrustStorePassword line

@@ -434,7 +434,7 @@ public class SQLEditor {
         mb.setText( BaseMessages.getString( PKG, "SQLEditor.Error.CouldNotConnect.Title" ) );
         mb.open();
       } finally {
-        db.disconnect();
+        db.close();
         refreshExecutionResults();
       }
     }

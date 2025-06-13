@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <artifactId>repo-vfs-plugin-assemblies</artifactId>
+    <version>10.3.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>repo-vfs-plugin-assembly</artifactId>
+  <version>10.3.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>PDI Projects Plugin Assembly</name>
+  <description>Produces the plugin ZIP for PDI Projects</description>
+
+  <properties>
+    <resources.directory>${project.basedir}/src/main/resources</resources.directory>
+    <assembly.dir>${project.build.directory}/assembly</assembly.dir>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <artifactId>repo-vfs-core</artifactId>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>repo-vfs-spoon</artifactId>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+    <build>
+      <plugins>
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>add-libs</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>copy-dependencies</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>${assembly.dir}/lib</outputDirectory>
+                <includeScope>runtime</includeScope>
+                <excludeArtifactIds>repo-vfs-spoon</excludeArtifactIds>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+</project>

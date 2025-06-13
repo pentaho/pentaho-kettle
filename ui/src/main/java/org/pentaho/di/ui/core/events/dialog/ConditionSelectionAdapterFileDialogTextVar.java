@@ -25,7 +25,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
  *  for steps that include "File Or Directory" option based on the dialog settings.
  *
  *  Example:
- *     SelectionAdapterOptions options = new SelectionAdapterOptions( SelectionOperation.FILE,
+ *     SelectionAdapterOptions options = new SelectionAdapterOptions( meta.getBowl(), SelectionOperation.FILE,
  *          new FilterType[] { FilterType.ALL, FilterType.XML }, FilterType.XML );
  *     adapter = new ConditionSelectionAdapterFileDialogTextVar( log, wFilename, transMeta, options,
  *          () -> ( [ Is Folder Condition ] ) ? SelectionOperation.FOLDER : SelectionOperation.FILE );

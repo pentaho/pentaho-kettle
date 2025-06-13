@@ -68,7 +68,7 @@ public class TableCompareIT {
     db.connect();
     db.execStatements( sql );
     db.commit( true );
-    db.disconnect();
+    db.close();
   }
 
   static final String schema = "public";
@@ -381,6 +381,6 @@ public class TableCompareIT {
     db.connect();
     db.execStatements( sql );
     db.commit( true );
-    db.disconnect();
+    db.close();
   }
 }

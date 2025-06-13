@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.filestoresult;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.ResultFile;
@@ -126,7 +127,8 @@ public class FilesToResultMeta extends BaseStepMeta implements StepMetaInterface
     rep.saveStepAttribute( id_transformation, id_step, "file_type", ResultFile.getTypeCode( fileType ) );
   }
 
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }

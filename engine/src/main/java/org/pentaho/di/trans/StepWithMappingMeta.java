@@ -16,6 +16,8 @@ package org.pentaho.di.trans;
 import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
@@ -62,16 +64,29 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
   protected String directoryPath;
   protected ObjectId transObjectId;
 
+  @Deprecated (since="10.3")  
   public static TransMeta loadMappingMeta( StepWithMappingMeta mappingMeta, Repository rep,
                                            IMetaStore metaStore, VariableSpace space ) throws KettleException {
-    return loadMappingMeta( mappingMeta, rep, metaStore, space, true );
+    return loadMappingMeta( DefaultBowl.getInstance(), mappingMeta, rep, metaStore, space );
   }
 
-  public static TransMeta loadMappingMeta( StepWithMappingMeta executorMeta, Repository rep, IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
+  public static TransMeta loadMappingMeta( Bowl bowl, StepWithMappingMeta mappingMeta, Repository rep,
+                                           IMetaStore metaStore, VariableSpace space ) throws KettleException {
+    return loadMappingMeta( bowl, mappingMeta, rep, metaStore, space, true );
+  }
+
+  @Deprecated (since="10.3")  
+  public static TransMeta loadMappingMeta( StepWithMappingMeta executorMeta, Repository rep,
+    IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
+    return loadMappingMeta( DefaultBowl.getInstance(), executorMeta, rep, metaStore, space, share );
+  }
+
+  public static TransMeta loadMappingMeta( Bowl bowl, StepWithMappingMeta executorMeta, Repository rep,
+    IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
     // Note - was a synchronized static method, but as no static variables are manipulated, this is entirely unnecessary
 
     IMetaFileLoader<TransMeta> metaFileLoader = new MetaFileLoaderImpl<>( executorMeta, executorMeta.getSpecificationMethod() );
-    TransMeta mappingTransMeta = metaFileLoader.getMetaForStep( rep, metaStore, space );
+    TransMeta mappingTransMeta = metaFileLoader.getMetaForStep( bowl, rep, metaStore, space );
 
     if ( share ) {
       //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the
@@ -240,9 +255,9 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
   }
 
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
-                                 IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // Try to load the transformation from repository or file.
       // Modify this recursively too...
@@ -252,14 +267,14 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
       //
       // First load the mapping transformation...
       //
-      TransMeta mappingTransMeta = loadMappingMeta( this, repository, metaStore, space );
+      TransMeta mappingTransMeta = loadMappingMeta( executionBowl, this, repository, metaStore, space );
 
       // Also go down into the mapping transformation and export the files
       // there. (mapping recursively down)
       //
       String proposedNewFilename =
-              mappingTransMeta.exportResources(
-                      mappingTransMeta, definitions, resourceNamingInterface, repository, metaStore );
+              mappingTransMeta.exportResources( executionBowl, globalManagementBowl, mappingTransMeta, definitions,
+                resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Entry.Current.Directory}

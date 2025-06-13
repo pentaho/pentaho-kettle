@@ -144,6 +144,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected boolean lenientStringToNumber;
   protected boolean ignoreTimezone;
   protected boolean emptyStringAndNullAreDifferent;
+  protected boolean ignoreOutOfRange;
 
   protected SimpleDateFormat dateFormat;
   protected boolean dateFormatChanged;
@@ -233,13 +234,14 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.identicalFormat = true;
     this.bigNumberFormatting = true;
     this.lenientStringToNumber =
-      convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ),
-        "N" ) );
+      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ) );
     this.ignoreTimezone =
-      convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ),
-        "N" ) );
-    this.emptyStringAndNullAreDifferent = convertStringToBoolean(
-      Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
+      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ) );
+    this.emptyStringAndNullAreDifferent =
+      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ) );
+    this.ignoreOutOfRange =
+      "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION, "N" ) );
+
 
     this.comparator = comparator;
     determineSingleByteEncoding();
@@ -1329,18 +1331,29 @@ public class ValueMetaBase implements ValueMetaInterface {
     try {
       Number number;
       if ( lenientStringToNumber ) {
-        number = new Long( getDecimalFormat( false ).parse( string ).longValue() );
+        number = getDecimalFormat( false ).parse( string );
       } else {
         ParsePosition parsePosition = new ParsePosition( 0 );
         number = getDecimalFormat( false ).parse( string, parsePosition );
 
         if ( parsePosition.getIndex() < string.length() ) {
           throw new KettleValueException( toString()
-              + " : couldn't convert String to number : non-numeric character found at position "
-              + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
+            + " : couldn't convert String to number : non-numeric character found at position "
+            + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
         }
-
       }
+
+      if ( number instanceof Double && ( number.doubleValue() < Long.MIN_VALUE
+        || number.doubleValue() > Long.MAX_VALUE ) ) {
+        log.logBasic( "Value [" + string + "] is out of range for Integer." );
+        if ( !ignoreOutOfRange ) {
+          throw new KettleValueException( toString()
+            + " : couldn't convert String to Integer : value Out of Range [" + string
+            + "]. Change the destination data type or round to the nearest value possible for Integer by setting "
+            + "property KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION to \"Y\". " );
+        }
+      }
+
       return new Long( number.longValue() );
     } catch ( Exception e ) {
       throw new KettleValueException( toString() + " : couldn't convert String to Integer", e );

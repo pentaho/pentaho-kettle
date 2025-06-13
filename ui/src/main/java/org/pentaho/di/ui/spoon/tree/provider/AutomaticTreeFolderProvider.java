@@ -17,13 +17,15 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
+import java.util.Optional;
+
 /**
  * Created by bmorrise on 7/9/18.
  */
 public abstract class AutomaticTreeFolderProvider extends TreeFolderProvider {
 
   @Override
-  public void checkUpdate( AbstractMeta meta, TreeNode treeNode, String filter ) {
+  public void checkUpdate( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
     treeNode.removeAll();
     refresh( meta, treeNode, filter );
   }

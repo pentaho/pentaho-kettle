@@ -13,17 +13,20 @@
 
 package org.pentaho.di.repository;
 
-import java.util.List;
-
-import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+
+import java.util.List;
 
 /**
  * Implementing convenience methods that can be described in terms of other methods in the interface
  */
 public abstract class AbstractRepository implements Repository {
+
+  private final Bowl bowl = new RepositoryBowl( this );
 
   @Override
   public long getJobEntryAttributeInteger( ObjectId id_jobentry, String code ) throws KettleException {
@@ -135,5 +138,10 @@ public abstract class AbstractRepository implements Repository {
   @Override
   public IUnifiedRepository getUnderlyingRepository() {
     return null;
+  }
+
+  @Override
+  public Bowl getBowl() {
+    return bowl;
   }
 }

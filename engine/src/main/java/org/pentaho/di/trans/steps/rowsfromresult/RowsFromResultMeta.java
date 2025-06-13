@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.rowsfromresult;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -210,7 +211,8 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
-  public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < this.fieldname.length; i++ ) {
       ValueMetaInterface v;

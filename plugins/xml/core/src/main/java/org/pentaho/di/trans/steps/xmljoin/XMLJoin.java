@@ -102,8 +102,8 @@ public class XMLJoin extends BaseStep implements StepInterface {
       }
 
       data.outputRowMeta = data.TargetRowSet.getRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() },
-          null, getTransMeta(), repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(),
+          new RowMetaInterface[] { data.TargetRowSet.getRowMeta() }, null, getTransMeta(), repository, metaStore );
       data.outputRowData = rTarget.clone();
 
       // get the target xml structure and create a DOM
