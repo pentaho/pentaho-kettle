@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.avro.output;
 
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.plugins.ParentFirst;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -26,6 +27,7 @@ import org.pentaho.di.trans.step.StepMeta;
     documentationUrl = "mk-95pdia003/pdi-transformation-steps/avro-output",
     i18nPackageName = "org.pentaho.di.trans.steps.avro.output" )
 @InjectionSupported( localizationPrefix = "AvroOutput.Injection.", groups = { "FIELDS" } )
+@ParentFirst( patterns = { ".*" } )
 public class AvroOutputMeta extends AvroOutputMetaBase {
 
 
