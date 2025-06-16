@@ -1270,7 +1270,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           } else {
             try {
               boolean found = false;
-              imageFile = KettleVFS.getFileObject( realImageFile, this );
+              imageFile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realImageFile, this );
               if ( imageFile.exists() && imageFile.getType() == FileType.FILE ) {
                 found = true;
               } else {
@@ -1542,23 +1542,23 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
 
-    JobEntryValidatorUtils.andValidator().validate( this, "server", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "server", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator()
-      .validate( this, "replyAddress", remarks, AndValidator.putValidators(
+      .validate( jobMeta.getBowl(), this, "replyAddress", remarks, AndValidator.putValidators(
           JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.emailValidator() ) );
 
-    JobEntryValidatorUtils.andValidator().validate( this, "destination", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "destination", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
     if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "authenticationUser", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "authenticationUser", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-      JobEntryValidatorUtils.andValidator().validate( this, "authenticationPassword", remarks,
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "authenticationPassword", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
     }
 
-    JobEntryValidatorUtils.andValidator().validate( this, "port", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "port", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
 
   }

@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.samplerows;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -66,7 +67,8 @@ public class SampleRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !Utils.isEmpty( linenumfield ) ) {
 
@@ -77,7 +79,7 @@ public class SampleRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       linesrange = XMLHandler.getTagValue( stepnode, "linesrange" );
       linenumfield = XMLHandler.getTagValue( stepnode, "linenumfield" );

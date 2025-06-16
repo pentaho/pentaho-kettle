@@ -754,7 +754,8 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
       int realPort = Const.toInt( environmentSubstitute( this.port ), 0 );
 
-      connection = new FTPSConnection( getConnectionType(), realServername, realPort, realUsername, realPassword, this );
+      connection = new FTPSConnection( parentJobMeta.getBowl(), getConnectionType(), realServername, realPort,
+        realUsername, realPassword, this );
 
       this.buildFTPSConnection( connection );
 
@@ -937,7 +938,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     if ( isaddresult ) {
       FileObject targetFile = null;
       try {
-        targetFile = KettleVFS.getFileObject( filename, this );
+        targetFile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( filename, this );
 
         // Add to the result files...
         ResultFile resultFile =
@@ -1159,16 +1160,16 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "serverName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate(
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(),
       this, "localDirectory", remarks, AndValidator.putValidators(
           JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "userName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "password", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "serverPort", remarks,
+    JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "serverPort", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 

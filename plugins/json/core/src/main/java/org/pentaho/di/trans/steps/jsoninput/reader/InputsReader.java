@@ -199,7 +199,8 @@ public class InputsReader implements Iterable<InputStream> {
     @Override
     public FileObject tryNext() throws KettleFileException {
       String fileName = step.environmentSubstitute( inner.next() );
-      return fileName == null ? null : KettleVFS.getFileObject( fileName, vars );
+      return fileName == null ? null : KettleVFS.getInstance( step.getTransMeta().getBowl() )
+        .getFileObject( fileName, vars );
     }
   }
 

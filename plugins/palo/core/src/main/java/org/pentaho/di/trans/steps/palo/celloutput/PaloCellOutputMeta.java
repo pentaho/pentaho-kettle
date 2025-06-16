@@ -107,7 +107,7 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
-  private void readData( final Node stepnode, final List<? extends SharedObjectInterface> databases )
+  private void readData( final Node stepnode, final List<DatabaseMeta> databases )
     throws KettleXMLException {
     try {
       databaseMeta = DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "connection" ) );

@@ -431,7 +431,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
       }
 
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields(
+      meta.getFields( getTransMeta().getBowl(),
         data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this, repository,
         metaStore );
 

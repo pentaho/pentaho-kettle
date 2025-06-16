@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -78,7 +79,7 @@ public class LdapProtocolFactory {
    * @return an LdapProtocol
    * @throws KettleException
    */
-  public LdapProtocol createLdapProtocol( VariableSpace variableSpace, LdapMeta meta,
+  public LdapProtocol createLdapProtocol( Bowl bowl, VariableSpace variableSpace, LdapMeta meta,
     Collection<String> binaryAttributes ) throws KettleException {
     String connectionType = variableSpace.environmentSubstitute( meta.getProtocol() );
 
@@ -87,10 +88,11 @@ public class LdapProtocolFactory {
         if ( getName( protocol ).equals( connectionType ) ) {
           try {
             return protocol.getConstructor(
+              Bowl.class,
               LogChannelInterface.class,
               VariableSpace.class,
               LdapMeta.class,
-              Collection.class ).newInstance( log, variableSpace, meta, binaryAttributes );
+              Collection.class ).newInstance( bowl, log, variableSpace, meta, binaryAttributes );
           } catch ( Exception e ) {
             throw new KettleException( e );
           }

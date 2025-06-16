@@ -62,7 +62,7 @@ public class JobEntryZipFileIT {
               entry.processRowFile(new Job(), result, zipPath, null, null, tempFile.getAbsolutePath(), null, false));
       boolean isTrue = true;
 
-      FileObject zip = KettleVFS.getFileObject(zipPath);
+      FileObject zip = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject(zipPath);
       assertTrue("Zip archive should be created", zip.exists());
 
       ByteArrayOutputStream os = new ByteArrayOutputStream();

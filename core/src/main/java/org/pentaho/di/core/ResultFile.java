@@ -16,6 +16,7 @@ package org.pentaho.di.core;
 import java.util.Date;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -282,7 +283,7 @@ public class ResultFile implements Cloneable {
   public ResultFile( Node node ) throws KettleFileException {
     try {
       type = getType( XMLHandler.getTagValue( node, "type" ) );
-      file = KettleVFS.getFileObject( XMLHandler.getTagValue( node, "file" ) );
+      file = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( XMLHandler.getTagValue( node, "file" ) );
       originParent = XMLHandler.getTagValue( node, "parentorigin" );
       origin = XMLHandler.getTagValue( node, "origin" );
       comment = XMLHandler.getTagValue( node, "comment" );

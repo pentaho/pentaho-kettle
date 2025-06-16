@@ -347,7 +347,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void loadFileTrans( String fname ) throws KettleException {
-    executorTransMeta = new TransMeta( transMeta.environmentSubstitute( fname ), repository );
+    executorTransMeta = new TransMeta( transMeta.getBowl(), transMeta.environmentSubstitute( fname ), repository );
     executorTransMeta.clearChanged();
   }
 

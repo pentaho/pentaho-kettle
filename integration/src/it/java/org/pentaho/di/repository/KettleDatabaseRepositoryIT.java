@@ -173,7 +173,7 @@ public class KettleDatabaseRepositoryIT extends TestCase {
   }
 
   protected void verifyJobSamples( RepositoryDirectoryInterface samplesDirectory ) throws Exception {
-    FileObject jobSamplesFolder = KettleVFS.getFileObject( "samples/jobs/" );
+    FileObject jobSamplesFolder = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( "samples/jobs/" );
     FileObject[] files = jobSamplesFolder.findFiles( new FileSelector() {
 
       @Override

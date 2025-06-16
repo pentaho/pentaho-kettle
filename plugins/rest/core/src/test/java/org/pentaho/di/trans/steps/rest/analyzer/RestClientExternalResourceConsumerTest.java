@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.steps.rest.Rest;
 import org.pentaho.di.trans.steps.rest.RestMeta;
@@ -63,7 +64,8 @@ public class RestClientExternalResourceConsumerTest {
   @Test
   public void testGetResourcesFromMeta() throws Exception {
     when( meta.getUrl() ).thenReturn( row[ 0 ].toString() );
-    Collection<IExternalResourceInfo> resourcesFromMeta = consumer.getResourcesFromMeta( meta );
+    Collection<IExternalResourceInfo> resourcesFromMeta =
+      consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta );
 
     assertEquals( 1, resourcesFromMeta.size() );
     assertEquals( row[ 0 ], resourcesFromMeta.toArray( new IExternalResourceInfo[ 1 ] )[ 0 ].getName() );

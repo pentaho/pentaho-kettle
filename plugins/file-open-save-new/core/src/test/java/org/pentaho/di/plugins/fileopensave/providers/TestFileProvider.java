@@ -13,6 +13,7 @@
 
 package org.pentaho.di.plugins.fileopensave.providers;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 public class TestFileProvider extends BaseFileProvider<TestFile> {
 
@@ -54,15 +54,17 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return true;
   }
 
-  @Override public Tree getTree() {
+  @Override
+  public Tree getTree( Bowl bowl ) {
     TestTree testTree = new TestTree( NAME );
     TestDirectory testDirectory = new TestDirectory();
     testDirectory.setPath( "/" );
-    testTree.setFiles( getFiles( testDirectory, null, null ) );
+    testTree.setFiles( getFiles( bowl, testDirectory, null, null ) );
     return testTree;
   }
 
-  @Override public List<TestFile> getFiles( TestFile file, String filters, VariableSpace space ) {
+  @Override
+  public List<TestFile> getFiles( Bowl bowl, TestFile file, String filters, VariableSpace space ) {
     List<TestFile> files = new ArrayList<>();
     testFileSystem.get( file.getPath() ).forEach( testFile -> {
       if ( testFile instanceof TestDirectory ) {
@@ -74,7 +76,8 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return files;
   }
 
-  @Override public List<TestFile> delete( List<TestFile> files, VariableSpace space ) throws FileException {
+  @Override
+  public List<TestFile> delete( Bowl bowl, List<TestFile> files, VariableSpace space ) throws FileException {
     List<TestFile> deletedFiles = new ArrayList<>();
     for ( TestFile testFile : files ) {
       if ( doDelete( testFile ) ) {
@@ -93,24 +96,30 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return false;
   }
 
-  @Override public TestFile add( TestFile folder, VariableSpace space ) throws FileException {
+  @Override
+  public TestFile add( Bowl bowl, TestFile folder, VariableSpace space ) throws FileException {
     testFileSystem.get( folder.getParent() ).add( folder );
     return folder;
   }
 
-  @Override public boolean fileExists( TestFile dir, String path, VariableSpace space ) throws FileException {
+  @Override
+  public boolean fileExists( Bowl bowl, TestFile dir, String path, VariableSpace space ) throws FileException {
     return findFile( dir, path ) != null;
   }
 
-  @Override public String getNewName( TestFile destDir, String newPath, VariableSpace space ) throws FileException {
+  @Override
+  public String getNewName( Bowl bowl, TestFile destDir, String newPath, VariableSpace space ) throws FileException {
     return newPath + " " + 1;
   }
 
-  @Override public boolean isSame( File file1, File file2 ) {
+  @Override
+  public boolean isSame( Bowl bowl, File file1, File file2 ) {
     return file1.getProvider().equals( file2.getProvider() );
   }
 
-  @Override public TestFile rename( TestFile file, String newPath, OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
+  @Override
+  public TestFile rename( Bowl bowl, TestFile file, String newPath, OverwriteStatus overwriteStatus,
+                          VariableSpace space ) throws FileException {
     TestFile findFile = findFile( file );
     if ( findFile != null ) {
       findFile.setPath( newPath );
@@ -120,7 +129,8 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return findFile;
   }
 
-  @Override public TestFile copy( TestFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space )
+  @Override
+  public TestFile copy( Bowl bowl, TestFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
     TestFile findFile = findFile( file );
     if ( findFile != null ) {
@@ -138,26 +148,30 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     return null;
   }
 
-  @Override public TestFile move( TestFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space )
+  @Override
+  public TestFile move( Bowl bowl, TestFile file, String toPath, OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
-    TestFile newFile = copy( file, toPath, overwriteStatus, space );
+    TestFile newFile = copy( bowl, file, toPath, overwriteStatus, space );
     if ( newFile != null ) {
       doDelete( newFile );
     }
     return newFile;
   }
 
-  @Override public InputStream readFile( TestFile file, VariableSpace space ) throws FileException {
+  @Override
+  public InputStream readFile( Bowl bowl, TestFile file, VariableSpace space ) throws FileException {
     return null;
   }
 
-  @Override public TestFile writeFile( InputStream inputStream, TestFile destDir, String path,
-                                       OverwriteStatus overwriteStatus, VariableSpace space )
+  @Override
+  public TestFile writeFile( Bowl bowl, InputStream inputStream, TestFile destDir, String path,
+                             OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
     return null;
   }
 
-  @Override public TestFile getParent( TestFile file ) {
+  @Override
+  public TestFile getParent( Bowl bowl, TestFile file ) {
     return TestDirectory.create( null, file.getParent(), "" );
   }
 
@@ -241,12 +255,14 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     //Any local caches that this provider might use should be cleared here.
   }
 
-  @Override public TestFile createDirectory( String parentPath, TestFile file, String newDirectoryName )
+  @Override
+  public TestFile createDirectory( Bowl bowl, String parentPath, TestFile file, String newDirectoryName )
     throws FileException, KettleFileException {
     return null;
   }
 
-  @Override public TestFile getFile( TestFile file, VariableSpace space ) {
+  @Override
+  public TestFile getFile( Bowl bowl, TestFile file, VariableSpace space ) {
     return null;
   }
 }

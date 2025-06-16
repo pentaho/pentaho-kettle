@@ -15,91 +15,104 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.List;
 
-import org.pentaho.di.core.Const;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.partition.PartitionSchemaManagementInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.provider.PartitionsFolderProvider;
 
-public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
+public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<PartitionSchema> {
   public SpoonPartitionsDelegate( Spoon spoon ) {
     super( spoon );
   }
 
   public void newPartitioningSchema( TransMeta transMeta ) {
     PartitionSchema partitionSchema = new PartitionSchema();
-
-    PartitionSchemaDialog dialog =
-        new PartitionSchemaDialog( spoon.getShell(), partitionSchema, transMeta.getPartitionSchemas(), transMeta
-            .getDatabases(), transMeta );
-    if ( dialog.open() ) {
-      List<PartitionSchema> partitions = transMeta.getPartitionSchemas();
-      if ( isDuplicate( partitions, partitionSchema ) ) {
-        new ErrorDialog(
-          spoon.getShell(), getMessage( "Spoon.Dialog.ErrorSavingPartition.Title" ), getMessage(
-          "Spoon.Dialog.ErrorSavingPartition.Message", partitionSchema.getName() ),
-          new KettleException( getMessage( "Spoon.Dialog.ErrorSavingPartition.NotUnique" ) ) );
-        return;
-      }
-
-      partitions.add( partitionSchema );
-
-      if ( spoon.rep != null ) {
-        try {
-          if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
-            spoon.rep.save( partitionSchema, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-            if ( sharedObjectSyncUtil != null ) {
-              sharedObjectSyncUtil.reloadTransformationRepositoryObjects( false );
-            }
-          } else {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
-          }
-        } catch ( KettleException e ) {
-          showSaveErrorDialog( partitionSchema, e );
-        }
-      }
-
-      refreshTree();
-    }
-  }
-
-  public void editPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
-    String originalName = partitionSchema.getName();
-    PartitionSchemaDialog dialog =
-        new PartitionSchemaDialog( spoon.getShell(), partitionSchema, transMeta.getPartitionSchemas(),
-            transMeta.getDatabases(), transMeta );
-    if ( dialog.open() ) {
-      if ( spoon.rep != null && partitionSchema.getObjectId() != null ) {
-        try {
-          saveSharedObjectToRepository( partitionSchema, null );
-          if ( sharedObjectSyncUtil != null ) {
-            sharedObjectSyncUtil.synchronizePartitionSchemas( partitionSchema, originalName );
-          }
-        } catch ( KettleException e ) {
-          showSaveErrorDialog( partitionSchema, e );
-        }
-      }
-      refreshTree();
-    }
-  }
-
-  public void delPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
     try {
-      int idx = transMeta.getPartitionSchemas().indexOf( partitionSchema );
-      transMeta.getPartitionSchemas().remove( idx );
+      PartitionSchemaManagementInterface partitionSchemaManagementInterface =
+          spoon.getManagementBowl().getManager( PartitionSchemaManagementInterface.class );
 
-      if ( spoon.rep != null && partitionSchema.getObjectId() != null ) {
-        // remove the partition schema from the repository too...
-        spoon.rep.deletePartitionSchema( partitionSchema.getObjectId() );
-        if ( sharedObjectSyncUtil != null ) {
-          sharedObjectSyncUtil.deletePartitionSchema( partitionSchema );
+      DatabaseManagementInterface databaseManagementInterface =
+        spoon.getExecutionBowl().getManager( DatabaseManagementInterface.class );
+
+      List<DatabaseMeta> databaseMetas = transMeta != null ? transMeta.getDatabases() :
+        databaseManagementInterface.getAll();
+
+      PartitionSchemaDialog dialog =
+          new PartitionSchemaDialog( spoon.getShell(), partitionSchema, partitionSchemaManagementInterface.getAll(),
+                    databaseMetas, spoon.getManagementBowl().getADefaultVariableSpace() );
+      if ( dialog.open() ) {
+        List<PartitionSchema> partitions = partitionSchemaManagementInterface.getAll();
+        if ( isDuplicate( partitions, partitionSchema ) ) {
+          new ErrorDialog(
+            spoon.getShell(), getMessage( "Spoon.Dialog.ErrorSavingPartition.Title" ), getMessage(
+            "Spoon.Dialog.ErrorSavingPartition.Message", partitionSchema.getName() ),
+            new KettleException( getMessage( "Spoon.Dialog.ErrorSavingPartition.NotUnique" ) ) );
+          return;
         }
+
+        partitionSchemaManagementInterface.add( partitionSchema );
       }
+    } catch ( KettleException e ) {
+      showSaveErrorDialog( partitionSchema, e );
+    }
+    refreshTree();
+
+  }
+
+  //public void editPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
+  public void editPartitionSchema( TransMeta transMeta, PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema ) {
+    String originalName = partitionSchema.getName();
+    try {
+      DatabaseManagementInterface databaseManagementInterface = spoon.getExecutionBowl().getManager( DatabaseManagementInterface.class );
+
+      List<DatabaseMeta> databaseMetas = transMeta != null ? transMeta.getDatabases() :
+        databaseManagementInterface.getAll();
+
+      PartitionSchemaDialog dialog =
+        new PartitionSchemaDialog( spoon.getShell(), partitionSchema, partitionSchemaManager.getAll(),
+                      databaseMetas, spoon.getManagementBowl().getADefaultVariableSpace() );
+      if ( dialog.open() ) {
+        String newName = partitionSchema.getName().trim();
+        // This should be case insensitive. We only need to remove if the name changed beyond case. The Managers handle
+        // case-only changes.
+        if ( !newName.equalsIgnoreCase( originalName ) ) {
+          partitionSchemaManager.remove( originalName );
+          // ideally we wouldn't leak this repository-specific concept, but I don't see how at the moment.
+          partitionSchema.setObjectId( null );
+        }
+        partitionSchemaManager.add( partitionSchema );
+        refreshTree();
+      }
+    } catch ( KettleException exception ) {
+      showSaveErrorDialog( partitionSchema, exception );
+    }
+  }
+
+  public void delPartitionSchema( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema ) {
+    MessageBox mb = new MessageBox( spoon.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+    mb.setMessage( BaseMessages.getString( PKG, "Spoon.Message.DeletePartitionSchemaAsk.Message", partitionSchema.getName() ) );
+    mb.setText( BaseMessages.getString( PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Title" ) );
+    int response = mb.open();
+
+    if ( response != SWT.YES ) {
+      return;
+    }
+    deletePartitionSchema( partitionSchemaManager, partitionSchema );
+  }
+  public void deletePartitionSchema( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema ) {
+    try {
+      spoon.getLog().logBasic( "Deleting the partition schema " +  partitionSchema.getName() );
+      partitionSchemaManager.remove( partitionSchema );
+
       refreshTree();
     } catch ( KettleException e ) {
       new ErrorDialog(
@@ -108,12 +121,51 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
     }
   }
 
+  public void moveToProject( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
+    throws KettleException {
+    moveCopy( partitionSchemaManager, spoon.getManagementBowl().getManager( PartitionSchemaManagementInterface.class ),
+      partitionSchema, true, "Spoon.Message.OverwritePartitionSchemaYN" );
+  }
+
+  public void moveToGlobal( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
+    throws KettleException {
+    moveCopy( partitionSchemaManager, spoon.getGlobalManagementBowl().getManager( PartitionSchemaManagementInterface.class ),
+      partitionSchema, true, "Spoon.Message.OverwritePartitionSchemaYN" );
+  }
+
+  public void copyToProject( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
+    throws KettleException {
+    moveCopy( partitionSchemaManager, spoon.getManagementBowl().getManager( PartitionSchemaManagementInterface.class ),
+      partitionSchema, false, "Spoon.Message.OverwritePartitionSchemaYN" );
+  }
+
+  public void copyToGlobal( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema )
+    throws KettleException {
+    moveCopy( partitionSchemaManager, spoon.getGlobalManagementBowl().getManager( PartitionSchemaManagementInterface.class ),
+      partitionSchema, false, "Spoon.Message.OverwritePartitionSchemaYN" );
+  }
+
+  public void dupePartitionSchema( PartitionSchemaManagementInterface partitionSchemaManager, PartitionSchema partitionSchema  ) {
+    ShowEditDialog<PartitionSchema> sed = ( ps, servers ) -> {
+      DatabaseManagementInterface databaseManagementInterface =  spoon.getExecutionBowl().getManager( DatabaseManagementInterface.class );
+
+      PartitionSchemaDialog dialog = new PartitionSchemaDialog( spoon.getShell(), ps, servers,
+         databaseManagementInterface.getAll(), spoon.getManagementBowl().getADefaultVariableSpace() );
+      if ( dialog.open() ) {
+        partitionSchemaManager.add( ps );
+      }
+    };
+    dupeSharedObject( partitionSchemaManager, partitionSchema, sed );
+  }
+
   private void showSaveErrorDialog( PartitionSchema partitionSchema, KettleException e ) {
     new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Title" ),
         BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Message", partitionSchema.getName() ), e );
   }
 
-  private void refreshTree() {
+
+  @Override
+  protected void refreshTree() {
     spoon.refreshTree( PartitionsFolderProvider.STRING_PARTITIONS );
   }
 }

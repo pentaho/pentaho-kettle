@@ -79,6 +79,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.TypedListener;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.exception.KettleException;
@@ -112,6 +113,7 @@ import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.FileDialogOperation.CustomImage;
 import org.pentaho.di.ui.core.FileDialogOperation.CustomImageProvider;
+import org.pentaho.di.ui.core.FileDialogOperation.FileLoadListener;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -197,7 +199,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private String provider;
   private String providerFilter;
   private String command = FileDialogOperation.OPEN;
-  private FileDialogOperation fileDialogOperation = new FileDialogOperation( command );
+  private FileDialogOperation fileDialogOperation;
 
   private Text txtFileName;
   private LogChannelInterface log;
@@ -290,10 +292,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   Label noRecentFilesLabel = null;
 
+  private Bowl bowl;
   private FileController fileController;
 
-  public FileOpenSaveDialog( Shell parentShell, int width, int height, LogChannelInterface logger ) {
+  public FileOpenSaveDialog( Bowl bowl, Shell parentShell, int width, int height, LogChannelInterface logger ) {
     super( parentShell );
+    this.bowl = bowl;
     this.log = logger;
     this.width = width;
     this.height = height;
@@ -314,7 +318,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     this.fileDialogOperation = fileDialogOperation;
     command = fileDialogOperation.getCommand();
     this.fileController =
-        new FileController( FileCacheService.INSTANCE.get(), ProviderServiceService.get(), fileDialogOperation.getFileLoadListener() );
+        new FileController( bowl, FileCacheService.INSTANCE.get(), ProviderServiceService.get(),
+                            Spoon.getInstance().getFileLoadListener() );
 
     shellTitle = BaseMessages.getString( PKG, "FileOpenSaveDialog.dialog." + command + ".title" );
 
@@ -363,7 +368,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         }
         return imgDisk;
       } else if ( element instanceof Directory ) {
-        return imgFolder;
+        File file = (File) element;
+        String path = file.getPath();
+        return Spoon.getInstance().getCustomImageProvider().flatMap( provider -> provider.getImage( path ) )
+            .map( customImages::get ).filter( Objects::nonNull ).orElseGet( () -> imgFolder );
       }
       return null;
     }
@@ -520,15 +528,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private void setPreviousSelection() {
     String targetPath = this.fileDialogOperation.getPath();
     if ( StringUtils.isNotEmpty( targetPath ) ) {
-      // If the path is file, set the parent to be the target path
       if ( targetPath.startsWith( "file:///" ) ) {
         targetPath = targetPath.substring( 7 );
-      }
-      java.io.File filePath = new java.io.File( targetPath );
-      if ( !filePath.exists() && !ProviderFilterType.REPOSITORY.toString().equalsIgnoreCase( fileDialogOperation.getProvider() ) ) {
-        return;
-      } else if ( filePath.isFile() ) {
-        targetPath = filePath.getParent();
       }
     }
 
@@ -543,7 +544,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( targetPathArray == null ) {
           return;
         }
-        Tree tree = fileProvider.getTree();
+        Tree tree = fileProvider.getTree( bowl );
         TreeItem[] treeItems = treeViewer.getTree().getItems();
         Tree selectedTree = null;
         for ( TreeItem currentTreeItem : treeItems ) {
@@ -646,6 +647,14 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         }
       }
     } else {
+      if ( targetPath.startsWith( "file:///" ) ) {
+        // remove the protocol so we are left with a local file path, including the leading /
+        targetPath = targetPath.substring( 7 );
+      }
+      if ( targetPath.startsWith( "file:/" ) ) {
+        // remove the protocol so we are left with a local file path, including the leading /
+        targetPath = targetPath.substring( 5 );
+      }
       // For  VFS File Path
       if ( targetPath.contains( "pvfs://" ) || targetPath.contains( "hc://" ) ) {
         int indexOfDoubleSlash = targetPath.indexOf( "//" ) + 2;
@@ -1163,6 +1172,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
     FileProvider fileProvider = null;
 
+    Spoon.getInstance().getFileLoadListener().ifPresent( FileLoadListener::reset );
+
     // Refresh the current element of the treeViewer
     if ( !treeViewerSelection.isEmpty() ) {
       if ( treeViewerSelection.getFirstElement() instanceof Tree ) {
@@ -1228,7 +1239,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     imgFile = rasterImage( "img/file_icons/Doc.S_D.svg", 25, 25 );
     imgTrans = rasterImage( "img/file_icons/Transformation.S_D.svg", 25, 25 );
     imgJob = rasterImage( "img/file_icons/Job.S_D.svg", 25, 25 );
-    fileDialogOperation.getCustomImageProvider()
+    Spoon.getInstance().getCustomImageProvider()
         .ifPresent( provider -> loadCustomImages( provider, customImages, getClass().getClassLoader() ) );
     Composite browser = new Composite( parent, SWT.NONE );
     PropsUI.getInstance().setLook( browser );
@@ -1244,12 +1255,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     treeViewer = new TreeViewer( sashForm, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI );
     PropsUI.getInstance().setLook( treeViewer.getTree() );
     // Add drag/drop support
-    Transfer[] dropTransfers = new Transfer[] { ElementTransfer.getInstance(), FileTransfer.getInstance() };
-    Transfer[] dragTransfers = new Transfer[] { ElementTransfer.getInstance() };
+    Transfer[] dropTransfers = new Transfer[] { ElementTransfer.getInstance( bowl ), FileTransfer.getInstance() };
+    Transfer[] dragTransfers = new Transfer[] { ElementTransfer.getInstance( bowl ) };
     int ops = DND.DROP_COPY | DND.DROP_MOVE;
 
-    treeViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( treeViewer, this, log ) );
-    treeViewer.addDropSupport( ops, dropTransfers, new ElementTreeDropAdapter( treeViewer, log ) );
+    treeViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( bowl, treeViewer, this, log ) );
+    treeViewer.addDropSupport( ops, dropTransfers, new ElementTreeDropAdapter( bowl, treeViewer, log ) );
 
     stackLayout = new StackLayout();
     recentComposite = new Composite( sashForm, SWT.BORDER );
@@ -1322,7 +1333,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     fileTableViewer = new TableViewer( recentComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION );
 
     // Add drag/drop support
-    fileTableViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( fileTableViewer, this, log ) );
+    fileTableViewer.addDragSupport( ops, dragTransfers, new ElementDragListener( bowl, fileTableViewer, this, log ) );
 
     PropsUI.getInstance().setLook( fileTableViewer.getTable() );
     fileTableViewer.getTable().setHeaderVisible( true );
@@ -1469,7 +1480,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( element instanceof File ) {
           File file = (File) element;
           String path = file.getPath();
-          return fileDialogOperation.getCustomImageProvider().flatMap( provider -> provider.getImage( path ) )
+          return Spoon.getInstance().getCustomImageProvider().flatMap( provider -> provider.getImage( path ) )
               .map( customImages::get ).filter( Objects::nonNull ).orElseGet( () -> getImageForFile( file ) );
         }
         return null;
@@ -1964,7 +1975,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     if ( isSaveState() ) {
       path = ( f instanceof Directory ) ? f.getPath() : f.getParent();
       try {
-        File parentFile = ProviderServiceService.get().get( provider ).getParent( f );
+        File parentFile = ProviderServiceService.get().get( provider ).getParent( bowl, f );
         if ( null != parentFile ) {
           parentPath = parentFile.getParent();
         } else {
@@ -2103,7 +2114,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
 
       if ( fileProvider != null ) {
-        File file = fileProvider.createDirectory( parentPathOfSelection, (File) selection, newFolderName );
+        File file = fileProvider.createDirectory( bowl, parentPathOfSelection, (File) selection, newFolderName );
         if ( file == null ) {
           Listener cancel = event -> { /* do nothing close dialog */ };
           Map<String, Listener> listenerMap = new LinkedHashMap<>();

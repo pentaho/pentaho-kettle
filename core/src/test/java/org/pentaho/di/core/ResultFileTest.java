@@ -26,6 +26,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -39,7 +40,8 @@ public class ResultFileTest {
   @Test
   public void testGetRow() throws KettleFileException, FileSystemException {
     File tempDir = new File( new TemporaryFolder().toString() );
-    FileObject tempFile = KettleVFS.createTempFile( "prefix", "suffix", tempDir.toString() );
+    FileObject tempFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
+      .createTempFile( "prefix", "suffix", tempDir.toString() );
     Date timeBeforeFile = Calendar.getInstance().getTime();
     ResultFile resultFile = new ResultFile( ResultFile.FILE_TYPE_GENERAL, tempFile, "myOriginParent", "myOrigin" );
     Date timeAfterFile = Calendar.getInstance().getTime();

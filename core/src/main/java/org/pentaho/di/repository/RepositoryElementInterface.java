@@ -13,6 +13,10 @@
 
 package org.pentaho.di.repository;
 
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.w3c.dom.Node;
+
 /**
  * A repository element is an object that can be saved or loaded from the repository. As such, we need to be able to
  * identify it. It needs a RepositoryDirectory, a name and an ID.
@@ -92,5 +96,20 @@ public interface RepositoryElementInterface extends RepositoryObjectInterface {
    * @param objectRevision
    */
   public void setObjectRevision( ObjectRevision objectRevision );
+
+  default void appendObjectId( StringBuilder builder ) {
+    if ( getObjectId() != null ) {
+      builder.append( "    " ).append( XMLHandler.addTagValue( SharedObjectInterface.OBJECT_ID,
+        getObjectId().toString() ) );
+    }
+  }
+
+  default void readObjectId( Node node ) {
+    String objectId = XMLHandler.getTagValue( node, SharedObjectInterface.OBJECT_ID );
+    if ( objectId != null ) {
+      setObjectId( new StringObjectId( objectId ) );
+    }
+  }
+
 
 }

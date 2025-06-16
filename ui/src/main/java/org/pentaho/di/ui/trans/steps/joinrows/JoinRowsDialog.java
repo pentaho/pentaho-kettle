@@ -162,7 +162,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
     wSortDir.setLayoutData( fdSortDir );
 
     wbSortDir.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSortDir, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Whenever something changes, set the tooltip to the expanded version:
     wSortDir.addModifyListener( new ModifyListener() {

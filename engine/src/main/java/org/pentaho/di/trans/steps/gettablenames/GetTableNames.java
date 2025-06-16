@@ -103,7 +103,8 @@ public class GetTableNames extends BaseDatabaseStep implements StepInterface {
         data.outputRowMeta = new RowMeta();
       }
 
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
     }
 
@@ -410,7 +411,8 @@ public class GetTableNames extends BaseDatabaseStep implements StepInterface {
         // Create the output row meta-data
         data.outputRowMeta = new RowMeta();
         // get the metadata populated
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
       } catch ( KettleException e ) {
         logError( "Error initializing step: " + e.toString() );
         logError( Const.getStackTracker( e ) );

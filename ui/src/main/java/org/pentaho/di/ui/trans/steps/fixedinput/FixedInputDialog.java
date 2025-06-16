@@ -504,7 +504,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Listen to the browse button next to the file name
     wbbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE, new FilterType[] { FilterType.TXT, FilterType.ALL },
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
+                                   new FilterType[] { FilterType.TXT, FilterType.ALL },
         FilterType.TXT, new ProviderFilterType[] { ProviderFilterType.LOCAL } ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...

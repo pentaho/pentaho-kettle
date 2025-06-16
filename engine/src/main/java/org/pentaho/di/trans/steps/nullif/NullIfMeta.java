@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.nullif;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -169,7 +170,8 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) {
     if ( r == null ) {
       r = new RowMeta(); // give back values

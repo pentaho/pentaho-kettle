@@ -719,7 +719,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
                 + Const.CR + e.getMessage() );
               mb.open();
             } finally {
-              db.disconnect();
+              db.close();
             }
             break;
           default:

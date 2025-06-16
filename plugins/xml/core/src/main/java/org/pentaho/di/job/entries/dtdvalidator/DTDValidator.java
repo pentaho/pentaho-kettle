@@ -14,6 +14,7 @@
 package org.pentaho.di.job.entries.dtdvalidator;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -42,9 +43,11 @@ public class DTDValidator {
   private String errormessage;
   private int errorscount;
 
+  private Bowl bowl;
   private LogChannelInterface log;
 
-  public DTDValidator( LogChannelInterface log ) {
+  public DTDValidator( Bowl bowl, LogChannelInterface log ) {
+    this.bowl = bowl;
     this.log = log;
     this.xmlfilename = null;
     this.xsdfilename = null;
@@ -103,7 +106,7 @@ public class DTDValidator {
 
     try {
       if ( xmlfilename != null && ( ( getDTDFilename() != null && !isInternDTD() ) || ( isInternDTD() ) ) ) {
-        xmlFileObject = KettleVFS.getFileObject( getXMLFilename() );
+        xmlFileObject = KettleVFS.getInstance( bowl ).getFileObject( getXMLFilename() );
 
         if ( xmlFileObject.exists() ) {
 
@@ -154,7 +157,7 @@ public class DTDValidator {
           } else {
             // DTD in external document
             // If we find an intern declaration, we remove it
-            dtdFileObject = KettleVFS.getFileObject( getDTDFilename() );
+            dtdFileObject = KettleVFS.getInstance( bowl ).getFileObject( getDTDFilename() );
 
             if ( dtdFileObject.exists() ) {
               if ( xmlStartDTD != -1 ) {

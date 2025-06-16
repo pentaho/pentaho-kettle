@@ -13,6 +13,7 @@
 
 package org.pentaho.di.trans.steps.fuzzymatch;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -365,7 +366,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
     return 0;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
 
       String lookupFromStepname = XMLHandler.getTagValue( stepnode, "from" );
@@ -438,7 +439,8 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Add match field
     ValueMetaInterface v =

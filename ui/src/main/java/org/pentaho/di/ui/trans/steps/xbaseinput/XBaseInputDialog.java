@@ -436,7 +436,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.DBF, FilterType.ALL }, FilterType.DBF  ) ) );
 
 

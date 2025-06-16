@@ -61,7 +61,8 @@ public class ColumnExists extends BaseDatabaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // Check is columnname field is provided
       if ( Utils.isEmpty( meta.getDynamicColumnnameField() ) ) {

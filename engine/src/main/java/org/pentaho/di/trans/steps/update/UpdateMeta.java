@@ -14,6 +14,7 @@
 package org.pentaho.di.trans.steps.update;
 
 import com.google.common.primitives.Ints;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -55,7 +56,7 @@ import java.util.List;
 public class UpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = UpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private List<? extends SharedObjectInterface> databases;
+  private List<DatabaseMeta> databases;
 
   /** The lookup table name */
   @Injection( name = "SCHEMA_NAME" )
@@ -361,7 +362,7 @@ public class UpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String csize;
       int nrkeys, nrvalues;
@@ -567,7 +568,7 @@ public class UpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( ignoreFlagField != null && ignoreFlagField.length() > 0 ) {
       ValueMetaInterface v = new ValueMetaBoolean( ignoreFlagField );
@@ -751,7 +752,7 @@ public class UpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "UpdateMeta.CheckResult.InvalidConnection" );

@@ -13,22 +13,39 @@
 
 package org.pentaho.di.be.ibridge.kettle.dummy;
 
-import org.eclipse.swt.widgets.*;
-import org.pentaho.di.core.*;
-import org.pentaho.di.core.annotations.*;
-import org.pentaho.di.core.database.*;
-import org.pentaho.di.core.exception.*;
-import org.pentaho.di.core.row.*;
-import org.pentaho.di.core.row.value.*;
-import org.pentaho.di.core.variables.*;
-import org.pentaho.di.core.xml.*;
-import org.pentaho.di.repository.*;
-import org.pentaho.di.trans.*;
-import org.pentaho.di.trans.step.*;
-import org.w3c.dom.*;
-
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+
+import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaAndData;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
 /*
  * Created on 02-jun-2003
@@ -77,7 +94,8 @@ public class DummyPluginMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space ) {
+  public void getFields( Bowl bowl, RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space ) {
     if ( value != null ) {
       ValueMetaInterface v = value.getValueMeta();
       v.setOrigin( origin );

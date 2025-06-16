@@ -68,7 +68,8 @@ public class FieldSplitter extends BaseStep implements StepInterface {
       // prepare the outputMeta
       //
       data.outputMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // Now create objects to do string to data type conversion...
       //

@@ -104,7 +104,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
         logError( BaseMessages.getString( PKG, "ProcessFiles.Error.SourceFileEmpty" ) );
         throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Error.SourceFileEmpty" ) );
       }
-      data.sourceFile = KettleVFS.getFileObject( sourceFilename, getTransMeta() );
+      data.sourceFile = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( sourceFilename, getTransMeta() );
 
       if ( !data.sourceFile.exists() ) {
         logError( BaseMessages.getString( PKG, "ProcessFiles.Error.SourceFileNotExist", sourceFilename ) );
@@ -125,7 +125,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
           logError( BaseMessages.getString( PKG, "ProcessFiles.Error.TargetFileEmpty" ) );
           throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Error.TargetFileEmpty" ) );
         }
-        data.targetFile = KettleVFS.getFileObject( targetFilename, getTransMeta() );
+        data.targetFile = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( targetFilename, getTransMeta() );
         if ( data.targetFile.exists() ) {
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "ProcessFiles.Log.TargetFileExists", targetFilename ) );
@@ -173,7 +173,8 @@ public class ProcessFiles extends BaseStep implements StepInterface {
         case ProcessFilesMeta.OPERATION_TYPE_MOVE:
           if ( ( ( meta.isOverwriteTargetFile() && data.targetFile.exists() ) || !data.targetFile.exists() )
             && !meta.simulate ) {
-            data.sourceFile.moveTo( KettleVFS.getFileObject( targetFilename, getTransMeta() ) );
+            data.sourceFile.moveTo( KettleVFS.getInstance( getTransMeta().getBowl() )
+                                    .getFileObject( targetFilename, getTransMeta() ) );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString(
                 PKG, "ProcessFiles.Log.SourceFileMoved", sourceFilename, targetFilename ) );

@@ -781,7 +781,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     };
 
     wbLocalDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wLocalDirectory, jobMeta,
-            new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+            new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     wCancel.addListener( SWT.Selection, lsCancel );
     wOK.addListener( SWT.Selection, lsOK );
@@ -864,7 +864,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
 
       if ( connection == null ) { // Create ftp client to host:port ...
         connection =
-          new FTPSConnection(
+          new FTPSConnection( jobMeta.getBowl(),
             FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername, realPort,
             realUsername, realPassword );
 

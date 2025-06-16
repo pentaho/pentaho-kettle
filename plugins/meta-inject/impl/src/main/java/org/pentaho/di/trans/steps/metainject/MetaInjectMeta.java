@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.metainject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -363,7 +364,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   }
 
   @Override
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     rowMeta.clear(); // No defined output is expected from this step.
@@ -488,27 +489,28 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   }
 
   @Override
-  public TransMeta fetchTransMeta( StepMetaInterface stepMeta, Repository rep, IMetaStore metastore, VariableSpace space ) throws KettleException {
+  public TransMeta fetchTransMeta( Bowl bowl, StepMetaInterface stepMeta, Repository rep, IMetaStore metastore,
+    VariableSpace space ) throws KettleException {
     return ( stepMeta != null && stepMeta instanceof MetaInjectMeta )
-        ? loadTransformationMeta( (MetaInjectMeta) stepMeta, rep, metastore, space ) : null;
+        ? loadTransformationMeta( bowl, (MetaInjectMeta) stepMeta, rep, metastore, space ) : null;
 
   }
 
   @Deprecated
-  public static final synchronized TransMeta loadTransformationMeta( MetaInjectMeta mappingMeta, Repository rep,
-                                                                     VariableSpace space ) throws KettleException {
-    return loadTransformationMeta( mappingMeta, rep, null, space );
+  public static final synchronized TransMeta loadTransformationMeta( Bowl bowl, MetaInjectMeta mappingMeta,
+    Repository rep, VariableSpace space ) throws KettleException {
+    return loadTransformationMeta( bowl, mappingMeta, rep, null, space );
   }
 
-  public static final synchronized TransMeta loadTransformationMeta( MetaInjectMeta injectMeta, Repository rep,
-                                                                     IMetaStore metaStore, VariableSpace space )
+  public static final synchronized TransMeta loadTransformationMeta( Bowl bowl, MetaInjectMeta injectMeta,
+    Repository rep, IMetaStore metaStore, VariableSpace space )
     throws KettleException {
     TransMeta mappingTransMeta = null;
 
     CurrentDirectoryResolver resolver = new CurrentDirectoryResolver();
     VariableSpace tmpSpace =
-      resolver.resolveCurrentDirectory( injectMeta.getSpecificationMethod(), space, rep, injectMeta
-        .getParentStepMeta(), injectMeta.getFileName() );
+      resolver.resolveCurrentDirectory( bowl,
+        injectMeta.getSpecificationMethod(), space, rep, injectMeta.getParentStepMeta(), injectMeta.getFileName() );
 
     switch ( injectMeta.getSpecificationMethod() ) {
       case FILENAME:
@@ -543,7 +545,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
             }
           }
           if ( mappingTransMeta == null ) {
-            mappingTransMeta = new TransMeta( realFilename, metaStore, rep, false, tmpSpace, null );
+            mappingTransMeta = new TransMeta( bowl, realFilename, metaStore, rep, false, tmpSpace, null );
             mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
               "Mapping transformation was loaded from XML file [" + realFilename + "]" );
           }
@@ -580,13 +582,13 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
         } else {
           try {
             mappingTransMeta =
-              new TransMeta( realDirectory + "/" + realTransname, metaStore, rep, true, tmpSpace, null );
+              new TransMeta( bowl, realDirectory + "/" + realTransname, metaStore, rep, true, tmpSpace, null );
           } catch ( KettleException ke ) {
             try {
               // add .ktr extension and try again
               mappingTransMeta =
-                new TransMeta( realDirectory + "/" + realTransname + "." + Const.STRING_TRANS_DEFAULT_EXT, metaStore,
-                  rep, true, tmpSpace, null );
+                new TransMeta( bowl, realDirectory + "/" + realTransname + "." + Const.STRING_TRANS_DEFAULT_EXT,
+                  metaStore, rep, true, tmpSpace, null );
             } catch ( KettleException ke2 ) {
               throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans",
                 realTransname ) + realDirectory );
@@ -614,8 +616,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   /**
    * package-local visibility for testing purposes
    */
-  TransMeta loadTransformationMeta( Repository rep, VariableSpace space ) throws KettleException {
-    return MetaInjectMeta.loadTransformationMeta( this, rep, null, space );
+  TransMeta loadTransformationMeta( Bowl bowl, Repository rep, VariableSpace space ) throws KettleException {
+    return MetaInjectMeta.loadTransformationMeta( bowl, this, rep, null, space );
   }
 
   @Override
@@ -641,10 +643,9 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   }
 
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
-                                 IMetaStore metaStore )
-    throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // Try to load the transformation from repository or file.
       // Modify this recursively too...
@@ -654,14 +655,14 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       //
       // First load the executor transformation metadata...
       //
-      TransMeta executorTransMeta = loadTransformationMeta( repository, space );
+      TransMeta executorTransMeta = loadTransformationMeta( executionBowl, repository, space );
 
       // Also go down into the mapping transformation and export the files
       // there. (mapping recursively down)
       //
       String proposedNewFilename =
-        executorTransMeta.exportResources( executorTransMeta, definitions, resourceNamingInterface, repository,
-          metaStore );
+        executorTransMeta.exportResources( executionBowl, globalManagementBowl, executorTransMeta, definitions,
+          resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Entry.Current.Directory}
@@ -768,8 +769,9 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
 
   @Override
   @Deprecated
-  public Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException {
-    return loadReferencedObject( index, rep, null, space );
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, VariableSpace space )
+    throws KettleException {
+    return loadReferencedObject( bowl, index, rep, null, space );
   }
 
   /**
@@ -783,9 +785,9 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
    * @throws KettleException
    */
   @Override
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
     throws KettleException {
-    return loadTransformationMeta( this, rep, metaStore, space );
+    return loadTransformationMeta( bowl, this, rep, metaStore, space );
   }
 
   public String getStreamSourceStepname() {

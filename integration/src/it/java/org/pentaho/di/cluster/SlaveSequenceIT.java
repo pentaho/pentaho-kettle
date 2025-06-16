@@ -69,7 +69,7 @@ public class SlaveSequenceIT extends TestCase {
     Database db = new Database( loggingObject, databaseMeta );
     db.connect();
     db.execStatement( "CREATE TABLE SLAVE_SEQUENCE(SEQ_NAME VARCHAR(100), SEQ_VALUE INTEGER);" );
-    db.disconnect();
+    db.close();
 
     // Start the Carte launcher
     CarteLauncher carteLauncher = new CarteLauncher( slaveConfig );
@@ -140,7 +140,7 @@ public class SlaveSequenceIT extends TestCase {
     Database db = new Database( loggingObject, databaseMeta );
     db.connect();
     db.execStatement( "CREATE TABLE SLAVE_SEQUENCE(SEQ_NAME VARCHAR(100), SEQ_VALUE INTEGER);" );
-    db.disconnect();
+    db.close();
 
     // Start the Carte launcher
     CarteLauncher carteLauncher = new CarteLauncher( slaveConfig );

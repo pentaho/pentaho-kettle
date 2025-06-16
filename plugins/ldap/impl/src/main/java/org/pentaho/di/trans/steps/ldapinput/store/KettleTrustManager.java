@@ -22,6 +22,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -47,14 +48,15 @@ public class KettleTrustManager implements X509TrustManager {
    * @param certPassword
    * @throws KettleException
    */
-  public KettleTrustManager( KeyStore keyStore, String certFilename, String certPassword ) throws KettleException {
+  public KettleTrustManager( Bowl bowl, KeyStore keyStore, String certFilename, String certPassword )
+    throws KettleException {
     try {
       // Load the CERT key from the file into the store using the provided
       // password if needed.
       //
       InputStream inputStream = null;
       try {
-        inputStream = KettleVFS.getInputStream( certFilename );
+        inputStream = KettleVFS.getInstance( bowl ).getInputStream( certFilename );
         keyStore.load( inputStream, Const.NVL( certPassword, "" ).toCharArray() );
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString(

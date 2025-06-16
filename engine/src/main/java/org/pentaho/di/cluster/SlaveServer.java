@@ -36,6 +36,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.message.BasicHeader;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.encryption.Encr;
@@ -95,6 +96,7 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -104,11 +106,12 @@ import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace,
+public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface<SlaveServer>, VariableSpace,
   RepositoryElementInterface, XMLInterface {
   private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SLAVESERVER = "Slave Server";
+  public static final Comparator<SlaveServer> COMPARATOR = Comparator.comparing( SlaveServer::getName, String.CASE_INSENSITIVE_ORDER );
 
   private static final Random RANDOM = new Random();
 
@@ -236,6 +239,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.master = "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "master" ) );
     initializeVariablesFrom( null );
     this.log = new LogChannel( this );
+    readObjectId( slaveNode );
 
     setSslMode( "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, SSL_MODE_TAG ) ) );
     Node sslConfig = XMLHandler.getSubNode( slaveNode, SslConfiguration.XML_TAG );
@@ -267,6 +271,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       xml.append( "        " ).append( XMLHandler.addTagValue( "non_proxy_hosts", nonProxyHosts ) );
       xml.append( "        " ).append( XMLHandler.addTagValue( "master", master ) );
       xml.append( "        " ).append( XMLHandler.addTagValue( SSL_MODE_TAG, isSslMode(), false ) );
+      appendObjectId( xml );
       if ( sslConfig != null ) {
         xml.append( sslConfig.getXML() );
       }
@@ -619,7 +624,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   /**
    * Throws if not ok
    */
-  private void handleStatus( HttpUriRequest method, StatusLine statusLine, int status ) throws KettleException {
+  private void handleStatus( HttpUriRequest method, StatusLine statusLine, int status, String responseBody ) throws KettleException {
     if ( status >= 300 ) {
       String message;
       if ( status == HttpStatus.SC_NOT_FOUND ) {
@@ -629,10 +634,16 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
           BaseMessages.getString( PKG, "SlaveServer.Error.404.Message" )
         );
       } else {
-        message = String.format( "HTTP Status %d - %s - %s",
+        String responseMessage = null;
+        if ( responseBody != null ) {
+          WebResult webResult = WebResult.fromXMLString( responseBody );
+          responseMessage = webResult.getMessage();
+        }
+        message = String.format( "HTTP Status %d - %s - %s%s",
           status,
           method.getURI().toString(),
-          statusLine.getReasonPhrase() );
+          statusLine.getReasonPhrase(),
+          responseMessage == null ? "" : "\n" + responseMessage );
       }
       throw new KettleException( message );
     }
@@ -670,7 +681,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
    */
   public String sendExport( String filename, String type, String load ) throws Exception {
     // Request content will be retrieved directly from the input stream
-    try ( InputStream is = KettleVFS.getInputStream( KettleVFS.getFileObject( filename ) ) ) {
+    try ( InputStream is = KettleVFS.getInputStream( KettleVFS.getInstance( DefaultBowl.getInstance() )
+                                                     .getFileObject( filename ) ) ) {
       // Execute request
       HttpPost method = buildSendExportMethod( type, load, is );
       try {
@@ -713,7 +725,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
 
     // throw if not ok
-    handleStatus( method, statusLine, statusCode );
+    handleStatus( method, statusLine, statusCode, responseBody );
 
     return responseBody;
   }
@@ -941,7 +953,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
     List<SlaveServerDetection> detections = new ArrayList<SlaveServerDetection>();
     for ( int i = 0; i < nrDetections; i++ ) {
-      Node detectionNode = XMLHandler.getSubNodeByNr( detectionsNode, SlaveServerDetection.XML_TAG, i );
+      Node detectionNode = XMLHandler.getSubNodeByNr( detectionsNode, SlaveServerDetection.XML_TAG, i, false );
       SlaveServerDetection detection = new SlaveServerDetection( detectionNode );
       detections.add( detection );
     }
@@ -1398,5 +1410,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     } finally {
       lock.readLock().unlock();
     }
+  }
+  @Override
+  public SlaveServer makeClone() {
+    return (SlaveServer) clone();
+  }
+
+  @Override
+  public Node toNode() throws KettleException {
+    Document doc = XMLHandler.loadXMLString( getXML() );
+    return XMLHandler.getSubNode( doc, XML_TAG );
   }
 }

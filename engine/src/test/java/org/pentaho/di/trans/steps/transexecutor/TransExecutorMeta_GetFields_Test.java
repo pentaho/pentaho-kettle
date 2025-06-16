@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -97,7 +98,7 @@ public class TransExecutorMeta_GetFields_Test {
 
   private RowMetaInterface invokeGetFieldsWith( StepMeta stepMeta ) throws Exception {
     RowMetaInterface rowMeta = mock( RowMetaInterface.class );
-    meta.getFields( rowMeta, "", null, stepMeta, null, null, null );
+    meta.getFields( DefaultBowl.getInstance(), rowMeta, "", null, stepMeta, null, null, null );
     return rowMeta;
   }
 }

@@ -718,7 +718,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     injectTransMeta.clearChanged();
   }
   private void loadFileTrans( String fname ) throws KettleException {
-    injectTransMeta = new TransMeta( transMeta.environmentSubstitute( fname ) );
+    injectTransMeta = new TransMeta( transMeta.getBowl(), transMeta.environmentSubstitute( fname ) );
     injectTransMeta.clearChanged();
   }
 

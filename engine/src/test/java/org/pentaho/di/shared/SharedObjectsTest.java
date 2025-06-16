@@ -27,11 +27,13 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 import org.junit.Assert;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.w3c.dom.Node;
 
 /**
  * SharedObjects tests
@@ -72,27 +74,27 @@ public class SharedObjectsTest {
   public void testCopyBackupVfs() throws Exception {
     final String dirName = "ram:/SharedObjectsTest";
 
-    FileObject baseDir = KettleVFS.getFileObject( dirName );
+    FileObject baseDir = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( dirName );
     try {
       baseDir.createFolder();
       final String fileName = dirName + "/shared.xml";
       SharedObjects sharedObjects = new SharedObjects( fileName );
 
-      SharedObjectInterface shared1 = new TestSharedObject( "shared1", "<shared1>shared1</shared1>" );
+      SharedObjectInterface<?> shared1 = new TestSharedObject( "shared1", "<shared1>shared1</shared1>" );
       sharedObjects.storeObject( shared1 );
       sharedObjects.saveToFile();
       final String backupFileName = fileName + ".backup";
-      FileObject backup = KettleVFS.getFileObject( backupFileName );
+      FileObject backup = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( backupFileName );
       Assert.assertFalse( backup.exists() );
 
-      String contents = KettleVFS.getTextFileContent( fileName, "utf8" );
+      String contents = KettleVFS.getInstance( DefaultBowl.getInstance() ).getTextFileContent( fileName, "utf8" );
       Assert.assertTrue( contents.contains( shared1.getXML() ) );
 
-      SharedObjectInterface shared2 = new TestSharedObject( "shared2", "<shared2>shared2</shared2>" );
+      SharedObjectInterface<?> shared2 = new TestSharedObject( "shared2", "<shared2>shared2</shared2>" );
       sharedObjects.storeObject( shared2 );
       sharedObjects.saveToFile();
       Assert.assertTrue( backup.exists() );
-      String contentsBackup = KettleVFS.getTextFileContent( backupFileName, "utf8" );
+      String contentsBackup = KettleVFS.getInstance( DefaultBowl.getInstance() ).getTextFileContent( backupFileName, "utf8" );
       Assert.assertEquals( contents, contentsBackup );
 
     } finally {
@@ -103,7 +105,7 @@ public class SharedObjectsTest {
 
   }
 
-  private static class TestSharedObject extends SharedObjectBase implements SharedObjectInterface {
+  private static class TestSharedObject extends SharedObjectBase implements SharedObjectInterface<TestSharedObject> {
 
     private String name, xml;
 
@@ -122,6 +124,15 @@ public class SharedObjectsTest {
       return xml;
     }
 
+    @Override
+    public TestSharedObject makeClone() {
+      return null;
+    }
+
+    @Override
+    public Node toNode() throws KettleException {
+      return null;
+    }
   }
 
 }

@@ -22,10 +22,8 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.JobTracker;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -110,6 +108,7 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
     super.replaceMeta( logTable );
   }
 
+  @Override
   public void loadXML( Node jobnode, List<DatabaseMeta> databases, List<StepMeta> steps ) {
     Node node = XMLHandler.getSubNode( jobnode, XML_TAG );
     if ( node == null ) {

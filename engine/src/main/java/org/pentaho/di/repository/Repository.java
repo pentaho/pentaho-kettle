@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -28,7 +29,6 @@ import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -202,7 +202,8 @@ public interface Repository {
    */
   public TransMeta loadTransformation( ObjectId id_transformation, String versionLabel ) throws KettleException;
 
-  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException;
+  @Deprecated( since = "10.3" )
+  public void readTransSharedObjects( TransMeta transMeta ) throws KettleException;
 
   /**
    * Move / rename a transformation
@@ -277,7 +278,8 @@ public interface Repository {
    */
   public JobMeta loadJob( ObjectId id_job, String versionLabel ) throws KettleException;
 
-  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException;
+  @Deprecated( since = "10.3" )
+  public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException;
 
   /**
    * Move / rename a job
@@ -757,4 +759,12 @@ public interface Repository {
    * @return repository for connect to server
    */
   public IUnifiedRepository getUnderlyingRepository();
+
+  /**
+   * Get a Bowl that represents context for the repository. Metastore and SharedObjects will come from the repository.
+   *
+   *
+   * @return Bowl
+   */
+  Bowl getBowl();
 }

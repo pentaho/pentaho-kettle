@@ -555,7 +555,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
           if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals( meta.getLoadMethod() ) ) {
             execute( meta, false );
           }
-          output.open( this, sqlldrProcess );
+          output.open( getTransMeta().getBowl(), this, sqlldrProcess );
         }
         output.writeLine( getInputRowMeta(), r );
       }
@@ -677,6 +677,6 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
   @VisibleForTesting
   FileObject getFileObject( String vfsFilename, VariableSpace space ) throws KettleFileException {
-    return KettleVFS.getFileObject( environmentSubstitute( vfsFilename ), space );
+    return KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( environmentSubstitute( vfsFilename ), space );
   }
 }

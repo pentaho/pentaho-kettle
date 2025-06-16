@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -70,7 +71,7 @@ public class TestUtils {
       space.initializeVariablesFrom( null );
     }
     try {
-      FileObject file = KettleVFS.getFileObject( "ram://" + path, space );
+      FileObject file = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( "ram://" + path, space );
       file.createFile();
       return file.getName().getURI();
     } catch ( FileSystemException | KettleFileException e ) {
@@ -88,7 +89,7 @@ public class TestUtils {
       space.initializeVariablesFrom( null );
     }
     try {
-      return KettleVFS.getFileObject( vfsPath, space );
+      return KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( vfsPath, space );
     } catch ( KettleFileException e ) {
       throw new RuntimeException( e );
     }

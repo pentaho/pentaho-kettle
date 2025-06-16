@@ -116,7 +116,8 @@ public class RssOutput extends BaseStep implements StepInterface {
       first = false;
       data.inputRowMeta = getInputRowMeta();
       data.outputRowMeta = data.inputRowMeta.clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
       // Let's check for filename...
 
       if ( meta.isFilenameInField() ) {
@@ -152,7 +153,8 @@ public class RssOutput extends BaseStep implements StepInterface {
         FileObject parentfolder = null;
         try {
           // Get parent folder
-          parentfolder = KettleVFS.getFileObject( data.filename, getTransMeta() ).getParent();
+          parentfolder = KettleVFS.getInstance( getTransMeta().getBowl() )
+            .getFileObject( data.filename, getTransMeta() ).getParent();
           if ( !parentfolder.exists() ) {
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "RssOutput.Log.ParentFolderExists", parentfolder
@@ -568,7 +570,7 @@ public class RssOutput extends BaseStep implements StepInterface {
   }
 
   public String buildFilename() throws KettleStepException {
-    return meta.buildFilename( this, getCopy() );
+    return meta.buildFilename( getTransMeta().getBowl(), this, getCopy() );
   }
 
   /**
@@ -583,7 +585,6 @@ public class RssOutput extends BaseStep implements StepInterface {
    * @param desc
    *          : The event's description
    */
-  @SuppressWarnings( "unchecked" )
   public boolean createEntry( String author, String title, String link, Date date, String desc,
     String geopointLat, String geopointLong ) {
     boolean retval = false;
@@ -706,7 +707,8 @@ public class RssOutput extends BaseStep implements StepInterface {
         // Add this to the result file names...
         ResultFile resultFile =
           new ResultFile(
-            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileName, getTransMeta() ), getTransMeta()
+            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( fileName, getTransMeta() ), getTransMeta()
               .getName(), getStepname() );
         resultFile.setComment( "This file was created with a RSS Output step" );
         addResultFile( resultFile );

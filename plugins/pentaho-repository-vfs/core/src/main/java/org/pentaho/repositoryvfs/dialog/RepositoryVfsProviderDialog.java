@@ -48,7 +48,8 @@ public class RepositoryVfsProviderDialog extends CustomVfsUiPanel {
 
   public FileObject resolveFile( String fileUri ) throws FileSystemException {
     try {
-      return KettleVFS.getFileObject( fileUri, getVariableSpace(), getFileSystemOptions() );
+      return KettleVFS.getInstance( Spoon.getInstance().getGlobalManagementBowl() )
+        .getFileObject( fileUri, getVariableSpace(), getFileSystemOptions() );
     } catch ( KettleFileException e ) {
       throw new FileSystemException( e );
     }

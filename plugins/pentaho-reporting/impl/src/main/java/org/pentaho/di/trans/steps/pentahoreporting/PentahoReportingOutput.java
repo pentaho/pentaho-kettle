@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.pentahoreporting;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -178,34 +179,34 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
     }
   }
 
-  public static MasterReport loadMasterReport( String sourceFilename, VariableSpace space )
+  public static MasterReport loadMasterReport( Bowl bowl, String sourceFilename, VariableSpace space )
     throws KettleFileException, MalformedURLException, ResourceException {
-    Resource resource = getResource( sourceFilename, space );
+    Resource resource = getResource( bowl, sourceFilename, space );
     return (MasterReport) resource.getResource();
   }
 
-  public static MasterReport loadMasterReport( String sourceFilename )
+  public static MasterReport loadMasterReport( Bowl bowl, String sourceFilename )
     throws KettleFileException, MalformedURLException, ResourceException {
-    return loadMasterReport( sourceFilename, null );
+    return loadMasterReport( bowl, sourceFilename, null );
   }
 
-  protected static Resource getResource( String sourceFilename, VariableSpace space )
+  protected static Resource getResource( Bowl bowl, String sourceFilename, VariableSpace space )
     throws KettleFileException, MalformedURLException, ResourceLoadingException, ResourceCreationException,
     ResourceKeyCreationException {
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
 
-    FileObject fileObject = getFileObject( sourceFilename, space );
+    FileObject fileObject = getFileObject( bowl, sourceFilename, space );
     return manager.createDirectly( getKeyValue( fileObject ), MasterReport.class );
   }
 
-  protected static FileObject getFileObject( String sourceFilename, VariableSpace space )
+  protected static FileObject getFileObject( Bowl bowl, String sourceFilename, VariableSpace space )
     throws KettleFileException {
     if ( space == null ) {
       space = new Variables();
       space.initializeVariablesFrom( null );
     }
-    return KettleVFS.getFileObject( sourceFilename, space );
+    return KettleVFS.getInstance( bowl ).getFileObject( sourceFilename, space );
   }
 
   protected static Object getKeyValue( FileObject fileObject ) throws MalformedURLException {
@@ -219,7 +220,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
 
       // Load the master report from the PRPT
       //
-      MasterReport report = loadMasterReport( sourceFilename, getTrans() );
+      MasterReport report = loadMasterReport( getTransMeta().getBowl(), sourceFilename, getTrans() );
 
       // Set the parameters values that are present in the various fields...
       //
@@ -284,7 +285,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
 
       switch ( outputProcessorType ) {
         case PDF:
-          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+          exportTask = new ReportExportTask( getTransMeta().getBowl(), report, context, targetFilename,
+              createParentFolder ) {
             protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
               PdfOutputProcessor outputProcessor =
                   new PdfOutputProcessor( report.getConfiguration(), fout, report.getResourceManager() );
@@ -293,7 +295,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
           };
           break;
         case CSV:
-          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+          exportTask = new ReportExportTask( getTransMeta().getBowl(), report, context, targetFilename,
+              createParentFolder ) {
             protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
               ReportStructureValidator validator = new ReportStructureValidator();
               if ( validator.isValidForFastProcessing( report ) == false ) {
@@ -306,7 +309,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
           };
           break;
         case Excel:
-          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+          exportTask = new ReportExportTask( getTransMeta().getBowl(), report, context, targetFilename,
+              createParentFolder ) {
             protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
               ReportStructureValidator validator = new ReportStructureValidator();
               if ( validator.isValidForFastProcessing( report ) == false ) {
@@ -321,7 +325,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
           };
           break;
         case Excel_2007:
-          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+          exportTask = new ReportExportTask( getTransMeta().getBowl(), report, context, targetFilename,
+              createParentFolder ) {
             protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
               ReportStructureValidator validator = new ReportStructureValidator();
               if ( validator.isValidForFastProcessing( report ) == false ) {
@@ -336,7 +341,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
           };
           break;
         case StreamingHTML:
-          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+          exportTask = new ReportExportTask( getTransMeta().getBowl(), report, context, targetFilename,
+              createParentFolder ) {
             protected String filename, suffix;
             protected ContentLocation targetRoot;
 
@@ -377,7 +383,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
           };
           break;
         case PagedHTML:
-          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+          exportTask = new ReportExportTask( getTransMeta().getBowl(), report, context, targetFilename,
+              createParentFolder ) {
             protected String filename, suffix;
             protected ContentLocation targetRoot;
 
@@ -412,7 +419,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
           };
           break;
         case RTF:
-          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+          exportTask = new ReportExportTask( getTransMeta().getBowl(), report, context, targetFilename,
+              createParentFolder ) {
             protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
               StreamRTFOutputProcessor target =
                   new StreamRTFOutputProcessor( report.getConfiguration(), fout, report.getResourceManager() );
@@ -430,7 +438,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
       }
 
       if ( context.getStatusType() == StatusType.ERROR ) {
-        KettleVFS.getFileObject( targetFilename, getTransMeta() ).delete();
+        KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( targetFilename, getTransMeta() ).delete();
         if ( context.getCause() != null ) {
           throw context.getCause();
         }
@@ -439,7 +447,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
 
       ResultFile resultFile =
         new ResultFile(
-          ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename, getTransMeta() ),
+          ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( getTransMeta().getBowl() )
+            .getFileObject( targetFilename, getTransMeta() ),
           getTransMeta().getName(), getStepname() );
       resultFile.setComment( "This file was created with a Pentaho Reporting Output step" );
       addResultFile( resultFile );

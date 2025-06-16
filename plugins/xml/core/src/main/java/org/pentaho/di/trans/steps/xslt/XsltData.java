@@ -23,6 +23,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -65,23 +66,23 @@ public class XsltData extends BaseStepData implements StepDataInterface {
     setOutputProperties = false;
   }
 
-  public Transformer getTemplate( String xslFilename, boolean isAfile ) throws Exception {
+  public Transformer getTemplate( Bowl bowl, String xslFilename, boolean isAfile ) throws Exception {
     Transformer template = transformers.get( xslFilename );
     if ( template != null ) {
       template.clearParameters();
       return template;
     }
 
-    return createNewTemplate( xslFilename, isAfile );
+    return createNewTemplate( bowl, xslFilename, isAfile );
   }
 
-  private Transformer createNewTemplate( String xslSource, boolean isAfile ) throws Exception {
+  private Transformer createNewTemplate( Bowl bowl, String xslSource, boolean isAfile ) throws Exception {
     FileObject file = null;
     InputStream xslInputStream = null;
     Transformer transformer = null;
     try {
       if ( isAfile ) {
-        file = KettleVFS.getFileObject( xslSource );
+        file = KettleVFS.getInstance( bowl ).getFileObject( xslSource );
         xslInputStream = KettleVFS.getInputStream( file );
       } else {
         xslInputStream = new ByteArrayInputStream( xslSource.getBytes( "UTF-8" ) );

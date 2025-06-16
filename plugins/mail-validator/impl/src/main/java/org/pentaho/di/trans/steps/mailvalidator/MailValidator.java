@@ -63,7 +63,8 @@ public class MailValidator extends BaseStep implements StepInterface {
       data.previousRowMeta = getInputRowMeta().clone();
       data.NrPrevFields = data.previousRowMeta.size();
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       // check result fieldname
       data.realResultFieldName = environmentSubstitute( meta.getResultFieldName() );

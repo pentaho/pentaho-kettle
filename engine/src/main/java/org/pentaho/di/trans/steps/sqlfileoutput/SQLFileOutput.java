@@ -67,7 +67,8 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
       data.insertRowMeta = getInputRowMeta().clone();
 
       if ( meta.isDoNotOpenNewFileInit() ) {
@@ -193,8 +194,8 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
         // Add this to the result file names...
         ResultFile resultFile =
           new ResultFile(
-            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ), getTransMeta()
-              .getName(), getStepname() );
+            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( filename, getTransMeta() ), getTransMeta().getName(), getStepname() );
         resultFile.setComment( "This file was created with a text file output step" );
         addResultFile( resultFile );
       }
@@ -203,7 +204,8 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
       if ( log.isDetailed() ) {
         logDetailed( "Opening output stream in nocompress mode" );
       }
-      OutputStream fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
+      OutputStream fos = KettleVFS.getInstance( getTransMeta().getBowl() )
+        .getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
       outputStream = fos;
 
       if ( log.isDetailed() ) {
@@ -297,7 +299,8 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
           try {
             // Get parent folder
             String filename = environmentSubstitute( meta.getFileName() );
-            parentfolder = KettleVFS.getFileObject( filename, getTransMeta() ).getParent();
+            parentfolder = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( filename, getTransMeta() ).getParent();
             if ( !parentfolder.exists() ) {
               log.logBasic( "Folder parent", "Folder parent " + parentfolder.getName() + " does not exist !" );
               parentfolder.createFolder();
@@ -363,7 +366,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
       setOutputDone();
 
       if ( data.db != null ) {
-        data.db.disconnect();
+        data.db.close();
       }
       super.dispose( smi, sdi );
     }

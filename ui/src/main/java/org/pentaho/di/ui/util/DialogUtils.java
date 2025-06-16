@@ -11,14 +11,16 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.ui.util;
 
-import java.util.Collection;
+package org.pentaho.di.ui.util;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author Andrey Khayrutdinov
@@ -43,15 +45,27 @@ public class DialogUtils {
     return null;
   }
 
-  public static boolean objectWithTheSameNameExists( SharedObjectInterface object,
-      Collection<? extends SharedObjectInterface> scope ) {
-    for ( SharedObjectInterface element : scope ) {
-      String elementName = element.getName();
-      if ( elementName != null && elementName.equalsIgnoreCase( object.getName() ) && object != element ) {
+  public static <T extends SharedObjectInterface<T>> boolean objectWithTheSameNameExists( T object, Collection<T> scope ) {
+    String objectName = object.getName().trim();
+    for ( SharedObjectInterface<T> element : scope ) {
+      String elementName = element.getName().trim();
+      if ( elementName != null && elementName.equalsIgnoreCase( objectName ) && object != element ) {
         return true;
       }
     }
     return false;
+  }
+
+  public static <T extends SharedObjectInterface<T>> void removeMatchingObject( String nameToRemove, Collection<? extends SharedObjectInterface<T>> objects ) {
+    if ( nameToRemove == null ) {
+      return;
+    }
+    Iterator<? extends SharedObjectInterface<T>> iter = objects.iterator();
+    while ( iter.hasNext() ) {
+      if ( nameToRemove.equals( iter.next().getName() ) ) {
+        iter.remove();
+      }
+    }
   }
 
   public static String getPath( String parentPath, String path ) {

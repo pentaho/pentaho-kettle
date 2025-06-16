@@ -21,6 +21,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -431,7 +432,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // the filename
@@ -679,22 +680,22 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     return filters;
   }
 
-  public String[] getFilePaths( VariableSpace space ) {
+  public String[] getFilePaths( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFilePathList(
-      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
+      bowl, space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
       buildFileTypeFiltersArray( fileName ) );
   }
 
-  public FileInputList getFileList( VariableSpace space ) {
+  public FileInputList getFileList( Bowl bowl, VariableSpace space ) {
     return FileInputList.createFileList(
-      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
+      bowl, space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
       buildFileTypeFiltersArray( fileName ) );
   }
 
-  public FileInputList getDynamicFileList( VariableSpace space, String[] filename, String[] filemask,
+  public FileInputList getDynamicFileList( Bowl bowl, VariableSpace space, String[] filename, String[] filemask,
     String[] excludefilemask, String[] filerequired, boolean[] includesubfolders ) {
     return FileInputList.createFileList(
-      space, filename, filemask, excludefilemask, filerequired, includesubfolders,
+      bowl, space, filename, filemask, excludefilemask, filerequired, includesubfolders,
       buildFileTypeFiltersArray( filename ) );
   }
 
@@ -743,7 +744,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
       remarks.add( cr );
 
       // check specified file names
-      FileInputList fileList = getFileList( transMeta );
+      FileInputList fileList = getFileList( transMeta.getBowl(), transMeta );
       if ( fileList.nrOfFiles() == 0 ) {
         cr =
           new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
@@ -763,7 +764,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
 
-    String[] files = getFilePaths( transMeta );
+    String[] files = getFilePaths( transMeta.getBowl(), transMeta );
     if ( files != null ) {
       for ( int i = 0; i < files.length; i++ ) {
         reference.getEntries().add( new ResourceEntry( files[i], ResourceType.FILE ) );
@@ -784,6 +785,11 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
+   * @param executionBowl
+   *          For file access
+   * @param globalManagementBowl
+   *          if needed for access to the current "global" (System or Repository) level config for export. If null, no
+   *          global config will be exported.
    * @param space
    *          the variable space to use
    * @param definitions
@@ -796,8 +802,9 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
    * @return the filename of the exported resource
    */
   @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public String exportResources( Bowl executionBowl, Bowl globalManagementBowl, VariableSpace space,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -808,8 +815,9 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
         // Replace the filename ONLY (folder or filename)
         //
         for ( int i = 0; i < fileName.length; i++ ) {
-          FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
-          fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
+          FileObject fileObject = KettleVFS.getInstance( executionBowl )
+            .getFileObject( space.environmentSubstitute( fileName[i] ), space );
+          fileName[i] = namingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
         }
       }
       return null;

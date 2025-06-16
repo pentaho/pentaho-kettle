@@ -13,7 +13,6 @@
 
 package org.pentaho.di.ui.core.dialog;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,16 +41,12 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.delegates.SpoonDBDelegate;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 
@@ -106,7 +101,6 @@ public class EnterSelectionDialog extends Dialog {
   private String filterString = null;
   private Pattern pattern = null;
   private Text searchText = null;
-  private HasDatabasesInterface databasesInterface;
 
   /**
    * @deprecated Use CT without <i>props</i> parameter
@@ -151,12 +145,6 @@ public class EnterSelectionDialog extends Dialog {
     this( parent, choices, shellText, message );
     this.shellWidth = shellWidth;
     this.shellHeight = shellHeight;
-  }
-
-  public EnterSelectionDialog( Shell parent, String[] choices, String shellText, String message,
-    HasDatabasesInterface databasesInterface ) {
-    this( parent, choices, shellText, message );
-    this.databasesInterface = databasesInterface;
   }
 
   public EnterSelectionDialog( Shell parent, String[] choices, String shellText, String message, String constant,
@@ -230,18 +218,6 @@ public class EnterSelectionDialog extends Dialog {
           updateFilter();
         }
       } );
-
-      if ( this.databasesInterface != null ) {
-        addConnection = new ToolItem( treeTb, SWT.PUSH );
-        addConnection.setImage( GUIResource.getInstance().getImageAdd() );
-        addConnection.setToolTipText( BaseMessages.getString( PKG, "Add.Datasource.Label" ) );
-
-        addConnection.addSelectionListener( new SelectionAdapter() {
-          public void widgetSelected( SelectionEvent event ) {
-            addDataSource();
-          }
-        } );
-      }
 
       FormData fd = new FormData();
       fd.right = new FormAttachment( 100 );
@@ -697,22 +673,6 @@ public class EnterSelectionDialog extends Dialog {
         filterString = searchText.getText().toUpperCase();
       }
     }
-    refresh();
-  }
-
-  protected void addDataSource() {
-    Spoon theSpoon = Spoon.getInstance();
-    SpoonDBDelegate theDelegate = new SpoonDBDelegate( theSpoon );
-    theDelegate.newConnection( this.databasesInterface );
-
-    ArrayList<DatabaseMeta> theDatabases = new ArrayList<DatabaseMeta>();
-    theDatabases.addAll( this.databasesInterface.getDatabases() );
-
-    String[] theNames = new String[theDatabases.size()];
-    for ( int i = 0; i < theDatabases.size(); i++ ) {
-      theNames[i] = theDatabases.get( i ).getName();
-    }
-    this.choices = theNames;
     refresh();
   }
 

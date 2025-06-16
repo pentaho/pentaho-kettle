@@ -14,6 +14,7 @@ package org.pentaho.di.plugins.fileopensave.dragdrop;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 
 import java.io.ByteArrayInputStream;
@@ -26,24 +27,26 @@ import java.io.IOException;
  * Class for serializing elements to/from a byte array
  */
 public class ElementTransfer extends ByteArrayTransfer {
-  private static ElementTransfer instance = new ElementTransfer();
   protected static final String TYPE_NAME = "pentaho-transfer_format";
   protected static final int TYPEID = registerType( TYPE_NAME );
 
   protected static boolean testMode; //Unit tests will set this mode
   protected static byte[] testPayload; //Unit test will place or load the byte array from here.
 
+  private final Bowl bowl;
+
   /**
    * Returns the singleton element transfer instance.
    */
-  public static ElementTransfer getInstance() {
-    return instance;
+  public static ElementTransfer getInstance( Bowl bowl ) {
+    return new ElementTransfer( bowl );
   }
 
   /**
    * Avoid explicit instantiation
    */
-  private ElementTransfer() {
+  private ElementTransfer( Bowl bowl ) {
+    this.bowl = bowl;
   }
 
   protected Element[] fromByteArray( byte[] bytes ) {
@@ -80,7 +83,7 @@ public class ElementTransfer extends ByteArrayTransfer {
     Object[] objects = (Object[]) object;
     Element[] elements = new Element[ objects.length ];
     for ( int i = 0; i < objects.length; i++ ) {
-      elements[ i ] = new Element( objects[ i ] );
+      elements[ i ] = new Element( bowl, objects[ i ] );
     }
     byte[] bytes = toByteArray( elements );
 
@@ -129,7 +132,7 @@ public class ElementTransfer extends ByteArrayTransfer {
 
       name += path.substring( path.length() - 4 );
     }
-    return new Element( name, entityType, path, provider, repositoryName );
+    return new Element( bowl, name, entityType, path, provider, repositoryName );
   }
 
   protected byte[] toByteArray( Element[] elements ) {

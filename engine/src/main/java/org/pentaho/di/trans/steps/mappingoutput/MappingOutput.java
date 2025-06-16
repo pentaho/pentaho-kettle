@@ -62,7 +62,8 @@ public class MappingOutput extends BaseStep implements StepInterface {
       data.outputRowMeta = getInputRowMeta().clone();
       meta.setOutputValueRenames( data.outputValueRenames );
       meta.setInputValueRenames( data.inputValueRenames );
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       //
       // Wait until the parent transformation has started completely.

@@ -89,7 +89,8 @@ public class GetFileNames extends BaseStep implements StepInterface {
 
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
 
         // Get total previous fields
         data.totalpreviousfields = data.inputRowMeta.size();
@@ -166,7 +167,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
           boolean[] includesubfolders = { meta.isDynamicIncludeSubFolders() };
           // Get files list
           data.files =
-            meta.getDynamicFileList(
+            meta.getDynamicFileList( getTransMeta().getBowl(),
               this, filesname, filesmask, excludefilesmask, filesrequired, includesubfolders );
           data.filessize = data.files.nrOfFiles();
           data.filenr = 0;
@@ -303,13 +304,12 @@ public class GetFileNames extends BaseStep implements StepInterface {
       try {
         // Create the output row meta-data
         data.outputRowMeta = new RowMeta();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                      // metadata
-                                                                                                      // populated
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore ); // get the metadata populated
         data.nrStepFields = data.outputRowMeta.size();
 
         if ( !meta.isFileField() ) {
-          data.files = meta.getFileList( this );
+          data.files = meta.getFileList( this.getTransMeta().getBowl(), this );
           data.filessize = data.files.nrOfFiles();
           handleMissingFiles();
         } else {

@@ -345,7 +345,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       dbchecked.connect( parentJob.getTransactionId(), null );
     } finally {
       if ( dbchecked != null ) {
-        dbchecked.disconnect();
+        dbchecked.close();
       }
     }
   }
@@ -568,7 +568,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
         if ( isAddRowsResult && iscustomSQL && ar != null ) {
           rowMeta = db.getQueryFields( countStatement, false );
         }
-        db.disconnect();
+        db.close();
       }
     }
 
@@ -608,7 +608,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "WaitForSQL", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "WaitForSQL", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

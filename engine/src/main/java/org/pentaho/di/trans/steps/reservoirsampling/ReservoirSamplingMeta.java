@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.reservoirsampling;
 import java.util.List;
 import java.util.Objects;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -212,7 +213,8 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
     rep.saveStepAttribute( id_transformation, id_step, "seed", m_randomSeed );
   }
 
-  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // nothing to do, as no fields are added/deleted
