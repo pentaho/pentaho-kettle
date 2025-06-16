@@ -15,11 +15,11 @@ package org.pentaho.di.trans.steps.rest;
 
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import com.sun.net.httpserver.HttpServer;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -104,15 +104,15 @@ public class RestIT {
     protected MultivaluedMap<String, Object> searchForHeaders( Response response ) {
       if ( override ) {
         String host = "host";
-        List<String> localhost = new ArrayList<>();
+        List<Object> localhost = new ArrayList<>();
         localhost.add( "localhost" );
-        Map.Entry<String, Object> entry = Mockito.mock( Map.Entry.class );
+        Map.Entry<String, List<Object>> entry = Mockito.mock( Map.Entry.class );
         when( entry.getKey() ).thenReturn( host );
         when( entry.getValue() ).thenReturn( localhost );
-        Set<Map.Entry<String, Object>> set = new HashSet<>();
+        Set<Map.Entry<String, List<Object>>> set = new HashSet<>();
         set.add( entry );
         MultivaluedMap<String, Object> test = Mockito.mock( MultivaluedMap.class );
-        when( test.entrySet() ).thenReturn( Collections.emptySet() );
+        when( test.entrySet() ).thenReturn( set );
         return test;
       } else {
         return super.searchForHeaders( response );
@@ -151,8 +151,8 @@ public class RestIT {
       stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     verify( stepMockHelper.trans, never() ).stopAll();
-    server = JdkHttpServerFactory.createHttpServer( new URI( HTTP_LOCALHOST_9998 ), null );
-    server.start();
+    ResourceConfig rc = new ResourceConfig( org.pentaho.di.trans.steps.rest.RestServices.class );
+    server = JdkHttpServerFactory.createHttpServer( new URI( HTTP_LOCALHOST_9998 ), rc );
   }
 
   @After
