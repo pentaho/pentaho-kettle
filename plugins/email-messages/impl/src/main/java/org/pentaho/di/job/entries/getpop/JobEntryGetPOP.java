@@ -1082,8 +1082,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       }
       mailConn =
         new MailConnection(
-          log, MailConnectionMeta.getProtocolFromString( getProtocol(), MailConnectionMeta.PROTOCOL_IMAP ),
-          realserver, realport, realusername, realpassword, isUseSSL(), isUseProxy(), realProxyUsername );
+          parentJobMeta.getBowl(), log, MailConnectionMeta.getProtocolFromString( getProtocol(),
+          MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realusername, realpassword, isUseSSL(),
+          isUseProxy(), realProxyUsername );
       // connect
       mailConn.connect();
 
@@ -1451,20 +1452,20 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "userName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "password", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     ValidatorContext ctx = new ValidatorContext();
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(),
         JobEntryValidatorUtils.fileExistsValidator() );
-    JobEntryValidatorUtils.andValidator().validate( this, "outputDirectory", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "outputDirectory", remarks, ctx );
 
-    JobEntryValidatorUtils.andValidator().validate( this, "SSLPort", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "SSLPort", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
@@ -1541,7 +1542,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
             .getString( PKG, "JobGetMailsFromPOP.Error.AttachmentFolderEmpty" ) );
       }
     }
-    FileObject folder = KettleVFS.getFileObject( folderName, this );
+    FileObject folder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( folderName, this );
     if ( folder.exists() ) {
       if ( folder.getType() != FileType.FOLDER ) {
         switch ( folderType ) {

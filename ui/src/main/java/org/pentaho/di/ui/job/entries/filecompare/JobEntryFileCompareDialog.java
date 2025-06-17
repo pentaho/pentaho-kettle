@@ -172,7 +172,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
     } );
 
     wbFilename1.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename1, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Filename 2 line
@@ -208,7 +208,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
     } );
 
     wbFilename2.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename2, jobMeta,
-        new SelectionAdapterOptions( SelectionOperation.FILE,
+        new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
           new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Add filename to result filenames

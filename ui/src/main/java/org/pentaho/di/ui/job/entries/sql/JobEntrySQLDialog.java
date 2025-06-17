@@ -252,7 +252,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.SQL, FilterType.TXT, FilterType.ALL }, FilterType.SQL  ) ) );
 
     // Send one SQL Statement?

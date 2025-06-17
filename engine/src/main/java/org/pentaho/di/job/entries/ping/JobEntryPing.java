@@ -408,7 +408,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "hostname", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "hostname", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

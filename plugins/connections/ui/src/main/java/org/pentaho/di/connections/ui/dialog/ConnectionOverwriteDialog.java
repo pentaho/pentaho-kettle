@@ -36,24 +36,21 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
-/**
- * Created by tkafalas.
- */
-public class ConnectionRenameDialog extends Dialog {
+public class ConnectionOverwriteDialog extends Dialog {
 
-  private static Class<?> PKG = ConnectionRenameDialog.class;
+  private static Class<?> PKG = ConnectionOverwriteDialog.class;
 
   private Shell shell;
   private PropsUI props;
   private int returnValue;
 
 
-  public ConnectionRenameDialog( Shell shell ) {
+  public ConnectionOverwriteDialog( Shell shell ) {
     super( shell );
     props = PropsUI.getInstance();
   }
 
-  public int open( String originalName, String connectionName ) {
+  public int open( String connectionName ) {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
@@ -65,7 +62,7 @@ public class ConnectionRenameDialog extends Dialog {
     formLayout.marginHeight = 15;
 
     shell.setLayout( formLayout );
-    shell.setText( BaseMessages.getString( PKG, "ConnectionRenameDialog.renameOrCopy.Title" ) );
+    shell.setText( BaseMessages.getString( PKG, "ConnectionOverwriteDialog.Title" ) );
     shell.setImage( getImage() );
 
     Image image = display.getSystemImage( SWT.ICON_WARNING );
@@ -87,8 +84,7 @@ public class ConnectionRenameDialog extends Dialog {
     Text wlMessage = new Text( wcMessage, SWT.MULTI | SWT.WRAP );
     wlMessage.setEditable( false );
     props.setLook( wlMessage );
-    wlMessage.setText(
-      BaseMessages.getString( PKG, "ConnectionRenameDialog.renameOrCopy.Label", originalName, connectionName ) );
+    wlMessage.setText( BaseMessages.getString( PKG, "ConnectionOverwriteDialog.Label.Confirmation", connectionName ) );
     GridData gdlLocal = new GridData( GridData.FILL_HORIZONTAL );
     gdlLocal.widthHint = 300;
     wlMessage.setLayoutData( gdlLocal );
@@ -100,19 +96,20 @@ public class ConnectionRenameDialog extends Dialog {
     wcMessage.setLayoutData( fdcMessage );
 
     Button wbNo = new Button( shell, SWT.PUSH );
-    wbNo.setText( BaseMessages.getString( PKG, "ConnectionRenameDialog.renameOrCopy.rename" ) );
+    wbNo.setText( BaseMessages.getString( PKG, "System.Button.No" ) );
     wbNo.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
         quit( SWT.NO );
       }
     } );
     FormData fdlNo = new FormData();
+    fdlNo.width = 70;
     fdlNo.top = new FormAttachment( wcMessage, 30 );
     fdlNo.right = new FormAttachment( 100 );
     wbNo.setLayoutData( fdlNo );
 
     Button wbYes = new Button( shell, SWT.PUSH );
-    wbYes.setText( BaseMessages.getString( PKG, "ConnectionRenameDialog.renameOrCopy.copy" ) );
+    wbYes.setText( BaseMessages.getString( PKG, "ConnectionOverwriteDialog.Label.Yes" ) );
     wbYes.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
         quit( SWT.YES );
@@ -120,22 +117,10 @@ public class ConnectionRenameDialog extends Dialog {
     } );
 
     FormData fdlYes = new FormData();
+    fdlYes.width = 105;
     fdlYes.top = new FormAttachment( wcMessage, 30 );
     fdlYes.right = new FormAttachment( wbNo, -10 );
     wbYes.setLayoutData( fdlYes );
-
-    Button wbCancel = new Button( shell, SWT.PUSH );
-    wbCancel.setText( BaseMessages.getString( PKG, "ConnectionRenameDialog.cancel" ) );
-    wbCancel.addSelectionListener( new SelectionAdapter() {
-      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        quit( SWT.CANCEL );
-      }
-    } );
-
-    FormData fdlCancel = new FormData();
-    fdlCancel.top = new FormAttachment( wcMessage, 30 );
-    fdlCancel.right = new FormAttachment( wbYes, -10 );
-    wbCancel.setLayoutData( fdlCancel );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -164,7 +149,7 @@ public class ConnectionRenameDialog extends Dialog {
   }
 
   private void cancel() {
-    quit( SWT.CANCEL );
+    quit( SWT.NO );
   }
 
   private void quit( int returnValue ) {

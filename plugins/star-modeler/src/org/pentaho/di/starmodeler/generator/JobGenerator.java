@@ -247,7 +247,7 @@ public class JobGenerator {
       throw new KettleException("There was an error during the generation of the SQL job", e);
     } finally {
       if (db!=null) {
-        db.disconnect();
+        db.close();
       }
     }
   }

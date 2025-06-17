@@ -12,6 +12,7 @@
  ******************************************************************************/
 
 
+
 package org.pentaho.di.core;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -25,7 +26,6 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.IKettleVFS;
@@ -1702,6 +1702,11 @@ public class Const {
    Value to execute a temporary generated file or the original script in Shell step
    */
   public static final String KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE = "KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE";
+
+  /**
+   * Value to configure whether to ignore out of range exceptions, letting values be rounded to the nearest possible value.
+   */
+  public static final String KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION = "KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION";
 
   /**
    Value that overrides gather performance metrics checkbox value in scheduler dialog

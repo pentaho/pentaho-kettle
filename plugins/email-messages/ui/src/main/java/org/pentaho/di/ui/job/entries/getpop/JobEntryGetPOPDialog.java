@@ -921,7 +921,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wOutputDirectory.setLayoutData( fdOutputDirectory );
 
     wbDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wOutputDirectory, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Create local folder
     wlcreateLocalFolder = new Label( wTargetFolder, SWT.RIGHT );
@@ -1073,7 +1073,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wAttachmentFolder.setLayoutData( fdAttachmentFolder );
 
     wbAttachmentFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wAttachmentFolder, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Limit attached files
     wlAttachmentWildcard = new Label( wTargetFolder, SWT.RIGHT );
@@ -1966,7 +1966,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       }
       try {
         mailConn =
-          new MailConnection(
+          new MailConnection( jobMeta.getBowl(),
             LogChannel.UI, MailConnectionMeta.getProtocolFromString(
               wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser,
             realpass, wUseSSL.getSelection(), wUseProxy.getSelection(), realproxyuser );

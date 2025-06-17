@@ -790,7 +790,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     new Thread( runnable ).start();
 
     wbLogFile.addSelectionListener(  new SelectionAdapterFileDialogTextVar( log, wLogFile, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
     // Add listeners
@@ -903,7 +903,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.
@@ -1303,7 +1303,11 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         cid.setDatabaseMeta( databaseMeta );
         cid.setModalDialog( true );
         if ( cid.open() != null ) {
-          transMeta.addDatabase( databaseMeta );
+          try {
+            transMeta.getDatabaseManagementInterface().add( databaseMeta );
+          } catch ( KettleException ex ) {
+            //Todo error message
+          }
           wConnection.removeAll();
           addDatabases( wConnection, databaseType );
           selectDatabase( wConnection, databaseMeta.getName() );

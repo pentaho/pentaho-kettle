@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.fieldsplitter;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -399,7 +400,8 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     return count;
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Remove the field to split
     int idx = r.indexOfValue( getSplitField() );

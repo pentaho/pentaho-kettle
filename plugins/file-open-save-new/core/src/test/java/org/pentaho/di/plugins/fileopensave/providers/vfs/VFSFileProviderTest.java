@@ -71,13 +71,12 @@ public class VFSFileProviderTest {
 
     when( vfsConnectionManagerHelper.getConnectionRootFileName( any() ) ).thenCallRealMethod();
 
-    when( bowl.getConnectionManager() ).thenReturn( connectionManager );
+    when( bowl.getManager( eq( ConnectionManager.class ) ) ).thenReturn( connectionManager );
 
     vfsFileProvider = new VFSFileProvider(
-      bowl,
-      kettleVFSService,
       vfsConnectionManagerHelper,
       new ConnectionFileNameParser() );
+    vfsFileProvider.setKettleVFSServiceSupplier( b -> kettleVFSService );
   }
 
   @Test
@@ -139,17 +138,17 @@ public class VFSFileProviderTest {
 
     File vfsFile = createTestFile( "pvfs://abc/someDir/somePath/someFile.txt" );
 
-    assertFalse( vfsFileProvider.isSame( file1, file2 ) );
+    assertFalse( vfsFileProvider.isSame( bowl, file1, file2 ) );
 
-    assertFalse( vfsFileProvider.isSame( file1, vfsFile ) );
+    assertFalse( vfsFileProvider.isSame( bowl, file1, vfsFile ) );
 
-    assertFalse( vfsFileProvider.isSame( vfsFile, file2 ) );
+    assertFalse( vfsFileProvider.isSame( bowl, vfsFile, file2 ) );
 
     // ---
 
     // Different schemes
-    assertFalse( vfsFileProvider.isSame( createTestFile( "xyz://abc" ), createTestFile( "pvfs://abc" ) ) );
-    assertFalse( vfsFileProvider.isSame( createTestFile( "pvfs://abc" ), createTestFile( "xyz://abc" ) ) );
+    assertFalse( vfsFileProvider.isSame( bowl, createTestFile( "xyz://abc" ), createTestFile( "pvfs://abc" ) ) );
+    assertFalse( vfsFileProvider.isSame( bowl, createTestFile( "pvfs://abc" ), createTestFile( "xyz://abc" ) ) );
 
     // ---
 
@@ -159,26 +158,26 @@ public class VFSFileProviderTest {
 
     File vfsFile_MNO_Path1 = createTestFile( "pvfs://mno/Path1/Path2" );
 
-    assertFalse( vfsFileProvider.isSame( vfsFile_ABC_SomeDir, vfsFile_MNO_Path1 ) );
+    assertFalse( vfsFileProvider.isSame( bowl, vfsFile_ABC_SomeDir, vfsFile_MNO_Path1 ) );
 
-    assertFalse( vfsFileProvider.isSame( vfsFile_MNO_Path1, vfsFile_ABC_SomeDir ) );
+    assertFalse( vfsFileProvider.isSame( bowl, vfsFile_MNO_Path1, vfsFile_ABC_SomeDir ) );
 
-    assertFalse( vfsFileProvider.isSame( createTestFile( "pvfs://" ), vfsFile_ABC_SomeDir ) ); // malformed VFS files
+    assertFalse( vfsFileProvider.isSame( bowl, createTestFile( "pvfs://" ), vfsFile_ABC_SomeDir ) ); // malformed VFS files
 
-    assertFalse( vfsFileProvider.isSame( createTestFile( "pvfs:/" ), vfsFile_ABC_SomeDir ) ); // malformed VFS files
+    assertFalse( vfsFileProvider.isSame( bowl, createTestFile( "pvfs:/" ), vfsFile_ABC_SomeDir ) ); // malformed VFS files
 
-    assertTrue( vfsFileProvider.isSame( vfsFile_ABC_SomeDir, vfsFile_ABC_SomeDir ) );
+    assertTrue( vfsFileProvider.isSame( bowl, vfsFile_ABC_SomeDir, vfsFile_ABC_SomeDir ) );
 
-    assertTrue( vfsFileProvider.isSame( vfsFile_ABC_SomeDir, vfsFile_ABC_FolderA ) );
+    assertTrue( vfsFileProvider.isSame( bowl, vfsFile_ABC_SomeDir, vfsFile_ABC_FolderA ) );
 
     File vfsFile_SpecialCharacters_Path1 = createTestFile( "pvfs://Special Character name &#! <>/Path1/Path2" );
 
     File vfsFile_SpecialCharacters_DirectoryA =
       createTestFile( "pvfs://Special Character name &#! <>/DirectoryA/DirectoryB/DirectoryC" );
 
-    assertTrue( vfsFileProvider.isSame( vfsFile_SpecialCharacters_Path1, vfsFile_SpecialCharacters_DirectoryA ) );
+    assertTrue( vfsFileProvider.isSame( bowl, vfsFile_SpecialCharacters_Path1, vfsFile_SpecialCharacters_DirectoryA ) );
 
-    assertFalse( vfsFileProvider.isSame( vfsFile_SpecialCharacters_Path1, vfsFile_ABC_SomeDir ) );
+    assertFalse( vfsFileProvider.isSame( bowl, vfsFile_SpecialCharacters_Path1, vfsFile_ABC_SomeDir ) );
   }
 
   // region getTree(..)
@@ -191,7 +190,7 @@ public class VFSFileProviderTest {
     when( vfsConnectionManagerHelper.getAllDetails( connectionManager ) )
       .thenReturn( List.of( details1, details2, details3 ) );
 
-    VFSTree resultTree = (VFSTree) vfsFileProvider.getTree();
+    VFSTree resultTree = (VFSTree) vfsFileProvider.getTree( bowl );
 
     assertEquals( VFSFileProvider.NAME, resultTree.getName() );
 
@@ -216,7 +215,7 @@ public class VFSFileProviderTest {
     when( vfsConnectionManagerHelper.getAllDetails( connectionManager ) )
       .thenReturn( List.of( details1, details2 ) );
 
-    VFSTree resultTree = (VFSTree) vfsFileProvider.getTree();
+    VFSTree resultTree = (VFSTree) vfsFileProvider.getTree( bowl );
 
     assertEquals( VFSFileProvider.NAME, resultTree.getName() );
 
@@ -238,7 +237,7 @@ public class VFSFileProviderTest {
     when( vfsConnectionManagerHelper.getAllDetails( connectionManager ) )
       .thenReturn( List.of( details1, details2, details3 ) );
 
-    VFSTree resultTree = vfsFileProvider.getTree( List.of( "typeA", "typeC" ) );
+    VFSTree resultTree = vfsFileProvider.getTree( bowl, List.of( "typeA", "typeC" ) );
 
     assertEquals( VFSFileProvider.NAME, resultTree.getName() );
 
@@ -292,7 +291,7 @@ public class VFSFileProviderTest {
     GetFilesOfConnectionUsingBucketsScenario scenario = new GetFilesOfConnectionUsingBucketsScenario();
     mockDetailsProviderLocations( scenario.details1, scenario.provider );
 
-    vfsFileProvider.getFiles( scenario.connectionRootFile, null, mock( VariableSpace.class ) );
+    vfsFileProvider.getFiles( bowl, scenario.connectionRootFile, null, mock( VariableSpace.class ) );
   }
 
   @Test( expected = FileException.class )
@@ -300,7 +299,7 @@ public class VFSFileProviderTest {
     GetFilesOfConnectionUsingBucketsScenario scenario = new GetFilesOfConnectionUsingBucketsScenario();
     when( scenario.provider.getLocations( scenario.details1 ) ).thenReturn( null );
 
-    vfsFileProvider.getFiles( scenario.connectionRootFile, null, mock( VariableSpace.class ) );
+    vfsFileProvider.getFiles( bowl, scenario.connectionRootFile, null, mock( VariableSpace.class ) );
   }
 
   @Test
@@ -308,7 +307,7 @@ public class VFSFileProviderTest {
     GetFilesOfConnectionUsingBucketsScenario scenario = new GetFilesOfConnectionUsingBucketsScenario();
 
     List<VFSFile> files =
-      vfsFileProvider.getFiles( scenario.connectionRootFile, null, mock( VariableSpace.class ) );
+      vfsFileProvider.getFiles( bowl, scenario.connectionRootFile, null, mock( VariableSpace.class ) );
 
     assertEquals( 2, files.size() );
 
@@ -332,12 +331,12 @@ public class VFSFileProviderTest {
     GetFilesOfConnectionUsingBucketsScenario scenario = new GetFilesOfConnectionUsingBucketsScenario();
 
     List<VFSFile> files1 =
-      vfsFileProvider.getFiles( scenario.connectionRootFile, null, mock( VariableSpace.class ) );
+      vfsFileProvider.getFiles( bowl, scenario.connectionRootFile, null, mock( VariableSpace.class ) );
 
     assertNotNull( files1 );
 
     List<VFSFile> files2 =
-      vfsFileProvider.getFiles( scenario.connectionRootFile, null, mock( VariableSpace.class ) );
+      vfsFileProvider.getFiles( bowl, scenario.connectionRootFile, null, mock( VariableSpace.class ) );
 
     assertSame( files2, files1 );
   }
@@ -348,7 +347,7 @@ public class VFSFileProviderTest {
 
     when( scenario.provider.getLocations( scenario.details1 ) ).thenThrow( RuntimeException.class );
 
-    vfsFileProvider.getFiles( scenario.connectionRootFile, null, mock( VariableSpace.class ) );
+    vfsFileProvider.getFiles( bowl, scenario.connectionRootFile, null, mock( VariableSpace.class ) );
   }
 
   void assertBucket( VFSFile bucketRootFile, String name, long modifiedDate, String path, String parentPath ) {
@@ -383,8 +382,10 @@ public class VFSFileProviderTest {
 
     mockGetFileObject( "pvfs://connection1/", connectionRootFileObject );
 
+    VariableSpace space = mock( VariableSpace.class );
+    when( space.listVariables() ).thenReturn( new String[0] );
     List<VFSFile> files =
-      vfsFileProvider.getFiles( connectionRootFile, null, mock( VariableSpace.class ) );
+      vfsFileProvider.getFiles( bowl, connectionRootFile, null, space );
 
     // This scenario has no children.
     // Children are tested in the (next) scenario, where the base file is not a connection root.
@@ -427,7 +428,9 @@ public class VFSFileProviderTest {
   public void testGetFilesOfSubFolder() throws Exception {
     GetFilesOfSubFolderScenario scenario = new GetFilesOfSubFolderScenario();
 
-    List<VFSFile> files = vfsFileProvider.getFiles( scenario.baseFile, null, mock( VariableSpace.class ) );
+    VariableSpace space = mock( VariableSpace.class );
+    when( space.listVariables() ).thenReturn( new String[0] );
+    List<VFSFile> files = vfsFileProvider.getFiles( bowl, scenario.baseFile, null, space );
 
     assertNotNull( files );
     assertEquals( 2, files.size() );
@@ -468,6 +471,8 @@ public class VFSFileProviderTest {
     VFSConnectionDetails details = mock( VFSConnectionDetails.class );
     when( details.getName() ).thenReturn( name );
 
+    when( connectionManager.getDetails( name ) ).thenReturn( details );
+    when( connectionManager.getConnectionDetails( name ) ).thenReturn( details );
     when( connectionManager.getExistingDetails( name ) ).thenReturn( details );
 
     return details;

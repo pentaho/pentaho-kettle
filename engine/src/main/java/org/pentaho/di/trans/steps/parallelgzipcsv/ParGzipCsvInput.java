@@ -61,7 +61,8 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
 
       if ( data.filenames == null ) {
         // We're expecting the list of filenames from the previous step(s)...
@@ -270,7 +271,8 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
       // Open the next one...
       //
       logBasic( "Opening file #" + data.filenr + " : " + data.filenames[data.filenr] );
-      FileObject fileObject = KettleVFS.getFileObject( data.filenames[data.filenr], getTransMeta() );
+      FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+        .getFileObject( data.filenames[data.filenr], getTransMeta() );
       data.fis = KettleVFS.getInputStream( fileObject );
 
       if ( meta.isLazyConversionActive() ) {

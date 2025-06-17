@@ -136,7 +136,7 @@ public class NameResourceIT {
     // Create a new transformation.
     TransMeta transMeta = new TransMeta();
 
-    FileObject fileObject = KettleVFS.getFileObject( fileName, transMeta );
+    FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( fileName, transMeta );
 
     // This code is modeled after the legacy code in legacy step meta classes
     // that have an exportResources method that deal with file masks

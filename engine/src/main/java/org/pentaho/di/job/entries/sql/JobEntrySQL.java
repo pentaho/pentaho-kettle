@@ -273,7 +273,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
     }
 
     String realFilename = environmentSubstitute( sqlFilename );
-    try ( FileObject sqlFile = KettleVFS.getFileObject( realFilename, this ) ) {
+    try ( FileObject sqlFile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilename, this ) ) {
       if ( !sqlFile.exists() ) {
         logError( BaseMessages.getString( PKG, "JobSQL.SQLFileNotExist", realFilename ) );
         throw new KettleDatabaseException( BaseMessages.getString(
@@ -330,7 +330,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "SQL", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "SQL", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 

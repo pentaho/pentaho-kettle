@@ -63,7 +63,8 @@ public class SetValueConstant extends BaseStep implements StepInterface {
 
       // What's the format of the output row?
       data.setOutputRowMeta( getInputRowMeta().clone() );
-      meta.getFields( data.getOutputRowMeta(), getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.getOutputRowMeta(), getStepname(), null, null, this, repository,
+         metaStore );
       // Create convert meta-data objects that will contain Date & Number formatters
       // data.convertRowMeta = data.outputRowMeta.clone();
 

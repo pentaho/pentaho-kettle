@@ -13,8 +13,7 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.repository;
 
-import org.apache.commons.io.FilenameUtils;
-import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
@@ -26,7 +25,6 @@ import org.pentaho.di.plugins.fileopensave.api.file.FileDetails;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
-import org.pentaho.di.plugins.fileopensave.api.providers.File;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileExistsException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileOperationException;
@@ -85,29 +83,35 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   public static final String NAME = "Pentaho Repository";
   public static final String TYPE = "repository";
 
-  @Override public String getName() {
+  @Override
+  public String getName() {
     return NAME;
   }
 
-  @Override public String getType() {
+  @Override
+  public String getType() {
     return TYPE;
   }
 
-  @Override public RepositoryTree getTree() {
+  @Override
+  public RepositoryTree getTree( Bowl bowl ) {
     RepositoryTree repositoryTree = new RepositoryTree( NAME );
     repositoryTree.setChildren( loadDirectoryTree().getChildren() );
     return repositoryTree;
   }
 
   @Override
-  public List<RepositoryFile> getFiles( RepositoryFile file, String filters, VariableSpace space ) {
+  public List<RepositoryFile> getFiles( Bowl bowl, RepositoryFile file, String filters, VariableSpace space ) {
     RepositoryDirectoryInterface repositoryDirectoryInterface =
       findDirectory( file.getType().equalsIgnoreCase( RepositoryDirectory.DIRECTORY ) ? file.getPath() : file.getParent() );
 
+    if ( filters == null ) {
+      filters = FILTER;
+    }
     RepositoryDirectory repositoryDirectory = RepositoryDirectory.build( null, repositoryDirectoryInterface );
     populateFolders( repositoryDirectory, repositoryDirectoryInterface );
     try {
-      populateFiles( repositoryDirectory, repositoryDirectoryInterface, FILTER );
+      populateFiles( repositoryDirectory, repositoryDirectoryInterface, filters );
     } catch ( KettleException ke ) {
       ke.printStackTrace();
     }
@@ -120,7 +124,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
 
   // TODO: (Result) objects should be created at the endpoint and these should throw appropriate exceptions
   @Override
-  public List<RepositoryFile> delete( List<RepositoryFile> files, VariableSpace space ) {
+  public List<RepositoryFile> delete( Bowl bowl, List<RepositoryFile> files, VariableSpace space ) {
     List<RepositoryFile> deletedFiles = new ArrayList<>();
     for ( RepositoryFile repositoryFile : files ) {
       try {
@@ -223,7 +227,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   @Override
-  public RepositoryFile add( RepositoryFile folder, VariableSpace space ) throws FileException {
+  public RepositoryFile add( Bowl bowl, RepositoryFile folder, VariableSpace space ) throws FileException {
     if ( hasDupeFolder( folder.getParent(), folder.getName() ) ) {
       throw new FileExistsException();
     }
@@ -253,7 +257,9 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   // TODO: Handle recents on rename/delete/etc.
-  @Override public RepositoryFile rename( RepositoryFile file, String newPath, OverwriteStatus overwriteStatus, VariableSpace space ) {
+  @Override
+  public RepositoryFile rename( Bowl bowl, RepositoryFile file, String newPath, OverwriteStatus overwriteStatus,
+                                VariableSpace space ) {
     String newName = newPath.substring( newPath.lastIndexOf( "/" ) + 1 );
     try {
       return doRename( file, newName );
@@ -308,7 +314,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return repositoryFile;
   }
 
-  @Override public RepositoryFile move( RepositoryFile file, String toPath,
+  @Override public RepositoryFile move( Bowl bowl, RepositoryFile file, String toPath,
                                         OverwriteStatus overwriteStatus, VariableSpace space ) {
     return null;
   }
@@ -330,16 +336,18 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return null;
   }
 
-  @Override public RepositoryFile copy( RepositoryFile file, String toPath,
-                                        OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
+  @Override
+  public RepositoryFile copy( Bowl bowl, RepositoryFile file, String toPath,
+                              OverwriteStatus overwriteStatus, VariableSpace space ) throws FileException {
     overwriteStatus.setCurrentFileInProgressDialog( file.getPath() );
     boolean destExists = false;
     String destinationObjectId = null;
 
-    RepositoryFile toFileParent = getFile( file, Util.getFolder( toPath ), EntityType.REPOSITORY_DIRECTORY, space );
-    if ( fileExists(toFileParent, toPath, space ) ){
+    RepositoryFile toFileParent = getFile( bowl, file, Util.getFolder( toPath ), EntityType.REPOSITORY_DIRECTORY,
+                                           space );
+    if ( fileExists( bowl, toFileParent, toPath, space ) ){
       destExists = true;
-      RepositoryFile toFile = getFile( file, toPath, file.getEntityType(), space );
+      RepositoryFile toFile = getFile( bowl, file, toPath, file.getEntityType(), space );
       destinationObjectId = toFile.getObjectId();
     }
 
@@ -349,7 +357,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
       return null;
     }
     if ( overwriteStatus.isRename() ) {
-      String newDestination = getNewName( toFileParent, toPath, space );
+      String newDestination = getNewName( bowl, toFileParent, toPath, space );
       toPath = newDestination;
       destinationObjectId = null;
     }
@@ -358,12 +366,12 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
         RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( toPath );
         if ( repositoryDirectoryInterface == null ) {
           //Create the folder
-          createDirectory( Util.getFolder( toPath ), file, Util.getName( toPath ) );
+          createDirectory( bowl, Util.getFolder( toPath ), file, Util.getName( toPath ) );
         }
         //Loop thru the children
-        List<RepositoryFile> children = getFiles( file, null, space );
+        List<RepositoryFile> children = getFiles( bowl, file, null, space );
         for ( RepositoryFile child : children ) {
-          copy( child, toPath + "/" + child.getName(), overwriteStatus, space );
+          copy( bowl, child, toPath + "/" + child.getName(), overwriteStatus, space );
 
         }
       } catch ( KettleException e ) {
@@ -388,7 +396,8 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return repositoryFile;
   }
 
-  @Override public boolean fileExists( RepositoryFile dir, String path, VariableSpace space ) {
+  @Override
+  public boolean fileExists( Bowl bowl, RepositoryFile dir, String path, VariableSpace space ) {
     RepositoryDirectoryInterface directoryInterface;
     try {
       //Only returns non-null if the path is not a folder
@@ -415,12 +424,13 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   @Override
-  public boolean isSame( org.pentaho.di.plugins.fileopensave.api.providers.File file1,
+  public boolean isSame( Bowl bowl, org.pentaho.di.plugins.fileopensave.api.providers.File file1,
                          org.pentaho.di.plugins.fileopensave.api.providers.File file2 ) {
     return file1.getProvider().equals( file2.getProvider() );
   }
 
-  @Override public InputStream readFile( RepositoryFile file, VariableSpace space ) throws FileException {
+  @Override
+  public InputStream readFile( Bowl bowl, RepositoryFile file, VariableSpace space ) throws FileException {
     RepositoryElementInterface repositoryElementInterface = getObject( file.getObjectId(), file.getType() );
     if ( repositoryElementInterface != null ) {
       String xml = null;
@@ -444,7 +454,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   }
 
   @Override
-  public RepositoryFile writeFile( InputStream inputStream, RepositoryFile destDir, String path,
+  public RepositoryFile writeFile( Bowl bowl, InputStream inputStream, RepositoryFile destDir, String path,
                                    OverwriteStatus overwriteStatus, VariableSpace space )
     throws FileException {
     RepositoryObjectType type = getType( path );
@@ -473,7 +483,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
         repositoryElementInterface.setRepositoryDirectory( directoryInterface );
         getRepository().save( repositoryElementInterface, null, null );
         // The save worked, now we have to return a RepositoryFile
-        return getFile( destDir, path, EntityType.REPOSITORY_FILE, space );
+        return getFile( bowl, destDir, path, EntityType.REPOSITORY_FILE, space );
       }
       return null;
     } catch ( KettleException e ) {
@@ -491,7 +501,8 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return null;
   }
 
-  @Override public String getNewName( RepositoryFile destDir, String newPath, VariableSpace space ) {
+  @Override
+  public String getNewName( Bowl bowl, RepositoryFile destDir, String newPath, VariableSpace space ) {
     RepositoryDirectoryInterface directoryInterface = null;
     RepositoryObjectType type = getType( newPath );
     try {
@@ -640,7 +651,8 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     return getRepository().getUserInfo().isAdmin();
   }
 
-  @Override public RepositoryFile getParent( RepositoryFile file ) {
+  @Override
+  public RepositoryFile getParent( Bowl bowl, RepositoryFile file ) {
     RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
     repositoryDirectory.setPath( file.getParent() );
     return repositoryDirectory;
@@ -650,7 +662,8 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
     //Any local caches that this provider might use should be cleared here.
   }
 
-  @Override public RepositoryFile getFile( RepositoryFile file, VariableSpace space ) {
+  @Override
+  public RepositoryFile getFile( Bowl bowl, RepositoryFile file, VariableSpace space ) {
     return null;
   }
 
@@ -665,16 +678,30 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
       // Don't set directory if not found
     }
     if ( fileDetails.getType() != null ) {
-      repositoryObject.setObjectType(
-        fileDetails.getType().equals( TRANSFORMATION ) ? RepositoryObjectType.TRANSFORMATION
-          : RepositoryObjectType.JOB );
+      repositoryObject.setObjectType( getRepoObjectType( fileDetails ) );
     }
     fileDialogOperation.setRepositoryObject( repositoryObject );
     fileDialogOperation.setProvider( fileDetails.getProvider() );
     fileDialogOperation.setFilename( fileDetails.getName() );
+    fileDialogOperation.setPath( fileDetails.getPath() );
   }
 
-  @Override public RepositoryFile createDirectory( String parentPath, RepositoryFile repositoryFile, String newDirectoryName )
+  private static RepositoryObjectType getRepoObjectType( FileDetails details ) {
+    // the file might be a folder but RepositoryObject was only intended for files
+    switch ( details.getType() ) {
+      case TRANSFORMATION:
+        return RepositoryObjectType.TRANSFORMATION;
+      case JOB:
+        return RepositoryObjectType.JOB;
+      case FOLDER:
+      default:
+      return RepositoryObjectType.UNKNOWN;
+    }
+  }
+
+  @Override
+  public RepositoryFile createDirectory( Bowl bowl, String parentPath, RepositoryFile repositoryFile,
+                                         String newDirectoryName )
     throws FileException {
     RepositoryDirectory newRepositoryDirectory = RepositoryDirectory.build( parentPath, findDirectory( repositoryFile.getPath() ) );
     newRepositoryDirectory.setName( newDirectoryName );
@@ -683,7 +710,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
       return RepositoryDirectory.build( newRepositoryDirectory.getParent(),
         findDirectory( newRepositoryDirectory.getPath() ) );
     }
-    return add( newRepositoryDirectory, null );
+    return add( bowl, newRepositoryDirectory, null );
   }
 
   private Repository getRepository() {
@@ -693,8 +720,9 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
 
   //Create a RepositoryFile object given the parent dir repositoryFile, an absolute path, and resulting file entityType,
   // none of which can be null.
-  private RepositoryFile getFile( RepositoryFile destDir, String toPath, EntityType entityType, VariableSpace space ) {
-    Element returnElement = new Element( destDir ); //The folder gives us the additional values we need like type
+  private RepositoryFile getFile( Bowl bowl, RepositoryFile destDir, String toPath, EntityType entityType,
+                                  VariableSpace space ) {
+    Element returnElement = new Element( bowl, destDir ); //The folder gives us the additional values we need like type
     returnElement.setPath( toPath ); //Then we override the path name and convert it back to a File
     returnElement.setName( Util.getName( toPath ) );
     returnElement.setEntityType( entityType );

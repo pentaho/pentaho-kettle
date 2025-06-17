@@ -648,7 +648,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
           // Get file names
           String file_previous = resultRow.getString( 0, null );
           if ( !Utils.isEmpty( file_previous ) ) {
-            FileObject file = KettleVFS.getFileObject( file_previous, this );
+            FileObject file = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( file_previous, this );
             if ( !file.exists() ) {
               logError( BaseMessages.getString( PKG, "JobSFTPPUT.Log.FilefromPreviousNotFound", file_previous ) );
             } else {
@@ -728,7 +728,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         } else {
           FileObject folder = null;
           try {
-            folder = KettleVFS.getFileObject( realDestinationFolder, this );
+            folder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realDestinationFolder, this );
             // Let's check if folder exists...
             if ( !folder.exists() ) {
               // Do we need to create it?
@@ -764,7 +764,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
           result.setNrErrors( 1 );
           return result;
         }
-        if ( !KettleVFS.fileExists( realKeyFilename ) ) {
+        if ( !KettleVFS.getInstance( parentJobMeta.getBowl() ).fileExists( realKeyFilename ) ) {
           // Error.. can not reach keyfile
           logError( BaseMessages.getString( PKG, "JobSFTP.Error.KeyFileNotFound" ) );
           result.setNrErrors( 1 );
@@ -775,7 +775,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
       // Create sftp client to host ...
       sftpclient =
-        new SFTPClient(
+        new SFTPClient( parentJobMeta.getBowl(),
           InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
           realKeyFilename, realPassPhrase );
       if ( log.isDetailed() ) {
@@ -829,7 +829,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         // Get all the files in the local directory...
         myFileList = new ArrayList<FileObject>();
 
-        FileObject localFiles = KettleVFS.getFileObject( realLocalDirectory, this );
+        FileObject localFiles = KettleVFS.getInstance( parentJobMeta.getBowl() )
+          .getFileObject( realLocalDirectory, this );
         FileObject[] children = localFiles.getChildren();
         if ( children != null ) {
           for ( int i = 0; i < children.length; i++ ) {
@@ -907,7 +908,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
                 FileObject destination = null;
                 try {
                   destination =
-                    KettleVFS.getFileObject( realDestinationFolder
+                    KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realDestinationFolder
                       + Const.FILE_SEPARATOR + myFile.getName().getBaseName(), this );
                   myFile.moveTo( destination );
                   if ( log.isDetailed() ) {
@@ -981,16 +982,16 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate(
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(),
       this, "localDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator(),
           JobEntryValidatorUtils.fileExistsValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "userName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "password", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( this, "serverPort", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverPort", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 

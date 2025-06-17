@@ -33,6 +33,9 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 
 /**
  * This utility provides methods for synchronization of kettle's shared objects.
+ *
+ * NOTE: this is currently only used for editing Steps and the Repository Explorer. Other uses have been replaced by
+ * Bowls and their embedded managers.
  * 
  */
 public class SharedObjectSyncUtil {
@@ -57,10 +60,6 @@ public class SharedObjectSyncUtil {
   public SharedObjectSyncUtil( Spoon spoon ) {
     this.spoonDelegates = spoon.delegates;
     this.spoon = spoon;
-    spoonDelegates.db.setSharedObjectSyncUtil( this );
-    spoonDelegates.slaves.setSharedObjectSyncUtil( this );
-    spoonDelegates.clusters.setSharedObjectSyncUtil( this );
-    spoonDelegates.partitions.setSharedObjectSyncUtil( this );
   }
 
   public synchronized void synchronizeConnections( DatabaseMeta database ) {
@@ -123,45 +122,11 @@ public class SharedObjectSyncUtil {
     synchronizeTransformations( true, transMeta -> transMeta.getPartitionSchemas().remove( removed ) );
   }
 
-  private <T extends SharedObjectInterface & RepositoryElementInterface>
+  private <T extends SharedObjectInterface<T> & RepositoryElementInterface>
     void updateRepositoryObjects( T updatedObject, SynchronizationHandler<T> handler ) {
     synchronizeJobs( true, job -> synchronizeByObjectId( updatedObject, handler.getObjectsForSyncFromJob( job ), handler ) );
     synchronizeTransformations( true, trans ->
       synchronizeByObjectId( updatedObject, handler.getObjectsForSyncFromTransformation( trans ), handler ) );
-  }
-
-  public synchronized void reloadTransformationRepositoryObjects( boolean includeActive ) {
-    if ( spoon.rep != null ) {
-      synchronizeTransformations( includeActive, transMeta -> {
-        try {
-          spoon.rep.readTransSharedObjects( transMeta );
-        } catch ( KettleException e ) {
-          logError( e );
-        }
-      } );
-    }
-  }
-
-  public synchronized void reloadJobRepositoryObjects( boolean includeActive ) {
-    if ( spoon.rep != null ) {
-      synchronizeJobs( includeActive, jobMeta -> {
-        try {
-          spoon.rep.readJobMetaSharedObjects( jobMeta );
-        } catch ( KettleException e ) {
-          logError( e );
-        }
-      } );
-    }
-  }
-
-  public synchronized void reloadSharedObjects() {
-    synchronizeAll( false, meta -> {
-      try {
-        meta.setSharedObjects( meta.readSharedObjects() );
-      } catch ( KettleException e ) {
-        logError( e );
-      }
-    } );
   }
 
   private synchronized void synchronizeJobs( boolean includeActive, Consumer<JobMeta> synchronizeAction ) {
@@ -251,13 +216,7 @@ public class SharedObjectSyncUtil {
     synchronizeTransformations( step, stepMetaSynchronizationHandler, step.getName() );
   }
 
-  private void logError( KettleException e ) {
-    if ( spoon.getLog() != null ) {
-      spoon.getLog().logError( e.getLocalizedMessage(), e );
-    }
-  }
-
-  private <T extends SharedObjectInterface> void synchronizeJobs( T sourceObject, SynchronizationHandler<T> handler,
+  private <T extends SharedObjectInterface<T>> void synchronizeJobs( T sourceObject, SynchronizationHandler<T> handler,
       String originalName ) {
     for ( JobMeta currentJob : spoonDelegates.jobs.getLoadedJobs() ) {
       List<T> objectsForSync = handler.getObjectsForSyncFromJob( currentJob );
@@ -265,7 +224,7 @@ public class SharedObjectSyncUtil {
     }
   }
 
-  private <T extends SharedObjectInterface> void synchronizeTransformations( T object,
+  private <T extends SharedObjectInterface<T>> void synchronizeTransformations( T object,
       SynchronizationHandler<T> handler, String originalName ) {
     for ( TransMeta currentTransformation : spoonDelegates.trans.getLoadedTransformations() ) {
       List<T> objectsForSync =
@@ -274,17 +233,17 @@ public class SharedObjectSyncUtil {
     }
   }
 
-  private static <T extends SharedObjectInterface> void synchronizeShared(
+  private static <T extends SharedObjectInterface<T>> void synchronizeShared(
       T object, String name, List<T> objectsForSync, SynchronizationHandler<T> handler ) {
     synchronize( object, toSync -> toSync.isShared() && toSync.getName().equals( name ), objectsForSync, handler );
   }
 
-  private static <T extends SharedObjectInterface & RepositoryElementInterface>
+  private static <T extends SharedObjectInterface<T> & RepositoryElementInterface>
     void synchronizeByObjectId( T object, List<T> objectsForSync, SynchronizationHandler<T> handler ) {
     synchronize( object, toSync -> object.getObjectId().equals( toSync.getObjectId() ), objectsForSync, handler );
   }
 
-  private static <T extends SharedObjectInterface> void synchronize( T object, Predicate<T> pred, List<T> objectsForSync,
+  private static <T extends SharedObjectInterface<T>> void synchronize( T object, Predicate<T> pred, List<T> objectsForSync,
       SynchronizationHandler<T> handler ) {
     for ( T objectToSync : objectsForSync ) {
       if ( pred.test( objectToSync ) && object != objectToSync ) {
@@ -293,7 +252,7 @@ public class SharedObjectSyncUtil {
     }
   }
 
-  protected static interface SynchronizationHandler<T extends SharedObjectInterface> {
+  protected static interface SynchronizationHandler<T extends SharedObjectInterface<T>> {
 
     List<T> getObjectsForSyncFromJob( JobMeta job );
 

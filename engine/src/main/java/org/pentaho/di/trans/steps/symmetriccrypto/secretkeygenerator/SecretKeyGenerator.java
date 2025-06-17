@@ -78,7 +78,8 @@ public class SecretKeyGenerator extends BaseStep implements StepInterface {
         first = false;
         data.prevNrField = getInputRowMeta().size();
         data.outputRowMeta = getInputRowMeta().clone();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
       }
 
     } else {
@@ -86,7 +87,8 @@ public class SecretKeyGenerator extends BaseStep implements StepInterface {
       if ( first ) {
         first = false;
         data.outputRowMeta = new RowMeta();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
       }
     }
     for ( int i = 0; i < data.nr && !isStopped(); i++ ) {

@@ -611,14 +611,16 @@ public class MetaInjectTest {
   public void getRepositoryNotNullTest() {
     metaInject.setRepository( repository );
     //If repository is set in the base step (Local Execution) TransMeta will not be required to get the repository
+    // But is required to get the Bowl for file I/O
     metaInject.getRepository();
-    verify( metaInject, times( 0 ) ).getTransMeta();
+    verify( metaInject, times( 1 ) ).getTransMeta();
   }
 
   @Test
   public void getRepositoryNullTest() {
     metaInject.getRepository();
     //If repository is not set in the base step (Remote Executions/Scheduling) Need to get the repository from TransMeta
-    verify( metaInject, times( 1 ) ).getTransMeta();
+    // and is required to get the Bowl for file I/O
+    verify( metaInject, times( 2 ) ).getTransMeta();
   }
 }

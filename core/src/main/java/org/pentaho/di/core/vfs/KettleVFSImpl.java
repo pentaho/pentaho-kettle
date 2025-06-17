@@ -13,11 +13,11 @@
 
 package org.pentaho.di.core.vfs;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.commons.vfs2.FileName;
 import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileSystem;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.variables.Variables;
@@ -26,7 +26,6 @@ import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
 import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
 import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import com.google.common.base.Preconditions;
 
@@ -36,17 +35,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.commons.vfs2.cache.WeakRefFilesCache;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileSystemOptions;
-import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 
 /**
@@ -227,7 +221,7 @@ public class KettleVFSImpl implements IKettleVFS {
       if ( scheme.equals( "pvfs" ) ) {
         configBuilder.setParameter( fsOptions, "VariableSpace", varSpace, vfsFilename );
       }
-    } catch ( MetaStoreException ex ) {
+    } catch ( KettleException ex ) {
       // keep backward compatible API in KettleVFS
       throw new IOException( ex );
     }

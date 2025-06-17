@@ -145,7 +145,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
         }
       } finally {
         if ( db != null ) {
-          db.disconnect();
+          db.close();
         }
       }
       meta.setCompatibilityDbVersionMode();

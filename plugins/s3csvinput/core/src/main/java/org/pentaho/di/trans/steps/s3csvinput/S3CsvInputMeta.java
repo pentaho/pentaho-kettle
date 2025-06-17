@@ -30,6 +30,7 @@ import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -311,7 +312,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   }
 
   @Override
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     rowMeta.clear(); // Start with a clean slate, eats the input
 
@@ -366,9 +367,9 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   }
 
   @Override
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space ) throws KettleStepException {
-    getFields( rowMeta, origin, info, nextStep, space, null, null );
+    getFields( bowl, rowMeta, origin, info, nextStep, space, null, null );
   }
 
   @Override

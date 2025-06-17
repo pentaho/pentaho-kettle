@@ -105,7 +105,8 @@ public class UnivariateStats extends BaseStep implements StepInterface {
       m_data.setOutputRowMeta( outputMeta );
 
       // Determine the output format
-      m_meta.getFields( m_data.getOutputRowMeta(), getStepname(), null, null, this, repository, metaStore );
+      m_meta.getFields( getTransMeta().getBowl(), m_data.getOutputRowMeta(), getStepname(), null, null, this,
+        repository, metaStore );
 
       // Set up data cache for calculating median/percentiles
       m_dataCache = new ArrayList[ m_meta.getNumFieldsToProcess() ];

@@ -691,7 +691,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
         } else {
           FileObject folder = null;
           try {
-            folder = KettleVFS.getFileObject( realDestinationFolder, this );
+            folder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realDestinationFolder, this );
             // Let's check if folder exists...
             if ( !folder.exists() ) {
               // Do we need to create it?
@@ -1066,7 +1066,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 
       // Get all the files in the local directory...
 
-      FileObject localFiles = KettleVFS.getFileObject( localfolder, this );
+      FileObject localFiles = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( localfolder, this );
       FileObject[] children = localFiles.getChildren();
       if ( children != null ) {
         for ( int i = 0; i < children.length; i++ ) {
@@ -1103,7 +1103,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
         FileObject source = null;
         try {
           destination =
-            KettleVFS.getFileObject(
+            KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject(
               destinationFolder + Const.FILE_SEPARATOR + file.getName().getBaseName(), this );
           file.moveTo( destination );
           retval = true;

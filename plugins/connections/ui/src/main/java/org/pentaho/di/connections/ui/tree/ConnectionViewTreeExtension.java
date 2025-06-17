@@ -13,13 +13,16 @@
 
 package org.pentaho.di.connections.ui.tree;
 
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.vfs.connections.ui.dialog.ConnectionDelegate;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.SelectionTreeExtension;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.eclipse.swt.widgets.TreeItem;
 
 @ExtensionPoint( id = "ConnectionViewTreeExtension", description = "",
   extensionPointId = "SpoonViewTreeExtension" )
@@ -35,8 +38,16 @@ public class ConnectionViewTreeExtension implements ExtensionPointInterface {
     SelectionTreeExtension selectionTreeExtension = (SelectionTreeExtension) object;
     if ( selectionTreeExtension.getAction().equals( Spoon.EDIT_SELECTION_EXTENSION ) ) {
       if ( selectionTreeExtension.getSelection() instanceof ConnectionTreeItem ) {
-        ConnectionTreeItem connectionTreeItem = (ConnectionTreeItem) selectionTreeExtension.getSelection();
-        connectionDelegate.openDialog( connectionTreeItem.getLabel() );
+        TreeItem treeItem = selectionTreeExtension.getTreeItem();
+        String name = LeveledTreeNode.getName( treeItem );
+        LeveledTreeNode.LEVEL level = LeveledTreeNode.getLevel( treeItem );
+
+        connectionDelegate.openDialog( name, level );
+      }
+    } else if ( selectionTreeExtension.getAction().equals( Spoon.CREATE_NEW_SELECTION_EXTENSION ) ) {
+      if ( selectionTreeExtension.getSelection().equals( VFSConnectionDetails.class ) ) {
+        // Create new VFS connection
+        connectionDelegate.openDialog();
       }
     }
   }

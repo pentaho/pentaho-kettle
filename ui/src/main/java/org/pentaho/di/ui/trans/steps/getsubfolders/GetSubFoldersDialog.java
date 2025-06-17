@@ -567,7 +567,7 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
     // Listen to the Browse... button
     wbbFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFoldername, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {

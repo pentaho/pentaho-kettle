@@ -52,7 +52,7 @@ public class DatabaseJoin extends BaseDatabaseStep implements StepInterface {
         first = false;
         prepareSQL( meta, data );
         data.outputRowMeta = rowMeta.clone();
-        meta.getFields(
+        meta.getFields( getTransMeta().getBowl(),
             data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
             repository, metaStore );
 
@@ -240,7 +240,6 @@ public class DatabaseJoin extends BaseDatabaseStep implements StepInterface {
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    final DatabaseJoinData data = (DatabaseJoinData) sdi;
     dbLock.lock();
     try {
       super.dispose( smi, sdi );

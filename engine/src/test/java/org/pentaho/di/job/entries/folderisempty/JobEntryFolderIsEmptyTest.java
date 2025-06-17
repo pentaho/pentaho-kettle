@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -27,6 +28,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -58,6 +60,7 @@ public class JobEntryFolderIsEmptyTest {
     job.getJobMeta().addJobEntry( new JobEntryCopy( entry ) );
     entry.setParentJob( job );
     JobMeta mockJobMeta = mock( JobMeta.class );
+    when( mockJobMeta .getBowl() ).thenReturn( DefaultBowl.getInstance() );
     entry.setParentJobMeta( mockJobMeta );
 
     job.setStopped( false );

@@ -43,6 +43,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 @Step( id = "RssInput", name = "BaseStep.TypeLongDesc.RssInput",
         description = "BaseStep.TypeTooltipDesc.RssInput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
@@ -340,7 +341,8 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
     rowLimit = 0;
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     int i;
     for ( i = 0; i < inputFields.length; i++ ) {

@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -48,7 +49,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -121,7 +121,7 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
   @Injection( name = "TARGET_TABLE" )
   private String tableName;
 
-  private List<? extends SharedObjectInterface> databases;
+  private List<DatabaseMeta> databases;
 
   /** The database connection */
   private DatabaseMeta databaseMeta;
@@ -733,7 +733,7 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
   }
 
   @Override
-  public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // Change all the fields to normal storage, this is the fastest way to handle lazy conversion.
@@ -809,7 +809,7 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
         throw new KettleStepException( message, e );
       } finally {
         if ( db != null ) {
-          db.disconnect();
+          db.close();
         }
       }
     }
@@ -880,7 +880,7 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String upd;
       int nrkeys, nrfields;
@@ -1530,7 +1530,7 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
       } catch ( KettleDatabaseException dbe ) {
         logError( BaseMessages.getString( PKG, "DimensionLookupMeta.Log.DatabaseErrorOccurred" ) + dbe.getMessage() );
       } finally {
-        db.disconnect();
+        db.close();
       }
     }
     return fields;
@@ -1696,7 +1696,7 @@ public class DimensionLookupMeta extends BaseDatabaseStepMeta implements StepMet
               retval.setError( BaseMessages.getString( PKG, "DimensionLookupMeta.ReturnValue.ErrorOccurred" ) + dbe
                   .getMessage() );
             } finally {
-              db.disconnect();
+              db.close();
             }
           } else {
             retval.setError( BaseMessages.getString( PKG,

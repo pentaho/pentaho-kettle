@@ -65,7 +65,7 @@ public class TransProfileFactory {
     // Now start building the transformation...
     //
     TransMeta transMeta = new TransMeta( databaseMeta );
-    transMeta.addDatabase( databaseMeta );
+    transMeta.getDatabaseManagementInterface().add( databaseMeta );
 
     // Create a step to read the content of the table
     // Read the data from the database table...
@@ -209,7 +209,7 @@ public class TransProfileFactory {
       database.connect();
       return database.getTableFields( schemaTable );
     } finally {
-      database.disconnect();
+      database.close();
     }
 
   }

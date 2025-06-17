@@ -90,8 +90,8 @@ public class ConnectionManagerTest {
     bowl = mock( Bowl.class );
     vfsConnectionManagerHelper = mock( VFSConnectionManagerHelper.class );
     memoryMetaStore = new MemoryMetaStore();
-
-    connectionManager = new ConnectionManager( () -> memoryMetaStore, bowl, vfsConnectionManagerHelper );
+    when( bowl.getMetastore() ).thenReturn( memoryMetaStore );
+    connectionManager = new ConnectionManager( bowl, vfsConnectionManagerHelper );
   }
 
   // region Construction and Singleton
@@ -124,14 +124,15 @@ public class ConnectionManagerTest {
   }
 
   @Test
-  public void testGetInstanceOfBowlRespectsGivenBowlAndMetaStoreAndUsesDefaultConnectionHelper() {
+  public void testGetInstanceOfBowlRespectsGivenBowlAndMetaStoreAndUsesDefaultConnectionHelper() throws Exception {
     IMetaStore metaStore = mock( IMetaStore.class );
     Bowl bowl = mock( Bowl.class );
+    when( bowl.getMetastore() ).thenReturn( metaStore );
 
     VFSConnectionManagerHelper defaultVfsConnectionManagerHelper = VFSConnectionManagerHelper.getInstance();
     assertNotNull( defaultVfsConnectionManagerHelper );
 
-    ConnectionManager adhocConnectionManager = ConnectionManager.getInstance( () -> metaStore, bowl );
+    ConnectionManager adhocConnectionManager = ConnectionManager.getInstance( bowl );
 
     assertSame( bowl, adhocConnectionManager.getBowl() );
     assertSame( metaStore, adhocConnectionManager.getMetastoreSupplier().get() );
@@ -158,6 +159,32 @@ public class ConnectionManagerTest {
         .getConnectionDetails( TestConnectionWithBucketsProvider.SCHEME, CONNECTION_NAME );
     assertEquals( CONNECTION_NAME, testConnectionDetails1.getName() );
   }
+
+  @Test
+  public void testSubscribers() {
+
+    class MyConnectionUpdateSubscriber implements ConnectionUpdateSubscriber {
+        boolean called = false;
+
+        public void notifyChanged() {
+          called = true;
+        }
+      };
+    MyConnectionUpdateSubscriber sub = new MyConnectionUpdateSubscriber();
+
+    connectionManager.addSubscriber( sub );
+    addOne();
+    Assert.assertTrue( sub.called );
+
+    sub.called = false;
+    connectionManager.delete( CONNECTION_NAME );
+    Assert.assertTrue( sub.called );
+
+    sub.called = false;
+    connectionManager.reset();
+    Assert.assertTrue( sub.called );
+  }
+
 
   @Test
   public void testEncryptedField() throws Exception {

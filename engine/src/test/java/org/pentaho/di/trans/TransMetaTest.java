@@ -17,6 +17,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
@@ -38,6 +40,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
@@ -141,6 +144,7 @@ public class TransMetaTest {
       rmi.addValueMeta( new ValueMetaString( overriddenValue ) );
       return null;
     } ).when( smi ).getFields(
+      any( Bowl.class ),
       any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ), eq( nextStep ),
       any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
 
@@ -174,7 +178,8 @@ public class TransMetaTest {
     transMeta.getThisStepFields( thisStep, nextStep, row );
 
     // then
-    verify( smi, never() ).getFields( any(), any(), eq( new RowMetaInterface[] { row } ), any(), any(), any(), any() );
+    verify( smi, never() ).getFields( any(), any(), any(), eq( new RowMetaInterface[] { row } ), any(), any(), any(),
+                                      any() );
   }
 
   @Test
@@ -191,7 +196,7 @@ public class TransMetaTest {
     DatabaseMetaStoreUtil.createDatabaseElement( mstore, dbMetaStore );
 
     TransMeta trans = new TransMeta();
-    trans.addOrReplaceDatabase( dbMetaShared );
+    trans.getDatabaseManagementInterface().add( dbMetaShared );
     trans.setMetaStore( mstore );
     trans.importFromMetaStore();
     DatabaseMeta dbMeta = trans.findDatabase( name );
@@ -479,6 +484,7 @@ public class TransMetaTest {
     Mockito.when( jobNode.getChildNodes() ).thenReturn( nodeList );
 
     Repository rep = Mockito.mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
     RepositoryDirectory repDirectory =
       new RepositoryDirectory( new RepositoryDirectory( new RepositoryDirectory(), "home" ), "admin" );
     Mockito.when( rep.findDirectory( Mockito.eq( directory ) ) ).thenReturn( repDirectory );
@@ -497,7 +503,8 @@ public class TransMetaTest {
 
   @Test
   public void testTransWithOneStepIsConsideredUsed() throws Exception {
-    TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "one-step-trans.ktr" ).getPath() );
     assertEquals( 1, transMeta.getUsedSteps().size() );
     Repository rep = mock( Repository.class );
     ProgressMonitorListener monitor = mock( ProgressMonitorListener.class );
@@ -512,7 +519,8 @@ public class TransMetaTest {
 
   @Test
   public void testGetCacheVersion() throws Exception {
-    TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "one-step-trans.ktr" ).getPath() );
     int oldCacheVersion = transMeta.getCacheVersion();
     transMeta.setSizeRowset( 10 );
     int currCacheVersion = transMeta.getCacheVersion();
@@ -521,7 +529,8 @@ public class TransMetaTest {
 
   @Test
   public void testGetCacheVersionWithIrrelevantParameters() throws Exception {
-    TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "one-step-trans.ktr" ).getPath() );
     int oldCacheVersion = transMeta.getCacheVersion();
     int currCacheVersion;
 
@@ -796,11 +805,11 @@ public class TransMetaTest {
     when( newSmi.getStepIOMeta() ).thenReturn( stepIOMeta );
 
     doAnswer( (Answer<Void>) invocationOnMock -> {
-      RowMetaInterface passedRmi = (RowMetaInterface) invocationOnMock.getArguments()[ 0 ];
+      RowMetaInterface passedRmi = (RowMetaInterface) invocationOnMock.getArguments()[ 1 ];
       passedRmi.addRowMeta( rowMetaWithFields );
       return null;
     } ).when( newSmi )
-      .getFields( any(), any(), any(), any(), any(), any(), any() );
+      .getFields( any(), any(), any(), any(), any(), any(), any(), any() );
 
     return newSmi;
   }
@@ -814,7 +823,7 @@ public class TransMetaTest {
 
   @Test
   public void testSetInternalEntryCurrentDirectoryWithFilename( ) {
-    TransMeta transMetaTest = new TransMeta(  );
+    TransMeta transMetaTest = new TransMeta();
     transMetaTest.setFilename( "hasFilename" );
     transMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
     transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
@@ -827,11 +836,13 @@ public class TransMetaTest {
 
   @Test
   public void testSetInternalEntryCurrentDirectoryWithRepository( ) {
-    TransMeta transMetaTest = new TransMeta(  );
+    TransMeta transMetaTest = new TransMeta();
     RepositoryDirectoryInterface path = mock( RepositoryDirectoryInterface.class );
 
     when( path.getPath() ).thenReturn( "aPath" );
-    transMetaTest.setRepository( mock( Repository.class ) );
+    Repository rep = mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
+    transMetaTest.setRepository( rep );
     transMetaTest.setRepositoryDirectory( path );
     transMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
     transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
@@ -843,7 +854,7 @@ public class TransMetaTest {
 
   @Test
   public void testSetInternalEntryCurrentDirectoryWithoutFilenameOrRepository( ) {
-    TransMeta transMetaTest = new TransMeta(  );
+    TransMeta transMetaTest = new TransMeta();
     transMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
     transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
     transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );

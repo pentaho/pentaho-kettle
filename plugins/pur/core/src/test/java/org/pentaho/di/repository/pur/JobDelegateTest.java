@@ -21,15 +21,17 @@ import org.mockito.MockedStatic;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.AttributesInterface;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.shared.MemorySharedObjectsIO;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 
@@ -65,8 +67,10 @@ public class JobDelegateTest {
   private Map<String, String> group = new HashMap<>();
 
   @BeforeClass
-  public static void before() throws KettlePluginException {
+  public static void before() throws Exception {
     JobEntryPluginType.getInstance().searchPlugins();
+    KettleClientEnvironment.init();
+    DefaultBowl.getInstance().setSharedObjectsIO( new MemorySharedObjectsIO() );
   }
 
   private abstract class JobEntryBaseAndInterface extends JobEntryBase implements JobEntryInterface {

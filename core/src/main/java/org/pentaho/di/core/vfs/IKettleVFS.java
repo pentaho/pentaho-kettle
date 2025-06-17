@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 
 /**
@@ -66,7 +65,6 @@ public interface IKettleVFS {
    * @param vfsFilename the filename or URL to read from
    * @param charSetName the character set of the string (UTF-8, ISO8859-1, etc)
    * @return The content of the file as a String
-   * @deprecated use getInstance( Bowl )
    * @throws IOException
    */
   String getTextFileContent( String vfsFilename, String charSetName ) throws KettleFileException;

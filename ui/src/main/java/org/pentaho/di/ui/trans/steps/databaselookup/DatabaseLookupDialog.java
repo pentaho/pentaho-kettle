@@ -611,7 +611,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
               } finally {
                 try {
                   if ( db != null ) {
-                    db.disconnect();
+                    db.close();
                   }
                 } catch ( Exception ignored ) {
                   // ignore any errors here.
@@ -899,7 +899,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
           .getString( PKG, "DatabaseLookupDialog.ErrorGettingSchemas" ), e );
       } finally {
-        database.disconnect();
+        database.close();
       }
     }
   }

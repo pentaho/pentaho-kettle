@@ -156,7 +156,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
         // read string to parse
         data.document = reader.read( new StringReader( StringXML ) );
       } else if ( readurl && KettleVFS.startsWithScheme( StringXML ) ) {
-        data.document = reader.read( KettleVFS.getInputStream( StringXML ) );
+        data.document = reader.read( KettleVFS.getInstance( getTransMeta().getBowl() ).getInputStream( StringXML ) );
       } else if ( readurl ) {
         // read url as source
         HttpClient client = HttpClientManager.getInstance().createDefaultClient();
@@ -344,7 +344,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
         data.nrReadRow = getInputRowMeta().size();
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                        metaStore );
 
         // Get total previous fields
         data.totalpreviousfields = data.inputRowMeta.size();
@@ -390,7 +391,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
           FileObject file = null;
           try {
             // XML source is a file.
-            file = KettleVFS.getFileObject( environmentSubstitute( Fieldvalue ), getTransMeta() );
+            file = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( environmentSubstitute( Fieldvalue ), getTransMeta() );
 
             if ( meta.isIgnoreEmptyFile() && file.getContent().getSize() == 0 ) {
               logBasic( BaseMessages.getString( PKG, "GetXMLData.Error.FileSizeZero", "" + file.getName() ) );
@@ -628,7 +630,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
     if ( first && !meta.isInFields() ) {
       first = false;
 
-      data.files = meta.getFiles( this );
+      data.files = meta.getFiles( getTransMeta().getBowl(), this );
 
       if ( !meta.isdoNotFailIfNoFile() && data.files.nrOfFiles() == 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Log.NoFiles" ) );
@@ -639,7 +641,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
       // Create the output row meta-data
       data.outputRowMeta = new RowMeta();
 
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                      metaStore );
 
       // Create convert meta-data objects that will contain Date & Number formatters
       // For String to <type> conversions, we allocate a conversion meta data row as well...

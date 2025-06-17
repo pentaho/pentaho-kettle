@@ -17,6 +17,7 @@ import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -43,7 +44,8 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
   private static Class<?> PKG = RunConfigurationRunExtensionPoint.class;
   // basically exists for testing.
   private Function<Bowl, RunConfigurationManager> rcmProvider = bowl ->
-    RunConfigurationManager.getInstance( bowl );
+    RunConfigurationManager.getInstance( () -> bowl != null ? bowl.getMetastore() :
+                                         DefaultBowl.getInstance().getMetastore() );
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     ExecutionConfiguration executionConfiguration = (ExecutionConfiguration) ( (Object[]) o )[ 0 ];

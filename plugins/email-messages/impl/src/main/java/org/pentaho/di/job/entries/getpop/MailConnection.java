@@ -18,6 +18,7 @@ import com.sun.mail.imap.IMAPSSLStore;
 import com.sun.mail.pop3.POP3SSLStore;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -131,6 +132,7 @@ public class MailConnection {
   private Folder destinationIMAPFolder = null;
 
   private LogChannelInterface log;
+  private Bowl bowl;
 
   /**
    * Construct a new Database MailConnection
@@ -149,10 +151,11 @@ public class MailConnection {
    * @param proxyusername
    *          proxy authorised user
    */
-  public MailConnection( LogChannelInterface log, int protocol, String server, int port, String username,
+  public MailConnection( Bowl bowl, LogChannelInterface log, int protocol, String server, int port, String username,
     String password, boolean usessl, boolean useproxy, String proxyusername ) throws KettleException {
 
     this.log = log;
+    this.bowl = bowl;
 
     // Get system properties
     try {
@@ -731,7 +734,8 @@ public class MailConnection {
   public void saveMessageContentToFile( String filename, String foldername ) throws KettleException {
     OutputStream os = null;
     try {
-      os = KettleVFS.getOutputStream( foldername + ( foldername.endsWith( "/" ) ? "" : "/" ) + filename, false );
+      os = KettleVFS.getInstance( bowl )
+        .getOutputStream( foldername + ( foldername.endsWith( "/" ) ? "" : "/" ) + filename, false );
       getMessage().writeTo( os );
       updateSavedMessagesCounter();
     } catch ( Exception e ) {
@@ -812,7 +816,7 @@ public class MailConnection {
           String filename = MimeUtility.decodeText( part.getFileName() );
           if ( isWildcardMatch( filename, pattern ) ) {
             // Save file
-            saveFile( foldername, filename, part.getInputStream() );
+            saveFile( bowl, foldername, filename, part.getInputStream() );
             updateSavedAttachedFilesCounter();
             if ( log.isDetailed() ) {
               log.logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.AttachedFileSaved", filename, ""
@@ -827,7 +831,7 @@ public class MailConnection {
   }
 
   @VisibleForTesting
-  static String findValidTarget( String folderName, final String fileName ) throws KettleException {
+  static String findValidTarget( Bowl bowl, String folderName, final String fileName ) throws KettleException {
     if ( fileName == null || folderName == null ) {
       throw new IllegalArgumentException( "Cannot have null arguments to findValidTarget" );
     }
@@ -844,12 +848,13 @@ public class MailConnection {
       build.setLength( baseSz ); // bring string back to size
       build.append( i > 0 ? Integer.toString( i ) : "" ).append( ext );
       rtn = build.toString();
-    } while ( KettleVFS.fileExists( rtn ) );
+    } while ( KettleVFS.getInstance( bowl ).fileExists( rtn ) );
 
     return rtn;
   }
 
-  private static void saveFile( String foldername, String filename, InputStream input ) throws KettleException {
+  private static void saveFile( Bowl bowl, String foldername, String filename, InputStream input )
+      throws KettleException {
     OutputStream fos = null;
     BufferedOutputStream bos = null;
     BufferedInputStream bis = null;
@@ -862,9 +867,9 @@ public class MailConnection {
         filename = f.getName();
         targetFileName = foldername + "/" + filename; // Note - createTempFile Used - so will be unique
       } else {
-        targetFileName = findValidTarget( foldername, filename );
+        targetFileName = findValidTarget( bowl, foldername, filename );
       }
-      fos = KettleVFS.getOutputStream( targetFileName, false );
+      fos = KettleVFS.getInstance( bowl ).getOutputStream( targetFileName, false );
       bos = new BufferedOutputStream( fos );
       bis = new BufferedInputStream( input );
       IOUtils.copy( bis, bos );

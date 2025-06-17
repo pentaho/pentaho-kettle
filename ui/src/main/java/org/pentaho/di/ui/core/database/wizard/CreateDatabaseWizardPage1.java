@@ -36,11 +36,14 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  *
@@ -219,17 +222,34 @@ public class CreateDatabaseWizardPage1 extends WizardPage {
 
   public boolean canFlipToNextPage() {
     String name = wName.getText() != null ? wName.getText().length() > 0 ? wName.getText() : null : null;
-    String dbType = wDBType.getSelection().length == 1 ? wDBType.getSelection()[0] : null;
-    String acType = wAccType.getSelection().length == 1 ? wAccType.getSelection()[0] : null;
+    String dbType = wDBType.getSelection().length == 1 ? wDBType.getSelection()[ 0 ] : null;
+    String acType = wAccType.getSelection().length == 1 ? wAccType.getSelection()[ 0 ] : null;
 
     if ( name == null || dbType == null || acType == null ) {
       setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPage1.ErrorMessage.InvalidInput" ) );
       return false;
     }
     if ( name != null && DatabaseMeta.findDatabase( databases, name ) != null ) {
-      setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPage1.ErrorMessage.DBNameExists",
-        name.trim() ) );
-      return false;
+      String trimmedName = name.trim();
+      try {
+        DatabaseManagementInterface dbMgr =
+          Spoon.getInstance().getManagementBowl().getManager( DatabaseManagementInterface.class );
+        if ( dbMgr.getAll().stream().anyMatch( db -> db.getName().trim().equalsIgnoreCase( trimmedName ) ) ) {
+          setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPage1.ErrorMessage.DBNameExists",
+            trimmedName ) );
+          return false;
+        } else {
+          // new connection can reuse name of an existing connection, but only if they are at different levels
+          getDatabaseInfo();
+          setErrorMessage( null );
+          setMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPage1.Message.Next" ) );
+          return true;
+        }
+      } catch ( KettleException e ) {
+        setErrorMessage(
+          BaseMessages.getString( PKG, "CreateDatabaseWizardPage1.ErrorMessage.UnexpectedError", trimmedName ) );
+        return false;
+      }
     } else {
       getDatabaseInfo();
       setErrorMessage( null );

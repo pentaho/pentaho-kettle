@@ -18,6 +18,8 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ConnectionProvider;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -42,12 +44,18 @@ public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends C
    *
    * @param connectionDetails for the connection
    * @param path              path relative to the connection
+   * @deprecated use the version with the Bowl.
    * @return FileSystem or null if the provided connection details are not the matching type
    */
+  @Deprecated
   default FileObject getDirectFile( T connectionDetails, String path ) throws KettleFileException {
+    return getDirectFile( DefaultBowl.getInstance(), connectionDetails, path );
+  }
+
+  default FileObject getDirectFile( Bowl bowl, T connectionDetails, String path ) throws KettleFileException {
     String pvfsUrl = connectionDetails.getType() + "://" + path;
     // use an empty Variables to prevent other "connection" values from causing StackOverflowErrors
-    return KettleVFS.getFileObject( pvfsUrl, new Variables(), getOpts( connectionDetails ) );
+    return KettleVFS.getInstance( bowl ).getFileObject( pvfsUrl, new Variables(), getOpts( connectionDetails ) );
   }
 
   /**

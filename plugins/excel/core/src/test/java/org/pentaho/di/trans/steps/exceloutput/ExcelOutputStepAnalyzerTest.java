@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransMeta;
@@ -35,6 +36,7 @@ import org.pentaho.metaverse.api.INamespace;
 import org.pentaho.metaverse.api.MetaverseComponentDescriptor;
 import org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer;
 import org.pentaho.metaverse.api.analyzer.kettle.step.StepNodes;
+import org.pentaho.metaverse.api.IMetaverseBuilder;
 import org.pentaho.metaverse.api.model.IExternalResourceInfo;
 
 import java.util.Collection;
@@ -73,7 +75,16 @@ public class ExcelOutputStepAnalyzerTest extends ClonableStepAnalyzerTest {
 
     analyzer = spy( new ExcelOutputStepAnalyzer() );
     analyzer.setDescriptor( descriptor );
+    IMetaverseBuilder builder = mock( IMetaverseBuilder.class );
+    analyzer.setMetaverseBuilder( builder );
     analyzer.setObjectFactory( MetaverseTestUtils.getMetaverseObjectFactory() );
+
+    StepMeta mockStepMeta = mock( StepMeta.class );
+    when( meta.getParentStepMeta() ).thenReturn( mockStepMeta );
+
+    lenient().when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    lenient().when( step.getTransMeta() ).thenReturn( transMeta );
+    lenient().when( mockStepMeta.getParentTransMeta() ).thenReturn( transMeta );
 
     inputs = new StepNodes();
     inputs.addNode( "previousStep", "first", node );
@@ -107,6 +118,7 @@ public class ExcelOutputStepAnalyzerTest extends ClonableStepAnalyzerTest {
   public void testCreateResourceNode() throws Exception {
     IExternalResourceInfo res = mock( IExternalResourceInfo.class );
     when( res.getName() ).thenReturn( "file:///Users/home/tmp/xyz.ktr" );
+    analyzer.validateState( descriptor, meta);
     IMetaverseNode resourceNode = analyzer.createResourceNode( res );
     assertNotNull( resourceNode );
     assertEquals( DictionaryConst.NODE_TYPE_FILE, resourceNode.getType() );
@@ -140,14 +152,14 @@ public class ExcelOutputStepAnalyzerTest extends ClonableStepAnalyzerTest {
     when( this.meta.getFiles( Mockito.any( VariableSpace.class ) ) ).thenReturn( filePaths );
 
     assertFalse( consumer.isDataDriven( this.meta ) );
-    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( this.meta );
+    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( DefaultBowl.getInstance(), this.meta );
     assertFalse( resources.isEmpty() );
     assertEquals( 2, resources.size() );
 
 
     lenient().when( this.meta.getExtension() ).thenReturn( "xls" );
 
-    assertFalse( consumer.getResourcesFromMeta( this.meta ).isEmpty() );
+    assertFalse( consumer.getResourcesFromMeta( DefaultBowl.getInstance(), this.meta ).isEmpty() );
 
     data.realFilename = "/path/to/row/file";
     when( step.buildFilename() )

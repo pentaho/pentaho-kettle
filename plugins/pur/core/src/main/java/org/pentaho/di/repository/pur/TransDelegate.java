@@ -12,10 +12,8 @@
 
 package org.pentaho.di.repository.pur;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -30,7 +28,6 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
@@ -40,7 +37,6 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -54,7 +50,6 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.ui.repository.pur.services.IConnectionAclService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
-import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNodeRef;
 import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
@@ -257,30 +252,6 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
   public void dataNodeToElement( final DataNode rootNode, final RepositoryElementInterface element )
     throws KettleException {
     TransMeta transMeta = (TransMeta) element;
-
-    Set<String> privateDatabases = null;
-    // read the private databases
-    DataNode privateDbsNode = rootNode.getNode( NODE_TRANS_PRIVATE_DATABASES );
-    // if we have node than we use one of two new formats. The older format that took
-    // too long to save, uses a separate node for each database name, the new format
-    // puts all the database names in the PROP_TRANS_PRIVATE_DATABASE_NAMES property.
-    // BACKLOG-6635
-    if ( privateDbsNode != null ) {
-      privateDatabases = new HashSet<String>();
-      if ( privateDbsNode.hasProperty( PROP_TRANS_PRIVATE_DATABASE_NAMES ) ) {
-        for ( String privateDatabaseName : getString( privateDbsNode, PROP_TRANS_PRIVATE_DATABASE_NAMES ).split(
-            TRANS_PRIVATE_DATABASE_DELIMITER ) ) {
-          if ( !privateDatabaseName.isEmpty() ) {
-            privateDatabases.add( privateDatabaseName );
-          }
-        }
-      } else {
-        for ( DataNode privateDatabase : privateDbsNode.getNodes() ) {
-          privateDatabases.add( privateDatabase.getName() );
-        }
-      }
-    }
-    transMeta.setPrivateDatabases( privateDatabases );
 
     // read the steps...
     //
@@ -577,7 +548,6 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       usingThreadPriorityManagement = rootNode.getProperty( PROP_USING_THREAD_PRIORITIES ).getBoolean();
     }
     transMeta.setUsingThreadPriorityManagment( usingThreadPriorityManagement );
-    transMeta.setSharedObjectsFile( getString( rootNode, PROP_SHARED_FILE ) );
     String transTypeCode = getString( rootNode, PROP_TRANSFORMATION_TYPE );
     transMeta.setTransformationType( TransformationType.getTransformationTypeByCode( transTypeCode ) );
 
@@ -607,13 +577,6 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     TransMeta transMeta = (TransMeta) element;
 
     DataNode rootNode = new DataNode( NODE_TRANS );
-
-    if ( transMeta.getPrivateDatabases() != null ) {
-      // save all private transformations database name http://jira.pentaho.com/browse/PPP-3405
-      String privateDatabaseNames = StringUtils.join( transMeta.getPrivateDatabases(), TRANS_PRIVATE_DATABASE_DELIMITER );
-      DataNode privateDatabaseNode = rootNode.addNode( NODE_TRANS_PRIVATE_DATABASES );
-      privateDatabaseNode.setProperty( PROP_TRANS_PRIVATE_DATABASE_NAMES, privateDatabaseNames );
-    }
 
     DataNode stepsNode = rootNode.addNode( NODE_STEPS );
 
@@ -828,7 +791,6 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     rootNode.setProperty( PROP_FEEDBACK_SHOWN, transMeta.isFeedbackShown() );
     rootNode.setProperty( PROP_FEEDBACK_SIZE, transMeta.getFeedbackSize() );
     rootNode.setProperty( PROP_USING_THREAD_PRIORITIES, transMeta.isUsingThreadPriorityManagment() );
-    rootNode.setProperty( PROP_SHARED_FILE, transMeta.getSharedObjectsFile() );
 
     rootNode.setProperty( PROP_CAPTURE_STEP_PERFORMANCE, transMeta.isCapturingStepPerformanceSnapShots() );
     rootNode.setProperty( PROP_STEP_PERFORMANCE_CAPTURING_DELAY, transMeta.getStepPerformanceCapturingDelay() );
@@ -852,22 +814,12 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     AttributesMapUtil.saveAttributesMap( rootNode, transMeta );
   }
 
-  @SuppressWarnings( "unchecked" )
-  public SharedObjects loadSharedObjects( final RepositoryElementInterface element,
-      final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType )
+  @Override
+  @Deprecated // Shared Object reads should now go through a SharedObjectsIO
+  public void loadSharedObjects( final RepositoryElementInterface element,
+      final Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjectsByType )
     throws KettleException {
-    TransMeta transMeta = (TransMeta) element;
-    transMeta.setSharedObjects( transMeta.readSharedObjects() );
-
-    // Repository objects take priority so let's overwrite them...
-    //
-    readDatabases( transMeta, true, (List<DatabaseMeta>) sharedObjectsByType.get( RepositoryObjectType.DATABASE ) );
-    readPartitionSchemas( transMeta, true, (List<PartitionSchema>) sharedObjectsByType
-        .get( RepositoryObjectType.PARTITION_SCHEMA ) );
-    readSlaves( transMeta, true, (List<SlaveServer>) sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER ) );
-    readClusters( transMeta, true, (List<ClusterSchema>) sharedObjectsByType.get( RepositoryObjectType.CLUSTER_SCHEMA ) );
-
-    return transMeta.getSharedObjects();
+    // NO-OP
   }
 
   /**
@@ -879,12 +831,13 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
    *          if an object with the same name exists, overwrite
    * @throws KettleException
    */
-  protected void readDatabases( TransMeta transMeta, boolean overWriteShared, List<DatabaseMeta> databaseMetas ) {
+  protected void readDatabases( TransMeta transMeta, boolean overWriteShared, List<DatabaseMeta> databaseMetas )
+    throws KettleException {
     for ( DatabaseMeta databaseMeta : databaseMetas ) {
       if ( overWriteShared || transMeta.findDatabase( databaseMeta.getName() ) == null ) {
         if ( databaseMeta.getName() != null ) {
           databaseMeta.shareVariablesWith( transMeta );
-          transMeta.addOrReplaceDatabase( databaseMeta );
+          transMeta.getDatabaseManagementInterface().add( databaseMeta );
           if ( !overWriteShared ) {
             databaseMeta.setChanged( false );
           }
@@ -960,51 +913,10 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     }
   }
 
+  @Deprecated // Shared Object writes should now go through a SharedObjectsIO
   public void saveSharedObjects( final RepositoryElementInterface element, final String versionComment )
     throws KettleException {
-    TransMeta transMeta = (TransMeta) element;
-    // First store the databases and other depending objects in the transformation.
-    //
-
-    // Only store if the database has actually changed or doesn't have an object ID (imported)
-    //
-    for ( DatabaseMeta databaseMeta : transMeta.getDatabases() ) {
-      if ( databaseMeta.hasChanged() || databaseMeta.getObjectId() == null ) {
-        if ( databaseMeta.getObjectId() == null
-            || unifiedRepositoryConnectionAclService.hasAccess( databaseMeta.getObjectId(),
-                RepositoryFilePermission.WRITE ) ) {
-          repo.save( databaseMeta, versionComment, null );
-        } else {
-          log.logError( BaseMessages.getString( PKG, "PurRepository.ERROR_0004_DATABASE_UPDATE_ACCESS_DENIED",
-              databaseMeta.getName() ) );
-        }
-      }
-    }
-
-    // Store the slave servers...
-    //
-    for ( SlaveServer slaveServer : transMeta.getSlaveServers() ) {
-      if ( slaveServer.hasChanged() || slaveServer.getObjectId() == null ) {
-        repo.save( slaveServer, versionComment, null );
-      }
-    }
-
-    // Store the cluster schemas
-    //
-    for ( ClusterSchema clusterSchema : transMeta.getClusterSchemas() ) {
-      if ( clusterSchema.hasChanged() || clusterSchema.getObjectId() == null ) {
-        repo.save( clusterSchema, versionComment, null );
-      }
-    }
-
-    // Save the partition schemas
-    //
-    for ( PartitionSchema partitionSchema : transMeta.getPartitionSchemas() ) {
-      if ( partitionSchema.hasChanged() || partitionSchema.getObjectId() == null ) {
-        repo.save( partitionSchema, versionComment, null );
-      }
-    }
-
+    // NO-OP
   }
 
 }

@@ -453,7 +453,7 @@ public class GPLoad extends BaseStep implements StepInterface {
       throw new KettleException( exceptionMessage );
     }
 
-    FileObject fileObject = KettleVFS.getFileObject( pathToFile, getTransMeta() );
+    FileObject fileObject = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( pathToFile, getTransMeta() );
     try {
       // we either check the existence of the file
       if ( checkExistenceOfFile ) {
@@ -680,7 +680,8 @@ public class GPLoad extends BaseStep implements StepInterface {
       if ( GPLoadMeta.METHOD_AUTO_END.equals( method ) ) {
         if ( meta.getControlFile() != null ) {
           try {
-            fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
+            fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
@@ -693,7 +694,8 @@ public class GPLoad extends BaseStep implements StepInterface {
         // In concurrent mode the data is written to the control file.
         if ( meta.getDataFile() != null ) {
           try {
-            fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getDataFile() ), getTransMeta() );
+            fileObject = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( environmentSubstitute( meta.getDataFile() ), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {

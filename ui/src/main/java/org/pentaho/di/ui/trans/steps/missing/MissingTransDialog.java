@@ -12,8 +12,6 @@
 
 package org.pentaho.di.ui.trans.steps.missing;
 
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,6 +24,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -35,7 +35,10 @@ import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.SpoonPluginType;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.util.List;
 
 public class MissingTransDialog extends BaseStepDialog implements StepDialogInterface {
 
@@ -67,6 +70,8 @@ public class MissingTransDialog extends BaseStepDialog implements StepDialogInte
 
   private String getErrorMessage( List<MissingTrans> missingTrans, int mode ) {
     String message = "";
+    boolean hasPluginManager = hasPluginManager();
+
     if ( mode == MISSING_TRANS_STEPS ) {
       StringBuilder entries = new StringBuilder();
       for ( MissingTrans entry : missingTrans ) {
@@ -76,15 +81,26 @@ public class MissingTransDialog extends BaseStepDialog implements StepDialogInte
           entries.append( "- " + entry.getStepName() + " - " + entry.getMissingPluginId() + "\n" );
         }
       }
-      message = BaseMessages.getString( PKG, "MissingTransDialog.MissingTransSteps", entries.toString() );
+      message = BaseMessages.getString( PKG, "MissingTransDialog.MissingTransSteps", entries.toString(),
+        (hasPluginManager ? " " + BaseMessages.getString( PKG, "MissingTransDialog.PluginManagerMessage") : "." ) );
+
     }
 
     if ( mode == MISSING_TRANS_STEP_ID ) {
       message =
-          BaseMessages.getString( PKG, "MissingTransDialog.MissingTransStepId", stepname + " - "
-              + ( (MissingTrans) baseStepMeta ).getMissingPluginId() );
+        BaseMessages.getString( PKG, "MissingTransDialog.MissingTransStepId",
+          stepname + " - " + ( (MissingTrans) baseStepMeta ).getMissingPluginId(),
+          (hasPluginManager ? " " + BaseMessages.getString( PKG, "MissingTransDialog.PluginManagerMessage") : "." ) );
     }
     return message.toString();
+  }
+
+  // A bit of a nasty hack... Plugin Manager is itself a plugin, and one that is not currently distributed with CE.
+  // We check for the presence of a plugin with this ID to determine whether this dialog should have a button to
+  // open the plugin manager interface.
+  private boolean hasPluginManager() {
+    PluginInterface pluginManagerPlugin = PluginRegistry.getInstance().findPluginWithId( SpoonPluginType.class, "plugin-manager-di" );
+    return pluginManagerPlugin != null;
   }
 
   public String open() {
@@ -168,20 +184,22 @@ public class MissingTransDialog extends BaseStepDialog implements StepDialogInte
       fdSearch.bottom = new FormAttachment( closeButton, 0, SWT.BOTTOM );
     }
 
-    Button searchButton = new Button( shell, SWT.PUSH );
-    props.setLook( searchButton );
-    searchButton.setText( BaseMessages.getString( PKG, "MissingTransDialog.SearchMarketplace" ) );
-    searchButton.setLayoutData( fdSearch );
-    searchButton.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        try {
-          shell.dispose();
-          Spoon.getInstance().openMarketplace();
-        } catch ( Exception ex ) {
-          ex.printStackTrace();
+    if ( hasPluginManager() ) {
+      Button searchButton = new Button( shell, SWT.PUSH );
+      props.setLook( searchButton );
+      searchButton.setText( BaseMessages.getString( PKG, "MissingTransDialog.OpenPluginManager" ) );
+      searchButton.setLayoutData( fdSearch );
+      searchButton.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent e ) {
+          try {
+            shell.dispose();
+            Spoon.getInstance().openMarketplace();
+          } catch ( Exception ex ) {
+            ex.printStackTrace();
+          }
         }
-      }
-    } );
+      } );
+    }
 
     shell.pack();
     shell.open();

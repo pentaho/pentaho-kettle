@@ -13,6 +13,7 @@
 
 package org.pentaho.di.trans.steps.simplemapping;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -262,7 +263,8 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
     outputMapping = outputDefinition;
   }
 
-  public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // First load some interesting data...
 
@@ -271,7 +273,7 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
     TransMeta mappingTransMeta = null;
     try {
       mappingTransMeta =
-        loadMappingMeta( this, repository, metaStore, space, mappingParameters.isInheritingAllVariables() );
+        loadMappingMeta( bowl, this, repository, metaStore, space, mappingParameters.isInheritingAllVariables() );
     } catch ( KettleException e ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "SimpleMappingMeta.Exception.UnableToLoadMappingTransformation" ), e );
@@ -514,8 +516,9 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
   }
 
   @Deprecated
-  public Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException {
-    return loadReferencedObject( index, rep, null, space );
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, VariableSpace space )
+    throws KettleException {
+    return loadReferencedObject( bowl, index, rep, null, space );
   }
 
   /**
@@ -532,8 +535,8 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
-    return loadMappingMeta( this, rep, metaStore, space );
+  public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
+    return loadMappingMeta( bowl, this, rep, metaStore, space );
   }
 
   public IMetaStore getMetaStore() {
@@ -562,14 +565,14 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
 
   @Override
   public List<MappingIODefinition> getInputMappings() {
-    final List<MappingIODefinition> inputMappings = new ArrayList();
+    final List<MappingIODefinition> inputMappings = new ArrayList<>();
     inputMappings.add( inputMapping );
     return inputMappings;
   }
 
   @Override
   public List<MappingIODefinition> getOutputMappings() {
-    final List<MappingIODefinition> outputMappings = new ArrayList();
+    final List<MappingIODefinition> outputMappings = new ArrayList<>();
     outputMappings.add( outputMapping );
     return outputMappings;
   }

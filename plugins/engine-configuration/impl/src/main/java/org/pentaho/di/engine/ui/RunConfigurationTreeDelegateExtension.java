@@ -13,19 +13,18 @@
 
 package org.pentaho.di.engine.ui;
 
-import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.RunConfigurationService;
-import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.TreeSelection;
 import org.pentaho.di.ui.spoon.delegates.SpoonTreeDelegateExtension;
 
 import java.util.List;
+import org.eclipse.swt.widgets.TreeItem;
 
 /**
  * Created by bmorrise on 3/14/17.
@@ -34,28 +33,28 @@ import java.util.List;
   extensionPointId = "SpoonTreeDelegateExtension" )
 public class RunConfigurationTreeDelegateExtension implements ExtensionPointInterface {
 
-  private RunConfigurationService runConfigurationManager = RunConfigurationManager.getInstance();
-
   @Override public void callExtensionPoint( LogChannelInterface log, Object extension ) throws KettleException {
     SpoonTreeDelegateExtension treeDelExt = (SpoonTreeDelegateExtension) extension;
 
     int caseNumber = treeDelExt.getCaseNumber();
-    AbstractMeta meta = treeDelExt.getTransMeta();
     String[] path = treeDelExt.getPath();
     List<TreeSelection> objects = treeDelExt.getObjects();
 
     TreeSelection object = null;
 
-    if ( path[2].equals( RunConfigurationViewTreeExtension.TREE_LABEL ) ) {
+    if ( path[1].equals( RunConfigurationViewTreeExtension.TREE_LABEL ) ) {
       switch ( caseNumber ) {
-        case 3:
-          object = new TreeSelection( path[2], RunConfiguration.class, meta );
+        case 2:
+          object = new TreeSelection( path[1], RunConfiguration.class );
           break;
-        case 4:
+        case 3:
           try {
-            final String name = path[ 3 ];
+            TreeItem treeItem = treeDelExt.getTreeItem();
+            String name = LeveledTreeNode.getName( treeItem );
+            LeveledTreeNode.LEVEL level = LeveledTreeNode.getLevel( treeItem );
+
             if ( !name.equalsIgnoreCase( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
-              object = new TreeSelection( path[ 3 ], path[ 3 ], meta );
+              object = new TreeSelection( treeItem, name, new RunConfigurationTreeItem( name, level ) );
             }
           } catch ( Exception e ) {
             // Do Nothing

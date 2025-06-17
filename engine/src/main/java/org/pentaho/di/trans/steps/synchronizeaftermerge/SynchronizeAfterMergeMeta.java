@@ -61,7 +61,7 @@ public class SynchronizeAfterMergeMeta extends BaseDatabaseStepMeta implements S
   @Injection( name = "TABLE_NAME" )
   private String tableName;
 
-  private List<? extends SharedObjectInterface> databases;
+  private List<DatabaseMeta> databases;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
@@ -405,7 +405,7 @@ public class SynchronizeAfterMergeMeta extends BaseDatabaseStepMeta implements S
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       int nrkeys, nrvalues;
       this.databases = databases;
@@ -868,7 +868,7 @@ public class SynchronizeAfterMergeMeta extends BaseDatabaseStepMeta implements S
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       error_message = BaseMessages.getString( PKG, "SynchronizeAfterMergeMeta.CheckResult.InvalidConnection" );
@@ -1054,7 +1054,7 @@ public class SynchronizeAfterMergeMeta extends BaseDatabaseStepMeta implements S
         throw new KettleException( BaseMessages.getString(
           PKG, "SynchronizeAfterMergeMeta.Exception.ErrorGettingFields" ), e );
       } finally {
-        db.disconnect();
+        db.close();
       }
     } else {
       throw new KettleException( BaseMessages.getString(

@@ -199,7 +199,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
             parentJobMeta.getNamedClusterEmbedManager()
               .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
           }
-          file = KettleVFS.getFileObject( realFilefoldername, this );
+          file = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realFilefoldername, this );
 
           if ( file.exists() && file.isReadable() ) { // TODO: is it needed to check file for readability?
             if ( log.isDetailed() ) {

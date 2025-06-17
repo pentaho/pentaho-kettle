@@ -324,7 +324,7 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
     } );
 
     wbDirectory.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FOLDER ) ) );
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
     // Buttons to the right of the screen...
     wbdFilename = new Button( shell, SWT.PUSH | SWT.CENTER );

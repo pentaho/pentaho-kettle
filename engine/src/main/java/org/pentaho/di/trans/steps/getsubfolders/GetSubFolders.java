@@ -78,7 +78,8 @@ public class GetSubFolders extends BaseStep implements StepInterface {
       if ( meta.isFoldernameDynamic() ) {
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
 
         // Get total previous fields
         data.totalpreviousfields = data.inputRowMeta.size();
@@ -104,12 +105,11 @@ public class GetSubFolders extends BaseStep implements StepInterface {
       } else {
         // Create the output row meta-data
         data.outputRowMeta = new RowMeta();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                      // metadata
-                                                                                                      // populated
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+          metaStore );
         // data.nrStepFields= data.outputRowMeta.size();
 
-        data.files = meta.getFolderList( this );
+        data.files = meta.getFolderList( getTransMeta().getBowl(), this );
         data.filessize = data.files.nrOfFiles();
         handleMissingFiles();
 
@@ -141,7 +141,7 @@ public class GetSubFolders extends BaseStep implements StepInterface {
           String[] filesname = { filename };
           String[] filesrequired = { GetSubFoldersMeta.NO };
           // Get files list
-          data.files = meta.getDynamicFolderList( getTransMeta(), filesname, filesrequired );
+          data.files = meta.getDynamicFolderList( getTransMeta().getBowl(), getTransMeta(), filesname, filesrequired );
           data.filessize = data.files.nrOfFiles();
           data.filenr = 0;
         }

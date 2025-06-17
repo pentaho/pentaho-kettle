@@ -403,7 +403,7 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     wFilename.setLayoutData( fdFilename );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wFilename, transMeta,
-      new SelectionAdapterOptions( SelectionOperation.SAVE_TO,
+      new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.SAVE_TO,
         new FilterType[] { FilterType.JSON, FilterType.JS, FilterType.ALL },
         FilterType.JSON ) ) );
 

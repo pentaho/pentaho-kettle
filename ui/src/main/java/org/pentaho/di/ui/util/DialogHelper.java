@@ -14,17 +14,13 @@
 package org.pentaho.di.ui.util;
 
 import org.pentaho.di.base.AbstractMeta;
-import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryObject;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.core.FileDialogOperation;
-import org.pentaho.di.ui.core.events.dialog.*;
+import org.pentaho.di.ui.core.events.dialog.FilterType;
+import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterFileDialogTextVar;
+import org.pentaho.di.ui.core.events.dialog.SelectionAdapterOptions;
+import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.TextVar;
 
 /**
@@ -32,26 +28,28 @@ import org.pentaho.di.ui.core.widget.TextVar;
  */
 public class DialogHelper {
   public static SelectionAdapterFileDialogTextVar constructSelectionAdapterFileDialogTextVarForKettleFile( LogChannel log
-          , TextVar wPath, AbstractMeta meta, SelectionOperation selectionOperation, FilterType filterType, Repository repository ) {
+                                                                                                           , TextVar wPath, AbstractMeta meta, SelectionOperation selectionOperation, FilterType filterType, Repository repository ) {
     if ( repository != null ) {
       ProviderFilterType[] providerFilterTypes = new ProviderFilterType[2];
       providerFilterTypes[0] = ProviderFilterType.RECENTS;
       providerFilterTypes[1] = ProviderFilterType.REPOSITORY;
-      return new SelectionAdapterFileDialogTextVar( log, wPath, meta
-              , new SelectionAdapterOptions( selectionOperation, new FilterType[]{ filterType, FilterType.XML
-              , FilterType.ALL }, filterType, providerFilterTypes ) );
+      return new SelectionAdapterFileDialogTextVar( log, wPath, meta,
+                                                    new SelectionAdapterOptions( meta.getBowl(), selectionOperation,
+                                                                                 new FilterType[] { filterType,
+        FilterType.XML, FilterType.ALL },
+                                                                                 filterType, providerFilterTypes ) );
     }
     return new SelectionAdapterFileDialogTextVar( log, wPath, meta,
-            new SelectionAdapterOptions( selectionOperation,
-                    new FilterType[]{ filterType, FilterType.XML, FilterType.ALL }, filterType ) );
+                                                  new SelectionAdapterOptions( meta.getBowl(), selectionOperation,
+                                                                               new FilterType[] { filterType, FilterType.XML, FilterType.ALL }, filterType ) );
   }
 
   public static SelectionAdapterFileDialogTextVar constructSelectionAdapterFileDialogTextVarForUserFile( LogChannel log
-      ,TextVar wPath, AbstractMeta meta, SelectionOperation selectionOperation, FilterType[] filterTypes
-          , FilterType defaultFilterType ) {
-      ProviderFilterType[] providerFilterTypes = new ProviderFilterType[1];
-      providerFilterTypes[0] = ProviderFilterType.DEFAULT;
-     return new SelectionAdapterFileDialogTextVar( log, wPath, meta
-         ,new SelectionAdapterOptions( selectionOperation, filterTypes, defaultFilterType, providerFilterTypes ) );
-    }
+                                                                                                         , TextVar wPath, AbstractMeta meta, SelectionOperation selectionOperation, FilterType[] filterTypes
+                                                                                                         , FilterType defaultFilterType ) {
+    ProviderFilterType[] providerFilterTypes = new ProviderFilterType[1];
+    providerFilterTypes[0] = ProviderFilterType.DEFAULT;
+    return new SelectionAdapterFileDialogTextVar( log, wPath, meta, new SelectionAdapterOptions( meta.getBowl(),
+                                                                                                 selectionOperation, filterTypes, defaultFilterType, providerFilterTypes ) );
+  }
 }

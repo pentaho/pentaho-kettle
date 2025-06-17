@@ -348,7 +348,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     executorJobMeta.clearChanged();
   }
   private void loadFileJob( String fname ) throws KettleException {
-    executorJobMeta = new JobMeta( transMeta.environmentSubstitute( fname ), repository );
+    executorJobMeta = new JobMeta( transMeta.getBowl(), transMeta.environmentSubstitute( fname ), repository );
     executorJobMeta.clearChanged();
   }
 

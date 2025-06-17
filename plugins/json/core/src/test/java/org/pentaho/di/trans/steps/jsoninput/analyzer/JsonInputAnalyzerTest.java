@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -97,8 +98,12 @@ public class JsonInputAnalyzerTest {
       }
     };
     analyzer.setMetaverseBuilder( mockBuilder );
+    when( meta.getParentStepMeta() ).thenReturn( mockStepMeta );
+
+    when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
 
     when( mockJsonInput.getStepMetaInterface() ).thenReturn( meta );
+    when( mockJsonInput.getTransMeta() ).thenReturn( transMeta );
     lenient().when( mockJsonInput.getStepMeta() ).thenReturn( mockStepMeta );
     lenient().when( mockStepMeta.getStepMetaInterface() ).thenReturn( meta );
   }
@@ -168,23 +173,23 @@ public class JsonInputAnalyzerTest {
 
     assertFalse( consumer.isDataDriven( meta ) );
 
-    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( meta );
+    Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta );
     assertTrue( resources.isEmpty() );
 
     when( meta.writesToFile() ).thenReturn( true );
-    resources = consumer.getResourcesFromMeta( meta );
+    resources = consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta );
     assertFalse( resources.isEmpty() );
     assertEquals( 2, resources.size() );
 
     when( meta.getFilePaths( false ) ).thenReturn( new String[]{ "/path/to/file1", "/another/path/to/file2",
       "/another/path/to/file3" } );
-    resources = consumer.getResourcesFromMeta( meta );
+    resources = consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta );
     assertFalse( resources.isEmpty() );
     assertEquals( 3, resources.size() );
 
     when( meta.isAcceptingFilenames() ).thenReturn( true );
     assertTrue( consumer.isDataDriven( meta ) );
-    assertTrue( consumer.getResourcesFromMeta( meta ).isEmpty() );
+    assertTrue( consumer.getResourcesFromMeta( DefaultBowl.getInstance(), meta ).isEmpty() );
 
     when( mockJsonInput.environmentSubstitute( Mockito.<String>any() ) ).thenReturn( "/path/to/row/file" );
     when( mockJsonInput.getStepMetaInterface() ).thenReturn( meta );

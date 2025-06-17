@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.regexeval;
 
 import java.util.List;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -331,7 +332,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldTrimType = fieldTrimType;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       script = XMLHandler.getTagValue( stepnode, "script" );
       matcher = XMLHandler.getTagValue( stepnode, "matcher" );
@@ -395,8 +396,10 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     allocate( 0 );
   }
 
-  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] infos, StepMeta nextSteps,
-    VariableSpace space, Repository repositorys, IMetaStore metaStores ) throws KettleStepException {
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] infos,
+    StepMeta nextSteps, VariableSpace space, Repository repositorys, IMetaStore metaStores )
+    throws KettleStepException {
     try {
       if ( !Utils.isEmpty( resultfieldname ) ) {
         if ( replacefields ) {

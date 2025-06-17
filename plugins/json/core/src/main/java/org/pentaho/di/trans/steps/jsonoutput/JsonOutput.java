@@ -244,7 +244,8 @@ public class JsonOutput extends BaseStep implements StepInterface {
       data.inputRowMetaSize = data.inputRowMeta.size();
       if ( data.outputValue ) {
         data.outputRowMeta = data.inputRowMeta.clone();
-        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+        meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+                        metaStore );
       }
 
       // Cache the field name indexes
@@ -375,7 +376,8 @@ public class JsonOutput extends BaseStep implements StepInterface {
     FileObject parentfolder = null;
     try {
       // Get parent folder
-      parentfolder = KettleVFS.getFileObject( filename, getTransMeta() ).getParent();
+      parentfolder = KettleVFS.getInstance( getTransMeta().getBowl() )
+        .getFileObject( filename, getTransMeta() ).getParent();
       if ( !parentfolder.exists() ) {
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "JsonOutput.Error.ParentFolderNotExist", parentfolder.getName() ) );
@@ -415,14 +417,16 @@ public class JsonOutput extends BaseStep implements StepInterface {
           // Add this to the result file names...
           ResultFile resultFile =
             new ResultFile(
-              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getInstance( getTransMeta().getBowl() )
+                .getFileObject( filename, getTransMeta() ),
               getTransMeta().getName(), getStepname() );
           resultFile.setComment( BaseMessages.getString( PKG, "JsonOutput.ResultFilenames.Comment" ) );
           addResultFile( resultFile );
         }
 
         OutputStream outputStream;
-        OutputStream fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
+        OutputStream fos = KettleVFS.getInstance( getTransMeta().getBowl() )
+          .getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
         outputStream = fos;
 
         if ( !Utils.isEmpty( meta.getEncoding() ) ) {

@@ -673,7 +673,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
     wFilename.addSelectionListener( lsDef );
 
     wbFilename.addSelectionListener( new SelectionAdapterFileDialogTextVar( jobMeta.getLogChannel(), wFilename, jobMeta,
-      new SelectionAdapterOptions( SelectionOperation.FILE,
+      new SelectionAdapterOptions( jobMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.SH, FilterType.BAT, FilterType.ALL }, FilterType.SH  ) ) );
 
     // Detect [X] or ALT-F4 or something that kills this window...

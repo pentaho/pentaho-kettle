@@ -23,8 +23,6 @@ import org.pentaho.metaverse.api.StepField;
 import org.pentaho.metaverse.api.analyzer.kettle.step.ExternalResourceStepAnalyzer;
 import org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer;
 import org.pentaho.metaverse.api.model.IExternalResourceInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +32,6 @@ import java.util.Set;
  * metaverse entities
  */
 public class ExcelInputStepAnalyzer extends ExternalResourceStepAnalyzer<ExcelInputMeta> {
-  private Logger log = LoggerFactory.getLogger( ExcelInputStepAnalyzer.class );
 
   @Override
   public Set<Class<? extends BaseStepMeta>> getSupportedSteps() {
@@ -57,7 +54,7 @@ public class ExcelInputStepAnalyzer extends ExternalResourceStepAnalyzer<ExcelIn
 
   @Override
   public IMetaverseNode createResourceNode( IExternalResourceInfo resource ) throws MetaverseException {
-    return createFileNode( resource.getName(), descriptor );
+    return createFileNode( parentTransMeta.getBowl(), resource.getName(), descriptor );
   }
 
   @Override

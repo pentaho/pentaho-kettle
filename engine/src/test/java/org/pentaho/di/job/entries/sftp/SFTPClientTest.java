@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -78,7 +79,7 @@ public class SFTPClientTest {
    */
   @Test
   public void shouldExcludeGssapiFromPreferredAuthenticationsByDefault() throws Exception {
-    new SFTPClient( server, port, username ) {
+    new SFTPClient( DefaultBowl.getInstance(), server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -100,7 +101,7 @@ public class SFTPClientTest {
   public void shouldIncludeGssapiToPreferredAuthenticationsIfSpecified() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "true" );
 
-    new SFTPClient( server, port, username ) {
+    new SFTPClient( DefaultBowl.getInstance(), server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -122,7 +123,7 @@ public class SFTPClientTest {
   public void shouldIncludeGssapiToPreferredAuthenticationsIfOnlySpecifiedCorrectly() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
 
-    new SFTPClient( server, port, username ) {
+    new SFTPClient( DefaultBowl.getInstance(), server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -139,7 +140,7 @@ public class SFTPClientTest {
   @Test( expected = KettleJobException.class )
   public void folderCreationEmptyTest() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
-    SFTPClient client = new SFTPClient( server, port, username ) {
+    SFTPClient client = new SFTPClient( DefaultBowl.getInstance(), server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -156,7 +157,7 @@ public class SFTPClientTest {
   @Test
   public void folderCreation_Relative_Simple() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
-    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+    SFTPClient client = spy( new SFTPClient( DefaultBowl.getInstance(), server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -178,7 +179,7 @@ public class SFTPClientTest {
   @Test
   public void folderCreation_Relative_Nested() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
-    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+    SFTPClient client = spy( new SFTPClient( DefaultBowl.getInstance(), server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -202,7 +203,7 @@ public class SFTPClientTest {
   @Test
   public void folderCreation_Absolute_Simple() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
-    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+    SFTPClient client = spy( new SFTPClient( DefaultBowl.getInstance(), server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -226,7 +227,7 @@ public class SFTPClientTest {
   @Test
   public void folderCreation_Absolute_TrailingSlash() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
-    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+    SFTPClient client = spy( new SFTPClient( DefaultBowl.getInstance(), server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -249,7 +250,7 @@ public class SFTPClientTest {
   @Test
   public void folderCreation_Absolute_Nested() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
-    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+    SFTPClient client = spy( new SFTPClient( DefaultBowl.getInstance(), server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -301,7 +302,7 @@ public class SFTPClientTest {
 
   @Test
   public void testReadKeyFile() throws Exception {
-    FileObject pk = KettleVFS.createTempFile( "pk", KettleVFS.Suffix.TMP );
+    FileObject pk = KettleVFS.getInstance( DefaultBowl.getInstance() ).createTempFile( "pk", KettleVFS.Suffix.TMP );
     try {
       byte[] pk_bytes = new byte[] { 1, 3, 1 };
       try ( OutputStream out = pk.getContent().getOutputStream() ) {
@@ -321,7 +322,7 @@ public class SFTPClientTest {
   }
 
   private SFTPClient spyClient( String privateKeyFilename ) throws KettleException {
-    return spy( new SFTPClient( server, port, username, privateKeyFilename ) {
+    return spy( new SFTPClient( DefaultBowl.getInstance(), server, port, username, privateKeyFilename ) {
       @Override
       JSch createJSch() {
         return jSch;

@@ -728,7 +728,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
     final boolean include_subfolders = YES.equalsIgnoreCase( includeSubfolders );
 
     try {
-      sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername, this );
+      sourcefilefolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realSourceFilefoldername, this );
 
       if ( sourcefilefolder.exists() ) {
         // File exists
@@ -1041,7 +1041,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks,
+    boolean res = JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res == false ) {
@@ -1054,7 +1054,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
         JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < sourceFileFolder.length; i++ ) {
-      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 

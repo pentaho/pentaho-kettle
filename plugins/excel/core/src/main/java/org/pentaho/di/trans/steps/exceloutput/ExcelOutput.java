@@ -33,9 +33,7 @@ import jxl.write.NumberFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableImage;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -482,7 +480,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     try {
       // Static filename
       data.realFilename = buildFilename();
-      data.file = KettleVFS.getFileObject( data.realFilename, getTransMeta() );
+      data.file = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( data.realFilename, getTransMeta() );
       if ( meta.isCreateParentFolder() ) {
         if ( !createParentFolder( data.file ) ) {
           return retval;
@@ -511,7 +509,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           meta.setHeaderEnabled( false );
         } else {
           // Create a new Workbook
-          data.outputStream = KettleVFS.getOutputStream( data.file, false );
+          data.outputStream = KettleVFS.getInstance( getTransMeta().getBowl() ).getOutputStream( data.file, false );
           data.workbook = Workbook.createWorkbook( data.outputStream, data.ws );
         }
 
@@ -525,7 +523,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         }
       } else {
         String templateFilename = environmentSubstitute( meta.getTemplateFileName() );
-        try ( FileObject templateFile = KettleVFS.getFileObject( templateFilename, getTransMeta() ) ) {
+        try ( FileObject templateFile = KettleVFS.getInstance( getTransMeta().getBowl() )
+                .getFileObject( templateFilename, getTransMeta() ) ) {
           // create the openFile from the template
           Workbook templateWorkbook = Workbook.getWorkbook( KettleVFS.getInputStream( templateFile ), data.ws );
 
@@ -536,7 +535,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             // Do not rewrite header
             meta.setHeaderEnabled( false );
           } else {
-            data.outputStream = KettleVFS.getOutputStream( data.file, false );
+            data.outputStream = KettleVFS.getInstance( getTransMeta().getBowl() ).getOutputStream( data.file, false );
             data.workbook = Workbook.createWorkbook( data.outputStream, templateWorkbook );
           }
 
@@ -806,7 +805,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     // Do we need to put a image on the header
     if ( !Utils.isEmpty( data.realHeaderImage ) ) {
       InputStream imageStream = null;
-      try ( FileObject imageFile = KettleVFS.getFileObject( data.realHeaderImage ) ) {
+      try ( FileObject imageFile = KettleVFS.getInstance( getTransMeta().getBowl() )
+              .getFileObject( data.realHeaderImage ) ) {
         if ( !imageFile.exists() ) {
           throw new KettleException( BaseMessages.getString( PKG, "ExcelInputLog.ImageFileNotExists", data.realHeaderImage ) );
         }

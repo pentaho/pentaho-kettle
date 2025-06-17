@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -37,6 +39,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.IRepositoryExporter;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
@@ -80,7 +83,8 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
     OutputStream os = null;
     OutputStreamWriter writer = null;
     try {
-      os = new BufferedOutputStream( KettleVFS.getOutputStream( xmlFilename, false ) );
+      os = new BufferedOutputStream( KettleVFS.getInstance( DefaultBowl.getInstance() )
+        .getOutputStream( xmlFilename, false ) );
       writer = new OutputStreamWriter( os, Const.XML_ENCODING );
       if ( monitor != null ) {
         monitor.beginTask( "Exporting the repository to XML...", 3 ); //$NON-NLS-1$
@@ -220,6 +224,10 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
         try {
           // Validate against the import rules first!
           if ( toExport( trans ) ) {
+            // Copy the config objects in transMeta
+            SharedObjectUtil.copySharedObjects( repository.getBowl(), trans,
+                    Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
+            SharedObjectUtil.stripObjectIds( trans );
             writer.write( trans.getXML() + Const.CR );
           }
         } catch ( Exception ex ) {
@@ -274,6 +282,10 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
         try {
           // Validate against the import rules first!
           if ( toExport( meta ) ) {
+            // Copy the config objects in meta
+            SharedObjectUtil.copySharedObjects( repository.getBowl(), meta,
+                    Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
+            SharedObjectUtil.stripObjectIds( meta );
             writer.write( meta.getXML() + Const.CR );
           }
         } catch ( Exception ex ) {

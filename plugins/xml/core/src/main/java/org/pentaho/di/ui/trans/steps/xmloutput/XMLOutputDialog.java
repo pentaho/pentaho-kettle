@@ -849,6 +849,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
                     wFilename,
                     transMeta,
                     new SelectionAdapterOptions(
+                            transMeta.getBowl(),
                             SelectionOperation.SAVE_TO,
                             new FilterType[] { FilterType.XML, FilterType.TXT, FilterType.CSV, FilterType.ALL },
                             FilterType.XML,

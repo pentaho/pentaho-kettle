@@ -64,7 +64,8 @@ public class IfNull extends BaseStep implements StepInterface {
 
       // What's the format of the output row?
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
+        metaStore );
       // Create convert meta-data objects that will contain Date & Number formatters
       data.convertRowMeta = data.outputRowMeta.clone();
 

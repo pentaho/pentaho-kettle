@@ -13,6 +13,7 @@
 
 package org.pentaho.di.trans.steps.mergejoin;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -277,7 +278,8 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
     remarks.add( cr );
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // We don't have any input fields here in "r" as they are all info fields.
     // So we just merge in the info fields.
