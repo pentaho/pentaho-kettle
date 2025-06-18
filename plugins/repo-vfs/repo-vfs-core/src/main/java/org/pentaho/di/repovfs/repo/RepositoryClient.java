@@ -1,16 +1,19 @@
 package org.pentaho.di.repovfs.repo;
 
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.ClientFilter;
-import com.sun.jersey.api.json.JSONConfiguration;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientResponseContext;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.Entity;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.ClientResponse;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,9 +30,10 @@ import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileDt
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileTreeDto;
 import org.pentaho.platform.util.RepositoryPathEncoder;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -91,12 +95,12 @@ public class RepositoryClient {
   }
 
   private static Client createClient( JCRSolutionConfig cfg, BasicAuthentication auth ) {
-    final ClientConfig config = new DefaultClientConfig();
-    config.getProperties().put( ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true );
-    config.getProperties().put( ClientConfig.PROPERTY_READ_TIMEOUT, cfg.getTimeOut() );
-    config.getClasses().add( MultiPartWriter.class );
-    config.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
-    Client client = Client.create( config );
+    ClientConfig config = new ClientConfig();
+    config.property( ClientProperties.FOLLOW_REDIRECTS, true );
+    config.property( ClientProperties.READ_TIMEOUT, cfg.getTimeOut() );
+    config.register( MultiPartWriter.class );
+    config.register( JacksonFeature.class );
+    Client client = ClientBuilder.newClient( config );
     auth.applyToClient( client );
 
     if ( log.isDebugEnabled() ) {
@@ -108,13 +112,18 @@ public class RepositoryClient {
 
   /** Logs every request/response */
   private static void addLoggingFilter( Client client ) {
-    client.addFilter( new ClientFilter() {
+    client.register( new ClientRequestFilter() {
       @Override
-      public ClientResponse handle( ClientRequest req ) throws ClientHandlerException {
-        log.debug( "Requesting: [{}] {}", req.getMethod(), req.getURI() );
-        ClientResponse response = getNext().handle( req );
-        log.debug( "Response: {} Content-Length: {}", response.getStatus(), response.getLength() );
-        return response;
+      public void filter( ClientRequestContext requestContext ) throws IOException {
+        log.debug( "Requesting: [{}] {}", requestContext.getMethod(), requestContext.getUri() );
+      }
+    });
+
+    client.register( new ClientResponseFilter() {
+      @Override
+      public void filter( ClientRequestContext requestContext, ClientResponseContext responseContext ) throws IOException {
+        int contentLength = responseContext.getLength();
+        log.debug( "Response: {} Content-Length: {}", responseContext.getStatus(), contentLength );
       }
     } );
   }
@@ -124,12 +133,12 @@ public class RepositoryClient {
     log.debug( "refreshing root.." );
     RepositoryFileTreeDto tree;
     if ( loadTreePartially ) {
-      WebResource resource = client.resource( url + cfg.getRepositoryPartialRootSvc() );
-      tree = resource.path( "" ).accept( MediaType.APPLICATION_XML_TYPE ).get( RepositoryFileTreeDto.class );
+      WebTarget target = client.target( url + cfg.getRepositoryPartialRootSvc() );
+      tree = target.path( "" ).request( MediaType.APPLICATION_XML_TYPE ).get( RepositoryFileTreeDto.class );
       tree = proxyRoot( tree );
     } else {
-      WebResource resource = client.resource( url + cfg.getRepositorySvc() );
-      tree = resource.path( "" ).accept( MediaType.APPLICATION_XML_TYPE ).get( RepositoryFileTreeDto.class );
+      WebTarget target = client.target( url + cfg.getRepositorySvc() );
+      tree = target.path( "" ).request( MediaType.APPLICATION_XML_TYPE ).get( RepositoryFileTreeDto.class );
     }
     setRoot( tree );
   }
@@ -163,8 +172,8 @@ public class RepositoryClient {
     String encodedPath = encodePathForRequest( path );
     String childrenUrl = cfg.getRepositoryPartialSvc( encodedPath );
 
-    WebResource resource = client.resource( url + childrenUrl );
-    return resource.path( "" ).accept( MediaType.APPLICATION_XML_TYPE ).get( RepositoryFileTreeDto.class );
+    WebTarget target = client.target( url + childrenUrl );
+    return target.path( "" ).request( MediaType.APPLICATION_XML_TYPE ).get( RepositoryFileTreeDto.class );
 
   }
 
@@ -209,14 +218,12 @@ public class RepositoryClient {
       String path = RepositoryPathEncoder.encodeRepositoryPath( filePath );
       String service = cfg.getCreateFolderSvc( path );
 
-      WebResource resource = client.resource( url + service );
-      ClientResponse response = resource.type( "text/plain" ).put( ClientResponse.class, null );
+      WebTarget target = client.target( url + service );
+      Response response = target.request( MediaType.TEXT_PLAIN ).put( Entity.text( " ") );
       if ( response.getStatus() != 200 ) {
-        throw new RepositoryClientException( response );
+        throw new RepositoryClientException( String.valueOf( response ) );
       }
-    } catch ( UniformInterfaceException | ClientHandlerException e ) {
-      throw new RepositoryClientException( "Client error creating folder", e );
-    }
+
   }
 
   /**
@@ -252,7 +259,7 @@ public class RepositoryClient {
     // TODO: repo endpoint fails for unrecognized file types
     String endpoint = url + cfg.getDownloadSvc( urlPath );
     log.debug( "getData: " + endpoint );
-    return client.resource( endpoint ).accept( MediaType.WILDCARD_TYPE ).get( InputStream.class );
+    return client.target( endpoint ).request( MediaType.WILDCARD_TYPE ).get( InputStream.class );
   }
 
   /** Download file contents with a buffered input stream of the given size */
@@ -280,8 +287,8 @@ public class RepositoryClient {
 
   /** Delete file or folder */
   public void delete( RepositoryFileDto file ) throws RepositoryClientException {
-    final WebResource resource = client.resource( url + cfg.getDeleteFileOrFolderUrl() );
-    final ClientResponse response = resource.put( ClientResponse.class, file.getId() );
+    final WebTarget target = client.target( url + cfg.getDeleteFileOrFolderUrl() );
+    Response response = target.request( MediaType.TEXT_PLAIN ).put( Entity.entity( file.getId(), MediaType.TEXT_PLAIN ) );
 
     if ( response == null || response.getStatus() != Response.Status.OK.getStatusCode() ) {
       throw new RepositoryClientException( "Failed with error-code " + response.getStatus() );
@@ -339,12 +346,13 @@ public class RepositoryClient {
     String path = encodePath( pathBuilder.toString() );
     String service = cfg.getUploadSvc( path );
 
-    final WebResource resource = client.resource( url + service );
-    final ClientResponse response = resource.put( ClientResponse.class, data );
+    final WebTarget target = client.target( url + service );
+    Response response = target.request( MediaType.TEXT_PLAIN ).put( Entity.entity( data, MediaType.TEXT_PLAIN ) );
+
     throwOnError( response );
   }
 
-  private void throwOnError( final ClientResponse response ) throws RepositoryClientException {
+  private void throwOnError( final Response response ) throws RepositoryClientException {
     final int status = response.getStatus();
 
     if ( status != HttpStatus.SC_OK ) {
@@ -355,7 +363,7 @@ public class RepositoryClient {
       } else {
         String errMsg;
         try {
-          errMsg = response.getEntity( String.class );
+          errMsg = response.readEntity( String.class );
         } catch ( Exception e ) {
           errMsg = "Unable to get error response entity";
         }
