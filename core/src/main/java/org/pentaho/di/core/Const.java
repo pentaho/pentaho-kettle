@@ -1699,6 +1699,11 @@ public class Const {
   public static final String KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE = "KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE";
 
   /**
+   * Value to configure whether to ignore out of range exceptions, letting values be rounded to the nearest possible value.
+   */
+  public static final String KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION = "KETTLE_IGNORE_OUT_OF_RANGE_EXCEPTION";
+
+  /**
    Value that overrides gather performance metrics checkbox value in scheduler dialog
    */
   public static final String KETTLE_PUC_SCHEDULE_GATHER_METRICS_OVERRIDE_VALUE = "KETTLE_PUC_SCHEDULE_GATHER_METRICS_OVERRIDE_VALUE";
