@@ -15,9 +15,12 @@ package org.pentaho.di.trans.steps.update;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -505,4 +508,35 @@ public class Update extends BaseDatabaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
+ @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getSQLAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    try {
+      UpdateMeta updateMeta = (UpdateMeta) getStepMetaInterface();
+      TransMeta transMeta = getTransMeta();
+      StepMeta stepInfo = new StepMeta( BaseMessages.getString( PKG, "Update.StepMeta.Title" ), updateMeta.getParentStepMeta().getName(), updateMeta );
+      RowMetaInterface prev = transMeta.getPrevStepFields( updateMeta.getParentStepMeta().getName() );
+
+      SQLStatement sql = updateMeta.getSQLStatements( transMeta, stepInfo, prev, null, null );
+      if ( sql.hasError() ) {
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+        response.put( "errorMessage", sql.getError() );
+        return response;
+      }
+
+      if ( sql.hasSQL() ) {
+        response.put( "sql", sql.getSQL() );
+        response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      } else {
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+        response.put( "errorMessage", BaseMessages.getString( PKG, "Update.NoSQLNeeds.DialogMessage" ) );
+        return response;
+      }
+    } catch ( KettleStepException e ) {
+      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+      response.put( "errorMessage", e.getMessage() );
+    }
+
+    return response;
+  }
 }
