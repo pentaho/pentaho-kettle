@@ -79,6 +79,7 @@
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
       <version>${jersey.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
@@ -89,6 +90,7 @@
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-multipart</artifactId>
       <version>${jersey.version}</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Testing -->
     <!-- temporary, introduced as a dependencies of commons-vfs2 but not coming from upstream-->
