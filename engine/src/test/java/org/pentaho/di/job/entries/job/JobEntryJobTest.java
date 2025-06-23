@@ -14,6 +14,7 @@
 package org.pentaho.di.job.entries.job;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.any;
@@ -29,12 +30,15 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,10 +50,13 @@ import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -57,6 +64,7 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.test.util.InternalState;
 import org.w3c.dom.Node;
 
 @RunWith( MockitoJUnitRunner.class )
@@ -882,6 +890,25 @@ public class JobEntryJobTest {
 
       verify( jobMeta, times( 1 ) ).initializeVariablesFrom( any() );
     }
+  }
+
+  @Test
+  public void testParametersAction_ReturnsParametersData() throws KettleException {
+    JobEntryJob jobEntryJob = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    LogChannelInterface logMock = mock( LogChannelInterface.class );
+    InternalState.setInternalState( jobEntryJob, "log", logMock );
+    JobEntryInterface jobEntryInterface = mock( JobEntryInterface.class );
+    JobMeta jobMetaMock = mock( JobMeta.class );
+    Job job = mock( Job.class );
+
+    doReturn( jobMetaMock ).when( jobEntryJob ).getJobMeta( null, null, null );
+    doReturn( new String[] { "param1", "param2" } ).when( jobMetaMock ).listParameters();
+    JSONObject response = jobEntryJob.doAction( "parameters", jobEntryInterface, jobMetaMock, job, new HashMap<>() );
+    JSONArray parameters = (JSONArray) response.get( "parameters" );
+
+    assertNotNull( parameters );
+    assertEquals( "param1", parameters.get( 0 ) );
+    assertEquals( "param2", parameters.get( 1 ) );
   }
 
   private JobEntryJob getJej() {
