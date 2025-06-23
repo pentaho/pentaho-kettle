@@ -14,6 +14,7 @@
 package org.pentaho.di.trans.steps.ldapinput;
 
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 
@@ -61,6 +62,7 @@ public class LdapProtocolFactoryIT {
     // In this particular case, no variable is used, so no substitution is needed
     when( variableSpace.environmentSubstitute( protocolName ) ).thenReturn( protocolName );
 
-    return new LdapProtocolFactory( null ).createLdapProtocol( variableSpace, mockLdapMeta, null );
+    return new LdapProtocolFactory( null ).createLdapProtocol( DefaultBowl.getInstance(), variableSpace, mockLdapMeta,
+      null );
   }
 }

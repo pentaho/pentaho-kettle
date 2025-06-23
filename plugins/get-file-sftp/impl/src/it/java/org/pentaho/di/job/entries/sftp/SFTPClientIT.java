@@ -69,7 +69,8 @@ public class SFTPClientIT {
     session = server.createJschSession();
     session.connect();
 
-    client = new SFTPClient( InetAddress.getByName( "localhost" ), server.getPort(), server.getUsername() );
+    client = new SFTPClient( DefaultBowl.getInstance(), InetAddress.getByName( "localhost" ), server.getPort(),
+      server.getUsername() );
     client.login( server.getPassword() );
 
     channel = (ChannelSftp) session.openChannel( "sftp" );
@@ -111,7 +112,7 @@ public class SFTPClientIT {
     channel.connect();
     channel.put( new ByteArrayInputStream( data ), "downloaded.txt" );
 
-    client.get( KettleVFS.getInstance( DefaultBowl.getInstance() )
+    client.get( DefaultBowl.getInstance(), KettleVFS.getInstance( DefaultBowl.getInstance() )
       .getFileObject( "ram://downloaded.txt" ), "downloaded.txt" );
 
     FileObject downloaded = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( "ram://downloaded.txt" );

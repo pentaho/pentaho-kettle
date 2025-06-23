@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.excelinput;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KCell;
@@ -105,7 +106,8 @@ public class PoiWorkBookIT {
   }
 
   private void readData( String file, String password ) throws KettleException {
-    KWorkbook workbook = WorkbookFactory.getWorkbook( SpreadSheetType.POI, file, null, password );
+    KWorkbook workbook = WorkbookFactory.getWorkbook( DefaultBowl.getInstance(), SpreadSheetType.POI, file, null,
+      password );
     int numberOfSheets = workbook.getNumberOfSheets();
     assertEquals( 3, numberOfSheets );
     KSheet sheet1 = workbook.getSheet( 0 );

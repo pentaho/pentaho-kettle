@@ -63,7 +63,7 @@ public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
   private void testLoadSharedObjects( RepositoryElementInterface sharedObject ) throws Exception {
     purRepository.save( sharedObject, null, null );
 
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> map = map();
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> map = map();
     purRepository.readSharedObjects( map, sharedObject.getRepositoryElementType() );
 
     List<? extends SharedObjectInterface> objects = map.get( sharedObject.getRepositoryElementType() );
@@ -141,7 +141,7 @@ public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
     purRepository.save( slaveServer, null, null );
     purRepository.save( partition, null, null );
 
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> map = map();
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> map = map();
     purRepository.readSharedObjects( map, RepositoryObjectType.CLUSTER_SCHEMA, RepositoryObjectType.DATABASE,
         RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.PARTITION_SCHEMA );
 
@@ -176,8 +176,8 @@ public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
     return schema;
   }
 
-  private static Map<RepositoryObjectType, List<? extends SharedObjectInterface>> map() {
-    return new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
+  private static Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> map() {
+    return new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>( RepositoryObjectType.class );
   }
 
   private interface Remover {

@@ -14,6 +14,7 @@
 package org.pentaho.di.trans.steps.excelinput;
 
 import junit.framework.TestCase;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
@@ -23,7 +24,8 @@ import java.util.Date;
 
 public class JxlWorkBookIT extends TestCase {
   public void testRead() throws Exception {
-    KWorkbook workbook = WorkbookFactory.getWorkbook( SpreadSheetType.JXL, "src/it/resources/sample-file.xls", null );
+    KWorkbook workbook = WorkbookFactory.getWorkbook( DefaultBowl.getInstance(), SpreadSheetType.JXL,
+      "src/it/resources/sample-file.xls", null );
     int numberOfSheets = workbook.getNumberOfSheets();
     assertEquals( 3, numberOfSheets );
     KSheet sheet1 = workbook.getSheet( 0 );

@@ -43,6 +43,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -566,8 +567,8 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     repository.save( partSchema1, VERSION_COMMENT_V1, null );
     repository.save( partSchema2, VERSION_COMMENT_V1, null );
 
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType =
-        new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjectsByType =
+        new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>();
     repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.PARTITION_SCHEMA );
 
     List<PartitionSchema> partitionSchemas =
@@ -581,7 +582,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
     repository.save( partSchema3, VERSION_COMMENT_V1, null );
     repository.save( partSchema4, VERSION_COMMENT_V1, null );
-    sharedObjectsByType = new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
+    sharedObjectsByType = new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>();
     repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.PARTITION_SCHEMA );
 
     partitionSchemas = (List<PartitionSchema>) sharedObjectsByType.get( RepositoryObjectType.PARTITION_SCHEMA );
