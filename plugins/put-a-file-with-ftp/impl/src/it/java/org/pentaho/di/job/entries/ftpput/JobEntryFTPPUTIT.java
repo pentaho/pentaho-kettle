@@ -21,6 +21,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
@@ -95,7 +96,8 @@ public class JobEntryFTPPUTIT {
     setMockParent( jobEntry );
 
     connection =
-      new FTPSConnection( CONNECTION_TYPE_FTP, "localhost", FTP_PORT, FTP_USER, FTP_USER_PASSWORD, new Variables() );
+      new FTPSConnection( DefaultBowl.getInstance(), CONNECTION_TYPE_FTP, "localhost", FTP_PORT, FTP_USER,
+        FTP_USER_PASSWORD, new Variables() );
     connection.connect();
   }
 

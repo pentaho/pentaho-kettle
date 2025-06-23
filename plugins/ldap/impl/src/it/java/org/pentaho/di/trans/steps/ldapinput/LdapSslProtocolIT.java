@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.ldapinput;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -52,7 +53,7 @@ public class LdapSslProtocolIT {
 
     public TestableLdapProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
       Collection<String> binaryAttributes ) {
-      super( log, variableSpace, meta, binaryAttributes );
+      super( DefaultBowl.getInstance(), log, variableSpace, meta, binaryAttributes );
     }
 
     @Override
