@@ -174,9 +174,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
       return populateMeta( queryParams );
     } else {
       List<String> rows = this.getFirst( 50, false );
-      for ( TextFileInputFieldInterface textFileInputFieldInterface : getFields( tfii, rows ) ) {
-        jsonArray.add( objectMapper.readTree( objectMapper.writeValueAsString( textFileInputFieldInterface ) ) );
-      }
+      jsonArray.addAll( rows );
     }
 
     response.put( "fields", jsonArray );
