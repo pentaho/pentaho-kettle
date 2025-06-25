@@ -414,7 +414,7 @@ public class Kitchen {
 
   private static final void exitJVM( int status ) {
 
-    System.exit( status );
+    ExitInterceptor.exit( status );
   }
 
   public static KitchenCommandExecutor getCommandExecutor() {
