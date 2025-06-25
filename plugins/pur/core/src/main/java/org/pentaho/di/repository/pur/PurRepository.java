@@ -2483,7 +2483,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     TransMeta transMeta = new TransMeta();
     transMeta.setName( file.getTitle() );
-    transMeta.setFilename( file.getName() );
+    transMeta.setFilename( file.getPath() );
     transMeta.setDescription( file.getDescription() );
     transMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
     transMeta.setObjectRevision( revision );
@@ -2598,7 +2598,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     JobMeta jobMeta = new JobMeta();
     jobMeta.setName( file.getTitle() );
-    jobMeta.setFilename( file.getName() );
+    jobMeta.setFilename( file.getPath() );
     jobMeta.setDescription( file.getDescription() );
     jobMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
     jobMeta.setObjectRevision( revision );

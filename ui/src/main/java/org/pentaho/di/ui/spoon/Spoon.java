@@ -5226,85 +5226,116 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // does the file exist? If not, show an error dialog
     boolean fileExists = false;
-    FileObject file = null;
-    try {
-      file = KettleVFS.getInstance( executionBowl ).getFileObject( filename, variableSpace );
-      fileExists = file.exists();
-    } catch ( final KettleFileException | FileSystemException e ) {
-      // nothing to do, null fileObject will be handled below
-    }
-    if ( StringUtils.isBlank( filename ) || !fileExists ) {
-      final Dialog dlg = new SimpleMessageDialog( shell,
-        BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Title" ),
-        BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message", getFileType( filename ).toLowerCase() ),
-        MessageDialog.ERROR, BaseMessages.getString( PKG, "System.Button.Close" ),
-        MISSING_RECENT_DLG_WIDTH, SimpleMessageDialog.BUTTON_WIDTH );
-      dlg.open();
-      return;
-    }
-
     boolean loaded = false;
-    FileListener listener = null;
-    Node root = null;
-    // match by extension first
-    int idx = filename.lastIndexOf( '.' );
-    if ( idx != -1 ) {
-      for ( FileListener li : fileListeners ) {
-        if ( li.accepts( filename ) ) {
-          listener = li;
-          break;
+
+    if ( rep != null && !importFile ) {
+      // load from the repository
+      try {
+        Path filePath = Paths.get( filename );
+        RepositoryDirectoryInterface rdi = rep.findDirectory( filePath.getParent().toString() );
+        ObjectId objectId = null;
+        RepositoryObjectType rtype = null;
+        if ( filename.endsWith( ".ktr" ) ) {
+          String fullFileName = filePath.getFileName().toString();
+          String name = fullFileName.substring( 0, fullFileName.length() - 4 );
+          objectId = rep.getTransformationID( name, rdi );
+          rtype = RepositoryObjectType.TRANSFORMATION;
+        } else if ( filename.endsWith( ".kjb" ) ) {
+          String fullFileName = filePath.getFileName().toString();
+          String name = fullFileName.substring( 0, fullFileName.length() - 4 );
+          objectId = rep.getJobId( name, rdi );
+          rtype = RepositoryObjectType.JOB;
         }
-      }
-    }
-
-    // Attempt to find a root XML node name. Fails gracefully for non-XML file
-    // types.
-    try {
-      Document document = XMLHandler.loadXMLFile( file );
-      root = document.getDocumentElement();
-    } catch ( KettleXMLException e ) {
-      if ( log.isDetailed() ) {
-        log.logDetailed( BaseMessages.getString( PKG, "Spoon.File.Xml.Parse.Error" ) );
-      }
-    }
-
-    // otherwise try by looking at the root node if we were able to parse file
-    // as XML
-    if ( listener == null && root != null ) {
-      for ( FileListener li : fileListeners ) {
-        if ( li.acceptsXml( root.getNodeName() ) ) {
-          listener = li;
-          break;
+        if ( objectId != null ) {
+          RepositoryObject repositoryObject = rep.getObjectInformation( objectId, rtype );
+          loadObjectFromRepository( repositoryObject.getObjectId(), repositoryObject.getObjectType(), null );
+          lastFileOpened = repositoryObject.getRepositoryDirectory().getPath() + "/" + repositoryObject.getName();
+          lastFileOpenedProvider = ProviderFilterType.REPOSITORY.toString();
+          loaded = true;
         }
+      } catch ( final Exception e ) {
+        // nothing to do, not loaded will be handled below
       }
-    }
+    } else {
+      FileObject file = null;
+      try {
+        file = KettleVFS.getInstance( executionBowl ).getFileObject( filename, variableSpace );
+        fileExists = file.exists();
+      } catch ( final KettleFileException | FileSystemException e ) {
+        // nothing to do, null fileObject will be handled below
+      }
+      if ( StringUtils.isBlank( filename ) || !fileExists ) {
+        final Dialog dlg = new SimpleMessageDialog( shell,
+          BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Title" ),
+          BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message", getFileType( filename ).toLowerCase() ),
+          MessageDialog.ERROR, BaseMessages.getString( PKG, "System.Button.Close" ),
+          MISSING_RECENT_DLG_WIDTH, SimpleMessageDialog.BUTTON_WIDTH );
+        dlg.open();
+        return;
+      }
 
-    // You got to have a file name!
-    //
-    if ( !Utils.isEmpty( filename ) ) {
-      if ( listener != null ) {
-        try {
-          String connection = variableSpace != null ? variableSpace.getVariable( CONNECTION ) : null;
-          if ( listener instanceof ConnectionListener ) {
-            loaded = ( (ConnectionListener) listener ).open( root, filename, connection, importFile );
-          } else {
-            loaded = listener.open( root, filename, importFile );
+      FileListener listener = null;
+      Node root = null;
+      // match by extension first
+      int idx = filename.lastIndexOf( '.' );
+      if ( idx != -1 ) {
+        for ( FileListener li : fileListeners ) {
+          if ( li.accepts( filename ) ) {
+            listener = li;
+            break;
           }
-        } catch ( KettleMissingPluginsException e ) {
-          log.logError( e.getMessage(), e );
         }
       }
-      if ( !loaded ) {
-        // Give error back
-        hideSplash();
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "Spoon.UnknownFileType.Message", filename ) );
-        mb.setText( BaseMessages.getString( PKG, "Spoon.UnknownFileType.Title" ) );
-        mb.open();
-      } else {
-        applyVariables(); // set variables in the newly loaded
-        // transformation(s) and job(s).
+
+      // Attempt to find a root XML node name. Fails gracefully for non-XML file
+      // types.
+      try {
+        Document document = XMLHandler.loadXMLFile( file );
+        root = document.getDocumentElement();
+      } catch ( KettleXMLException e ) {
+        if ( log.isDetailed() ) {
+          log.logDetailed( BaseMessages.getString( PKG, "Spoon.File.Xml.Parse.Error" ) );
+        }
       }
+
+      // otherwise try by looking at the root node if we were able to parse file
+      // as XML
+      if ( listener == null && root != null ) {
+        for ( FileListener li : fileListeners ) {
+          if ( li.acceptsXml( root.getNodeName() ) ) {
+            listener = li;
+            break;
+          }
+        }
+      }
+
+      // You got to have a file name!
+      //
+      if ( !Utils.isEmpty( filename ) ) {
+        if ( listener != null ) {
+          try {
+            String connection = variableSpace != null ? variableSpace.getVariable( CONNECTION ) : null;
+            if ( listener instanceof ConnectionListener ) {
+              loaded = ( (ConnectionListener) listener ).open( root, filename, connection, importFile );
+            } else {
+              loaded = listener.open( root, filename, importFile );
+            }
+          } catch ( KettleMissingPluginsException e ) {
+            log.logError( e.getMessage(), e );
+          }
+        }
+      }
+    }
+    if ( !loaded ) {
+      // Give error back
+      hideSplash();
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "Spoon.UnknownFileType.Message", filename ) );
+      mb.setText( BaseMessages.getString( PKG, "Spoon.UnknownFileType.Title" ) );
+      mb.open();
+    } else {
+      applyVariables(); // set variables in the newly loaded
+      // transformation(s) and job(s).
     }
   }
 
@@ -5902,8 +5933,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( !Utils.isEmpty( meta.getName() ) && rep != null ) {
 
       ObjectId existingId = null;
+      String saveEventId = null;
       if ( meta instanceof TransMeta ) {
         existingId = rep.getTransformationID( meta.getName(), meta.getRepositoryDirectory() );
+        saveEventId = KettleExtensionPoint.TransAfterSave.id;
       }
       if ( meta instanceof JobMeta ) {
         existingId = rep.getJobId( meta.getName(), meta.getRepositoryDirectory() );
@@ -6034,6 +6067,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       } finally {
         shell.setCursor( null );
+      }
+
+      if ( saved && saveEventId != null ) {
+        try {
+          ExtensionPointHandler.callExtensionPoint( getLog(), saveEventId, meta );
+        } catch ( KettleException e ) {
+          // fails gracefully
+        }
       }
 
       return saved;
