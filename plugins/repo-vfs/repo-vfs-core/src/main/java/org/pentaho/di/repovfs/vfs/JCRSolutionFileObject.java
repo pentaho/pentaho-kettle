@@ -72,7 +72,7 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
     if ( getName().getDepth() < 2 ) {
       return FileType.FOLDER;
     }
-    if ( !exists( getName() ) ) {
+    if ( !nodeExists( getName() ) ) {
       return FileType.IMAGINARY;
     }
     if ( isDirectory() ) {
@@ -221,7 +221,9 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
    */
   @Override
   protected void doCreateFolder() throws Exception {
-    repoClient.createFolder( getName().getPath() );
+    if ( !nodeExists( getName() ) || !isDirectory() ) {
+      repoClient.createFolder( getName().getPath() );
+    }
   }
 
   @Override
@@ -333,11 +335,12 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
     return result;
   }
 
+  /** If this is a directory. Must have checked if exists first */
   private boolean isDirectory() throws FileSystemException {
     return getFileDto().isFolder();
   }
 
-  public boolean exists( final FileName file ) throws FileSystemException {
+  private boolean nodeExists( final FileName file ) throws FileSystemException {
     final String[] fileName = computeFileNames( file );
     try {
       return repoClient.lookupNode( fileName ).isPresent();
