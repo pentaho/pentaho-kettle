@@ -54,7 +54,6 @@ import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileTr
 /**
  * Created by tkafalas 7/14/14.
  */
-@Ignore
 @RunWith( org.mockito.junit.MockitoJUnitRunner.class )
 public class UnifiedRepositoryPurgeServiceTest {
 
