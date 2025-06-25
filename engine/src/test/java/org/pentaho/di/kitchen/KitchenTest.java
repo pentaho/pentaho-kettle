@@ -28,6 +28,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.security.ExitInterceptor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -52,7 +53,6 @@ public class KitchenTest {
   private ByteArrayOutputStream sysOutContent;
   private ByteArrayOutputStream sysErrContent;
 
-  private SecurityManager oldSecurityManager;
 
   RepositoriesMeta mockRepositoriesMeta;
   RepositoryMeta mockRepositoryMeta;
@@ -62,10 +62,9 @@ public class KitchenTest {
   @Before
   public void setUp() throws KettleException {
     KettleEnvironment.init();
-    oldSecurityManager = System.getSecurityManager();
+    ExitInterceptor.enableIntercept();
     sysOutContent = new ByteArrayOutputStream();
     sysErrContent = new ByteArrayOutputStream();
-    System.setSecurityManager( new MySecurityManager( oldSecurityManager ) );
     mockRepositoriesMeta = mock( RepositoriesMeta.class );
     mockRepositoryMeta = mock( RepositoryMeta.class );
     mockRepository = mock( Repository.class );
@@ -74,7 +73,7 @@ public class KitchenTest {
 
   @After
   public void tearDown() {
-    System.setSecurityManager( oldSecurityManager );
+    ExitInterceptor.disableIntercept();
     sysOutContent = null;
     sysErrContent = null;
     mockRepositoriesMeta = null;
@@ -297,27 +296,6 @@ public class KitchenTest {
     public Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
                                                          final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
       return testRepository != null ? testRepository : super.establishRepositoryConnection( repositoryMeta, username, password, operations );
-    }
-  }
-
-  public class MySecurityManager extends SecurityManager {
-
-    private SecurityManager baseSecurityManager;
-
-    public MySecurityManager( SecurityManager baseSecurityManager ) {
-      this.baseSecurityManager = baseSecurityManager;
-    }
-
-    @Override
-    public void checkPermission( Permission permission ) {
-      if ( permission.getName().startsWith( "exitVM" ) ) {
-        throw new SecurityException( "System exit not allowed" );
-      }
-      if ( baseSecurityManager != null ) {
-        baseSecurityManager.checkPermission( permission );
-      } else {
-        return;
-      }
     }
   }
 }
