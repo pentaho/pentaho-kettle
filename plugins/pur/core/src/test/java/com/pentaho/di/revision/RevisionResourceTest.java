@@ -76,14 +76,13 @@ public class RevisionResourceTest {
    * 
    * @throws Exception
    */
-  @org.junit.Ignore
   @org.junit.Test
   public void testDoGetVersions() throws Exception {
     Response response = revisionResource.doGetVersions( MOCK_FILE_PATH );
     Object entity = response.getEntity();
 
     // Yeah this gets weird: List, wrapped in a Response, wrapped in GenericEnttiy
-    List<PurObjectRevision> revisionList = (List<PurObjectRevision>) ( (GenericEntity) entity ).getEntity();
+    List<PurObjectRevision> revisionList = (List<PurObjectRevision>) entity;
 
     Assert.assertTrue( revisionList.size() == 1 );
     Assert.assertTrue( revisionList.get( 0 ).getLogin().equals( MOCK_VERSION_AUTHOR_1 ) );
