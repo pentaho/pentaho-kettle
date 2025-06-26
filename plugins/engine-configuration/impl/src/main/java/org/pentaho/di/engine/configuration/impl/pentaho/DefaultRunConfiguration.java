@@ -26,7 +26,7 @@ import org.pentaho.metastore.persist.MetaStoreElementType;
   description = "Defines a default run configuration" )
 public class DefaultRunConfiguration implements RunConfiguration {
 
-  public static String TYPE = "Pentaho";
+  public static final String TYPE = "Pentaho";
 
   @MetaStoreAttribute
   private boolean local = true;
