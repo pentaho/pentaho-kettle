@@ -97,7 +97,7 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
 
   private Image getRunConfigurationImage( GUIResource guiResource, String file ) {
     return guiResource
-            .getImage( file, getClass().getClassLoader(), ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+      .getImage( file, getClass().getClassLoader(), ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
   private Color getDisabledColor() {

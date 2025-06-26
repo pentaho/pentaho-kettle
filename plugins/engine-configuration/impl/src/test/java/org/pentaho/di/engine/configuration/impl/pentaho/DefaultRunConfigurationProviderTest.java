@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.impl.CheckedMetaStoreSupplier;
+import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
 
 import static org.junit.Assert.assertEquals;
 
