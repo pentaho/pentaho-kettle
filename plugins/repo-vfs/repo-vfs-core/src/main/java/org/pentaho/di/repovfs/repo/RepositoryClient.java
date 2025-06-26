@@ -206,7 +206,7 @@ public class RepositoryClient {
   /** Create folder with given path */
   public void createFolder( String filePath ) throws RepositoryClientException {
     try {
-      String path = encodePath( filePath );
+      String path = RepositoryPathEncoder.encodeRepositoryPath( filePath );
       String service = cfg.getCreateFolderSvc( path );
 
       WebResource resource = client.resource( url + service );
