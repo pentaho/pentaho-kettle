@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
@@ -52,8 +53,8 @@ public class RunConfigurationManagerTest {
       new DefaultRunConfigurationProvider( metastoreSupplier );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
+    runConfigurationProviders.add( defaultRunConfigurationProvider );
     executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
-    executionConfigurationManager.setDefaultRunConfigurationProvider( defaultRunConfigurationProvider );
 
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
     defaultRunConfiguration.setName( "Default Configuration" );
@@ -124,6 +125,8 @@ public class RunConfigurationManagerTest {
     DefaultRunConfiguration defaultRunConfiguration =
       (DefaultRunConfiguration) executionConfigurationManager.getRunConfigurationByType( DefaultRunConfiguration.TYPE );
     assertNotNull( defaultRunConfiguration );
+
+    assertNotNull( defaultRunConfiguration );
   }
 
   @Test
@@ -140,10 +143,10 @@ public class RunConfigurationManagerTest {
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreSupplier );
 
-    List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
 
+    List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
+    runConfigurationProviders.add( defaultRunConfigurationProvider );
     executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
-    executionConfigurationManager.setDefaultRunConfigurationProvider( defaultRunConfigurationProvider );
 
     DefaultRunConfiguration defaultRunConfiguration1 = new DefaultRunConfiguration();
     defaultRunConfiguration1.setName( "z" );
