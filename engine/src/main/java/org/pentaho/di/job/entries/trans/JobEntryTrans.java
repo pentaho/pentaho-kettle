@@ -75,6 +75,7 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.trans.DefaultTransFactoryManager;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -1131,10 +1132,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           //
           //trans = new Trans( transMeta, this );
           final TransMeta meta = transMeta;
-          trans = new Trans( meta, this );
+
+          trans = DefaultTransFactoryManager.getInstance().getTransFactory( executionConfiguration.getRunConfiguration() )
+                  .create( transMeta, this );
 
           // Pass the socket repository as early as possible...
           //
+          trans.setLog( log );
           trans.setSocketRepository( parentJob.getSocketRepository() );
 
           if ( parentJob.getJobMeta().isBatchIdPassed() ) {

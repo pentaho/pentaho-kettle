@@ -218,6 +218,11 @@
             <artifactId>pentaho-kettle-repository-locator-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.pentaho.di.plugins</groupId>
+            <artifactId>pdi-engine-configuration-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--  Pentaho reporting dependencies -->
         <dependency>
