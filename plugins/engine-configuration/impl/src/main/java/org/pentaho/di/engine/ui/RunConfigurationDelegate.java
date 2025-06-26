@@ -24,7 +24,7 @@ import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
-import org.pentaho.di.engine.configuration.impl.CheckedMetaStoreSupplier;
+import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.i18n.BaseMessages;
@@ -86,7 +86,8 @@ public class RunConfigurationDelegate {
           if ( jet.getRunConfiguration() != null ) {
             if ( jet.getRunConfiguration().equals( key ) ) {
               try {
-                ExtensionPointHandler.callExtensionPoint( job.getLogChannel(), KettleExtensionPoint.JobEntryTransSave.id,
+                ExtensionPointHandler.callExtensionPoint( job.getLogChannel(),
+                  KettleExtensionPoint.JobEntryTransSave.id,
                   new Object[] { job, runConfig.getName() } );
               } catch ( KettleException e ) {
                 spoonSupplier.get().getLog().logBasic( "Unable to set run configuration in job " + job.getName() );
