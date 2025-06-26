@@ -47,6 +47,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.pan.CommandLineOption;
+import org.pentaho.di.security.ExitInterceptor;
 
 public class Kitchen {
   private static Class<?> PKG = Kitchen.class; // for i18n purposes, needed by Translator2!!
@@ -344,7 +345,7 @@ public class Kitchen {
 
   private static final void exitJVM( int status ) {
 
-    System.exit( status );
+    ExitInterceptor.exit( status );
   }
 
   public static KitchenCommandExecutor getCommandExecutor() {
