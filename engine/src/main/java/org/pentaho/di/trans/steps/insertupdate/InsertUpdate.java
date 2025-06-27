@@ -49,11 +49,6 @@ import org.pentaho.di.trans.step.BaseDatabaseStep;
 public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String IS_NULL = "IS NULL";
-  private static final String IS_NOT_NULL = "IS NOT NULL";
-  private static final String IS_EQUAL_TO_NOT_NULL = "= ~NULL";
-  private static final String BETWEEN = "BETWEEN";
-
   private InsertUpdateMeta meta;
   private InsertUpdateData data;
 
@@ -211,8 +206,8 @@ public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
         int keynr = getInputRowMeta().indexOfValue( meta.getKeyFields()[ i ].getKeyStream() );
 
         if ( keynr < 0 && // couldn't find field!
-          !IS_NULL.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) && // No field needed!
-          !IS_NOT_NULL.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) // No field needed!
+          !"IS NULL".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) && // No field needed!
+          !"IS NOT NULL".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) // No field needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "InsertUpdate.Exception.FieldRequired", meta
             .getKeyFields()[ i ].getKeyStream() ) );
@@ -220,14 +215,14 @@ public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
         keynrs.add( keynr );
 
         // this operator needs two bindings
-        if ( IS_EQUAL_TO_NOT_NULL.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
+        if ( "= ~NULL".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
           keynrs.add( keynr );
           keynrs2.add( -1 );
         }
 
         int keynr2 = getInputRowMeta().indexOfValue( meta.getKeyFields()[ i ].getKeyStream2() );
         if ( keynr2 < 0 && // couldn't find field!
-          BETWEEN.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) // 2 fields needed!
+          "BETWEEN".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) // 2 fields needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "InsertUpdate.Exception.FieldRequired", meta
             .getKeyFields()[ i ].getKeyStream2() ) );
@@ -353,11 +348,8 @@ public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
   public JSONObject getComparatorsAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     JSONArray comparators = new JSONArray();
-    String[] comparatorValues = {
-            "=", IS_EQUAL_TO_NOT_NULL, "<>", "<", "<=", ">", ">=", "LIKE", BETWEEN, IS_NULL, IS_NOT_NULL
-    };
 
-    for ( String comparator : comparatorValues ) {
+    for ( String comparator : InsertUpdateMeta.COMPARATORS ) {
       JSONObject comparatorJson = new JSONObject();
       comparatorJson.put( "id", comparator );
       comparatorJson.put( "name", comparator );
@@ -394,15 +386,15 @@ public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
       sql += " ( ( ";
 
       sql += databaseMeta.quoteField( meta.getKeyFields()[ i ].getKeyLookup() );
-      if ( BETWEEN.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
+      if ( "BETWEEN".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
         sql += " BETWEEN ? AND ? ";
         data.lookupParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyFields()[ i ].getKeyStream() ) );
         data.lookupParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyFields()[ i ].getKeyStream2() ) );
       } else {
-        if ( IS_NULL.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() )
-          || IS_NOT_NULL.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
+        if ( "IS NULL".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() )
+          || "IS NOT NULL".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
           sql += " " + meta.getKeyFields()[ i ].getKeyCondition() + " ";
-        } else if ( IS_EQUAL_TO_NOT_NULL.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
+        } else if ( "= ~NULL".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
 
           sql += " IS NULL AND ";
 
@@ -471,14 +463,14 @@ public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
       }
       sql += " ( ( ";
       sql += databaseMeta.quoteField( meta.getKeyFields()[ i ].getKeyLookup() );
-      if ( BETWEEN.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
+      if ( "BETWEEN".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
         sql += " BETWEEN ? AND ? ";
         data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyFields()[ i ].getKeyStream() ) );
         data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyFields()[ i ].getKeyStream2() ) );
-      } else if ( IS_NULL.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() )
-        || IS_NOT_NULL.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
+      } else if ( "IS NULL".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() )
+        || "IS NOT NULL".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
         sql += " " + meta.getKeyFields()[ i ].getKeyCondition() + " ";
-      } else if ( IS_EQUAL_TO_NOT_NULL.equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
+      } else if ( "= ~NULL".equalsIgnoreCase( meta.getKeyFields()[ i ].getKeyCondition() ) ) {
 
         sql += " IS NULL AND ";
 
