@@ -43,6 +43,8 @@ import org.pentaho.di.trans.step.*;
 public class Update extends BaseDatabaseStep implements StepInterface {
   private static Class<?> PKG = UpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private static final String ERROR_MESSAGE = "errorMessage";
+
   private UpdateMeta meta;
   private UpdateData data;
 
@@ -520,7 +522,7 @@ public class Update extends BaseDatabaseStep implements StepInterface {
       SQLStatement sql = updateMeta.getSQLStatements( transMeta, stepInfo, prev, null, null );
       if ( sql.hasError() ) {
         response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-        response.put( "errorMessage", sql.getError() );
+        response.put( ERROR_MESSAGE, sql.getError() );
         return response;
       }
 
@@ -529,12 +531,12 @@ public class Update extends BaseDatabaseStep implements StepInterface {
         response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
       } else {
         response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-        response.put( "errorMessage", BaseMessages.getString( PKG, "Update.NoSQLNeeds.DialogMessage" ) );
+        response.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "Update.NoSQLNeeds.DialogMessage" ) );
         return response;
       }
     } catch ( KettleStepException e ) {
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-      response.put( "errorMessage", e.getMessage() );
+      response.put( ERROR_MESSAGE, e.getMessage() );
     }
 
     return response;
