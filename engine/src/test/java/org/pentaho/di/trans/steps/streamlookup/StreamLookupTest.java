@@ -13,6 +13,8 @@
 
 package org.pentaho.di.trans.steps.streamlookup;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -20,6 +22,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import junit.framework.Assert;
 
@@ -38,12 +42,17 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Test for StreamLookup step
@@ -230,5 +239,211 @@ public class StreamLookupTest {
   @Test
   public void testMemoryPreservationWithBinaryStreams() throws KettleException {
     doTest( true, false, true );
+  }
+
+  @Test
+  public void lookupFieldsTest() throws KettleStepException {
+    StreamLookup streamLookup = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    RowMeta rowMeta = new RowMeta();
+    ValueMetaString valueMetaString = new ValueMetaString( "value" );
+    rowMeta.setValueMetaList( Collections.singletonList( valueMetaString ) );
+
+    Stream stream = mock( Stream.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    StreamLookupMeta streamLookupMeta = mock( StreamLookupMeta.class );
+    StepIOMetaInterface stepIOMetaInterface = mock( StepIOMetaInterface.class );
+
+    when( streamLookupMeta.getStepIOMeta() ).thenReturn( stepIOMetaInterface );
+    when( stream.getStepname() ).thenReturn( "stepName" );
+    when( stepIOMetaInterface.getInfoStreams() ).thenReturn( Collections.singletonList( stream ) );
+    when( smh.transMeta.findStep( "stepName" ) ).thenReturn( stepMeta );
+    when( smh.transMeta.getStepFields( stepMeta ) ).thenReturn( rowMeta );
+
+    JSONObject jsonObject = streamLookup.doAction( "lookupFields", streamLookupMeta,
+        smh.transMeta, smh.trans, new HashMap<>() );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    JSONArray jsonArray = (JSONArray) jsonObject.get( "lookupFields" );
+    assertEquals( 1, jsonArray.size() );
+  }
+
+  @Test
+  public void lookupFieldsTest_withEmptyStepName() {
+    StreamLookup streamLookup = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+
+    Stream stream = mock( Stream.class );
+    StreamLookupMeta streamLookupMeta = mock( StreamLookupMeta.class );
+    StepIOMetaInterface stepIOMetaInterface = mock( StepIOMetaInterface.class );
+
+    when( streamLookupMeta.getStepIOMeta() ).thenReturn( stepIOMetaInterface );
+    when( stream.getStepname() ).thenReturn( "" );
+    when( stepIOMetaInterface.getInfoStreams() ).thenReturn( Collections.singletonList( stream ) );
+
+    JSONObject jsonObject = streamLookup.doAction( "lookupFields", streamLookupMeta,
+        smh.transMeta, smh.trans, new HashMap<>() );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    String errorMessage = (String) jsonObject.get( "errorMessage" );
+    assertNotNull( errorMessage );
+  }
+
+  @Test
+  public void lookupFieldsTest_throwsExceptionWhileFetchingFields() throws KettleStepException {
+    StreamLookup streamLookup = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+
+    Stream stream = mock( Stream.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    StreamLookupMeta streamLookupMeta = mock( StreamLookupMeta.class );
+    StepIOMetaInterface stepIOMetaInterface = mock( StepIOMetaInterface.class );
+
+    when( streamLookupMeta.getStepIOMeta() ).thenReturn( stepIOMetaInterface );
+    when( stream.getStepname() ).thenReturn( "stepName" );
+    when( stepIOMetaInterface.getInfoStreams() ).thenReturn( Collections.singletonList( stream ) );
+    when( smh.transMeta.findStep( "stepName" ) ).thenReturn( stepMeta );
+    when( smh.transMeta.getStepFields( stepMeta ) ).thenThrow( new KettleStepException( "errorMessage" ) );
+
+    JSONObject jsonObject = streamLookup.doAction( "lookupFields", streamLookupMeta,
+        smh.transMeta, smh.trans, new HashMap<>() );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+  }
+
+  @Test
+  public void getFieldsTest_fromPrevFields() throws KettleStepException {
+    StreamLookup streamLookup = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    RowMeta rowMeta = new RowMeta();
+    ValueMetaString valueMetaString = new ValueMetaString( "value" );
+    rowMeta.setValueMetaList( Collections.singletonList( valueMetaString ) );
+
+    StreamLookupMeta streamLookupMeta = mock( StreamLookupMeta.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    when( streamLookupMeta.getParentStepMeta() ).thenReturn( stepMeta );
+    when( stepMeta.getName() ).thenReturn( "stepName" );
+    when( smh.transMeta.getPrevStepFields( "stepName" ) ).thenReturn( rowMeta );
+
+    JSONObject jsonObject = streamLookup.doAction( "getFields", streamLookupMeta,
+        smh.transMeta, smh.trans, new HashMap<>() );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    JSONArray jsonArray = (JSONArray) jsonObject.get( "fields" );
+    assertEquals( 1, jsonArray.size() );
+  }
+
+  @Test
+  public void getFieldsTest_fromStream() throws KettleStepException {
+    StreamLookup streamLookup = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    RowMeta rowMeta = new RowMeta();
+    ValueMetaString valueMetaString = new ValueMetaString( "value" );
+    rowMeta.setValueMetaList( Collections.singletonList( valueMetaString ) );
+
+    Stream stream = mock( Stream.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    StreamLookupMeta streamLookupMeta = mock( StreamLookupMeta.class );
+    StepIOMetaInterface stepIOMetaInterface = mock( StepIOMetaInterface.class );
+
+    when( streamLookupMeta.getStepIOMeta() ).thenReturn( stepIOMetaInterface );
+    when( stream.getStepname() ).thenReturn( "stepName" );
+    when( stepIOMetaInterface.getInfoStreams() ).thenReturn( Collections.singletonList( stream ) );
+
+    when( streamLookupMeta.getParentStepMeta() ).thenReturn( stepMeta );
+    when( stepMeta.getName() ).thenReturn( "stepName" );
+    when( smh.transMeta.getPrevStepFields( "stepName" ) ).thenReturn( null );
+    when( smh.transMeta.findStep( "stepName" ) ).thenReturn( stepMeta );
+    when( smh.transMeta.getStepFields( "stepName" ) ).thenReturn( rowMeta );
+
+    JSONObject jsonObject = streamLookup.doAction( "getFields", streamLookupMeta,
+        smh.transMeta, smh.trans, new HashMap<>() );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    JSONArray jsonArray = (JSONArray) jsonObject.get( "fields" );
+    assertEquals( 1, jsonArray.size() );
+  }
+
+  @Test
+  public void getFieldsTest_fromStreamWithEmptyStepName() throws KettleStepException {
+    StreamLookup streamLookup = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+
+    Stream stream = mock( Stream.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    StreamLookupMeta streamLookupMeta = mock( StreamLookupMeta.class );
+    StepIOMetaInterface stepIOMetaInterface = mock( StepIOMetaInterface.class );
+
+    when( streamLookupMeta.getStepIOMeta() ).thenReturn( stepIOMetaInterface );
+    when( stream.getStepname() ).thenReturn( "" );
+    when( stepIOMetaInterface.getInfoStreams() ).thenReturn( Collections.singletonList( stream ) );
+
+    when( streamLookupMeta.getParentStepMeta() ).thenReturn( stepMeta );
+    when( stepMeta.getName() ).thenReturn( "stepName" );
+    when( smh.transMeta.getPrevStepFields( "stepName" ) ).thenReturn( null );
+    when( smh.transMeta.findStep( "stepName" ) ).thenReturn( stepMeta );
+
+    JSONObject jsonObject = streamLookup.doAction( "getFields", streamLookupMeta,
+        smh.transMeta, smh.trans, new HashMap<>() );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    String errorMessage = (String) jsonObject.get( "errorMessage" );
+    assertNotNull( errorMessage );
+  }
+
+  @Test
+  public void getFieldsTest_fromStreamWithEmptyFields() throws KettleStepException {
+    StreamLookup streamLookup = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+
+    Stream stream = mock( Stream.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    StreamLookupMeta streamLookupMeta = mock( StreamLookupMeta.class );
+    StepIOMetaInterface stepIOMetaInterface = mock( StepIOMetaInterface.class );
+
+    when( streamLookupMeta.getStepIOMeta() ).thenReturn( stepIOMetaInterface );
+    when( stream.getStepname() ).thenReturn( "stepName" );
+    when( stepIOMetaInterface.getInfoStreams() ).thenReturn( Collections.singletonList( stream ) );
+
+    when( streamLookupMeta.getParentStepMeta() ).thenReturn( stepMeta );
+    when( stepMeta.getName() ).thenReturn( "stepName" );
+    when( smh.transMeta.getPrevStepFields( "stepName" ) ).thenReturn( null );
+    when( smh.transMeta.findStep( "stepName" ) ).thenReturn( stepMeta );
+    when( smh.transMeta.getStepFields( "stepName" ) ).thenReturn( null );
+
+    JSONObject jsonObject = streamLookup.doAction( "getFields", streamLookupMeta,
+        smh.transMeta, smh.trans, new HashMap<>() );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    String errorMessage = (String) jsonObject.get( "errorMessage" );
+    assertNotNull( errorMessage );
+  }
+
+  @Test
+  public void getFieldsTest_fromStreamThrowsExceptionWhenFetchingFields() throws KettleStepException {
+    StreamLookup streamLookup = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+
+    Stream stream = mock( Stream.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    StreamLookupMeta streamLookupMeta = mock( StreamLookupMeta.class );
+    StepIOMetaInterface stepIOMetaInterface = mock( StepIOMetaInterface.class );
+
+    when( streamLookupMeta.getStepIOMeta() ).thenReturn( stepIOMetaInterface );
+    when( stream.getStepname() ).thenReturn( "stepName" );
+    when( stepIOMetaInterface.getInfoStreams() ).thenReturn( Collections.singletonList( stream ) );
+
+    when( streamLookupMeta.getParentStepMeta() ).thenReturn( stepMeta );
+    when( stepMeta.getName() ).thenReturn( "stepName" );
+    when( smh.transMeta.getPrevStepFields( "stepName" ) ).thenReturn( null );
+    when( smh.transMeta.findStep( "stepName" ) ).thenReturn( stepMeta );
+    when( smh.transMeta.getStepFields( "stepName" ) ).thenThrow( new KettleStepException( "errorMessage" ) );
+
+    JSONObject jsonObject = streamLookup.doAction( "getFields", streamLookupMeta,
+        smh.transMeta, smh.trans, new HashMap<>() );
+
+    assertNotNull( jsonObject );
+    assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    String errorMessage = (String) jsonObject.get( "errorMessage" );
+    assertNotNull( errorMessage );
   }
 }
