@@ -18,6 +18,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -101,7 +102,8 @@ public class JobExportIT {
     JobMeta jobMeta = repository.loadJob( JOB_NAME, repositoryDir, null, null );
     Job job = new Job( repository, jobMeta );
 
-    ResourceUtil.serializeResourceExportInterface( EXPORT_FILE, job.getJobMeta(), job, repository, null );
+    ResourceUtil.serializeResourceExportInterface( DefaultBowl.getInstance(), DefaultBowl.getInstance(), EXPORT_FILE,
+      job.getJobMeta(), job, repository, null );
 
     File zipFile = new File( EXPORT_FILE );
     assertTrue( zipFile.exists() );

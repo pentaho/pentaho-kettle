@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.excelinput;
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
@@ -185,7 +186,7 @@ public class StaxWorkBookIT {
   }
 
   protected KWorkbook getWorkbook( String file, String encoding, String password ) throws KettleException {
-    return WorkbookFactory.getWorkbook( SpreadSheetType.SAX_POI, file, encoding, password );
+    return WorkbookFactory.getWorkbook( DefaultBowl.getInstance(), SpreadSheetType.SAX_POI, file, encoding, password );
   }
 
   private void readData( String file ) throws KettleException {
