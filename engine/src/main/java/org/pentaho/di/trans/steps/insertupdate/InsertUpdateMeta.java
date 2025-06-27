@@ -56,7 +56,7 @@ import org.w3c.dom.Node;
 public class InsertUpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterface, ProvidesModelerMeta {
   private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String[] COMPARATORS = new String[] { "=", "= ~NULL", "<>", "<", "<=",
+  protected static final String[] COMPARATORS = new String[] { "=", "= ~NULL", "<>", "<", "<=",
     ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" };
 
   private List<DatabaseMeta> databases;
