@@ -483,6 +483,13 @@ public class StreamLookup extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
+  /**
+   * Retrieves the list of fields from the specified lookup step and returns them as a JSON object.
+   * This method is invoked dynamically using reflection from StepInterface#doAction method.
+   *
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing the list of lookup fields under the key "lookupFields" or an error message if retrieval fails.
+   */
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject lookupFieldsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
@@ -517,6 +524,13 @@ public class StreamLookup extends BaseStep implements StepInterface {
     return response;
   }
 
+  /**
+   * Retrieves the fields from the previous step or the specified lookup step and returns them as a JSON object.
+   * This method is invoked dynamically using reflection from StepInterface#doAction method.
+   *
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing the list of fields under the key "fields" or an error message if retrieval fails.
+   */
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject getFieldsAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
@@ -552,6 +566,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
         }
       }
     } catch ( KettleException ke ) {
+      logError( "Error while retrieving the fields from the step", ke.getMessage() );
       response.put( ERROR_MESSAGE, ke.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
       return response;
