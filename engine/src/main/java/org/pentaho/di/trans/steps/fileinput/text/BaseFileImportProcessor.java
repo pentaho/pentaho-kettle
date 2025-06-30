@@ -322,7 +322,7 @@ public abstract class BaseFileImportProcessor {
       fileLineNumber = textFileLine.getLineNumber();
     }
 
-    message = evaluateFieldsAndGenerateMessage( nrfields, evaluators, linenr, fieldAnalyses );
+    message = generateFieldAnalysisMessage( nrfields, evaluators, linenr, fieldAnalyses );
 
     return message;
   }
@@ -401,8 +401,8 @@ public abstract class BaseFileImportProcessor {
    * @param fieldAnalyses an array of `FieldAnalysis` objects containing analysis results for each field
    * @return a `String` containing the generated summary message
    */
-  private String evaluateFieldsAndGenerateMessage( int nrfields, List<StringEvaluator> evaluators,
-                                                   int linenr, FieldAnalysis[] fieldAnalyses ) {
+  private String generateFieldAnalysisMessage( int nrfields, List<StringEvaluator> evaluators,
+                                               int linenr, FieldAnalysis[] fieldAnalyses ) {
     StringBuilder summary = new StringBuilder();
     if ( showSummary ) {
       summary.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.ResultAfterScanning",

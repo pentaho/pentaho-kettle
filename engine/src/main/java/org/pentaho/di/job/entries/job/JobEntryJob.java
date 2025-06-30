@@ -1775,6 +1775,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
 
+  /**
+   * Retrieves the list of parameters from the given job metadata and returns them as a JSON object.
+   * This method is called from JobEntryInterface#doAction dynamically using reflection.
+   *
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing the list of parameters under the key "parameters".
+   * @throws KettleException If an error occurs while retrieving the job metadata or parameters.
+   */
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();

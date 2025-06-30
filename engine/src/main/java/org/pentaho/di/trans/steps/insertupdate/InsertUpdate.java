@@ -324,6 +324,13 @@ public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
     return true;
   }
 
+  /**
+   * Generates a JSON object containing an SQL statement or an error message.
+   * This method is invoked dynamically using reflection from StepInterface#doAction method.
+   *
+   * @param queryParamToValues A map of query parameters and their corresponding values (not used in this implementation).
+   * @return A JSON object containing the generated SQL statement under the key "sql" or an error message under the key "error".
+   */
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject getSQLAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
@@ -344,6 +351,13 @@ public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
     return response;
   }
 
+  /**
+   * Generates a JSON object containing a list of comparators.
+   * This method is invoked dynamically using reflection from StepInterface#doAction method.
+   *
+   * @param queryParamToValues A map of query parameters and their corresponding values (not used in this implementation).
+   * @return A JSON object containing the list of comparators under the key "comparators".
+   */
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject getComparatorsAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
