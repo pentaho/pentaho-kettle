@@ -16,9 +16,13 @@ package org.pentaho.di.trans.steps.insertupdate;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -318,6 +322,55 @@ public class InsertUpdate extends BaseDatabaseStep implements StepInterface {
     }
 
     return true;
+  }
+
+  /**
+   * Generates a JSON object containing an SQL statement or an error message.
+   * This method is invoked dynamically using reflection from StepInterface#doAction method.
+   *
+   * @param queryParamToValues A map of query parameters and their corresponding values (not used in this implementation).
+   * @return A JSON object containing the generated SQL statement under the key "sql" or an error message under the key "error".
+   */
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getSQLAction( Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    try {
+      RowMetaInterface prev = getTransMeta().getPrevStepFields( getStepname() );
+      InsertUpdateMeta insertUpdateMeta = ( InsertUpdateMeta ) getStepMetaInterface();
+      SQLStatement sql = insertUpdateMeta.getSQLStatements(
+              getTransMeta(), getStepMeta(), prev, repository, metaStore );
+      if ( !sql.hasError() ) {
+        response.put( "sql", sql.getSQL() );
+      } else {
+        response.put( "error", sql.getError() );
+      }
+
+    } catch ( Exception e ) {
+      response.put( "error", "Error generating SQL: " + e.getMessage() );
+    }
+    return response;
+  }
+
+  /**
+   * Generates a JSON object containing a list of comparators.
+   * This method is invoked dynamically using reflection from StepInterface#doAction method.
+   *
+   * @param queryParamToValues A map of query parameters and their corresponding values (not used in this implementation).
+   * @return A JSON object containing the list of comparators under the key "comparators".
+   */
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject getComparatorsAction( Map<String, String> queryParamToValues ) {
+    JSONObject response = new JSONObject();
+    JSONArray comparators = new JSONArray();
+
+    for ( String comparator : InsertUpdateMeta.COMPARATORS ) {
+      JSONObject comparatorJson = new JSONObject();
+      comparatorJson.put( "id", comparator );
+      comparatorJson.put( "name", comparator );
+      comparators.add( comparatorJson );
+    }
+    response.put( "comparators", comparators );
+    return response;
   }
 
   public void setLookup( RowMetaInterface rowMeta ) throws KettleDatabaseException {

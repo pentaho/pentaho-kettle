@@ -322,9 +322,8 @@ public abstract class BaseFileImportProcessor {
       fileLineNumber = textFileLine.getLineNumber();
     }
 
-    if ( showSummary ) {
-      message = generateResultsMessage( nrfields, evaluators, linenr, fieldAnalyses );
-    }
+    message = generateFieldAnalysisMessage( nrfields, evaluators, linenr, fieldAnalyses );
+
     return message;
   }
 
@@ -388,7 +387,7 @@ public abstract class BaseFileImportProcessor {
   }
 
   /**
-   * Generates a summary message based on the analysis of the file's fields.
+   * Evaluates fields and generates a summary message based on the analysis of the file's fields.
    * <p>
    * This method processes the results of field evaluations and constructs a detailed summary
    * message. The summary includes information about each field, such as its name, type, length,
@@ -402,12 +401,14 @@ public abstract class BaseFileImportProcessor {
    * @param fieldAnalyses an array of `FieldAnalysis` objects containing analysis results for each field
    * @return a `String` containing the generated summary message
    */
-  private String generateResultsMessage( int nrfields, List<StringEvaluator> evaluators,
-                                         int linenr, FieldAnalysis[] fieldAnalyses ) {
+  private String generateFieldAnalysisMessage( int nrfields, List<StringEvaluator> evaluators,
+                                               int linenr, FieldAnalysis[] fieldAnalyses ) {
     StringBuilder summary = new StringBuilder();
-    summary.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.ResultAfterScanning",
-      String.valueOf( linenr - 1 ) ) );
-    summary.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.HorizontalLine" ) );
+    if ( showSummary ) {
+      summary.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.ResultAfterScanning",
+        String.valueOf( linenr - 1 ) ) );
+      summary.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.HorizontalLine" ) );
+    }
 
     if ( nrfields == evaluators.size() ) {
       for ( int i = 0; i < nrfields; i++ ) {
@@ -422,7 +423,9 @@ public abstract class BaseFileImportProcessor {
           fieldAnalyses[ i ].minstr = Objects.toString( strEvalResult.getMin(), Const.EMPTY_STRING );
           fieldAnalyses[ i ].maxstr = Objects.toString( strEvalResult.getMax(), Const.EMPTY_STRING );
         }
-        appendFieldInfoToMessage( summary, i, field, evaluationResults, fieldAnalyses[ i ], linenr );
+        if ( showSummary ) {
+          appendFieldInfoToMessage( summary, i, field, evaluationResults, fieldAnalyses[ i ], linenr );
+        }
       }
     }
     return summary.toString();

@@ -14,6 +14,8 @@
 package org.pentaho.di.job.entries.job;
 
 import org.apache.commons.vfs2.FileObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
@@ -93,6 +95,7 @@ import java.util.UUID;
 public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories, JobEntryRunConfigurableInterface {
   private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!
   public static final int IS_PENTAHO = 1;
+  private static final String PARAMETERS_DATA = "parameters";
 
   private String filename;
   private String jobname;
@@ -1770,6 +1773,26 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     if ( parentJob != null ) {
       parentJob.callAfterLog();
     }
+  }
+
+  /**
+   * Retrieves the list of parameters from the given job metadata and returns them as a JSON object.
+   * This method is called from JobEntryInterface#doAction dynamically using reflection.
+   *
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing the list of parameters under the key "parameters".
+   * @throws KettleException If an error occurs while retrieving the job metadata or parameters.
+   */
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    JobMeta inputJobMeta = this.getJobMeta( this.rep, this.metaStore, this.parentJobMeta );
+    String[] parametersList = inputJobMeta.listParameters();
+
+    JSONArray parametersData = new JSONArray();
+    parametersData.addAll( Arrays.asList( parametersList ) );
+    response.put( PARAMETERS_DATA, parametersData );
+    return response;
   }
 
 }
