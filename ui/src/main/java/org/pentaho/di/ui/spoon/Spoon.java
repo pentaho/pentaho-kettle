@@ -488,6 +488,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private SharedObjectSyncUtil sharedObjectSyncUtil = new SharedObjectSyncUtil( this );
 
+
   public RowMetaAndData variables = new RowMetaAndData( new RowMeta() );
 
   /**

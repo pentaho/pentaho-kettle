@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 @SpoonPlugin( id = "RepoVfsPlugin", image = "" )
 public class RepoVfsSpoonLifecycleListener implements SpoonPluginInterface, SpoonLifecycleListener {
 
-  public static final String CONNECTION_NAME = "repository";
+  public static final String CONNECTION_NAME = ConnectionManager.STRING_REPO_CONNECTION;
 
   private static final Logger log = LoggerFactory.getLogger( RepoVfsSpoonLifecycleListener.class );
 
