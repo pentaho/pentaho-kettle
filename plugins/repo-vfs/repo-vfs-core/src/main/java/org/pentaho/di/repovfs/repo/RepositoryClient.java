@@ -1,6 +1,8 @@
 package org.pentaho.di.repovfs.repo;
 
 
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.ClientRequestContext;
@@ -223,7 +225,9 @@ public class RepositoryClient {
       if (response.getStatus() != 200) {
         throw new RepositoryClientException(String.valueOf(response));
       }
-
+    } catch ( WebApplicationException | ProcessingException e ) {
+      throw new RepositoryClientException( "Client error creating folder", e );
+    }
   }
 
   /**
