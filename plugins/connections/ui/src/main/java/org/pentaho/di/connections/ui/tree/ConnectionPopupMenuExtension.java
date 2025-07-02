@@ -19,6 +19,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.vfs.connections.ui.dialog.ConnectionDelegate;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
@@ -62,6 +63,10 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
       popupMenu = createRootPopupMenu( selectionTree );
     } else if ( selection instanceof ConnectionTreeItem ) {
       vfsConnectionTreeItem = (ConnectionTreeItem) selection;
+      // No popup menu for "Repository" vfs connection
+      if ( vfsConnectionTreeItem.getName().equals( ConnectionManager.STRING_REPO_CONNECTION ) ) {
+        return;
+      }
       popupMenu = createItemPopupMenu( selectionTree );
     }
 

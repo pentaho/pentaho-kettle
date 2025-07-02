@@ -77,10 +77,12 @@ public class ConnectionManager {
   private final VFSConnectionManagerHelper vfsConnectionManagerHelper;
 
   private boolean initialized;
+  public static final String STRING_REPO_CONNECTION = "Repository";
 
   private ConnectionManager() {
     // Must throw a RuntimeException on metastore error to not break compatibility.
     this( DefaultBowl.getInstance() );
+
   }
 
   @VisibleForTesting
