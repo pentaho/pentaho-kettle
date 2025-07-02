@@ -125,8 +125,8 @@ public class PurRepository_SharedObjects_Links_IT extends PurRepositoryIT {
       Document doc = dBuilder.parse( IOUtils.toInputStream( xmlText ) );
       gMeta.loadFromXml( doc.getParentNode() );
 
-      List<SharedObjectInterface> sharedObjects =
-          (List<SharedObjectInterface>) pur.loadAndCacheSharedObjects( false ).get( RepositoryObjectType.SLAVE_SERVER );
+      List<SharedObjectInterface<?>> sharedObjects =
+          (List<SharedObjectInterface<?>>) pur.loadAndCacheSharedObjects( false ).get( RepositoryObjectType.SLAVE_SERVER );
 
       for ( int i = 0; i < meta.getSlaveServers().size(); i++ ) {
         for ( int j = 0; j < sharedObjects.size(); j++ ) {

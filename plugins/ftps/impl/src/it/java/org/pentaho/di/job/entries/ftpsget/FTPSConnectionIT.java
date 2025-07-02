@@ -21,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.variables.Variables;
 
@@ -64,8 +65,8 @@ public class FTPSConnectionIT {
 
   @Before
   public void createConnection() throws Exception {
-    connection = new FTPSConnection( CONNECTION_TYPE_FTP_IMPLICIT_SSL, "localhost", FtpsServer.DEFAULT_PORT, FTP_USER,
-      FTP_USER_PASSWORD, new Variables() );
+    connection = new FTPSConnection( DefaultBowl.getInstance(), CONNECTION_TYPE_FTP_IMPLICIT_SSL, "localhost",
+      FtpsServer.DEFAULT_PORT, FTP_USER, FTP_USER_PASSWORD, new Variables() );
     connection.connect();
   }
 

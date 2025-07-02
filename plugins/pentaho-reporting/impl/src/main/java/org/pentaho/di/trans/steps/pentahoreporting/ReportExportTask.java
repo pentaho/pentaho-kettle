@@ -60,6 +60,7 @@ public abstract class ReportExportTask implements Runnable {
       throw new NullPointerException( "ReportExportTask(..): Report parameter cannot be null" );
     }
 
+    this.bowl = bowl;
     this.report = report;
     this.statusListener = swingGuiContext.getStatusListener();
 
