@@ -38,6 +38,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.pan.CommandExecutorResult;
 import org.pentaho.di.pan.CommandLineOption;
+import org.pentaho.di.security.ExitInterceptor;
 import org.pentaho.di.pan.CommandLineOptionProvider;
 
 import java.util.AbstractMap;
