@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -248,10 +249,60 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
 
   @Override
   public void moveTo( FileObject destFile ) throws FileSystemException {
-    // TODO: this requires copying content, should use endpoints to do it on the server
-    // overriding because default is to either call rename, or copy only current file, which is not good for folders
-    destFile.copyFrom( this, Selectors.SELECT_ALL );
-    delete();
+    try {
+      if ( haveSameName( this, destFile ) ) {
+        callRepoMove( destFile.getParent() );
+      } else if ( haveSameParent( this, destFile ) ) {
+        callRepoRename( destFile.getName().getBaseName() );
+      } else {
+        // can be optimized to use move+rename as well, but shouldn't be reached in normal use
+        log.warn( "Unable to optimize moveTo, falling back to copy+delete" );
+        // manual copy+delete
+        // overriding because default is to either call rename, or copy only current file, which is not good for folders
+        destFile.copyFrom( this, Selectors.SELECT_ALL );
+        delete();
+      }
+    } catch ( RepositoryClientException e ) {
+      throw new FileSystemException( e );
+    }
+  }
+
+  /** Rename this file in place */
+  private void callRepoRename( String newName ) throws RepositoryClientException {
+    String[] origPath = computeFileNames( getName() );
+    log.debug( "Optimized rename call" );
+    repoClient.rename( origPath, newName );
+  }
+
+  /** Move this to a different parent */
+  private void callRepoMove( FileObject targetFolder ) throws FileSystemException, RepositoryClientException {
+    if ( targetFolder == null ) {
+      // beyond root
+      throw new FileSystemException( "Illegal move target" );
+    }
+    if ( !targetFolder.exists() ) {
+      log.debug( "Creating target folder {} for move", targetFolder.getName() );
+      targetFolder.createFolder();
+    }
+    RepositoryFileDto thisFile = getFile( getName() );
+    String[] destPath = computeFileNames( targetFolder.getName() );
+    log.debug( "Optimized move call" );
+    repoClient.moveTo( thisFile, destPath );
+  }
+
+  private static boolean haveSameName( FileObject file1, FileObject file2 ) {
+    return file1.getName().getBaseName().equals( file2.getName().getBaseName() );
+  }
+
+  private static boolean haveSameParent( FileObject file1, FileObject file2 ) throws FileSystemException {
+    FileObject parent1 = file1.getParent();
+    FileObject parent2 = file2.getParent();
+    if ( parent1 == null ) {
+      return parent2 == null;
+    } else if ( parent2 == null ) {
+      return false;
+    }
+    return Arrays.equals( computeFileNames( parent1.getName() ), computeFileNames( parent2.getName() ) );
   }
 
   @Override

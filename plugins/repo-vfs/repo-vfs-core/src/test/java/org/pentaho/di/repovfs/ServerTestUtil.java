@@ -23,6 +23,9 @@ public class ServerTestUtil {
     server.when( request().withPath( "/pentaho/api/repo/files/tree" ).withQueryStringParameters( new Parameter( "depth",
       "1" ) ) )
       .respond( response().withBody( rootResp ).withContentType( MediaType.XML_UTF_8 ) );
+    server.when( request().withPath( "/pentaho/api/repo/files/:/tree" ).withQueryStringParameters( new Parameter( "depth",
+      "1" ) ) )
+      .respond( response().withBody( rootResp ).withContentType( MediaType.XML_UTF_8 ) );
 
     server.when( request().withPath( "/pentaho/api/repo/files/:public/tree" ).withQueryStringParameters( new Parameter( "depth",
       "1" ) ) )
