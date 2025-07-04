@@ -117,7 +117,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     }
 
     Object[] add;
-    boolean cache_now = false;
+    boolean cacheNow = false;
     boolean cacheHit = false;
 
     // First, check if we looked up before
@@ -131,10 +131,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     }
 
     if ( add == null ) {
-      if ( !( meta.isCached() && meta.isLoadingAllDataInCache() ) || data.hasDBCondition ) { // do not go to the
-        // database when all rows
-        // are in (exception LIKE
-        // operator)
+      if ( !( meta.isCached() && meta.isLoadingAllDataInCache() ) || data.hasDBCondition ) {
+        // do not go to the database when all rows are in (exception LIKE operator)
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.AddedValuesToLookupRow1" )
             + meta.getStreamKeyField1().length
@@ -144,7 +142,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
         data.db.setValuesLookup( data.lookupMeta, lookupRow );
         add = data.db.getLookup( meta.isFailingOnMultipleResults() );
-        cache_now = true;
+        cacheNow = true;
       }
     }
 
@@ -202,7 +200,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     // Store in cache if we need to!
     // If we already loaded all data into the cache, storing more makes no sense.
     //
-    if ( meta.isCached() && cache_now && !meta.isLoadingAllDataInCache() && data.allEquals ) {
+    if ( meta.isCached() && cacheNow && !meta.isLoadingAllDataInCache() && data.allEquals ) {
       data.cache.storeRowInCache( meta, data.lookupMeta, lookupRow, add );
     }
 
