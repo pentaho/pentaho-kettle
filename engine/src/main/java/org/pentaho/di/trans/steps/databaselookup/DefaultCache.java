@@ -29,14 +29,8 @@ import java.util.Map;
 public class DefaultCache implements DatabaseLookupData.Cache {
 
   public static DefaultCache newCache( DatabaseLookupData data, int cacheSize ) {
-    if ( cacheSize > 0 ) {
-      cacheSize = (int) ( cacheSize * 1.5 );
-    } else {
-      cacheSize = 16;
-    }
-    return new DefaultCache( data, cacheSize );
+    return new DefaultCache( data, Math.max( 16, (int) ( cacheSize * 1.5 ) ) );
   }
-
 
   private final DatabaseLookupData data;
   private final LinkedHashMap<RowMetaAndData, Object[]> map;
@@ -113,7 +107,6 @@ public class DefaultCache implements DatabaseLookupData.Cache {
                 data.hasDBCondition = true; // avoid looping in here the next time, also safety when a new condition
                 // will be introduced
                 break;
-
             }
             lookupIndex++;
           }
@@ -132,10 +125,7 @@ public class DefaultCache implements DatabaseLookupData.Cache {
   @Override
   public void storeRowInCache( DatabaseLookupMeta meta, RowMetaInterface lookupMeta, Object[] lookupRow,
                                Object[] add ) {
-    RowMetaAndData rowMetaAndData = new RowMetaAndData( lookupMeta, lookupRow );
-    if ( !map.containsKey( rowMetaAndData ) ) {
-      map.put( rowMetaAndData, add );
-    }
+    map.computeIfAbsent( new RowMetaAndData( lookupMeta, lookupRow ), k -> add );
 
     // DEinspanjer 2009-02-01: If you had previously set a cache size and then turned on load all, this
     // method would throw out entries if the previous cache size wasn't big enough.

@@ -399,15 +399,19 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
     retval.allocate( nrKeys, nrValues );
 
-    System.arraycopy( streamKeyField1, 0, retval.streamKeyField1, 0, nrKeys );
-    System.arraycopy( tableKeyField, 0, retval.tableKeyField, 0, nrKeys );
-    System.arraycopy( keyCondition, 0, retval.keyCondition, 0, nrKeys );
-    System.arraycopy( streamKeyField2, 0, retval.streamKeyField2, 0, nrKeys );
+    if ( nrKeys != 0 ) {
+      System.arraycopy( streamKeyField1, 0, retval.streamKeyField1, 0, nrKeys );
+      System.arraycopy( tableKeyField, 0, retval.tableKeyField, 0, nrKeys );
+      System.arraycopy( keyCondition, 0, retval.keyCondition, 0, nrKeys );
+      System.arraycopy( streamKeyField2, 0, retval.streamKeyField2, 0, nrKeys );
+    }
 
-    System.arraycopy( returnValueField, 0, retval.returnValueField, 0, nrValues );
-    System.arraycopy( returnValueNewName, 0, retval.returnValueNewName, 0, nrValues );
-    System.arraycopy( returnValueDefault, 0, retval.returnValueDefault, 0, nrValues );
-    System.arraycopy( returnValueDefaultType, 0, retval.returnValueDefaultType, 0, nrValues );
+    if ( nrValues != 0 ) {
+      System.arraycopy( returnValueField, 0, retval.returnValueField, 0, nrValues );
+      System.arraycopy( returnValueNewName, 0, retval.returnValueNewName, 0, nrValues );
+      System.arraycopy( returnValueDefault, 0, retval.returnValueDefault, 0, nrValues );
+      System.arraycopy( returnValueDefaultType, 0, retval.returnValueDefaultType, 0, nrValues );
+    }
 
     return retval;
   }
@@ -455,7 +459,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
           returnValueDefaultType[ i ] = ValueMetaInterface.TYPE_STRING;
         }
       }
-      orderByClause = XMLHandler.getTagValue( lookup, TAG_ORDERBY ); // Optional, can be null
+      orderByClause = XMLHandler.getTagValue( lookup, TAG_ORDERBY ); // Optional, can by null
       failingOnMultipleResults = "Y".equalsIgnoreCase( XMLHandler.getTagValue( lookup, TAG_FAIL_ON_MULTIPLE ) );
       eatingRowOnLookupFailure = "Y".equalsIgnoreCase( XMLHandler.getTagValue( lookup, TAG_EAT_ROW_ON_FAILURE ) );
     } catch ( Exception e ) {
@@ -474,25 +478,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     schemaName = "";
     tablename = BaseMessages.getString( PKG, "DatabaseLookupMeta.Default.TableName" );
 
-    int nrKeys = 0;
-    int nrValues = 0;
-
-    allocate( nrKeys, nrValues );
-
-    for ( int i = 0; i < nrKeys; i++ ) {
-      tableKeyField[ i ] = BaseMessages.getString( PKG, "DatabaseLookupMeta.Default.KeyFieldPrefix" );
-      keyCondition[ i ] = BaseMessages.getString( PKG, "DatabaseLookupMeta.Default.KeyCondition" );
-      streamKeyField1[ i ] = BaseMessages.getString( PKG, "DatabaseLookupMeta.Default.KeyStreamField1" );
-      streamKeyField2[ i ] = BaseMessages.getString( PKG, "DatabaseLookupMeta.Default.KeyStreamField2" );
-    }
-
-    for ( int i = 0; i < nrValues; i++ ) {
-      returnValueField[ i ] = BaseMessages.getString( PKG, "DatabaseLookupMeta.Default.ReturnFieldPrefix" ) + i;
-      returnValueNewName[ i ] = BaseMessages.getString( PKG, "DatabaseLookupMeta.Default.ReturnNewNamePrefix" ) + i;
-      returnValueDefault[ i ] =
-        BaseMessages.getString( PKG, "DatabaseLookupMeta.Default.ReturnDefaultValuePrefix" ) + i;
-      returnValueDefaultType[ i ] = ValueMetaInterface.TYPE_STRING;
-    }
+    allocate( 0, 0 );
 
     orderByClause = "";
     failingOnMultipleResults = false;
@@ -638,9 +624,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         rep.insertStepDatabase( idTransformation, idStep, databaseMeta.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "DatabaseLookupMeta.ERROR0003.UnableToSaveStepToRepository" )
-        + idStep, e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "DatabaseLookupMeta.ERROR0003.UnableToSaveStepToRepository" ) + idStep, e );
     }
   }
 
@@ -652,11 +637,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     String errorMessage = "";
 
     if ( databaseMeta != null ) {
-      Database db = new Database( loggingObject, databaseMeta );
-      db.shareVariablesWith( transMeta );
-      databases = new Database[] { db }; // Keep track of this one for cancelQuery
+      try ( Database db = new Database( loggingObject, databaseMeta ) ) {
+        db.shareVariablesWith( transMeta );
+        databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
-      try {
         db.connect();
 
         if ( !Utils.isEmpty( tablename ) ) {
@@ -672,10 +656,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
           if ( r != null ) {
             // Check the keys used to do the lookup...
 
-            for ( int i = 0; i < tableKeyField.length; i++ ) {
-              String lufield = tableKeyField[ i ];
-
-              ValueMetaInterface v = r.searchValueMeta( lufield );
+            for ( String keyField : tableKeyField ) {
+              ValueMetaInterface v = r.searchValueMeta( keyField );
               if ( v == null ) {
                 if ( first ) {
                   first = false;
@@ -684,7 +666,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
                       + Const.CR;
                 }
                 errorFound = true;
-                errorMessage += "\t\t" + lufield + Const.CR;
+                errorMessage += "\t\t" + keyField + Const.CR;
               }
             }
             if ( errorFound ) {
@@ -698,10 +680,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
             // Also check the returned values!
 
-            for ( int i = 0; i < returnValueField.length; i++ ) {
-              String lufield = returnValueField[ i ];
-
-              ValueMetaInterface v = r.searchValueMeta( lufield );
+            for ( String returnField : returnValueField ) {
+              ValueMetaInterface v = r.searchValueMeta( returnField );
               if ( v == null ) {
                 if ( first ) {
                   first = false;
@@ -710,7 +690,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
                       + Const.CR;
                 }
                 errorFound = true;
-                errorMessage += "\t\t" + lufield + Const.CR;
+                errorMessage += "\t\t" + returnField + Const.CR;
               }
             }
             if ( errorFound ) {
@@ -735,8 +715,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
           errorMessage = "";
           boolean errorFound = false;
 
-          for ( int i = 0; i < streamKeyField1.length; i++ ) {
-            ValueMetaInterface v = prev.searchValueMeta( streamKeyField1[ i ] );
+          for ( String streamKeyField : streamKeyField1 ) {
+            ValueMetaInterface v = prev.searchValueMeta( streamKeyField );
             if ( v == null ) {
               if ( first ) {
                 first = false;
@@ -745,7 +725,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
                     + Const.CR;
               }
               errorFound = true;
-              errorMessage += "\t\t" + streamKeyField1[ i ] + Const.CR;
+              errorMessage += "\t\t" + streamKeyField + Const.CR;
             }
           }
           if ( errorFound ) {
@@ -768,8 +748,6 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
             + dbe.getMessage();
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
         remarks.add( cr );
-      } finally {
-        db.close();
       }
     } else {
       errorMessage = BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingConnectionError" );
@@ -795,10 +773,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
   public RowMetaInterface getTableFields() {
     RowMetaInterface fields = null;
     if ( databaseMeta != null ) {
-      Database db = new Database( loggingObject, databaseMeta );
+      try ( Database db = new Database( loggingObject, databaseMeta ) ) {
       databases = new Database[] { db }; // Keep track of this one for cancelQuery
-
-      try {
         db.connect();
         String tableName = databaseMeta.environmentSubstitute( tablename );
         String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
@@ -806,9 +782,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
       } catch ( KettleDatabaseException dbe ) {
         logError( BaseMessages.getString( PKG, "DatabaseLookupMeta.ERROR0004.ErrorGettingTableFields" )
-            + dbe.getMessage() );
-      } finally {
-        db.close();
+          + dbe.getMessage() );
       }
     }
     return fields;
@@ -826,28 +800,25 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   @Override
-  public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepinfo,
+  public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepInfo,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
       IMetaStore metaStore ) {
     // The keys are read-only...
+    String remarkKey = BaseMessages.getString( PKG, "DatabaseLookupMeta.Impact.Key" );
     for ( int i = 0; i < streamKeyField1.length; i++ ) {
       ValueMetaInterface v = prev.searchValueMeta( streamKeyField1[ i ] );
-      DatabaseImpact ii =
-          new DatabaseImpact(
-          DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepinfo.getName(), databaseMeta
-            .getDatabaseName(), tablename, tableKeyField[ i ], streamKeyField1[ i ], v != null
-            ? v.getOrigin() : "?", "", BaseMessages.getString( PKG, "DatabaseLookupMeta.Impact.Key" ) );
-      impact.add( ii );
+      impact.add( new DatabaseImpact(
+        DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepInfo.getName(), databaseMeta
+        .getDatabaseName(), tablename, tableKeyField[ i ], streamKeyField1[ i ], v != null
+        ? v.getOrigin() : "?", Const.EMPTY_STRING, remarkKey ) );
     }
 
     // The Return fields are read-only too...
-    for ( int i = 0; i < returnValueField.length; i++ ) {
-      DatabaseImpact ii =
-          new DatabaseImpact(
-          DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepinfo.getName(),
-          databaseMeta.getDatabaseName(), tablename, returnValueField[ i ], "", "", "",
-          BaseMessages.getString( PKG, "DatabaseLookupMeta.Impact.ReturnValue" ) );
-      impact.add( ii );
+    String remarkReturnValue = BaseMessages.getString( PKG, "DatabaseLookupMeta.Impact.ReturnValue" );
+    for ( String returnValue : returnValueField ) {
+      impact.add( new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepInfo.getName(),
+        databaseMeta.getDatabaseName(), tablename, returnValue, Const.EMPTY_STRING, Const.EMPTY_STRING,
+        Const.EMPTY_STRING, remarkReturnValue ) );
     }
   }
 
