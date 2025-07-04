@@ -80,6 +80,8 @@ public class DatabaseLookupTest {
 
     databaseMeta = mock( DatabaseMeta.class );
     when( helper.transMeta.findDatabase( connection ) ).thenReturn( databaseMeta );
+    when( helper.transMeta.environmentSubstitute( schema ) ).thenReturn( schema );
+    when( helper.transMeta.environmentSubstitute( table ) ).thenReturn( table );
 
     valueMetaInterfaceList = new ArrayList<>();
     rowMeta = new RowMeta();
