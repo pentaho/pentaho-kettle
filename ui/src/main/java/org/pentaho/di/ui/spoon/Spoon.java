@@ -487,6 +487,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public SpoonDelegates delegates = new SpoonDelegates( this );
 
   private SharedObjectSyncUtil sharedObjectSyncUtil = new SharedObjectSyncUtil( this );
+  public static final String STRING_REPO_CONNECTION = "repository";
+  public static final String REPO_CONNECTION_DISPLAY_NAME = "Pentaho Repository";
 
   public RowMetaAndData variables = new RowMetaAndData( new RowMeta() );
 

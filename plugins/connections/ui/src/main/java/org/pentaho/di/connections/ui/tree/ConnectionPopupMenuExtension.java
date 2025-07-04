@@ -62,6 +62,10 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
       popupMenu = createRootPopupMenu( selectionTree );
     } else if ( selection instanceof ConnectionTreeItem ) {
       vfsConnectionTreeItem = (ConnectionTreeItem) selection;
+      // No popup menu for "Pentaho Repository" vfs connection
+      if ( vfsConnectionTreeItem.getName().equals( Spoon.REPO_CONNECTION_DISPLAY_NAME ) ) {
+        return;
+      }
       popupMenu = createItemPopupMenu( selectionTree );
     }
 
