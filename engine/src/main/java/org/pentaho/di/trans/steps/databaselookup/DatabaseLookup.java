@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.json.simple.JSONArray;
@@ -426,7 +428,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       if ( meta.isCached() && meta.isLoadingAllDataInCache() ) {
         loadAllTableDataIntoTheCache();
       }
-
     }
 
     if ( log.isRowLevel() ) {
@@ -446,8 +447,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
           logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.WroteRowToNextStep" )
             + getInputRowMeta().getString( r ) );
         }
-        if ( checkFeedback( getLinesRead() ) ) {
-          logBasic( "linenr " + getLinesRead() );
+
+        long linesRead = getLinesRead();
+        if ( checkFeedback( linesRead ) ) {
+          logBasic( "linenr " + linesRead );
         }
       }
     } catch ( KettleException e ) {
@@ -469,83 +472,78 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
   private void loadAllTableDataIntoTheCache() throws KettleException {
     DatabaseMeta dbMeta = meta.getDatabaseMeta();
 
-    Database db = getDatabase( dbMeta );
-    connectDatabase( db );
+    try ( Database db = getDatabase( dbMeta ) ) {
+      connectDatabase( db );
 
-    try {
       // We only want to get the used table fields...
       //
-      String sql = "SELECT ";
+      StringBuilder sql = new StringBuilder( "SELECT " );
 
       for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
         if ( i > 0 ) {
-          sql += ", ";
+          sql.append( ", " );
         }
-        sql += dbMeta.quoteField( meta.getTableKeyField()[ i ] );
+        sql.append( dbMeta.quoteField( meta.getTableKeyField()[ i ] ) );
       }
 
       // Also grab the return field...
       //
       for ( int i = 0; i < meta.getReturnValueField().length; i++ ) {
-        sql += ", " + dbMeta.quoteField( meta.getReturnValueField()[ i ] );
+        sql.append( ", " ).append( dbMeta.quoteField( meta.getReturnValueField()[ i ] ) );
       }
       // The schema/table
       //
-      sql += " FROM "
-        + dbMeta.getQuotedSchemaTableCombination(
-          environmentSubstitute( meta.getSchemaName() ),
-          environmentSubstitute( meta.getTablename() ) );
+      sql.append( " FROM " ).append(
+        dbMeta.getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
+          environmentSubstitute( meta.getTablename() ) ) );
 
       // order by?
-      if ( meta.getOrderByClause() != null && meta.getOrderByClause().length() != 0 ) {
-        sql += " ORDER BY " + meta.getOrderByClause();
+      if ( !Utils.isEmpty( meta.getOrderByClause() ) ) {
+        sql.append( " ORDER BY " ).append( meta.getOrderByClause() );
       }
 
       // Now that we have the SQL constructed, let's store the rows...
       //
-      List<Object[]> rows = db.getRows( sql, 0 );
-      if ( rows != null && rows.size() > 0 ) {
-        if ( data.allEquals ) {
-          putToDefaultCache( db, rows );
-        } else {
-          putToReadOnlyCache( db, rows );
-        }
+
+      if ( data.allEquals ) {
+        final int keysAmount = meta.getStreamKeyField1().length;
+        AtomicReference<RowMetaInterface> prototype = new AtomicReference<>();
+        AtomicBoolean firstRow = new AtomicBoolean( true );
+
+        db.forEachRow( sql.toString(), 0, row -> {
+          if ( firstRow.get() ) {
+            // Assume that all rows have the same meta; let's reuse it for all rows
+            prototype.set( copyValueMetasFrom( db.getReturnRowMeta(), keysAmount ) );
+            firstRow.set( false );
+          }
+          putToDefaultCache( prototype.get(), keysAmount, row );
+        } );
+      } else {
+        putToReadOnlyCache( db, db.getRows( sql.toString(), 0 ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( e );
-    } finally {
-      if ( db != null ) {
-        db.close();
-      }
     }
   }
 
-  private void putToDefaultCache( Database db, List<Object[]> rows ) {
-    final int keysAmount = meta.getStreamKeyField1().length;
-    RowMetaInterface prototype = copyValueMetasFrom( db.getReturnRowMeta(), keysAmount );
-
+  private void putToDefaultCache( RowMetaInterface keyMeta, int keysAmount, Object[] row ) {
     // Copy the data into 2 parts: key and value...
     //
-    for ( Object[] row : rows ) {
-      int index = 0;
-      // not sure it is efficient to re-create the same on every row,
-      // but this was done earlier, so I'm keeping this behaviour
-      RowMetaInterface keyMeta = prototype.clone();
-      Object[] keyData = new Object[ keysAmount ];
-      for ( int i = 0; i < keysAmount; i++ ) {
-        keyData[ i ] = row[ index++ ];
-      }
-      // RowMeta valueMeta = new RowMeta();
-      Object[] valueData = new Object[ data.returnMeta.size() ];
-      for ( int i = 0; i < data.returnMeta.size(); i++ ) {
-        valueData[ i ] = row[ index++ ];
-        // valueMeta.addValueMeta(returnRowMeta.getValueMeta(index++));
-      }
-      // Store the data...
-      //
-      data.cache.storeRowInCache( meta, keyMeta, keyData, valueData );
-      incrementLinesInput();
+    int index = 0;
+    Object[] keyData = new Object[ keysAmount ];
+    for ( int i = 0; i < keysAmount; i++ ) {
+      keyData[ i ] = row[ index++ ];
     }
+
+    Object[] valueData = new Object[ data.returnMeta.size() ];
+    for ( int i = 0; i < data.returnMeta.size(); i++ ) {
+      valueData[ i ] = row[ index++ ];
+    }
+
+    // Store the data...
+    //
+    data.cache.storeRowInCache( meta, keyMeta, keyData, valueData );
+    incrementLinesInput();
   }
 
   private RowMetaInterface copyValueMetasFrom( RowMetaInterface source, int n ) {
