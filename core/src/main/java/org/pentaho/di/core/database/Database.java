@@ -540,7 +540,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
           String pluginId =
             PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+
           Set<String> registeredDriversFromPlugin = registeredDrivers.computeIfAbsent( pluginId, k -> new HashSet<>() );
+
           // Prevent registering multiple delegating drivers for same class, plugin
           if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
             DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
@@ -3812,6 +3814,32 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       return result;
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Unable to get list of rows from ResultSet : ", e );
+    }
+  }
+
+  /**
+   * Iterates over the first 'limit' rows of the ResultSet obtained from the given SQL statement,
+   * executing the given callback for each row. If limit <= 0, all rows are processed.
+   *
+   * @param sql      The SQL statement to execute
+   * @param limit    The maximum number of rows to process (<=0 means unlimited)
+   * @param callback The callback to execute for each row (receives Object[] row)
+   * @throws KettleDatabaseException if something goes wrong
+   */
+  public void forEachRow( String sql, int limit, java.util.function.Consumer<Object[]> callback )
+    throws KettleDatabaseException {
+    try ( ResultSet rset = openQuery( sql ) ) {
+      int count = 0;
+      while ( rset != null && ( limit <= 0 || count < limit ) ) {
+        Object[] row = getRow( rset );
+        if ( row == null ) {
+          break;
+        }
+        callback.accept( row );
+        count++;
+      }
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException( "Error executing forEachRow", e );
     }
   }
 
