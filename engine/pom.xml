@@ -462,7 +462,7 @@
     </dependency>
     <dependency>
       <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon</artifactId>
+      <artifactId>Saxon-HE</artifactId>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
