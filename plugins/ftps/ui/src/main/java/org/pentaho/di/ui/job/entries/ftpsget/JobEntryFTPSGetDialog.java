@@ -1261,7 +1261,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
         connection =
           new FTPSConnection( jobMeta.getBowl(),
             FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername, port,
-            realUsername, realPassword );
+            realUsername, realPassword, jobMeta );
 
         if ( !Utils.isEmpty( wProxyHost.getText() ) ) {
           // Set proxy
