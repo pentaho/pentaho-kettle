@@ -53,8 +53,6 @@
     <commons-math3.version>3.6.1</commons-math3.version>
     <curvesapi.version>1.06</curvesapi.version>
     <SassyReader.version>0.5</SassyReader.version>
-    <saxon.version>9.1.0.8</saxon.version>
-    <saxon-dom.version>9.1.0.8</saxon-dom.version>
     <snmp4j.version>1.9.3d</snmp4j.version>
     <syslog4j.version>0.9.46</syslog4j.version>
     <trilead-ssh2.version>build213</trilead-ssh2.version>
@@ -492,7 +490,6 @@
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon</artifactId>
-      <version>${saxon.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -503,7 +500,6 @@
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon-dom</artifactId>
-      <version>${saxon-dom.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
