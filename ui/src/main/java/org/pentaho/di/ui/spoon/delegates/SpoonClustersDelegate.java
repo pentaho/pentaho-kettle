@@ -15,6 +15,8 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.List;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
@@ -95,6 +97,16 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate<ClusterSche
   }
 
   public void delClusterSchema( ClusterSchemaManagementInterface manager, ClusterSchema clusterSchema ) {
+    MessageBox mb = new MessageBox( spoon.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+    mb.setMessage( BaseMessages.getString( PKG, "Spoon.Message.DeleteClusterSchemaAsk.Message", clusterSchema.getName() ) );
+    mb.setText( BaseMessages.getString( PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Title" ) );
+    int response = mb.open();
+
+    if ( response != SWT.YES ) {
+      return;
+    }
+    spoon.getLog().logBasic( "Deleting the cluster schema " +  clusterSchema.getName() );
+
     try {
       manager.remove( clusterSchema );
 
