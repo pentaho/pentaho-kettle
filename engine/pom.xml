@@ -481,6 +481,11 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.xmlresolver</groupId>
+      <artifactId>xmlresolver</artifactId>
+      <version>6.0.17</version>
+    </dependency>
+    <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
       <version>${snmp4j.version}</version>
