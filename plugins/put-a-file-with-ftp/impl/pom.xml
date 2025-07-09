@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>put-a-file-with-ftp</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.4-351</version>
   </parent>
 
   <artifactId>put-a-file-with-ftp-plugins-impl</artifactId>
