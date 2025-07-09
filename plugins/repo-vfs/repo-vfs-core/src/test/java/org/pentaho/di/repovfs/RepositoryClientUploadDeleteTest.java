@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 
 public class RepositoryClientUploadDeleteTest {
-    private static ClientAndServer server;
+  private static ClientAndServer server;
 
   @BeforeAll
   static void setUpOnce() throws Exception {
@@ -36,13 +36,11 @@ public class RepositoryClientUploadDeleteTest {
     server.stop();
   }
 
-
   private RepositoryClient createRepositoryClient() {
     int port = server.getPort();
     String url = String.format("http://localhost:%d/pentaho", port );
     return new RepositoryClient( new JCRSolutionConfig(), url, new BasicAuthentication( "a", "p") );
   }
-
 
   @Test
   void testUploadFile() throws Exception {

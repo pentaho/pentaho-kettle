@@ -62,6 +62,16 @@ public class JCRSolutionConfig {
     return MessageFormat.format( cfg.getMandatoryProperty( "URL.Path.CreateFolderSvc" ), path );
   }
 
+  /** Service to move file or folder to inside the specified folder */
+  public String getMoveToSvc( String destPath ) {
+    return MessageFormat.format( cfg.getMandatoryProperty( "URL.Path.MoveToSvc" ), destPath );
+  }
+
+  /** Service to rename file or folder in place */
+  public String getRenameSvc( String path, String newName ) {
+    return MessageFormat.format( cfg.getMandatoryProperty( "URL.Path.RenameSvc" ), path, newName );
+  }
+
   /** Timeout, in ms, to wait for server requests */
   public int getTimeOut() {
     return cfg.parseProperty( "Request.TimeOut.ms", Integer::parseInt ).orElse( 0 );

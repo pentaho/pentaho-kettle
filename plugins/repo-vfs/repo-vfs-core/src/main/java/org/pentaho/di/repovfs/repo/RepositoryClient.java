@@ -344,6 +344,32 @@ public class RepositoryClient {
     throwOnError( response );
   }
 
+  /**
+   * Moves a file or folder to an existing destination
+   */
+  public void moveTo( RepositoryFileDto file, final String[] destinationPath ) throws RepositoryClientException {
+    String destRepoPath = encodePath( destinationPath );
+    String svc = cfg.getMoveToSvc( destRepoPath );
+
+    WebResource resource = client.resource( url + svc );
+    final ClientResponse response = resource.put( ClientResponse.class, file.getId() );
+    throwOnError( response );
+  }
+
+  /** Renames a file or folder in place */
+  public void rename( String[] origPath, String newName ) throws RepositoryClientException {
+    String origRepoPath = encodePath( origPath );
+    String svc = cfg.getRenameSvc( origRepoPath, newName );
+    WebResource resource = client.resource( url + svc );
+    final ClientResponse response = resource.put( ClientResponse.class );
+    throwOnError( response );
+  }
+
+  private static String encodePath( String[] path ) {
+    String repoPath = ":" + StringUtils.join( path, ":" );
+    return Encode.forUriComponent( repoPath );
+  }
+
   private void throwOnError( final ClientResponse response ) throws RepositoryClientException {
     final int status = response.getStatus();
 
@@ -364,7 +390,7 @@ public class RepositoryClient {
     }
   }
 
-  private String encodePath( String path ) {
+  private static String encodePath( String path ) {
     String repoEncoded = RepositoryPathEncoder.encodeRepositoryPath( path );
     return Encode.forUriComponent( repoEncoded );
   }
