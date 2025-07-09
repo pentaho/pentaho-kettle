@@ -112,7 +112,9 @@ public class ConnectionDialog extends Dialog {
     this.connectionManager = connectionManager;
     connectionTypes = connectionManager.getItems();
     connectionTypeChoices =
-      connectionTypes.stream().filter( connType -> !"other".equals( new String( connType.getValue() ) ) )
+      connectionTypes.stream()
+         .filter( connType -> !"other".equals( connType.getValue() )  &&
+                                    !ConnectionManager.STRING_REPO_VFS_PROVIDER_NAME.equals( connType.getLabel() )  )
         .map( ConnectionManager.Type::getLabel ).sorted().toArray( String[]::new );
 
     helper = new VFSDetailsCompositeHelper( PKG, props );

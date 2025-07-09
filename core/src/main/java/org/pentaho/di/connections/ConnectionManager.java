@@ -78,6 +78,7 @@ public class ConnectionManager {
 
   private boolean initialized;
   public static final String STRING_REPO_CONNECTION = "Repository";
+  public static final String STRING_REPO_VFS_PROVIDER_NAME = "Pentaho Repository";
 
   private ConnectionManager() {
     // Must throw a RuntimeException on metastore error to not break compatibility.
