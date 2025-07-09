@@ -494,7 +494,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       int realPort = Const.toInt( environmentSubstitute( realServerPort ), 0 );
       // Define a new connection
       connection = new FTPSConnection( parentJobMeta.getBowl(), getConnectionType(), realServerName, realPort,
-                                       realUsername, realPassword );
+                                       realUsername, realPassword, variables );
 
       this.buildFTPSConnection( connection );
 

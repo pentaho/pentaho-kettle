@@ -93,11 +93,6 @@ public class FTPSConnection implements FTPListener {
   /**
    * Please supply real namespace as it is required for proper VFS operation
    */
-  @Deprecated
-  public FTPSConnection( Bowl bowl, int connectionType, String hostname, int port, String username, String password ) {
-    this( bowl, connectionType, hostname, port, username, password, new Variables() );
-  }
-
   public FTPSConnection( Bowl bowl, int connectionType, String hostname, int port, String username, String password,
                          VariableSpace nameSpace ) {
     this.hostName = hostname;
