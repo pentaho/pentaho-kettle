@@ -217,13 +217,13 @@ public class RepositoryClient {
   /** Create folder with given path */
   public void createFolder( String filePath ) throws RepositoryClientException {
     try {
-      String path = RepositoryPathEncoder.encodeRepositoryPath(filePath);
-      String service = cfg.getCreateFolderSvc(path);
+      String path = RepositoryPathEncoder.encodeRepositoryPath( filePath );
+      String service = cfg.getCreateFolderSvc( path );
 
-      WebTarget target = client.target(url + service);
+      WebTarget target = client.target( url + service );
       Response response = target.request( MediaType.TEXT_PLAIN ).put( Entity.text(" ") );
-      if (response.getStatus() != 200) {
-        throw new RepositoryClientException(String.valueOf(response));
+      if ( response.getStatus() != 200 ) {
+        throw new RepositoryClientException( String.valueOf( response ) );
       }
     } catch ( WebApplicationException | ProcessingException e ) {
       throw new RepositoryClientException( "Client error creating folder", e );
