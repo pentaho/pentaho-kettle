@@ -1996,7 +1996,7 @@ public class Const {
   }
 
   /**
-   * Right pad a string: adds spaces to a string until a certain length. If the length is smaller then the limit
+   * Right pad a string: adds spaces to a string until a certain length. If the length is smaller than the limit
    * specified, the String is truncated.
    *
    * @param ret
@@ -2014,7 +2014,7 @@ public class Const {
   }
 
   /**
-   * Right pad a StringBuffer: adds spaces to a string until a certain length. If the length is smaller then the limit
+   * Right pad a StringBuffer: adds spaces to a string until a certain length. If the length is smaller than the limit
    * specified, the String is truncated.
    *
    * MB - New version is nearly 25% faster
@@ -2038,7 +2038,7 @@ public class Const {
   }
 
   /**
-   * Right pad a StringBuilder: adds spaces to a string until a certain length. If the length is smaller then the limit
+   * Right pad a StringBuilder: adds spaces to a string until a certain length. If the length is smaller than the limit
    * specified, the String is truncated.
    *
    * MB - New version is nearly 25% faster
@@ -2083,7 +2083,7 @@ public class Const {
   }
 
   /**
-   * Alternate faster version of string replace using a stringbuffer as input.
+   * Alternate faster version of string replace using a StringBuffer as input.
    *
    * 33% Faster using replaceAll this way than original method
    *
@@ -2104,7 +2104,7 @@ public class Const {
   }
 
   /**
-   * Alternate faster version of string replace using a stringbuilder as input (non-synchronized).
+   * Alternate faster version of string replace using a StringBuilder as input (non-synchronized).
    *
    * 33% Faster using replaceAll this way than original method
    *
@@ -2374,8 +2374,7 @@ public class Const {
     while ( ipAddresses.hasMoreElements() ) {
       InetAddress inetAddress = ipAddresses.nextElement();
       if ( !inetAddress.isLoopbackAddress() && inetAddress.toString().indexOf( ":" ) < 0 ) {
-        String hostname = inetAddress.getHostAddress();
-        return hostname;
+        return inetAddress.getHostAddress();
       }
     }
     return null;
@@ -2852,7 +2851,7 @@ public class Const {
     }
     int[] indexes = new int[indexesList.size()];
     for ( int i = 0; i < indexesList.size(); i++ ) {
-      indexes[i] = ( indexesList.get( i ) ).intValue();
+      indexes[i] = indexesList.get( i );
     }
     return indexes;
   }
@@ -2916,7 +2915,7 @@ public class Const {
     // System.out.println("splitString ["+path+"] using ["+separator+"]");
     List<String> list = new ArrayList<>();
 
-    if ( string == null || string.length() == 0 ) {
+    if ( string == null || string.isEmpty() ) {
       return new String[] {};
     }
 
@@ -2981,7 +2980,7 @@ public class Const {
     // System.out.println("splitString ["+path+"] using ["+separator+"]");
     List<String> list = new ArrayList<>();
 
-    if ( string == null || string.length() == 0 ) {
+    if ( string == null || string.isEmpty() ) {
       return new String[] {};
     }
 
@@ -3045,16 +3044,16 @@ public class Const {
     }
 
     int sepLen = separator.length();
-    int nr_separators = 1;
+    int nrSeparators = 1;
     int from = path.startsWith( separator ) ? sepLen : 0;
 
     for ( int i = from; i < path.length(); i += sepLen ) {
       if ( path.substring( i, i + sepLen ).equalsIgnoreCase( separator ) ) {
-        nr_separators++;
+        nrSeparators++;
       }
     }
 
-    String[] spath = new String[nr_separators];
+    String[] spath = new String[nrSeparators];
     int nr = 0;
     for ( int i = from; i < path.length(); i += sepLen ) {
       if ( path.substring( i, i + sepLen ).equalsIgnoreCase( separator ) ) {
