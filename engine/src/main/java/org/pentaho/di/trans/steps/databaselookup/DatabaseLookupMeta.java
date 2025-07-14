@@ -634,7 +634,6 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
       Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
-    String errorMessage = "";
 
     if ( databaseMeta != null ) {
       try ( Database db = new Database( loggingObject, databaseMeta ) ) {
@@ -646,31 +645,30 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         if ( !Utils.isEmpty( tablename ) ) {
           boolean first = true;
           boolean errorFound = false;
-          errorMessage = "";
+          StringBuilder errorMessage = new StringBuilder();
 
-          String schemaTable =
-            databaseMeta.getQuotedSchemaTableCombination( db.environmentSubstitute( schemaName ), db
-              .environmentSubstitute( tablename ) );
+          String schemaTable = databaseMeta.getQuotedSchemaTableCombination( db.environmentSubstitute( schemaName ),
+            db.environmentSubstitute( tablename ) );
           RowMetaInterface r = db.getTableFields( schemaTable );
 
           if ( r != null ) {
             // Check the keys used to do the lookup...
-
             for ( String keyField : tableKeyField ) {
               ValueMetaInterface v = r.searchValueMeta( keyField );
               if ( v == null ) {
                 if ( first ) {
                   first = false;
-                  errorMessage +=
-                    BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingCompareFieldsInLookupTable" )
-                      + Const.CR;
+                  errorMessage.append(
+                      BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingCompareFieldsInLookupTable" ) )
+                    .append( Const.CR );
                 }
                 errorFound = true;
-                errorMessage += "\t\t" + keyField + Const.CR;
+                errorMessage.append( "\t\t" ).append( keyField ).append( Const.CR );
               }
             }
+
             if ( errorFound ) {
-              cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
+              cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage.toString(), stepMeta );
             } else {
               cr =
                 new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
@@ -685,26 +683,25 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
               if ( v == null ) {
                 if ( first ) {
                   first = false;
-                  errorMessage +=
-                    BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingReturnFieldsInLookupTable" )
-                      + Const.CR;
+                  errorMessage.append(
+                      BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingReturnFieldsInLookupTable" ) )
+                    .append( Const.CR );
                 }
                 errorFound = true;
-                errorMessage += "\t\t" + returnField + Const.CR;
+                errorMessage.append( "\t\t" ).append( returnField ).append( Const.CR );
               }
             }
             if ( errorFound ) {
-              cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
+              cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage.toString(), stepMeta );
             } else {
-              cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                  PKG, "DatabaseLookupMeta.Check.AllReturnFieldsFoundInTable" ), stepMeta );
+              cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
+                BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.AllReturnFieldsFoundInTable" ), stepMeta );
             }
             remarks.add( cr );
 
           } else {
-            errorMessage = BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.CouldNotReadTableInfo" );
-            cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
+            cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
+              BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.CouldNotReadTableInfo" ), stepMeta );
             remarks.add( cr );
           }
         }
@@ -712,7 +709,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         // Look up fields in the input stream <prev>
         if ( prev != null && prev.size() > 0 ) {
           boolean first = true;
-          errorMessage = "";
+          StringBuilder errorMessage = new StringBuilder();
           boolean errorFound = false;
 
           for ( String streamKeyField : streamKeyField1 ) {
@@ -720,16 +717,16 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
             if ( v == null ) {
               if ( first ) {
                 first = false;
-                errorMessage +=
-                  BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingFieldsNotFoundInInput" )
-                    + Const.CR;
+                errorMessage.append(
+                    BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingFieldsNotFoundInInput" ) )
+                  .append( Const.CR );
               }
               errorFound = true;
-              errorMessage += "\t\t" + streamKeyField + Const.CR;
+              errorMessage.append( "\t\t" ).append( streamKeyField ).append( Const.CR );
             }
           }
           if ( errorFound ) {
-            cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
+            cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage.toString(), stepMeta );
           } else {
             cr =
               new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
@@ -737,36 +734,33 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
           }
           remarks.add( cr );
         } else {
-          errorMessage =
-            BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.CouldNotReadFromPreviousSteps" ) + Const.CR;
-          cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
+          cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
+            BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.CouldNotReadFromPreviousSteps" ) + Const.CR,
+            stepMeta );
           remarks.add( cr );
         }
       } catch ( KettleDatabaseException dbe ) {
-        errorMessage =
+        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
           BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.DatabaseErrorWhileChecking" )
-            + dbe.getMessage();
-        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
+            + dbe.getMessage(), stepMeta );
         remarks.add( cr );
       }
     } else {
-      errorMessage = BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingConnectionError" );
-      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
+      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
+        BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.MissingConnectionError" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
-      cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "DatabaseLookupMeta.Check.StepIsReceivingInfoFromOtherSteps" ), stepMeta );
-      remarks.add( cr );
+      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
+        BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.StepIsReceivingInfoFromOtherSteps" ), stepMeta );
     } else {
-      cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "DatabaseLookupMeta.Check.NoInputReceivedFromOtherSteps" ), stepMeta );
-      remarks.add( cr );
+      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
+        BaseMessages.getString( PKG, "DatabaseLookupMeta.Check.NoInputReceivedFromOtherSteps" ), stepMeta );
     }
+
+    remarks.add( cr );
   }
 
   @Override

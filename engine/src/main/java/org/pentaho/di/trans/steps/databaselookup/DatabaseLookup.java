@@ -132,21 +132,20 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       add = null;
     }
 
-    if ( add == null ) {
-      if ( !( meta.isCached() && meta.isLoadingAllDataInCache() ) || data.hasDBCondition ) {
-        // do not go to the database when all rows are in (exception LIKE operator)
-        if ( log.isRowLevel() ) {
-          logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.AddedValuesToLookupRow1" )
-            + meta.getStreamKeyField1().length
-            + BaseMessages.getString( PKG, "DatabaseLookup.Log.AddedValuesToLookupRow2" )
-            + data.lookupMeta.getString( lookupRow ) );
-        }
-
-        data.db.setValuesLookup( data.lookupMeta, lookupRow );
-        add = data.db.getLookup( meta.isFailingOnMultipleResults() );
-        cacheNow = true;
+    if ( add == null && ( !( meta.isCached() && meta.isLoadingAllDataInCache() ) || data.hasDBCondition ) ) {
+      // do not go to the database when all rows are in (exception LIKE operator)
+      if ( log.isRowLevel() ) {
+        logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.AddedValuesToLookupRow1" )
+          + meta.getStreamKeyField1().length
+          + BaseMessages.getString( PKG, "DatabaseLookup.Log.AddedValuesToLookupRow2" )
+          + data.lookupMeta.getString( lookupRow ) );
       }
+
+      data.db.setValuesLookup( data.lookupMeta, lookupRow );
+      add = data.db.getLookup( meta.isFailingOnMultipleResults() );
+      cacheNow = true;
     }
+
 
     if ( add == null ) { // nothing was found, unknown code: add default values
       if ( meta.isEatingRowOnLookupFailure() ) {
@@ -506,18 +505,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       //
 
       if ( data.allEquals ) {
-        final int keysAmount = meta.getStreamKeyField1().length;
-        AtomicReference<RowMetaInterface> prototype = new AtomicReference<>();
-        AtomicBoolean firstRow = new AtomicBoolean( true );
-
-        db.forEachRow( sql.toString(), 0, row -> {
-          if ( firstRow.get() ) {
-            // Assume that all rows have the same meta; let's reuse it for all rows
-            prototype.set( copyValueMetasFrom( db.getReturnRowMeta(), keysAmount ) );
-            firstRow.set( false );
-          }
-          putToDefaultCache( prototype.get(), keysAmount, row );
-        } );
+        putToDefaultCache( db, sql.toString() );
       } else {
         putToReadOnlyCache( db, db.getRows( sql.toString(), 0 ) );
       }
@@ -526,7 +514,22 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     }
   }
 
-  private void putToDefaultCache( RowMetaInterface keyMeta, int keysAmount, Object[] row ) {
+  private void putToDefaultCache( Database db, String sql ) throws KettleDatabaseException {
+    final int keysAmount = meta.getStreamKeyField1().length;
+    AtomicReference<RowMetaInterface> prototype = new AtomicReference<>();
+    AtomicBoolean firstRow = new AtomicBoolean( true );
+
+    db.forEachRow( sql, 0, row -> {
+      if ( firstRow.get() ) {
+        // Assume that all rows have the same meta; let's reuse it for all rows
+        prototype.set( copyValueMetasFrom( db.getReturnRowMeta(), keysAmount ) );
+        firstRow.set( false );
+      }
+      putRowToDefaultCache( prototype.get(), keysAmount, row );
+    } );
+  }
+
+  private void putRowToDefaultCache( RowMetaInterface keyMeta, int keysAmount, Object[] row ) {
     // Copy the data into 2 parts: key and value...
     //
     int index = 0;
