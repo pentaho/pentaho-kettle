@@ -18,6 +18,7 @@ import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.plugins.ParentFirst;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -97,6 +98,7 @@ import static org.pentaho.metaverse.api.analyzer.kettle.step.ExternalResourceSte
   NODE_TYPE_EXTERNAL_CONNECTION )
 @Metaverse.EntityLink ( entity = MQTT_TOPIC_METAVERSE, link = LINK_CONTAINS_CONCEPT, parentEntity = MQTT_SERVER_METAVERSE )
 @Metaverse.EntityLink ( entity = MQTT_TOPIC_METAVERSE, link = LINK_PARENT_CONCEPT )
+@ParentFirst( patterns = { ".*" } )
 public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInterface {
   private static final Class<?> PKG = MQTTConsumerMeta.class;
 
