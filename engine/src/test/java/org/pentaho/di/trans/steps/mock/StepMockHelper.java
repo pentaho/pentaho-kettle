@@ -14,9 +14,10 @@
 package org.pentaho.di.trans.steps.mock;
 
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -82,27 +83,18 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
   public RowSet getMockInputRowSet( final List<Object[]> rows ) {
     final AtomicInteger index = new AtomicInteger( 0 );
     RowSet rowSet = mock( RowSet.class, Mockito.RETURNS_MOCKS );
-    Answer<Object[]> answer = new Answer<Object[]>() {
-      @Override
-      public Object[] answer( InvocationOnMock invocation ) throws Throwable {
-        int i = index.getAndIncrement();
-        return i < rows.size() ? rows.get( i ) : null;
-      }
+    Answer<Object[]> answer = invocation -> {
+      int i = index.getAndIncrement();
+      return i < rows.size() ? rows.get( i ) : null;
     };
     lenient().when( rowSet.getRowWait( anyLong(), any( TimeUnit.class ) ) ).thenAnswer( answer );
     when( rowSet.getRow() ).thenAnswer( answer );
-    when( rowSet.isDone() ).thenAnswer( new Answer<Boolean>() {
-
-      @Override
-      public Boolean answer( InvocationOnMock invocation ) throws Throwable {
-        return index.get() >= rows.size();
-      }
-    } );
+    when( rowSet.isDone() ).thenAnswer( (Answer<Boolean>) invocation -> index.get() >= rows.size() );
     return rowSet;
   }
 
   public static List<Object[]> asList( Object[]... objects ) {
-    List<Object[]> result = new ArrayList<Object[]>();
+    List<Object[]> result = new ArrayList<>();
     Collections.addAll( result, objects );
     return result;
   }
@@ -122,27 +114,24 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
     final LogChannel log = spy( new LogChannel( this.getClass().getName(), true ) );
     log.setLogLevel( channelLogLevel );
     when( logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn( log );
-    doAnswer( new Answer<Object>() {
-      @Override
-      public Object answer( InvocationOnMock invocation ) throws Throwable {
-        Object[] args = invocation.getArguments();
+    doAnswer( (Answer<Object>) invocation -> {
+      Object[] args = invocation.getArguments();
 
-        LogLevel logLevel = (LogLevel) args[1];
-        LogLevel channelLogLevel = log.getLogLevel();
+      LogLevel logLevel = (LogLevel) args[1];
+      LogLevel channelLogLevel1 = log.getLogLevel();
 
-        if ( !logLevel.isVisible( channelLogLevel ) ) {
-          return null; // not for our eyes.
-        }
-        if ( channelLogLevel.getLevel() >= logLevel.getLevel() ) {
-          LogMessageInterface logMessage = (LogMessageInterface) args[0];
-          out.write( logMessage.getMessage().getBytes() );
-          out.write( '\n' );
-          out.write( '\r' );
-          out.flush();
-          return true;
-        }
-        return false;
+      if ( !logLevel.isVisible( channelLogLevel1 ) ) {
+        return null; // not for our eyes.
       }
+      if ( channelLogLevel1.getLevel() >= logLevel.getLevel() ) {
+        LogMessageInterface logMessage = (LogMessageInterface) args[0];
+        out.write( logMessage.getMessage().getBytes() );
+        out.write( '\n' );
+        out.write( '\r' );
+        out.flush();
+        return true;
+      }
+      return false;
     } ).when( log ).println( any( LogMessageInterface.class ), any( LogLevel.class ) );
   }
 }
