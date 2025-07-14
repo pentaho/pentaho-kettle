@@ -455,8 +455,14 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public void setRepository( Repository repository ) {
-    if ( !Objects.equals( this.repository, repository ) ) {
-      // TODO BACKLOG-41158  When we implement execution from repository with projects, revisit this.
+    if ( Objects.equals( this.repository, repository ) ) {
+      // covers both null
+      return;
+    }
+    if ( this.repository == null || repository == null || !Objects.equals( this.repository.getName(), repository.getName() ) ) {
+      // In debug, the existing this.repository is a PurRepository, but the incoming repository is a
+      // Proxy, probably caused by the xul call that eventually calls Spoon.saveToFile. Have to compare names instead
+      // of just references
       this.repository = repository;
       if ( repository != null ) {
         setBowl( repository.getBowl() );
