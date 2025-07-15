@@ -5907,7 +5907,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       if ( meta instanceof JobMeta ) {
         existingId = rep.getJobId( meta.getName(), meta.getRepositoryDirectory() );
-        saveEventId = KettleExtensionPoint.JobAfterSave.id;
       }
 
       boolean saved = false;
