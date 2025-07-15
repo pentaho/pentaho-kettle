@@ -2490,6 +2490,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     transMeta.setRepository( this );
     transMeta.setRepositoryDirectory( parentDir );
     transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransSharedObjectsLoaded.id, transMeta );
     transDelegate.dataNodeToElement( data.getNode(), transMeta );
     transMeta.clearChanged();
     return transMeta;
@@ -2604,6 +2605,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     jobMeta.setRepository( this );
     jobMeta.setRepositoryDirectory( parentDir );
     jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobSharedObjectsLoaded.id, jobMeta );
     jobDelegate.dataNodeToElement( data.getNode(), jobMeta );
     jobMeta.clearChanged();
     return jobMeta;
@@ -3199,6 +3201,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         // Additional obfuscation through obscurity
         jobMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
 
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobSharedObjectsLoaded.id, jobMeta );
         jobDelegate.dataNodeToElement( pur.getDataAtVersionForRead( idJob.getId(), versionLabel,
           NodeRepositoryFileData.class ).getNode(), jobMeta );
 
@@ -3239,6 +3242,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
         transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
 
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransSharedObjectsLoaded.id, transMeta );
         transDelegate.dataNodeToElement(
           pur.getDataAtVersionForRead( idTransformation.getId(), versionLabel, NodeRepositoryFileData.class ).getNode(),
           transMeta );

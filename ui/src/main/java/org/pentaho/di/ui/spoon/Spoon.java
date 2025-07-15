@@ -5907,6 +5907,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       if ( meta instanceof JobMeta ) {
         existingId = rep.getJobId( meta.getName(), meta.getRepositoryDirectory() );
+        saveEventId = KettleExtensionPoint.JobAfterSave.id;
       }
 
       boolean saved = false;
@@ -7016,7 +7017,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private String[] pickupPartitionSchemaNames( TransMeta transMeta ) throws KettleException {
-    return ( rep == null ) ? transMeta.getPartitionSchemasNames() : rep.getPartitionSchemaNames( false );
+    return transMeta.getPartitionSchemasNames();
   }
 
 
@@ -7025,16 +7026,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private List<PartitionSchema> pickupPartitionSchemas( TransMeta transMeta ) throws KettleException {
-    if ( rep != null ) {
-      ObjectId[] ids = rep.getPartitionSchemaIDs( false );
-      List<PartitionSchema> result = new ArrayList<>( ids.length );
-      for ( ObjectId id : ids ) {
-        PartitionSchema schema = rep.loadPartitionSchema( id, null );
-        result.add( schema );
-      }
-      return result;
-    }
-
     return transMeta.getPartitionSchemas();
   }
 
