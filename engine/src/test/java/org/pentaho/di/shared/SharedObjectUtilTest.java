@@ -26,6 +26,7 @@ import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.bowl.BaseBowl;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.partition.PartitionSchemaManagementInterface;
@@ -39,11 +40,23 @@ import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.List;
 import java.util.Map;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 
 public class SharedObjectUtilTest {
+
+  @BeforeClass
+  public static void setup() throws Exception {
+    KettleEnvironment.init();
+  }
+
+  @AfterClass
+  public static void teardown() throws Exception {
+    KettleEnvironment.reset();
+  }
 
   @Test
   public void testCollectChanged() throws Exception {

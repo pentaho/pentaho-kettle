@@ -13,6 +13,9 @@
 
 package org.pentaho.di.connections.ui.tree;
 
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
@@ -20,6 +23,7 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
@@ -47,6 +51,9 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
 
   @Override
   public void refresh( Optional<AbstractMeta> meta, TreeNode treeNode, String filter ) {
+    String levelName;
+    Image image;
+    String connectionName;
     try {
       Set<String> bowlNames = new HashSet<>();
       Bowl currentBowl = Spoon.getInstance().getManagementBowl();
@@ -58,19 +65,38 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
           if ( !filterMatch( name, filter ) ) {
             continue;
           }
+          ConnectionDetails connectionDetails = bowlCM.getConnectionDetails( name );
+          if ( connectionDetails.getName().equals( ConnectionManager.STRING_REPO_CONNECTION ) ) {
+            continue;
+          }
           bowlNames.add( name );
           createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree(),
-                          LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
+                          LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false, false );
         }
       }
 
       ConnectionManager globalCM = globalBowl.getManager( ConnectionManager.class );
       for ( String name : globalCM.getNames() ) {
+        connectionName = name;
         if ( !filterMatch( name, filter ) ) {
           continue;
         }
-        createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree(), LeveledTreeNode.LEVEL.GLOBAL,
-                globalBowl.getLevelDisplayName(), containsIgnoreCase( bowlNames, name ) );
+
+        LeveledTreeNode.LEVEL level = LeveledTreeNode.LEVEL.GLOBAL;
+        levelName = globalBowl.getLevelDisplayName();
+        image  = GUIResource.getInstance().getImageSlaveTree();
+        ConnectionDetails connectionDetails = globalCM.getConnectionDetails( name );
+        // For repo connection, set the name, level and image
+        if ( connectionDetails.getName().equals( ConnectionManager.STRING_REPO_CONNECTION ) ) {
+          connectionName = ConnectionManager.STRING_REPO_CONNECTION;
+          level = LeveledTreeNode.LEVEL.DEFAULT;
+          levelName = LeveledTreeNode.LEVEL_DEFAULT_DISPLAY_NAME;
+          image = getRunConfigurationImage( GUIResource.getInstance(), "images/PentahoRepository.svg" );
+        }
+
+        createTreeNode( treeNode, connectionName, image, level, levelName, containsIgnoreCase( bowlNames, name ),
+                            ( level == LeveledTreeNode.LEVEL.DEFAULT ) ? true : false );
+
       }
     } catch ( KettleException e ) {
       new ErrorDialog( Spoon.getInstance().getShell(),
@@ -94,7 +120,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
   @Override
   public void create( Optional<AbstractMeta> meta, TreeNode parent ) {
     Repository repository = Spoon.getInstance().getRepository();
-    if( repository != null && repository.getUserInfo() != null && repository.getUserInfo().isAdmin() != null
+    if ( repository != null && repository.getUserInfo() != null && repository.getUserInfo().isAdmin() != null
       && Boolean.FALSE.equals( repository.getUserInfo().isAdmin() ) ) {
       return;
     }
@@ -103,11 +129,25 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
   }
 
   public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
-                                  boolean overridden ) {
+                                  boolean overridden, boolean displayAsDiabled ) {
     LeveledTreeNode childTreeNode = new LeveledTreeNode( name, level, levelDisplayName, overridden );
     childTreeNode.setImage( image );
 
     parent.addChild( childTreeNode );
+    // If the level is DEFAULT, it is readonly and is displayed as disabled
+    if ( displayAsDiabled ) {
+      childTreeNode.setForeground( getDisabledColor() );
+    }
     return childTreeNode;
+  }
+
+  private Image getRunConfigurationImage( GUIResource guiResource, String file ) {
+    return guiResource
+      .getImage( file, getClass().getClassLoader(), ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  private Color getDisabledColor() {
+    Device device = Display.getCurrent();
+    return new Color( device, 188, 188, 188 );
   }
 }

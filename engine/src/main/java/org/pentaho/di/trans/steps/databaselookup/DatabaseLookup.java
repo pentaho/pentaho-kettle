@@ -693,8 +693,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
 
     String connectionName = queryParams.get( "connection" );
-    String schema = queryParams.get( "schema" );
-    String table = queryParams.get( "table" );
+    String schema = getTransMeta().environmentSubstitute( queryParams.get( "schema" ) );
+    String table = getTransMeta().environmentSubstitute( queryParams.get( "table" ) );
 
     if ( connectionName == null || connectionName.isBlank() ||
       schema == null || schema.isBlank() ||
