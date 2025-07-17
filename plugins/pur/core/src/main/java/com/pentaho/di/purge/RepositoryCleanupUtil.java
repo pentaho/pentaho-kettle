@@ -123,7 +123,7 @@ public class RepositoryCleanupUtil {
       form = createParametersForm();
 
       WebTarget target = client.target( serviceURL );
-      Response response = target.request( MediaType.MULTIPART_FORM_DATA ).post( Entity.entity(form, MediaType.MULTIPART_FORM_DATA_TYPE ) );
+      Response response = target.request( MediaType.MULTIPART_FORM_DATA ).post( Entity.entity( form, MediaType.MULTIPART_FORM_DATA_TYPE ) );
 
       if ( response != null && response.getStatus() == 200 ) {
         String resultLog = response.getEntity().toString();
