@@ -46,7 +46,7 @@ public class RepositoryCleanupUtilTest {
     WebTarget mockTarget = mock( WebTarget.class );
     Invocation.Builder builder = mock( Invocation.Builder.class );
     when( mockTarget.request( MediaType.TEXT_PLAIN ) ).thenReturn( builder );
-    when( builder.get( String.class ) ).thenReturn("true" );
+    when( builder.get( String.class ) ).thenReturn( "true" );
 
     Client mockClient = mock( Client.class );
     HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( "admin", "password" );

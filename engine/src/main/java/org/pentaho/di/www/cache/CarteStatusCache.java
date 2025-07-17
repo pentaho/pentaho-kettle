@@ -157,20 +157,22 @@ public class CarteStatusCache implements Cache {
     return null;
   }
 
-  @Override public boolean containsEntity( Class<?> aClass, Object o ) {
+ @Override public boolean containsEntity( Class<?> entityClass, Object identifier ) {
+   throwNotImplemented();
+   return false;
+  }
+
+  @Override public boolean containsEntity( String entityName, Object identifier ) {
+    throwNotImplemented();
     return false;
   }
 
-  @Override public boolean containsEntity( String s, Object o ) {
-    return false;
+  @Override public void evictEntityData( Class entityClass, Object identifier ) {
+    throwNotImplemented();
   }
 
-  @Override public void evictEntityData( Class<?> aClass, Object o ) {
-
-  }
-
-  @Override public void evictEntityData( String s, Object o ) {
-
+  @Override public void evictEntityData( String entityName, Object identifier ) {
+    throwNotImplemented();
   }
 
   @Override public void evictEntityData( Class entityClass ) {
@@ -197,12 +199,13 @@ public class CarteStatusCache implements Cache {
     throwNotImplemented();
   }
 
-  @Override public boolean containsCollection( String s, Object o ) {
+  @Override public boolean containsCollection( String role, Object ownerIdentifier ) {
+    throwNotImplemented();
     return false;
   }
 
-  @Override public void evictCollectionData( String s, Object o ) {
-
+  @Override public void evictCollectionData( String role, Object ownerIdentifier ) {
+    throwNotImplemented();
   }
 
   @Override public void evictCollectionData( String role ) {
@@ -234,28 +237,25 @@ public class CarteStatusCache implements Cache {
     throwNotImplemented();
   }
 
-
-  private void throwNotImplemented(){
-    throw new NotImplementedException( "Method not Implemented with upgrade to hibernate 5.4.24");
-  }
-
-  @Override
-  public boolean contains( Class aClass, Object o ) {
+  @Override public boolean contains( Class cls, Object primaryKey ) {
+    throwNotImplemented();
     return false;
   }
 
-  @Override
-  public void evict( Class aClass, Object o ) {
-
+  @Override public void evict( Class cls, Object primaryKey ) {
+    throwNotImplemented();
   }
 
-  @Override
-  public void evict( Class aClass ) {
-
+  @Override public void evict( Class cls ) {
+    throwNotImplemented();
   }
 
-  @Override
-  public <T> T unwrap( Class<T> aClass ) {
+  @Override public <T> T unwrap( Class<T> cls ) {
+    throwNotImplemented();
     return null;
+  }
+
+  private void throwNotImplemented(){
+    throw new NotImplementedException( "Method not Implemented with upgrade to hibernate 5.4.24");
   }
 }

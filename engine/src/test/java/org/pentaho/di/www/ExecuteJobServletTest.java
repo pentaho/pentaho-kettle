@@ -169,6 +169,7 @@ public class ExecuteJobServletTest {
       assertTrue( out.toString().contains( Encode.forHtml( message ) ) );
     }
   }
+
   @Test
   public void testExecuteJobServletTestCantFindRepository() throws ServletException, IOException {
     try ( MockedStatic<Encr> encrMockedStatic = mockStatic( Encr.class ) ) {
