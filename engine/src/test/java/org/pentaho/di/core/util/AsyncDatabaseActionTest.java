@@ -81,6 +81,7 @@ public class AsyncDatabaseActionTest {
     KettleLogStore.getAppender().addLoggingEventListener( errorLogListener );
   }
 
+
   @Test
   public void getTables() throws InterruptedException, ExecutionException, TimeoutException {
     AsyncDatabaseAction.getTables( dbMeta, "PUBLIC", completion::complete );

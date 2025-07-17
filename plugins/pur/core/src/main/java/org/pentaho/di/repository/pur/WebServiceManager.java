@@ -138,8 +138,7 @@ public class WebServiceManager implements ServiceManager {
               ( (BindingProvider) port ).getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
               // support streaming binary data
               // TODO mlowery this is not portable between JAX-WS implementations (uses com.sun)
-              ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE,
-                      8192 );
+              ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192 );
               SOAPBinding binding = (SOAPBinding) ( (BindingProvider) port ).getBinding();
               binding.setMTOMEnabled( true );
               return port;

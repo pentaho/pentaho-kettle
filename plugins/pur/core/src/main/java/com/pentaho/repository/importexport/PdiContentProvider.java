@@ -123,6 +123,7 @@ public class PdiContentProvider implements IPdiContentProvider {
     }
     return userVariables;
   }
+
   private Map<String, String> getTransVars( TransMeta transMeta, RepositoryFile file ) {
     /*
      * The following code was more or less copy/pasted from SpoonTransformationDelegate and
