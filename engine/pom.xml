@@ -69,7 +69,7 @@
     <rxjava.version>2.2.3</rxjava.version>
     <xmlunit.version>1.5</xmlunit.version>
     <wiremock.version>2.25.0</wiremock.version>
-    <spring-bridge.version>3.1.0</spring-bridge.version>
+    <glassfish-spring.version>3.1.0</glassfish-spring.version>
   </properties>
 
   <dependencyManagement>
@@ -318,7 +318,7 @@
     <dependency>
       <groupId>org.glassfish.hk2</groupId>
       <artifactId>spring-bridge</artifactId>
-      <version>${spring-bridge.version}</version>
+      <version>${glassfish-spring.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
