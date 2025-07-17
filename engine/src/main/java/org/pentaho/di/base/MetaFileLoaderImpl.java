@@ -156,8 +156,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
         case FILENAME:
           String realFilename = tmpSpace.environmentSubstitute( filename );
           try {
-            theMeta = attemptLoadMeta( bowl, realFilename, rep, metaStore, tmpSpace,
-                                       jobEntryBase.getParentVariableSpace(), idContainer );
+            theMeta = attemptLoadMeta( bowl, realFilename, rep, metaStore, tmpSpace, null, idContainer );
           } catch ( KettleException e ) {
             // try to load from repository, this trans may have been developed locally and later uploaded to the
             // repository
