@@ -1,7 +1,7 @@
 package org.pentaho.di.repovfs.repo;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import jakarta.ws.rs.client.Client;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 public class BasicAuthentication {
 
@@ -14,6 +14,7 @@ public class BasicAuthentication {
   }
 
   public void applyToClient( Client client ) {
-    client.addFilter( new HTTPBasicAuthFilter( user, password ) );
+    HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( user, password );
+    client.register( feature );
   }
 }

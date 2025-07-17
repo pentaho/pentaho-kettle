@@ -31,11 +31,11 @@ import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Message;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;

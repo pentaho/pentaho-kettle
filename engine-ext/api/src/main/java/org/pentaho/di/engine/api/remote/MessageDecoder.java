@@ -13,9 +13,9 @@
 
 package org.pentaho.di.engine.api.remote;
 
-import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
-import javax.websocket.EndpointConfig;
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.EndpointConfig;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
