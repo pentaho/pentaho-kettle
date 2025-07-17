@@ -773,7 +773,7 @@ public class SystemData extends BaseStep implements StepInterface {
     JSONArray jsonArray = new JSONArray();
     for ( int i = 1; i < SystemDataTypes.values().length; i++ ) {
       JSONObject jsonObject = new JSONObject();
-      jsonObject.put( "id", SystemDataTypes.values()[ i ].name() );
+      jsonObject.put( "id", SystemDataTypes.values()[ i ].getCode() );
       jsonObject.put( "name", SystemDataTypes.values()[ i ].getDescription() );
       jsonArray.add( jsonObject );
     }
