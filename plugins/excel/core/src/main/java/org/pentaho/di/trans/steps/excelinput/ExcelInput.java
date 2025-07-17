@@ -950,7 +950,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
     return WorkbookFactory.getWorkbook( getTransMeta().getBowl(), excelInputMeta.getSpreadSheetType(),
       KettleVFS.getFilename( fileObject ),
       excelInputMeta.getEncoding(),
-      excelInputMeta.getPassword() );
+      getTransMeta().environmentSubstitute( excelInputMeta.getPassword() ) );
   }
 
   private int getSheetNumber(  ExcelInputMeta info, KSheet sheet ) {
