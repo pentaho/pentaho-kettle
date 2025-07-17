@@ -157,9 +157,9 @@ public class CarteStatusCache implements Cache {
     return null;
   }
 
- @Override public boolean containsEntity( Class<?> entityClass, Object identifier ) {
-   throwNotImplemented();
-   return false;
+  @Override public boolean containsEntity( Class entityClass, Object identifier ) {
+    throwNotImplemented();
+    return false;
   }
 
   @Override public boolean containsEntity( String entityName, Object identifier ) {

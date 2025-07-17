@@ -9,7 +9,7 @@ import org.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
 import org.pentaho.di.repovfs.vfs.JCRSolutionFileSystem;
 import org.pentaho.di.repovfs.vfs.JCRSolutionFileSystem.ConfigBuilder;
 
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.HttpMethod;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
