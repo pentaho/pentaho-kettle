@@ -762,6 +762,38 @@ public class TransExecutorUnitTest {
   }
 
   @Test
+  public void testIsTransValidAction_ForValidTrans() throws KettleException {
+    Trans trans = mock( Trans.class );
+    Repository repositoryMock = mock( Repository.class );
+    StepMetaInterface stepMetaInterfaceMock = mock( StepMetaInterface.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    when( executor.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
+    when( executor.loadExecutorTransMeta() ).thenReturn( transMeta );
+    when( trans.getRepository() ).thenReturn( repositoryMock );
+    executor.init( meta, data );
+
+    JSONObject response = executor.doAction( "isTransValid", meta, transMeta, trans, new HashMap<>() );
+    String transPresent = response.get( "transPresent" ).toString();
+    assertEquals( "true", transPresent );
+  }
+
+  @Test
+  public void testIsTransValidAction_ForInvalidTrans() throws KettleException {
+    Trans trans = mock( Trans.class );
+    Repository repositoryMock = mock( Repository.class );
+    StepMetaInterface stepMetaInterfaceMock = mock( StepMetaInterface.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    when( executor.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
+    when( executor.loadExecutorTransMeta() ).thenThrow( new KettleException( "File not found" ) );
+    when( trans.getRepository() ).thenReturn( repositoryMock );
+    executor.init( meta, data );
+
+    JSONObject response = executor.doAction( "isTransValid", meta, transMeta, trans, new HashMap<>() );
+    String transPresent = response.get( "transPresent" ).toString();
+    assertEquals( "false", transPresent );
+  }
+
+  @Test
   public void testDoAction_ThrowException() {
     Trans trans = mock( Trans.class );
     TransMeta transMeta = mock( TransMeta.class );

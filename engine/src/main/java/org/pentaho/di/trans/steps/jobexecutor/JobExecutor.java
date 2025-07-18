@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
@@ -524,6 +525,30 @@ public class JobExecutor extends BaseStep implements StepInterface {
     } catch ( Exception e ) {
       log.logError( e.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    }
+    return response;
+  }
+
+  /**
+   * Validates the presence of a job by attempting to load its metadata.
+   * This method is invoked dynamically using reflection from StepInterface#doAction method.
+   *
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing:
+   * - "jobPresent": A boolean indicating whether the job metadata was successfully loaded.
+   * - "errorMessage": An error message if the job metadata could not be loaded.
+   * @throws KettleException If an error occurs while loading the job metadata.
+   */
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  private JSONObject isJobValidAction( Map<String, String> queryParams ) throws KettleException {
+    JSONObject response = new JSONObject();
+    try {
+      JobExecutorMeta.loadJobMeta( getTransMeta().getBowl(), meta, meta.getRepository(), this );
+      response.put( "jobPresent", true );
+    } catch ( Exception e ) {
+      response.put( "jobPresent", false );
+      response.put( "errorMessage", ExceptionUtils.getRootCauseMessage( e ) );
+      log.logError( e.getMessage() );
     }
     return response;
   }
