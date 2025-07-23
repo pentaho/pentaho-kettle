@@ -13,6 +13,7 @@
 
 package org.pentaho.di.shared;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -62,13 +63,13 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   private Map<String, Node> clusterSchemaNodes = new HashMap<>();
 
   private boolean isInitialized = false;
-
+  private Bowl bowl;
   /**
    * Creates the instance of VfsSharedObjectsIO using the default location of the shared file.
    *
    */
   public VfsSharedObjectsIO() {
-    this( getDefaultSharedObjectFileLocation() );
+    this( getDefaultSharedObjectFileLocation(), DefaultBowl.getInstance() );
   }
 
   /**
@@ -76,8 +77,9 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    *
    * @param rootFolder the root folder containing the shared object file.
    */
-  public VfsSharedObjectsIO( String rootFolder ) {
+  public VfsSharedObjectsIO( String rootFolder, Bowl bowl ) {
     this.rootFolder = rootFolder;
+    this.bowl = bowl;
     // Get the complete path to shared.xml
     this.sharedObjectFile = getSharedObjectFilePath( rootFolder );
   }
@@ -112,7 +114,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
 
     try {
       // Get the FileObject
-      FileObject file = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( pathToSharedObjectFile );
+      FileObject file = KettleVFS.getInstance( bowl ).getFileObject( pathToSharedObjectFile );
 
       // If we have a shared file, load the content, otherwise, just keep this one empty
       if ( file.exists() ) {
@@ -214,7 +216,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
 
   protected void saveToFile() throws KettleException {
     try {
-      FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( sharedObjectFile );
+      FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( sharedObjectFile );
       Optional<String> backupFileName = createOrGetFileBackup( fileObject );
       writeToFile( fileObject, backupFileName );
       isInitialized = false;
@@ -225,7 +227,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
 
   protected void writeToFile( FileObject fileObject, Optional<String> backupFileName )
     throws IOException, KettleException {
-    try ( OutputStream outputStream = KettleVFS.getInstance( DefaultBowl.getInstance() ).getOutputStream( fileObject, false );
+    try ( OutputStream outputStream = KettleVFS.getInstance( bowl ).getOutputStream( fileObject, false );
          PrintStream out = new PrintStream( outputStream ) ) {
 
       out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
@@ -269,7 +271,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   }
 
   private boolean getBackupFileFromFileSystem( String backupFileName ) throws KettleException {
-    FileObject fileObject = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( backupFileName );
+    FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( backupFileName );
     try {
       return fileObject.exists();
     } catch ( FileSystemException e ) {
@@ -278,7 +280,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   }
 
   private boolean copyFile( String src, String dest ) throws IOException, KettleFileException {
-    IKettleVFS vfs = KettleVFS.getInstance( DefaultBowl.getInstance() );
+    IKettleVFS vfs = KettleVFS.getInstance( bowl );
     FileObject srcFile = vfs.getFileObject( src );
     FileObject destFile = vfs.getFileObject( dest );
     try ( InputStream in = KettleVFS.getInputStream( srcFile );
