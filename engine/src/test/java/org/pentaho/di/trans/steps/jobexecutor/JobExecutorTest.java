@@ -249,4 +249,50 @@ public class JobExecutorTest {
     assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
 
+  @Test
+  public void testIsJobValidAction_ForValidJob() throws KettleException {
+    Trans trans = mock( Trans.class );
+    Repository repositoryMock = mock( Repository.class );
+    StepMetaInterface stepMetaInterfaceMock = mock( StepMetaInterface.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    JobMeta jobMeta = mock( JobMeta.class );
+    when( jobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    when( executor.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
+    when( trans.getRepository() ).thenReturn( repositoryMock );
+    executor.init( meta, data );
+
+    try ( MockedStatic<JobExecutorMeta> mocked = mockStatic( JobExecutorMeta.class ) ) {
+      when( JobExecutorMeta.loadJobMeta( transMeta.getBowl(), meta, meta.getRepository(), executor ) )
+        .thenReturn( jobMeta );
+
+      JSONObject response = executor.doAction( "isJobValid", meta, transMeta, trans, new HashMap<>() );
+      String transPresent = response.get( "jobPresent" ).toString();
+      assertEquals( "true", transPresent );
+    }
+  }
+
+  @Test
+  public void testIsJobValidAction_ForInvalidJob() throws KettleException {
+    Trans trans = mock( Trans.class );
+    Repository repositoryMock = mock( Repository.class );
+    StepMetaInterface stepMetaInterfaceMock = mock( StepMetaInterface.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    JobMeta jobMeta = mock( JobMeta.class );
+    when( jobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    when( executor.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
+    when( trans.getRepository() ).thenReturn( repositoryMock );
+    executor.init( meta, data );
+
+    try ( MockedStatic<JobExecutorMeta> mocked = mockStatic( JobExecutorMeta.class ) ) {
+      when( JobExecutorMeta.loadJobMeta( transMeta.getBowl(), meta, meta.getRepository(), executor ) )
+        .thenThrow( new KettleException( "File not found" ) );
+
+      JSONObject response = executor.doAction( "isJobValid", meta, transMeta, trans, new HashMap<>() );
+      String transPresent = response.get( "jobPresent" ).toString();
+      assertEquals( "false", transPresent );
+    }
+  }
+
 }
