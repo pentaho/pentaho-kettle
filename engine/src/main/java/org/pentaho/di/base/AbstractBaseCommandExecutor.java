@@ -34,9 +34,12 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.metastore.MetaStoreConst;
+import org.pentaho.di.pan.CommandExecutorResult;
+import org.pentaho.di.pan.CommandLineOptionProvider;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -271,6 +274,28 @@ public abstract class AbstractBaseCommandExecutor {
     }
 
     return file;
+  }
+
+  /**
+   * Pass the plugin parameters to the CommandLineOptionProvider for validation and setting the plugin context.
+   * @param log LogChannelInterface for logging
+   * @param params Params containing the plugin parameters
+   * @param repository Repository object when connected
+   * @return CommandExecutorResult contains the result of the of validation.
+   */
+  protected static CommandExecutorResult validateAndSetPluginContext( LogChannelInterface log, Params params, Repository repository ) throws KettleException {
+    CommandExecutorResult result = null;
+    Map<String, String> paramMap = params.getPluginParams();
+
+    for ( CommandLineOptionProvider provider : PluginServiceLoader.loadServices( CommandLineOptionProvider.class ) ) {
+      result = provider.handleParameter( log, paramMap, repository );
+      if ( result.getCode() != 0 ) {
+        log.logError( result.getDescription() );
+        break; // if result is NOT SUCCESS, break out of the loop
+      }
+    }
+
+    return result;
   }
 
   public LogChannelInterface getLog() {

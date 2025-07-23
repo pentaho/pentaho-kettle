@@ -59,7 +59,6 @@ public interface Bowl {
    * @see BowlManagerFactoryRegistry for how Managers should be registered.
    *
    * @return a manager instance, never null.
-   * @throws NotFoundException if the manager type is unknown
    * @throws KettleException for other errors.
    */
   <T> T getManager( Class<T> managerClazz ) throws KettleException;
@@ -94,4 +93,6 @@ public interface Bowl {
    * @return level name
    */
   String getLevelDisplayName();
+
+
 }
