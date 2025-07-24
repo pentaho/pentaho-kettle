@@ -13,6 +13,14 @@
 
 package org.pentaho.di.trans.steps.propertyinput;
 
+import org.apache.commons.configuration2.INIConfiguration;
+import org.apache.commons.configuration2.SubnodeConfiguration;
+import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.step.BaseStepData;
+import org.pentaho.di.trans.step.StepDataInterface;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.text.DateFormatSymbols;
@@ -24,14 +32,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.commons.vfs2.FileObject;
-import org.ini4j.Profile.Section;
-import org.ini4j.Wini;
-import org.pentaho.di.core.fileinput.FileInputList;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * @author Samatar Hassan
@@ -69,8 +69,9 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
   public Iterator<Object> it;
 
   // INI files
-  public Section iniSection;
-  public Wini wini;
+  public INIConfiguration iniConf;
+  public SubnodeConfiguration iniSection;
+  public String currentSection;
   public Iterator<String> itSection;
   public String realEncoding;
   public String realSection;
@@ -99,7 +100,6 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
     dafs = new DateFormatSymbols();
 
     nr_repeats = 0;
-    previousRow = null;
     filenr = 0;
 
     fr = null;
@@ -112,7 +112,8 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
     pro = null;
     it = null;
     iniSection = null;
-    wini = null;
+    currentSection = null;
+    iniConf = null;
     itSection = null;
     realEncoding = null;
     realSection = null;
