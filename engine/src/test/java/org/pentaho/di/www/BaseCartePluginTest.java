@@ -19,8 +19,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public class BaseCartePluginTest {
   CarteRequestHandler.WriterResponse writerResponse = mock( CarteRequestHandler.WriterResponse.class );
   CarteRequestHandler.OutputStreamResponse outputStreamResponse = mock( CarteRequestHandler.OutputStreamResponse.class );
   PrintWriter printWriter = mock( PrintWriter.class );
-  javax.servlet.ServletOutputStream outputStream = mock( javax.servlet.ServletOutputStream.class );
+  jakarta.servlet.ServletOutputStream outputStream = mock( jakarta.servlet.ServletOutputStream.class );
 
   ArgumentCaptor<CarteRequestHandler.CarteRequest> carteReqCaptor = ArgumentCaptor.forClass( CarteRequestHandler.CarteRequest.class );
 

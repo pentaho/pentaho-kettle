@@ -13,13 +13,13 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import com.sun.jersey.api.container.httpserver.HttpServerFactory;
+import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import com.sun.net.httpserver.HttpServer;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -37,8 +37,9 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -103,15 +104,15 @@ public class RestIT {
     protected MultivaluedMap<String, Object> searchForHeaders( Response response ) {
       if ( override ) {
         String host = "host";
-        List<String> localhost = new ArrayList<>();
+        List<Object> localhost = new ArrayList<>();
         localhost.add( "localhost" );
-        Map.Entry<String, Object> entry = Mockito.mock( Map.Entry.class );
+        Map.Entry<String, List<Object>> entry = Mockito.mock( Map.Entry.class );
         when( entry.getKey() ).thenReturn( host );
         when( entry.getValue() ).thenReturn( localhost );
-        Set<Map.Entry<String, Object>> set = new HashSet<>();
+        Set<Map.Entry<String, List<Object>>> set = new HashSet<>();
         set.add( entry );
         MultivaluedMap<String, Object> test = Mockito.mock( MultivaluedMap.class );
-        when( test.entrySet() ).thenReturn( Collections.emptySet() );
+        when( test.entrySet() ).thenReturn( set );
         return test;
       } else {
         return super.searchForHeaders( response );
@@ -150,8 +151,8 @@ public class RestIT {
       stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     verify( stepMockHelper.trans, never() ).stopAll();
-    server = HttpServerFactory.create( HTTP_LOCALHOST_9998 );
-    server.start();
+    ResourceConfig rc = new ResourceConfig( org.pentaho.di.trans.steps.rest.RestServices.class );
+    server = JdkHttpServerFactory.createHttpServer( new URI( HTTP_LOCALHOST_9998 ), rc );
   }
 
   @After

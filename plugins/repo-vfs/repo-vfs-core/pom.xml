@@ -19,7 +19,6 @@
   <properties>
     <pentaho-platform.version>${pdi.version}</pentaho-platform.version>
     <!-- should be in sync with one from kettle-engine -->
-    <jersey.version>1.19.1</jersey.version>
 
     <junit-jupiter.version>5.13.0-M2</junit-jupiter.version>
     <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
@@ -77,54 +76,22 @@
 
     <!-- JERSE-->
     <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-multipart</artifactId>
-      <scope>provided</scope>
-      <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-apache-client</artifactId>
-      <scope>provided</scope>
-      <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-core</artifactId>
-      <scope>provided</scope>
-      <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-json</artifactId>
-      <scope>provided</scope>
-      <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-spring</artifactId>
-      <scope>provided</scope>
-      <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
+      <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
+      <version>${jersey.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
       <version>${jersey.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-server</artifactId>
-      <scope>provided</scope>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-multipart</artifactId>
       <version>${jersey.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-servlet</artifactId>
       <scope>provided</scope>
-      <version>${jersey.version}</version>
     </dependency>
-
     <!-- Testing -->
     <!-- temporary, introduced as a dependencies of commons-vfs2 but not coming from upstream-->
     <dependency>

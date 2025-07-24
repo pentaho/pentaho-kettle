@@ -19,8 +19,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cache.CacheException;
-import org.hibernate.cfg.Configuration;
 import org.pentaho.di.core.Const;
 import org.hibernate.Cache;
 
@@ -74,7 +72,7 @@ public class CarteStatusCache implements Cache {
     removeService.scheduleAtFixedRate( this::clear, 1, 1, TimeUnit.DAYS );
   }
 
-  public void clear() throws CacheException {
+  public void clear() {
     cachedMap.forEach( ( k, v ) -> {
       if ( LocalDate.now().isAfter( v.getExceedTime() ) ) {
         remove( k );
@@ -101,7 +99,7 @@ public class CarteStatusCache implements Cache {
     }
   }
 
-  public void put( Object key, Object value ) throws CacheException {
+  public void put( Object key, Object value ) throws Exception {
     cachedMap.put( (String) key, (CachedItem) value );
   }
 
@@ -159,21 +157,21 @@ public class CarteStatusCache implements Cache {
     return null;
   }
 
-  @Override public boolean containsEntity( Class entityClass, Serializable identifier ) {
+  @Override public boolean containsEntity( Class entityClass, Object identifier ) {
     throwNotImplemented();
     return false;
   }
 
-  @Override public boolean containsEntity( String entityName, Serializable identifier ) {
+  @Override public boolean containsEntity( String entityName, Object identifier ) {
     throwNotImplemented();
     return false;
   }
 
-  @Override public void evictEntityData( Class entityClass, Serializable identifier ) {
+  @Override public void evictEntityData( Class entityClass, Object identifier ) {
     throwNotImplemented();
   }
 
-  @Override public void evictEntityData( String entityName, Serializable identifier ) {
+  @Override public void evictEntityData( String entityName, Object identifier ) {
     throwNotImplemented();
   }
 
@@ -201,12 +199,12 @@ public class CarteStatusCache implements Cache {
     throwNotImplemented();
   }
 
-  @Override public boolean containsCollection( String role, Serializable ownerIdentifier ) {
+  @Override public boolean containsCollection( String role, Object ownerIdentifier ) {
     throwNotImplemented();
     return false;
   }
 
-  @Override public void evictCollectionData( String role, Serializable ownerIdentifier ) {
+  @Override public void evictCollectionData( String role, Object ownerIdentifier ) {
     throwNotImplemented();
   }
 

@@ -20,9 +20,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.Point;

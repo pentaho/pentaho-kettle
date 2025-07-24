@@ -475,6 +475,12 @@
 
     <!-- Test dependencies -->
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-mock</artifactId>
+      <version>${spring-mock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>java-hamcrest</artifactId>
       <scope>test</scope>

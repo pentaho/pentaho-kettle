@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.Response;
 
 import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.repository.pur.PurObjectRevision;
@@ -82,7 +82,7 @@ public class RevisionResourceTest {
     Object entity = response.getEntity();
 
     // Yeah this gets weird: List, wrapped in a Response, wrapped in GenericEnttiy
-    List<PurObjectRevision> revisionList = (List<PurObjectRevision>) ( (GenericEntity) entity ).getEntity();
+    List<PurObjectRevision> revisionList = (List<PurObjectRevision>) entity;
 
     Assert.assertTrue( revisionList.size() == 1 );
     Assert.assertTrue( revisionList.get( 0 ).getLogin().equals( MOCK_VERSION_AUTHOR_1 ) );
