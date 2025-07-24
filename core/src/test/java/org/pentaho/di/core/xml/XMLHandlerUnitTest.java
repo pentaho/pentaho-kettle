@@ -213,7 +213,7 @@ public class XMLHandlerUnitTest {
     String expectedStrAfterConversion = "<[value_start (&#34;&#39;&lt;&amp;&gt;) value_end] "
       + "[value_start (&#34;&#39;&lt;&amp;&gt;) value_end]=\""
       + "[value_start (&#34;&#39;&lt;&amp;>) value_end]\" >"
-      + "[value_start (&#34;&#39;&lt;&amp;&gt;) value_end]"
+      + "[value_start (\"'&lt;&amp;&gt;) value_end]"
       + "</[value_start (&#34;&#39;&lt;&amp;&gt;) value_end]>";
     String result = XMLHandler.addTagValue( testString, testString, false, testString, testString );
     assertEquals( expectedStrAfterConversion, result );
