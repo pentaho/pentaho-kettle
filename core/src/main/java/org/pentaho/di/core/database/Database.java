@@ -44,8 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -180,8 +178,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   private DataSource dataSource;
   private String ownerName;
-
-  private static final Lock lock = new ReentrantLock();
 
   static {
     initValueMetaPluginClasses();
@@ -2732,26 +2728,27 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     long startTime = System.currentTimeMillis();
 
     try {
-      lock.lock();
+      // PDI-19750 - synchronize on the connection to prevent data inconsistency
+      // when multiple Database objects share the same connection and access ResultSets concurrently
+      synchronized ( connection ) {
+        int nrcols = rowInfo.size();
+        Object[] data = RowDataUtil.allocateRowData( nrcols );
 
-      int nrcols = rowInfo.size();
-      Object[] data = RowDataUtil.allocateRowData( nrcols );
+        if ( rs.next() ) {
+          for ( int i = 0; i < nrcols; i++ ) {
+            ValueMetaInterface val = rowInfo.getValueMeta( i );
 
-      if ( rs.next() ) {
-        for ( int i = 0; i < nrcols; i++ ) {
-          ValueMetaInterface val = rowInfo.getValueMeta( i );
-
-          data[ i ] = databaseMeta.getValueFromResultSet( rs, val, i );
+            data[ i ] = databaseMeta.getValueFromResultSet( rs, val, i );
+          }
+        } else {
+          data = null;
         }
-      } else {
-        data = null;
-      }
 
-      return data;
+        return data;
+      }
     } catch ( Exception ex ) {
       throw new KettleDatabaseException( "Couldn't get row from result set", ex );
     } finally {
-      lock.unlock();
       if ( log.isGatheringMetrics() ) {
         long time = System.currentTimeMillis() - startTime;
         log.snap( Metrics.METRIC_DATABASE_GET_ROW_SUM_TIME, databaseMeta.getName(), time );
