@@ -64,20 +64,22 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
   public int indexOfFilenameField;
   public Object[] readrow;
 
+  // Are we handling Property files (true) or INI files (false)?
+  public boolean propfiles;
+
   // Properties files
   public Properties pro;
-  public Iterator<Object> it;
+  public Iterator<Object> propIt;
 
   // INI files
   public INIConfiguration iniConf;
   public SubnodeConfiguration iniSection;
-  public String currentSection;
-  public Iterator<String> itSection;
+  public Iterator<String> iniIt;
+  public Iterator<String> iniSectionIt;
+
   public String realEncoding;
   public String realSection;
-  public Iterator<String> iniIt;
-
-  public boolean propfiles;
+  public String currentSection;
 
   public String filename;
   public String shortFilename;
@@ -110,11 +112,11 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
     readrow = null;
 
     pro = null;
-    it = null;
+    propIt = null;
     iniSection = null;
     currentSection = null;
     iniConf = null;
-    itSection = null;
+    iniSectionIt = null;
     realEncoding = null;
     realSection = null;
     propfiles = true;
