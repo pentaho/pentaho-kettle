@@ -121,6 +121,8 @@ public enum KettleExtensionPoint {
     BeforeSaveToRepository( "BeforeSaveToRepository", "Before meta is saved to the repository" ),
     AfterDeleteRepositoryObject( "AfterDeleteRepositoryObject",
       "After an object has been deleted from the repository" ),
+    /** Argument is the repository being changed to, or null if disconnecting */
+    RepositoryChanging( "RepositoryChanging", "The process of connecting/disconnecting to/from a repository has been initiated but not yet completed" ),
 
    TransformationCreateNew( "TransformationCreateNew", "Create a New Empty Transformation in Spoon" ),
    JobCreateNew( "JobCreateNew", "Create a New Empty Job in Spoon" ),
