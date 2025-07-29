@@ -73,7 +73,7 @@ public class BaseStepDialog_ConnectionLine_Test {
     mockSupplier = mock( Supplier.class );
     mockSpoon = mock( Spoon.class );
     mockDialog = mock( BaseStepDialog.class );
-    Shell shell = new Shell();
+    Shell shell = mock( Shell.class );
 
     Whitebox.setInternalState( mockDialog, "spoonSupplier", mockSupplier );
     Whitebox.setInternalState( mockDialog, "shell", shell );
