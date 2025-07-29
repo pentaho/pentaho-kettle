@@ -13,9 +13,6 @@
 
 package org.pentaho.di.trans.steps.xmljoin;
 
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +56,7 @@ public class XmlJoinOmitNullValuesTest {
     doTest(
         "<child><empty/><subChild a=\"\"><empty/></subChild><subChild><empty/></subChild><subChild><subSubChild a=\"\"/></subChild></child>",
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root xmlns=\"http://www.myns1.com\" xmlns:xsi=\"http://www.myns2.com\" xsi:schemalocation=\"http://www.mysl1.com\"></root>",
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root xmlns=\"http://www.myns1.com\" xmlns:xsi=\"http://www.myns2.com\" xsi:schemalocation=\"http://www.mysl1.com\"><child xmlns=\"\"><subChild a=\"\"/><subChild><subSubChild a=\"\"/></subChild></child></root>" );
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root xmlns:xsi=\"http://www.myns2.com\" xsi:schemalocation=\"http://www.mysl1.com\"><child><subChild a=\"\"/><subChild><subSubChild a=\"\"/></subChild></child></root>" );
   }
 
   private void doTest( final String sourceXml, final String targetXml, final String expectedXml )
@@ -83,14 +80,7 @@ public class XmlJoinOmitNullValuesTest {
     spy.addRowListener( new RowAdapter() {
       @Override
       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-        try {
-          XMLUnit.setIgnoreWhitespace(true);
-          XMLUnit.setIgnoreAttributeOrder(true);
-          Diff diff = new Diff(expectedXml, (String) row[0]);
-          XMLAssert.assertXMLEqual("XMLs are not semantically equal", diff, true);
-        } catch (Exception e) {
-          throw new KettleStepException(e);
-        }
+        Assert.assertEquals( expectedXml, row[0] );
       }
     } );
 
