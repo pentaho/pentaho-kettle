@@ -36,20 +36,15 @@
     <jt400.version>6.1</jt400.version>
     <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
     <sapdbc.version>7.4.4</sapdbc.version>
-    <webservices-api.version>2.3.1</webservices-api.version>
-    <webservices-rt.version>2.3.1</webservices-rt.version>
     <asm.version>3.2</asm.version>
     <blueprints-core.version>2.6.0</blueprints-core.version>
     <commons-configuration.version>1.9</commons-configuration.version>
     <flexjson.version>2.1</flexjson.version>
-    <jersey-multipart.version>1.19.1</jersey-multipart.version>
     <mimepull.version>1.9.3</mimepull.version>
-    <jsr311-api.version>1.1.1</jsr311-api.version>
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
     <tyrus-standalone-client.version>1.13.1</tyrus-standalone-client.version>
     <databricks.version>4.0.0</databricks.version>
-    <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <jface.version>3.22.0</jface.version>
     <pentaho-metadata.version>11.0.0.0-SNAPSHOT</pentaho-metadata.version>
     <google-http-client.version>1.42.3</google-http-client.version>
@@ -309,7 +304,7 @@
     <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
-      <version>1.3.5</version>
+      <version>${jakarta.annotation-api.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -395,9 +390,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>${javax.servlet-api.version}</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>${jakarta.servlet.version}</version>
     </dependency>
     <dependency>
       <groupId>net.snowflake</groupId>
@@ -444,8 +439,8 @@
 
     <!-- Other third-party dependencies -->
     <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
+      <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+      <artifactId>jackson-jakarta-rs-json-provider</artifactId>
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.module</groupId>
@@ -480,7 +475,7 @@
     <dependency>
       <groupId>org.glassfish.metro</groupId>
       <artifactId>webservices-api</artifactId>
-      <version>${webservices-api.version}</version>
+      <version>${webservices.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -491,7 +486,7 @@
     <dependency>
       <groupId>org.glassfish.metro</groupId>
       <artifactId>webservices-rt</artifactId>
-      <version>${webservices-rt.version}</version>
+      <version>${webservices.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -509,6 +504,15 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!--
+     Dependency for Apache Santuario XML Security.
+     This library provides security functionality for XML.
+    -->
+    <dependency>
+      <groupId>org.apache.santuario</groupId>
+      <artifactId>xmlsec</artifactId>
+      <version>${xmlsec-osgi.version}</version>
     </dependency>
     <dependency>
       <groupId>com.tinkerpop.blueprints</groupId>
@@ -544,15 +548,20 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-multipart</artifactId>
-      <version>${jersey-multipart.version}</version>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-multipart</artifactId>
+      <version>${jersey.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-jaxb</artifactId>
+      <version>${jersey.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jvnet.mimepull</groupId>
@@ -566,15 +575,20 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
-      <version>${jsr311-api.version}</version>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>${jakarta.ws.rs-api.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-session</artifactId>
+      <version>${jetty.version}</version>
     </dependency>
 
     <!-- To support Enunciate Annotations in Resource classes -->
@@ -838,6 +852,67 @@
             <configuration>
               <includeScope>compile</includeScope>
               <outputDirectory>${assembly.dir}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <!--
+              Dependencies for Javax XML Binding API, JAXB Runtime, Javax Activation API, Javax Transaction API and IStack Commons Runtime
+              These dependencies are required for OSGi environment and Felix directly depends on javax.xml.bind (Javax XML Bind API and Javax JAXB runtime) and we are making these available to OSGi through jre.properties.
+              Even if these dependencies are added to pom.xml dependencies section, maven is trying to add the latest version of artifacts instead of adding jars with both versions.
+              So, Following configuration helps to copy the both versions of jars to the lib.
+             -->
+            <id>copy-extra-dependencies</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${assembly.dir}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>jakarta.xml.bind</groupId>
+                  <artifactId>jakarta.xml.bind-api</artifactId>
+                  <version>${jakarta.xml.bind-api.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>jakarta.xml.bind</groupId>
+                  <artifactId>jakarta.xml.bind-api</artifactId>
+                  <version>${jakarta.xml.bind-osgi.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+
+                <artifactItem>
+                  <groupId>org.glassfish.jaxb</groupId>
+                  <artifactId>jaxb-runtime</artifactId>
+                  <version>${jaxb-runtime.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.glassfish.jaxb</groupId>
+                  <artifactId>jaxb-runtime</artifactId>
+                  <version>${jaxb-api-osgi.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+
+                <artifactItem>
+                  <groupId>jakarta.transaction</groupId>
+                  <artifactId>jakarta.transaction-api</artifactId>
+                  <version>${jakarta.transaction-api-osgi.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>jakarta.transaction</groupId>
+                  <artifactId>jakarta.transaction-api</artifactId>
+                  <version>${jakarta.transaction.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.sun.istack</groupId>
+                  <artifactId>istack-commons-runtime</artifactId>
+                  <version>${istack-osgi.version}</version>
+                </artifactItem>
+              </artifactItems>
             </configuration>
           </execution>
         </executions>
