@@ -204,4 +204,9 @@ public interface IParams extends Serializable {
    * @return namedParams custom parameters to be passed into the executing file
    */
   NamedParams getCustomNamedParams();
+
+  /**
+   * @return runConfiguration the name of the run configuration to use
+   */
+  String getRunConfiguration();
 }
