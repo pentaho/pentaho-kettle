@@ -999,7 +999,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     // Create ftps client to host ...
     ftpsclient =
       new FTPSConnection( parentJobMeta.getBowl(), getFTPSConnectionType(), realservername, realport, realusername,
-        realpassword );
+        realpassword, variables );
 
     if ( !Utils.isEmpty( proxyHost ) ) {
       String realProxy_host = environmentSubstitute( proxyHost );

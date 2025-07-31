@@ -167,7 +167,10 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   private static final String NODE_PARTITIONER_CUSTOM = "partitionerCustom";
 
+  // always by ref
   private static final String PROP_PARTITIONING_SCHEMA = "PARTITIONING_SCHEMA";
+  // always by name
+  private static final String PROP_PARTITIONING_SCHEMA_NAME = "PARTITIONING_SCHEMA_NAME";
 
   private static final String PROP_PARTITIONING_METHOD = "PARTITIONING_METHOD";
 
@@ -322,9 +325,14 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
       // Get the partitioning as well...
       StepPartitioningMeta stepPartitioningMeta = new StepPartitioningMeta();
-      if ( stepNode.hasProperty( PROP_PARTITIONING_SCHEMA ) ) {
-        String partSchemaId = stepNode.getProperty( PROP_PARTITIONING_SCHEMA ).getRef().getId().toString();
-        String schemaName = repo.loadPartitionSchema( new StringObjectId( partSchemaId ), null ).getName();
+      if ( stepNode.hasProperty( PROP_PARTITIONING_SCHEMA ) || stepNode.hasProperty( PROP_PARTITIONING_SCHEMA_NAME ) ) {
+        String schemaName;
+        if ( stepNode.hasProperty( PROP_PARTITIONING_SCHEMA ) ) {
+          String partSchemaId = stepNode.getProperty( PROP_PARTITIONING_SCHEMA ).getRef().getId().toString();
+          schemaName = repo.loadPartitionSchema( new StringObjectId( partSchemaId ), null ).getName();
+        } else {
+          schemaName = stepNode.getProperty( PROP_PARTITIONING_SCHEMA_NAME ).getString();
+        }
 
         stepPartitioningMeta.setPartitionSchemaName( schemaName );
         String methodCode = getString( stepNode, PROP_PARTITIONING_METHOD );
@@ -620,8 +628,12 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       StepPartitioningMeta partitioningMeta = step.getStepPartitioningMeta();
       if ( partitioningMeta != null && partitioningMeta.getPartitionSchema() != null
           && partitioningMeta.isPartitioned() ) {
-        DataNodeRef ref = new DataNodeRef( partitioningMeta.getPartitionSchema().getObjectId().getId() );
-        stepNode.setProperty( PROP_PARTITIONING_SCHEMA, ref );
+        if ( partitioningMeta.getPartitionSchema().getObjectId() != null ) {
+          DataNodeRef ref = new DataNodeRef( partitioningMeta.getPartitionSchema().getObjectId().getId() );
+          stepNode.setProperty( PROP_PARTITIONING_SCHEMA, ref );
+        } else {
+          stepNode.setProperty( PROP_PARTITIONING_SCHEMA_NAME, partitioningMeta.getPartitionSchema().getName() );
+        }
         stepNode.setProperty( PROP_PARTITIONING_METHOD, partitioningMeta.getMethodCode() ); // method of partitioning
         if ( partitioningMeta.getPartitioner() != null ) {
           DataNode partitionerCustomNode = new DataNode( NODE_PARTITIONER_CUSTOM );

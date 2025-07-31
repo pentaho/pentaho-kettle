@@ -93,8 +93,8 @@ import org.pentaho.platform.repository2.ClientRepositoryPaths;
 import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-import javax.xml.ws.soap.SOAPFaultException;
+import jakarta.xml.ws.Service;
+import jakarta.xml.ws.soap.SOAPFaultException;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
@@ -2483,13 +2483,14 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     TransMeta transMeta = new TransMeta();
     transMeta.setName( file.getTitle() );
-    transMeta.setFilename( file.getName() );
+    transMeta.setFilename( file.getPath() );
     transMeta.setDescription( file.getDescription() );
     transMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
     transMeta.setObjectRevision( revision );
     transMeta.setRepository( this );
     transMeta.setRepositoryDirectory( parentDir );
     transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransSharedObjectsLoaded.id, transMeta );
     transDelegate.dataNodeToElement( data.getNode(), transMeta );
     transMeta.clearChanged();
     return transMeta;
@@ -2597,13 +2598,14 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     JobMeta jobMeta = new JobMeta();
     jobMeta.setName( file.getTitle() );
-    jobMeta.setFilename( file.getName() );
+    jobMeta.setFilename( file.getPath() );
     jobMeta.setDescription( file.getDescription() );
     jobMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
     jobMeta.setObjectRevision( revision );
     jobMeta.setRepository( this );
     jobMeta.setRepositoryDirectory( parentDir );
     jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobSharedObjectsLoaded.id, jobMeta );
     jobDelegate.dataNodeToElement( data.getNode(), jobMeta );
     jobMeta.clearChanged();
     return jobMeta;
@@ -3199,6 +3201,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         // Additional obfuscation through obscurity
         jobMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
 
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobSharedObjectsLoaded.id, jobMeta );
         jobDelegate.dataNodeToElement( pur.getDataAtVersionForRead( idJob.getId(), versionLabel,
           NodeRepositoryFileData.class ).getNode(), jobMeta );
 
@@ -3239,6 +3242,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
         transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
 
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransSharedObjectsLoaded.id, transMeta );
         transDelegate.dataNodeToElement(
           pur.getDataAtVersionForRead( idTransformation.getId(), versionLabel, NodeRepositoryFileData.class ).getNode(),
           transMeta );

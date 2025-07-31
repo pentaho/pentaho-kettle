@@ -13,9 +13,10 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import com.sun.jersey.spi.container.servlet.ServletContainer;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.servlet.ServletTester;
+import org.eclipse.jetty.util.resource.Resource;
+import org.glassfish.jersey.servlet.ServletContainer;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.ServletTester;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,9 +57,10 @@ public class RestInputIT {
 
     tester = new ServletTester();
     tester.setContextPath( "/context" );
-    tester.setResourceBase( RestInputIT.class.getResource( "/" ).toExternalForm() );
+    Resource base = tester.getContext().newResource( RestInputIT.class.getResource( "/" ) );
+    tester.setResourceBase( base );
     final ServletHolder servletHolder = tester.addServlet( ServletContainer.class, "/*" );
-    servletHolder.setInitParameter( "com.sun.jersey.config.property.classpath", "/" );
+    servletHolder.setInitParameter( "jakarta.ws.rs.Application", "org.glassfish.jersey.server.ResourceConfig" );
     servletHolder.setInitParameter( "jersey.config.server.provider.classnames", SimpleRestService.class.getName() );
     tester.start();
   }
@@ -104,7 +106,7 @@ public class RestInputIT {
     assertEquals( "name", fieldNames[1] );
     assertEquals( "result", fieldNames[2] );
 
-    assertEquals( 5, data[0] );
+    assertEquals( Integer.valueOf( 5 ), data[0] );
     assertEquals( "limit", data[1] );
   }
 
@@ -136,7 +138,7 @@ public class RestInputIT {
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "pageSize" ) );
     rowMeta.addValueMeta( new ValueMetaString( "name" ) );
-    rp.putRow( rowMeta, new Object[] { limit, name } );
+    rp.putRow( rowMeta, new Object[] { Integer.valueOf( limit ), name } );
 
     rp.finished();
     return trans;

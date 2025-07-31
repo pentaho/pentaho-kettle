@@ -71,6 +71,19 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
   private final ConnectionFileNameParser connectionFileNameParser;
 
+  private static final Comparator<VFSConnectionDetails> COMPARATOR =
+    Comparator.<VFSConnectionDetails, String>comparing( VFSConnectionDetails::getName,
+      ( o1, o2 ) -> {
+    if ( ConnectionManager.STRING_REPO_CONNECTION.equals( o1 ) ) {
+      return -1;
+    } else if ( ConnectionManager.STRING_REPO_CONNECTION.equals( o2 ) ) {
+      return 1;
+    }
+    return 0;
+  } )
+  .thenComparing( VFSConnectionDetails::getName,
+    String.CASE_INSENSITIVE_ORDER );
+
   public VFSFileProvider() {
     this(
       VFSConnectionManagerHelper.getInstance(),
@@ -157,8 +170,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
       List<VFSConnectionDetails> allDetails = vfsConnectionManagerHelper.getAllDetails( manager );
       List<VFSConnectionDetails> sorted = new ArrayList<>( allDetails );
 
-      Collections.sort( sorted, Comparator.comparing( VFSConnectionDetails::getName,
-                                                      String.CASE_INSENSITIVE_ORDER ) );
+      Collections.sort( sorted, COMPARATOR );
 
       for ( VFSConnectionDetails details : sorted ) {
         if ( connectionTypes.isEmpty() || connectionTypes.contains( details.getType() ) ) {

@@ -34,7 +34,7 @@ import org.apache.commons.vfs2.FileSystemOptions;
  */
 public class RepoVfsPdiProvider  extends BaseVFSConnectionProvider<RepoVfsDetails> {
 
-  public static final String NAME = "Pentaho Repository";
+  public static final String NAME = ConnectionManager.STRING_REPO_VFS_PROVIDER_NAME;
 
   /** The connection instance for this provider */
   private Optional<RepoVfsDetails> activeDetails = Optional.empty();
