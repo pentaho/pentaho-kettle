@@ -4576,6 +4576,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void closeRepository() {
     if ( rep != null ) {
 
+      callRepositoryChangingEP( null );
       // Prompt and close all tabs as user disconnected from the repo
       boolean shouldDisconnect = Spoon.getInstance().closeAllJobsAndTransformations( true );
       if ( shouldDisconnect ) {
@@ -9344,6 +9345,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     delegates.update( this );
     enableMenus();
+  }
+
+  private void callRepositoryChangingEP( Repository rep ) {
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.RepositoryChanging.id, rep );
+    } catch ( Exception e ) {
+      log.logError( e.getLocalizedMessage(), e );
+    }
   }
 
   public void setRepositoryName( String repoName ) {

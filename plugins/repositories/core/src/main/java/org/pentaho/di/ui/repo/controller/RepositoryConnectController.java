@@ -22,6 +22,8 @@ import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -360,7 +362,9 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     Spoon spoon = spoonSupplier.get();
     if ( spoon.getRepository() != null ) {
         spoon.closeRepository();
+        callRepositoryChangingEP( repository );
     } else {
+        callRepositoryChangingEP( repository );
         spoon.closeAllJobsAndTransformations( true );
     }
     spoon.setRepository( repository );
@@ -368,6 +372,14 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     fireListeners();
     spoon.forceRefreshTree();
     spoon.clearRepositoryDirectory();
+  }
+
+  private void callRepositoryChangingEP( Repository rep ) {
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.RepositoryChanging.id, rep );
+    } catch ( Exception e ) {
+      log.logError( e.getLocalizedMessage(), e );
+    }
   }
 
   private Repository loadRepositoryObject( String id ) throws KettleException {
