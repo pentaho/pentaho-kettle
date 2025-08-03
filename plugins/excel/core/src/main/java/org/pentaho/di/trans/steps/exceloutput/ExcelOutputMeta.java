@@ -61,7 +61,7 @@ import org.pentaho.di.core.annotations.Step;
         description = "BaseStep.TypeTooltipDesc.ExcelOutput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
         image = "ui/images/deprecated.svg",
-        documentationUrl = "mk-95pdia003/pdi-transformation-steps/microsoft-excel-output",
+        documentationUrl = "pdia-data-integration/pdi-transformation-steps-reference-overview/microsoft-excel-output",
         i18nPackageName = "org.pentaho.di.trans.steps.exceloutput",
         suggestion = "ExcelOutput.Suggestion" )
 @InjectionSupported( localizationPrefix = "ExcelOutput.Injection.", groups = { "FIELDS", "CUSTOM", "CONTENT" } )

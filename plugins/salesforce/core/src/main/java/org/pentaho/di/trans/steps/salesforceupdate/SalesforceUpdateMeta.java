@@ -45,7 +45,7 @@ import org.w3c.dom.Node;
     description = "SalesforceUpdate.TypeTooltipDesc.SalesforceUpdate",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
     image = "SFUD.svg",
-    documentationUrl = "mk-95pdia003/pdi-transformation-steps/salesforce-update" )
+    documentationUrl = "pdia-data-integration/pdi-transformation-steps-reference-overview/salesforce-update" )
 public class SalesforceUpdateMeta extends SalesforceStepMeta {
   private static Class<?> PKG = SalesforceUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
