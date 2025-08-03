@@ -56,7 +56,7 @@ import org.pentaho.di.core.bowl.Bowl;
         description = "BaseStep.TypeTooltipDesc.MondrianInput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
         image = "MON.svg",
-        documentationUrl = "mk-95pdia003/pdi-transformation-steps/mondrian-input",
+        documentationUrl = "pdi-transformation-steps-reference-overview/mondrian-input-pdi-transformation-step-cp",
         i18nPackageName = "org.pentaho.di.trans.steps.mondrianinput" )
 public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface {
   private DatabaseMeta databaseMeta;

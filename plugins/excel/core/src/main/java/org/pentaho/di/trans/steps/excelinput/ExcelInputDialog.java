@@ -91,7 +91,7 @@ import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.ui.util.DialogHelper;
 
 @PluginDialog( id = "ExcelInput", image = "XLI.svg", pluginType = PluginDialog.PluginType.STEP,
-        documentationUrl = "mk-95pdia003/pdi-transformation-steps/microsoft-excel-input" )
+        documentationUrl = "pdi-transformation-steps-reference-overview/microsoft-excel-input" )
 public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 

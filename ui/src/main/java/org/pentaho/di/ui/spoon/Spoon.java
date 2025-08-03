@@ -541,7 +541,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           .safeAppendDirectory( BasePropertyHandler.getProperty( "systemDirBase", "system/" ), "" );
 
   public static final String DOCUMENTATION_URL = Const
-      .getDocUrl( BasePropertyHandler.getProperty( "documentationUrl" ) );
+      .getDocUrl( "" );
 
   private static final String UNDO_MENU_ITEM = "edit-undo";
 

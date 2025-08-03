@@ -154,7 +154,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   private final Image logo = GUIResource.getInstance().getImageLogoSmall();
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
-  private static final String HELP_URL = Const.getDocUrl( "mk-95pdia003/data-integration-perspective-in-the-pdi-client/work-with-transformations/open-a-transformation" );
+  private static final String HELP_URL = Const.getDocUrl( "data-integration-perspective-in-the-pdi-client/work-with-transformations-cp/open-a-transformation" );
   private static final String FILE_EXTENSION_RESOURCE_PATH = "extensions/supported_file_filters.json";
 
   public static final String PATH_PARAM = "path";

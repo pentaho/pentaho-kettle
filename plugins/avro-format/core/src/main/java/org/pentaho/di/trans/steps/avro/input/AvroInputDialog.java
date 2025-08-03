@@ -64,7 +64,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @PluginDialog( id = "AvroInputNew", image = "AI.svg", pluginType = PluginDialog.PluginType.STEP,
-        documentationUrl = "mk-95pdia003/pdi-transformation-steps/avro-input" )
+        documentationUrl = "pdi-transformation-steps-reference-overview/avro-input" )
 public class AvroInputDialog extends BaseAvroStepDialog {
   private static final Class<?> PKG = AvroInputMeta.class;
 

@@ -24,7 +24,7 @@ import org.pentaho.di.trans.step.StepMeta;
 
 @Step( id = "AvroOutput", image = "AO.svg", name = "AvroOutput.Name", description = "AvroOutput.Description",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.BigData",
-    documentationUrl = "mk-95pdia003/pdi-transformation-steps/avro-output",
+    documentationUrl = "pdi-transformation-steps-reference-overview/avro-output",
     i18nPackageName = "org.pentaho.di.trans.steps.avro.output" )
 @InjectionSupported( localizationPrefix = "AvroOutput.Injection.", groups = { "FIELDS" } )
 @ParentFirst( patterns = { ".*" } )
