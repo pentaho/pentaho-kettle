@@ -47,7 +47,8 @@ import org.w3c.dom.Node;
         i18nPackageName = "org.pentaho.di.trans.steps.rules",
         name = "RulesAccumulator.StepConfigurationDialog.Title",
         description = "RulesAccumulator.StepConfigurationDialog.TooltipDesc",
-        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting",
+        documentationUrl = "https://pentaho-public.atlassian.net/wiki/spaces/EAI/pages/386794192/Rule+Accumulator" )
 
 public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = Rules.class; // for i18n purposes

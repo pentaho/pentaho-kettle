@@ -66,7 +66,7 @@ import com.healthmarketscience.jackcess.DataType;
        description = "BaseStep.TypeTooltipDesc.AccessInput",
        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
        image = "images/ACI.svg",
-       documentationUrl = "http://wiki.pentaho.com/display/EAI/Access+Input",
+       documentationUrl = "pdi-transformation-steps-reference-overview/microsoft-access-input",
      i18nPackageName = "org.pentaho.di.trans.steps.accessinput" )
 public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AccessInputMeta.class; // for i18n purposes, needed by Translator2!!

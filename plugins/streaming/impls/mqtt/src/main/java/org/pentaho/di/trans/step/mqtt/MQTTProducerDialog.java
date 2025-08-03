@@ -62,7 +62,7 @@ import static org.pentaho.di.ui.core.WidgetUtils.formDataBelow;
 
 @SuppressWarnings ( "unused" )
 @PluginDialog ( id = "MQTTProducer", image = "MQTTProducer.svg", pluginType = PluginDialog.PluginType.STEP,
-  documentationUrl = "mk-95pdia003/pdi-transformation-steps/mqtt-producer" )
+  documentationUrl = "pdi-transformation-steps-reference-overview/mqtt-producer" )
 public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInterface {
   private static final int SHELL_MIN_WIDTH = 527;
   private static final int SHELL_MIN_HEIGHT = 650;
