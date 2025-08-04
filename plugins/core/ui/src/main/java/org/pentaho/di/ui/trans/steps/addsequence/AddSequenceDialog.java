@@ -50,7 +50,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 @PluginDialog( id = "Sequence", image = "SEQ.svg", pluginType = PluginDialog.PluginType.STEP,
-  documentationUrl = "pdi-transformation-steps-reference-overview/add-sequence-step-article" )
+  documentationUrl = "pdia-data-integration/pdi-transformation-steps-reference-overview/add-sequence-step-article" )
 public class AddSequenceDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = AddSequenceDialog.class; // for i18n purposes, needed by Translator2!!
 
