@@ -35,6 +35,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.metastore.MetaStoreConst;
+import org.pentaho.di.pan.CommandExecutorResult;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -134,7 +135,23 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
             return exitWithStatus( CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
           }
 
+          // Validate PluginNamedParams
+          CommandExecutorResult result = validateAndSetPluginContext( getLog(), params, repository );
+          if ( result != null && result.getCode() != 0 ) {
+            blockAndThrow( getKettleInit() );
+            return exitWithStatus( result.getCode() );
+          }
+
           job = loadJobFromRepository( repository, params.getInputDir(), params.getInputFile() );
+        }
+
+        // Validate customNamedParams
+        if ( repository == null ) {
+          CommandExecutorResult result = validateAndSetPluginContext( getLog(), params, null );
+          if ( result != null && result.getCode() != 0 ) {
+            blockAndThrow( getKettleInit() );
+            return exitWithStatus( result.getCode() );
+          }
         }
 
         // Try to load if from file
