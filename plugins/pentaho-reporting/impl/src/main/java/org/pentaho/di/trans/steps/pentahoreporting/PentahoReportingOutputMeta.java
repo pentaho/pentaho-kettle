@@ -53,7 +53,7 @@ import org.w3c.dom.Node;
         description = "BaseStep.TypeTooltipDesc.PentahoReportingOutput",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
         image = "JFR.svg",
-        documentationUrl = "mk-95pdia003/pdi-transformation-steps/pentaho-reporting-output",
+        documentationUrl = "pdia-data-integration/pdi-transformation-steps-reference-overview/pentaho-reporting-output",
         i18nPackageName = "org.pentaho.di.trans.steps.pentahoreporting" )
 @InjectionSupported( localizationPrefix = "PentahoReportingOutputMeta.Injection.", groups = { "PARAMETERS" } )
 public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMetaInterface {

@@ -48,7 +48,7 @@ import org.w3c.dom.Node;
     description = "SalesforceUpsert.TypeTooltipDesc.SalesforceUpsert",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
     image = "SFU.svg",
-    documentationUrl = "mk-95pdia003/pdi-transformation-steps/salesforce-upsert" )
+    documentationUrl = "pdia-data-integration/pdi-transformation-steps-reference-overview/salesforce-upsert" )
 public class SalesforceUpsertMeta extends SalesforceStepMeta {
   private static Class<?> PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!!
 

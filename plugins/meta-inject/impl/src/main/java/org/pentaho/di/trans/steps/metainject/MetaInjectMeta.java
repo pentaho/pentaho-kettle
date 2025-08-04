@@ -68,7 +68,7 @@ import java.util.Map.Entry;
     name = "i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MetaInject",
     description = "i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MetaInject",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow",
-    documentationUrl = "mk-95pdia003/pdi-transformation-steps/etl-metadata-injection" )
+    documentationUrl = "pdi-transformation-steps-reference-overview/etl-metadata-injection" )
 @InjectionSupported( localizationPrefix = "MetaInject.Injection.", groups = { "SOURCE_OUTPUT_FIELDS",
   "MAPPING_FIELDS" } )
 public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, StepMetaChangeListenerInterface,

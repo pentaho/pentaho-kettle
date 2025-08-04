@@ -54,7 +54,7 @@ import static org.pentaho.metaverse.api.analyzer.kettle.step.ExternalResourceSte
   name = "JmsConsumer.TypeLongDesc",
   description = "JmsConsumer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
-  documentationUrl = "mk-95pdia003/pdi-transformation-steps/jms-consumer" )
+  documentationUrl = "pdia-data-integration/pdi-transformation-steps-reference-overview/jms-consumer" )
 @Metaverse.CategoryMap ( entity = JMS_DESTINATION_METAVERSE, category = CATEGORY_MESSAGE_QUEUE )
 @Metaverse.CategoryMap ( entity = JMS_SERVER_METAVERSE, category = CATEGORY_DATASOURCE )
 @Metaverse.EntityLink ( entity = JMS_SERVER_METAVERSE, link = LINK_PARENT_CONCEPT, parentEntity =

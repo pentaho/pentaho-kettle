@@ -89,7 +89,7 @@ import static org.pentaho.metaverse.api.analyzer.kettle.step.ExternalResourceSte
   name = "MQTTConsumer.TypeLongDesc",
   description = "MQTTConsumer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
-  documentationUrl = "mk-95pdia003/pdi-transformation-steps/mqtt-consumer" )
+  documentationUrl = "pdia-data-integration/pdi-transformation-steps-reference-overview/mqtt-consumer" )
 @InjectionSupported ( localizationPrefix = "MQTTConsumerMeta.Injection.", groups = { "SSL" } )
 @Metaverse.CategoryMap ( entity = MQTT_TOPIC_METAVERSE, category = CATEGORY_MESSAGE_QUEUE )
 @Metaverse.CategoryMap ( entity = MQTT_SERVER_METAVERSE, category = CATEGORY_DATASOURCE )

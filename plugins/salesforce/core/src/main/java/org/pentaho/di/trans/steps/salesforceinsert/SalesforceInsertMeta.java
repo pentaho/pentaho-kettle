@@ -48,7 +48,7 @@ import org.w3c.dom.Node;
     description = "SalesforceInsert.TypeTooltipDesc.SalesforceInsert",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
     image = "FFO.svg",
-    documentationUrl = "mk-95pdia003/pdi-transformation-steps/salesforce-insert" )
+    documentationUrl = "pdia-data-integration/pdi-transformation-steps-reference-overview/salesforce-insert" )
 public class SalesforceInsertMeta extends SalesforceStepMeta {
   private static Class<?> PKG = SalesforceInsertMeta.class; // for i18n purposes, needed by Translator2!!
 
