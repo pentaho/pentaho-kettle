@@ -11,24 +11,24 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>11.0.0.0-SNAPSHOT</version>
+    <version>11.0.0.0-47</version>
   </parent>
 
   <properties>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
-    <pentaho-mongodb-plugin.version>11.0.0.0-SNAPSHOT</pentaho-mongodb-plugin.version>
-    <big-data-plugin.version>11.0.0.0-SNAPSHOT</big-data-plugin.version>
+    <pentaho-mongodb-plugin.version>11.0.0.0-47</pentaho-mongodb-plugin.version>
+    <big-data-plugin.version>11.0.0.0-47</big-data-plugin.version>
 
-    <pentaho-json.version>11.0.0.0-SNAPSHOT</pentaho-json.version>
+    <pentaho-json.version>11.0.0.0-47</pentaho-json.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
-    <commons-database.version>11.0.0.0-SNAPSHOT</commons-database.version>
-    <pentaho-registry.version>11.0.0.0-SNAPSHOT</pentaho-registry.version>
-    <pentaho-metaverse.version>11.0.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <platform.version>11.0.0.0-SNAPSHOT</platform.version>
-    <pentaho-reporting.version>11.0.0.0-SNAPSHOT</pentaho-reporting.version>
-    <pdi-osgi-bridge.version>11.0.0.0-SNAPSHOT</pdi-osgi-bridge.version>
-    <pentaho-hadoop-shims.version>11.0.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
+    <commons-database.version>11.0.0.0-47</commons-database.version>
+    <pentaho-registry.version>11.0.0.0-47</pentaho-registry.version>
+    <pentaho-metaverse.version>11.0.0.0-47</pentaho-metaverse.version>
+    <platform.version>11.0.0.0-47</platform.version>
+    <pentaho-reporting.version>11.0.0.0-47</pentaho-reporting.version>
+    <pdi-osgi-bridge.version>11.0.0.0-47</pdi-osgi-bridge.version>
+    <pentaho-hadoop-shims.version>11.0.0.0-47</pentaho-hadoop-shims.version>
 
     <!-- third party -->
     <hsqldb.version>2.3.2</hsqldb.version>
@@ -46,7 +46,7 @@
     <tyrus-standalone-client.version>1.13.1</tyrus-standalone-client.version>
     <databricks.version>4.0.0</databricks.version>
     <jface.version>3.22.0</jface.version>
-    <pentaho-metadata.version>11.0.0.0-SNAPSHOT</pentaho-metadata.version>
+    <pentaho-metadata.version>11.0.0.0-47</pentaho-metadata.version>
     <google-http-client.version>1.42.3</google-http-client.version>
     <pax-swissbox-core.version>1.8.2</pax-swissbox-core.version>
   </properties>
