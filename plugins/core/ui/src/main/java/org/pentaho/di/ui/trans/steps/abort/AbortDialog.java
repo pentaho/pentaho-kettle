@@ -46,7 +46,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 @PluginDialog( id = "Abort", image = "ABR.svg", pluginType = PluginDialog.PluginType.STEP,
-  documentationUrl = "pdi-transformation-steps-reference-overview/abort" )
+  documentationUrl = "pdia-data-integration/pdi-transformation-steps-reference-overview/abort" )
 public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = AbortDialog.class; // for i18n purposes, needed by Translator2!!
 
