@@ -34,7 +34,6 @@ public class KettleURLClassLoader extends URLClassLoader {
   private static Class<?> PKG = KettleURLClassLoader.class; // for i18n purposes, needed by Translator2!!
 
   private String name;
-  private ClassLoader child;
 
   public KettleURLClassLoader( URL[] url, ClassLoader classLoader ) {
     super( url, classLoader );
@@ -83,20 +82,11 @@ public class KettleURLClassLoader extends URLClassLoader {
 
   protected Class<?> loadClassFromParent( String arg0, boolean arg1 ) throws ClassNotFoundException {
     Class<?> clz;
-    try {
-      if ( ( clz = getParent().loadClass( arg0 ) ) != null ) {
-        if ( arg1 ) {
-          resolveClass( clz );
-        }
-        return clz;
+    if ( ( clz = getParent().loadClass( arg0 ) ) != null ) {
+      if ( arg1 ) {
+        resolveClass( clz );
       }
-    } catch (ClassNotFoundException e ) {
-      if ( this.child != null ) {
-        Class cl = this.child.loadClass( arg0 );
-        if ( cl != null ) {
-          return cl;
-        }
-      }
+      return clz;
     }
     throw new ClassNotFoundException( "Could not find :" + arg0 );
   }
@@ -299,7 +289,4 @@ public class KettleURLClassLoader extends URLClassLoader {
     return url;
   }
 
-  public void setChild( ClassLoader child ) {
-    this.child = child;
-  }
 }
