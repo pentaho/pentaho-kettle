@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -69,6 +70,10 @@ public abstract class BasePluginType implements PluginTypeInterface {
   protected boolean searchLibDir;
 
   Class<? extends java.lang.annotation.Annotation> pluginClass;
+
+  private static final String CLASSPATH_VARIABLE_START_DELIMITER = "${";
+  private static final String CLASSPATH_VARIABLE_END_DELIMITER = "}";
+  private static final String PLUGIN_PROPERTIES_FILE_NAME = "plugin.properties";
 
   public BasePluginType( Class<? extends java.lang.annotation.Annotation> pluginClass ) {
     this.pluginFolders = new ArrayList<>();
@@ -670,6 +675,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
           Properties classPathProperties = new Properties();
           classPathProperties.load( classPathFileInputStream );
           String classpathProperty = classPathProperties.getProperty( "classpath" );
+          classpathProperty = processClasspath( pluginRootFolderName, classpathProperty );
           String[] sourceDirectories = classpathProperty.split( ":" );
           for ( String sourceDirectory : sourceDirectories ) {
             File sourceDirectoryFile = new File( pluginRootFolder, sourceDirectory );
@@ -691,6 +697,77 @@ public abstract class BasePluginType implements PluginTypeInterface {
     }
     return urlClassLoader;
   }
+
+    /**
+     * Process the classpath variable in the classpath string. If the classpath contains variables like ${VAR} then
+     * replace them with the value from plugin.properties.
+     *
+     * @param pluginRootFolder
+     *          The root folder of the plugin
+     * @param classpath
+     *          The classpath to process
+     * @return The processed classpath
+     */
+  private String processClasspath( String pluginRootFolder, final String classpath ) {
+    if ( classpath == null || !classpath.contains( CLASSPATH_VARIABLE_START_DELIMITER ) ) {
+        return classpath;
+    }
+    List<String> classpathVariables = getVariables( classpath );
+    Properties pluginProperties = loadPluginProperties( pluginRootFolder );
+    AtomicReference<String> newClasspath = new AtomicReference<>( classpath );
+    classpathVariables.forEach(variable -> {
+      newClasspath.set(newClasspath.get().replace(
+              CLASSPATH_VARIABLE_START_DELIMITER + variable + CLASSPATH_VARIABLE_END_DELIMITER,
+              pluginProperties.getProperty(variable, "") ) );
+    } );
+    return newClasspath.get();
+  }
+
+    /**
+     * Get the variables in the classpath string. The variables are defined as ${VAR} in the classpath string.
+     *
+     * @param classpath
+     *          The classpath to process
+     * @return A list of variable names found in the classpath
+     */
+  private List<String> getVariables( String classpath ) {
+      if ( classpath == null || !classpath.contains( CLASSPATH_VARIABLE_START_DELIMITER ) ) {
+        return new ArrayList<>();
+      }
+      List<String> variables = new ArrayList<>();
+      int startIndex = 0;
+      while ( ( startIndex = classpath.indexOf( CLASSPATH_VARIABLE_START_DELIMITER, startIndex ) ) != -1 ) {
+      int endIndex = classpath.indexOf( CLASSPATH_VARIABLE_END_DELIMITER, startIndex );
+      if ( endIndex == -1 ) {
+          break; // No closing brace found
+      }
+      String variableName = classpath.substring( startIndex + 2, endIndex );
+      variables.add( variableName );
+      startIndex = endIndex + 1; // Move past the closing brace
+      }
+      return variables;
+  }
+
+    /**
+     * Load the plugin properties file from the plugin root folder.
+     *
+     * @param pluginRootFolder
+     *          The root folder of the plugin
+     * @return The properties loaded from the plugin.properties file, or null if the file could not be loaded
+     */
+  private Properties loadPluginProperties( String pluginRootFolder ) {
+      Properties properties = new Properties();
+      try {
+        InputStream inputStream = new FileInputStream(
+                pluginRootFolder + Const.FILE_SEPARATOR + PLUGIN_PROPERTIES_FILE_NAME );
+        properties.load( inputStream );
+      } catch ( Exception e ) {
+        LogChannel.GENERAL.logError( "Error loading plugin.properties", e );
+        return null;
+      }
+      return properties;
+  }
+
 
   protected abstract String extractID( java.lang.annotation.Annotation annotation );
 
