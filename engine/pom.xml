@@ -796,8 +796,12 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.woodstox</groupId>
+      <artifactId>woodstox-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.woodstox</groupId>
-      <artifactId>wstx-asl</artifactId>
+      <artifactId>stax2-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

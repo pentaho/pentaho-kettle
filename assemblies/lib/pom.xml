@@ -394,6 +394,15 @@
       <artifactId>jakarta.servlet-api</artifactId>
       <version>${jakarta.servlet.version}</version>
     </dependency>
+    <!-- Added this dependency as part of webservices jar upgradation which excluded below jar-->
+    <dependency>
+      <groupId>com.fasterxml.woodstox</groupId>
+      <artifactId>woodstox-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>stax2-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>net.snowflake</groupId>
       <artifactId>snowflake-jdbc</artifactId>
