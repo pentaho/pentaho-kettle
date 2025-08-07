@@ -515,7 +515,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     wlFileType.setLayoutData( fdlFileType );
     wFileType = new CCombo( wSettingsGroup, SWT.BORDER | SWT.READ_ONLY );
     wFileType.setEditable( true );
-    wFileType.setItems( PropertyInputMeta.fileTypeDesc );
+    wFileType.setItems( PropertyInputMeta.FILE_TYPE_DESC );
     props.setLook( wFileType );
     wFileType.addModifyListener( lsMod );
     FormData fdFileType = new FormData();
@@ -965,7 +965,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
       @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         wFilenameList.add( wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
-          PropertyInputMeta.RequiredFilesCode[ 0 ], PropertyInputMeta.RequiredFilesCode[ 0 ] );
+          PropertyInputMeta.REQUIRED_FILES_CODE[ 0 ], PropertyInputMeta.REQUIRED_FILES_CODE[ 0 ] );
         wFilename.setText( Const.EMPTY_STRING );
         wFilemask.setText( Const.EMPTY_STRING );
         wExcludeFilemask.setText( Const.EMPTY_STRING );
