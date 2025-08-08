@@ -61,6 +61,7 @@
     <encoder.version>1.2</encoder.version>
     <jsch.version>0.2.9</jsch.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
+    <commons-configuration2.version>2.10.1</commons-configuration2.version>
 
     <!-- Test dependencies -->
     <mockito.version>5.10.0</mockito.version>
@@ -269,6 +270,11 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>${fasterxml-jackson.non-osgi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-configuration2</artifactId>
+        <version>${commons-configuration2.version}</version>
       </dependency>
 
       <!-- Test dependencies -->
