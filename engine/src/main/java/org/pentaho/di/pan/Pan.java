@@ -19,7 +19,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -72,7 +71,6 @@ public class Pan {
       StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
       StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
       StringBuilder optionBase64Zip, optionUuid;
-      StringBuilder pluginParam = new StringBuilder();
 
       NamedParams optionParams = new NamedParamsDefault();
 
@@ -160,7 +158,11 @@ public class Pan {
             "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
             new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
 
-      List<CommandLineOption> updatedOptionList = getAdditionalCommandlineOption( options, pluginParam );
+      // Get command line Parameters added by plugins
+      NamedParams pluginNamedParams = getPluginNamedParams( log );
+
+      // Update the options list
+      List<CommandLineOption> updatedOptionList = updateCommandlineOptions( options, pluginNamedParams );
       if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
         CommandLineOption.printUsage( updatedOptionList.toArray( new CommandLineOption[ 0 ] ) );
         exitJVM( CommandExecutorCodes.Pan.CMD_LINE_PRINT.getCode() );
@@ -234,13 +236,9 @@ public class Pan {
         }
       }
 
-      if ( !Utils.isEmpty( pluginParam.toString() ) ) {
-        CommandExecutorResult result = validateAndSetPluginParam( log, pluginParam.toString() );// it should take the List class field just added.
-        if ( result.getCode() != 0 ) {
-          log.logError( result.getDescription() );
-          exitJVM( result.getCode() );
-        }
-      }
+      // Set the value of commandline param into the PluginNamedParams after parsing
+      updatedPluginParamValue( pluginNamedParams, options );
+
 
       Params.Builder builder =
         optionUuid.length() > 0 ? new Params.Builder( optionUuid.toString() ) : new Params.Builder();
@@ -272,6 +270,7 @@ public class Pan {
         .resultSetCopyNumber( optionResultSetCopyNumber.toString() )
         .base64Zip( optionBase64Zip.toString() )
         .namedParams( optionParams )
+        .pluginNamedParams( pluginNamedParams )
         .build();
 
       Result rslt = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] ) );
@@ -284,34 +283,52 @@ public class Pan {
     }
   }
 
-  private static CommandExecutorResult validateAndSetPluginParam( LogChannelInterface log, String param ) {
-    CommandExecutorResult result = null;
+  private static NamedParams getPluginNamedParams( LogChannelInterface log ) {
+    NamedParams newNamedParams = new NamedParamsDefault();
     try {
       for ( CommandLineOptionProvider provider : PluginServiceLoader.loadServices( CommandLineOptionProvider.class ) ) {
-        result = provider.handleParameter( log, param );
-        if ( result.getCode() != 0 ) {
-          break; // if result is NOT SUCCESS, break out of the loop
-        }
-      }
-    } catch ( KettleException e ) {
-      throw new RuntimeException( e );
-    }
-    return result;
-  }
-
-  private static List<CommandLineOption> getAdditionalCommandlineOption( CommandLineOption[] options,
-                                                                         StringBuilder param ) {
-    List<CommandLineOption> modifiableList = new ArrayList<>();
-
-    Collections.addAll( modifiableList, options );
-    try {
-      for ( CommandLineOptionProvider provider : PluginServiceLoader.loadServices( CommandLineOptionProvider.class ) ) {
-        provider.prepareAdditionalCommandlineOption( modifiableList, param );
-        //above returning the newly added CommandLineOption
-        //add it to a List<CommandlineOption> pluginParams as class field.
+        newNamedParams = provider.getAdditionalCommandlineOptions( log );
       }
     } catch ( KettlePluginException e ) {
-      System.out.println( "Exception loading CommandLineOptionProvider services" + e.toString() );
+      System.out.println( "Exception getting the named parameters" + e.toString() );
+    }
+    return newNamedParams;
+  }
+
+
+  private static void updatedPluginParamValue( NamedParams namedParams, CommandLineOption[] options ) {
+    try {
+      if ( namedParams != null ) {
+        for ( String key : namedParams.listParameters() ) {
+          for ( CommandLineOption option : options ) {
+            if ( key.equals( option.getOption() ) ) {
+              namedParams.setParameterValue( key, option.getArgument().toString() );
+              break;
+            }
+          }
+        }
+      }
+    } catch ( UnknownParamException e ) {
+      System.out.println( "Unknown parameter" + e.toString() );
+    }
+  }
+
+  private static List<CommandLineOption> updateCommandlineOptions( CommandLineOption[] options,
+                                                                  NamedParams namedParams ) {
+    List<CommandLineOption> modifiableList = new ArrayList<>();
+    Collections.addAll( modifiableList, options );
+
+    try {
+      if ( namedParams != null ) {
+        // For each additional commandLine parameter, create new CommandLineOption
+        for ( String key: namedParams.listParameters() ) {
+          // Prepare the new commandline option
+          CommandLineOption option = new CommandLineOption( key, namedParams.getParameterDescription( key ), new StringBuilder(), false, false );
+          modifiableList.add( option );
+        }
+      }
+    } catch ( UnknownParamException e ) {
+      System.out.println( "Exception getting the additional parameters" + e.toString() );
     }
     return modifiableList;
   }

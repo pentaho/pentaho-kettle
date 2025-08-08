@@ -68,7 +68,7 @@ public class VfsSharedObjectsIOTest {
       outputStream.write( CONN_STR.getBytes( StandardCharsets.UTF_8 ) );
     }
 
-    SharedObjectsIO sharedObjectsIO = new VfsSharedObjectsIO( ROOT_FILE_PATH );
+    SharedObjectsIO sharedObjectsIO = new VfsSharedObjectsIO( ROOT_FILE_PATH, DefaultBowl.getInstance() );
     Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( "connection" );
     assertEquals( 1, nodesMap.size() );
 
@@ -95,7 +95,7 @@ public class VfsSharedObjectsIOTest {
     FileObject projectDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( ROOT_FILE_PATH );
     projectDirectory.createFolder();
 
-    SharedObjectsIO sharedObjectsIO = new VfsSharedObjectsIO( ROOT_FILE_PATH );
+    SharedObjectsIO sharedObjectsIO = new VfsSharedObjectsIO( ROOT_FILE_PATH, DefaultBowl.getInstance() );
     String type = String.valueOf( SharedObjectsIO.SharedObjectType.CONNECTION );
     String connectionName = "NewConn";
     // Create a new DatabaseMeta object
@@ -171,7 +171,7 @@ public class VfsSharedObjectsIOTest {
     FileObject projectDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( ROOT_FILE_PATH );
     projectDirectory.createFolder();
 
-    return new VfsSharedObjectsIO( rootPath );
+    return new VfsSharedObjectsIO( rootPath, DefaultBowl.getInstance() );
   }
 
   private DatabaseMeta createDatabaseMeta( String name ) {
