@@ -46,6 +46,7 @@ public class FragmentHandlerTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
+    //Failing on Jenkins
     PluginRegistry.init();
     KettleLogStore.init();
   }
