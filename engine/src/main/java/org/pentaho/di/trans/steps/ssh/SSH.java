@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho
  *
@@ -23,7 +24,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
@@ -37,8 +37,8 @@ import com.trilead.ssh2.Session;
  *
  */
 
-public class SSH extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
+public class SSH extends BaseStep {
+  private static final Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SSHMeta meta;
   private SSHData data;
@@ -107,13 +107,14 @@ public class SSH extends BaseStep implements StepInterface {
       this.setInputRowMeta( imeta );
     }
     // Reserve room
-    Object[] rowData = new Object[data.nrOutputFields];
+    Object[] rowData = new Object[ data.nrOutputFields ];
     for ( int i = 0; i < data.nrInputFields; i++ ) {
-      rowData[i] = row[i]; // no data is changed, clone is not needed here.
+      rowData[ i ] = row[ i ]; // no data is changed, clone is not needed here.
     }
     int index = data.nrInputFields;
 
     Session session = null;
+    SshStepConnectionAdapter.StepSessionAdapter modernSession = null;
     try {
       if ( meta.isDynamicCommand() ) {
         // get commands
@@ -123,31 +124,53 @@ public class SSH extends BaseStep implements StepInterface {
         }
       }
 
-      // Open a session
-      session = data.conn.openSession();
-      if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionOpened" ) );
+      // Open a session using the appropriate connection type
+      SessionResultAdapter sessionresult;
+      if ( data.sshConn != null ) {
+        // Use modern SSH abstraction layer
+        modernSession = data.sshConn.openSession();
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionOpened" )
+            + " (modern implementation)" );
+        }
+
+        // execute commands
+        if ( log.isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "SSH.Log.RunningCommand", data.commands ) );
+        }
+        modernSession.execCommand( data.commands );
+
+        // Read results using adapter
+        sessionresult = new SessionResultAdapter( modernSession );
+      } else {
+        // Use legacy Trilead implementation
+        session = data.conn.openSession();
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionOpened" )
+            + " (legacy implementation)" );
+        }
+
+        // execute commands
+        if ( log.isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "SSH.Log.RunningCommand", data.commands ) );
+        }
+        session.execCommand( data.commands );
+
+        // Read results using legacy SessionResult
+        sessionresult = new SessionResultAdapter( session );
       }
 
-      // execute commands
-      if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "SSH.Log.RunningCommand", data.commands ) );
-      }
-      session.execCommand( data.commands );
-
-      // Read Stdout, Sterr and exitStatus
-      SessionResult sessionresult = new SessionResult( session );
       if ( log.isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "SSH.Log.CommandRunnedCommand", data.commands, sessionresult
           .getStdOut(), sessionresult.getStdErr() ) );
       }
 
       // Add stdout to output
-      rowData[index++] = sessionresult.getStd();
+      rowData[ index++ ] = sessionresult.getStd();
 
       if ( !Utils.isEmpty( data.stdTypeField ) ) {
         // Add stdtype to output
-        rowData[index++] = sessionresult.isStdTypeErr();
+        rowData[ index++ ] = sessionresult.isStdTypeErr();
       }
 
       if ( log.isRowLevel() ) {
@@ -181,10 +204,18 @@ public class SSH extends BaseStep implements StepInterface {
         putError( getInputRowMeta(), row, 1, errorMessage, null, "SSH001" );
       }
     } finally {
-      if ( session != null ) {
+      // Close the appropriate session type
+      if ( modernSession != null ) {
+        modernSession.close();
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionClosed" ) +
+            " (modern implementation)" );
+        }
+      } else if ( session != null ) {
         session.close();
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionClosed" ) );
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionClosed" ) +
+            " (legacy implementation)" );
         }
       }
     }
@@ -230,14 +261,27 @@ public class SSH extends BaseStep implements StepInterface {
       data.stdTypeField = environmentSubstitute( meta.getStdErrFieldName() );
 
       try {
-        // Open connection
-        data.conn =
-          SSHData.OpenConnection(
+        // Try to use modern SSH abstraction layer first
+        if ( meta.getSshImplementation() != null || useModernSshImplementation() ) {
+          data.sshConn = SSHData.OpenSshConnection(
+            getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
+            passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword,
+            meta.getSshImplementation(), log );
+
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionOpened" ) +
+              " (using modern SSH implementation)" );
+          }
+        } else {
+          // Fall back to legacy Trilead connection
+          data.conn = SSHData.OpenConnection(
             getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
             passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword );
 
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionOpened" ) );
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionOpened" ) +
+              " (using legacy Trilead implementation)" );
+          }
         }
 
       } catch ( Exception e ) {
@@ -250,16 +294,38 @@ public class SSH extends BaseStep implements StepInterface {
     return false;
   }
 
+  /**
+   * Determine if we should use the modern SSH implementation.
+   * This can be controlled by system properties or other configuration.
+   */
+  private boolean useModernSshImplementation() {
+    // Check for system property to enable modern SSH by default
+    String enableModern = System.getProperty( "pentaho.ssh.use.modern", "false" );
+    return "true".equalsIgnoreCase( enableModern );
+  }
+
   @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SSHMeta) smi;
     data = (SSHData) sdi;
 
-    if ( data.conn != null ) {
-      data.conn.close();
-      if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionClosed" ) );
+    // Close the appropriate connection type
+    try {
+      if ( data.sshConn != null ) {
+        data.sshConn.close();
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionClosed" ) +
+            " (modern SSH implementation)" );
+        }
+      } else if ( data.conn != null ) {
+        data.conn.close();
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionClosed" ) +
+            " (legacy Trilead implementation)" );
+        }
       }
+    } catch ( Exception e ) {
+      logError( "Error closing SSH connection: " + e.getMessage() );
     }
 
     super.dispose( smi, sdi );
