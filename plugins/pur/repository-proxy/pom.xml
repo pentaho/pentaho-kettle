@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pur</artifactId>
-    <version>11.0.0.0-SNAPSHOT</version>
+    <version>11.0.0.0-57</version>
   </parent>
 
   <artifactId>repository-proxy</artifactId>
@@ -18,11 +18,11 @@
 
   <properties>
     <!-- Kettle dependencies -->
-    <pdi.version>11.0.0.0-SNAPSHOT</pdi.version>
-    <metastore.version>11.0.0.0-SNAPSHOT</metastore.version>
-    <platform.version>11.0.0.0-SNAPSHOT</platform.version>
-    <pentaho-osgi-bundles.version>11.0.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
-    <pdi-pur-plugin.version>11.0.0.0-SNAPSHOT</pdi-pur-plugin.version>
+    <pdi.version>11.0.0.0-57</pdi.version>
+    <metastore.version>11.0.0.0-57</metastore.version>
+    <platform.version>11.0.0.0-57</platform.version>
+    <pentaho-osgi-bundles.version>11.0.0.0-57</pentaho-osgi-bundles.version>
+    <pdi-pur-plugin.version>11.0.0.0-57</pdi-pur-plugin.version>
     <junit.version>4.11</junit.version>
   </properties>
 

@@ -24,12 +24,12 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-streaming-impls</artifactId>
-    <version>11.0.0.0-SNAPSHOT</version>
+    <version>11.0.0.0-57</version>
   </parent>
 
   <artifactId>pentaho-streaming-mqtt-plugin</artifactId>
 
-  <version>11.0.0.0-SNAPSHOT</version>
+  <version>11.0.0.0-57</version>
   <packaging>bundle</packaging>
 
   <name>MQTT Streaming Step Plugin Bundle</name>
@@ -68,7 +68,7 @@
 
 
   <properties>
-    <pdi.version>11.0.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>11.0.0.0-57</pdi.version>
     <target.jdk.version>1.8</target.jdk.version>
     <maven-bundle-plugin.version>2.4.0</maven-bundle-plugin.version>
     <junit.version>4.12</junit.version>
