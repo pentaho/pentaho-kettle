@@ -5063,7 +5063,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // This is the first time user is saving this file.
         if ( !Utils.isEmpty( lastFileOpenedProvider )  && lastFileOpenedProvider
             .equalsIgnoreCase( ProviderFilterType.REPOSITORY.toString() ) && rep == null ) {
-          // User has not opened any file but the lastOpenProvider was repository and use is not connected to the
+          // User has not opened any file but the lastFileOpenedProvider was repository and user is not connected to the
           // repository so set the session to the user's home folder
           defaultFileDialogOperationToUserHome( fileDialogOperation );
         } else if ( getActiveAbstractMeta() != null && getActiveAbstractMeta().getDefaultSaveDirectory() != null ) {
