@@ -21,21 +21,23 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.pentaho.di.core.ssh.SshImplementation;
+import org.pentaho.di.core.ssh.SshConnection;
+import org.pentaho.di.core.ssh.ExecResult;
 
 /**
  * Tests for the SSH step migration functionality.
- * Verifies that the SSH step can work with both legacy Trilead and modern SSH
+ * Verifies that the SSH step works with the modern SSH abstraction layer.
  * implementations.
  */
 public class SshStepMigrationTest {
 
   @Test
-  public void testSshStepConnectionAdapterCreation() {
-    // Test that our adapter classes can be instantiated
-    assertNotNull("SshStepConnectionAdapter class should be available",
-        SshStepConnectionAdapter.class);
-    assertNotNull("SessionResultAdapter class should be available",
-        SessionResultAdapter.class);
+  public void testSshAbstractionLayer() {
+    // Test that our simplified SSH abstraction classes are available
+    assertNotNull( "SshConnection interface should be available",
+      SshConnection.class );
+    assertNotNull( "ExecResult class should be available",
+      ExecResult.class );
   }
 
   @Test
@@ -43,69 +45,64 @@ public class SshStepMigrationTest {
     SSHMeta meta = new SSHMeta();
 
     // Test default state (should be null for auto-detect)
-    assertNull("Default SSH implementation should be null (auto-detect)",
-        meta.getSshImplementation());
+    assertNull( "Default SSH implementation should be null (auto-detect)",
+      meta.getSshImplementation() );
 
     // Test setting MINA implementation
-    meta.setSshImplementation(SshImplementation.MINA);
-    assertEquals("Should be able to set MINA implementation",
-        SshImplementation.MINA, meta.getSshImplementation());
-
-    // Test setting Trilead implementation
-    meta.setSshImplementation(SshImplementation.TRILEAD);
-    assertEquals("Should be able to set Trilead implementation",
-        SshImplementation.TRILEAD, meta.getSshImplementation());
+    meta.setSshImplementation( SshImplementation.MINA );
+    assertEquals( "Should be able to set MINA implementation",
+      SshImplementation.MINA, meta.getSshImplementation() );
 
     // Test setting back to auto-detect
-    meta.setSshImplementation(null);
-    assertNull("Should be able to set back to auto-detect",
-        meta.getSshImplementation());
+    meta.setSshImplementation( null );
+    assertNull( "Should be able to set back to auto-detect",
+      meta.getSshImplementation() );
   }
 
   @Test
   public void testSSHDataFieldsAvailable() {
     SSHData data = new SSHData();
 
-    // Verify that both connection fields are available
-    assertNull("Legacy conn field should be null initially", data.conn);
-    assertNull("Modern sshConn field should be null initially", data.sshConn);
+    // Verify connection field is available
+    assertNull( "SSH connection field should be null initially", data.sshConnection );
+    assertFalse( "Connected flag should be false initially", data.connected );
 
     // Verify other fields are still properly initialized
-    assertEquals("indexOfCommand should be -1 initially", -1, data.indexOfCommand);
-    assertFalse("wroteOneRow should be false initially", data.wroteOneRow);
-    assertNull("commands should be null initially", data.commands);
+    assertEquals( "indexOfCommand should be -1 initially", -1, data.indexOfCommand );
+    assertFalse( "wroteOneRow should be false initially", data.wroteOneRow );
+    assertNull( "commands should be null initially", data.commands );
   }
 
   @Test
-  public void testSessionResultAdapterCompatibility() {
-    // Test that SessionResultAdapter has the expected methods
+  public void testExecResultCompatibility() {
+    // Test that ExecResult has the expected methods for SSH step usage
     // This is a compilation test - if it compiles, the interface is correct
 
-    java.lang.reflect.Method[] methods = SessionResultAdapter.class.getMethods();
-    boolean hasGetStd = false;
-    boolean hasGetStdOut = false;
-    boolean hasGetStdErr = false;
-    boolean hasIsStdTypeErr = false;
-    boolean hasGetExitStatus = false;
+    java.lang.reflect.Method[] methods = ExecResult.class.getMethods();
+    boolean hasGetStdout = false;
+    boolean hasGetStderr = false;
+    boolean hasGetCombined = false;
+    boolean hasHasErrorOutput = false;
+    boolean hasGetExitCode = false;
 
-    for (java.lang.reflect.Method method : methods) {
+    for ( java.lang.reflect.Method method : methods ) {
       String methodName = method.getName();
-      if ("getStd".equals(methodName))
-        hasGetStd = true;
-      if ("getStdOut".equals(methodName))
-        hasGetStdOut = true;
-      if ("getStdErr".equals(methodName))
-        hasGetStdErr = true;
-      if ("isStdTypeErr".equals(methodName))
-        hasIsStdTypeErr = true;
-      if ("getExitStatus".equals(methodName))
-        hasGetExitStatus = true;
+      if ( "getStdout".equals( methodName ) )
+        hasGetStdout = true;
+      if ( "getStderr".equals( methodName ) )
+        hasGetStderr = true;
+      if ( "getCombined".equals( methodName ) )
+        hasGetCombined = true;
+      if ( "hasErrorOutput".equals( methodName ) )
+        hasHasErrorOutput = true;
+      if ( "getExitCode".equals( methodName ) )
+        hasGetExitCode = true;
     }
 
-    assertTrue("SessionResultAdapter should have getStd method", hasGetStd);
-    assertTrue("SessionResultAdapter should have getStdOut method", hasGetStdOut);
-    assertTrue("SessionResultAdapter should have getStdErr method", hasGetStdErr);
-    assertTrue("SessionResultAdapter should have isStdTypeErr method", hasIsStdTypeErr);
-    assertTrue("SessionResultAdapter should have getExitStatus method", hasGetExitStatus);
+    assertTrue( "ExecResult should have getStdout method", hasGetStdout );
+    assertTrue( "ExecResult should have getStderr method", hasGetStderr );
+    assertTrue( "ExecResult should have getCombined method", hasGetCombined );
+    assertTrue( "ExecResult should have hasErrorOutput method", hasHasErrorOutput );
+    assertTrue( "ExecResult should have getExitCode method", hasGetExitCode );
   }
 }

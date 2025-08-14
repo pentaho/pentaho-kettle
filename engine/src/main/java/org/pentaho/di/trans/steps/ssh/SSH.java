@@ -1,5 +1,4 @@
-/*
- * ! ******************************************************************************
+/*! ******************************************************************************
  *
  * Pentaho
  *
@@ -19,6 +18,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.ssh.ExecResult;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -26,8 +26,6 @@ import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import com.trilead.ssh2.Session;
 
 /**
  * Write commands to SSH *
@@ -113,8 +111,6 @@ public class SSH extends BaseStep {
     }
     int index = data.nrInputFields;
 
-    Session session = null;
-    SshStepConnectionAdapter.StepSessionAdapter modernSession = null;
     try {
       if ( meta.isDynamicCommand() ) {
         // get commands
@@ -124,53 +120,32 @@ public class SSH extends BaseStep {
         }
       }
 
-      // Open a session using the appropriate connection type
-      SessionResultAdapter sessionresult;
-      if ( data.sshConn != null ) {
-        // Use modern SSH abstraction layer
-        modernSession = data.sshConn.openSession();
+      // Connect if not already connected
+      if ( !data.connected ) {
+        data.sshConnection.connect();
+        data.connected = true;
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionOpened" )
-            + " (modern implementation)" );
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionOpened" ) );
         }
-
-        // execute commands
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "SSH.Log.RunningCommand", data.commands ) );
-        }
-        modernSession.execCommand( data.commands );
-
-        // Read results using adapter
-        sessionresult = new SessionResultAdapter( modernSession );
-      } else {
-        // Use legacy Trilead implementation
-        session = data.conn.openSession();
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionOpened" )
-            + " (legacy implementation)" );
-        }
-
-        // execute commands
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "SSH.Log.RunningCommand", data.commands ) );
-        }
-        session.execCommand( data.commands );
-
-        // Read results using legacy SessionResult
-        sessionresult = new SessionResultAdapter( session );
       }
 
+      // execute commands
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "SSH.Log.RunningCommand", data.commands ) );
+      }
+      ExecResult execResult = data.sshConnection.exec( data.commands, 30000L ); // 30 second timeout
+
       if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "SSH.Log.CommandRunnedCommand", data.commands, sessionresult
-          .getStdOut(), sessionresult.getStdErr() ) );
+        logDebug( BaseMessages.getString( PKG, "SSH.Log.CommandRunnedCommand", data.commands, execResult
+          .getStdout(), execResult.getStderr() ) );
       }
 
       // Add stdout to output
-      rowData[ index++ ] = sessionresult.getStd();
+      rowData[ index++ ] = execResult.getCombined();
 
       if ( !Utils.isEmpty( data.stdTypeField ) ) {
         // Add stdtype to output
-        rowData[ index++ ] = sessionresult.isStdTypeErr();
+        rowData[ index++ ] = execResult.hasErrorOutput();
       }
 
       if ( log.isRowLevel() ) {
@@ -204,20 +179,7 @@ public class SSH extends BaseStep {
         putError( getInputRowMeta(), row, 1, errorMessage, null, "SSH001" );
       }
     } finally {
-      // Close the appropriate session type
-      if ( modernSession != null ) {
-        modernSession.close();
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionClosed" ) +
-            " (modern implementation)" );
-        }
-      } else if ( session != null ) {
-        session.close();
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionClosed" ) +
-            " (legacy implementation)" );
-        }
-      }
+      // No session cleanup needed - connection lifecycle is managed separately
     }
 
     return true;
@@ -261,31 +223,14 @@ public class SSH extends BaseStep {
       data.stdTypeField = environmentSubstitute( meta.getStdErrFieldName() );
 
       try {
-        boolean useModern = meta.getSshImplementation() != null || useModernSshImplementation();
+        logBasic( "SSH Step: Using modern SSH implementation" );
 
-        if ( useModern ) {
-          logBasic( "SSH Step: Using modern SSH implementation" );
+        data.sshConnection = SSHData.OpenSshConnection(
+          getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
+          passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword,
+          meta.getSshImplementation(), log );
 
-          try {
-            data.sshConn = SSHData.OpenSshConnection(
-              getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
-              passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword,
-              meta.getSshImplementation(), log );
-
-            logBasic( "SSH Step: Modern SSH connection created successfully" );
-          } catch ( Exception e ) {
-            logBasic( "SSH Step: Modern SSH implementation failed (" + e.getClass().getSimpleName() + ": " + e
-              .getMessage() );
-          }
-        } else {
-          logBasic( "SSH Step: Using legacy Trilead implementation" );
-
-          data.conn = SSHData.OpenConnection(
-            getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
-            passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword );
-
-          logBasic( "SSH Step: Legacy Trilead connection created successfully" );
-        }
+        logBasic( "SSH Step: Modern SSH connection created successfully" );
 
       } catch ( Exception e ) {
         logError( "SSH connection initialization failed:" );
@@ -311,35 +256,17 @@ public class SSH extends BaseStep {
     return false;
   }
 
-  /**
-   * Determine if we should use the modern SSH implementation.
-   * This can be controlled by system properties or other configuration.
-   */
-  private boolean useModernSshImplementation() {
-    // Check for system property to enable modern SSH by default
-    String enableModern = System.getProperty( "pentaho.ssh.use.modern", "false" );
-    logBasic( "SSH Step: System property pentaho.ssh.use.modern = " + enableModern );
-    return "true".equalsIgnoreCase( enableModern );
-  }
-
   @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SSHMeta) smi;
     data = (SSHData) sdi;
 
-    // Close the appropriate connection type
+    // Close the SSH connection
     try {
-      if ( data.sshConn != null ) {
-        data.sshConn.close();
+      if ( data.sshConnection != null ) {
+        data.sshConnection.close();
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionClosed" ) +
-            " (modern SSH implementation)" );
-        }
-      } else if ( data.conn != null ) {
-        data.conn.close();
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionClosed" ) +
-            " (legacy Trilead implementation)" );
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionClosed" ) );
         }
       }
     } catch ( Exception e ) {

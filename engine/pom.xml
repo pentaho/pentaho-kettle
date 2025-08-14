@@ -51,7 +51,6 @@
     <SassyReader.version>0.5</SassyReader.version>
     <snmp4j.version>1.9.3d</snmp4j.version>
     <syslog4j.version>0.9.46</syslog4j.version>
-    <trilead-ssh2.version>build213</trilead-ssh2.version>
     <sshd.version>2.15.0</sshd.version>
     <jaxrpc-api.version>1.1</jaxrpc-api.version>
     <olap4j.version>1.2.0</olap4j.version>
@@ -496,17 +495,6 @@
       <groupId>org.syslog4j</groupId>
       <artifactId>syslog4j</artifactId>
       <version>${syslog4j.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>trilead-ssh2</groupId>
-      <artifactId>trilead-ssh2</artifactId>
-      <version>${trilead-ssh2.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
