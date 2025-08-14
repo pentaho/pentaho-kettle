@@ -4980,7 +4980,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     } else if ( getActiveMeta() != null ) {
       // There is an opened file, lets set that as the file open browser location
-      setFileOperationPathForNonRepositoryFile( fileDialogOperation, getActiveMeta(), false );
+      if ( rep == null ) {
+        setFileOperationPathForNonRepositoryFile( fileDialogOperation, getActiveMeta(), false );
+      } else {
+        setFileOperationPathForRepositoryFile( fileDialogOperation, getActiveMeta() );
+      }
     } else {
       // Unable to find last open file so setting the file open browser to user's home
       defaultFileDialogOperationToUserHome( fileDialogOperation );
