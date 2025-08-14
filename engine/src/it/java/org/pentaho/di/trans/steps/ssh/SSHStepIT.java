@@ -1,5 +1,4 @@
-/*
- * ! ******************************************************************************
+/*! ******************************************************************************
  *
  * Pentaho
  *
@@ -47,7 +46,7 @@ import org.pentaho.test.util.TestCleanupUtil;
 
 /**
  * Integration test for SSH transformation step.
- * Tests the SSH step with both MINA and Trilead implementations in actual transformation execution.
+ * Tests the SSH step with MINA implementations in actual transformation execution.
  */
 public class SSHStepIT {
 
@@ -86,12 +85,6 @@ public class SSHStepIT {
   public void testSSHStepWithMinaImplementation() throws Exception {
     // Skip actual connection testing for now, focus on configuration
     runSSHConfigurationTest( SshImplementation.MINA, "MINA implementation should configure correctly" );
-  }
-
-  @Test
-  public void testSSHStepWithTrileadImplementation() throws Exception {
-    // Skip actual connection testing for now, focus on configuration  
-    runSSHConfigurationTest( SshImplementation.TRILEAD, "Trilead implementation should configure correctly" );
   }
 
   @Test
@@ -153,9 +146,6 @@ public class SSHStepIT {
     // Test implementation configuration
     meta.setSshImplementation( SshImplementation.MINA );
     assertEquals( "Should set MINA implementation", SshImplementation.MINA, meta.getSshImplementation() );
-
-    meta.setSshImplementation( SshImplementation.TRILEAD );
-    assertEquals( "Should set Trilead implementation", SshImplementation.TRILEAD, meta.getSshImplementation() );
 
     meta.setSshImplementation( null );
     assertEquals( "Should set auto-detect", null, meta.getSshImplementation() );

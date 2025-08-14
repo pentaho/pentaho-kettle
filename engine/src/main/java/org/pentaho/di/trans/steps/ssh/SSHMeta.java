@@ -1,5 +1,4 @@
-/*
- * ! ******************************************************************************
+/*! ******************************************************************************
  *
  * Pentaho
  *
@@ -47,8 +46,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import com.trilead.ssh2.Connection;
 
 /*
  * Created on 03-Juin-2008
@@ -609,38 +606,6 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public boolean supportsErrorHandling() {
     return true;
-  }
-
-  /**
-   *
-   * @param bowl
-   * @param serveur
-   * @param port
-   * @param username
-   * @param password
-   * @param useKey
-   * @param keyFilename
-   * @param passPhrase
-   * @param timeOut
-   * @param space
-   * @param proxyhost
-   * @param proxyport
-   * @param proxyusername
-   * @param proxypassword
-   * @return
-   * @throws KettleException
-   * @deprecated Use
-   *             {@link SSHData#OpenConnection(String, int, String, String, boolean, String, String, int, VariableSpace, String, int, String, String)}
-   *             instead
-   */
-  @Deprecated
-  public static Connection OpenConnection( Bowl bowl, String serveur, int port, String username, String password,
-                                           boolean useKey, String keyFilename, String passPhrase, int timeOut,
-                                           VariableSpace space, String proxyhost,
-                                           int proxyport, String proxyusername, String proxypassword )
-    throws KettleException {
-    return SSHData.OpenConnection( bowl, serveur, port, username,
-      password, useKey, keyFilename, passPhrase, timeOut, space, proxyhost, proxyport, proxyusername, proxypassword );
   }
 
   /**

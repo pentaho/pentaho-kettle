@@ -1,8 +1,19 @@
+/*! ******************************************************************************
+ *
+ * Pentaho
+ *
+ * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ *
+ * Use of this software is governed by the Business Source License included
+ * in the LICENSE.TXT file.
+ *
+ * Change Date: 2029-07-20
+ ******************************************************************************/
+
 package org.pentaho.di.core.ssh;
 
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.ssh.mina.MinaSshConnection;
-import org.pentaho.di.core.ssh.trilead.TrileadSshConnection;
 
 public interface SshConnectionFactory {
   SshConnection open( SshConfig config ) throws SshConnectionException;
@@ -23,8 +34,6 @@ public interface SshConnectionFactory {
         switch ( impl ) {
           case MINA:
             return log != null ? new MinaSshConnection( config, log ) : new MinaSshConnection( config );
-          case TRILEAD:
-            return log != null ? new TrileadSshConnection( config, log ) : new TrileadSshConnection( config );
           default:
             throw new SshConnectionException( "Unknown SSH implementation: " + impl );
         }
