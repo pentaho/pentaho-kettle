@@ -5139,6 +5139,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private void setFileOperationPathForRepositoryFile( FileDialogOperation fileDialogOperation, EngineMetaInterface meta ) {
 
     List<LastUsedFile> lastUsedFileList = getLastUsedRepoFiles();
+    //TODO this list of files does not include the project.  the non-repo equivalent does.
 
     if ( getActiveAbstractMeta() != null && getActiveAbstractMeta().getDefaultSaveDirectory() != null ) {
       // if the default save directory is present, set the path to this directory
