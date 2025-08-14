@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.ssh.ExecResult;
 import org.pentaho.di.core.ssh.SftpFile;
 import org.pentaho.di.core.ssh.SftpSession;
@@ -23,10 +25,17 @@ import com.trilead.ssh2.Session;
 
 public class TrileadSshConnection implements SshConnection {
   private final SshConfig config;
+  private final LogChannelInterface log;
   private Connection conn;
 
   public TrileadSshConnection( SshConfig config ) {
     this.config = config;
+    this.log = new LogChannel( "TrileadSshConnection" );
+  }
+
+  public TrileadSshConnection( SshConfig config, LogChannelInterface log ) {
+    this.config = config;
+    this.log = log != null ? log : new LogChannel( "TrileadSshConnection" );
   }
 
   @Override
@@ -34,17 +43,24 @@ public class TrileadSshConnection implements SshConnection {
     if ( conn != null ) {
       return;
     }
+
+    log.logBasic( "TrileadSshConnection: Connecting to " + config.getHost() + ":" + config.getPort() );
     conn = new Connection( config.getHost(), config.getPort() );
     // TODO: proxy, timeouts, known hosts handling (reuse existing logic later)
     conn.connect();
+
+    log.logBasic( "TrileadSshConnection: Attempting authentication..." );
     boolean authed = false;
     if ( config.getPassword() != null ) {
       authed = conn.authenticateWithPassword( config.getUsername(), config.getPassword() );
     }
     // TODO: key auth
     if ( !authed ) {
+      log.logError( "TrileadSshConnection: Authentication failed" );
       throw new IOException( "SSH authentication failed (Trilead)" );
     }
+
+    log.logBasic( "TrileadSshConnection: Successfully connected and authenticated" );
   }
 
 

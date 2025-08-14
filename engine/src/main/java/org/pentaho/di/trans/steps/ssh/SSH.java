@@ -261,30 +261,47 @@ public class SSH extends BaseStep {
       data.stdTypeField = environmentSubstitute( meta.getStdErrFieldName() );
 
       try {
-        // Try to use modern SSH abstraction layer first
-        if ( meta.getSshImplementation() != null || useModernSshImplementation() ) {
-          data.sshConn = SSHData.OpenSshConnection(
-            getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
-            passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword,
-            meta.getSshImplementation(), log );
+        boolean useModern = meta.getSshImplementation() != null || useModernSshImplementation();
 
-          if ( log.isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionOpened" ) +
-              " (using modern SSH implementation)" );
+        if ( useModern ) {
+          logBasic( "SSH Step: Using modern SSH implementation" );
+
+          try {
+            data.sshConn = SSHData.OpenSshConnection(
+              getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
+              passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword,
+              meta.getSshImplementation(), log );
+
+            logBasic( "SSH Step: Modern SSH connection created successfully" );
+          } catch ( Exception e ) {
+            logBasic( "SSH Step: Modern SSH implementation failed (" + e.getClass().getSimpleName() + ": " + e
+              .getMessage() );
           }
         } else {
-          // Fall back to legacy Trilead connection
+          logBasic( "SSH Step: Using legacy Trilead implementation" );
+
           data.conn = SSHData.OpenConnection(
             getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
             passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword );
 
-          if ( log.isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionOpened" ) +
-              " (using legacy Trilead implementation)" );
-          }
+          logBasic( "SSH Step: Legacy Trilead connection created successfully" );
         }
 
       } catch ( Exception e ) {
+        logError( "SSH connection initialization failed:" );
+        logError( "  Server: " + servername + ":" + nrPort );
+        logError( "  Username: " + username );
+        logError( "  Use Private Key: " + meta.isusePrivateKey() );
+        if ( meta.isusePrivateKey() ) {
+          logError( "  Key File: " + keyFilename );
+        }
+        logError( "  Timeout: " + timeOut + "ms" );
+        logError( "  Error: " + e.getClass().getSimpleName() + ": " + e.getMessage() );
+
+        if ( log.isDebug() ) {
+          logError( "Full stack trace:", e );
+        }
+
         logError( BaseMessages.getString( PKG, "SSH.Error.OpeningConnection", e.getMessage() ) );
         return false;
       }
@@ -301,6 +318,7 @@ public class SSH extends BaseStep {
   private boolean useModernSshImplementation() {
     // Check for system property to enable modern SSH by default
     String enableModern = System.getProperty( "pentaho.ssh.use.modern", "false" );
+    logBasic( "SSH Step: System property pentaho.ssh.use.modern = " + enableModern );
     return "true".equalsIgnoreCase( enableModern );
   }
 

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,6 +43,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
+import org.pentaho.test.util.TestCleanupUtil;
 
 /**
  * Integration test for SSH transformation step.
@@ -71,6 +73,13 @@ public class SSHStepIT {
   @After
   public void tearDown() {
     // Clean up any resources if needed
+  }
+
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    // Shutdown Kettle environment
+    KettleEnvironment.shutdown();
+    TestCleanupUtil.cleanUpLogsDir();
   }
 
   @Test

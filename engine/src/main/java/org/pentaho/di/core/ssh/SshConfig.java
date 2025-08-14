@@ -22,7 +22,7 @@ public class SshConfig {
   private boolean cacheHostKey;
   private long connectTimeoutMillis;
   private long commandTimeoutMillis;
-  private SshImplementation implementation = SshImplementation.TRILEAD; // default until flip
+  private SshImplementation implementation;
 
   public static SshConfig create() {
     return new SshConfig();
