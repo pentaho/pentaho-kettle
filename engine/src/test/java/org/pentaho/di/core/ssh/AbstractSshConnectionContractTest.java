@@ -13,6 +13,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.test.util.TestCleanupUtil;
 
 public abstract class AbstractSshConnectionContractTest {
 
@@ -32,6 +34,7 @@ public abstract class AbstractSshConnectionContractTest {
 
   @BeforeClass
   public static void startServer() throws Exception {
+    KettleEnvironment.init();
     server = new TestSshServer();
     server.start( 0 ); // random port
     port = server.getAssignedPort();
@@ -39,6 +42,8 @@ public abstract class AbstractSshConnectionContractTest {
 
   @AfterClass
   public static void stopServer() throws Exception {
+    KettleEnvironment.shutdown();
+    TestCleanupUtil.cleanUpLogsDir();
     if ( server != null ) {
       server.stop();
     }

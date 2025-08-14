@@ -53,7 +53,6 @@
     <syslog4j.version>0.9.46</syslog4j.version>
     <trilead-ssh2.version>build213</trilead-ssh2.version>
     <sshd.version>2.15.0</sshd.version>
-    <mina.version>2.2.4</mina.version>
     <jaxrpc-api.version>1.1</jaxrpc-api.version>
     <olap4j.version>1.2.0</olap4j.version>
     <olap4j-xmla.version>1.2.0</olap4j-xmla.version>
@@ -516,11 +515,6 @@
       </exclusions>
     </dependency>
     <!-- Apache MINA SSHD -->
-    <dependency>
-      <groupId>org.apache.mina</groupId>
-      <artifactId>mina-core</artifactId>
-      <version>${mina.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.apache.sshd</groupId>
       <artifactId>sshd-core</artifactId>

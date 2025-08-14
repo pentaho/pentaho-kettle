@@ -23,8 +23,6 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.ssh.ExecResult;
-import org.pentaho.di.core.ssh.SftpSession;
 import org.pentaho.di.core.ssh.SshConfig;
 import org.pentaho.di.core.ssh.SshConnection;
 import org.pentaho.di.core.ssh.SshConnectionFactory;
@@ -177,7 +175,7 @@ public class SSHData extends BaseStepData {
         config.authType( SshConfig.AuthType.PASSWORD )
               .password( password );
       }
-      
+
       // Set preferred implementation or let factory decide
       if ( preferredImplementation != null ) {
         config.implementation( preferredImplementation );
@@ -185,21 +183,28 @@ public class SSHData extends BaseStepData {
 
       if ( log != null && log.isDebug() ) {
         log.logDebug( "Creating SSH connection using modern abstraction layer to " + server + ":" + port );
+        log.logDebug( "SSH Config - Auth type: " + config.getAuthType()
+                    + ", Connect timeout: " + config.getConnectTimeoutMillis() + "ms"
+                    + ", Command timeout: " + config.getCommandTimeoutMillis() + "ms"
+                    + ", Implementation: " + config.getImplementation() );
       }
 
-      SshConnection connection = SshConnectionFactory.defaultFactory().open( config );
+      SshConnection connection = SshConnectionFactory.defaultFactory().open( config, log );
+      if ( log != null && log.isDebug() ) {
+        log.logDebug( "Successfully created SSH connection object, type: " + connection.getClass().getSimpleName() );
+      }
       return new SshStepConnectionAdapter( connection );
 
     } catch ( Exception e ) {
-      // Fall back to legacy Trilead connection for backward compatibility
+      // Log the exception details for debugging
       if ( log != null ) {
-        log.logMinimal( "Failed to create modern SSH connection, falling back to legacy Trilead: " + e.getMessage() );
+        log.logError( "Failed to create SSH connection to " + server + ":" + port
+                    + " - Exception: " + e.getClass().getSimpleName() + ": " + e.getMessage() );
+        log.logError( "Full stack trace for SSH connection failure:", e );
       }
 
-      Connection triLeadConn = OpenConnection( bowl, server, port, username, password,
-                                            useKey, keyFilename, passPhrase, timeOut, space,
-                                            proxyhost, proxyport, proxyusername, proxypassword );
-      return new SshStepConnectionAdapter( new TrileadConnectionWrapper( triLeadConn ) );
+      // Re-throw as KettleException to maintain API contract
+      throw new KettleException( "SSH connection failed: " + e.getMessage(), e );
     }
   }
 
@@ -208,67 +213,12 @@ public class SSHData extends BaseStepData {
    */
   public static SshStepConnectionAdapter OpenSshConnection(
       Bowl bowl, String server, int port, String username, String password,
-      boolean useKey, String keyFilename, String passPhrase, int timeOut, 
-      VariableSpace space, String proxyhost, int proxyport, 
+      boolean useKey, String keyFilename, String passPhrase, int timeOut,
+      VariableSpace space, String proxyhost, int proxyport,
       String proxyusername, String proxypassword, LogChannelInterface log ) throws KettleException {
 
     return OpenSshConnection( bowl, server, port, username, password, useKey, keyFilename,
-                           passPhrase, timeOut, space, proxyhost, proxyport, proxyusername,
-                           proxypassword, null, log );
-  }
-
-  /**
-   * Wrapper to make legacy Trilead Connection work with our SshConnection interface.
-   * This enables backward compatibility when the modern implementation fails.
-   */
-  private static class TrileadConnectionWrapper implements SshConnection {
-    private final Connection triLeadConn;
-
-    public TrileadConnectionWrapper( Connection conn ) {
-      this.triLeadConn = conn;
-    }
-    
-    @Override
-    public void connect() throws Exception {
-      // Connection is already established when passed to constructor
-      // No additional connection setup needed for Trilead
-    }
-    
-    @Override
-    public ExecResult exec( String command, long timeoutMs ) throws Exception {
-      com.trilead.ssh2.Session session = triLeadConn.openSession();
-      try {
-        session.execCommand( command );
-
-        // Wait for command completion (similar to SessionResult logic)
-        session.waitForCondition( com.trilead.ssh2.ChannelCondition.EXIT_STATUS, timeoutMs );
-
-        // Read results using existing SessionResult logic
-        SessionResult result = new SessionResult( session );
-        Integer exitStatus = session.getExitStatus();
-        
-        return new ExecResult(
-          result.getStdOut(),
-          result.getStdErr(),
-          exitStatus != null ? exitStatus : -1
-        );
-      } finally {
-        session.close();
-      }
-    }
-    
-    @Override
-    public SftpSession openSftp() throws Exception {
-      throw new UnsupportedOperationException( "SFTP not supported in legacy Trilead wrapper" );
-    }
-    
-    @Override
-    public void close() {
-      try {
-        triLeadConn.close();
-      } catch ( Exception e ) {
-        // Log but don't throw - close() shouldn't throw exceptions
-      }
-    }
+                              passPhrase, timeOut, space, proxyhost, proxyport, proxyusername,
+                              proxypassword, null, log );
   }
 }
