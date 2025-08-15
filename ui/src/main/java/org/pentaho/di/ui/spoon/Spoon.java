@@ -4700,11 +4700,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     lastFileOpened = inLastFileOpened;
     props.setLastUsedLocalFile( inLastFileOpened );
     //TODO alternative - add the project path to both lists.  looks like addLastFile really does not expect a directory though...
-//    if ( rep == null ) {
-//      props.setLastUsedLocalFile( inLastFileOpened );
-//    } else {
-//      props.addLastFile( null, inLastFileOpened, null, false, null );
-//    }
+    if ( rep == null ) {
+      props.setLastUsedLocalFile( inLastFileOpened );
+    } else {
+      props.addLastFile( LastUsedFile.FILE_TYPE_CUSTOM, inLastFileOpened, inLastFileOpened, true, rep.getName() );
+      //TODO does this actually add stuff to the list of last used repo files?
+    }
   }
 
   public void setLastFileOpenedProvider( String provider ) {
@@ -5150,15 +5151,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( getActiveAbstractMeta() != null && getActiveAbstractMeta().getDefaultSaveDirectory() != null ) {
       // if the default save directory is present, set the path to this directory
       fileDialogOperation.setPath( getActiveAbstractMeta().getDefaultSaveDirectory() );
-    } else if ( lastFileOpened != null && !Utils.isEmpty( lastUsedFileList ) && !lastFileOpened.equals(
-      lastUsedFileList.get( 0 ).getDirectory() ) ) {
-      // if the lastFileOpened differs from the first (read: last) item in lastUsedFileList differ, use lastFileOpened
-      //TODO buy why? hard to comment this without having to explain projects
-
-      //TODO might need to strip the path delimeter from the end. need to be careful because lastFileOpened isn't necessarily something in the repository...
-      lastFileOpened = lastFileOpened.substring(0, lastFileOpened.length() - 1);
-      fileDialogOperation.setPath( lastFileOpened );
-      // TODO adding the project to that other list is probably the better approach
+//    } else if ( lastFileOpened != null && !Utils.isEmpty( lastUsedFileList ) && !lastFileOpened.equals(
+//      lastUsedFileList.get( 0 ).getDirectory() ) ) {
+//      // if the lastFileOpened differs from the first (read: last) item in lastUsedFileList differ, use lastFileOpened
+//      //TODO buy why? hard to comment this without having to explain projects
+//
+//      //TODO might need to strip the path delimeter from the end. need to be careful because lastFileOpened isn't necessarily something in the repository...
+//      lastFileOpened = lastFileOpened.substring(0, lastFileOpened.length() - 1);
+//      fileDialogOperation.setPath( lastFileOpened );
+//      // TODO adding the project to that other list is probably the better approach
     }
     else if ( !Utils.isEmpty( lastUsedFileList ) ) {
       fileDialogOperation.setPath( lastUsedFileList.get( 0 ).getDirectory() );
