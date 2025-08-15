@@ -4699,7 +4699,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void setLastFileOpened( String inLastFileOpened ) {
     lastFileOpened = inLastFileOpened;
     props.setLastUsedLocalFile( inLastFileOpened );
-    //TODO maybe this?
+    //TODO alternative - add the project path to both lists.  looks like addLastFile really does not expect a directory though...
 //    if ( rep == null ) {
 //      props.setLastUsedLocalFile( inLastFileOpened );
 //    } else {
@@ -5145,15 +5145,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private void setFileOperationPathForRepositoryFile( FileDialogOperation fileDialogOperation, EngineMetaInterface meta ) {
 
     List<LastUsedFile> lastUsedFileList = getLastUsedRepoFiles();
-    //TODO this list of files does not include the project.  the non-repo equivalent does.
-    // maybe we can check the non-repo list. the project dir should be in there with a provider type of REPOSITORY...
-
-    String testing = getLastFileOpened();
+    String lastFileOpened = getLastFileOpened();
 
     if ( getActiveAbstractMeta() != null && getActiveAbstractMeta().getDefaultSaveDirectory() != null ) {
       // if the default save directory is present, set the path to this directory
       fileDialogOperation.setPath( getActiveAbstractMeta().getDefaultSaveDirectory() );
-    } else if ( !Utils.isEmpty( lastUsedFileList ) ) {
+    } else if ( lastFileOpened != null && !Utils.isEmpty( lastUsedFileList ) && !lastFileOpened.equals(
+      lastUsedFileList.get( 0 ).getDirectory() ) ) {
+      // if the lastFileOpened differs from the first (read: last) item in lastUsedFileList differ, use lastFileOpened
+      //TODO buy why? hard to comment this without having to explain projects
+      fileDialogOperation.setPath( lastFileOpened );
+    }
+    else if ( !Utils.isEmpty( lastUsedFileList ) ) {
       fileDialogOperation.setPath( lastUsedFileList.get( 0 ).getDirectory() );
     } else {
       fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
