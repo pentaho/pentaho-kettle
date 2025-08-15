@@ -5154,7 +5154,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       lastUsedFileList.get( 0 ).getDirectory() ) ) {
       // if the lastFileOpened differs from the first (read: last) item in lastUsedFileList differ, use lastFileOpened
       //TODO buy why? hard to comment this without having to explain projects
+
+      //TODO might need to strip the path delimeter from the end. need to be careful because lastFileOpened isn't necessarily something in the repository...
+      lastFileOpened = lastFileOpened.substring(0, lastFileOpened.length() - 1);
       fileDialogOperation.setPath( lastFileOpened );
+      // TODO adding the project to that other list is probably the better approach
     }
     else if ( !Utils.isEmpty( lastUsedFileList ) ) {
       fileDialogOperation.setPath( lastUsedFileList.get( 0 ).getDirectory() );
