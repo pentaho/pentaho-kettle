@@ -4699,6 +4699,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void setLastFileOpened( String inLastFileOpened ) {
     lastFileOpened = inLastFileOpened;
     props.setLastUsedLocalFile( inLastFileOpened );
+    //TODO maybe this?
+//    if ( rep == null ) {
+//      props.setLastUsedLocalFile( inLastFileOpened );
+//    } else {
+//      props.addLastFile( null, inLastFileOpened, null, false, null );
+//    }
   }
 
   public void setLastFileOpenedProvider( String provider ) {
@@ -5070,7 +5076,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           // if the default save directory is present, set the path to this directory
           fileDialogOperation.setPath( getActiveAbstractMeta().getDefaultSaveDirectory() );
         } else if ( !Utils.isEmpty( lastFileOpened ) ) {
-          //User has opened a file previously, set the save folder be the last file opened folder
+          // User has opened a file previously, set the save folder to be the last file opened folder
           int parentIndex = lastFileOpened.lastIndexOf('\\');
           if (parentIndex == -1) {
             parentIndex = lastFileOpened.lastIndexOf('/');
@@ -5140,6 +5146,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     List<LastUsedFile> lastUsedFileList = getLastUsedRepoFiles();
     //TODO this list of files does not include the project.  the non-repo equivalent does.
+    // maybe we can check the non-repo list. the project dir should be in there with a provider type of REPOSITORY...
+
+    String testing = getLastFileOpened();
 
     if ( getActiveAbstractMeta() != null && getActiveAbstractMeta().getDefaultSaveDirectory() != null ) {
       // if the default save directory is present, set the path to this directory
