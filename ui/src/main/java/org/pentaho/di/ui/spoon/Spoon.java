@@ -5156,12 +5156,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private String getRepoAndUser() {
-    String username = getRepoUser();
+    String username = getRepository().getUserInfo() != null ? getRepository().getUserInfo().getLogin() : "";
     return getRepository().getName() + ":" + username;
-  }
-
-  private String getRepoUser() {
-    return getRepository().getUserInfo() != null ? getRepository().getUserInfo().getLogin() : "";
   }
 
   private boolean performRepoSave( EngineMetaInterface meta, String fileType, FileDialogOperation fileDialogOperation ) throws KettleException {
