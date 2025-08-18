@@ -474,7 +474,6 @@ public class PropsUI extends Props {
   }
 
   private void addLastRepoFile( LastUsedFile lastUsedFile ) {
-    //TODO are the project directories making it in here?
     String repositoryName = lastUsedFile.getRepositoryName();
     String username = lastUsedFile.getUsername() != null ? lastUsedFile.getUsername() : "";
     if ( !Utils.isEmpty( repositoryName ) ) {
