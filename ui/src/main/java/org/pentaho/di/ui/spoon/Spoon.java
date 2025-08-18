@@ -4703,7 +4703,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( rep == null ) {
       props.setLastUsedLocalFile( inLastFileOpened );
     } else {
-      props.addLastFile( LastUsedFile.FILE_TYPE_CUSTOM, inLastFileOpened, inLastFileOpened, true, rep.getName() );
+      props.addLastFile( LastUsedFile.FILE_TYPE_CUSTOM, inLastFileOpened, null, true, rep.getName() );
       //TODO does this actually add stuff to the list of last used repo files?
     }
   }
