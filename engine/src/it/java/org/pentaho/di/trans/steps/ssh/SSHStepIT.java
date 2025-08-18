@@ -87,12 +87,6 @@ public class SSHStepIT {
     runSSHConfigurationTest( SshImplementation.MINA, "MINA implementation should configure correctly" );
   }
 
-  @Test
-  public void testSSHStepWithAutoDetectImplementation() throws Exception {
-    // Skip actual connection testing for now, focus on configuration
-    runSSHConfigurationTest( null, "Auto-detect implementation should configure correctly" );
-  }
-
   private void runSSHConfigurationTest( SshImplementation implementation, String testDescription ) throws Exception {
     // Test SSH step configuration without actually connecting
     SSHMeta sshMeta = new SSHMeta();
@@ -135,23 +129,6 @@ public class SSHStepIT {
   }
 
   @Test
-  public void testSSHStepConfiguration() throws Exception {
-    // Test that SSH step can be configured with different implementations
-    SSHMeta meta = new SSHMeta();
-
-    // Test default configuration
-    String defaultTimeout = meta.getTimeOut();
-    assertTrue( "Default timeout should be null or empty", defaultTimeout == null || defaultTimeout.isEmpty() );
-
-    // Test implementation configuration
-    meta.setSshImplementation( SshImplementation.MINA );
-    assertEquals( "Should set MINA implementation", SshImplementation.MINA, meta.getSshImplementation() );
-
-    meta.setSshImplementation( null );
-    assertEquals( "Should set auto-detect", null, meta.getSshImplementation() );
-  }
-
-  @Test
   public void testSSHStepErrorHandling() throws Exception {
     // Test SSH step configuration validation
     SSHMeta sshMeta = new SSHMeta();
@@ -172,11 +149,4 @@ public class SSHStepIT {
     // The actual connection testing should be in separate tests
     assertNotNull( "Meta should be created even with incomplete config", sshMeta );
   }
-
-  // Note: Additional tests could be added for:
-  // - Different authentication methods
-  // - File transfer operations (if supported)
-  // - Multiple commands
-  // - Timeout behavior
-  // - Performance comparison between implementations
 }

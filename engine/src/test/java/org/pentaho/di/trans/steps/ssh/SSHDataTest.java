@@ -70,7 +70,7 @@ public class SSHDataTest {
     logChannel = mock( LogChannelInterface.class );
     sshConnectionFactoryMockedStatic = mockStatic( SshConnectionFactory.class );
     kettleVFSMockedStatic = mockStatic( KettleVFS.class );
-    
+
     IKettleVFS ikettleVFS = mock( IKettleVFS.class );
     when( ikettleVFS.getFileObject( keyFilePath ) ).thenReturn( fileObject );
     when( KettleVFS.getInstance( any() ) ).thenReturn( ikettleVFS );
