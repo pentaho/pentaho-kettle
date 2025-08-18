@@ -4703,8 +4703,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( rep == null ) {
       props.setLastUsedLocalFile( inLastFileOpened );
     } else {
-      props.addLastFile( LastUsedFile.FILE_TYPE_CUSTOM, inLastFileOpened, null, true, rep.getName() );
-      //TODO does this actually add stuff to the list of last used repo files?
+//      props.addLastFile( LastUsedFile.FILE_TYPE_CUSTOM, inLastFileOpened, null, true, rep.getName(), getRepoUser(), null, null );
+      props.addLastFile( LastUsedFile.FILE_TYPE_CUSTOM, inLastFileOpened, null, true, getRepoAndUser() );
+      //TODO this needs to add files to the correct repository, i.e. "Pentaho:admin", not "Pentaho:" or "Pentaho:admin:"
     }
   }
 
@@ -5174,8 +5175,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private String getRepoAndUser() {
-    String username = getRepository().getUserInfo() != null ? getRepository().getUserInfo().getLogin() : "";
+    String username = getRepoUser();
     return getRepository().getName() + ":" + username;
+  }
+
+  private String getRepoUser() {
+    return getRepository().getUserInfo() != null ? getRepository().getUserInfo().getLogin() : "";
   }
 
   private boolean performRepoSave( EngineMetaInterface meta, String fileType, FileDialogOperation fileDialogOperation ) throws KettleException {
