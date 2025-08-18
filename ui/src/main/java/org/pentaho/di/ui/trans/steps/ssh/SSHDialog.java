@@ -850,27 +850,18 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     String proxyusername = transMeta.environmentSubstitute( wProxyUsername.getText() );
     String proxypassword = Utils.resolvePassword( transMeta,  wProxyPassword.getText() );
 
-    SshConnection conn = null;
-    try {
-      conn =
-        SSHData.OpenSshConnection( transMeta.getBowl(),
+    try ( SshConnection conn = SSHData.OpenSshConnection( transMeta.getBowl(),
           servername, nrPort, username, password, wUseKey.getSelection(), keyFilename, passphrase, timeOut,
-          transMeta, proxyhost, proxyport, proxyusername, proxypassword, log );
-      
-      // Actually test the connection by connecting
-      conn.connect();
-      testOK = true;
+          transMeta, proxyhost, proxyport, proxyusername, proxypassword, log ) ) {
+
+        // Actually test the connection by connecting
+        conn.connect();
+        testOK = true;
 
     } catch ( Exception e ) {
       errMsg = e.getMessage();
-    } finally {
-      if ( conn != null ) {
-        try {
-          conn.close();
-        } catch ( Exception e ) { /* Ignore */
-        }
-      }
     }
+
     if ( testOK ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
       mb.setMessage( BaseMessages.getString( PKG, "SSHDialog.Connected.OK", servername, username ) + Const.CR );
