@@ -902,7 +902,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
           executionConfiguration );
 
       try {
-        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransBeforeStart.id, new Object[] {
           executionConfiguration, transMeta, transMeta, spoon.getRepository()
         } );
       } catch ( KettleException e ) {

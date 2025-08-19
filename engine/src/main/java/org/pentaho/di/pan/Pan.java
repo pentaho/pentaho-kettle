@@ -37,6 +37,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -225,7 +226,16 @@ public class Pan {
       // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
       if ( getCommandExecutor() == null ) {
-        setCommandExecutor( new PanCommandExecutor( PKG, log ) ); // init
+        PanCommandExecutor executor;
+        Collection<PanCommandExecutor> panExecutors = PluginServiceLoader.loadServices( PanCommandExecutor.class );
+        if ( !panExecutors.isEmpty() ) {
+          executor = (PanCommandExecutor) panExecutors.toArray()[0];
+          executor.setPkgClazz( PKG );
+          executor.setLog( log );
+        } else {
+          executor = new PanCommandExecutor( PKG, log );
+        }
+        setCommandExecutor( executor );
       }
 
       if ( !Utils.isEmpty( optionVersion ) ) {
@@ -287,7 +297,7 @@ public class Pan {
     NamedParams newNamedParams = new NamedParamsDefault();
     try {
       for ( CommandLineOptionProvider provider : PluginServiceLoader.loadServices( CommandLineOptionProvider.class ) ) {
-        newNamedParams = provider.getAdditionalCommandlineOptions( log );
+        newNamedParams.mergeParametersWith( provider.getAdditionalCommandlineOptions( log ), false );
       }
     } catch ( KettlePluginException e ) {
       System.out.println( "Exception getting the named parameters" + e.toString() );

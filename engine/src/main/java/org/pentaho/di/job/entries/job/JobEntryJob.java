@@ -898,7 +898,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           log.logBasic( BaseMessages.getString( PKG, "JobJob.RunConfig.Message" ), runConfiguration );
           executionConfiguration.setRunConfiguration( runConfiguration );
           try {
-            ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
+            ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransBeforeStart.id, new Object[] {
               executionConfiguration, parentJob.getJobMeta(), jobMeta, rep
             } );
             List<Object> items = Arrays.asList( runConfiguration, false );

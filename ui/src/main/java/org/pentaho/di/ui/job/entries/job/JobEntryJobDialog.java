@@ -380,8 +380,8 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     List<String> runConfigurations = new ArrayList<>();
     try {
       ExtensionPointHandler
-        .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.SpoonRunConfiguration.id,
-          new Object[] { runConfigurations, JobMeta.XML_TAG } );
+        .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.RunConfiguration.id,
+          new Object[] { runConfigurations, JobMeta.XML_TAG, Spoon.getInstance().getExecutionBowl() } );
     } catch ( KettleException e ) {
       // Ignore errors
     }
@@ -528,7 +528,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
     executionConfiguration.setRunConfiguration( jej.getRunConfiguration() );
     try {
-      ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.SpoonTransBeforeStart.id,
+      ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.TransBeforeStart.id,
         new Object[] { executionConfiguration, jobMeta, jobMeta, null } );
     } catch ( KettleException e ) {
       // Ignore errors

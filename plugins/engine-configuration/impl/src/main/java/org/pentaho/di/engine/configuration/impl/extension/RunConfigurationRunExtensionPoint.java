@@ -37,7 +37,7 @@ import java.util.function.Function;
 /**
  * Created by bmorrise on 3/16/17.
  */
-@ExtensionPoint( id = "RunConfigurationRunExtensionPoint", extensionPointId = "SpoonTransBeforeStart",
+@ExtensionPoint( id = "RunConfigurationRunExtensionPoint", extensionPointId = "TransBeforeStart",
   description = "" )
 public class RunConfigurationRunExtensionPoint implements ExtensionPointInterface {
 

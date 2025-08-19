@@ -17,19 +17,20 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -59,7 +60,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Ignore( "Failing due to PowerMock" )
 public class PanCommandExecutorTest {
 
   private static final String FS_METASTORE_NAME = "FS_METASTORE";
@@ -95,11 +95,13 @@ public class PanCommandExecutorTest {
 
     // mock actions from Repository
     when( repository.getRepositoryMetaStore() ).thenReturn( repoMetaStore );
+    when( repository.getBowl() ).thenReturn( DefaultBowl.getInstance() );
 
     // mock actions from PanCommandExecutor
     when( mockedPanCommandExecutor.getMetaStore() ).thenReturn( metastore );
     when( mockedPanCommandExecutor.loadRepositoryDirectory( any(), anyString(), anyString(), anyString(), anyString() ) )
       .thenReturn( directoryInterface );
+    when( mockedPanCommandExecutor.getBowl() ).thenReturn( DefaultBowl.getInstance() );
 
     // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
     doCallRealMethod().when( mockedPanCommandExecutor ).loadTransFromFilesystem( anyString(), anyString(), anyString(), any() );
@@ -154,7 +156,6 @@ public class PanCommandExecutorTest {
       base64Zip );
     assertNotNull( trans );
   }
-
 
   @Test
   public void testExecuteWithInvalidRepository() {
@@ -279,5 +280,23 @@ public class PanCommandExecutorTest {
     Assert.assertTrue( kettleXMLExceptionThrown );
 
     verify( extensionPoint, times( 1 ) ).callExtensionPoint( any( LogChannelInterface.class ), same( trans ) );
+  }
+
+  @Test
+  public void testRunConfigurationSupport() throws Exception {
+    // Test that run configuration parameter is properly handled
+    String runConfigName = "testRunConfig";
+    NamedParams namedParams = new NamedParamsDefault();
+    namedParams.addParameterDefinition( "runConfig", "", "Run Configuration" );
+    namedParams.setParameterValue( "runConfig", runConfigName );
+
+    Params params = new Params.Builder()
+      .inputFile( SAMPLE_KTR )
+      .namedParams( namedParams )
+      .build();
+
+    // Verify the parameter is correctly stored
+    Assert.assertEquals( "Run configuration should match", runConfigName,
+      params.getNamedParams().getParameterValue( "runConfig" ) );
   }
 }
