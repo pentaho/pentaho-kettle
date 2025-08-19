@@ -1609,6 +1609,58 @@ public class JsonInputTest {
       deleteFiles();
     }
   }
+  @Test
+  public void selectFieldsForNoInputSpecifiedTest() throws Exception {
+      try {
+        JsonInputMeta meta = createFileListMeta( new ArrayList<>() );
+        setupInputMeta( meta );
+
+        JsonInput jsonInput = createJsonInput( meta );
+        jsonInput.setStepMetaInterface( meta );
+
+        JSONObject jsonObject = jsonInput.selectFieldsAction( new HashMap<>() );
+
+        disposeJsonInput( jsonInput );
+
+        assertNotNull( jsonObject );
+        assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+        assertEquals(
+                BaseMessages.getString( JsonInputMeta.class, "JsonInput.Error.NoInputSpecified.Label" ),
+                jsonObject.get( "errorLabel" )
+        );
+        assertEquals(
+                BaseMessages.getString( JsonInputMeta.class, "JsonInput.Error.NoInputSpecified.Message" ),
+                jsonObject.get( "errorMessage" )
+        );
+      } finally {
+          deleteFiles();
+        }
+  }
+
+  @Test
+  public void testBuildErrorResponse() throws Exception {
+      try {
+        JsonInput jsonInput = getInputForDoActions( "{}", true );
+
+        Method buildErrorResponseMethod = JsonInput.class.getDeclaredMethod(
+                "buildErrorResponse", String.class, String.class
+        );
+        buildErrorResponseMethod.setAccessible( true );
+
+        JSONObject jsonObject = (JSONObject) buildErrorResponseMethod.invoke(
+                jsonInput,
+                "JsonInput.Error.NoInputSpecified.Label",
+                "JsonInput.Error.NoInputSpecified.Message"
+        );
+
+        disposeJsonInput( jsonInput );
+
+        assertNotNull( jsonObject );
+        assertEquals( StepInterface.FAILURE_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+    } finally {
+        deleteFiles();
+      }
+  }
 
   private void setupInputMeta( JsonInputMeta meta ) {
     String[] fileNames = new String[]{BASE_RAM_DIR + "test.json"};
