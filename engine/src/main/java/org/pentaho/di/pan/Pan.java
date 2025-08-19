@@ -34,6 +34,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.kitchen.Kitchen;
+import org.pentaho.di.pan.delegates.EnhancedPanCommandExecutor;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
@@ -50,7 +51,7 @@ public class Pan {
 
   private static FileLoggingEventListener fileLoggingEventListener;
 
-  private static PanCommandExecutor commandExecutor;
+  private static EnhancedPanCommandExecutor commandExecutor;
 
   public static void main( String[] a ) throws Exception {
     try {
@@ -71,7 +72,7 @@ public class Pan {
       StringBuilder optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
       StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
       StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
-      StringBuilder optionBase64Zip, optionUuid;
+      StringBuilder optionBase64Zip, optionUuid, optionRunConfiguration;
       StringBuilder pluginParam = new StringBuilder();
 
       NamedParams optionParams = new NamedParamsDefault();
@@ -158,7 +159,10 @@ public class Pan {
             new StringBuilder(), false, true ),
           new CommandLineOption(
             "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
-            new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
+            new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption,
+          new CommandLineOption(
+            "runconfig", BaseMessages.getString( PKG, "Pan.ComdLine.RunConfiguration" ), optionRunConfiguration =
+            new StringBuilder() ) };
 
       List<CommandLineOption> updatedOptionList = getAdditionalCommandlineOption( options, pluginParam );
       if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
@@ -223,7 +227,7 @@ public class Pan {
       // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
       if ( getCommandExecutor() == null ) {
-        setCommandExecutor( new PanCommandExecutor( PKG, log ) ); // init
+        setCommandExecutor( new EnhancedPanCommandExecutor( PKG, log ) ); // init
       }
 
       if ( !Utils.isEmpty( optionVersion ) ) {
@@ -272,6 +276,7 @@ public class Pan {
         .resultSetCopyNumber( optionResultSetCopyNumber.toString() )
         .base64Zip( optionBase64Zip.toString() )
         .namedParams( optionParams )
+        .runConfiguration( optionRunConfiguration.toString() )
         .build();
 
       Result rslt = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] ) );
@@ -326,7 +331,7 @@ public class Pan {
    */
   protected static void configureParameters( Trans trans, NamedParams optionParams,
                                              TransMeta transMeta ) throws UnknownParamException {
-    PanCommandExecutor.configureParameters( trans, optionParams, transMeta );
+    EnhancedPanCommandExecutor.configureParameters( trans, optionParams, transMeta );
   }
 
   private static final void exitJVM( int status ) {
@@ -346,11 +351,11 @@ public class Pan {
     System.exit( status );
   }
 
-  public static PanCommandExecutor getCommandExecutor() {
+  public static EnhancedPanCommandExecutor getCommandExecutor() {
     return commandExecutor;
   }
 
-  public static void setCommandExecutor( PanCommandExecutor commandExecutor ) {
+  public static void setCommandExecutor( EnhancedPanCommandExecutor commandExecutor ) {
     Pan.commandExecutor = commandExecutor;
   }
 }

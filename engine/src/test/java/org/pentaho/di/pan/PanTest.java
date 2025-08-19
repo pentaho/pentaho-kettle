@@ -25,6 +25,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.pan.delegates.EnhancedPanCommandExecutor;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -153,7 +154,7 @@ public class PanTest {
     when( mockRepositoriesMeta.nrRepositories() ).thenReturn( 1 );
     when( mockRepositoriesMeta.getRepository( 0 ) ).thenReturn( mockRepositoryMeta );
 
-    PanCommandExecutor testPanCommandExecutor = new PanCommandExecutorForTesting( null, null, mockRepositoriesMeta );
+    PanCommandExecutorForTesting testPanCommandExecutor = new PanCommandExecutorForTesting( null, null, mockRepositoriesMeta );
 
     origSysOut = System.out;
     origSysErr = System.err;
@@ -201,7 +202,7 @@ public class PanTest {
     when( mockRepository.getDirectoryNames( any() ) ).thenReturn( new String[]{ DUMMY_DIR_1, DUMMY_DIR_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    PanCommandExecutor testPanCommandExecutor =
+    PanCommandExecutorForTesting testPanCommandExecutor =
       new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
     origSysOut = System.out;
@@ -250,7 +251,7 @@ public class PanTest {
     when( mockRepository.getTransformationNames( any(), anyBoolean() ) ).thenReturn( new String[]{ DUMMY_TRANS_1, DUMMY_TRANS_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    PanCommandExecutor testPanCommandExecutor =
+    PanCommandExecutorForTesting testPanCommandExecutor =
       new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
     origSysOut = System.out;
@@ -287,7 +288,7 @@ public class PanTest {
     }
   }
 
-  private static class PanCommandExecutorForTesting extends PanCommandExecutor {
+  private static class PanCommandExecutorForTesting extends EnhancedPanCommandExecutor {
 
     private final Repository testRepository;
     private final RepositoryMeta testRepositoryMeta;
