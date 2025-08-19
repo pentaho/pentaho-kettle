@@ -12,6 +12,7 @@
 
 
 package org.pentaho.di.ui.trans.steps.mailinput;
+import org.eclipse.swt.widgets.*;
 import org.pentaho.di.core.annotations.PluginDialog;
 
 import java.text.SimpleDateFormat;
@@ -37,19 +38,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
@@ -64,6 +52,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.mailinput.MailInput;
 import org.pentaho.di.trans.steps.mailinput.MailInputField;
 import org.pentaho.di.trans.steps.mailinput.MailInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
@@ -72,10 +61,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.core.widget.*;
 import org.pentaho.di.ui.job.entries.getpop.SelectFolderDialog;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -86,6 +72,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MailInputMeta input;
+  private MailInput mailInput;
   private Label wlServerName;
   private TextVar wServerName;
   private FormData fdlServerName, fdServerName;
@@ -101,6 +88,46 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   private Label wlSubject;
   private TextVar wSubject;
   private FormData fdlSubject, fdSubject;
+
+  private Label wlUseAuth;
+
+  private Combo wUseAuth;
+
+  private FormData fdlUseAuth, fdUseAuth;
+
+  private Label wlGrantType;
+
+  private Combo grantType;
+
+  private FormData fdlGrantType,fdGrantType;
+
+  private LabelTextVar wAuthClientId;
+
+  private FormData fdAuthClientId;
+
+  private LabelTextVar wAuthSecretKey;
+
+  private FormData fdAuthSecretKey;
+
+  private LabelTextVar wAuthScope;
+
+  private FormData fdAuthScope;
+
+  private LabelTextVar wAuthTokenUrl;
+
+  private FormData fdAuthTokenUrl;
+
+  private LabelTextVar wAuthorizationCode;
+
+  private FormData fdAuthorizationCode;
+
+  private LabelTextVar wRedirectUri;
+
+  private FormData fdRedirectUri;
+
+  private LabelTextVar wAuthRefreshToken;
+
+  private FormData fdAuthRefreshToken;
 
   private Label wlUserName;
   private TextVar wUserName;
@@ -170,7 +197,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   private FormData fdGeneralComp, fdSettingsComp, fdSearchComp, fdFieldsComp;
   private FormData fdTabFolder;
 
-  private Group wServerSettings, wPOP3Settings, wIMAPSettings, wReceivedDate, wHeader;
+  private Group wServerSettings, wPOP3Settings, wIMAPSettings, wReceivedDate, wHeader,wAuthentificationGroup;
   private FormData fdServerSettings, fdPOP3Settings, fdIMAPSettings, fdReceivedDate, fdHeader;
 
   private Label wlLimit;
@@ -373,27 +400,66 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdPort.right = new FormAttachment( 100, 0 );
     wPort.setLayoutData( fdPort );
 
+    fdServerSettings = new FormData();
+    fdServerSettings.left = new FormAttachment( 0, margin );
+    fdServerSettings.top = new FormAttachment( wProtocol, margin );
+    fdServerSettings.right = new FormAttachment( 100, -margin );
+    wServerSettings.setLayoutData( fdServerSettings );
+
+    // ////////////////////////////////////
+    // START OF AUTHENTIFICATION GROUP
+    // ////////////////////////////////////
+
+    wAuthentificationGroup = new Group( wGeneralComp, SWT.SHADOW_NONE );
+    props.setLook( wAuthentificationGroup );
+    wAuthentificationGroup.setText( BaseMessages.getString( PKG, "MailInput.Group.Authentification.Label" ) );
+
+    FormLayout authentificationgroupLayout = new FormLayout();
+    authentificationgroupLayout.marginWidth = 10;
+    authentificationgroupLayout.marginHeight = 10;
+    wAuthentificationGroup.setLayout( authentificationgroupLayout );
+
+    // Authentication?
+    wlUseAuth = new Label( wAuthentificationGroup, SWT.RIGHT );
+    wlUseAuth.setText( BaseMessages.getString( PKG, "MailInput.UseAuthentication.Label" ) );
+    props.setLook( wlUseAuth );
+    fdlUseAuth = new FormData();
+    fdlUseAuth.left = new FormAttachment( 0, 0 );
+    fdlUseAuth.top = new FormAttachment( wServerSettings, margin );
+    fdlUseAuth.right = new FormAttachment( middle, -2 * margin );
+    wlUseAuth.setLayoutData( fdlUseAuth );
+    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN );
+    wUseAuth.add( MailInputMeta.AUTENTICATION_NONE );
+    wUseAuth.add( MailInputMeta.AUTENTICATION_BASIC );
+    wUseAuth.add( MailInputMeta.AUTENTICATION_OAUTH );
+    props.setLook( wUseAuth );
+    wUseAuth.addModifyListener( lsMod );
+    fdUseAuth = new FormData();
+    fdUseAuth.left = new FormAttachment( middle, -margin );
+    fdUseAuth.top = new FormAttachment( wServerSettings, margin );
+    fdUseAuth.right = new FormAttachment( 100, 0 );
+    wUseAuth.setLayoutData( fdUseAuth );
     // UserName line
-    wlUserName = new Label( wServerSettings, SWT.RIGHT );
+    wlUserName = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlUserName.setText( BaseMessages.getString( PKG, "MailInput.Username.Label" ) );
     props.setLook( wlUserName );
     fdlUserName = new FormData();
     fdlUserName.left = new FormAttachment( 0, 0 );
-    fdlUserName.top = new FormAttachment( wPort, margin );
+    fdlUserName.top = new FormAttachment( wUseAuth, margin );
     fdlUserName.right = new FormAttachment( middle, -margin );
     wlUserName.setLayoutData( fdlUserName );
-    wUserName = new TextVar( transMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wUserName = new TextVar( transMeta, wAuthentificationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wUserName );
     wUserName.setToolTipText( BaseMessages.getString( PKG, "MailInput.Username.Tooltip" ) );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
     fdUserName.left = new FormAttachment( middle, 0 );
-    fdUserName.top = new FormAttachment( wPort, margin );
+    fdUserName.top = new FormAttachment( wUseAuth, margin );
     fdUserName.right = new FormAttachment( 100, 0 );
     wUserName.setLayoutData( fdUserName );
 
     // Password line
-    wlPassword = new Label( wServerSettings, SWT.RIGHT );
+    wlPassword = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlPassword.setText( BaseMessages.getString( PKG, "MailInput.Password.Label" ) );
     props.setLook( wlPassword );
     fdlPassword = new FormData();
@@ -401,7 +467,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdlPassword.top = new FormAttachment( wUserName, margin );
     fdlPassword.right = new FormAttachment( middle, -margin );
     wlPassword.setLayoutData( fdlPassword );
-    wPassword = new PasswordTextVar( transMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword = new PasswordTextVar( transMeta, wAuthentificationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPassword );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
@@ -409,22 +475,126 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
+    wUseAuth.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        setUseAuth();
+      }
+    } );
+    // AuthSecretKey line
+    wAuthSecretKey = new LabelTextVar( transMeta, wAuthentificationGroup,
+            BaseMessages.getString( PKG, "MailInput.AuthenticationSecretKey.Label" ),
+            BaseMessages.getString( PKG, "MailInput.AuthenticationSecretKey.Tooltip" ), true );
+    wAuthSecretKey.addModifyListener( lsMod );
+    fdAuthSecretKey= new FormData();
+    fdAuthSecretKey.left = new FormAttachment( 0, 0 );
+    fdAuthSecretKey.top = new FormAttachment( wPassword, margin );
+    fdAuthSecretKey.right = new FormAttachment( 100, 0 );
+    wAuthSecretKey.setLayoutData( fdAuthSecretKey);
+
+    // AuthClientId line
+    wAuthClientId = new LabelTextVar( transMeta, wAuthentificationGroup,
+            BaseMessages.getString( PKG, "MailInput.AuthenticationClientId.Label" ),
+            BaseMessages.getString( PKG, "MailInput.AuthenticationClientId.Tooltip" ));
+    wAuthClientId.addModifyListener( lsMod );
+    fdAuthClientId = new FormData();
+    fdAuthClientId.left = new FormAttachment( 0, 0 );
+    fdAuthClientId.top = new FormAttachment( wAuthSecretKey, margin );
+    fdAuthClientId.right = new FormAttachment( 100, 0 );
+    wAuthClientId.setLayoutData( fdAuthClientId);
+
+    //Scope line
+    wAuthScope = new LabelTextVar( transMeta, wAuthentificationGroup,
+            BaseMessages.getString( PKG, "MailInput.AuthenticationScope.Label" ),
+            BaseMessages.getString( PKG, "MailInput.AuthenticationScope.Tooltip" ));
+    wAuthScope.addModifyListener( lsMod );
+    fdAuthScope= new FormData();
+    fdAuthScope.left = new FormAttachment( 0, 0 );
+    fdAuthScope.top = new FormAttachment( wAuthClientId, margin );
+    fdAuthScope.right = new FormAttachment( 100, 0 );
+    wAuthScope.setLayoutData( fdAuthScope);
+// Grant Type
+    wlGrantType = new Label( wAuthentificationGroup, SWT.RIGHT );
+    wlGrantType.setText(BaseMessages.getString( PKG, "MailInput.GrantType.Label" ) );
+    props.setLook( wlGrantType );
+    fdlGrantType = new FormData();
+    fdlGrantType.left = new FormAttachment( 0, 0 );
+    fdlGrantType.top = new FormAttachment( wAuthScope, 2*margin );
+    fdlGrantType.right = new FormAttachment( middle, -margin );
+    wlGrantType.setLayoutData( fdlGrantType );
+    grantType = new Combo( wAuthentificationGroup, SWT.DROP_DOWN );
+    grantType.add( MailInputMeta.GRANTTYPE_CLIENTCREDENTIALS );
+    grantType.add( MailInputMeta.GRANTTYPE_AUTHORIZATION_CODE );
+    grantType.add( MailInputMeta.GRANTTYPE_REFRESH_TOKEN );
+    props.setLook( grantType );
+    grantType.addModifyListener( lsMod );
+    fdGrantType = new FormData();
+    fdGrantType.left = new FormAttachment( middle, margin );
+    fdGrantType.top = new FormAttachment( wAuthScope, 2*margin );
+    fdGrantType.right = new FormAttachment( 100, 0 );
+    grantType.setLayoutData( fdGrantType );
+    grantType.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        setUseGrantType();
+      }
+    } );
+    //Token Url
+    wAuthTokenUrl = new LabelTextVar( transMeta, wAuthentificationGroup,
+            BaseMessages.getString( PKG, "MailInput.AuthenticationTokenUrl.Label" ),
+            BaseMessages.getString( PKG, "MailInput.AuthenticationTokenUrl.Tooltip" ));
+    wAuthTokenUrl.addModifyListener( lsMod );
+    fdAuthTokenUrl= new FormData();
+    fdAuthTokenUrl.left = new FormAttachment( 0, 0 );
+    fdAuthTokenUrl.top = new FormAttachment( grantType, margin );
+    fdAuthTokenUrl.right = new FormAttachment( 100, 0 );
+    wAuthTokenUrl.setLayoutData( fdAuthTokenUrl);
+    //AuthorizationCode
+    wAuthorizationCode= new LabelTextVar( transMeta, wAuthentificationGroup,
+            BaseMessages.getString( PKG, "MailInput.AuthorizationCode.Label" ),
+            BaseMessages.getString( PKG, "MailInput.AuthorizationCode.Tooltip" ));
+    wAuthorizationCode.addModifyListener( lsMod );
+    fdAuthorizationCode= new FormData();
+    fdAuthorizationCode.left = new FormAttachment( 0, 0 );
+    fdAuthorizationCode.top = new FormAttachment( wAuthTokenUrl, margin );
+    fdAuthorizationCode.right = new FormAttachment( 100, 0 );
+    wAuthorizationCode.setLayoutData( fdAuthorizationCode);
+    //Redirect Uri
+    wRedirectUri= new LabelTextVar( transMeta, wAuthentificationGroup,
+            BaseMessages.getString( PKG, "MailInput.RedirectURI.Label" ),
+            BaseMessages.getString( PKG, "MailInput.RedirectURI.Tooltip" ));
+    wRedirectUri.addModifyListener( lsMod );
+    fdRedirectUri= new FormData();
+    fdRedirectUri.left = new FormAttachment( 0, 0 );
+    fdRedirectUri.top = new FormAttachment(wAuthorizationCode, margin );
+    fdRedirectUri.right = new FormAttachment( 100, 0 );
+    wRedirectUri.setLayoutData( fdRedirectUri);
+    //Refresh Token
+    wAuthRefreshToken= new LabelTextVar( transMeta, wAuthentificationGroup,
+            BaseMessages.getString( PKG, "MailInput.RefreshToken.Label" ),
+            BaseMessages.getString( PKG, "MailInput.RefreshToken.Tooltip" ));
+    wAuthRefreshToken.addModifyListener( lsMod );
+    fdAuthRefreshToken= new FormData();
+    fdAuthRefreshToken.left = new FormAttachment( 0, 0 );
+    fdAuthRefreshToken.top = new FormAttachment(wRedirectUri, margin );
+    fdAuthRefreshToken.right = new FormAttachment( 100, 0 );
+    wAuthRefreshToken.setLayoutData( fdAuthRefreshToken);
+
+
 
     // USE proxy
-    wlUseProxy = new Label( wServerSettings, SWT.RIGHT );
+    wlUseProxy = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlUseProxy.setText( BaseMessages.getString( PKG, "MailInput.UseProxyMails.Label" ) );
     props.setLook( wlUseProxy );
     fdlUseProxy = new FormData();
     fdlUseProxy.left = new FormAttachment( 0, 0 );
-    fdlUseProxy.top = new FormAttachment( wPassword, 2 * margin );
+    fdlUseProxy.top = new FormAttachment( wAuthRefreshToken, 2 * margin );
     fdlUseProxy.right = new FormAttachment( middle, -margin );
     wlUseProxy.setLayoutData( fdlUseProxy );
-    wUseProxy = new Button( wServerSettings, SWT.CHECK );
+    wUseProxy = new Button( wAuthentificationGroup, SWT.CHECK );
     props.setLook( wUseProxy );
     fdUseProxy = new FormData();
     wUseProxy.setToolTipText( BaseMessages.getString( PKG, "MailInput.UseProxyMails.Tooltip" ) );
     fdUseProxy.left = new FormAttachment( middle, 0 );
-    fdUseProxy.top = new FormAttachment( wPassword, 2 * margin );
+    fdUseProxy.top = new FormAttachment( wAuthRefreshToken, 2 * margin );
     fdUseProxy.right = new FormAttachment( 100, 0 );
     wUseProxy.setLayoutData( fdUseProxy );
 
@@ -436,17 +606,17 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     } );
 
     // ProxyUsername line
-    wlProxyUsername = new Label( wServerSettings, SWT.RIGHT );
+    wlProxyUsername = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlProxyUsername.setText( BaseMessages.getString( PKG, "MailInput.ProxyUsername.Label" ) );
-    wProxyUsername = new TextVar( transMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wProxyUsername = new TextVar( transMeta, wAuthentificationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wProxyUsername.setToolTipText( BaseMessages.getString( PKG, "MailInput.ProxyUsername.Tooltip" ) );
     wProxyUsername.addModifyListener( lsMod );
     addLabelInputPairBelow( wlProxyUsername, wProxyUsername, wUseProxy );
 
     // Use Batch label/checkbox
-    Label wlUseBatch = new Label( wServerSettings, SWT.RIGHT );
+    Label wlUseBatch = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlUseBatch.setText( BaseMessages.getString( PKG, "MailInputDialog.UseBatch.Label" ) );
-    wUseBatch = new Button( wServerSettings, SWT.CHECK );
+    wUseBatch = new Button( wAuthentificationGroup, SWT.CHECK );
     wUseBatch.setToolTipText( BaseMessages.getString( PKG, "MailInputDialog.UseBatch.Tooltip" ) );
     wUseBatch.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -455,16 +625,16 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     } );
     addLabelInputPairBelow( wlUseBatch, wUseBatch, wProxyUsername );
     // ignore field errors
-    wlIgnoreFieldErrors = new Label( wServerSettings, SWT.RIGHT );
+    wlIgnoreFieldErrors = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlIgnoreFieldErrors.setText( BaseMessages.getString( PKG, "MailInput.IgnoreFieldErrors.Label" ) );
-    wIgnoreFieldErrors = new Button( wServerSettings, SWT.CHECK );
+    wIgnoreFieldErrors = new Button( wAuthentificationGroup, SWT.CHECK );
     wIgnoreFieldErrors.setToolTipText( BaseMessages.getString( PKG, "MailInput.IgnoreFieldErrors.Tooltip" ) );
     addLabelInputPairBelow( wlIgnoreFieldErrors, wIgnoreFieldErrors, wUseBatch );
 
     // Protocol
-    wlProtocol = new Label( wServerSettings, SWT.RIGHT );
+    wlProtocol = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlProtocol.setText( BaseMessages.getString( PKG, "MailInput.Protocol.Label" ) );
-    wProtocol = new CCombo( wServerSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
+    wProtocol = new CCombo( wAuthentificationGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wProtocol.setItems( MailConnectionMeta.protocolCodes );
     wProtocol.select( 0 );
     wProtocol.addSelectionListener( new SelectionAdapter() {
@@ -476,7 +646,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     addLabelInputPairBelow( wlProtocol, wProtocol, wIgnoreFieldErrors );
 
     // Test connection button
-    wTest = new Button( wServerSettings, SWT.PUSH );
+    wTest = new Button( wAuthentificationGroup, SWT.PUSH );
     wTest.setText( BaseMessages.getString( PKG, "MailInput.TestConnection.Label" ) );
     props.setLook( wTest );
     fdTest = new FormData();
@@ -485,15 +655,16 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdTest.right = new FormAttachment( 100, 0 );
     wTest.setLayoutData( fdTest );
 
-    fdServerSettings = new FormData();
-    fdServerSettings.left = new FormAttachment( 0, margin );
-    fdServerSettings.top = new FormAttachment( wProtocol, margin );
-    fdServerSettings.right = new FormAttachment( 100, -margin );
-    wServerSettings.setLayoutData( fdServerSettings );
-    // ///////////////////////////////////////////////////////////
-    // / END OF SERVER SETTINGS GROUP
-    // ///////////////////////////////////////////////////////////
+    FormData fdAuthentificationGroup = new FormData();
+    fdAuthentificationGroup.left = new FormAttachment( 0, margin );
+    fdAuthentificationGroup.top = new FormAttachment( wServerSettings, margin );
+    fdAuthentificationGroup.right = new FormAttachment( 100, -margin );
+    fdAuthentificationGroup.bottom = new FormAttachment( 100, -margin );
+    wAuthentificationGroup.setLayoutData( fdAuthentificationGroup );
 
+    // //////////////////////////////////////
+    // / END OF AUTHENTIFICATION GROUP
+    // ///////////////////////////////////////
     fdGeneralComp = new FormData();
     fdGeneralComp.left = new FormAttachment( 0, 0 );
     fdGeneralComp.top = new FormAttachment( wStepname, 0 );
@@ -1282,6 +1453,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     } );
 
     getData();
+    setUseAuth();
+    setUseGrantType();
     setUserProxy();
     chooseListMails();
     refreshProtocol( false );
@@ -1337,6 +1510,36 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( input.getPort() != null ) {
       wPort.setText( input.getPort() );
     }
+    if( input.isUsingAuthentication() !=null) {
+      wUseAuth.setText(input.isUsingAuthentication());
+    }
+
+    if( input.getClientId()!= null ) {
+      wAuthClientId.setText( input.getClientId() );
+    }
+    if( input.getSecretKey()!= null ) {
+      wAuthSecretKey.setText( input.getSecretKey() );
+    }
+    if( input.getScope()!= null ) {
+      wAuthScope.setText( input.getScope() );
+    }
+    if( input.getTokenUrl()!= null ) {
+      wAuthTokenUrl.setText( input.getTokenUrl() );
+    }
+    if( input.getAuthorization_code()!= null ) {
+      wAuthorizationCode.setText( input.getAuthorization_code() );
+    }
+    if( input.getRedirectUri()!= null ) {
+      wRedirectUri.setText( input.getRedirectUri() );
+    }
+    if( input.getRefresh_token()!= null ) {
+      wAuthRefreshToken.setText( input.getRefresh_token() );
+    }
+    if( input.getGrant_type()!= null ) {
+      grantType.setText( input.getGrant_type() );
+    }
+
+
 
     String protocol = input.getProtocol();
 
@@ -1463,6 +1666,15 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setPassword( wPassword.getText() );
     in.setUseSSL( wUseSSL.getSelection() );
     in.setPort( wPort.getText() );
+    in.setClientId( wAuthClientId.getText() );
+    in.setSecretKey( wAuthSecretKey.getText() );
+    in.setScope( wAuthScope.getText() );
+    in.setTokenUrl( wAuthTokenUrl.getText() );
+    in.setAuthorization_code( wAuthorizationCode.getText() );
+    in.setRedirectUri( wRedirectUri.getText() );
+    in.setRefresh_token( wAuthRefreshToken.getText() );
+    in.setUsingAuthentication( wUseAuth.getText() );
+    in.setGrant_type( grantType.getText() );
 
     // [PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
     // for backward compatibility: 0 is 'retrieve all', 2 is 'retrieve first...'
@@ -1692,9 +1904,23 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( !retval ) {
       String realserver = transMeta.environmentSubstitute( wServerName.getText() );
       String realuser = transMeta.environmentSubstitute( wUserName.getText() );
-      String realpass = Utils.resolvePassword( transMeta, wPassword.getText() );
+      String realpass = transMeta.environmentSubstitute( wPassword.getText() );
       String realProxyUsername = transMeta.environmentSubstitute( wProxyUsername.getText() );
       int realport = Const.toInt( transMeta.environmentSubstitute( wPort.getText() ), -1 );
+
+      String tokenUrl = transMeta.environmentSubstitute( wAuthTokenUrl.getText() );
+      String scope = transMeta.environmentSubstitute( wAuthScope.getText() );
+      String clientId = transMeta.environmentSubstitute( wAuthClientId.getText() );
+      String secretKey = transMeta.environmentSubstitute( wAuthSecretKey.getText() );
+      String grantType = transMeta.environmentSubstitute( input.getGrant_type() );
+      String refreshToken = transMeta.environmentSubstitute( wAuthRefreshToken.getText() );
+      String authorizationCode = transMeta.environmentSubstitute( wAuthorizationCode.getText() );
+      String redirectUri = transMeta.environmentSubstitute( wRedirectUri.getText() );
+
+      if( wUseAuth.getText().equals( MailInputMeta.AUTENTICATION_OAUTH ) ){
+        realpass = "Bearer "+ input.getOauthToken(tokenUrl,scope,clientId,secretKey,
+                grantType, refreshToken, authorizationCode, redirectUri).getAccessToken();
+      }
 
       try {
         mailConn =
@@ -1852,6 +2078,58 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fData.top = new FormAttachment( widgetAbove, Const.MARGIN );
     fData.right = new FormAttachment( Const.MIDDLE_PCT, -Const.MARGIN );
     label.setLayoutData( fData );
+  }
+  protected void setUseAuth() {
+    String selectedAuth = wUseAuth.getText();
+    if (selectedAuth.equals( MailInputMeta.AUTENTICATION_NONE ) ) {
+      wAuthClientId.setEnabled( false );
+      wAuthSecretKey.setEnabled( false );
+      wUserName.setEnabled( false );
+      wPassword.setEnabled( false );
+      wAuthScope.setEnabled( false );
+      grantType.setEnabled( false );
+      wAuthTokenUrl.setEnabled( false );
+      wAuthorizationCode.setEnabled( false );
+      wRedirectUri.setEnabled( false );
+      wAuthRefreshToken.setEnabled( false );
+    } else if ( selectedAuth.equals( MailInputMeta.AUTENTICATION_BASIC ) ) {
+      wAuthClientId.setEnabled( false );
+      wAuthSecretKey.setEnabled( false );
+      wUserName.setEnabled( true );
+      wPassword.setEnabled( true );
+      wAuthScope.setEnabled( false );
+      grantType.setEnabled( false );
+      wAuthTokenUrl.setEnabled( false );
+      wAuthorizationCode.setEnabled( false );
+      wRedirectUri.setEnabled( false );
+      wAuthRefreshToken.setEnabled( false );
+    } else if ( selectedAuth.equals( MailInputMeta.AUTENTICATION_OAUTH ) ) {
+      wUserName.setEnabled( true );
+      wPassword.setEnabled( false );
+      wAuthClientId.setEnabled( true );
+      wAuthSecretKey.setEnabled( true );
+      wAuthScope.setEnabled( true );
+      grantType.setEnabled( true );
+    }
+  }
+  protected void setUseGrantType() {
+    String selectedAuth = grantType.getText();
+    if (selectedAuth.equals(MailInputMeta.GRANTTYPE_CLIENTCREDENTIALS)) {
+      wAuthTokenUrl.setEnabled(true);
+      wAuthorizationCode.setEnabled(false);
+      wRedirectUri.setEnabled(false);
+      wAuthRefreshToken.setEnabled(false);
+    } else if (selectedAuth.equals(MailInputMeta.GRANTTYPE_REFRESH_TOKEN)) {
+      wAuthTokenUrl.setEnabled(true);
+      wAuthorizationCode.setEnabled(false);
+      wRedirectUri.setEnabled(false);
+      wAuthRefreshToken.setEnabled(true);
+    } else if (selectedAuth.equals(MailInputMeta.GRANTTYPE_AUTHORIZATION_CODE)) {
+      wAuthTokenUrl.setEnabled(true);
+      wAuthorizationCode.setEnabled(true);
+      wRedirectUri.setEnabled(true);
+      wAuthRefreshToken.setEnabled(false);
+    }
   }
 
   private void addControlBelow( Control control, Control widgetAbove ) {

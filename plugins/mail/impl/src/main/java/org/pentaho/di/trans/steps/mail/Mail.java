@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -37,12 +39,24 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.FileType;
+import org.apache.http.Consts;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -58,6 +72,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.pentaho.di.trans.steps.mail.MailMeta.AUTENTICATION_BASIC;
 
 /**
  * Send mail step. based on Mail job entry
@@ -73,6 +88,7 @@ public class Mail extends BaseStep implements StepInterface {
 
   private MailMeta meta;
   private MailData data;
+  private IEmailAuthenticationResponse token;
 
   public Mail( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -356,17 +372,7 @@ public class Mail extends BaseStep implements StepInterface {
       }
     }
     // Authentication
-    if ( meta.isUsingAuthentication() ) {
-      // cache the position of the Authentication user field
-      if ( data.indexOfAuthenticationUser < 0 ) {
-        String realAuthenticationUser = meta.getAuthenticationUser();
-        data.indexOfAuthenticationUser = data.previousRowMeta.indexOfValue( realAuthenticationUser );
-        if ( data.indexOfAuthenticationUser < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Mail.Exception.CouldnotFindAuthenticationUserField", realAuthenticationUser ) );
-        }
-      }
-
+    if ( meta.isUsingAuthentication().equals( meta.AUTENTICATION_BASIC ) ) {
       // cache the position of the Authentication password field
       if ( data.indexOfAuthenticationPass < 0 ) {
         String realAuthenticationPassword = Utils.resolvePassword( variables, meta.getAuthenticationPassword() );
@@ -375,6 +381,15 @@ public class Mail extends BaseStep implements StepInterface {
           throw new KettleException( BaseMessages.getString(
             PKG, "Mail.Exception.CouldnotFindAuthenticationPassField", realAuthenticationPassword ) );
         }
+      }
+    }
+    // cache the position of the Authentication user field
+    if ( data.indexOfAuthenticationUser < 0 ) {
+      String realAuthenticationUser = meta.getAuthenticationUser();
+      data.indexOfAuthenticationUser = data.previousRowMeta.indexOfValue( realAuthenticationUser );
+      if ( data.indexOfAuthenticationUser < 0 ) {
+        throw new KettleException( BaseMessages.getString(
+                PKG, "Mail.Exception.CouldnotFindAuthenticationUserField", realAuthenticationUser ) );
       }
     }
     // Mail Subject
@@ -485,7 +500,7 @@ public class Mail extends BaseStep implements StepInterface {
     validateZipFiles( meta );
 
     // check authentication
-    if ( meta.isUsingAuthentication() ) {
+    if ( meta.isUsingAuthentication().equals( AUTENTICATION_BASIC ) ) {
       // check authentication user
       if ( Utils.isEmpty( meta.getAuthenticationUser() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.AuthenticationUserFieldEmpty" ) );
@@ -574,8 +589,17 @@ public class Mail extends BaseStep implements StepInterface {
       data.props.put( "mail.debug", "true" );
     }
 
-    if ( meta.isUsingAuthentication() ) {
+    if ( meta.isUsingAuthentication().equals( meta.AUTENTICATION_BASIC ) ) {
       data.props.put( "mail." + protocol + ".auth", "true" );
+    }
+    else if( meta.isUsingAuthentication().equals( meta.AUTENTICATION_OAUTH ) ) {
+      token= getOauthToken( meta.getTokenUrl() );
+      data.props.put( "mail."+protocol+".auth.xoauth2.disable", "false" );
+      data.props.put( "mail."+protocol+".auth.mechanisms", "XOAUTH2" );
+      data.props.put( "mail.transport.protocol", "smtp");
+      data.props.put( "mail."+protocol+".auth.login.disable", "true" );
+      data.props.put( "mail."+protocol+".auth.plain.disable", "true" );
+      data.props.setProperty( "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
     }
 
     Session session = Session.getInstance( data.props );
@@ -736,13 +760,27 @@ public class Mail extends BaseStep implements StepInterface {
     Transport transport = null;
     try {
       transport = session.getTransport( protocol );
-      if ( meta.isUsingAuthentication() ) {
+      if ( meta.isUsingAuthentication().equals( meta.AUTENTICATION_BASIC ) ) {
         if ( port != -1 ) {
           transport.connect( Const.NVL( server, "" ), port, Const.NVL( authenticationUser, "" ), Const.NVL(
             authenticationPassword, "" ) );
         } else {
           transport.connect( Const.NVL( server, "" ), Const.NVL( authenticationUser, "" ), Const.NVL(
             authenticationPassword, "" ) );
+        }
+      }
+      else if( meta.isUsingAuthentication().equals(  meta.AUTENTICATION_OAUTH ) ) {
+        if ( !Utils.isEmpty( meta.getPort() ) ) {
+          transport.connect(
+                  environmentSubstitute( Const.NVL( server, "" ) ),
+                  Integer.parseInt( environmentSubstitute( Const.NVL( meta.getPort(), "" ) ) ),
+                  environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+                  this.token.getAccessToken() );
+        } else {
+          transport.connect(
+                  environmentSubstitute( Const.NVL( server, "" ) ),
+                  environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+                  this.token.getAccessToken() );
         }
       } else {
         transport.connect();
@@ -754,6 +792,39 @@ public class Mail extends BaseStep implements StepInterface {
       }
     }
 
+  }
+  IEmailAuthenticationResponse getOauthToken(String tokenUrl) {
+    try ( CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient() ) {
+      tokenUrl = environmentSubstitute( meta.getTokenUrl() );
+      HttpPost httpPost = new HttpPost( tokenUrl );
+      List<NameValuePair> form = new ArrayList<>();
+      form.add( new BasicNameValuePair( "scope", environmentSubstitute( meta.getScope() ) ) );
+      form.add( new BasicNameValuePair( "client_id", environmentSubstitute( meta.getClientId() ) ) );
+      form.add( new BasicNameValuePair( "client_secret", environmentSubstitute( meta.getSecretKey() ) ) );
+      form.add( new BasicNameValuePair( "grant_type", environmentSubstitute( meta.getGrant_type() ) ) );
+      if ( meta.getGrant_type().equals( meta.GRANTTYPE_REFRESH_TOKEN ) ) {
+        form.add( new BasicNameValuePair( meta.GRANTTYPE_REFRESH_TOKEN, environmentSubstitute( meta.getRefresh_token() ) ) );
+      }
+      if ( meta.getGrant_type().equals( meta.GRANTTYPE_AUTHORIZATION_CODE ) ) {
+        form.add( new BasicNameValuePair( "code", environmentSubstitute( meta.getAuthorization_code() ) ) );
+        form.add( new BasicNameValuePair( "redirect_uri", environmentSubstitute( meta.getRedirectUri() ) ) );
+      }
+      UrlEncodedFormEntity entity = new UrlEncodedFormEntity( form, Consts.UTF_8 );
+      httpPost.setEntity( entity );
+      try ( CloseableHttpResponse response = client.execute( httpPost ) ) {
+        if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
+          throw new HttpException( "Unable to get authorization token " + response.getStatusLine().toString() );
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue( EntityUtils.toString( response.getEntity() ), EmailAuthenticationResponse.class );
+      } catch ( HttpException e ) {
+        throw new RuntimeException( e );
+      } catch ( IOException e ) {
+        throw new RuntimeException( e );
+      }
+    } catch ( IOException e ) {
+      throw new RuntimeException( e );
+    }
   }
 
   @VisibleForTesting
