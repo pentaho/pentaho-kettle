@@ -46,6 +46,24 @@ public class BaseXBaseParsingTest extends BaseParsingTest<XBaseInputMeta, XBaseI
     FileObject fo = getFile( file );
     meta.setDbfFileName( fo.getName().getPath() );
 
+    init();
+  }
+
+  /**
+   * Initialize for processing specified file with compression.
+   */
+  protected void init( String file, String fileCompression ) throws Exception {
+    FileObject fo = getFile( file );
+    meta.setDbfFileName( fo.getName().getPath() );
+    meta.setFileCompression( fileCompression );
+
+    init();
+  }
+
+  /**
+   * Initialize XBase input from file defined in meta.
+   */
+  private void init() {
     step = new XBaseInput( stepMeta, null, 1, transMeta, trans );
     step.init( meta, data );
     step.addRowListener( rowListener );
