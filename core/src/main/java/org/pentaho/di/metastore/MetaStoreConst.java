@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.util.Utils;
@@ -91,7 +92,7 @@ public class MetaStoreConst {
   private static final MetastoreDirectoryProvider NULL_METASTORE_DIRECTORY_PROVIDER =
     new MetastoreDirectoryProvider() {
       @Override
-      public IMetaStore getMetastoreForDirectory(String rootFolder) {
+      public IMetaStore getMetastoreForDirectory(String rootFolder, Bowl bowl) {
         return null;
       }
     };
@@ -212,13 +213,13 @@ public class MetaStoreConst {
    * @return IMetaStore a metastore implementation at the given path, or null
    *
    */
-  public static Supplier<IMetaStore> getMetastoreForDirectorySupplier( String rootFolder ) {
+  public static Supplier<IMetaStore> getMetastoreForDirectorySupplier( String rootFolder, Bowl bowl ) {
     return () -> {
       MetastoreDirectoryProvider provider = metastoreDirectoryProviderSupplier.get();
       if ( provider == null ) {
         return null;
       }
-      return provider.getMetastoreForDirectory( rootFolder );
+      return provider.getMetastoreForDirectory( rootFolder, bowl );
     };
   }
 
