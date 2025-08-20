@@ -52,7 +52,7 @@ public enum KettleExtensionPoint {
       "Spoon initiates the execution of a trans (TransMeta)" ),
     SpoonTransExecutionConfiguration( "SpoonTransExecutionConfiguration",
       "Right before Spoon configuration of transformation to be executed takes place" ),
-    SpoonTransBeforeStart( "SpoonTransBeforeStart", "Right before the transformation is started" ),
+    TransBeforeStart( "TransBeforeStart", "Right before the transformation is started" ),
     RunConfigurationSelection( "RunConfigurationSelection", "Check when run configuration is selected" ),
     RunConfigurationIsRemote( "RunConfigurationIsRemote", "Check when run configuration is pointing to a remote server" ),
     SpoonRunConfiguration( "SpoonRunConfiguration", "Send the run configuration" ),

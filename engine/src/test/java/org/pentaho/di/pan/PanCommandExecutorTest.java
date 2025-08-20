@@ -280,4 +280,21 @@ public class PanCommandExecutorTest {
 
     verify( extensionPoint, times( 1 ) ).callExtensionPoint( any( LogChannelInterface.class ), same( trans ) );
   }
+
+  @Test
+  public void testRunConfigurationSupport() throws Exception {
+    // Test that run configuration parameter is properly handled
+    String runConfigName = "testRunConfig";
+    
+    Params params = new Params.Builder()
+      .inputFile( SAMPLE_KTR )
+      .runConfiguration( runConfigName )
+      .build();
+
+    // Verify the parameter is correctly stored
+    Assert.assertEquals( "Run configuration should match", runConfigName, params.getRunConfiguration() );
+    
+    // Note: Full integration testing would require mocking the ExtensionPointHandler
+    // and verifying the TransExecutionConfiguration is properly created and called
+  }
 }
