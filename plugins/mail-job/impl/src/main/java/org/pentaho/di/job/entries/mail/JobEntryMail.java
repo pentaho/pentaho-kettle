@@ -13,7 +13,19 @@
 
 package org.pentaho.di.job.entries.mail;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.Consts;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.pentaho.di.core.annotations.JobEntry;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
@@ -21,6 +33,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -86,6 +99,32 @@ import org.w3c.dom.Node;
 public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryMail.class; // for i18n purposes, needed by Translator2!!
 
+  public static String AUTENTICATION_OAUTH = "OAUTH";
+
+  public static  String AUTENTICATION_BASIC = "Basic";
+
+  public static String AUTENTICATION_NONE= "No Auth";
+
+  public static String GRANTTYPE_CLIENTCREDENTIALS="client_credentials";
+
+  public static String GRANTTYPE_AUTHORIZATION_CODE="authorization_code";
+
+  public static String GRANTTYPE_REFRESH_TOKEN="refresh_token";
+
+  private String clientId;
+
+  private String secretKey;
+
+  private String scope;
+
+  private String tokenUrl;
+
+  private String authorization_code;
+
+  private String redirectUri;
+
+  private String refresh_token;
+
   private String server;
 
   private String destination;
@@ -106,6 +145,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
   private String contactPerson;
 
+  private IEmailAuthenticationResponse token;
+
   private String contactPhone;
 
   private String comment;
@@ -118,7 +159,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
   private String zipFilename;
 
-  private boolean usingAuthentication;
+  private String usingAuthentication;
 
   private String authenticationUser;
 
@@ -129,6 +170,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   private boolean useHTML;
 
   private boolean usingSecureAuthentication;
+
+  private String grant_type;
 
   private boolean usePriority;
 
@@ -207,14 +250,23 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      " ).append( XMLHandler.addTagValue( "include_files", includingFiles ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "zip_files", zipFiles ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "zip_name", zipFilename ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "use_grantType", grant_type) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_auth", usingAuthentication ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_secure_auth", usingSecureAuthentication ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "auth_user", authenticationUser ) );
     retval.append( "      " ).append(
-      XMLHandler
-        .addTagValue( "auth_password", Encr.encryptPasswordIfNotUsingVariables( authenticationPassword ) ) );
-
+            XMLHandler
+                    .addTagValue( "auth_password", Encr.encryptPasswordIfNotUsingVariables( authenticationPassword ) ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_clientId", clientId ) );
+    retval.append( "      " ).append(
+            XMLHandler
+                    .addTagValue( "auth_secretKey",  secretKey)  );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_scope", scope ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_tokenUrl", tokenUrl ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_authorizationCode", authorization_code ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "redirectURI", redirectUri ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshToken", refresh_token) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "only_comment", onlySendComment ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_HTML", useHTML ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_Priority", usePriority ) );
@@ -268,12 +320,19 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       setComment( XMLHandler.getTagValue( entrynode, "comment" ) );
       setIncludingFiles( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "include_files" ) ) );
 
-      setUsingAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_auth" ) ) );
+      setUsingAuthentication( XMLHandler.getTagValue( entrynode, "use_auth" ) );
       setUsingSecureAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_secure_auth" ) ) );
       setAuthenticationUser( XMLHandler.getTagValue( entrynode, "auth_user" ) );
       setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(
-        entrynode, "auth_password" ) ) );
-
+              entrynode, "auth_password" ) ) );
+      setClientId( XMLHandler.getTagValue( entrynode, "auth_clientId" ) );
+      setSecretKey( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "auth_secretKey" ) ) );
+      setScope( XMLHandler.getTagValue( entrynode, "auth_scope" ) );
+      setTokenUrl( XMLHandler.getTagValue( entrynode, "auth_tokenUrl" ) );
+      setAuthorization_code( XMLHandler.getTagValue( entrynode, "auth_authorizationCode" ) );
+      setRedirectUri( XMLHandler.getTagValue( entrynode, "redirectURI" ) );
+      setRefresh_token( XMLHandler.getTagValue( entrynode, "refreshToken" ) );
+      setGrant_type( XMLHandler.getTagValue( entrynode, "use_grantType" ) );
       setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "only_comment" ) ) );
       setUseHTML( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_HTML" ) ) );
 
@@ -338,11 +397,20 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       importance = rep.getJobEntryAttributeString( id_jobentry, "importance" );
       sensitivity = rep.getJobEntryAttributeString( id_jobentry, "sensitivity" );
       includingFiles = rep.getJobEntryAttributeBoolean( id_jobentry, "include_files" );
-      usingAuthentication = rep.getJobEntryAttributeBoolean( id_jobentry, "use_auth" );
+      grant_type = rep.getJobEntryAttributeString( id_jobentry, "use_grantType" );
+      usingAuthentication = rep.getJobEntryAttributeString( id_jobentry, "use_auth" );
       usingSecureAuthentication = rep.getJobEntryAttributeBoolean( id_jobentry, "use_secure_auth" );
       authenticationUser = rep.getJobEntryAttributeString( id_jobentry, "auth_user" );
       authenticationPassword =
-        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "auth_password" ) );
+              Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "auth_password" ) );
+      clientId = rep.getJobEntryAttributeString( id_jobentry, "auth_clientId" );
+      secretKey =
+              Encr.decryptPasswordOptionallyEncrypted(  rep.getJobEntryAttributeString( id_jobentry, "auth_secretKey" ) ) ;
+      scope = rep.getJobEntryAttributeString( id_jobentry, "auth_scope" );
+      tokenUrl = rep.getJobEntryAttributeString( id_jobentry, "auth_tokenUrl" );
+      authorization_code = rep.getJobEntryAttributeString( id_jobentry, "auth_authorizationCode" );
+      redirectUri= rep.getJobEntryAttributeString( id_jobentry, "redirectURI" );
+      refresh_token = rep.getJobEntryAttributeString( id_jobentry, "refreshToken" );
       onlySendComment = rep.getJobEntryAttributeBoolean( id_jobentry, "only_comment" );
       useHTML = rep.getJobEntryAttributeBoolean( id_jobentry, "use_HTML" );
       usePriority = rep.getJobEntryAttributeBoolean( id_jobentry, "use_Priority" );
@@ -398,11 +466,19 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "include_files", includingFiles );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "use_auth", usingAuthentication );
+      rep.saveJobEntryAttribute(id_job,getObjectId(),"use_grantType",grant_type );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "use_secure_auth", usingSecureAuthentication );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_user", authenticationUser );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_password", Encr
-        .encryptPasswordIfNotUsingVariables( authenticationPassword ) );
-
+              .encryptPasswordIfNotUsingVariables( authenticationPassword ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_clientId", clientId );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_secretKey", Encr
+              .encryptPasswordIfNotUsingVariables( secretKey ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_scope", scope );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_tokenUrl", tokenUrl );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_authorizationCode", authorization_code );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "redirectURI",  redirectUri );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "refreshToken", refresh_token );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "only_comment", onlySendComment );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "use_HTML", useHTML );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "use_Priority", usePriority );
@@ -521,6 +597,13 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   public String getComment() {
     return comment;
   }
+  public void setGrant_type( String grant_type ) {
+    this.grant_type = grant_type;
+  }
+
+  public String getGrant_type() {
+    return grant_type;
+  }
 
   /**
    * @return the result file types to select for attachment </b>
@@ -599,6 +682,72 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return authenticationUser;
   }
 
+  public void setClientId( String clientId ) {
+    this.clientId = clientId;
+  }
+
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setSecretKey( String secretKey ) {
+    this.secretKey = secretKey;
+  }
+  public String getSecretKey() {
+    return secretKey;
+  }
+
+  public void setScope(String scope)
+  {
+    this.scope=scope;
+  }
+
+  public String getScope()
+  {
+    return scope;
+  }
+
+  public void setTokenUrl(String tokenUrl)
+  {
+    this.tokenUrl=tokenUrl;
+  }
+
+  public String getTokenUrl()
+  {
+    return tokenUrl;
+  }
+
+  public void setAuthorization_code(String authorization_code)
+  {
+    this.authorization_code=authorization_code;
+  }
+
+  public String getAuthorization_code()
+  {
+    return authorization_code;
+  }
+
+
+  public void setRedirectUri(String redirectUri)
+  {
+    this.redirectUri=redirectUri;
+  }
+
+  public String getRedirectUri()
+  {
+    return redirectUri;
+  }
+
+  public void setRefresh_token(String refresh_token)
+  {
+    this.refresh_token=refresh_token;
+  }
+
+  public String getRefresh_token()
+  {
+    return refresh_token;
+  }
+
   /**
    * @param authenticationUser
    *          The authenticationUser to set.
@@ -610,7 +759,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   /**
    * @return Returns the usingAuthentication.
    */
-  public boolean isUsingAuthentication() {
+  public String isUsingAuthentication() {
     return usingAuthentication;
   }
 
@@ -618,7 +767,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
    * @param usingAuthentication
    *          The usingAuthentication to set.
    */
-  public void setUsingAuthentication( boolean usingAuthentication ) {
+  public void setUsingAuthentication( String usingAuthentication ) {
     this.usingAuthentication = usingAuthentication;
   }
 
@@ -789,7 +938,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       props.put( "mail.debug", "true" );
     }
 
-    if ( usingAuthentication ) {
+    if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
       props.put( "mail." + protocol + ".auth", "true" );
 
       /*
@@ -797,6 +946,16 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
        * PasswordAuthentication( StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")),
        * StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, "")) ); } };
        */
+    }
+
+    else if( usingAuthentication.equals(JobEntryMail.AUTENTICATION_OAUTH ) ) {
+      token = getOauthToken( tokenUrl );
+      props.put( "mail."+protocol+".auth.xoauth2.disable", "false" );
+      props.put( "mail."+protocol+".auth.mechanisms", "XOAUTH2" );
+      props.put( "mail.transport.protocol", "smtp");
+      props.put( "mail."+protocol+".auth.login.disable", "true" );
+      props.put( "mail."+protocol+".auth.plain.disable", "true" );
+      props.setProperty( "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
     }
 
     Session session = Session.getInstance( props );
@@ -1160,7 +1319,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         transport = session.getTransport( protocol );
         String authPass = getPassword( authenticationPassword );
 
-        if ( usingAuthentication ) {
+        if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
           if ( !Utils.isEmpty( port ) ) {
             transport.connect(
               environmentSubstitute( Const.NVL( server, "" ) ),
@@ -1172,6 +1331,20 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
               environmentSubstitute( Const.NVL( server, "" ) ),
               environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
               authPass );
+          }
+        }
+        else if( usingAuthentication.equals(  JobEntryMail.AUTENTICATION_OAUTH ) ) {
+          if ( !Utils.isEmpty( port ) ) {
+            transport.connect(
+                    environmentSubstitute( Const.NVL( server, "" ) ),
+                    Integer.parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ),
+                    environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+                    this.token.getAccessToken() );
+          } else {
+            transport.connect(
+                    environmentSubstitute( Const.NVL( server, "" ) ),
+                    environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+                    this.token.getAccessToken() );
           }
         } else {
           transport.connect();
@@ -1322,6 +1495,40 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     this.port = port;
   }
 
+  IEmailAuthenticationResponse getOauthToken( String tokenUrl ) {
+    try ( CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient() ) {
+      this.tokenUrl = environmentSubstitute( tokenUrl );
+      HttpPost httpPost = new HttpPost( tokenUrl );
+      List<NameValuePair> form = new ArrayList<>();
+      form.add( new BasicNameValuePair( "scope", environmentSubstitute( scope ) ) );
+      form.add( new BasicNameValuePair( "client_id", environmentSubstitute( clientId ) ) );
+      form.add( new BasicNameValuePair( "client_secret", environmentSubstitute( secretKey ) ) );
+      form.add( new BasicNameValuePair( "grant_type", environmentSubstitute( grant_type ) ) );
+      if ( grant_type.equals( JobEntryMail.GRANTTYPE_REFRESH_TOKEN ) ) {
+        form.add( new BasicNameValuePair( JobEntryMail.GRANTTYPE_REFRESH_TOKEN, environmentSubstitute( refresh_token ) ) );
+      }
+      if ( grant_type.equals( JobEntryMail.GRANTTYPE_AUTHORIZATION_CODE ) ) {
+        form.add( new BasicNameValuePair( "code", environmentSubstitute( authorization_code ) ) );
+        form.add( new BasicNameValuePair( "redirect_uri", environmentSubstitute( redirectUri ) ) );
+      }
+      UrlEncodedFormEntity entity = new UrlEncodedFormEntity( form, Consts.UTF_8 );
+      httpPost.setEntity( entity );
+      try ( CloseableHttpResponse response = client.execute( httpPost ) ) {
+        if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
+          throw new HttpException( "Unable to get authorization token " + response.getStatusLine().toString() );
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue( EntityUtils.toString( response.getEntity() ), EmailAuthenticationResponse.class );
+      } catch ( HttpException e ) {
+        throw new RuntimeException( e );
+      } catch ( IOException e ) {
+        throw new RuntimeException( e );
+      }
+    } catch ( IOException e ) {
+      throw new RuntimeException( e );
+    }
+  }
+
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
     String realServername = jobMeta.environmentSubstitute( server );
@@ -1344,7 +1551,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     JobEntryValidatorUtils.andValidator().validate( this, "destination", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
-    if ( usingAuthentication ) {
+    if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
       JobEntryValidatorUtils.andValidator().validate( this, "authenticationUser", remarks,
           AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
       JobEntryValidatorUtils.andValidator().validate( this, "authenticationPassword", remarks,

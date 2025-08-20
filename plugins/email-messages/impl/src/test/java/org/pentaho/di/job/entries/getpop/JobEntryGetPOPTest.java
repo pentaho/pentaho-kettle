@@ -15,7 +15,8 @@ package org.pentaho.di.job.entries.getpop;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -30,6 +31,13 @@ import javax.mail.MessagingException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicStatusLine;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -49,12 +57,22 @@ public class JobEntryGetPOPTest {
   Job parentJob;
   @Mock
   Message message;
+  @Mock
+  private HttpClientManager httpClientManager;
+  @Mock
+  private CloseableHttpClient httpClient;
+  @Mock
+  private CloseableHttpResponse httpResponse;
 
   JobEntryGetPOP entry = new JobEntryGetPOP();
 
   @Before
   public void before() throws IOException, KettleException, MessagingException {
     MockitoAnnotations.initMocks( this );
+
+    httpClientManager = Mockito.mock( HttpClientManager.class );
+    httpClient = Mockito.mock( CloseableHttpClient.class );
+    httpResponse = Mockito.mock( CloseableHttpResponse.class);
 
     Mockito.when( parentJob.getLogLevel() ).thenReturn( LogLevel.BASIC );
     entry.setParentJob( parentJob );
@@ -310,5 +328,73 @@ public class JobEntryGetPOPTest {
     } catch ( Exception e ) {
       fail( "Unexpected exception when calling createOutputDirectory for attachment directory" );
     }
+  }
+  @Test
+  public void testgrantTypeIsClientCredentials() {
+   entry.setGrant_type( JobEntryGetPOP.GRANTTYPE_CLIENTCREDENTIALS );
+    assertEquals( JobEntryGetPOP.GRANTTYPE_CLIENTCREDENTIALS, entry.getGrant_type() );
+  }
+
+  @Test
+  public void testgrantTypeIsAuthorizationCode() {
+    entry.setGrant_type( JobEntryGetPOP.GRANTTYPE_AUTHORIZATION_CODE );
+    assertEquals( JobEntryGetPOP.GRANTTYPE_AUTHORIZATION_CODE, entry.getGrant_type() );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void testgetOauthTokenThrowsExceptionOnUnsuccessfulResponse() throws IOException {
+    String tokenUrl = "http://example.com/token";
+
+    StatusLine statusLine = new BasicStatusLine( new ProtocolVersion( "HTTP", 1, 1 ), 400, "Bad Request" );
+
+    Mockito.when( httpClientManager.createDefaultClient() ).thenReturn( httpClient );
+    Mockito.when( httpClient.execute( any( HttpPost.class ) ) ).thenReturn( httpResponse );
+    Mockito.when( httpResponse.getStatusLine() ).thenReturn( statusLine );
+
+    entry.getOauthToken( tokenUrl );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void testgetOauthTokenThrowsExceptionOnHttpClientExecuteFailure() throws IOException {
+    String tokenUrl = "http://example.com/token";
+
+    Mockito.when( httpClientManager.createDefaultClient() ).thenReturn( httpClient );
+    Mockito.when( httpClient.execute( any( HttpPost.class ) ) ).thenThrow( new IOException() );
+    entry.getOauthToken( tokenUrl );
+  }
+
+  @Test( expected = RuntimeException.class )
+  public void testGetOauthTokenThrowsExceptionOnHttpError() throws Exception {
+    entry.setGrant_type( entry.GRANTTYPE_REFRESH_TOKEN );
+    entry.setRefresh_token( "refresh_token_value" );
+    entry.setTokenUrl( "http://example.com/token" );
+
+    Mockito.when( httpClient.execute( any( HttpPost.class ) ) ).thenReturn( httpResponse );
+    Mockito.when( httpResponse.getStatusLine().getStatusCode() ).thenReturn( 500 );
+
+    entry.getOauthToken( "http://example.com/token" );
+  }
+  @Test
+  public void testAuthorizationCodeAndRedirectUri() {
+   JobEntryGetPOP jobEntry = new JobEntryGetPOP();
+    String authorizationCode = "testAuthCode";
+    String redirectUri = "http://test.redirect.uri";
+
+    jobEntry.setAuthorization_code( authorizationCode );
+    jobEntry.setRedirectUri( redirectUri );
+
+    assertEquals( authorizationCode, jobEntry.getAuthorization_code() );
+    assertEquals( redirectUri, jobEntry.getRedirectUri() );
+  }
+
+  @Test( expected = RuntimeException.class )
+  public void testGetOauthTokenThrowsExceptionOnIOException() throws Exception {
+    entry.setGrant_type( entry.GRANTTYPE_REFRESH_TOKEN );
+    entry.setRefresh_token( "refresh_token_value" );
+    entry.setTokenUrl( "http://example.com/token" );
+
+    Mockito.when( httpClient.execute( any( HttpPost.class ) ) ).thenThrow( new IOException() );
+
+    entry.getOauthToken( "http://example.com/token" );
   }
 }
