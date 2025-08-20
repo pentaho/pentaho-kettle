@@ -13,34 +13,27 @@
 
 package org.pentaho.di.trans.steps.ssh;
 
-import java.io.CharArrayWriter;
-import java.io.InputStream;
-
-import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.vfs2.FileContent;
-import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.ssh.SshConfig;
+import org.pentaho.di.core.ssh.SshConnection;
+import org.pentaho.di.core.ssh.SshConnectionFactory;
+import org.pentaho.di.core.ssh.SshImplementation;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
-
-import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.HTTPProxyData;
 
 /**
  * @author Samatar
  * @since 03-Juin-2008
  *
  */
-public class SSHData extends BaseStepData implements StepDataInterface {
+public class SSHData extends BaseStepData {
   public int indexOfCommand;
-  public Connection conn;
+  public SshConnection sshConnection;  // Direct SSH connection
+  public boolean connected;            // Track connection state
   public boolean wroteOneRow;
   public String commands;
   public int nrInputFields;
@@ -55,84 +48,90 @@ public class SSHData extends BaseStepData implements StepDataInterface {
   public SSHData() {
     super();
     this.indexOfCommand = -1;
-    this.conn = null;
+    this.sshConnection = null;
+    this.connected = false;
     this.wroteOneRow = false;
     this.commands = null;
     this.stdOutField = null;
     this.stdTypeField = null;
   }
 
-  public static Connection OpenConnection( Bowl bowl, String serveur, int port, String username, String password,
-      boolean useKey, String keyFilename, String passPhrase, int timeOut, VariableSpace space, String proxyhost,
-      int proxyport, String proxyusername, String proxypassword ) throws KettleException {
-    Connection conn = null;
-    char[] content = null;
-    boolean isAuthenticated = false;
+  /**
+   * Connection method using our SSH abstraction layer.
+   * Provides modern SSH implementation with Ed25519 support and algorithm flexibility.
+   * 
+   * @param preferredImplementation SSH implementation to prefer (null for auto-detect)
+   * @param log Optional log channel for warnings and debug info
+   */
+  public static SshConnection OpenSshConnection(
+      Bowl bowl, String server, int port, String username, String password,
+      boolean useKey, String keyFilename, String passPhrase, int timeOut, 
+      VariableSpace space, String proxyhost, int proxyport, 
+      String proxyusername, String proxypassword,
+      SshImplementation preferredImplementation, LogChannelInterface log ) throws KettleException {
+
     try {
-      // perform some checks
-      if ( useKey ) {
-        if ( Utils.isEmpty( keyFilename ) ) {
-          throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyFileMissing" ) );
+      // Build SSH configuration
+      SshConfig config = SshConfig.create()
+          .host( server )
+          .port( port )
+          .username( username )
+          .connectTimeoutMillis( timeOut > 0 ? timeOut * 1000 : 30000 ); // Default 30 seconds
+
+      if ( useKey && !Utils.isEmpty( keyFilename ) ) {
+        config.authType( SshConfig.AuthType.PUBLIC_KEY )
+              .keyPath( java.nio.file.Paths.get( space.environmentSubstitute( keyFilename ) ) );
+        if ( !Utils.isEmpty( passPhrase ) ) {
+          config.passphrase( space.environmentSubstitute( passPhrase ) );
         }
-        FileObject keyFileObject = KettleVFS.getInstance( bowl ).getFileObject( keyFilename );
-
-        if ( !keyFileObject.exists() ) {
-          throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
-        }
-
-        FileContent keyFileContent = keyFileObject.getContent();
-
-        CharArrayWriter charArrayWriter = new CharArrayWriter( (int) keyFileContent.getSize() );
-
-        try ( InputStream in = keyFileContent.getInputStream() ) {
-          IOUtils.copy( in, charArrayWriter );
-        }
-
-        content = charArrayWriter.toCharArray();
-      }
-      // Create a new connection
-      conn = createConnection( serveur, port );
-
-      /* We want to connect through a HTTP proxy */
-      if ( !Utils.isEmpty( proxyhost ) ) {
-        /* Now connect */
-        // if the proxy requires basic authentication:
-        if ( !Utils.isEmpty( proxyusername ) ) {
-          conn.setProxyData( new HTTPProxyData( proxyhost, proxyport, proxyusername, proxypassword ) );
-        } else {
-          conn.setProxyData( new HTTPProxyData( proxyhost, proxyport ) );
-        }
-      }
-
-      // and connect
-      if ( timeOut == 0 ) {
-        conn.connect();
       } else {
-        conn.connect( null, 0, timeOut * 1000 );
+        config.authType( SshConfig.AuthType.PASSWORD )
+              .password( password );
       }
-      // authenticate
-      if ( useKey ) {
-        isAuthenticated =
-          conn.authenticateWithPublicKey( username, content, space.environmentSubstitute( passPhrase ) );
-      } else {
-        isAuthenticated = conn.authenticateWithPassword( username, password );
+
+      // Set preferred implementation or let factory decide
+      if ( preferredImplementation != null ) {
+        config.implementation( preferredImplementation );
       }
-      if ( isAuthenticated == false ) {
-        throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.AuthenticationFailed", username ) );
+
+      if ( log != null && log.isDebug() ) {
+        log.logDebug( "Creating SSH connection using modern abstraction layer to " + server + ":" + port );
+        log.logDebug( "SSH Config - Auth type: " + config.getAuthType()
+                    + ", Connect timeout: " + config.getConnectTimeoutMillis() + "ms"
+                    + ", Command timeout: " + config.getCommandTimeoutMillis() + "ms"
+                    + ", Implementation: " + config.getImplementation() );
       }
+
+      SshConnection connection = SshConnectionFactory.defaultFactory().open( config, log );
+      if ( log != null && log.isDebug() ) {
+        log.logDebug( "Successfully created SSH connection object, type: " + connection.getClass().getSimpleName() );
+      }
+      return connection;
+
     } catch ( Exception e ) {
-      // Something wrong happened
-      // do not forget to disconnect if connected
-      if ( conn != null ) {
-        conn.close();
+      // Log the exception details for debugging
+      if ( log != null ) {
+        log.logError( "Failed to create SSH connection to " + server + ":" + port
+                    + " - Exception: " + e.getClass().getSimpleName() + ": " + e.getMessage() );
+        log.logError( "Full stack trace for SSH connection failure:", e );
       }
-      throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.ErrorConnecting", serveur, username ), e );
+
+      // Re-throw as KettleException to maintain API contract
+      throw new KettleException( "SSH connection failed: " + e.getMessage(), e );
     }
-    return conn;
   }
 
-  @VisibleForTesting
-   static Connection createConnection( String serveur, int port ) {
-    return new Connection( serveur, port );
+  /**
+   * Convenience method that uses auto-detection for SSH implementation.
+   */
+  public static SshConnection OpenSshConnection(
+      Bowl bowl, String server, int port, String username, String password,
+      boolean useKey, String keyFilename, String passPhrase, int timeOut,
+      VariableSpace space, String proxyhost, int proxyport,
+      String proxyusername, String proxypassword, LogChannelInterface log ) throws KettleException {
+
+    return OpenSshConnection( bowl, server, port, username, password, useKey, keyFilename,
+                              passPhrase, timeOut, space, proxyhost, proxyport, proxyusername,
+                              proxypassword, null, log );
   }
 }
