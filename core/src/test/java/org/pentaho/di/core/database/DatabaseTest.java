@@ -270,9 +270,11 @@ public class DatabaseTest {
     when( rsMetaData.getColumnCount() ).thenReturn( 0 );
     when( ps.getMetaData() ).thenReturn( rsMetaData );
 
-    Database db = new Database( log, meta );
-    db.getLookup( ps );
-    verify( rsMetaData, times( 1 ) ).getColumnCount();
+    try ( Database db = new Database( log, meta ) ) {
+      db.setConnection( conn );
+      db.getLookup( ps );
+      verify( rsMetaData, times( 1 ) ).getColumnCount();
+    }
   }
 
   @Test
