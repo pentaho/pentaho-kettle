@@ -16,8 +16,6 @@ package org.pentaho.di.trans.steps.mock;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.RowSet;
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;

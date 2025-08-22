@@ -175,7 +175,6 @@ public class DatabaseLookupUTest {
       row.addValueMeta( new ValueMetaBinary( BINARY_FIELD ) );
       return null;
     } ).when( meta ).getFields(
-      any( Bowl.class ),
       any( RowMetaInterface.class ),
       anyString(),
       any( RowMetaInterface[].class ),
@@ -277,7 +276,6 @@ public class DatabaseLookupUTest {
       row.addValueMeta( v );
       return null;
     } ).when( meta ).getFields(
-      any( Bowl.class ),
       any( RowMetaInterface.class ),
       anyString(),
       any( RowMetaInterface[].class ),
