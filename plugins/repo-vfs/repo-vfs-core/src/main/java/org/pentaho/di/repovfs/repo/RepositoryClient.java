@@ -301,8 +301,8 @@ public class RepositoryClient {
 
   /** Search for the given path, filling the cache tree along the way */
   public Optional<RepositoryFileTreeDto> lookupNode( final String[] path ) throws RepositoryClientException {
-    if ( log.isDebugEnabled() ) {
-      log.debug( "lookupNode: {}", StringUtils.join( path, "/" ) );
+    if ( log.isTraceEnabled() ) {
+      log.trace( "lookupNode: {}", StringUtils.join( path, "/" ) );
     }
     if ( root == null ) {
       refreshRoot();
@@ -368,10 +368,15 @@ public class RepositoryClient {
     throwOnError( response );
   }
 
-  /** Renames a file or folder in place */
-  public void rename( String[] origPath, String newName ) throws RepositoryClientException {
+  /**
+   * Renames a file or folder in place keeping the extension
+   * @param origPath the path of the original file or folder
+   * @param newNameNoExt the new name without extension
+   */
+  public void rename( String[] origPath, String newNameNoExt ) throws RepositoryClientException {
     String origRepoPath = encodePath( origPath );
-    String svc = cfg.getRenameSvc( origRepoPath, newName );
+    newNameNoExt = Encode.forUriComponent( newNameNoExt );
+    String svc = cfg.getRenameSvc( origRepoPath, newNameNoExt );
     WebTarget target = client.target( url + svc );
     final Response response = target.request( MediaType.WILDCARD ).put( Entity.text(" ") );
     throwOnError( response );

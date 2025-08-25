@@ -1,15 +1,12 @@
 package org.pentaho.di.repovfs.plugin.vfs;
 
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.repository.IUser;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repovfs.cfg.JCRSolutionConfig;
 import org.pentaho.di.repovfs.repo.BasicAuthentication;
 import org.pentaho.di.repovfs.repo.RepositoryClient;
 import org.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
 import org.pentaho.di.repovfs.vfs.JCRSolutionFileSystem;
 
+import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionProvider;
 import org.pentaho.di.connections.vfs.DefaultVFSConnectionFileNameTransformer;
@@ -19,15 +16,12 @@ import org.pentaho.di.connections.vfs.provider.ConnectionFileName;
 import org.pentaho.di.core.exception.KettleException;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemOptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -42,7 +36,23 @@ public class RepoVfsPdiProvider  extends BaseVFSConnectionProvider<RepoVfsDetail
 
   public static final String NAME = ConnectionManager.STRING_REPO_VFS_PROVIDER_NAME;
 
-  private static final Logger log = LoggerFactory.getLogger( RepoVfsPdiProvider.class );
+  /** The connection instance for this provider */
+  private Optional<RepoVfsDetails> activeDetails = Optional.empty();
+
+  /** Set an active connection instance for this provider */
+  public void setActiveDetails( RepoVfsDetails details ) {
+    activeDetails = Optional.of( details );
+  }
+
+  /** Clear the active connection instance for this provider, if any */
+  public void clearActiveDetails() {
+    activeDetails = Optional.empty();
+  }
+
+  /** Get the active connection instance for this provider, if any */
+  public Optional<RepoVfsDetails> getActiveDetails() {
+    return activeDetails;
+  }
 
   @Override
   public List<VFSRoot> getLocations( RepoVfsDetails details ) {
@@ -128,51 +138,27 @@ public class RepoVfsPdiProvider  extends BaseVFSConnectionProvider<RepoVfsDetail
 
   @Override
   public List<RepoVfsDetails> getConnectionDetails() {
-    throw new UnsupportedOperationException( "Deprecated method " );
+    return activeDetails.map( Collections::singletonList ).orElse( Collections.emptyList() );
   }
 
   @Override
   public List<String> getNames() {
-    throw new UnsupportedOperationException( "Deprecated method " );
+    return activeDetails.map( ConnectionDetails::getName ).map( Collections::singletonList ).orElse( Collections
+      .emptyList() );
   }
 
   @Override
   public List<RepoVfsDetails> getConnectionDetails( ConnectionManager connectionManager ) {
-    RepoVfsDetails details;
-    List<RepoVfsDetails> detailsList = new ArrayList<>();
-    Bowl bowl = connectionManager.getBowl();
-    if ( bowl instanceof RepositoryBowl ) {
-      details = createConnectionDetail( ( (RepositoryBowl) bowl).getRepository(), ConnectionManager.STRING_REPO_CONNECTION );
-      detailsList.add( details );
-    }
-    return detailsList;
-
+    return getConnectionDetails();
   }
 
   @Override
   public List<String> getNames( ConnectionManager connectionManager ) {
-    return getConnectionDetails( connectionManager ).stream()
-            .map( RepoVfsDetails::getName )
-            .collect( Collectors.toList() );
+    return getNames();
   }
 
   @Override
   public boolean isStorageManaged() {
     return false;
   }
-
-  private static RepoVfsDetails createConnectionDetail( Repository repo, String connectionName ) {
-    IUser userInfo = repo.getUserInfo();
-
-    RepoVfsDetails details = new RepoVfsDetails();
-    repo.getUri().ifPresent( uri -> {
-      log.debug( "URI: {}", uri.toString() );
-      details.setUrl( uri.toString() );
-      details.setName( connectionName );
-      details.setUser( userInfo.getLogin() );
-      details.setPass( userInfo.getPassword() );
-    } );
-    return details;
-  }
-
 }

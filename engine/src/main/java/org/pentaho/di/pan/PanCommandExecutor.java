@@ -135,21 +135,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
             return exitWithStatus( CommandExecutorCodes.Pan.SUCCESS.getCode() );
           }
 
-          // Validate PluginNamedParams when repository is connected
-          CommandExecutorResult result = validateAndSetPluginContext( getLog(), params, repository );
-          if ( result != null && result.getCode() != 0 ) {
-            return exitWithStatus( result.getCode() );
-          }
-
           trans = loadTransFromRepository( repository, params.getInputDir(), params.getInputFile() );
-        }
-
-        // Validate PluginNamedParams when repository is not connected
-        if ( repository == null ) {
-          CommandExecutorResult result = validateAndSetPluginContext( getLog(), params, null );
-          if ( result != null && result.getCode() != 0 ) {
-            return exitWithStatus( result.getCode() );
-          }
         }
 
         // Try to load the transformation from file, even if it failed to load from the repository
@@ -158,7 +144,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
           trans = loadTransFromFilesystem( params.getLocalInitialDir(),
             params.getLocalFile(), params.getLocalJarFile(), params.getBase64Zip() );
         }
-
 
       }
 
@@ -487,8 +472,6 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       }
     }
   }
-
-
 
   private void waitUntilFinished( Trans trans, final long waitMillis ) {
 

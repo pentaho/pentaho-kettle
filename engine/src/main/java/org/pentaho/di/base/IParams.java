@@ -204,16 +204,4 @@ public interface IParams extends Serializable {
    * @return namedParams custom parameters to be passed into the executing file
    */
   NamedParams getCustomNamedParams();
-
-  /**
-   *
-   * @return NamedParams custom plugin named parameters
-   */
-  NamedParams getPluginNamedParams();
-
-  /**
-   *
-   * @return  Map custom plugin named parameter key/value pairs
-   */
-  Map<String, String> getPluginParams();
 }

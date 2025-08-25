@@ -33,6 +33,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.base.Objects;
+
 public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSystem> {
   private static final Logger log = LoggerFactory.getLogger( JCRSolutionFileObject.class );
 
@@ -252,8 +254,8 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
     try {
       if ( haveSameName( this, destFile ) ) {
         callRepoMove( destFile.getParent() );
-      } else if ( haveSameParent( this, destFile ) ) {
-        callRepoRename( destFile.getName().getBaseName() );
+      } else if ( haveSameParent( this, destFile ) && haveSameExtension( this, destFile ) ) {
+        callRepoRename( getNameNoExt( destFile ) );
       } else {
         // can be optimized to use move+rename as well, but shouldn't be reached in normal use
         log.warn( "Unable to optimize moveTo, falling back to copy+delete" );
@@ -265,6 +267,14 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
     } catch ( RepositoryClientException e ) {
       throw new FileSystemException( e );
     }
+  }
+
+  private boolean haveSameExtension( FileObject file1, FileObject file2 ) {
+    return Objects.equal( file1.getName().getExtension(), file2.getName().getExtension() );
+  }
+
+  private static String getNameNoExt( FileObject file ) {
+    return FilenameUtils.removeExtension( file.getName().getBaseName() );
   }
 
   /** Rename this file in place */

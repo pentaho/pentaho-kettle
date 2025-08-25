@@ -68,8 +68,4 @@ public class RepositoryBowl extends BaseBowl {
   public String getLevelDisplayName() {
     return BaseMessages.getString(PKG, "Repository.Level.Name");
   }
-
-  public Repository getRepository() {
-    return repository;
-  }
 }

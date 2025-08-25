@@ -13,6 +13,13 @@
 
 package org.pentaho.di.trans.steps.propertyinput;
 
+import org.apache.commons.configuration2.INIConfiguration;
+import org.apache.commons.configuration2.SubnodeConfiguration;
+import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.step.BaseStepData;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.text.DateFormatSymbols;
@@ -25,19 +32,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.vfs2.FileObject;
-import org.ini4j.Profile.Section;
-import org.ini4j.Wini;
-import org.pentaho.di.core.fileinput.FileInputList;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
-
 /**
  * @author Samatar Hassan
  * @since 24-Mars-2008
  */
-public class PropertyInputData extends BaseStepData implements StepDataInterface {
+@SuppressWarnings( { "java:S1104", "java:S116" } ) // Public fields and naming convention are intentional for data classes in this framework
+public class PropertyInputData extends BaseStepData {
   public String thisline;
   public RowMetaInterface outputRowMeta;
   public RowMetaInterface convertRowMeta;
@@ -64,19 +64,22 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
   public int indexOfFilenameField;
   public Object[] readrow;
 
+  // Are we handling Property files (true) or INI files (false)?
+  public boolean propfiles;
+
   // Properties files
   public Properties pro;
-  public Iterator<Object> it;
+  public Iterator<Object> propIt;
 
   // INI files
-  public Section iniSection;
-  public Wini wini;
-  public Iterator<String> itSection;
+  public INIConfiguration iniConf;
+  public SubnodeConfiguration iniSection;
+  public Iterator<String> iniIt;
+  public Iterator<String> iniSectionIt;
+
   public String realEncoding;
   public String realSection;
-  public Iterator<String> iniIt;
-
-  public boolean propfiles;
+  public String currentSection;
 
   public String filename;
   public String shortFilename;
@@ -99,7 +102,6 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
     dafs = new DateFormatSymbols();
 
     nr_repeats = 0;
-    previousRow = null;
     filenr = 0;
 
     fr = null;
@@ -110,10 +112,11 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
     readrow = null;
 
     pro = null;
-    it = null;
+    propIt = null;
     iniSection = null;
-    wini = null;
-    itSection = null;
+    currentSection = null;
+    iniConf = null;
+    iniSectionIt = null;
     realEncoding = null;
     realSection = null;
     propfiles = true;

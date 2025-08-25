@@ -89,7 +89,6 @@ import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
@@ -4576,6 +4575,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void closeRepository() {
     if ( rep != null ) {
 
+      callRepositoryChangingEP( null );
       // Prompt and close all tabs as user disconnected from the repo
       boolean shouldDisconnect = Spoon.getInstance().closeAllJobsAndTransformations( true );
       if ( shouldDisconnect ) {
@@ -4980,7 +4980,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     } else if ( getActiveMeta() != null ) {
       // There is an opened file, lets set that as the file open browser location
-      setFileOperatioPathForNonRepositoryFile( fileDialogOperation, getActiveMeta(), false );
+      if ( rep == null ) {
+        setFileOperationPathForNonRepositoryFile( fileDialogOperation, getActiveMeta(), false );
+      } else {
+        setFileOperationPathForRepositoryFile( fileDialogOperation, getActiveMeta() );
+      }
     } else {
       // Unable to find last open file so setting the file open browser to user's home
       defaultFileDialogOperationToUserHome( fileDialogOperation );
@@ -5040,7 +5044,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return saveAsNew( meta, export, evaluateFileBrowserProviderFilter(), fileType, command );
   }
 
-  private void setFileOperatioPathForNonRepositoryFile(FileDialogOperation fileDialogOperation
+  private void setFileOperationPathForNonRepositoryFile( FileDialogOperation fileDialogOperation
           , EngineMetaInterface meta, boolean export) {
     // Check if user is exporting a file
     if (export && !Utils.isEmpty( lastFileOpenedProvider ) && lastFileOpenedProvider
@@ -5059,14 +5063,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // This is the first time user is saving this file.
         if ( !Utils.isEmpty( lastFileOpenedProvider )  && lastFileOpenedProvider
             .equalsIgnoreCase( ProviderFilterType.REPOSITORY.toString() ) && rep == null ) {
-          // User has not opened any file but the lastOpenProvier was repository and use is not connected to the
+          // User has not opened any file but the lastFileOpenedProvider was repository and user is not connected to the
           // repository so set the session to the user's home folder
           defaultFileDialogOperationToUserHome( fileDialogOperation );
         } else if ( getActiveAbstractMeta() != null && getActiveAbstractMeta().getDefaultSaveDirectory() != null ) {
           // if the default save directory is present, set the path to this directory
           fileDialogOperation.setPath( getActiveAbstractMeta().getDefaultSaveDirectory() );
         } else if ( !Utils.isEmpty( lastFileOpened ) ) {
-          //User has opened a file previously, set the save folder be the last file opened folder
+          // User has opened a file previously, set the save folder to be the last file opened folder
           int parentIndex = lastFileOpened.lastIndexOf('\\');
           if (parentIndex == -1) {
             parentIndex = lastFileOpened.lastIndexOf('/');
@@ -5095,9 +5099,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     fileDialogOperation.setFilename( meta.getName() );
     fileDialogOperation.setProviderFilter( providerFilter );
     if ( !export && rep != null && meta.getRepositoryDirectory() != null ) {
-      setFileOperatioPathForRepositoryFile( fileDialogOperation, meta );
+      setFileOperationPathForRepositoryFile( fileDialogOperation, meta );
     } else {
-      setFileOperatioPathForNonRepositoryFile(fileDialogOperation, meta, export );
+      setFileOperationPathForNonRepositoryFile( fileDialogOperation, meta, export );
     }
     if ( meta instanceof VariableSpace ) {
       fileDialogOperation.setConnection( null );
@@ -5132,11 +5136,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return saved;
   }
 
-  private void setFileOperatioPathForRepositoryFile( FileDialogOperation fileDialogOperation, EngineMetaInterface meta ) {
+  private void setFileOperationPathForRepositoryFile( FileDialogOperation fileDialogOperation, EngineMetaInterface meta ) {
 
     List<LastUsedFile> lastUsedFileList = getLastUsedRepoFiles();
 
-    if ( !Utils.isEmpty( lastUsedFileList ) ) {
+    if ( getActiveAbstractMeta() != null && getActiveAbstractMeta().getDefaultSaveDirectory() != null ) {
+      // if the default save directory is present, set the path to this directory
+      fileDialogOperation.setPath( getActiveAbstractMeta().getDefaultSaveDirectory() );
+    } else if ( !Utils.isEmpty( lastUsedFileList ) ) {
       fileDialogOperation.setPath( lastUsedFileList.get( 0 ).getDirectory() );
     } else {
       fileDialogOperation.setPath( meta.getRepositoryDirectory().getPath() );
@@ -5870,7 +5877,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation.setFileType( fileType );
           fileDialogOperation.setFilter( deriveFileFilterFromFileType( fileType ) );
-          setFileOperatioPathForRepositoryFile( fileDialogOperation, meta );
+          setFileOperationPathForRepositoryFile( fileDialogOperation, meta );
           //Set the filename so it can be used as the default filename in the save dialog
           String fileName = ( meta.getFilename() == null || meta.getFilename().length() == 0 )
                   ? meta.getName() : meta.getFilename();
@@ -5940,6 +5947,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       if ( meta instanceof JobMeta ) {
         existingId = rep.getJobId( meta.getName(), meta.getRepositoryDirectory() );
+        saveEventId = KettleExtensionPoint.JobAfterSave.id;
       }
 
       boolean saved = false;
@@ -6196,7 +6204,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       fileDialogOperation.setFileType(FilterType.ZIP.toString());
       fileDialogOperation.setFilter(FilterType.ZIP.toString());
       fileDialogOperation.setProviderFilter(ProviderFilterType.LOCAL + "," + ProviderFilterType.VFS);
-      setFileOperatioPathForNonRepositoryFile(fileDialogOperation, (EngineMetaInterface) resourceExportInterface, true);
+      setFileOperationPathForNonRepositoryFile(fileDialogOperation, (EngineMetaInterface) resourceExportInterface, true);
       ExtensionPointHandler.callExtensionPoint(getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
               fileDialogOperation);
 
@@ -9344,6 +9352,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     delegates.update( this );
     enableMenus();
+  }
+
+  private void callRepositoryChangingEP( Repository rep ) {
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.RepositoryChanging.id, rep );
+    } catch ( Exception e ) {
+      log.logError( e.getLocalizedMessage(), e );
+    }
   }
 
   public void setRepositoryName( String repoName ) {

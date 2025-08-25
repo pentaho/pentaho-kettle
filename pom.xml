@@ -59,9 +59,9 @@
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <encoder.version>1.2</encoder.version>
-    <wstx-asl.version>3.2.4</wstx-asl.version>
     <jsch.version>0.2.9</jsch.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
+    <commons-configuration2.version>2.10.1</commons-configuration2.version>
 
     <!-- Test dependencies -->
     <mockito.version>5.10.0</mockito.version>
@@ -234,9 +234,15 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.woodstox</groupId>
+        <artifactId>woodstox-core</artifactId>
+        <version>${woodstox-core.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>org.codehaus.woodstox</groupId>
-        <artifactId>wstx-asl</artifactId>
-        <version>${wstx-asl.version}</version>
+        <artifactId>stax2-api</artifactId>
+        <version>${stax2-api.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -264,6 +270,11 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>${fasterxml-jackson.non-osgi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-configuration2</artifactId>
+        <version>${commons-configuration2.version}</version>
       </dependency>
 
       <!-- Test dependencies -->
