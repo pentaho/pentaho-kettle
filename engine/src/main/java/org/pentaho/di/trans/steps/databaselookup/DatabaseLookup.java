@@ -135,10 +135,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
           + data.lookupMeta.getString( lookupRow ) );
       }
 
-        data.db.setValuesLookup( data.lookupMeta, lookupRow );
-        add = data.db.getLookup( meta.isFailingOnMultipleResults() );
-        cache_now = true;
-      }
+      data.db.setValuesLookup( data.lookupMeta, lookupRow );
+      add = data.db.getLookup( meta.isFailingOnMultipleResults() );
+      cacheNow = true;
     }
 
 
