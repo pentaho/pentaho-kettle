@@ -415,7 +415,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
       String con = XMLHandler.getTagValue( stepnode, TAG_CONNECTION );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
