@@ -13,17 +13,24 @@
 
 package org.pentaho.di.www;
 
-import com.sun.jersey.spi.container.servlet.ServletContainer;
-import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.jaas.JAASLoginService;
-import org.eclipse.jetty.security.ConstraintMapping;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.security.ConstraintMapping;
+import org.eclipse.jetty.ee10.servlet.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.Constraint;
 import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.UserStore;
+import org.eclipse.jetty.security.RolePrincipal;
+import org.eclipse.jetty.security.UserPrincipal;
+import org.eclipse.jetty.security.jaas.JAASLoginService;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.resource.ResourceFactory;
+import org.glassfish.jersey.servlet.ServletContainer;
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.LowResourceMonitor;
@@ -32,12 +39,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Password;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.pentaho.di.cluster.SlaveServer;
@@ -53,14 +55,16 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static org.eclipse.jetty.security.Authenticator.BASIC_AUTH;
+import static org.eclipse.jetty.security.Constraint.Authorization.ANY_USER;
 
 public class WebServer {
 
@@ -150,9 +154,6 @@ public class WebServer {
   public void startServer() throws Exception {
     server = new Server();
 
-    List<String> roles = new ArrayList<>();
-    roles.add( Constraint.ANY_AUTH );
-
     // Set up the security handler, optionally with JAAS
     //
     ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
@@ -184,26 +185,23 @@ public class WebServer {
             passwordFile = Const.getKettleLocalCartePasswordFile();
           }
         }
-        hashLoginService = new HashLoginService( SERVICE_NAME, passwordFile ) {
+
+        hashLoginService = new HashLoginService( SERVICE_NAME, ResourceFactory.of( server ).newResource( passwordFile ) ) {
           @Override
-          protected String[] loadRoleInfo( UserPrincipal user ) {
-            List<String> newRoles = new ArrayList<>();
-            String[] roles = super.loadRoleInfo( user );
-            if ( null != roles ) {
-              Collections.addAll( newRoles, roles );
+          protected List<RolePrincipal> loadRoleInfo(UserPrincipal user ) {
+            List<RolePrincipal> newRoles = new ArrayList<>();
+            List<RolePrincipal> roles = super.loadRoleInfo( user );
+            if ( roles != null ) {
+              newRoles.addAll( roles );
             }
-            return newRoles.toArray( new String[ newRoles.size() ] );
+            return newRoles;
           }
         };
       }
       securityHandler.setLoginService( hashLoginService );
     }
 
-    Constraint constraint = new Constraint();
-    constraint.setName( Constraint.__BASIC_AUTH );
-    constraint.setRoles( roles.toArray( new String[ roles.size() ] ) );
-    constraint.setAuthenticate( true );
-
+    Constraint constraint = new Constraint.Builder().name( BASIC_AUTH ).authorization( ANY_USER ).build();
     ConstraintMapping constraintMapping = new ConstraintMapping();
     constraintMapping.setConstraint( constraint );
     constraintMapping.setPathSpec( "/*" );
@@ -218,12 +216,11 @@ public class WebServer {
 
     // Root
     //
-    ServletContextHandler
-        root =
-        new ServletContextHandler( contexts, GetRootServlet.CONTEXT_PATH, ServletContextHandler.SESSIONS );
+    ServletContextHandler root = new ServletContextHandler( GetRootServlet.CONTEXT_PATH, ServletContextHandler.SESSIONS );
     GetRootServlet rootServlet = new GetRootServlet();
     rootServlet.setJettyMode( true );
     root.addServlet( new ServletHolder( rootServlet ), "/*" );
+    contexts.addHandler( root );
 
     PluginRegistry pluginRegistry = PluginRegistry.getInstance();
     List<PluginInterface> plugins = pluginRegistry.getPlugins( CartePluginType.class );
@@ -234,16 +231,16 @@ public class WebServer {
       servlet.setJettyMode( true );
 
       ServletContextHandler servletContext =
-        new ServletContextHandler( contexts, getContextPath( servlet ), ServletContextHandler.SESSIONS );
+        new ServletContextHandler( getContextPath( servlet ), ServletContextHandler.SESSIONS );
       ServletHolder servletHolder = new ServletHolder( (Servlet) servlet );
       servletContext.addServlet( servletHolder, "/*" );
+      contexts.addHandler( servletContext );
     }
 
     // setup jersey (REST)
     ServletHolder jerseyServletHolder = new ServletHolder( ServletContainer.class );
-    jerseyServletHolder.setInitParameter( "com.sun.jersey.config.property.resourceConfigClass",
-        "com.sun.jersey.api.core.PackagesResourceConfig" );
-    jerseyServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "org.pentaho.di.www.jaxrs" );
+    jerseyServletHolder.setInitParameter( "jakarta.ws.rs.Application" , "org.glassfish.jersey.server.ResourceConfig" );
+    jerseyServletHolder.setInitParameter( "jersey.config.server.provider.packages" , "org.pentaho.di.www.jaxrs" );
     root.addServlet( jerseyServletHolder, "/api/*" );
 
     // setup static resource serving
@@ -257,21 +254,16 @@ public class WebServer {
     // Allow png files to be shown for transformations and jobs...
     //
     ResourceHandler resourceHandler = new ResourceHandler();
-    resourceHandler.setResourceBase( "temp" );
+    resourceHandler.setBaseResourceAsString( "static" );
+
+    ContextHandler contextHandler = new ContextHandler();
+    contextHandler.setContextPath( "/static" );
+    contextHandler.setHandler( resourceHandler );
+    contexts.addHandler( contextHandler );
+
+    securityHandler.setHandler( contexts );
+
     // add all handlers/contexts to server
-
-    // set up static servlet
-    ServletHolder staticHolder = new ServletHolder( "static", DefaultServlet.class );
-    // resourceBase maps to the path relative to where carte is started
-    staticHolder.setInitParameter( "resourceBase", "./static/" );
-    staticHolder.setInitParameter( "dirAllowed", "true" );
-    staticHolder.setInitParameter( "pathInfoOnly", "true" );
-    root.addServlet( staticHolder, "/static/*" );
-
-    HandlerList handlers = new HandlerList();
-    handlers.setHandlers( new Handler[] { resourceHandler, contexts } );
-    securityHandler.setHandler( handlers );
-
     server.setHandler( securityHandler );
     
     // Configure listeners (Acceptors, ServerConnector/SSL, etc)
@@ -362,7 +354,7 @@ public class WebServer {
     // Create the server with the configurated number of acceptors
     if ( sslConfig != null ) {
       log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.SslModeUsing" ) );
-      SslContextFactory sslContextFactory = new SslContextFactory();
+      SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
       sslContextFactory.setKeyStorePath( sslConfig.getKeyStore() );
       sslContextFactory.setKeyStorePassword( sslConfig.getKeyStorePassword() );
       sslContextFactory.setKeyManagerPassword( sslConfig.getKeyPassword() );

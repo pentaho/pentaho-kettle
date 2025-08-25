@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
@@ -459,46 +458,44 @@ public class MergeJoin extends BaseStep implements StepInterface {
     return true;
   }
 
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  /**
+   * Retrieves the keys of the previous steps in the transformation and returns them as a JSON object.
+   * This method is invoked dynamically using reflection from StepInterface#doAction method.
+   *
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing:
+   *         - "stepKeys": A JSON object where each key is the name of a step, and the value is an array of field names
+   *           from that step.
+   * @throws KettleException If an error occurs while retrieving the step fields.
+   */
+  @SuppressWarnings( "java:S1144" ) // Using reflection, this method is being invoked
   public JSONObject previousKeysAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
-
-    String stepIndex = queryParams.get( "stepIndex" );
-    if ( StringUtils.isBlank( stepIndex ) || !StringUtils.isNumeric( stepIndex ) ) {
-      throw new KettleException( BaseMessages.getString( PKG, "MergeJoin.Exception.ErrorGettingFields" ) );
-    }
+    JSONObject keys = new JSONObject();
     try {
-      JSONArray keysList = new JSONArray();
-      String[] keys = getPreviousStepKeys( Integer.parseInt( stepIndex ) );
-      if ( keys != null ) {
-        keysList.addAll( Arrays.asList( keys ) );
+      MergeJoinMeta joinMeta = (MergeJoinMeta) getStepMetaInterface();
+      List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
+
+      for ( StreamInterface stream : infoStreams ) {
+        StepMeta stepMeta = stream.getStepMeta();
+        if ( stepMeta != null ) {
+          RowMetaInterface prev = getTransMeta().getStepFields( stepMeta );
+          JSONArray keysList = new JSONArray();
+          if ( prev != null ) {
+            keysList.addAll( Arrays.asList( prev.getFieldNames() ) );
+          }
+          keys.put( stepMeta.getName(), keysList );
+        }
       }
-      response.put( "keys", keysList );
+      response.put( "stepKeys", keys );
+    } catch ( KettleException e ) {
+      log.logError( e.getMessage() );
+      throw new KettleException( BaseMessages.getString( PKG, "MergeJoin.Exception.ErrorGettingFields" ) );
     } catch ( Exception e ) {
       log.logError( e.getMessage() );
       response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
     }
     return response;
-  }
-
-  private String[] getPreviousStepKeys( Integer stepIndex ) throws KettleException {
-    MergeJoinMeta joinMeta = (MergeJoinMeta) getStepMetaInterface();
-    String[] fields = null;
-    try {
-      List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
-
-      StepMeta stepMeta = infoStreams.get( stepIndex ).getStepMeta();
-      if ( stepMeta != null ) {
-        RowMetaInterface prev = getTransMeta().getStepFields( stepMeta );
-        if ( prev != null ) {
-          fields = prev.getFieldNames();
-        }
-      }
-    } catch ( KettleException e ) {
-      log.logError( e.getMessage() );
-      throw new KettleException( BaseMessages.getString( PKG, "MergeJoin.Exception.ErrorGettingFields" ) );
-    }
-    return fields;
   }
 
 }

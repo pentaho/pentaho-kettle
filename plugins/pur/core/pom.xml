@@ -26,11 +26,7 @@
     <pentaho-json.version>11.0.0.0-SNAPSHOT</pentaho-json.version>
 
     <!-- Third party dependencies -->
-    <webservices-api.version>2.3.1</webservices-api.version>
-    <webservices-rt.version>2.3.1</webservices-rt.version>
-    <servlet-api.version>2.5</servlet-api.version>
     <encoder.version>1.2</encoder.version>
-    <jersey-multipart.version>1.19.1</jersey-multipart.version>
     <enunciate-core-annotations.version>1.28</enunciate-core-annotations.version>
     <wadl-core.version>1.1.6</wadl-core.version>
     <wadl-ant.version>1.1.6</wadl-ant.version>
@@ -163,6 +159,26 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>${jakarta.ws.rs-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -180,7 +196,7 @@
     <dependency>
       <groupId>org.glassfish.metro</groupId>
       <artifactId>webservices-api</artifactId>
-      <version>${webservices-api.version}</version>
+      <version>${webservices.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -192,7 +208,7 @@
     <dependency>
       <groupId>org.glassfish.metro</groupId>
       <artifactId>webservices-rt</artifactId>
-      <version>${webservices-rt.version}</version>
+      <version>${webservices.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -202,9 +218,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>${servlet-api.version}</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>${jakarta.servlet.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -214,9 +230,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-multipart</artifactId>
-      <version>${jersey-multipart.version}</version>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-multipart</artifactId>
+      <version>${jersey.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -235,8 +251,9 @@
       <version>${enunciate-core-annotations.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
+      <groupId>org.gwtproject</groupId>
+      <artifactId>gwt-servlet-jakarta</artifactId>
+      <version>${gwt-servlet-jakarta.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

@@ -13,6 +13,7 @@
 package org.pentaho.di.www;
 
 
+import jakarta.servlet.ReadListener;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.job.Job;
@@ -24,10 +25,10 @@ import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletOutputStream;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -117,6 +118,21 @@ public class RegisterJobServletTest {
     when( mockHttpServletResponse.getOutputStream() ).thenReturn( outputStream );
     final ByteArrayInputStream is = new ByteArrayInputStream( xmlJob.getBytes() );
     when( mockHttpServletRequest.getInputStream() ).thenReturn( new ServletInputStream() {
+      @Override
+      public boolean isFinished() {
+        return false;
+      }
+
+      @Override
+      public boolean isReady() {
+        return false;
+      }
+
+      @Override
+      public void setReadListener(ReadListener readListener) {
+
+      }
+
       @Override public int read() throws IOException {
         return is.read();
       }

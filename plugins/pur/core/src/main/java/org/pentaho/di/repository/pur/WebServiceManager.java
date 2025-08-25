@@ -25,10 +25,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Service;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.soap.SOAPBinding;
+import com.sun.xml.ws.developer.JAXWSProperties;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.Service;
+import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.soap.SOAPBinding;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.util.ExecutorUtil;
@@ -41,11 +42,12 @@ import org.pentaho.platform.security.userroledao.ws.IUserRoleWebService;
 
 import com.pentaho.di.services.PentahoDiPlugin;
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.xml.ws.developer.JAXWSProperties;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+
 
 /**
  * Web service factory. Not a true factory in that the things that this factory can create are not configurable. But it
@@ -136,8 +138,7 @@ public class WebServiceManager implements ServiceManager {
               ( (BindingProvider) port ).getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
               // support streaming binary data
               // TODO mlowery this is not portable between JAX-WS implementations (uses com.sun)
-              ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE,
-                  8192 );
+              ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192 );
               SOAPBinding binding = (SOAPBinding) ( (BindingProvider) port ).getBinding();
               binding.setMTOMEnabled( true );
               return port;
@@ -157,9 +158,11 @@ public class WebServiceManager implements ServiceManager {
 
               @Override
               public Object call() throws Exception {
-                ClientConfig clientConfig = new DefaultClientConfig();
-                Client client = Client.create( clientConfig );
-                client.addFilter( new HTTPBasicAuthFilter( username, password ) );
+                ClientConfig clientConfig = new ClientConfig();
+                clientConfig.property( ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE );
+                Client client = ClientBuilder.newClient( clientConfig );
+                HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( username, password );
+                client.register( feature );
 
                 Class<?>[] parameterTypes = new Class<?>[] { Client.class, URI.class };
                 String factoryClassName = webServiceSpecification.getServiceClass().getName();

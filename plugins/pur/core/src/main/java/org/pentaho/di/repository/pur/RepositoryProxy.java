@@ -66,6 +66,8 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
 
   private static final String PROPERTY_XML = "XML"; //$NON-NLS-1$
 
+  private static final String NAME_EXT = "name";
+
   private DataNode node;
 
   public RepositoryProxy( final DataNode node ) {
@@ -343,8 +345,10 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
 
   public void insertStepDatabase( ObjectId idTransformation, ObjectId idStep, ObjectId idDatabase )
     throws KettleException {
-    DataNodeRef ref = new DataNodeRef( idDatabase.getId() );
-    node.setProperty( idDatabase.getId(), ref );
+    if ( idDatabase != null ) {
+      DataNodeRef ref = new DataNodeRef( idDatabase.getId() );
+      node.setProperty( idDatabase.getId(), ref );
+    }
   }
 
   public boolean isConnected() {
@@ -375,26 +379,31 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId idJobentry, String nameCode, int nr, String code,
       List<DatabaseMeta> databases ) throws KettleException {
     String attribute = code + PROP_CODE_NR_SEPARATOR + nr;
-    if ( attribute != null && node.hasProperty( attribute ) ) {
-      return loadDatabaseMeta( attribute, databases );
-    } else if ( code != null && node.hasProperty( code ) ) {
-      return loadDatabaseMeta( code, databases );
+    return loadDatabaseMeta( attribute, databases );
+  }
+
+  private DatabaseMeta loadDatabaseMeta( String code, List<DatabaseMeta> databases ) throws KettleException {
+    DataProperty codeProp = node.getProperty( code );
+    if ( codeProp != null ) {
+      if ( DataNodeRef.REF_MISSING.equals( codeProp.getRef().getId() )
+          && System.getProperty( "kettle.allow_missing_refs" ) == null ) {
+        throw new KettleException( BaseMessages.getString( PKG, "RepositoryProxy.ERROR_0001_MISSING_REF" ) );
+      }
+      ObjectId databaseId = new StringObjectId( node.getProperty( code ).getRef().getId().toString() );
+      return DatabaseMeta.findDatabase( databases, databaseId );
+    } else {
+      DataProperty nameProp = node.getProperty( code + PROP_CODE_NR_SEPARATOR + NAME_EXT );
+      if ( nameProp != null ) {
+        String dbName = nameProp.getString();
+        return DatabaseMeta.findDatabase( databases, dbName );
+      }
     }
     return null;
   }
 
-  private DatabaseMeta loadDatabaseMeta( String code, List<DatabaseMeta> databases ) throws KettleException {
-    if ( DataNodeRef.REF_MISSING.equals( node.getProperty( code ).getRef().getId() )
-        && System.getProperty( "kettle.allow_missing_refs" ) == null ) {
-      throw new KettleException( BaseMessages.getString( PKG, "RepositoryProxy.ERROR_0001_MISSING_REF" ) );
-    }
-    ObjectId databaseId = new StringObjectId( node.getProperty( code ).getRef().getId().toString() );
-    return DatabaseMeta.findDatabase( databases, databaseId );
-  }
-
   public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId idStep, String code, List<DatabaseMeta> databases )
     throws KettleException {
-    if ( code != null && node.hasProperty( code ) ) {
+    if ( code != null ) {
       return loadDatabaseMeta( code, databases );
     }
     return null;
@@ -500,17 +509,25 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
 
   public void saveDatabaseMetaJobEntryAttribute( ObjectId idJob, ObjectId idJobentry, int nr, String nameCode,
       String code, DatabaseMeta database ) throws KettleException {
-    if ( database != null && database.getObjectId() != null ) {
-      DataNodeRef ref = new DataNodeRef( database.getObjectId().getId() );
-      node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, ref );
+    if ( database != null) {
+      if ( database.getObjectId() != null ) {
+        DataNodeRef ref = new DataNodeRef( database.getObjectId().getId() );
+        node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, ref );
+      } else if ( database.getName() != null ) {
+        node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr + PROP_CODE_NR_SEPARATOR + NAME_EXT, database.getName() );
+      }
     }
   }
 
   public void saveDatabaseMetaStepAttribute( ObjectId idTransformation, ObjectId idStep, String code,
       DatabaseMeta database ) throws KettleException {
-    if ( database != null && database.getObjectId() != null ) {
-      DataNodeRef ref = new DataNodeRef( database.getObjectId().getId() );
-      node.setProperty( code, ref );
+    if ( database != null ) {
+      if ( database.getObjectId() != null ) {
+        DataNodeRef ref = new DataNodeRef( database.getObjectId().getId() );
+        node.setProperty( code, ref );
+      } else if ( database.getName() != null ) {
+        node.setProperty( code + PROP_CODE_NR_SEPARATOR + NAME_EXT, database.getName() );
+      }
     }
   }
 

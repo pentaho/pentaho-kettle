@@ -1,9 +1,7 @@
 package org.pentaho.di.trans.steps.mergejoin;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -58,48 +56,38 @@ public class MergeJoinTest {
 
   @Test
   public void testPreviousKeysAction() throws Exception {
-    Map<String, String> queryParams = new HashMap<>();
-    queryParams.put( "stepIndex", "0" );
+    RowMetaInterface rowMeta1 = new RowMeta();
+    rowMeta1.addValueMeta( new ValueMetaString( "step1:key1" ) );
+    rowMeta1.addValueMeta( new ValueMetaString( "step1:key2" ) );
 
-    RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMetaString( "key1" ) );
-    rowMeta.addValueMeta( new ValueMetaString( "key2" ) );
+    RowMetaInterface rowMeta2 = new RowMeta();
+    rowMeta2.addValueMeta( new ValueMetaString( "step2:key1" ) );
+    rowMeta2.addValueMeta( new ValueMetaString( "step2:key2" ) );
 
     MergeJoinMeta meta = new MergeJoinMeta();
-    StepMeta stepMetaValidList = new StepMeta();
-    stepMetaValidList.setName( "test-name" );
     meta.setJoinType( "INNER" );
+    StepMeta stepMeta1 = new StepMeta();
+    stepMeta1.setName( "step1-name" );
+    StepMeta stepMeta2 = new StepMeta();
+    stepMeta2.setName( "step2-name" );
 
-    meta.getStepIOMeta().getInfoStreams().get( 0 ).setStepMeta( stepMetaValidList );
-    meta.getStepIOMeta().getInfoStreams().get( 1 ).setStepMeta( stepMetaValidList );
-    when( mockHelper.transMeta.getStepFields( any( StepMeta.class ) ) ).thenReturn( rowMeta );
-    mergeJoin.init( meta, mockHelper.initStepDataInterface );
-
-    JSONObject response =
-      mergeJoin.doAction( "previousKeys", meta, null, null, queryParams );
-    assertNotNull( response.get( "keys" ) );
-    assertEquals( 2, ( (JSONArray) response.get( "keys" ) ).size() );
-
-    when( mockHelper.transMeta.getStepFields( any( StepMeta.class ) ) ).thenThrow( new KettleStepException( "Error" ) );
-    response = mergeJoin.doAction( "previousKeys", meta, null, null, queryParams );
-    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-  }
-
-  @Test
-  public void testPreviousKeysAction_WhenStepIndexIsNotValid() {
-    MergeJoinMeta meta = new MergeJoinMeta();
-    StepMeta stepMetaValidList = new StepMeta();
-    stepMetaValidList.setName( "test-name" );
-    meta.setJoinType( "INNER" );
+    meta.getStepIOMeta().getInfoStreams().get( 0 ).setStepMeta( stepMeta1 );
+    meta.getStepIOMeta().getInfoStreams().get( 1 ).setStepMeta( stepMeta2 );
+    when( mockHelper.transMeta.getStepFields( any( StepMeta.class ) ) ).thenReturn( rowMeta1 ).thenReturn( rowMeta2 );
     mergeJoin.init( meta, mockHelper.initStepDataInterface );
 
     JSONObject response =
       mergeJoin.doAction( "previousKeys", meta, null, null, new HashMap<>() );
+    assertNotNull( response.get( "stepKeys" ) );
+    assertEquals( 2, ( (JSONObject) response.get( "stepKeys" ) ).size() );
+
+    when( mockHelper.transMeta.getStepFields( any( StepMeta.class ) ) ).thenThrow( new KettleStepException( "Error" ) );
+    response = mergeJoin.doAction( "previousKeys", meta, null, null, new HashMap<>() );
     assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
 
-    Map<String, String> queryParams = new HashMap<>();
-    queryParams.put( "stepIndex", "InvalidIndex" );
-    mergeJoin.doAction( "previousKeys", meta, null, null, queryParams );
+    when( mockHelper.transMeta.getStepFields( any( StepMeta.class ) ) ).thenThrow(
+      new IndexOutOfBoundsException( "Error" ) );
+    response = mergeJoin.doAction( "previousKeys", meta, null, null, new HashMap<>() );
     assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
 
