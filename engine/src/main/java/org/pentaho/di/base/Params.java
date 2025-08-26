@@ -52,7 +52,6 @@ public class Params implements IParams {
   private String base64Zip;
   private NamedParams namedParams;
   private NamedParams customNamedParams;
-  private NamedParams pluginNamedParams;
 
   private Params() {
 
@@ -88,7 +87,6 @@ public class Params implements IParams {
     private String base64Zip;
     private NamedParams namedParams;
     private NamedParams customNamedParams;
-    private NamedParams pluginNamedParams;
 
     public Builder() {
       this( java.util.UUID.randomUUID().toString() );
@@ -238,11 +236,6 @@ public class Params implements IParams {
       return this;
     }
 
-    public Builder pluginNamedParams( NamedParams pluginNamedParams ) {
-      this.pluginNamedParams = pluginNamedParams;
-      return this;
-    }
-
     public Params build() {
       Params params = new Params();
       params.uuid = uuid;
@@ -275,8 +268,6 @@ public class Params implements IParams {
       params.base64Zip = base64Zip;
       params.namedParams = namedParams;
       params.customNamedParams = customNamedParams;
-      params.pluginNamedParams = pluginNamedParams;
-
 
       return params;
     }
@@ -577,31 +568,5 @@ public class Params implements IParams {
     }
 
     return customParams;
-  }
-
-  @Override
-  public NamedParams getPluginNamedParams() {
-    return pluginNamedParams;
-  }
-
-  public void setPluginNamedParams( NamedParams customPluginNamedParams ) {
-    this.pluginNamedParams = customPluginNamedParams;
-  }
-
-  @Override
-  public Map<String, String> getPluginParams() {
-    if ( this.pluginNamedParams == null ) {
-      return Collections.emptyMap();
-    }
-    Map<String, String> pluginParams = new HashMap<>();
-
-    for ( String key : this.pluginNamedParams.listParameters() ) {
-      try {
-        pluginParams.put( key, this.pluginNamedParams.getParameterValue( key ) );
-      } catch ( UnknownParamException e ) {
-        /* no-op */
-      }
-    }
-    return pluginParams;
   }
 }
