@@ -368,7 +368,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   public synchronized void connect( String group, String partitionId ) throws KettleDatabaseException {
     try {
-
       log.snap( Metrics.METRIC_DATABASE_CONNECT_START, databaseMeta.getName() );
 
       // Before anything else, let's see if we already have a connection defined
@@ -400,10 +399,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       } catch ( KettleException e ) {
         throw new KettleDatabaseException( e );
       }
-
     } finally {
       log.snap( Metrics.METRIC_DATABASE_CONNECT_STOP, databaseMeta.getName() );
-
     }
   }
 
@@ -538,11 +535,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
           String pluginId =
             PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
-          Set<String> registeredDriversFromPlugin = registeredDrivers.get( pluginId );
-          if ( registeredDriversFromPlugin == null ) {
-            registeredDriversFromPlugin = new HashSet<>();
-            registeredDrivers.put( pluginId, registeredDriversFromPlugin );
-          }
+
+          Set<String> registeredDriversFromPlugin = registeredDrivers.computeIfAbsent( pluginId, k -> new HashSet<>() );
+
           // Prevent registering multiple delegating drivers for same class, plugin
           if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
             DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
@@ -606,11 +601,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
               url += ";instanceName=" + instance;
             }
           }
-          connection = DriverManager.getConnection( url, properties );
-        } else {
-          // Perhaps the username is in the URL or no username is required...
-          connection = DriverManager.getConnection( url, properties );
-        }
+        } // else: Perhaps the username is in the URL or no username is required...
       } else {
         if ( !Utils.isEmpty( username ) ) {
           properties.put( "user", username );
@@ -618,9 +609,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         if ( !Utils.isEmpty( password ) ) {
           properties.put( "password", password );
         }
-
-        connection = DriverManager.getConnection( url, properties );
       }
+
+      connection = DriverManager.getConnection( url, properties );
+
     } catch ( SQLException sqlException ) {
       throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Exception.ConnectionTestFailed", toString() ), sqlException );
     } catch ( Exception e ) {
@@ -632,11 +624,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * Disconnect from the database and close all open prepared statements.
    */
   public synchronized void disconnect() {
-    if ( connection == null ) {
-      return; // Nothing to do...
-    }
     try {
-      if ( connection.isClosed() ) {
+      if ( connection == null || connection.isClosed() ) {
         return; // Nothing to do...
       }
     } catch ( SQLException ex ) {
@@ -646,53 +635,23 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
 
     if ( pstmt != null ) {
-      try {
-        pstmt.close();
-      } catch ( SQLException ex ) {
-        // cannot do anything about this but log it
-        log.logError( "Error closing statement:" + Const.CR + ex.getMessage() );
-        log.logError( Const.getStackTracker( ex ) );
-      }
+      tryCloseAndLog( pstmt, "statement" );
       pstmt = null;
     }
     if ( prepStatementLookup != null ) {
-      try {
-        prepStatementLookup.close();
-      } catch ( SQLException ex ) {
-        // cannot do anything about this but log it
-        log.logError( "Error closing lookup statement:" + Const.CR + ex.getMessage() );
-        log.logError( Const.getStackTracker( ex ) );
-      }
+      tryCloseAndLog( prepStatementLookup, "lookup statement" );
       prepStatementLookup = null;
     }
     if ( prepStatementInsert != null ) {
-      try {
-        prepStatementInsert.close();
-      } catch ( SQLException ex ) {
-        // cannot do anything about this but log it
-        log.logError( "Error closing insert statement:" + Const.CR + ex.getMessage() );
-        log.logError( Const.getStackTracker( ex ) );
-      }
+      tryCloseAndLog( prepStatementInsert, "insert statement" );
       prepStatementInsert = null;
     }
     if ( prepStatementUpdate != null ) {
-      try {
-        prepStatementUpdate.close();
-      } catch ( SQLException ex ) {
-        // cannot do anything about this but log it
-        log.logError( "Error closing update statement:" + Const.CR + ex.getMessage() );
-        log.logError( Const.getStackTracker( ex ) );
-      }
+      tryCloseAndLog( prepStatementUpdate, "update statement" );
       prepStatementUpdate = null;
     }
     if ( pstmtSeq != null ) {
-      try {
-        pstmtSeq.close();
-      } catch ( SQLException ex ) {
-        // cannot do anything about this but log it
-        log.logError( "Error closing seq statement:" + Const.CR + ex.getMessage() );
-        log.logError( Const.getStackTracker( ex ) );
-      }
+      tryCloseAndLog(  pstmtSeq, "seq statement" );
       pstmtSeq = null;
     }
 
@@ -736,7 +695,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
-  @Override public void close() {
+  @Override
+  public void close() {
     disconnect();
   }
 
@@ -838,7 +798,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         throw new KettleDatabaseException( BaseMessages.getString(
           PKG, "Database.Exception.UnableToDisableAutoCommit", toString() ) );
       }
-
     }
   }
 
@@ -953,7 +912,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           log.logDetailed( "No rollback possible on database connection [" + toString() + "]" );
         }
       }
-
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Error performing rollback on connection", e );
     }
@@ -1027,8 +985,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   }
 
   public void closeLookup() throws KettleDatabaseException {
-    closePreparedStatement( pstmt );
-    pstmt = null;
+    if ( pstmt != null ) {
+      closePreparedStatement( pstmt );
+      pstmt = null;
+    }
   }
 
   public void closePreparedStatement( PreparedStatement ps ) throws KettleDatabaseException {
@@ -1041,25 +1001,48 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
+  /**
+   * Invokes the {@link AutoCloseable#close()} method on the given object, logging any exceptions that occur.
+   *
+   * @param closeable      the object to close
+   * @param objDescription the description of the closeable object, used in logging
+   */
+  protected void tryCloseAndLog( AutoCloseable closeable, String objDescription ) {
+    try {
+      closeable.close();
+    } catch ( Exception ex ) {
+      log.logError( "Error closing " + objDescription + ":" + Const.CR + ex.getMessage() );
+      log.logError( Const.getStackTracker( ex ) );
+    }
+  }
+
+  /**
+   * Invokes the {@link AutoCloseable#close()} method on the given object, throwing a {@link KettleDatabaseException}
+   * encapsulating any exception that occurs.
+   *
+   * @param closeable      the object to close
+   * @param objDescription the description of the closeable object, used in exception message
+   */
+  protected void tryCloseAndThrow( AutoCloseable closeable, String objDescription ) throws KettleDatabaseException {
+    try {
+      closeable.close();
+    } catch ( Exception ex ) {
+      throw new KettleDatabaseException( "Error closing " + objDescription, ex );
+    }
+  }
+
+
   public void closeInsert() throws KettleDatabaseException {
     if ( prepStatementInsert != null ) {
-      try {
-        prepStatementInsert.close();
-        prepStatementInsert = null;
-      } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Error closing insert prepared statement.", e );
-      }
+      tryCloseAndThrow( prepStatementInsert, "insert prepared statement" );
+      prepStatementInsert = null;
     }
   }
 
   public void closeUpdate() throws KettleDatabaseException {
     if ( prepStatementUpdate != null ) {
-      try {
-        prepStatementUpdate.close();
-        prepStatementUpdate = null;
-      } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Error closing update prepared statement.", e );
-      }
+      tryCloseAndThrow( prepStatementUpdate, "update prepared statement" );
+      prepStatementUpdate = null;
     }
   }
 
@@ -1089,13 +1072,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   public void setProcValues( RowMetaInterface rowMeta, Object[] data, int[] argnrs, String[] argdir, boolean result )
     throws KettleDatabaseException {
-    int pos;
-
-    if ( result ) {
-      pos = 2;
-    } else {
-      pos = 1;
-    }
+    int pos = result ? 2 : 1;
 
     for ( int i = 0; i < argnrs.length; i++ ) {
       if ( argdir[ i ].equalsIgnoreCase( "IN" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
@@ -1103,10 +1080,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         Object value = data[ argnrs[ i ] ];
 
         setValue( cstmt, valueMeta, value, pos );
-        pos++;
-      } else {
-        pos++; // next parameter when OUT
       }
+
+      pos++;
     }
   }
 
@@ -1114,7 +1090,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     throws KettleDatabaseException {
 
     v.setPreparedStatementValue( databaseMeta, ps, pos, object );
-
   }
 
   public void setValues( RowMetaAndData row, PreparedStatement ps ) throws KettleDatabaseException {
@@ -1172,15 +1147,15 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       if ( resultSetMetaData == null ) {
         resultSetMetaData = ps.getMetaData();
       }
-      RowMetaInterface rowMeta;
+      RowMetaInterface rowMetaInterface;
       if ( resultSetMetaData == null ) {
-        rowMeta = new RowMeta();
-        rowMeta.addValueMeta( new ValueMetaInteger( "ai-key" ) );
+        rowMetaInterface = new RowMeta();
+        rowMetaInterface.addValueMeta( new ValueMetaInteger( "ai-key" ) );
       } else {
-        rowMeta = getRowInfo( resultSetMetaData, false, false );
+        rowMetaInterface = getRowInfo( resultSetMetaData, false, false );
       }
 
-      return new RowMetaAndData( rowMeta, getRow( keys, resultSetMetaData, rowMeta ) );
+      return new RowMetaAndData( rowMetaInterface, getRow( keys, resultSetMetaData, rowMetaInterface ) );
     } catch ( Exception ex ) {
       throw new KettleDatabaseException( "Unable to retrieve key(s) from auto-increment field(s)", ex );
     }
@@ -1201,15 +1176,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         pstmtSeq =
           connection.prepareStatement( databaseMeta.getSeqNextvalSQL( databaseMeta.stripCR( schemaSequence ) ) );
       }
-      ResultSet rs = null;
-      try {
-        rs = pstmtSeq.executeQuery();
+      try ( ResultSet rs = pstmtSeq.executeQuery() ) {
         if ( rs.next() ) {
-          retval = Long.valueOf( rs.getLong( 1 ) );
-        }
-      } finally {
-        if ( rs != null ) {
-          rs.close();
+          retval = rs.getLong( 1 );
         }
       }
     } catch ( SQLException ex ) {
@@ -1339,22 +1308,20 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
       written++;
 
-      if ( handleCommit ) { // some steps handle the commit themselves (see e.g.
-        // TableOutput step)
-        if ( !isAutoCommit() && ( written % commitsize ) == 0 ) {
-          if ( useBatchInsert ) {
-            isBatchUpdate = true;
-            debug = "insertRow executeBatch commit";
-            ps.executeBatch();
-            commit();
-            ps.clearBatch();
-          } else {
-            debug = "insertRow normal commit";
-            commit();
-          }
-          written = 0;
-          rowsAreSafe = true;
+      // some steps handle the commit themselves (see e.g. TableOutput step)
+      if ( handleCommit && !isAutoCommit() && ( written % commitsize ) == 0 ) {
+        if ( useBatchInsert ) {
+          isBatchUpdate = true;
+          debug = "insertRow executeBatch commit";
+          ps.executeBatch();
+          commit();
+          ps.clearBatch();
+        } else {
+          debug = "insertRow normal commit";
+          commit();
         }
+        written = 0;
+        rowsAreSafe = true;
       }
 
       return rowsAreSafe;
@@ -1667,13 +1634,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
               if ( rs != null ) {
                 Object[] row = getRow( rs );
                 while ( row != null ) {
-                  result.setNrLinesRead( result.getNrLinesRead() + 1 );
+                  result.increaseLinesRead( 1 );
                   if ( log.isDetailed() ) {
                     log.logDetailed( rowMeta.getString( row ) );
                   }
                   row = getRow( rs );
                 }
-
               } else {
                 if ( log.isDebug() ) {
                   log.logDebug( "Error executing query: " + Const.CR + sql );
@@ -1757,7 +1723,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
         if ( canWeSetFetchSize( pstmt ) ) {
           int maxRows = pstmt.getMaxRows();
-          int fs = Const.FETCH_SIZE <= maxRows ? maxRows : Const.FETCH_SIZE;
+          int fs = Math.max( Const.FETCH_SIZE, maxRows );
           if ( databaseMeta.isMySQLVariant() ) {
             setMysqlFetchSize( pstmt, fs, maxRows );
           } else {
@@ -1779,7 +1745,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         selStmt = connection.createStatement();
         log.snap( Metrics.METRIC_DATABASE_CREATE_SQL_STOP, databaseMeta.getName() );
         if ( canWeSetFetchSize( selStmt ) ) {
-          int fs = Const.FETCH_SIZE <= selStmt.getMaxRows() ? selStmt.getMaxRows() : Const.FETCH_SIZE;
+          int fs = Math.max( Const.FETCH_SIZE, selStmt.getMaxRows() );
           if ( databaseMeta.getDatabaseInterface().isMySQLVariant()
             && databaseMeta.isStreamingResults() ) {
             selStmt.setFetchSize( Integer.MIN_VALUE );
@@ -1797,10 +1763,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         log.snap( Metrics.METRIC_DATABASE_EXECUTE_SQL_STOP, databaseMeta.getName() );
       }
 
-      // MySQL Hack only. It seems too much for the cursor type of operation on
-      // MySQL, to have another cursor opened
-      // to get the length of a String field. So, on MySQL, we ingore the length
-      // of Strings in result rows.
+      // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
+      // to get the length of a String field. So, on MySQL, we ignore the length of Strings in result rows.
       //
       rowMeta = getRowInfo( res.getMetaData(), databaseMeta.isMySQLVariant(), lazyConversion );
     } catch ( SQLException ex ) {
@@ -1835,7 +1799,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
       if ( canWeSetFetchSize( ps ) ) {
         int maxRows = ps.getMaxRows();
-        int fs = Const.FETCH_SIZE <= maxRows ? maxRows : Const.FETCH_SIZE;
+        int fs = Math.max( Const.FETCH_SIZE, maxRows );
         // mysql have some restriction on fetch size assignment
         if ( databaseMeta.isMySQLVariant() ) {
           setMysqlFetchSize( ps, fs, maxRows );
@@ -1863,8 +1827,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       log.snap( Metrics.METRIC_DATABASE_GET_ROW_META_START, databaseMeta.getName() );
       rowMeta = getRowInfo( res.getMetaData(), databaseMeta.isMySQLVariant(), false );
       log.snap( Metrics.METRIC_DATABASE_GET_ROW_META_STOP, databaseMeta.getName() );
-    } catch ( SQLException ex ) {
-      throw new KettleDatabaseException( "ERROR executing query", ex );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "ERROR executing query", e );
     } finally {
@@ -2165,7 +2127,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * Check if an index on certain fields in a table exists.
    *
    * @param tableName The table on which the index is checked
-   * @param idxFields The fields on which the indexe is checked
+   * @param idxFields The fields on which the index is checked
    * @return True if the index exists
    */
   public boolean checkIndexExists( String tableName, String[] idxFields ) throws KettleDatabaseException {
@@ -3851,6 +3813,32 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
+  /**
+   * Iterates over the first 'limit' rows of the ResultSet obtained from the given SQL statement,
+   * executing the given callback for each row. If limit <= 0, all rows are processed.
+   *
+   * @param sql      The SQL statement to execute
+   * @param limit    The maximum number of rows to process (<=0 means unlimited)
+   * @param callback The callback to execute for each row (receives Object[] row)
+   * @throws KettleDatabaseException if something goes wrong
+   */
+  public void forEachRow( String sql, int limit, java.util.function.Consumer<Object[]> callback )
+    throws KettleDatabaseException {
+    try ( ResultSet rset = openQuery( sql ) ) {
+      int count = 0;
+      while ( rset != null && ( limit <= 0 || count < limit ) ) {
+        Object[] row = getRow( rset );
+        if ( row == null ) {
+          break;
+        }
+        callback.accept( row );
+        count++;
+      }
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException( "Error executing forEachRow", e );
+    }
+  }
+
   public List<Object[]> getFirstRows( String tableName, int limit ) throws KettleDatabaseException {
     return getFirstRows( tableName, limit, null );
   }
@@ -4307,12 +4295,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           String procSchema = rowMeta.getString( row, "PROCEDURE_SCHEM", null );
           String procName = rowMeta.getString( row, "PROCEDURE_NAME", "" );
 
-          StringBuilder name = new StringBuilder( "" );
+          StringBuilder name = new StringBuilder();
           if ( procCatalog != null ) {
-            name.append( procCatalog ).append( "." );
+            name.append( procCatalog ).append( '.' );
           }
           if ( procSchema != null ) {
-            name.append( procSchema ).append( "." );
+            name.append( procSchema ).append( '.' );
           }
 
           name.append( procName );
@@ -4647,7 +4635,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           } else {
             // Save the update count if it is available (> -1)
             updateCount = cstmt.getUpdateCount();
-
           }
 
           moreResults = cstmt.getMoreResults();
@@ -4658,14 +4645,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
             rs = null;
           }
         }
-
       } while ( moreResults || ( updateCount > -1 ) );
 
       return ret;
     } catch ( Exception ex ) {
       throw new KettleDatabaseException( "Unable to call procedure", ex );
     }
-
   }
 
   public void closeProcedureStatement() throws KettleDatabaseException {
@@ -4690,14 +4675,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    */
 
   public String getDDLCreationTable( String tableName, RowMetaInterface fields ) throws KettleDatabaseException {
-    String retval;
 
     // First, check for reserved SQL in the input row r...
     databaseMeta.quoteReservedWords( fields );
     String quotedTk = databaseMeta.quoteField( null );
-    retval = getCreateTableStatement( tableName, fields, quotedTk, false, null, true );
 
-    return retval;
+    return getCreateTableStatement( tableName, fields, quotedTk, false, null, true );
   }
 
   /**
@@ -4745,8 +4728,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         }
         String name = fields.getValueMeta( i ).getName();
         ins.append( databaseMeta.quoteField( name ) );
-
       }
+
       ins.append( ") VALUES (" );
 
       java.text.SimpleDateFormat[] fieldDateFormatters = new java.text.SimpleDateFormat[ fields.size() ];
@@ -4757,7 +4740,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         Object valueData = r[ i ];
 
         if ( i > 0 ) {
-          ins.append( "," );
+          ins.append( ',' );
         }
 
         // Check for null values...
@@ -4770,13 +4753,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           switch ( valueMeta.getType() ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
             case ValueMetaInterface.TYPE_STRING:
-              String string = valueMeta.getString( valueData );
               // Have the database dialect do the quoting.
               // This also adds the single quotes around the string (thanks to
               // PostgreSQL)
               //
-              string = databaseMeta.quoteSQLString( string );
-              ins.append( string );
+              ins.append( databaseMeta.quoteSQLString( valueMeta.getString( valueData ) ) );
               break;
             case ValueMetaInterface.TYPE_DATE:
               Date date = fields.getDate( r, i );
@@ -4789,12 +4770,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
                   ins.append( "TO_DATE('" ).append( fieldDateFormatters[ i ].format( date ) ).append(
                     "', 'YYYY/MM/DD HH24:MI:SS')" );
                 } else {
-                  ins.append( "'" + fields.getString( r, i ) + "'" );
+                  ins.append( '\'' ).append( fields.getString( r, i ) ).append( '\'' );
                 }
               } else {
                 try {
                   java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat( dateFormat );
-                  ins.append( "'" + formatter.format( fields.getDate( r, i ) ) + "'" );
+                  ins.append( '\'' ).append( formatter.format( fields.getDate( r, i ) ) ).append( '\'' );
                 } catch ( Exception e ) {
                   throw new KettleDatabaseException( "Error : ", e );
                 }
@@ -4805,7 +4786,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
               break;
           }
         }
-
       }
       ins.append( ')' );
     } catch ( Exception e ) {
@@ -5028,11 +5008,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
       is = KettleVFS.getInputStream( sqlFile );
       bis = new InputStreamReader( new BufferedInputStream( is, 500 ) );
-      StringBuilder lineStringBuilder = new StringBuilder( 256 );
-      lineStringBuilder.setLength( 0 );
 
       BufferedReader buff = new BufferedReader( bis );
-      String sLine = null;
+      String sLine;
       StringBuilder sql = new StringBuilder( Const.CR );
 
       while ( ( sLine = buff.readLine() ) != null ) {
