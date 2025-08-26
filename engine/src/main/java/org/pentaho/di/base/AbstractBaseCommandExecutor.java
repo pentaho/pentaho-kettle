@@ -283,20 +283,18 @@ public abstract class AbstractBaseCommandExecutor {
    * @param repository Repository object when connected
    * @return CommandExecutorResult contains the result of the of validation.
    */
-  protected static CommandExecutorResult validateAndSetPluginContext( LogChannelInterface log, Params params, Repository repository ) {
+  protected static CommandExecutorResult validateAndSetPluginContext( LogChannelInterface log, Params params, Repository repository ) throws KettleException {
     CommandExecutorResult result = null;
     Map<String, String> paramMap = params.getPluginParams();
-    try {
-      for ( CommandLineOptionProvider provider : PluginServiceLoader.loadServices( CommandLineOptionProvider.class ) ) {
-        result = provider.handleParameter( log, paramMap, repository );
-        if ( result.getCode() != 0 ) {
-          log.logError( result.getDescription() );
-          break; // if result is NOT SUCCESS, break out of the loop
-        }
+
+    for ( CommandLineOptionProvider provider : PluginServiceLoader.loadServices( CommandLineOptionProvider.class ) ) {
+      result = provider.handleParameter( log, paramMap, repository );
+      if ( result.getCode() != 0 ) {
+        log.logError( result.getDescription() );
+        break; // if result is NOT SUCCESS, break out of the loop
       }
-    } catch ( KettleException e ) {
-      throw new RuntimeException( e );
     }
+
     return result;
   }
 

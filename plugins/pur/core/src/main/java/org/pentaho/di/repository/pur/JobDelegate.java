@@ -389,7 +389,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       jobMetaInterface.setName( name );
       jobMetaInterface.setDescription( getString( copyNode, PROP_DESCRIPTION ) );
       jobMetaInterface.setObjectId( new StringObjectId( copyNode.getId().toString() ) );
-      RepositoryProxy proxy = new RepositoryProxy( copyNode.getNode( NODE_CUSTOM ) );
+      RepositoryProxy proxy = new RepositoryProxy( copyNode.getNode( NODE_CUSTOM ), this.repo );
 
       jobMetaInterface.setMetaStore( jobMeta.getMetaStore() ); // make sure metastore is passed
       if ( !isMissing ) {
@@ -467,7 +467,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       //
       copyNode.setProperty( PROP_JOBENTRY_TYPE, entry.getPluginId() );
       DataNode customNode = new DataNode( NODE_CUSTOM );
-      RepositoryProxy proxy = new RepositoryProxy( customNode );
+      RepositoryProxy proxy = new RepositoryProxy( customNode, this.repo );
       entry.saveRep( proxy, MetaStoreConst.getDefaultMetastore(), null );
       compatibleEntrySaveRep( entry, proxy, null );
 

@@ -327,36 +327,6 @@ public class SelectValuesTest {
     assertTrue( properException );
   }
 
-  @Test
-  public void testLocalesAction() throws Exception {
-    SelectValuesMeta meta = mock( SelectValuesMeta.class );
-    SelectValues rest = StepMockUtil.getStep( SelectValues.class, SelectValuesMeta.class, "RestTest" );
-    JSONObject response = rest.doAction( "locales", meta, null, null, new HashMap<>() );
-    JSONArray httpMethods = (JSONArray) response.get( "locales" );
-
-    assertEquals( EnvUtil.getLocaleList().length, httpMethods.size() );
-  }
-
-  @Test
-  public void testTimezonesAction() throws Exception {
-    SelectValuesMeta meta = mock( SelectValuesMeta.class );
-    SelectValues rest = StepMockUtil.getStep( SelectValues.class, SelectValuesMeta.class, "RestTest" );
-    JSONObject response = rest.doAction( "timezones", meta, null, null, new HashMap<>() );
-    JSONArray httpMethods = (JSONArray) response.get( "timezones" );
-
-    assertEquals( EnvUtil.getTimeZones().length, httpMethods.size() );
-  }
-
-  @Test
-  public void testEncodingsAction() throws Exception {
-    SelectValuesMeta meta = mock( SelectValuesMeta.class );
-    SelectValues rest = StepMockUtil.getStep( SelectValues.class, SelectValuesMeta.class, "RestTest" );
-    JSONObject response = rest.doAction( "encodings", meta, null, null, new HashMap<>() );
-    JSONArray httpMethods = (JSONArray) response.get( "encodings" );
-
-    assertEquals( Charset.availableCharsets().values().size(), httpMethods.size() );
-  }
-
   public static class SelectValuesHandler extends SelectValues {
     private RowMetaInterface rowMeta;
     private RowSet rowset;

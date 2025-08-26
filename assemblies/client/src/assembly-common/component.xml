@@ -66,16 +66,6 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
-    <!-- jdbc drivers -->
-    <dependencySet>
-      <includes>
-        <include>pentaho:pdi-dataservice-driver-bundle:zip</include>
-      </includes>
-      <outputDirectory>Data Service JDBC Driver</outputDirectory>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-      <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}.${artifact.extension}</outputFileNameMapping>
-    </dependencySet>
     <!-- application launcher -->
     <dependencySet>
       <includes>
