@@ -184,10 +184,19 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
   private VariableSpace initializeVariableSpace( @NonNull VFSConnectionDetails details )
     throws IOException {
 
+    if ( details == null || details.getName() == null ) {
+      throw new IOException( "Missing connection configuration" );
+    }
+
     VariableSpace varSpace = getSpace();
+    if ( varSpace == null ) {
+      throw new IOException( "Failed to initialize connection variables" );
+    }
+
+    String connectionName = details.getName();
 
     // Used by KettleVFSImpl#buildFsOptions -> VFSHelper#getOpts(...).
-    varSpace.setVariable( CONNECTION, details.getName() );
+    varSpace.setVariable( CONNECTION, connectionName );
 
     details.setSpace( varSpace );
 
@@ -196,7 +205,8 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
 
   @NonNull
   protected VariableSpace getSpace() throws IOException {
-    return (VariableSpace) getConfigBuilder().getVariableSpace( getFileSystemOptions() );
+    VariableSpace varSpace = (VariableSpace) getConfigBuilder().getVariableSpace( getFileSystemOptions() );
+    return varSpace != null ? varSpace : Variables.getADefaultVariableSpace();
   }
 
   @NonNull

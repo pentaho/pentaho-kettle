@@ -47,6 +47,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
@@ -1177,6 +1178,11 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
 
   public StepMeta getExecutorsOutputStepMeta() {
     return executorsOutputStepMeta;
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new TransExecutorHelper( this );
   }
 
   public void setExecutorsOutputStepMeta( StepMeta executorsOutputStepMeta ) {

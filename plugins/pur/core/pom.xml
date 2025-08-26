@@ -253,7 +253,6 @@
     <dependency>
       <groupId>org.gwtproject</groupId>
       <artifactId>gwt-servlet-jakarta</artifactId>
-      <version>${gwt-servlet-jakarta.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

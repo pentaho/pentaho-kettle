@@ -63,7 +63,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.selectvalues.SelectMetadataChange;
-import org.pentaho.di.trans.steps.selectvalues.SelectValues;
+import org.pentaho.di.trans.steps.selectvalues.SelectValuesHelper;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -682,10 +682,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
   }
 
   private String[] getCharsets() {
-    Trans trans = new Trans( transMeta, null );
-    trans.rowsets = new ArrayList<>();
-    SelectValues step = (SelectValues) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
-    return step.getCharsets();
+    SelectValuesHelper stepHelper = (SelectValuesHelper) input.getStepHelperInterface();
+    return stepHelper.getCharsets();
   }
 
   private void cancel() {

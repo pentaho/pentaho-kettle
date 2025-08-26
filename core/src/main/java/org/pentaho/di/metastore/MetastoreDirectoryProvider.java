@@ -12,6 +12,7 @@
 
 package org.pentaho.metastore.locator.api;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.metastore.api.IMetaStore;
 
 public interface MetastoreDirectoryProvider {
@@ -27,6 +28,6 @@ public interface MetastoreDirectoryProvider {
    * @return IMetaStore a metastore implementation at the given path, or null
    *
    */
-  IMetaStore getMetastoreForDirectory( String rootFolder );
+  IMetaStore getMetastoreForDirectory( String rootFolder, Bowl bowl );
 
 }

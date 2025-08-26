@@ -27,6 +27,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransMeta;
@@ -193,6 +194,29 @@ public interface Repository {
     ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException;
 
   /**
+   * Load a transformation with a name from a folder in the repository
+   *
+   * @param transname
+   *          the name of the transformation to load
+   * @param The
+   *          folder to load it from
+   * @param monitor
+   *          the progress monitor to use (UI feedback)
+   * @param setInternalVariables
+   *          set to true if you want to automatically set the internal variables of the loaded transformation. (true is
+   *          the default with very few exceptions!)
+   * @param revision
+   *          the revision to load. Specify null to load the last version.
+   * @param parent
+   *          The parent VariableSpace. Used in the initial load of the Transformation
+   */
+  default TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
+    ProgressMonitorListener monitor, boolean setInternalVariables, String revision, VariableSpace parent )
+    throws KettleException {
+    return loadTransformation( transname, repdir, monitor, setInternalVariables, revision );
+  }
+
+  /**
    * Load a transformation by id
    *
    * @param id_transformation
@@ -201,6 +225,21 @@ public interface Repository {
    *          version to load. Specify null to load the last version.
    */
   public TransMeta loadTransformation( ObjectId id_transformation, String versionLabel ) throws KettleException;
+
+  /**
+   * Load a transformation by id
+   *
+   * @param id_transformation
+   *          the id of the transformation to load
+   * @param versionLabel
+   *          version to load. Specify null to load the last version.
+   * @param parent
+   *          The parent VariableSpace. Used in the initial load of the Transformation
+   */
+  default TransMeta loadTransformation( ObjectId id_transformation, String versionLabel, VariableSpace parent )
+      throws KettleException {
+    return loadTransformation( id_transformation, versionLabel );
+  }
 
   @Deprecated( since = "10.3" )
   public void readTransSharedObjects( TransMeta transMeta ) throws KettleException;
@@ -269,6 +308,25 @@ public interface Repository {
     String revision ) throws KettleException;
 
   /**
+   * Load a job from the repository
+   *
+   * @param jobname
+   *          the name
+   * @param repdir
+   *          the directory
+   * @param monitor
+   *          the progress monitor or null
+   * @param revision
+   *          the revision to load. Specify null to load the last version.
+   * @param parent
+   *          The parent VariableSpace. Used in the initial load of the Transformation
+   */
+  default JobMeta loadJob( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor,
+    String revision, VariableSpace parent ) throws KettleException {
+    return loadJob( jobname, repdir, monitor, revision );
+  }
+
+  /**
    * Load a job from the repository by id
    *
    * @param id_job
@@ -277,6 +335,20 @@ public interface Repository {
    *          version to load. Specify null to load the last version.
    */
   public JobMeta loadJob( ObjectId id_job, String versionLabel ) throws KettleException;
+
+  /**
+   * Load a job from the repository by id
+   *
+   * @param id_job
+   *          the id of the job
+   * @param versionLabel
+   *          version to load. Specify null to load the last version.
+   * @param parent
+   *          The parent VariableSpace. Used in the initial load of the Transformation
+   */
+  default JobMeta loadJob( ObjectId id_job, String versionLabel, VariableSpace parent ) throws KettleException {
+    return loadJob( id_job, versionLabel );
+  }
 
   @Deprecated( since = "10.3" )
   public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException;

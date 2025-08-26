@@ -1,9 +1,9 @@
 package org.pentaho.di.repovfs.plugin.vfs;
 
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repovfs.cfg.JCRSolutionConfig;
 import org.pentaho.di.repovfs.repo.BasicAuthentication;
 import org.pentaho.di.repovfs.repo.RepositoryClient;
@@ -141,9 +141,12 @@ public class RepoVfsPdiProvider  extends BaseVFSConnectionProvider<RepoVfsDetail
     RepoVfsDetails details;
     List<RepoVfsDetails> detailsList = new ArrayList<>();
     Bowl bowl = connectionManager.getBowl();
-    if ( bowl instanceof RepositoryBowl ) {
-      details = createConnectionDetail( ( (RepositoryBowl) bowl).getRepository(), ConnectionManager.STRING_REPO_CONNECTION );
-      detailsList.add( details );
+    if ( bowl instanceof HasRepositoryInterface && ( (HasRepositoryInterface) bowl).getRepository() != null ) {
+      details = createConnectionDetail( ( (HasRepositoryInterface) bowl).getRepository(), ConnectionManager.STRING_REPO_CONNECTION );
+      // Add the details only if the repository has the non-empty url
+      if ( details != null && !details.getUrl().isEmpty() ) {
+        detailsList.add( details );
+      }
     }
     return detailsList;
 

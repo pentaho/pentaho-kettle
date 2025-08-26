@@ -130,6 +130,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -5291,11 +5292,9 @@ public class TransMeta extends AbstractMeta
       if ( arguments != null && argNr > 0 && argNr <= arguments.length ) {
         value = Const.NVL( arguments[argNr - 1], "" );
       }
-      if ( value.length() == 0 ) { // try the saved option...
-
-        if ( argNr > 0 && argNr < saved.length && saved[argNr] != null ) {
-          value = saved[argNr - 1];
-        }
+      // if value is empty try the saved option...
+      if ( value.length() == 0 && argNr > 0 && Objects.nonNull( saved ) && argNr < saved.length && saved[argNr] != null ) {
+        value = saved[argNr - 1];
       }
       transArgs.put( argument, value );
     }

@@ -13,17 +13,12 @@
 
 package org.pentaho.di.trans.steps.selectvalues;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleConversionException;
 import org.pentaho.di.core.exception.KettleException;
@@ -445,43 +440,6 @@ public class SelectValues extends BaseStep implements StepInterface {
     } else {
       return false;
     }
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject localesAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    JSONArray locales = new JSONArray();
-    locales.addAll( Arrays.asList( EnvUtil.getLocaleList() ) );
-    response.put( "locales", locales );
-    return response;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject timezonesAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    JSONArray timezones = new JSONArray();
-    timezones.addAll( Arrays.asList( EnvUtil.getTimeZones() ) );
-    response.put( "timezones", timezones );
-    return response;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject encodingsAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    JSONArray encodings = new JSONArray();
-    encodings.addAll( Arrays.asList( getCharsets() ) );
-    response.put( "encodings", encodings );
-    return response;
-  }
-
-  public String[] getCharsets() {
-    Collection<Charset> charsetCol = Charset.availableCharsets().values();
-    String[] charsets = new String[ charsetCol.size() ];
-    int i = 0;
-    for ( Charset charset : charsetCol ) {
-      charsets[ i++ ] = charset.displayName();
-    }
-    return charsets;
   }
 
 }

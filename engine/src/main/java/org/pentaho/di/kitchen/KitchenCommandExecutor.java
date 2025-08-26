@@ -136,9 +136,9 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
           }
 
           // Validate PluginNamedParams
+          blockAndThrow( getKettleInit() );
           CommandExecutorResult result = validateAndSetPluginContext( getLog(), params, repository );
           if ( result != null && result.getCode() != 0 ) {
-            blockAndThrow( getKettleInit() );
             return exitWithStatus( result.getCode() );
           }
 
@@ -147,9 +147,10 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
         // Validate customNamedParams
         if ( repository == null ) {
+          // We need the plugins to be loaded here
+          blockAndThrow( getKettleInit() );
           CommandExecutorResult result = validateAndSetPluginContext( getLog(), params, null );
           if ( result != null && result.getCode() != 0 ) {
-            blockAndThrow( getKettleInit() );
             return exitWithStatus( result.getCode() );
           }
         }

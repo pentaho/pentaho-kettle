@@ -34,7 +34,7 @@ import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.Objects;
 
-public class RepositoryBowl extends BaseBowl {
+public class RepositoryBowl extends BaseBowl implements HasRepositoryInterface{
 
   private static Class<?> PKG = RepositoryBowl.class;
 
@@ -69,7 +69,13 @@ public class RepositoryBowl extends BaseBowl {
     return BaseMessages.getString(PKG, "Repository.Level.Name");
   }
 
+  @Override
   public Repository getRepository() {
     return repository;
+  }
+
+  @Override
+  public void setRepository(Repository repository) {
+    throw new UnsupportedOperationException( " not supported " );
   }
 }
