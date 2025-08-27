@@ -43,6 +43,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepInterface;
@@ -200,6 +201,23 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       // allocate & run the required sub-threads
       try {
+        // Configure run configuration if specified
+        if ( !Utils.isEmpty( params.getRunConfiguration() ) ) {
+          TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
+            executionConfiguration.setRunConfiguration( params.getRunConfiguration() );
+          try {
+            // Trigger the extension point that handles run configurations
+            ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.TransBeforeStart.id,
+              new Object[] { executionConfiguration, trans.getTransMeta(), trans.getTransMeta(), repository } );
+          } catch ( KettleException e ) {
+            getLog().logError( "Error configuring run configuration: " + params.getRunConfiguration(), e );
+          }
+        }
+
+
+        // Running Remotely
+
+        // Running Locally
         trans.prepareExecution( arguments );
 
         if ( !StringUtils.isEmpty( params.getResultSetStepName() ) ) {
