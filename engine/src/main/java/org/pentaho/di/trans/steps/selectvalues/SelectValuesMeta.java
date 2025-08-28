@@ -48,6 +48,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -902,6 +903,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
 
     return lineages;
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new SelectValuesHelper();
   }
 
   public static class SelectField implements Cloneable {
