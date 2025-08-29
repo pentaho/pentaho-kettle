@@ -69,7 +69,6 @@
 
   <properties>
     <pdi.version>11.0.0.0-SNAPSHOT</pdi.version>
-    <target.jdk.version>1.8</target.jdk.version>
     <maven-bundle-plugin.version>2.4.0</maven-bundle-plugin.version>
     <junit.version>4.12</junit.version>
     <mockito-all.version>1.9.5</mockito-all.version>
