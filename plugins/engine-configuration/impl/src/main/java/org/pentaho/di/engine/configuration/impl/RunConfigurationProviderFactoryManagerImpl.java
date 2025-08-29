@@ -62,10 +62,6 @@ public class RunConfigurationProviderFactoryManagerImpl implements RunConfigurat
     }
   }
 
-  public List<RunConfigurationProvider> generateProviders() {
-    return generateProviders( MetaStoreConst::getDefaultMetastore );
-  }
-
   /**
    * Generates (instantiates) a RunConfigurationProvider of each registered Factory type using the provided
    * CheckedMetaStoreSupplier
