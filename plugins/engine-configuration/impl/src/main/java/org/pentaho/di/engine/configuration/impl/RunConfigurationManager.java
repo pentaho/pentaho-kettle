@@ -30,7 +30,6 @@ import java.util.List;
 public class RunConfigurationManager implements RunConfigurationService {
 
   private final List<RunConfigurationProvider> runConfigurationProviders;
-  private static RunConfigurationManager instance;
 
   public static RunConfigurationManager getInstance( CheckedMetaStoreSupplier bowlSupplier ) {
     return new RunConfigurationManager(
@@ -39,10 +38,6 @@ public class RunConfigurationManager implements RunConfigurationService {
 
   public RunConfigurationManager( List<RunConfigurationProvider> runConfigurationProviders ) {
     this.runConfigurationProviders = runConfigurationProviders;
-  }
-
-  private RunConfigurationManager() {
-    runConfigurationProviders = RunConfigurationProviderFactoryManagerImpl.getInstance().generateProviders();
   }
 
   /**
