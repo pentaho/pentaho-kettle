@@ -32,6 +32,7 @@ import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -2420,7 +2421,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public TransMeta loadTransformation( final String transName, final RepositoryDirectoryInterface parentDir,
                                        final ProgressMonitorListener monitor, final boolean setInternalVariables,
                                        final String versionId )
-    throws KettleException {
+  throws KettleException {
+    return loadTransformation( transName, parentDir, monitor, setInternalVariables, versionId, null );
+  }
+
+  @Override
+  public TransMeta loadTransformation( final String transName, final RepositoryDirectoryInterface parentDir,
+                                       final ProgressMonitorListener monitor, final boolean setInternalVariables,
+                                       final String versionId, VariableSpace parent )
+  throws KettleException {
     String absPath = null;
     try {
       // if transName is empty, we cannot load the transformation - the transformation path was likely not provided
@@ -2467,7 +2476,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       }
 
       revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionId );
-      TransMeta transMeta = buildTransMeta( file, parentDir, data, revision );
+      TransMeta transMeta = buildTransMeta( file, parentDir, data, revision, parent );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
       return transMeta;
     } catch ( final KettleException ke ) {
@@ -2479,9 +2488,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   private TransMeta buildTransMeta( final RepositoryFile file, final RepositoryDirectoryInterface parentDir,
-                                    final NodeRepositoryFileData data, final ObjectRevision revision )
+                                    final NodeRepositoryFileData data, final ObjectRevision revision,
+                                    final VariableSpace parent )
     throws KettleException {
-    TransMeta transMeta = new TransMeta();
+    TransMeta transMeta = new TransMeta( parent );
     transMeta.setName( file.getTitle() );
     transMeta.setFilename( file.getPath() );
     transMeta.setDescription( file.getDescription() );
@@ -2542,7 +2552,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         }
         TransMeta
           transMeta =
-          buildTransMeta( file, findDirectory( dirPath ), fileData, createObjectRevision( version ) );
+          buildTransMeta( file, findDirectory( dirPath ), fileData, createObjectRevision( version ), null );
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
         transformations.add( transMeta );
       } catch ( Exception ex ) {
@@ -2559,6 +2569,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public JobMeta loadJob( String jobname, RepositoryDirectoryInterface parentDir, ProgressMonitorListener monitor,
                           String versionId ) throws KettleException {
+    return loadJob( jobname, parentDir, monitor, versionId, null );
+  }
+
+  @Override
+  public JobMeta loadJob( String jobname, RepositoryDirectoryInterface parentDir, ProgressMonitorListener monitor,
+                          String versionId, VariableSpace parent ) throws KettleException {
     String absPath = null;
     try {
       absPath = getPath( jobname, parentDir, RepositoryObjectType.JOB );
@@ -2585,7 +2601,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       }
 
       revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionId );
-      JobMeta jobMeta = buildJobMeta( file, parentDir, data, revision );
+      JobMeta jobMeta = buildJobMeta( file, parentDir, data, revision, parent );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobMetaLoaded.id, jobMeta );
       return jobMeta;
     } catch ( Exception e ) {
@@ -2594,9 +2610,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   private JobMeta buildJobMeta( final RepositoryFile file, final RepositoryDirectoryInterface parentDir,
-                                final NodeRepositoryFileData data, final ObjectRevision revision )
+                                final NodeRepositoryFileData data, final ObjectRevision revision,
+                                final VariableSpace parent )
     throws KettleException {
-    JobMeta jobMeta = new JobMeta();
+    JobMeta jobMeta = new JobMeta( parent );
     jobMeta.setName( file.getTitle() );
     jobMeta.setFilename( file.getPath() );
     jobMeta.setDescription( file.getDescription() );
@@ -2655,7 +2672,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         if ( monitor != null ) {
           monitor.subTask( "Exporting job [" + file.getPath() + "]" ); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        JobMeta jobMeta = buildJobMeta( file, findDirectory( dirPath ), fileData, createObjectRevision( version ) );
+        JobMeta jobMeta = buildJobMeta( file, findDirectory( dirPath ), fileData, createObjectRevision( version ), null );
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobMetaLoaded.id, jobMeta );
         jobs.add( jobMeta );
       } catch ( Exception ex ) {
@@ -3175,6 +3192,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public JobMeta loadJob( ObjectId idJob, String versionLabel ) throws KettleException {
+    return loadJob( idJob, versionLabel, null );
+  }
+
+  @Override
+  public JobMeta loadJob( ObjectId idJob, String versionLabel, VariableSpace parent ) throws KettleException {
     try {
       RepositoryFile file = null;
       EEJobMeta jobMeta = null;
@@ -3187,7 +3209,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           file = pur.getFileById( idJob.getId() );
         }
 
-        jobMeta = new EEJobMeta();
+        jobMeta = new EEJobMeta( parent );
         jobMeta.setName( file.getTitle() );
         jobMeta.setFilename( file.getPath() );
         jobMeta.setDescription( file.getDescription() );
@@ -3220,6 +3242,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public TransMeta loadTransformation( ObjectId idTransformation, String versionLabel ) throws KettleException {
+    return loadTransformation( idTransformation, versionLabel, null );
+  }
+
+  @Override
+  public TransMeta loadTransformation( ObjectId idTransformation, String versionLabel, VariableSpace parent )
+      throws KettleException {
     try {
       RepositoryFile file = null;
       EETransMeta transMeta = null;
@@ -3231,7 +3259,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         } else {
           file = pur.getFileById( idTransformation.getId() );
         }
-        transMeta = new EETransMeta();
+        transMeta = new EETransMeta( parent );
         transMeta.setName( file.getTitle() );
         transMeta.setFilename( file.getPath() );
         transMeta.setDescription( file.getDescription() );
