@@ -20,6 +20,7 @@ import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProviderFactory;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.di.metastore.MetaStoreConst;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +54,7 @@ public class RunConfigurationProviderFactoryManagerImplTest {
   @Test
   public void testDefault() {
     List<RunConfigurationProvider> providers =
-      RunConfigurationProviderFactoryManagerImpl.getInstance().generateProviders();
+      RunConfigurationProviderFactoryManagerImpl.getInstance().generateProviders( MetaStoreConst::getDefaultMetastore );
 
     Assert.assertEquals( 1, providers.size() );
     Assert.assertEquals( DEFAULT_PROVIDER_TYPE, providers.get( 0 ).getType() );
