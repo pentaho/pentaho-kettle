@@ -24,6 +24,7 @@
 
   <modules>
     <module>repo-vfs-core</module>
+    <module>repo-vfs-server-local</module>
     <module>repo-vfs-spoon</module>
     <module>assemblies</module>
   </modules>

@@ -28,7 +28,13 @@
         <dependency>
             <groupId>org.pentaho.di.plugins</groupId>
             <artifactId>repo-vfs-core</artifactId>
-            <version>11.0.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.pentaho.di.plugins</groupId>
+            <artifactId>repo-vfs-server-local</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -52,6 +58,12 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-ui-swt</artifactId>
+            <version>${pdi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>pentaho</groupId>
+            <artifactId>pentaho-platform-core</artifactId>
             <version>${pdi.version}</version>
             <scope>provided</scope>
         </dependency>

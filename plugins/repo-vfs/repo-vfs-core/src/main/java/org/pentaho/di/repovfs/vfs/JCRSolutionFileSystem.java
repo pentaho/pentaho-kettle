@@ -37,9 +37,8 @@ public class JCRSolutionFileSystem extends AbstractFileSystem {
   /**
    * Creates a file object.  This method is called only if the requested file is not cached.
    */
-  protected FileObject createFile(final AbstractFileName name) throws Exception
-  {
-    return new JCRSolutionFileObject(name, this, cfg, solutionFileModel);
+  protected FileObject createFile( final AbstractFileName name ) throws Exception {
+    return new JCRSolutionFileObject( name, this, cfg, solutionFileModel );
   }
 
   /**
@@ -70,7 +69,8 @@ public class JCRSolutionFileSystem extends AbstractFileSystem {
       public static final String USER = "user";
       public static final String PASS = "password";
       public static final String URL = "pentaho_url";
-      public static final String TIMEOUT = "timeout"; 
+      public static final String TIMEOUT = "timeout";
+      public static final String USE_LOCAL = "use_local_repo";
     }
 
     @Override
@@ -105,10 +105,18 @@ public class JCRSolutionFileSystem extends AbstractFileSystem {
     public void setTimeOut( final FileSystemOptions opts, final int timeOut ) {
       setParam( opts, Params.TIMEOUT, timeOut );
     }
-  
+
     public int getTimeOut( final FileSystemOptions opts ) {
       Integer timeout = getInteger( opts, Params.TIMEOUT );
       return timeout != null ? timeout : 0;
+    }
+
+    public void setUseLocalRepo( FileSystemOptions opts, boolean useLocalRepo ) {
+      setParam( opts, Params.USE_LOCAL, useLocalRepo );
+    }
+
+    public boolean getUseLocalRepo( FileSystemOptions opts ) {
+      return getBoolean( opts, Params.USE_LOCAL );
     }
   }
 }
