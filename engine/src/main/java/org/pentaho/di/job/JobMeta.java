@@ -204,6 +204,18 @@ public class JobMeta extends AbstractMeta
     initializeVariablesFrom( null );
   }
 
+    /**
+   * Builds a new empty job with a set of variables to inherit from.
+   *
+   * @param parent
+   *          the variable space to inherit from
+   */
+  public JobMeta( VariableSpace parent ) {
+    clear();
+    initializeVariablesFrom( parent );
+  }
+
+
   /**
    * Clears or reinitializes many of the JobMeta properties.
    */

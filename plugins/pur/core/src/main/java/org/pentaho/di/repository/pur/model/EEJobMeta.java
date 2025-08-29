@@ -13,12 +13,17 @@
 
 package org.pentaho.di.repository.pur.model;
 
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.JobMeta;
 
 public class EEJobMeta extends JobMeta implements ILockable, java.io.Serializable {
 
   private static final long serialVersionUID = -8474422291164154884L; /* EESOURCE: UPDATE SERIALVERUID */
   private RepositoryLock repositoryLock;
+
+  public EEJobMeta( VariableSpace parent ) {
+    super( parent );
+  }
 
   /**
    * @return the repositoryLock
