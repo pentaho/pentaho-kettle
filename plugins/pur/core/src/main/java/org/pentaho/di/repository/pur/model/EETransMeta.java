@@ -12,12 +12,17 @@
 
 package org.pentaho.di.repository.pur.model;
 
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransMeta;
 
 public class EETransMeta extends TransMeta implements ILockable, java.io.Serializable {
 
   private static final long serialVersionUID = -5959504570945456271L; /* EESOURCE: UPDATE SERIALVERUID */
   private RepositoryLock repositoryLock;
+
+  public EETransMeta( VariableSpace parent ) {
+    super( parent );
+  }
 
   /**
    * @return the repositoryLock
