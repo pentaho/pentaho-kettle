@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pentaho-kettle-repository-locator-assemblies</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.6-366</version>
   </parent>
 
   <artifactId>kettle-repository-locator-plugin</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.2.0.6-366</version>
   <packaging>pom</packaging>
 
   <name>Pentaho Repository Locator Plugin</name>
