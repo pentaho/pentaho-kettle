@@ -31,7 +31,6 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
-import org.pentaho.di.security.ExitInterceptor;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
@@ -71,7 +70,6 @@ public class PanTest {
 
   @Before
   public void setUp() {
-    ExitInterceptor.enableIntercept();
     sysOutContent = new ByteArrayOutputStream();
     sysErrContent = new ByteArrayOutputStream();
     mockRepositoriesMeta = mock( RepositoriesMeta.class );
@@ -82,7 +80,6 @@ public class PanTest {
 
   @After
   public void tearDown() {
-    ExitInterceptor.disableIntercept();
     sysOutContent = null;
     sysErrContent = null;
     mockRepositoriesMeta = null;

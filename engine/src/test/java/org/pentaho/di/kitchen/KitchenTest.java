@@ -28,7 +28,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
-import org.pentaho.di.security.ExitInterceptor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -62,7 +61,6 @@ public class KitchenTest {
   @Before
   public void setUp() throws KettleException {
     KettleEnvironment.init();
-    ExitInterceptor.enableIntercept();
     sysOutContent = new ByteArrayOutputStream();
     sysErrContent = new ByteArrayOutputStream();
     mockRepositoriesMeta = mock( RepositoriesMeta.class );
@@ -73,7 +71,6 @@ public class KitchenTest {
 
   @After
   public void tearDown() {
-    ExitInterceptor.disableIntercept();
     sysOutContent = null;
     sysErrContent = null;
     mockRepositoriesMeta = null;
