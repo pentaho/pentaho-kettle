@@ -912,4 +912,7 @@ public interface StepMetaInterface {
     return null; // default
   }
 
+  default StepHelperInterface getStepHelperInterface() {
+    return null; // default
+  }
 }
