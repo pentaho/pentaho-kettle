@@ -204,6 +204,18 @@ public class JobMeta extends AbstractMeta
     initializeVariablesFrom( null );
   }
 
+    /**
+   * Builds a new empty job with a set of variables to inherit from.
+   *
+   * @param parent
+   *          the variable space to inherit from
+   */
+  public JobMeta( VariableSpace parent ) {
+    clear();
+    initializeVariablesFrom( parent );
+  }
+
+
   /**
    * Clears or reinitializes many of the JobMeta properties.
    */
@@ -871,6 +883,24 @@ public class JobMeta extends AbstractMeta
   public JobMeta( InputStream inputStream, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
     this();
     Document doc = XMLHandler.loadXMLFile( inputStream, null, false, false );
+    loadXML( XMLHandler.getSubNode( doc, JobMeta.XML_TAG ), rep, prompter );
+  }
+
+  /**
+   * Instantiates a new job meta.
+   *
+   * @param inputStream the input stream
+   * @param rep         the rep
+   * @param prompter    the prompter
+   * @param parentVariableSpace           the parent variable space to use during JobMeta construction
+   * @throws KettleXMLException the kettle xml exception
+   */
+  public JobMeta( InputStream inputStream, Repository rep, OverwritePrompter prompter,
+      VariableSpace parentVariableSpace ) throws KettleXMLException {
+
+    this();
+    Document doc = XMLHandler.loadXMLFile( inputStream, null, false, false );
+    initializeVariablesFrom( parentVariableSpace );
     loadXML( XMLHandler.getSubNode( doc, JobMeta.XML_TAG ), rep, prompter );
   }
 
