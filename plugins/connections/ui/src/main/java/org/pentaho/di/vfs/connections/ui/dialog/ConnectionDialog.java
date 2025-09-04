@@ -508,6 +508,10 @@ public class ConnectionDialog extends Dialog {
     if ( isEmpty( connectionDetails.getName() ) ) {
       return BaseMessages.getString( PKG, "ConnectionDialog.validate.failure.noName" );
     }
+    if ( ConnectionManager.STRING_REPO_CONNECTION.equalsIgnoreCase( connectionDetails.getName().trim() ) ) {
+      return BaseMessages.getString( PKG, "ConnectionDialog.validate.failure.reservedName",
+        ConnectionManager.STRING_REPO_CONNECTION );
+    }
     VFSConnectionDetails vfsConnectionDetails = asVFSConnectionDetails( connectionDetails );
     if ( vfsConnectionDetails != null && vfsConnectionDetails.isRootPathRequired() && isEmpty( vfsConnectionDetails.getRootPath() ) ) {
       return BaseMessages.getString( PKG, "ConnectionDialog.validate.failure.rootPath" );
