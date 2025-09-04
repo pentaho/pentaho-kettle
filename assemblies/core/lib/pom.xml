@@ -42,7 +42,6 @@
         <mimepull.version>1.9.3</mimepull.version>
         <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
         <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
-        <tyrus-standalone-client.version>1.13.1</tyrus-standalone-client.version>
         <databricks.version>4.0.0</databricks.version>
    </properties>
 
@@ -105,17 +104,6 @@
         <dependency>
             <groupId>org.eclipse.paho</groupId>
             <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus.bundles</groupId>
-            <artifactId>tyrus-standalone-client</artifactId>
-            <version>${tyrus-standalone-client.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Pentaho dependencies -->
