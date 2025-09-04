@@ -115,6 +115,7 @@ public class ConnectionManager {
   private synchronized void initialize() {
     if ( !initialized ) {
       try {
+        List<ConnectionProvider<? extends ConnectionDetails>> notStoredProviders = new ArrayList<>();
         List<ConnectionProvider<? extends ConnectionDetails>> providers = getProviders();
         for ( ConnectionProvider<? extends ConnectionDetails> provider : providers ) {
           List<String> names;
@@ -128,11 +129,17 @@ public class ConnectionManager {
               EncryptUtils.decryptFields( details );
               detailsByName.put( name, details );
             }
+            namesByConnectionProvider.put( provider.getName(), names );
           } else {
-            List<? extends ConnectionDetails> details = provider.getConnectionDetails( this );
-            details.forEach( d -> detailsByName.put( d.getName(), d ) );
-            names = details.stream().map( ConnectionDetails::getName ).collect( Collectors.toList() );
+            notStoredProviders.add( provider );
           }
+        }
+        // Make sure these hard-coded providers overwrite any other sources by being the last added.
+        for ( ConnectionProvider<? extends ConnectionDetails> provider : notStoredProviders ) {
+          List<String> names;
+          List<? extends ConnectionDetails> details = provider.getConnectionDetails( this );
+          details.forEach( d -> detailsByName.put( d.getName(), d ) );
+          names = details.stream().map( ConnectionDetails::getName ).collect( Collectors.toList() );
           namesByConnectionProvider.put( provider.getName(), names );
         }
         initialized = true;
