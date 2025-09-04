@@ -53,12 +53,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>pdi-engine-api</artifactId>
-      <version>${pdi.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-metastore-locator-api</artifactId>
       <version>${pdi.version}</version>

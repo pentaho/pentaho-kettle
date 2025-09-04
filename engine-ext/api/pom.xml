@@ -18,7 +18,7 @@
 
   <properties>
     <reactive-streams.version>1.0.0</reactive-streams.version>
-    <pdi-version>$(project.version}</pdi-version>
+    <pdi-version>${project.version}</pdi-version>
   </properties>
 
   <dependencies>
@@ -40,6 +40,11 @@
       <groupId>org.reactivestreams</groupId>
       <artifactId>reactive-streams</artifactId>
       <version>${reactive-streams.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${pdi-version}</version>
     </dependency>
   </dependencies>
 
