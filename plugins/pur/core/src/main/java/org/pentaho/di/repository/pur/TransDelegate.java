@@ -316,7 +316,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
       // Read the metadata from the repository too...
       //
-      RepositoryProxy proxy = new RepositoryProxy( stepNode.getNode( NODE_STEP_CUSTOM ) );
+      RepositoryProxy proxy = new RepositoryProxy( stepNode.getNode( NODE_STEP_CUSTOM ), this.repo );
       if ( !stepMeta.isMissing() ) {
         readRepCompatibleStepMeta( stepMetaInterface, proxy, null, transMeta.getDatabases() );
         stepMetaInterface.readRep( proxy, transMeta.getMetaStore(), null, transMeta.getDatabases() );
@@ -338,7 +338,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
         String methodCode = getString( stepNode, PROP_PARTITIONING_METHOD );
         stepPartitioningMeta.setMethod( StepPartitioningMeta.getMethod( methodCode ) );
         if ( stepPartitioningMeta.getPartitioner() != null ) {
-          proxy = new RepositoryProxy( stepNode.getNode( NODE_PARTITIONER_CUSTOM ) );
+          proxy = new RepositoryProxy( stepNode.getNode( NODE_PARTITIONER_CUSTOM ), this.repo );
           stepPartitioningMeta.getPartitioner().loadRep( proxy, null );
         }
         stepPartitioningMeta.hasChanged( true );
@@ -618,7 +618,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       //
       StepMetaInterface stepMetaInterface = step.getStepMetaInterface();
       DataNode stepCustomNode = new DataNode( NODE_STEP_CUSTOM );
-      Repository proxy = new RepositoryProxy( stepCustomNode );
+      Repository proxy = new RepositoryProxy( stepCustomNode, this.repo );
       compatibleSaveRep( stepMetaInterface, proxy, null, null );
       stepMetaInterface.saveRep( proxy, MetaStoreConst.getDefaultMetastore(), null, null );
       stepNode.addNode( stepCustomNode );
@@ -637,7 +637,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
         stepNode.setProperty( PROP_PARTITIONING_METHOD, partitioningMeta.getMethodCode() ); // method of partitioning
         if ( partitioningMeta.getPartitioner() != null ) {
           DataNode partitionerCustomNode = new DataNode( NODE_PARTITIONER_CUSTOM );
-          proxy = new RepositoryProxy( partitionerCustomNode );
+          proxy = new RepositoryProxy( partitionerCustomNode, this.repo );
           partitioningMeta.getPartitioner().saveRep( proxy, null, null );
           stepNode.addNode( partitionerCustomNode );
         }
