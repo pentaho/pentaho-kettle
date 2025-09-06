@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>repositories</artifactId>
-  <version>11.0.0.0-SNAPSHOT</version>
+  <version>11.0.0.0-83</version>
   <packaging>pom</packaging>
 
   <name>PDI Repositories Plugin</name>
@@ -12,11 +12,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>11.0.0.0-SNAPSHOT</version>
+    <version>11.0.0.0-83</version>
   </parent>
 
   <properties>
-    <pdi.version>11.0.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>11.0.0.0-83</pdi.version>
   </properties>
 
   <modules>
