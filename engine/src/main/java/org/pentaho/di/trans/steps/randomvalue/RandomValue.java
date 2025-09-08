@@ -13,8 +13,6 @@
 
 package org.pentaho.di.trans.steps.randomvalue;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -33,10 +31,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Get random value.
@@ -245,39 +240,6 @@ public class RandomValue extends BaseStep implements StepInterface {
       return true;
     }
     return false;
-  }
-
-  /**
-   * Generates a JSON response containing the available random function types.
-   * <p>
-   * Iterates through the list of random value functions defined in {@link RandomValueMeta#functions},
-   * and constructs a JSON array where each element represents a function type with its code and description.
-   * The resulting JSON object contains this array under the key "randomFunctionTypes".
-   * </p>
-   *
-   * <p>
-   * <b>Note:</b> This method is invoked dynamically using reflection from {@link StepInterface#doAction}.
-   * </p>
-   *
-   * @param queryParamToValues a map of query parameter names to their values (currently unused)
-   * @return a {@link JSONObject} containing the available random function types
-   */
-  @SuppressWarnings( "unchecked" )
-  public JSONObject getRandomFunctionTypesAction( Map<String, String> queryParamToValues ) {
-    JSONArray functionTypes = new JSONArray();
-
-    Arrays.stream( RandomValueMeta.functions )
-      .filter( Objects::nonNull )
-      .forEach( func -> {
-        JSONObject type = new JSONObject();
-        type.put( "id", func.getCode() );
-        type.put( "name", func.getDescription() );
-        functionTypes.add( type );
-      } );
-
-    JSONObject response = new JSONObject();
-    response.put( "randomFunctionTypes", functionTypes );
-    return response;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
