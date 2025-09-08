@@ -50,7 +50,7 @@ import java.util.function.Function;
  *
  * @author Alexander Buloichik@epam.com>
  */
-public abstract class AvroOutputMetaBase extends BaseStepMeta implements StepMetaInterface,  ResolvableResource {
+public abstract class AvroOutputMetaBase extends BaseStepMeta implements StepMetaInterface {
   private static final String FILE_NAME = "filename";
   private static final String PRECISION = "precision";
   private static final String SCALE = "scale";
@@ -293,33 +293,6 @@ public abstract class AvroOutputMetaBase extends BaseStepMeta implements StepMet
 
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for stepId=" + stepId, e );
-    }
-  }
-
-  @Override
-  public void resolve( Bowl bowl ) {
-    if ( filename != null && !filename.isEmpty() ) {
-      try {
-        String realFileName = getParentStepMeta().getParentTransMeta().environmentSubstitute( filename );
-        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( realFileName );
-        if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-          filename = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
-        }
-      } catch ( KettleFileException e ) {
-        throw new RuntimeException( e );
-      }
-    }
-
-    if ( schemaFilename != null && !schemaFilename.isEmpty() ) {
-      try {
-        String realSchemaFilename = getParentStepMeta().getParentTransMeta().environmentSubstitute( schemaFilename );
-        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( realSchemaFilename );
-        if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-          schemaFilename = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
-        }
-      } catch ( KettleFileException e ) {
-        throw new RuntimeException( e );
-      }
     }
   }
 
