@@ -26,10 +26,9 @@ import java.util.concurrent.Future;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Result;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
@@ -43,9 +42,9 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.ExecutorUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
-import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.pan.CommandLineOption;
 
 public class Kitchen {
@@ -178,6 +177,15 @@ public class Kitchen {
       exitJVM( 9 );
     }
 
+    Map.Entry<KettlePluginException, Future<KettleException>> repositoryRegisterResults =
+      repositoryRegisterFuture.get();
+    // It's a singleton map with one key-value pair (a Pair collection)
+    KettlePluginException repositoryRegisterException = repositoryRegisterResults.getKey();
+    if ( repositoryRegisterException != null ) {
+      throw repositoryRegisterException;
+    }
+    Future<KettleException> kettleInitFuture = repositoryRegisterResults.getValue();
+
     LogChannelInterface log = new LogChannel( STRING_KITCHEN );
 
     CommandLineOption.parseArguments( args, options, log );
@@ -203,15 +211,6 @@ public class Kitchen {
       // overwrite the new by the old
       optionLogfile = optionLogfileOld;
     }
-
-    Map.Entry<KettlePluginException, Future<KettleException>> repositoryRegisterResults =
-      repositoryRegisterFuture.get();
-    // It's a singleton map with one key-value pair (a Pair collection)
-    KettlePluginException repositoryRegisterException = repositoryRegisterResults.getKey();
-    if ( repositoryRegisterException != null ) {
-      throw repositoryRegisterException;
-    }
-    Future<KettleException> kettleInitFuture = repositoryRegisterResults.getValue();
 
     if ( !Utils.isEmpty( optionLogfile ) ) {
       fileAppender = new FileLoggingEventListener( optionLogfile.toString(), true );
