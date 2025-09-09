@@ -37,9 +37,11 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.trans.step.BaseStepHelper.REFERENCE_PATH;
 import static org.pentaho.di.trans.step.StepHelperInterface.ACTION_STATUS;
 import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_METHOD_NOT_FOUND_RESPONSE;
 import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_RESPONSE;
+import static org.pentaho.di.trans.step.StepHelperInterface.SUCCESS_RESPONSE;
 
 public class TransExecutorHelperTest {
 
@@ -126,5 +128,18 @@ public class TransExecutorHelperTest {
     JSONObject response = underTest.stepAction( "invalidMethod", transMeta, null );
 
     assertNotNull( response ); assertEquals( FAILURE_METHOD_NOT_FOUND_RESPONSE, response.get( ACTION_STATUS ) );
+  }
+
+  @Test
+  public void testReferencePath() {
+    when( transExecutorMeta.getDirectoryPath() ).thenReturn( "/path" );
+    when( transExecutorMeta.getTransName() ).thenReturn( "transName" );
+    when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    JSONObject response = underTest.stepAction( REFERENCE_PATH, transMeta, null );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( REFERENCE_PATH ) );
+    assertEquals( "/path/transName", response.get( REFERENCE_PATH ) );
   }
 }

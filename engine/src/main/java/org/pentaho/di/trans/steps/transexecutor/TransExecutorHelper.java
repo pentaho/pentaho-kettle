@@ -51,6 +51,9 @@ public class TransExecutorHelper extends BaseStepHelper {
       case IS_TRANS_VALID:
         response = isTransValid( transMeta, transExecutorMeta );
         break;
+      case REFERENCE_PATH:
+        response = getReferencePath( transMeta, transExecutorMeta );
+        break;
       default:
         response.put( ACTION_STATUS, FAILURE_METHOD_NOT_FOUND_RESPONSE );
         break;
@@ -114,6 +117,21 @@ public class TransExecutorHelper extends BaseStepHelper {
       response.put( TRANS_PRESENT, false );
       response.put( "errorMessage", ExceptionUtils.getRootCauseMessage( e ) );
     }
+    return response;
+  }
+
+  /**
+   * Fetches the reference path of the transformation used in the transformation executor step.
+   *
+   * @return  A JSON object containing:
+   * - "referencePath": The full path to the referenced transformation, with environment variables substituted.
+   * - "isTransReference": A boolean indicating that this is a transformation reference.
+   *
+   */
+  private JSONObject getReferencePath( TransMeta transMeta, TransExecutorMeta transExecutorMeta ) {
+    JSONObject response = new JSONObject();
+    response.put( REFERENCE_PATH, transMeta.environmentSubstitute( transExecutorMeta.getDirectoryPath() + SEPARATOR + transExecutorMeta.getTransName() ) );
+    response.put( IS_TRANS_REFERENCE, true );
     return response;
   }
 

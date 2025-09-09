@@ -61,6 +61,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
@@ -1432,6 +1433,11 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   public Object loadReferencedObject( Bowl bowl, int index, Repository rep, IMetaStore metaStore, VariableSpace space )
     throws KettleException {
     return loadJobMeta( bowl, this, rep, metaStore, space );
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new JobExecutorHelper( this );
   }
 
   public void setMetaStore( IMetaStore metaStore ) {
