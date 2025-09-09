@@ -15,28 +15,25 @@ package org.pentaho.di.pan;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.parameters.NamedParams;
-import org.pentaho.di.repository.Repository;
 
-import java.util.Map;
+import java.util.List;
 
 public interface CommandLineOptionProvider {
-
   /**
-   * Return the additional commandline option in the form of namedParams
+   * Prepare additional commandline option.
    *
-   * @param log LogChannelInterface object for logging information
-   * @return NamedParam  NameParam containing the name and description of the commandline options
+   * @param options Existing commandline options
+   * @param param   Additional commandline option.
    */
-  NamedParams getAdditionalCommandlineOptions( LogChannelInterface log );
+  void prepareAdditionalCommandlineOption( List<CommandLineOption> options, StringBuilder param );
 
   /**
-   * Validate the parameter value and set the project context
+   * Handle additional parameter
+   *
    * @param log
-   * @param params Map containing the param/value
-   * @param repository Repository object in case we are connected to repository
-   * @return CommandExecutorResult Returns the return code which is zero in case of success and non-zero code in case of error
+   * @param param Commandline option String value.
+   * @return CommandExecutorResult
    * @throws KettleException
    */
-  CommandExecutorResult handleParameter( LogChannelInterface log, Map<String, String> params, Repository repository ) throws KettleException;
+  CommandExecutorResult handleParameter( LogChannelInterface log, String param ) throws KettleException;
 }
