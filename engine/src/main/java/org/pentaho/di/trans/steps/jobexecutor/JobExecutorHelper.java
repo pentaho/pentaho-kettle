@@ -119,13 +119,20 @@ public class JobExecutorHelper extends BaseStepHelper {
    *
    * @return  A JSON object containing:
    * - "referencePath": The full path to the referenced transformation, with environment variables substituted.
-   * - "isTransReference": A boolean indicating that this is a transformation reference.
+   * - "isValidReference": A boolean indicating whether the reference is valid.
    *
    */
   private JSONObject getReferencePath( TransMeta transMeta, JobExecutorMeta jobExecutorMeta ) {
     JSONObject response = new JSONObject();
-    response.put( REFERENCE_PATH, transMeta.environmentSubstitute( jobExecutorMeta.getDirectoryPath() + SEPARATOR + jobExecutorMeta.getJobName() ) );
-    response.put( IS_TRANS_REFERENCE, false );
+    try {
+      response.put( REFERENCE_PATH, getReferencePath( transMeta, jobExecutorMeta.getDirectoryPath(), jobExecutorMeta.getJobName() ) );
+      JobExecutorMeta.loadJobMeta( transMeta.getBowl(), jobExecutorMeta, jobExecutorMeta.getRepository(), transMeta );
+      response.put( IS_VALID_REFERENCE, true );
+      response.put( IS_TRANS_REFERENCE, false );
+    } catch ( Exception exception ) {
+      response.put( IS_VALID_REFERENCE, false );
+      response.put( IS_TRANS_REFERENCE, false );
+    }
     return response;
   }
 }

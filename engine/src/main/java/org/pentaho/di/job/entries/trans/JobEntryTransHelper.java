@@ -24,6 +24,7 @@ import java.util.Map;
 public class JobEntryTransHelper extends BaseJobEntryHelper {
 
   protected static final String PARAMETERS = "parameters";
+  protected static final String JOB_ENTRY_TRANS_REFERENCE_PATH = "referencePath";
   private final JobEntryTrans jobEntryTrans;
 
   public JobEntryTransHelper( JobEntryTrans jobEntryTrans ) {
@@ -43,9 +44,12 @@ public class JobEntryTransHelper extends BaseJobEntryHelper {
     JSONObject response = new JSONObject();
     if ( method.equals( PARAMETERS ) ) {
       response = getParametersFromTrans( jobMeta );
+    } else if ( method.equals( JOB_ENTRY_TRANS_REFERENCE_PATH ) ) {
+      response = getReferencePath( jobMeta );
     } else {
       response.put( ACTION_STATUS, FAILURE_METHOD_NOT_FOUND_RESPONSE );
     }
+
     return response;
   }
 
@@ -69,6 +73,28 @@ public class JobEntryTransHelper extends BaseJobEntryHelper {
       response.put( "error", kettleException.getMessage() );
     }
 
+    return response;
+  }
+
+  /**
+   * Retrieves the reference path of the transformation associated with the job entry.
+   * @param jobMeta The job metadata containing the job entry.
+   * @return A JSON object containing:
+   * - "referencePath": The reference path of the transformation.
+   * - "isValidReference": A boolean indicating if the reference is valid.
+   * - "isTransReference": A boolean indicating if the reference is a transformation.
+   */
+  public JSONObject getReferencePath( JobMeta jobMeta ) {
+    JSONObject response = new JSONObject();
+    try {
+      response.put( JOB_ENTRY_TRANS_REFERENCE_PATH, getReferencePath( jobMeta, jobEntryTrans.getDirectory(), jobEntryTrans.getTransname() ) );
+      jobEntryTrans.getTransMeta( jobMeta.getRepository(), null, jobMeta );
+      response.put( IS_VALID_REFERENCE, true );
+      response.put( IS_TRANS_REFERENCE, true );
+    } catch ( Exception exception ) {
+      response.put( IS_VALID_REFERENCE, false );
+      response.put( IS_TRANS_REFERENCE, true );
+    }
     return response;
   }
 }

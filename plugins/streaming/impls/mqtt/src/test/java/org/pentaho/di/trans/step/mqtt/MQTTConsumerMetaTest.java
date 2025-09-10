@@ -34,6 +34,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepOption;
 import org.pentaho.metastore.api.IMetaStore;
@@ -289,6 +290,16 @@ public class MQTTConsumerMetaTest {
     assertEquals( ValueMetaInterface.TYPE_BINARY, meta.getRowMeta( "", new Variables() ).getValueMeta( 0 ).getType() );
     meta.messageDataType = ValueMetaInterface.getTypeDescription( ValueMetaInterface.TYPE_STRING );
     assertEquals( ValueMetaInterface.TYPE_STRING, meta.getRowMeta( "", new Variables() ).getValueMeta( 0 ).getType() );
+  }
+
+  @Test
+  public void testGetStepHelperInterface() {
+    MQTTConsumerMeta mqttConsumerMeta = new MQTTConsumerMeta();
+    StepHelperInterface stepHelperInterface = mqttConsumerMeta.getStepHelperInterface();
+
+    assertNotNull( "StepHelperInterface should not be null", stepHelperInterface );
+    Assert.assertTrue( "StepHelperInterface should be an instance of MQTTConsumerHelper",
+        stepHelperInterface instanceof MQTTConsumerHelper );
   }
 
   private void metaMatchesTestMetaFields( MQTTConsumerMeta consumerMeta ) {

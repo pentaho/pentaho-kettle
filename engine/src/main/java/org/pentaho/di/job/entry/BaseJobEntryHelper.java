@@ -11,6 +11,7 @@
 
 package org.pentaho.di.job.entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -31,6 +32,11 @@ import java.util.Map;
  * @see JobEntryHelperInterface
  */
 public abstract class BaseJobEntryHelper implements JobEntryHelperInterface {
+
+  public static final String IS_TRANS_REFERENCE = "isTransReference";
+  public static final String IS_VALID_REFERENCE = "isValidReference";
+  public static final String REFERENCE_PATH = "referencePath";
+  public static final String SEPARATOR = "/";
 
   protected LogChannelInterface log;
 
@@ -94,6 +100,23 @@ public abstract class BaseJobEntryHelper implements JobEntryHelperInterface {
       return false;
     }
     return FAILURE_RESPONSE.equalsIgnoreCase( status.toString() );
+  }
+
+  /**
+   * Constructs the reference path for a job or transformation based on the provided directory path and name.
+   * @param jobMeta The job metadata containing the job entry.
+   * @param directoryPath The directory path where the job or transformation is located.
+   * @param objectName The name of the job or transformation.
+   * @return The constructed reference path, or an empty string if neither directoryPath nor objectName is provided.
+   */
+  protected String getReferencePath( JobMeta jobMeta, String directoryPath, String objectName ) {
+    if ( StringUtils.isNotBlank( directoryPath ) && StringUtils.isNotBlank( objectName ) ) {
+      return jobMeta.environmentSubstitute( directoryPath ) + SEPARATOR +  jobMeta.environmentSubstitute( objectName );
+    } else if ( StringUtils.isNotBlank( objectName ) ) {
+      return jobMeta.environmentSubstitute( objectName );
+    }
+
+    return StringUtils.EMPTY;
   }
 }
 

@@ -30,6 +30,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -374,6 +375,11 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
 
   public void setAutomaticReconnect( String automaticReconnect ) {
     this.automaticReconnect = automaticReconnect;
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new MQTTConsumerHelper( this );
   }
 
   List<StepOption> retrieveOptions() {
