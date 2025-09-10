@@ -13,12 +13,9 @@ package org.pentaho.di.trans.steps.randomvalue;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.pentaho.di.trans.TransMeta;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,36 +24,29 @@ import java.util.Objects;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
+import static org.pentaho.di.trans.steps.randomvalue.RandomValueStepHelper.METHOD_GET_RANDOM_FUNCTION_TYPES;
+import static org.pentaho.di.trans.steps.randomvalue.RandomValueStepHelper.RESPONSE_KEY;
 
-public class RandomValueTest {
+public class RandomValueStepHelperTest {
 
-  private RandomValue randomValue;
-  private StepMockHelper<RandomValueMeta, RandomValueData> mockHelper;
+  private RandomValueStepHelper randomValueStepHelper;
+  private TransMeta transMeta;
 
   @Before
   public void setUp() {
-    mockHelper = new StepMockHelper<>( "RandomValueTest", RandomValueMeta.class, RandomValueData.class );
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-      mockHelper.logChannelInterface );
-    when( mockHelper.trans.isRunning() ).thenReturn( true );
-    randomValue = Mockito.spy(
-      new RandomValue( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans ) );
-  }
-
-  @After
-  public void tearDown() {
-    mockHelper.cleanUp();
+    transMeta = mock( TransMeta.class );
+    randomValueStepHelper = new RandomValueStepHelper();
   }
 
   @Test
   public void testGetRandomFunctionTypesAction_returnsAllFunctionTypes() {
-    JSONObject result = randomValue.getRandomFunctionTypesAction( Collections.emptyMap() );
+    JSONObject result =
+      randomValueStepHelper.handleStepAction( METHOD_GET_RANDOM_FUNCTION_TYPES, transMeta, Collections.emptyMap() );
     assertNotNull( result );
-    assertTrue( result.containsKey( "randomFunctionTypes" ) );
+    assertTrue( result.containsKey( RESPONSE_KEY ) );
 
-    JSONArray array = (JSONArray) result.get( "randomFunctionTypes" );
+    JSONArray array = (JSONArray) result.get( RESPONSE_KEY );
     assertNotNull( array );
 
     // Should match the number of non-null functions in RandomValueMeta.functions
@@ -74,5 +64,14 @@ public class RandomValueTest {
       assertEquals( func.getCode(), obj.get( "id" ) );
       assertEquals( func.getDescription(), obj.get( "name" ) );
     }
+  }
+
+  @Test
+  public void testHandleStepAction_withUnknownMethod_returnsFailureResponse() {
+    JSONObject result = randomValueStepHelper.handleStepAction( "unknownMethod", transMeta, Collections.emptyMap() );
+    assertNotNull( result );
+    String actionStatus = RandomValueStepHelper.ACTION_STATUS;
+    assertTrue( result.containsKey( actionStatus ) );
+    assertEquals( RandomValueStepHelper.FAILURE_METHOD_NOT_FOUND_RESPONSE, result.get( actionStatus ) );
   }
 }
