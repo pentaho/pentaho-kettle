@@ -67,6 +67,7 @@ import org.xml.sax.SAXException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -75,6 +76,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.job.entries.trans.JobEntryTrans.IS_TRANS_REFERENCE;
+import static org.pentaho.di.job.entries.trans.JobEntryTrans.REFERENCE_PATH;
+import static org.pentaho.di.job.entry.JobEntryInterface.ACTION_STATUS;
+import static org.pentaho.di.job.entry.JobEntryInterface.SUCCESS_RESPONSE;
 
 public class JobEntryTransTest {
   private final String JOB_ENTRY_TRANS_NAME = "JobEntryTransName";
@@ -499,6 +504,23 @@ public class JobEntryTransTest {
     assertNotNull( parameters );
     assertEquals( "param1", parameters.get( 0 ) );
     assertEquals( "param2", parameters.get( 1 ) );
+  }
+
+  @Test
+  public void testReferencePath() {
+    JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
+    JobMeta jobMeta = mock( JobMeta.class );
+    jobEntryTrans.setParentJobMeta( jobMeta );
+    when( jobEntryTrans.getDirectoryPath() ).thenReturn( "/path" );
+    when( jobEntryTrans.getTransname() ).thenReturn( "transName.ktr" );
+    when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    JSONObject response = jobEntryTrans.doAction( REFERENCE_PATH, null, jobMeta, mock( Job.class ), new HashMap<>() );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( REFERENCE_PATH ) );
+    assertEquals( "/path/transName.ktr", response.get( REFERENCE_PATH ) );
+    assertEquals( true, response.get( IS_TRANS_REFERENCE ) );
   }
 
   @Test

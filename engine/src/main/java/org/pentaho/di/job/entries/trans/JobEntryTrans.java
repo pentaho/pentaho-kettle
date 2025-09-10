@@ -157,6 +157,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
   private Trans trans;
 
+  public static final String IS_TRANS_REFERENCE = "isTransRef";
+
+  public static final String REFERENCE_PATH = "referencePath";
+
+  public static final String SEPARATOR = "/";
+
   private CurrentDirectoryChangedListener currentDirListener = new EntryCurrentDirectoryChangedListener(
       this::getSpecificationMethod,
       this::getDirectory,
@@ -1753,6 +1759,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     JSONArray parametersData = new JSONArray();
     parametersData.addAll( Arrays.asList( parametersList ) );
     response.put( PARAMETERS_DATA, parametersData );
+    return response;
+  }
+
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject referencePathAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( REFERENCE_PATH, this.parentJobMeta.environmentSubstitute( this.getDirectoryPath() + SEPARATOR + this.getTransname() ) );
+    response.put( IS_TRANS_REFERENCE, true );
     return response;
   }
 }

@@ -26,6 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.job.entries.job.JobEntryJob.REFERENCE_PATH;
+import static org.pentaho.di.job.entries.trans.JobEntryTrans.IS_TRANS_REFERENCE;
+import static org.pentaho.di.job.entry.JobEntryInterface.ACTION_STATUS;
+import static org.pentaho.di.job.entry.JobEntryInterface.SUCCESS_RESPONSE;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -909,6 +913,23 @@ public class JobEntryJobTest {
     assertNotNull( parameters );
     assertEquals( "param1", parameters.get( 0 ) );
     assertEquals( "param2", parameters.get( 1 ) );
+  }
+
+  @Test
+  public void testReferencePath() {
+    JobEntryJob jobEntryJob = spy( new JobEntryJob( JOB_ENTRY_JOB_NAME ) );
+    JobMeta jobMeta = mock( JobMeta.class );
+    jobEntryJob.setParentJobMeta( jobMeta );
+    when( jobEntryJob.getDirectory() ).thenReturn( "/path" );
+    when( jobEntryJob.getJobName() ).thenReturn( "sample-job.ktr" );
+    when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    JSONObject response = jobEntryJob.doAction( REFERENCE_PATH, null, jobMeta, mock( Job.class ), new HashMap<>() );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( REFERENCE_PATH ) );
+    assertEquals( "/path/sample-job.ktr", response.get( REFERENCE_PATH ) );
+    assertEquals( false, response.get( IS_TRANS_REFERENCE ) );
   }
 
   private JobEntryJob getJej() {

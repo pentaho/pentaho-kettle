@@ -38,6 +38,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.pentaho.di.trans.step.BaseStepHelper.IS_TRANS_REFERENCE;
 import static org.pentaho.di.trans.step.BaseStepHelper.REFERENCE_PATH;
 import static org.pentaho.di.trans.step.StepHelperInterface.ACTION_STATUS;
 import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_METHOD_NOT_FOUND_RESPONSE;
@@ -159,6 +160,7 @@ public class JobExecutorHelperTest {
     assertNotNull( response );
     assertNotNull( response.get( REFERENCE_PATH ) );
     assertEquals( "/path/jobName", response.get( REFERENCE_PATH ) );
+    assertEquals( false, response.get( IS_TRANS_REFERENCE ) );
   }
 
   @Test

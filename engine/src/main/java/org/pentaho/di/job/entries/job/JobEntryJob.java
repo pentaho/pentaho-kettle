@@ -134,6 +134,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   private String runConfiguration;
 
   public static final LogLevel DEFAULT_LOG_LEVEL = LogLevel.NOTHING;
+  public static final String IS_TRANS_REFERENCE = "isTransRef";
+  public static final String REFERENCE_PATH = "referencePath";
+  public static final String SEPARATOR = "/";
 
   private Job job;
 
@@ -1795,4 +1798,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
+  public JSONObject referencePathAction( Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( REFERENCE_PATH, this.parentJobMeta.environmentSubstitute( this.getDirectory() + SEPARATOR + this.getJobName() ) );
+    response.put( IS_TRANS_REFERENCE, false );
+    return response;
+  }
 }
