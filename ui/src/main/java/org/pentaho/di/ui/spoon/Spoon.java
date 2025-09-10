@@ -5239,7 +5239,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // load from the repository
       try {
         Path filePath = Paths.get( filename );
-        RepositoryDirectoryInterface rdi = rep.findDirectory( filePath.getParent().toString() );
+        RepositoryDirectoryInterface rdi = rep.findDirectory( filePath.getParent().toString().replace( '\\', '/' ) );
         ObjectId objectId = null;
         RepositoryObjectType rtype = null;
         if ( filename.endsWith( ".ktr" ) ) {
