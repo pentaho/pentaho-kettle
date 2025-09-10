@@ -11,6 +11,7 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.jobexecutor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -119,13 +120,27 @@ public class JobExecutorHelper extends BaseStepHelper {
    *
    * @return  A JSON object containing:
    * - "referencePath": The full path to the referenced transformation, with environment variables substituted.
-   * - "isTransReference": A boolean indicating that this is a transformation reference.
+   * - "isValidReference": A boolean indicating whether the reference is valid.
    *
    */
   private JSONObject getReferencePath( TransMeta transMeta, JobExecutorMeta jobExecutorMeta ) {
     JSONObject response = new JSONObject();
-    response.put( REFERENCE_PATH, transMeta.environmentSubstitute( jobExecutorMeta.getDirectoryPath() + SEPARATOR + jobExecutorMeta.getJobName() ) );
-    response.put( IS_TRANS_REFERENCE, false );
+    String referencePath = StringUtils.EMPTY;
+    String directoryPath = jobExecutorMeta.getDirectoryPath() + SEPARATOR + jobExecutorMeta.getJobName();
+    String jobName = jobExecutorMeta.getJobName();
+    if ( StringUtils.isNotBlank( jobName ) && StringUtils.isNotBlank( directoryPath ) ) {
+      referencePath = directoryPath + SEPARATOR + jobName;
+    } else if ( StringUtils.isNotBlank( jobName ) ) {
+      referencePath = jobName;
+    }
+
+    response.put( REFERENCE_PATH, transMeta.environmentSubstitute( referencePath ) );
+    try {
+      JobExecutorMeta.loadJobMeta( transMeta.getBowl(), jobExecutorMeta, jobExecutorMeta.getRepository(), transMeta );
+      response.put( IS_VALID_REFERENCE, true );
+    } catch ( Exception exception ) {
+      response.put( IS_VALID_REFERENCE, false );
+    }
     return response;
   }
 }

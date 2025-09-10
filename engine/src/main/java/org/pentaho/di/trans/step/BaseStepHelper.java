@@ -49,7 +49,7 @@ import java.util.Map;
 public abstract class BaseStepHelper implements StepHelperInterface {
 
   protected final LogChannelInterface log;
-  public static final String IS_TRANS_REFERENCE = "isTransRef";
+  public static final String IS_VALID_REFERENCE = "isValidReference";
   public static final String REFERENCE_PATH = "referencePath";
   public static final String SEPARATOR = "/";
 

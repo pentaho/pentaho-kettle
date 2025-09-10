@@ -50,6 +50,7 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
@@ -496,6 +497,11 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     return ( stepMeta != null && stepMeta instanceof MetaInjectMeta )
         ? loadTransformationMeta( bowl, (MetaInjectMeta) stepMeta, rep, metastore, space ) : null;
 
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new MetaInjectHelper( this );
   }
 
   @Deprecated

@@ -37,6 +37,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.trans.step.BaseStepHelper.IS_VALID_REFERENCE;
 import static org.pentaho.di.trans.step.BaseStepHelper.REFERENCE_PATH;
 import static org.pentaho.di.trans.step.StepHelperInterface.ACTION_STATUS;
 import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_METHOD_NOT_FOUND_RESPONSE;
@@ -141,5 +142,22 @@ public class TransExecutorHelperTest {
     assertNotNull( response );
     assertNotNull( response.get( REFERENCE_PATH ) );
     assertEquals( "/path/transName", response.get( REFERENCE_PATH ) );
+    assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+  }
+
+  @Test
+  public void testReferencePath_throwsException() throws KettleException {
+    doThrow( new KettleException( "Invalid transformation" ) ).when( underTest )
+        .loadExecutorTransMeta( transMeta, transExecutorMeta );
+    when( transExecutorMeta.getDirectoryPath() ).thenReturn( "/path" );
+    when( transExecutorMeta.getTransName() ).thenReturn( "transName" );
+    when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    JSONObject response = underTest.stepAction( REFERENCE_PATH, transMeta, null );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( REFERENCE_PATH ) );
+    assertEquals( "/path/transName", response.get( REFERENCE_PATH ) );
+    assertEquals( false, response.get( IS_VALID_REFERENCE ) );
   }
 }

@@ -13,6 +13,7 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -125,13 +126,27 @@ public class TransExecutorHelper extends BaseStepHelper {
    *
    * @return  A JSON object containing:
    * - "referencePath": The full path to the referenced transformation, with environment variables substituted.
-   * - "isTransReference": A boolean indicating that this is a transformation reference.
+   * - "isValidReference": A boolean indicating whether the referenced transformation could be successfully loaded.
    *
    */
   private JSONObject getReferencePath( TransMeta transMeta, TransExecutorMeta transExecutorMeta ) {
     JSONObject response = new JSONObject();
-    response.put( REFERENCE_PATH, transMeta.environmentSubstitute( transExecutorMeta.getDirectoryPath() + SEPARATOR + transExecutorMeta.getTransName() ) );
-    response.put( IS_TRANS_REFERENCE, true );
+    String referencePath = StringUtils.EMPTY;
+    String directoryPath = transExecutorMeta.getDirectoryPath() + SEPARATOR + transExecutorMeta.getTransName();
+    String transName = transExecutorMeta.getTransName();
+    if ( StringUtils.isNotBlank( directoryPath ) && StringUtils.isNotBlank( transName ) ) {
+      referencePath = directoryPath + SEPARATOR + transName;
+    } else if ( StringUtils.isNotBlank( transName ) ) {
+      referencePath = transName;
+    }
+
+    response.put( REFERENCE_PATH, transMeta.environmentSubstitute( referencePath ) );
+    try {
+      loadExecutorTransMeta( transMeta, transExecutorMeta );
+      response.put( IS_VALID_REFERENCE, true );
+    } catch ( Exception exception ) {
+      response.put( IS_VALID_REFERENCE, false );
+    }
     return response;
   }
 
