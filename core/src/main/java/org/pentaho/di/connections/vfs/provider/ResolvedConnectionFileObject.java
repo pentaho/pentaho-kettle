@@ -92,9 +92,4 @@ class ResolvedConnectionFileObject extends ConnectionFileObject {
   public boolean canRenameTo( FileObject newfile ) {
     return resolvedFileObject.canRenameTo( newfile );
   }
-
-  @Override
-  public String getAELSafeURIString() {
-    return resolvedFileObject.getPublicURIString().replaceFirst( "s3://", "s3a://" );
-  }
 }
