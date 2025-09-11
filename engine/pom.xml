@@ -88,11 +88,6 @@
       <artifactId>kettle-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>pdi-engine-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
     <!-- Pentaho dependencies -->
     <dependency>
@@ -764,18 +759,6 @@
       <groupId>jakarta.ws.rs</groupId>
       <artifactId>jakarta.ws.rs-api</artifactId>
       <version>${jakarta.ws.rs-api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.websocket</groupId>
-      <artifactId>jakarta.websocket-client-api</artifactId>
-      <version>${jakarta.websocket-api.version}</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.woodstox</groupId>
