@@ -38,6 +38,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
@@ -159,9 +160,6 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
     retval.append( XMLHandler.addTagValue( "reference", infoStreams.get( 0 ).getStepname() ) );
     retval.append( XMLHandler.addTagValue( "compare", infoStreams.get( 1 ).getStepname() ) );
-    retval.append( "    <compare>" + Const.CR );
-
-    retval.append( "    </compare>" + Const.CR );
 
     return retval.toString();
   }
@@ -400,4 +398,8 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return new TransformationType[] { TransformationType.Normal, };
   }
 
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new MergeRowsHelper( this );
+  }
 }

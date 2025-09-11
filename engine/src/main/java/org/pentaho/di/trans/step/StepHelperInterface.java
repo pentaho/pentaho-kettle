@@ -19,7 +19,7 @@ import org.pentaho.di.trans.TransMeta;
 import java.util.Map;
 
 /**
- * Defines helper methods for executing "step actions" used by a step user interface (UI).
+ * Defines helper methods for executing "step actions" and common methods used by a step user interface (UI).
  * <p>
  * Step actions are step-specific, non-runtime operations invoked from a step dialog
  * (e.g. fetching metadata, testing connections) whose results are displayed in the dialog.
