@@ -41,22 +41,22 @@ public class SelectValuesHelperTest {
   }
 
   @Test
-  public void testHandleStepAction_whenMethodNameIsLocales() {
+  public void testHandleStepAction_whenMethodNameIsLocales_thenReturnsLocalesArray() {
     testFieldDataWithActionMethods( "locales" );
   }
 
   @Test
-  public void testHandleStepAction_whenMethodNameIsTimezones() {
+  public void testHandleStepAction_whenMethodNameIsTimezones_thenReturnsTimezonesArray() {
     testFieldDataWithActionMethods( "timezones" );
   }
 
   @Test
-  public void testHandleStepAction_whenMethodNameIsEncodings() {
+  public void testHandleStepAction_whenMethodNameIsEncodings_thenReturnsEncodingsArray() {
     testFieldDataWithActionMethods( "encodings" );
   }
 
   @Test
-  public void testHandleStepAction_whenMethodNameIsInvalid() {
+  public void testHandleStepAction_whenMethodNameIsInvalid_thenReturnsFailureMethodNotFound() {
     JSONObject response = underTest.stepAction( "invalidMethod", transMeta, null );
 
     assertNotNull( response );
@@ -64,17 +64,17 @@ public class SelectValuesHelperTest {
   }
 
   @Test
-  public void testGetLocales_returnsData() {
+  public void testGetLocales_whenCalled_thenReturnsLocalesArray() {
     verifyFieldData( underTest.getLocales(), "locales" );
   }
 
   @Test
-  public void testGetTimeZones_returnsData() {
+  public void testGetTimezones_whenCalled_thenReturnsTimezonesArray() {
     verifyFieldData( underTest.getTimezones(), "timezones" );
   }
 
   @Test
-  public void testGetEncodings_returnsData() {
+  public void testGetEncodings_whenCalled_thenReturnsEncodingsArray() {
     verifyFieldData( underTest.getEncodings(), "encodings" );
   }
 
