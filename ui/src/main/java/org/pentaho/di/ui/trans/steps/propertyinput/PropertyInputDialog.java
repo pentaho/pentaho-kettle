@@ -1187,7 +1187,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         wFields.removeAll();
         for ( int j = 0; j < fields.size(); j++ ) {
           ValueMetaInterface field = fields.getValueMeta( j );
-          wFields.add( field.getName(), field.getName(), field.getTypeDesc(), Const.EMPTY_STRING, "-9",
+          wFields.add( field.getName(), field.getName(), field.getTypeDesc(), Const.EMPTY_STRING, "-1",
             Const.EMPTY_STRING, Const.EMPTY_STRING, Const.EMPTY_STRING, Const.EMPTY_STRING, "none", "N" );
         }
         wFields.removeEmptyRows();
@@ -1269,8 +1269,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
       wFilenameList.setRowNums();
       wFilenameList.optWidth( true );
     }
-    wFileType
-      .setText( PropertyInputMeta.getFileTypeDesc( PropertyInputMeta.getFileTypeByCode( in.getFileType() ) ) );
+    wFileType.setText( PropertyInputMeta.getFileTypeDesc( PropertyInputMeta.getFileTypeByCode( in.getFileType() ) ) );
     wInclFilename.setSelection( in.includeFilename() );
     wInclRownum.setSelection( in.includeRowNumber() );
     wInclINIsection.setSelection( in.includeIniSection() );
@@ -1301,8 +1300,25 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     if ( log.isDebug() ) {
       log.logDebug( BaseMessages.getString( PKG, "PropertyInputDialog.Log.GettingFieldsInfo" ) );
     }
+    getDataFieldsInfo( in );
+
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth( true );
+
+    getDataAdditionalFields( in );
+
+    setIncludeFilename();
+    setIncludeRownum();
+    setIncludeSection();
+
+    wStepname.selectAll();
+    wStepname.setFocus();
+  }
+
+  private void getDataFieldsInfo( PropertyInputMeta in ) {
     for ( int i = 0; i < in.getInputFields().length; i++ ) {
-      PropertyInputField field = in.getInputFields()[i];
+      PropertyInputField field = in.getInputFields()[ i ];
 
       if ( field != null ) {
         TableItem item = wFields.table.getItem( i );
@@ -1355,15 +1371,20 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         }
       }
     }
+  }
 
-    wFields.removeEmptyRows();
-    wFields.setRowNums();
-    wFields.optWidth( true );
+  private void getDataAdditionalFields( PropertyInputMeta in ) {
     if ( in.getShortFileNameField() != null ) {
       wShortFileFieldName.setText( in.getShortFileNameField() );
     }
+    if ( in.getExtensionField() != null ) {
+      wExtensionFieldName.setText( in.getExtensionField() );
+    }
     if ( in.getPathField() != null ) {
       wPathFieldName.setText( in.getPathField() );
+    }
+    if ( in.getSizeField() != null ) {
+      wSizeFieldName.setText( in.getSizeField() );
     }
     if ( in.isHiddenField() != null ) {
       wIsHiddenName.setText( in.isHiddenField() );
@@ -1377,19 +1398,6 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     if ( in.getRootUriField() != null ) {
       wRootUriName.setText( in.getRootUriField() );
     }
-    if ( in.getExtensionField() != null ) {
-      wExtensionFieldName.setText( in.getExtensionField() );
-    }
-    if ( in.getSizeField() != null ) {
-      wSizeFieldName.setText( in.getSizeField() );
-    }
-
-    setIncludeFilename();
-    setIncludeRownum();
-    setIncludeSection();
-
-    wStepname.selectAll();
-    wStepname.setFocus();
   }
 
   private void cancel() {

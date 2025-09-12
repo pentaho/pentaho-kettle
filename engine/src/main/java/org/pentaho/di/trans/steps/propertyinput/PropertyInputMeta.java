@@ -59,6 +59,66 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   public static final String[] RequiredFilesDesc = new String[] {
     BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
+  private static final String TAG_NAME = "name";
+  private static final String TAG_COLUMN = "column";
+  private static final String TAG_TYPE = "type";
+  private static final String TAG_LENGTH = "length";
+  private static final String TAG_PRECISION = "precision";
+  private static final String TAG_TRIM_TYPE = "trim_type";
+  private static final String TAG_REPEAT = "repeat";
+  private static final String TAG_FORMAT = "format";
+  private static final String TAG_CURRENCY = "currency";
+  private static final String TAG_DECIMAL = "decimal";
+  private static final String TAG_GROUP = "group";
+  private static final String TAG_LIMIT = "limit";
+  private static final String TAG_SHORT_FILE_FIELD_NAME = "shortFileFieldName";
+  private static final String TAG_PATH_FIELD_NAME = "pathFieldName";
+  private static final String TAG_HIDDEN_FIELD_NAME = "hiddenFieldName";
+  private static final String TAG_LAST_MODIFICATION_TIME_FIELD_NAME = "lastModificationTimeFieldName";
+  private static final String TAG_URI_NAME_FIELD_NAME = "uriNameFieldName";
+  private static final String TAG_ROOT_URI_NAME_FIELD_NAME = "rootUriNameFieldName";
+  private static final String TAG_EXTENSION_FIELD_NAME = "extensionFieldName";
+  private static final String TAG_SIZE_FIELD_NAME = "sizeFieldName";
+  private static final String TAG_FILE_TYPE = "file_type";
+  private static final String TAG_ENCODING = "encoding";
+  private static final String TAG_INCLUDE = "include";
+  private static final String TAG_INCLUDE_FIELD = "include_field";
+  private static final String TAG_ROWNUM = "rownum";
+  private static final String TAG_IS_ADD_RESULT = "isaddresult";
+  private static final String TAG_SECTION = "section";
+  private static final String TAG_INI_SECTION_FIELD = "ini_section_field";
+  private static final String TAG_INI_SECTION = "ini_section";
+  private static final String TAG_FILE_FIELD = "filefield";
+  private static final String TAG_ROWNUM_FIELD = "rownum_field";
+  private static final String TAG_FILENAME_FIELD = "filename_Field";
+  private static final String TAG_RESETROWNUMBER = "resetrownumber";
+  private static final String TAG_RESOLVE_VALUE_VARIABLE = "resolvevaluevariable";
+  private static final String TAG_FILE = "file";
+  private static final String TAG_FIELDS = "fields";
+  private static final String TAG_FIELD = "field";
+  private static final String TAG_FILEMASK = "filemask";
+  private static final String TAG_EXCLUDE_FILEMASK = "exclude_filemask";
+  private static final String TAG_FILE_REQUIRED = "file_required";
+  private static final String TAG_INCLUDE_SUBFOLDERS = "include_subfolders";
+  private static final String TAG_RESET_ROWNUMBER = "reset_rownumber";
+  private static final String TAG_FILE_NAME = "file_name";
+  private static final String TAG_FIELD_NAME = "field_name";
+  private static final String TAG_FILE_MASK = "file_mask";
+  private static final String TAG_EXCLUDE_FILE_MASK = "exclude_file_mask";
+  private static final String TAG_FIELD_COLUMN = "field_column";
+  private static final String TAG_FIELD_TYPE = "field_type";
+  private static final String TAG_FIELD_FORMAT = "field_format";
+  private static final String TAG_FIELD_CURRENCY = "field_currency";
+  private static final String TAG_FIELD_DECIMAL = "field_decimal";
+  private static final String TAG_FIELD_GROUP = "field_group";
+  private static final String TAG_FIELD_LENGTH = "field_length";
+  private static final String TAG_FIELD_PRECISION = "field_precision";
+  private static final String TAG_FIELD_TRIM_TYPE = "field_trim_type";
+  private static final String TAG_FIELD_REPEAT = "field_repeat";
+  private static final String TAB8 = "        ";
+  private static final String TAB6 = "      ";
+  private static final String TAB4 = "    ";
+
   private static final String YES = "Y";
   private static final String NO = "N";
   public static final String[] RequiredFilesCode = new String[] { NO, YES };
@@ -665,27 +725,27 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 500 );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "file_type", fileType ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "include", includeFilename ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "include_field", filenameField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "filename_Field", dynamicFilenameField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "rownum", includeRowNumber ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "isaddresult", isAddResult ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "filefield", fileField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "rownum_field", rowNumberField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "resetrownumber", resetRowNumber ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "resolvevaluevariable", resolveValueVariable ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "ini_section", includeIniSection ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "ini_section_field", iniSectionField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "section", section ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_FILE_TYPE, fileType ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_ENCODING, encoding ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_INCLUDE, includeFilename ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_INCLUDE_FIELD, filenameField ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_FILENAME_FIELD, dynamicFilenameField ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_ROWNUM, includeRowNumber ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_IS_ADD_RESULT, isAddResult ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_FILE_FIELD, fileField ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_ROWNUM_FIELD, rowNumberField ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_RESETROWNUMBER, resetRowNumber ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_RESOLVE_VALUE_VARIABLE, resolveValueVariable ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_INI_SECTION, includeIniSection ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_INI_SECTION_FIELD, iniSectionField ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_SECTION, section ) );
     retval.append( "    <file>" ).append( Const.CR );
     for ( int i = 0; i < fileName.length; i++ ) {
-      retval.append( "      " ).append( XMLHandler.addTagValue( "name", fileName[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "exclude_filemask", excludeFileMask[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "filemask", fileMask[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "file_required", fileRequired[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includeSubFolders[i] ) );
+      retval.append( TAB6 ).append( XMLHandler.addTagValue( TAG_NAME, fileName[i] ) );
+      retval.append( TAB6 ).append( XMLHandler.addTagValue( TAG_EXCLUDE_FILEMASK, excludeFileMask[i] ) );
+      retval.append( TAB6 ).append( XMLHandler.addTagValue( TAG_FILEMASK, fileMask[i] ) );
+      retval.append( TAB6 ).append( XMLHandler.addTagValue( TAG_FILE_REQUIRED, fileRequired[i] ) );
+      retval.append( TAB6 ).append( XMLHandler.addTagValue( TAG_INCLUDE_SUBFOLDERS, includeSubFolders[i] ) );
       parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( fileName[i] );
     }
     retval.append( "    </file>" ).append( Const.CR );
@@ -694,71 +754,70 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
      * Describe the fields to read
      */
     retval.append( "    <fields>" ).append( Const.CR );
-    for ( int i = 0; i < inputFields.length; i++ ) {
+    for ( PropertyInputField inputField : inputFields ) {
       retval.append( "      <field>" ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", inputFields[i].getName() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "column", inputFields[i].getColumnCode() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "type", inputFields[i].getTypeDesc() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "format", inputFields[i].getFormat() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "length", inputFields[i].getLength() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "precision", inputFields[i].getPrecision() ) );
-      retval
-        .append( "        " ).append( XMLHandler.addTagValue( "currency", inputFields[i].getCurrencySymbol() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", inputFields[i].getDecimalSymbol() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "group", inputFields[i].getGroupSymbol() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", inputFields[i].getTrimTypeCode() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "repeat", inputFields[i].isRepeated() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_NAME, inputField.getName() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_COLUMN, inputField.getColumnCode() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_TYPE, inputField.getTypeDesc() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_FORMAT, inputField.getFormat() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_LENGTH, inputField.getLength() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_PRECISION, inputField.getPrecision() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_CURRENCY, inputField.getCurrencySymbol() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_DECIMAL, inputField.getDecimalSymbol() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_GROUP, inputField.getGroupSymbol() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_TRIM_TYPE, inputField.getTrimTypeCode() ) );
+      retval.append( TAB8 ).append( XMLHandler.addTagValue( TAG_REPEAT, inputField.isRepeated() ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
     retval.append( "    </fields>" ).append( Const.CR );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "limit", rowLimit ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "shortFileFieldName", shortFileFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "pathFieldName", pathFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "hiddenFieldName", hiddenFieldName ) );
-    retval.append( "    " ).append(
-      XMLHandler.addTagValue( "lastModificationTimeFieldName", lastModificationTimeFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "uriNameFieldName", uriNameFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "rootUriNameFieldName", rootUriNameFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "extensionFieldName", extensionFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "sizeFieldName", sizeFieldName ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_LIMIT, rowLimit ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_SHORT_FILE_FIELD_NAME, shortFileFieldName ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_PATH_FIELD_NAME, pathFieldName ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_HIDDEN_FIELD_NAME, hiddenFieldName ) );
+    retval.append( TAB4 ).append(
+      XMLHandler.addTagValue( TAG_LAST_MODIFICATION_TIME_FIELD_NAME, lastModificationTimeFieldName ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_URI_NAME_FIELD_NAME, uriNameFieldName ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_ROOT_URI_NAME_FIELD_NAME, rootUriNameFieldName ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_EXTENSION_FIELD_NAME, extensionFieldName ) );
+    retval.append( TAB4 ).append( XMLHandler.addTagValue( TAG_SIZE_FIELD_NAME, sizeFieldName ) );
     return retval.toString();
   }
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      fileType = XMLHandler.getTagValue( stepnode, "file_type" );
-      encoding = XMLHandler.getTagValue( stepnode, "encoding" );
-      includeFilename = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include" ) );
-      filenameField = XMLHandler.getTagValue( stepnode, "include_field" );
-      includeRowNumber = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
+      fileType = XMLHandler.getTagValue( stepnode, TAG_FILE_TYPE );
+      encoding = XMLHandler.getTagValue( stepnode, TAG_ENCODING );
+      includeFilename = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_INCLUDE ) );
+      filenameField = XMLHandler.getTagValue( stepnode, TAG_INCLUDE_FIELD );
+      includeRowNumber = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_ROWNUM ) );
 
-      String addResult = XMLHandler.getTagValue( stepnode, "isaddresult" );
+      String addResult = XMLHandler.getTagValue( stepnode, TAG_IS_ADD_RESULT );
       if ( Utils.isEmpty( addResult ) ) {
         isAddResult = true;
       } else {
         isAddResult = YES.equalsIgnoreCase( addResult );
       }
-      section = XMLHandler.getTagValue( stepnode, "section" );
-      iniSectionField = XMLHandler.getTagValue( stepnode, "ini_section_field" );
-      includeIniSection = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "ini_section" ) );
-      fileField = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "filefield" ) );
-      rowNumberField = XMLHandler.getTagValue( stepnode, "rownum_field" );
-      dynamicFilenameField = XMLHandler.getTagValue( stepnode, "filename_Field" );
-      resetRowNumber = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "resetrownumber" ) );
-      resolveValueVariable = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "resolvevaluevariable" ) );
-      Node filenode = XMLHandler.getSubNode( stepnode, "file" );
-      Node fields = XMLHandler.getSubNode( stepnode, "fields" );
-      int nrFiles = XMLHandler.countNodes( filenode, "name" );
-      int nrFields = XMLHandler.countNodes( fields, "field" );
+      section = XMLHandler.getTagValue( stepnode, TAG_SECTION );
+      iniSectionField = XMLHandler.getTagValue( stepnode, TAG_INI_SECTION_FIELD );
+      includeIniSection = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_INI_SECTION ) );
+      fileField = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_FILE_FIELD ) );
+      rowNumberField = XMLHandler.getTagValue( stepnode, TAG_ROWNUM_FIELD );
+      dynamicFilenameField = XMLHandler.getTagValue( stepnode, TAG_FILENAME_FIELD );
+      resetRowNumber = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_RESETROWNUMBER ) );
+      resolveValueVariable = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_RESOLVE_VALUE_VARIABLE ) );
+      Node filenode = XMLHandler.getSubNode( stepnode, TAG_FILE );
+      Node fields = XMLHandler.getSubNode( stepnode, TAG_FIELDS );
+      int nrFiles = XMLHandler.countNodes( filenode, TAG_NAME );
+      int nrFields = XMLHandler.countNodes( fields, TAG_FIELD );
 
       allocate( nrFiles, nrFields );
 
       for ( int i = 0; i < nrFiles; i++ ) {
-        Node filenamenode = XMLHandler.getSubNodeByNr( filenode, "name", i );
-        Node filemasknode = XMLHandler.getSubNodeByNr( filenode, "filemask", i );
-        Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, "exclude_filemask", i );
-        Node fileRequirednode = XMLHandler.getSubNodeByNr( filenode, "file_required", i );
-        Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, "include_subfolders", i );
+        Node filenamenode = XMLHandler.getSubNodeByNr( filenode, TAG_NAME, i );
+        Node filemasknode = XMLHandler.getSubNodeByNr( filenode, TAG_FILEMASK, i );
+        Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, TAG_EXCLUDE_FILEMASK, i );
+        Node fileRequirednode = XMLHandler.getSubNodeByNr( filenode, TAG_FILE_REQUIRED, i );
+        Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, TAG_INCLUDE_SUBFOLDERS, i );
         fileName[i] = XMLHandler.getNodeValue( filenamenode );
         fileMask[i] = XMLHandler.getNodeValue( filemasknode );
         excludeFileMask[i] = XMLHandler.getNodeValue( excludefilemasknode );
@@ -767,39 +826,33 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       }
 
       for ( int i = 0; i < nrFields; i++ ) {
-        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
+        Node fnode = XMLHandler.getSubNodeByNr( fields, TAG_FIELD, i );
         inputFields[i] = new PropertyInputField();
 
-        inputFields[i].setName( XMLHandler.getTagValue( fnode, "name" ) );
-        inputFields[i].setColumn( getColumnByCode( XMLHandler.getTagValue( fnode, "column" ) ) );
-        inputFields[i].setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
-        inputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
-        inputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
-        inputFields[i].setTrimType( getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
+        inputFields[i].setName( XMLHandler.getTagValue( fnode, TAG_NAME ) );
+        inputFields[i].setColumn( getColumnByCode( XMLHandler.getTagValue( fnode, TAG_COLUMN ) ) );
+        inputFields[i].setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, TAG_TYPE ) ) );
+        inputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, TAG_LENGTH ), -1 ) );
+        inputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, TAG_PRECISION ), -1 ) );
+        inputFields[i].setTrimType( getTrimTypeByCode( XMLHandler.getTagValue( fnode, TAG_TRIM_TYPE ) ) );
+        inputFields[i].setRepeated( YES.equalsIgnoreCase( XMLHandler.getTagValue( fnode, TAG_REPEAT ) ) );
 
-        String srepeat = XMLHandler.getTagValue( fnode, "repeat" );
-        if ( srepeat != null ) {
-          inputFields[i].setRepeated( YES.equalsIgnoreCase( srepeat ) );
-        } else {
-          inputFields[i].setRepeated( false );
-        }
-
-        inputFields[i].setFormat( XMLHandler.getTagValue( fnode, "format" ) );
-        inputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
-        inputFields[i].setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
-        inputFields[i].setGroupSymbol( XMLHandler.getTagValue( fnode, "group" ) );
+        inputFields[i].setFormat( XMLHandler.getTagValue( fnode, TAG_FORMAT ) );
+        inputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, TAG_CURRENCY ) );
+        inputFields[i].setDecimalSymbol( XMLHandler.getTagValue( fnode, TAG_DECIMAL ) );
+        inputFields[i].setGroupSymbol( XMLHandler.getTagValue( fnode, TAG_GROUP ) );
       }
 
       // Is there a limit on the number of rows we process?
-      rowLimit = Const.toLong( XMLHandler.getTagValue( stepnode, "limit" ), 0L );
-      shortFileFieldName = XMLHandler.getTagValue( stepnode, "shortFileFieldName" );
-      pathFieldName = XMLHandler.getTagValue( stepnode, "pathFieldName" );
-      hiddenFieldName = XMLHandler.getTagValue( stepnode, "hiddenFieldName" );
-      lastModificationTimeFieldName = XMLHandler.getTagValue( stepnode, "lastModificationTimeFieldName" );
-      uriNameFieldName = XMLHandler.getTagValue( stepnode, "uriNameFieldName" );
-      rootUriNameFieldName = XMLHandler.getTagValue( stepnode, "rootUriNameFieldName" );
-      extensionFieldName = XMLHandler.getTagValue( stepnode, "extensionFieldName" );
-      sizeFieldName = XMLHandler.getTagValue( stepnode, "sizeFieldName" );
+      rowLimit = Const.toLong( XMLHandler.getTagValue( stepnode, TAG_LIMIT ), 0L );
+      shortFileFieldName = XMLHandler.getTagValue( stepnode, TAG_SHORT_FILE_FIELD_NAME );
+      pathFieldName = XMLHandler.getTagValue( stepnode, TAG_PATH_FIELD_NAME );
+      hiddenFieldName = XMLHandler.getTagValue( stepnode, TAG_HIDDEN_FIELD_NAME );
+      lastModificationTimeFieldName = XMLHandler.getTagValue( stepnode, TAG_LAST_MODIFICATION_TIME_FIELD_NAME );
+      uriNameFieldName = XMLHandler.getTagValue( stepnode, TAG_URI_NAME_FIELD_NAME );
+      rootUriNameFieldName = XMLHandler.getTagValue( stepnode, TAG_ROOT_URI_NAME_FIELD_NAME );
+      extensionFieldName = XMLHandler.getTagValue( stepnode, TAG_EXTENSION_FIELD_NAME );
+      sizeFieldName = XMLHandler.getTagValue( stepnode, TAG_SIZE_FIELD_NAME );
 
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -969,43 +1022,43 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId idSstep, List<DatabaseMeta> databases ) throws KettleException {
     try {
-      fileType = rep.getStepAttributeString( idSstep, "file_type" );
-      section = rep.getStepAttributeString( idSstep, "section" );
-      encoding = rep.getStepAttributeString( idSstep, "encoding" );
-      includeIniSection = rep.getStepAttributeBoolean( idSstep, "ini_section" );
-      iniSectionField = rep.getStepAttributeString( idSstep, "ini_section_field" );
-      includeFilename = rep.getStepAttributeBoolean( idSstep, "include" );
-      filenameField = rep.getStepAttributeString( idSstep, "include_field" );
-      dynamicFilenameField = rep.getStepAttributeString( idSstep, "filename_Field" );
-      includeRowNumber = rep.getStepAttributeBoolean( idSstep, "rownum" );
+      fileType = rep.getStepAttributeString( idSstep, TAG_FILE_TYPE );
+      section = rep.getStepAttributeString( idSstep, TAG_SECTION );
+      encoding = rep.getStepAttributeString( idSstep, TAG_ENCODING );
+      includeIniSection = rep.getStepAttributeBoolean( idSstep, TAG_INI_SECTION );
+      iniSectionField = rep.getStepAttributeString( idSstep, TAG_INI_SECTION_FIELD );
+      includeFilename = rep.getStepAttributeBoolean( idSstep, TAG_INCLUDE );
+      filenameField = rep.getStepAttributeString( idSstep, TAG_INCLUDE_FIELD );
+      dynamicFilenameField = rep.getStepAttributeString( idSstep, TAG_FILENAME_FIELD );
+      includeRowNumber = rep.getStepAttributeBoolean( idSstep, TAG_ROWNUM );
 
-      String addresult = rep.getStepAttributeString( idSstep, "isaddresult" );
+      String addresult = rep.getStepAttributeString( idSstep, TAG_IS_ADD_RESULT );
       if ( Utils.isEmpty( addresult ) ) {
         isAddResult = true;
       } else {
-        isAddResult = rep.getStepAttributeBoolean( idSstep, "isaddresult" );
+        isAddResult = rep.getStepAttributeBoolean( idSstep, TAG_IS_ADD_RESULT );
       }
 
-      fileField = rep.getStepAttributeBoolean( idSstep, "filefield" );
-      rowNumberField = rep.getStepAttributeString( idSstep, "rownum_field" );
-      resetRowNumber = rep.getStepAttributeBoolean( idSstep, "reset_rownumber" );
+      fileField = rep.getStepAttributeBoolean( idSstep, TAG_FILE_FIELD );
+      rowNumberField = rep.getStepAttributeString( idSstep, TAG_ROWNUM_FIELD );
+      resetRowNumber = rep.getStepAttributeBoolean( idSstep, TAG_RESET_ROWNUMBER );
       resolveValueVariable = rep.getStepAttributeBoolean( idSstep, "resolve_value_variable" );
 
-      rowLimit = rep.getStepAttributeInteger( idSstep, "limit" );
-      int nrFiles = rep.countNrStepAttributes( idSstep, "file_name" );
-      int nrFields = rep.countNrStepAttributes( idSstep, "field_name" );
+      rowLimit = rep.getStepAttributeInteger( idSstep, TAG_LIMIT );
+      int nrFiles = rep.countNrStepAttributes( idSstep, TAG_FILE_NAME );
+      int nrFields = rep.countNrStepAttributes( idSstep, TAG_FIELD_NAME );
 
       allocate( nrFiles, nrFields );
 
       for ( int i = 0; i < nrFiles; i++ ) {
-        fileName[i] = rep.getStepAttributeString( idSstep, i, "file_name" );
-        fileMask[i] = rep.getStepAttributeString( idSstep, i, "file_mask" );
-        excludeFileMask[i] = rep.getStepAttributeString( idSstep, i, "exclude_file_mask" );
-        fileRequired[i] = rep.getStepAttributeString( idSstep, i, "file_required" );
+        fileName[i] = rep.getStepAttributeString( idSstep, i, TAG_FILE_NAME );
+        fileMask[i] = rep.getStepAttributeString( idSstep, i, TAG_FILE_MASK );
+        excludeFileMask[i] = rep.getStepAttributeString( idSstep, i, TAG_EXCLUDE_FILE_MASK );
+        fileRequired[i] = rep.getStepAttributeString( idSstep, i, TAG_FILE_REQUIRED );
         if ( !YES.equalsIgnoreCase( fileRequired[i] ) ) {
           fileRequired[i] = RequiredFilesCode[0];
         }
-        includeSubFolders[i] = rep.getStepAttributeString( idSstep, i, "include_subfolders" );
+        includeSubFolders[i] = rep.getStepAttributeString( idSstep, i, TAG_INCLUDE_SUBFOLDERS );
         if ( !YES.equalsIgnoreCase( includeSubFolders[i] ) ) {
           includeSubFolders[i] = RequiredFilesCode[0];
         }
@@ -1014,30 +1067,30 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       for ( int i = 0; i < nrFields; i++ ) {
         PropertyInputField field = new PropertyInputField();
 
-        field.setName( rep.getStepAttributeString( idSstep, i, "field_name" ) );
+        field.setName( rep.getStepAttributeString( idSstep, i, TAG_FIELD_NAME ) );
         field.setColumn( PropertyInputField.getColumnByCode( rep.getStepAttributeString(
-          idSstep, i, "field_column" ) ) );
-        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( idSstep, i, "field_type" ) ) );
-        field.setFormat( rep.getStepAttributeString( idSstep, i, "field_format" ) );
-        field.setCurrencySymbol( rep.getStepAttributeString( idSstep, i, "field_currency" ) );
-        field.setDecimalSymbol( rep.getStepAttributeString( idSstep, i, "field_decimal" ) );
-        field.setGroupSymbol( rep.getStepAttributeString( idSstep, i, "field_group" ) );
-        field.setLength( (int) rep.getStepAttributeInteger( idSstep, i, "field_length" ) );
-        field.setPrecision( (int) rep.getStepAttributeInteger( idSstep, i, "field_precision" ) );
+          idSstep, i, TAG_FIELD_COLUMN ) ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( idSstep, i, TAG_FIELD_TYPE ) ) );
+        field.setFormat( rep.getStepAttributeString( idSstep, i, TAG_FIELD_FORMAT ) );
+        field.setCurrencySymbol( rep.getStepAttributeString( idSstep, i, TAG_FIELD_CURRENCY ) );
+        field.setDecimalSymbol( rep.getStepAttributeString( idSstep, i, TAG_FIELD_DECIMAL ) );
+        field.setGroupSymbol( rep.getStepAttributeString( idSstep, i, TAG_FIELD_GROUP ) );
+        field.setLength( (int) rep.getStepAttributeInteger( idSstep, i, TAG_FIELD_LENGTH ) );
+        field.setPrecision( (int) rep.getStepAttributeInteger( idSstep, i, TAG_FIELD_PRECISION ) );
         field.setTrimType(
-          PropertyInputField.getTrimTypeByCode( rep.getStepAttributeString( idSstep, i, "field_trim_type" ) ) );
-        field.setRepeated( rep.getStepAttributeBoolean( idSstep, i, "field_repeat" ) );
+          PropertyInputField.getTrimTypeByCode( rep.getStepAttributeString( idSstep, i, TAG_FIELD_TRIM_TYPE ) ) );
+        field.setRepeated( rep.getStepAttributeBoolean( idSstep, i, TAG_FIELD_REPEAT ) );
 
         inputFields[i] = field;
       }
-      shortFileFieldName = rep.getStepAttributeString( idSstep, "shortFileFieldName" );
-      pathFieldName = rep.getStepAttributeString( idSstep, "pathFieldName" );
-      hiddenFieldName = rep.getStepAttributeString( idSstep, "hiddenFieldName" );
-      lastModificationTimeFieldName = rep.getStepAttributeString( idSstep, "lastModificationTimeFieldName" );
-      uriNameFieldName = rep.getStepAttributeString( idSstep, "uriNameFieldName" );
-      rootUriNameFieldName = rep.getStepAttributeString( idSstep, "rootUriNameFieldName" );
-      extensionFieldName = rep.getStepAttributeString( idSstep, "extensionFieldName" );
-      sizeFieldName = rep.getStepAttributeString( idSstep, "sizeFieldName" );
+      shortFileFieldName = rep.getStepAttributeString( idSstep, TAG_SHORT_FILE_FIELD_NAME );
+      pathFieldName = rep.getStepAttributeString( idSstep, TAG_PATH_FIELD_NAME );
+      hiddenFieldName = rep.getStepAttributeString( idSstep, TAG_HIDDEN_FIELD_NAME );
+      lastModificationTimeFieldName = rep.getStepAttributeString( idSstep, TAG_LAST_MODIFICATION_TIME_FIELD_NAME );
+      uriNameFieldName = rep.getStepAttributeString( idSstep, TAG_URI_NAME_FIELD_NAME );
+      rootUriNameFieldName = rep.getStepAttributeString( idSstep, TAG_ROOT_URI_NAME_FIELD_NAME );
+      extensionFieldName = rep.getStepAttributeString( idSstep, TAG_EXTENSION_FIELD_NAME );
+      sizeFieldName = rep.getStepAttributeString( idSstep, TAG_SIZE_FIELD_NAME );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages
         .getString( PKG, "PropertyInputMeta.Exception.ErrorReadingRepository" ), e );
@@ -1047,55 +1100,55 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
     try {
-      rep.saveStepAttribute( idTransformation, idStep, "file_type", fileType );
-      rep.saveStepAttribute( idTransformation, idStep, "section", section );
-      rep.saveStepAttribute( idTransformation, idStep, "encoding", encoding );
-      rep.saveStepAttribute( idTransformation, idStep, "ini_section", includeIniSection );
-      rep.saveStepAttribute( idTransformation, idStep, "ini_section_field", iniSectionField );
-      rep.saveStepAttribute( idTransformation, idStep, "include", includeFilename );
-      rep.saveStepAttribute( idTransformation, idStep, "include_field", filenameField );
-      rep.saveStepAttribute( idTransformation, idStep, "rownum", includeRowNumber );
-      rep.saveStepAttribute( idTransformation, idStep, "isaddresult", isAddResult );
-      rep.saveStepAttribute( idTransformation, idStep, "filefield", fileField );
-      rep.saveStepAttribute( idTransformation, idStep, "filename_Field", dynamicFilenameField );
-      rep.saveStepAttribute( idTransformation, idStep, "rownum_field", rowNumberField );
-      rep.saveStepAttribute( idTransformation, idStep, "limit", rowLimit );
-      rep.saveStepAttribute( idTransformation, idStep, "reset_rownumber", resetRowNumber );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_FILE_TYPE, fileType );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_SECTION, section );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_ENCODING, encoding );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_INI_SECTION, includeIniSection );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_INI_SECTION_FIELD, iniSectionField );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_INCLUDE, includeFilename );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_INCLUDE_FIELD, filenameField );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_ROWNUM, includeRowNumber );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_IS_ADD_RESULT, isAddResult );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_FILE_FIELD, fileField );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_FILENAME_FIELD, dynamicFilenameField );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_ROWNUM_FIELD, rowNumberField );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_LIMIT, rowLimit );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_RESET_ROWNUMBER, resetRowNumber );
       rep.saveStepAttribute( idTransformation, idStep, "resolve_value_variable", resolveValueVariable );
-      rep.saveStepAttribute( idTransformation, idStep, "sizeFieldName", sizeFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_SIZE_FIELD_NAME, sizeFieldName );
 
       for ( int i = 0; i < fileName.length; i++ ) {
-        rep.saveStepAttribute( idTransformation, idStep, i, "file_name", fileName[i] );
-        rep.saveStepAttribute( idTransformation, idStep, i, "file_mask", fileMask[i] );
-        rep.saveStepAttribute( idTransformation, idStep, i, "exclude_file_mask", excludeFileMask[i] );
-        rep.saveStepAttribute( idTransformation, idStep, i, "file_required", fileRequired[i] );
-        rep.saveStepAttribute( idTransformation, idStep, i, "include_subfolders", includeSubFolders[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FILE_NAME, fileName[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FILE_MASK, fileMask[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_EXCLUDE_FILE_MASK, excludeFileMask[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FILE_REQUIRED, fileRequired[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_INCLUDE_SUBFOLDERS, includeSubFolders[i] );
       }
 
       for ( int i = 0; i < inputFields.length; i++ ) {
         PropertyInputField field = inputFields[i];
 
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_name", field.getName() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_column", field.getColumnCode() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_type", field.getTypeDesc() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_format", field.getFormat() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_currency", field.getCurrencySymbol() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_decimal", field.getDecimalSymbol() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_group", field.getGroupSymbol() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_length", field.getLength() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_precision", field.getPrecision() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_trim_type", field.getTrimTypeCode() );
-        rep.saveStepAttribute( idTransformation, idStep, i, "field_repeat", field.isRepeated() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_NAME, field.getName() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_COLUMN, field.getColumnCode() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_TYPE, field.getTypeDesc() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_FORMAT, field.getFormat() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_CURRENCY, field.getCurrencySymbol() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_DECIMAL, field.getDecimalSymbol() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_GROUP, field.getGroupSymbol() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_LENGTH, field.getLength() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_PRECISION, field.getPrecision() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_TRIM_TYPE, field.getTrimTypeCode() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_FIELD_REPEAT, field.isRepeated() );
       }
 
-      rep.saveStepAttribute( idTransformation, idStep, "shortFileFieldName", shortFileFieldName );
-      rep.saveStepAttribute( idTransformation, idStep, "pathFieldName", pathFieldName );
-      rep.saveStepAttribute( idTransformation, idStep, "hiddenFieldName", hiddenFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_SHORT_FILE_FIELD_NAME, shortFileFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_PATH_FIELD_NAME, pathFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_HIDDEN_FIELD_NAME, hiddenFieldName );
       rep.saveStepAttribute(
-        idTransformation, idStep, "lastModificationTimeFieldName", lastModificationTimeFieldName );
-      rep.saveStepAttribute( idTransformation, idStep, "uriNameFieldName", uriNameFieldName );
-      rep.saveStepAttribute( idTransformation, idStep, "rootUriNameFieldName", rootUriNameFieldName );
-      rep.saveStepAttribute( idTransformation, idStep, "extensionFieldName", extensionFieldName );
+        idTransformation, idStep, TAG_LAST_MODIFICATION_TIME_FIELD_NAME, lastModificationTimeFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_URI_NAME_FIELD_NAME, uriNameFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_ROOT_URI_NAME_FIELD_NAME, rootUriNameFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_EXTENSION_FIELD_NAME, extensionFieldName );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "PropertyInputMeta.Exception.ErrorSavingToRepository", "" + idStep ), e );
