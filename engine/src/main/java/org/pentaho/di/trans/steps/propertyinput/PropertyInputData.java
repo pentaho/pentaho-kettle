@@ -19,7 +19,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -37,7 +36,8 @@ import java.util.Properties;
  * @author Samatar Hassan
  * @since 24-Mars-2008
  */
-public class PropertyInputData extends BaseStepData implements StepDataInterface {
+@SuppressWarnings( { "java:S1104", "java:S116" } ) // Public fields and naming convention are intentional for data classes in this framework
+public class PropertyInputData extends BaseStepData {
   public String thisline;
   public RowMetaInterface outputRowMeta;
   public RowMetaInterface convertRowMeta;

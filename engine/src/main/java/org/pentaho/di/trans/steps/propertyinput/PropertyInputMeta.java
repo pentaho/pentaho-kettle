@@ -54,10 +54,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!
-
-  public static final String[] RequiredFilesDesc = new String[] {
-    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  private static final Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String TAG_NAME = "name";
   private static final String TAG_COLUMN = "column";
@@ -121,18 +118,27 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
   private static final String YES = "Y";
   private static final String NO = "N";
-  public static final String[] RequiredFilesCode = new String[] { NO, YES };
+
+  protected static final String[] REQUIRED_FILES_DESC = new String[] {
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+
+  // SuppressWarnings: Needs to be public for access from external UI modules (PropertyInputDialog)
+  @SuppressWarnings( "squid:S2386" )
+  public static final String[] REQUIRED_FILES_CODE = new String[] { NO, YES };
 
   public static final String DEFAULT_ENCODING = "UTF-8";
 
-  public static final String[] type_trim_code = { "none", "left", "right", "both" };
+  protected static final String[] TYPE_TRIM_CODE = { "none", "left", "right", "both" };
 
-  public static final String[] column_code = { "key", "value" };
+  protected static final String[] COLUMN_CODE = { "key", "value" };
 
-  public static final String[] fileTypeDesc = new String[] {
+  // SuppressWarnings: Needs to be public for access from external UI modules (PropertyInputDialog)
+  @SuppressWarnings( "squid:S2386" )
+  public static final String[] FILE_TYPE_DESC = new String[] {
     BaseMessages.getString( PKG, "PropertyInputMeta.FileType.Property" ),
     BaseMessages.getString( PKG, "PropertyInputMeta.FileType.Ini" ) };
-  public static final String[] fileTypeCode = new String[] { "property", "ini" };
+  protected static final String[] FILE_TYPE_CODE = new String[] { "property", "ini" };
+
   public static final int FILE_TYPE_PROPERTY = 0;
   public static final int FILE_TYPE_INI = 1;
 
@@ -411,23 +417,23 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
   public String getRequiredFilesCode( String tt ) {
     if ( tt == null ) {
-      return RequiredFilesCode[0];
+      return REQUIRED_FILES_CODE[0];
     }
-    if ( tt.equals( RequiredFilesDesc[1] ) ) {
-      return RequiredFilesCode[1];
+    if ( tt.equals( REQUIRED_FILES_DESC[1] ) ) {
+      return REQUIRED_FILES_CODE[1];
     } else {
-      return RequiredFilesCode[0];
+      return REQUIRED_FILES_CODE[0];
     }
   }
 
   public String getRequiredFilesDesc( String tt ) {
     if ( tt == null ) {
-      return RequiredFilesDesc[0];
+      return REQUIRED_FILES_DESC[0];
     }
-    if ( tt.equals( RequiredFilesCode[1] ) ) {
-      return RequiredFilesDesc[1];
+    if ( tt.equals( REQUIRED_FILES_CODE[1] ) ) {
+      return REQUIRED_FILES_DESC[1];
     } else {
-      return RequiredFilesDesc[0];
+      return REQUIRED_FILES_DESC[0];
     }
   }
 
@@ -485,10 +491,10 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public static String getFileTypeCode( int i ) {
-    if ( i < 0 || i >= fileTypeCode.length ) {
-      return fileTypeCode[0];
+    if ( i < 0 || i >= FILE_TYPE_CODE.length ) {
+      return FILE_TYPE_CODE[0];
     }
-    return fileTypeCode[i];
+    return FILE_TYPE_CODE[i];
   }
 
   public static int getFileTypeByDesc( String tt ) {
@@ -496,8 +502,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       return 0;
     }
 
-    for ( int i = 0; i < fileTypeDesc.length; i++ ) {
-      if ( fileTypeDesc[i].equalsIgnoreCase( tt ) ) {
+    for ( int i = 0; i < FILE_TYPE_DESC.length; i++ ) {
+      if ( FILE_TYPE_DESC[i].equalsIgnoreCase( tt ) ) {
         return i;
       }
     }
@@ -510,8 +516,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       return 0;
     }
 
-    for ( int i = 0; i < fileTypeCode.length; i++ ) {
-      if ( fileTypeCode[i].equalsIgnoreCase( tt ) ) {
+    for ( int i = 0; i < FILE_TYPE_CODE.length; i++ ) {
+      if ( FILE_TYPE_CODE[i].equalsIgnoreCase( tt ) ) {
         return i;
       }
     }
@@ -519,10 +525,10 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public static String getFileTypeDesc( int i ) {
-    if ( i < 0 || i >= fileTypeDesc.length ) {
-      return fileTypeDesc[0];
+    if ( i < 0 || i >= FILE_TYPE_DESC.length ) {
+      return FILE_TYPE_DESC[0];
     }
-    return fileTypeDesc[i];
+    return FILE_TYPE_DESC[i];
   }
 
   public void setFileType( String filetype ) {
@@ -878,7 +884,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     extensionFieldName = null;
     sizeFieldName = null;
 
-    fileType = fileTypeCode[0];
+    fileType = FILE_TYPE_CODE[0];
     section = "";
     encoding = DEFAULT_ENCODING;
     includeIniSection = false;
@@ -999,8 +1005,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
   public static int getTrimTypeByCode( String tt ) {
     if ( tt != null ) {
-      for ( int i = 0; i < type_trim_code.length; i++ ) {
-        if ( type_trim_code[ i ].equalsIgnoreCase( tt ) ) {
+      for ( int i = 0; i < TYPE_TRIM_CODE.length; i++ ) {
+        if ( TYPE_TRIM_CODE[ i ].equalsIgnoreCase( tt ) ) {
           return i;
         }
       }
@@ -1010,8 +1016,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
   public static int getColumnByCode( String tt ) {
     if ( tt != null ) {
-      for ( int i = 0; i < column_code.length; i++ ) {
-        if ( column_code[ i ].equalsIgnoreCase( tt ) ) {
+      for ( int i = 0; i < COLUMN_CODE.length; i++ ) {
+        if ( COLUMN_CODE[ i ].equalsIgnoreCase( tt ) ) {
           return i;
         }
       }
@@ -1056,11 +1062,11 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
         excludeFileMask[i] = rep.getStepAttributeString( idSstep, i, TAG_EXCLUDE_FILE_MASK );
         fileRequired[i] = rep.getStepAttributeString( idSstep, i, TAG_FILE_REQUIRED );
         if ( !YES.equalsIgnoreCase( fileRequired[i] ) ) {
-          fileRequired[i] = RequiredFilesCode[0];
+          fileRequired[i] = REQUIRED_FILES_CODE[0];
         }
         includeSubFolders[i] = rep.getStepAttributeString( idSstep, i, TAG_INCLUDE_SUBFOLDERS );
         if ( !YES.equalsIgnoreCase( includeSubFolders[i] ) ) {
-          includeSubFolders[i] = RequiredFilesCode[0];
+          includeSubFolders[i] = REQUIRED_FILES_CODE[0];
         }
       }
 
