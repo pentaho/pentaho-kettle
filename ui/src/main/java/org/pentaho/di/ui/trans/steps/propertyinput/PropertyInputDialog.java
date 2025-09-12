@@ -13,10 +13,10 @@
 
 package org.pentaho.di.ui.trans.steps.propertyinput;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Iterator;
-
+import org.apache.commons.configuration2.INIConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
+import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -42,9 +42,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.ini4j.Wini;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -53,6 +51,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -78,6 +77,12 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Set;
 
 public class PropertyInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -1629,39 +1634,36 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void getSections() {
-    Wini wini = new Wini();
     PropertyInputMeta meta = new PropertyInputMeta();
     try {
       getInfo( meta );
 
       FileInputList fileInputList = meta.getFiles( transMeta );
 
+      // Are there any files configured?
       if ( fileInputList.nrOfFiles() > 0 ) {
-        // Check the first file
-        if ( fileInputList.getFile( 0 ).exists() ) {
-          // Open the file (only first file) in readOnly ...
-          //
-          wini = new Wini( KettleVFS.getInputStream( fileInputList.getFile( 0 ) ) );
-          Iterator<String> itSection = wini.keySet().iterator();
-          String[] sectionsList = new String[wini.keySet().size()];
-          int i = 0;
-          while ( itSection.hasNext() ) {
-            sectionsList[i] = itSection.next();
-            i++;
-          }
-          Const.sortStrings( sectionsList );
-          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, sectionsList,
+        // Get the first file
+        FileObject theFirstFile = fileInputList.getFile( 0 );
+
+        // Check if it exists
+        if ( theFirstFile.exists() ) {
+          // Get all sections from the INI file
+          String[] sectionNames = loadSectionsFromIniFile( theFirstFile );
+
+          // Show the list for the user to select one section
+          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, sectionNames,
             BaseMessages.getString( PKG, "PropertyInputDialog.Dialog.SelectASection.Title" ),
             BaseMessages.getString( PKG, "PropertyInputDialog.Dialog.SelectASection.Message" ) );
           String sectionName = dialog.open();
+
+          // If the user selected a section, set it in the dialog
           if ( sectionName != null ) {
             wSection.setText( sectionName );
           }
         } else {
           // The file not exists !
           throw new KettleException( BaseMessages.getString(
-            PKG, "PropertyInputDialog.Exception.FileDoesNotExist", KettleVFS.getFilename( fileInputList
-              .getFile( 0 ) ) ) );
+            PKG, "PropertyInputDialog.Exception.FileDoesNotExist", KettleVFS.getFilename( theFirstFile ) ) );
         }
       } else {
         // No file specified
@@ -1670,17 +1672,24 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
         mb.open();
       }
-    } catch ( Throwable e ) {
+    } catch ( Exception e ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "PropertyInputDialog.UnableToGetListOfSections.Title" ),
         BaseMessages.getString( PKG, "PropertyInputDialog.UnableToGetListOfSections.Message" ), e );
-    } finally {
-      if ( wini != null ) {
-        wini.clear();
-      }
-      wini = null;
-      meta = null;
     }
+  }
+
+  private String[] loadSectionsFromIniFile( FileObject theFirstFile ) throws IOException, ConfigurationException {
+    String[] sectionNames;
+    INIConfiguration config = new INIConfiguration();
+    FileHandler handler = new FileHandler( config );
+    try ( InputStream inputStream = KettleVFS.getInputStream( theFirstFile ) ) {
+      handler.load( inputStream );
+      Set<String> sections = config.getSections();
+      sectionNames = sections.toArray( String[]::new );
+      Const.sortStrings( sectionNames );
+    }
+    return sectionNames;
   }
 
   private void addAdditionalFieldsTab() {
