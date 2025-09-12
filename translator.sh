@@ -91,6 +91,9 @@ case `uname -s` in
 			ppc)
 				LIBPATH=$BASEDIR/libswt/linux/ppc/
 				;;
+            loongarch64)
+                LIBPATH=$CURRENTDIR/../libswt/linux/loongarch64/
+                ;;
 
 			*)	
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
