@@ -39,6 +39,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.pan.CommandLineOptionProvider;
+import org.pentaho.di.security.ExitInterceptor;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -224,6 +225,7 @@ public class Kitchen {
     if ( args.size() == 2 ) {
       CommandLineOption.printUsage( updatedOptionList.toArray( new CommandLineOption[ 0 ] ) );
       blockAndThrow( kettleInitFuture );
+      exitJVM( 9 );
     }
 
     CommandLineOption.parseArguments( args, options, log );
@@ -253,6 +255,7 @@ public class Kitchen {
       if ( !Utils.isEmpty( optionVersion ) ) {
         getCommandExecutor().printVersion();
         if ( a.length == 1 ) {
+          exitJVM( CommandExecutorCodes.Pan.KETTLE_VERSION_PRINT.getCode() );
         }
       }
 
@@ -305,6 +308,7 @@ public class Kitchen {
       }
     }
 
+    exitJVM( result.getExitStatus() );
 
   }
 
@@ -409,6 +413,10 @@ public class Kitchen {
     }
   }
 
+  private static final void exitJVM( int status ) {
+
+    ExitInterceptor.exit( status );
+  }
 
   public static KitchenCommandExecutor getCommandExecutor() {
     return commandExecutor;
