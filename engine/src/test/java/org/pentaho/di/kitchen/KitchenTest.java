@@ -42,6 +42,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.pentaho.di.security.ExitInterceptor;
 
 public class KitchenTest {
 
@@ -61,6 +62,7 @@ public class KitchenTest {
   @Before
   public void setUp() throws KettleException {
     KettleEnvironment.init();
+    ExitInterceptor.enableIntercept();
     sysOutContent = new ByteArrayOutputStream();
     sysErrContent = new ByteArrayOutputStream();
     mockRepositoriesMeta = mock( RepositoriesMeta.class );
@@ -71,6 +73,7 @@ public class KitchenTest {
 
   @After
   public void tearDown() {
+    ExitInterceptor.disableIntercept();
     sysOutContent = null;
     sysErrContent = null;
     mockRepositoriesMeta = null;
