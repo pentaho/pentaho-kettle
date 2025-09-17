@@ -98,8 +98,7 @@
       </dependency>
       <dependency>
         <groupId>net.sf.saxon</groupId>
-        <artifactId>saxon</artifactId>
-        <version>${saxon.version}</version>
+        <artifactId>Saxon-HE</artifactId>
         <scope>provided</scope>
       </dependency>
       <!-- test dependencies -->
