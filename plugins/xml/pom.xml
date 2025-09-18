@@ -35,7 +35,6 @@
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <pdi.version>11.0.0.0-SNAPSHOT</pdi.version>
     <mockito.version>5.10.0</mockito.version>
-    <saxon.version>8.7</saxon.version>
     <platform.version>11.0.0.0-SNAPSHOT</platform.version>
   </properties>
 
@@ -94,12 +93,6 @@
         <groupId>org.eclipse</groupId>
         <artifactId>jface</artifactId>
         <version>${jface.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.saxon</groupId>
-        <artifactId>saxon</artifactId>
-        <version>${saxon.version}</version>
         <scope>provided</scope>
       </dependency>
       <!-- test dependencies -->
