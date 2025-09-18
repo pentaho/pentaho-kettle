@@ -125,6 +125,8 @@ public class JobEntryFTPDelete extends JobEntryBase implements JobEntryInterface
 
   public static final String PROTOCOL_SSH = "SSH";
 
+  private static final String ERROR_QUITTING_KEY = "JobEntryFTPDelete.ErrorQuitting";
+
   public String SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED = "success_when_at_least";
 
   public String SUCCESS_IF_ERRORS_LESS = "success_if_errors_less";
@@ -176,6 +178,58 @@ public class JobEntryFTPDelete extends JobEntryBase implements JobEntryInterface
 
   public JobEntryFTPDelete() {
     this( "" );
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( !super.equals( obj ) ) {
+      return false;
+    }
+    if ( !( obj instanceof JobEntryFTPDelete ) ) {
+      return false;
+    }
+
+    JobEntryFTPDelete other = (JobEntryFTPDelete) obj;
+    return java.util.Objects.equals( serverName, other.serverName )
+        && java.util.Objects.equals( port, other.port )
+        && java.util.Objects.equals( userName, other.userName )
+        && java.util.Objects.equals( password, other.password )
+        && java.util.Objects.equals( ftpDirectory, other.ftpDirectory )
+        && java.util.Objects.equals( wildcard, other.wildcard )
+        && timeout == other.timeout
+        && activeConnection == other.activeConnection
+        && publicpublickey == other.publicpublickey
+        && java.util.Objects.equals( keyFilename, other.keyFilename )
+        && java.util.Objects.equals( keyFilePass, other.keyFilePass )
+        && useproxy == other.useproxy
+        && java.util.Objects.equals( proxyHost, other.proxyHost )
+        && java.util.Objects.equals( proxyPort, other.proxyPort )
+        && java.util.Objects.equals( proxyUsername, other.proxyUsername )
+        && java.util.Objects.equals( proxyPassword, other.proxyPassword )
+        && java.util.Objects.equals( socksProxyHost, other.socksProxyHost )
+        && java.util.Objects.equals( socksProxyPort, other.socksProxyPort )
+        && java.util.Objects.equals( socksProxyUsername, other.socksProxyUsername )
+        && java.util.Objects.equals( socksProxyPassword, other.socksProxyPassword )
+        && java.util.Objects.equals( protocol, other.protocol )
+        && java.util.Objects.equals( nr_limit_success, other.nr_limit_success )
+        && java.util.Objects.equals( success_condition, other.success_condition )
+        && copyprevious == other.copyprevious
+        && FTPSConnectionType == other.FTPSConnectionType;
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(
+        super.hashCode(),
+        serverName, port, userName, password, ftpDirectory, wildcard, timeout,
+        activeConnection, publicpublickey, keyFilename, keyFilePass, useproxy,
+        proxyHost, proxyPort, proxyUsername, proxyPassword,
+        socksProxyHost, socksProxyPort, socksProxyUsername, socksProxyPassword,
+        protocol, nr_limit_success, success_condition, copyprevious, FTPSConnectionType
+    );
   }
 
   public Object clone() {
@@ -855,14 +909,14 @@ public class JobEntryFTPDelete extends JobEntryBase implements JobEntryInterface
           ftpclient.quit();
           ftpclient = null;
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage() ) );
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
         }
       }
       if ( ftpsclient != null ) {
         try {
           ftpsclient.disconnect();
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage() ) );
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
         }
       }
       if ( sftpclient != null ) {
@@ -870,7 +924,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements JobEntryInterface
           sftpclient.disconnect();
           sftpclient = null;
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage() ) );
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
         }
       }
       if ( sftpSession != null ) {
@@ -878,7 +932,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements JobEntryInterface
           sftpSession.close();
           sftpSession = null;
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage() ) );
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
         }
       }
       if ( sshConnection != null ) {
@@ -886,7 +940,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements JobEntryInterface
           sshConnection.close();
           sshConnection = null;
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage() ) );
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
         }
       }
 

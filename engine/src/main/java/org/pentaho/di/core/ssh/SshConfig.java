@@ -34,7 +34,6 @@ public class SshConfig {
   private boolean cacheHostKey;
   private long connectTimeoutMillis;
   private long commandTimeoutMillis;
-  private SshImplementation implementation;
 
   public static SshConfig create() {
     return new SshConfig();
@@ -107,11 +106,6 @@ public class SshConfig {
     return this;
   }
 
-  public SshConfig implementation( SshImplementation i ) {
-    this.implementation = i;
-    return this;
-  }
-
   public String getHost() {
     return host;
   }
@@ -170,9 +164,5 @@ public class SshConfig {
 
   public long getCommandTimeoutMillis() {
     return commandTimeoutMillis;
-  }
-
-  public SshImplementation getImplementation() {
-    return implementation;
   }
 }

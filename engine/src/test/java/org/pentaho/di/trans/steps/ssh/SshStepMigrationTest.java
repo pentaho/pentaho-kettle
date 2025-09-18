@@ -20,7 +20,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.pentaho.di.core.ssh.SshImplementation;
 import org.pentaho.di.core.ssh.SshConnection;
 import org.pentaho.di.core.ssh.ExecResult;
 
@@ -38,25 +37,6 @@ public class SshStepMigrationTest {
       SshConnection.class );
     assertNotNull( "ExecResult class should be available",
       ExecResult.class );
-  }
-
-  @Test
-  public void testSSHMetaSshImplementationConfig() {
-    SSHMeta meta = new SSHMeta();
-
-    // Test default state (should be null for auto-detect)
-    assertNull( "Default SSH implementation should be null (auto-detect)",
-      meta.getSshImplementation() );
-
-    // Test setting MINA implementation
-    meta.setSshImplementation( SshImplementation.MINA );
-    assertEquals( "Should be able to set MINA implementation",
-      SshImplementation.MINA, meta.getSshImplementation() );
-
-    // Test setting back to auto-detect
-    meta.setSshImplementation( null );
-    assertNull( "Should be able to set back to auto-detect",
-      meta.getSshImplementation() );
   }
 
   @Test

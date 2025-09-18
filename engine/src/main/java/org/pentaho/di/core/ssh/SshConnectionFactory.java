@@ -30,14 +30,8 @@ public interface SshConnectionFactory {
 
       @Override
       public SshConnection open( SshConfig config, LogChannelInterface log ) throws SshConnectionException {
-        SshImplementation impl = config.getImplementation() != null ? config.getImplementation()
-          : SshImplementationSelector.resolve();
-
-        if ( impl == SshImplementation.MINA ) {
-          return log != null ? new MinaSshConnection( config, log ) : new MinaSshConnection( config );
-        } else {
-          throw new SshConnectionException( "Unknown SSH implementation: " + impl );
-        }
+        // Always use MINA implementation since it's the only one supported
+        return log != null ? new MinaSshConnection( config, log ) : new MinaSshConnection( config );
       }
     };
   }

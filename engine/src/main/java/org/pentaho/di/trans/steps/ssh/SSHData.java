@@ -20,7 +20,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.ssh.SshConfig;
 import org.pentaho.di.core.ssh.SshConnection;
 import org.pentaho.di.core.ssh.SshConnectionFactory;
-import org.pentaho.di.core.ssh.SshImplementation;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -103,10 +102,9 @@ public class SSHData extends BaseStepData {
    */
   public static SshConnection openSshConnection(
       Bowl bowl, String server, int port, String username, String password,
-      boolean useKey, String keyFilename, String passPhrase, int timeOut, 
-      VariableSpace space, String proxyhost, int proxyport, 
-      String proxyusername, String proxypassword,
-      SshImplementation preferredImplementation, LogChannelInterface log ) throws KettleException {
+      boolean useKey, String keyFilename, String passPhrase, int timeOut,
+      VariableSpace space, String proxyhost, int proxyport,
+      String proxyusername, String proxypassword, LogChannelInterface log ) throws KettleException {
 
     try {
       // Build SSH configuration
@@ -128,16 +126,11 @@ public class SSHData extends BaseStepData {
       }
 
       // Set preferred implementation or let factory decide
-      if ( preferredImplementation != null ) {
-        config.implementation( preferredImplementation );
-      }
-
       if ( log != null && log.isDebug() ) {
         log.logDebug( "Creating SSH connection using modern abstraction layer to " + server + ":" + port );
         log.logDebug( "SSH Config - Auth type: " + config.getAuthType()
                     + ", Connect timeout: " + config.getConnectTimeoutMillis() + "ms"
-                    + ", Command timeout: " + config.getCommandTimeoutMillis() + "ms"
-                    + ", Implementation: " + config.getImplementation() );
+                    + ", Command timeout: " + config.getCommandTimeoutMillis() + "ms" );
       }
 
       SshConnection connection = SshConnectionFactory.defaultFactory().open( config, log );
@@ -157,19 +150,5 @@ public class SSHData extends BaseStepData {
       // Re-throw as KettleException to maintain API contract
       throw new KettleException( "SSH connection failed: " + e.getMessage(), e );
     }
-  }
-
-  /**
-   * Convenience method that uses auto-detection for SSH implementation.
-   */
-  public static SshConnection openSshConnection(
-      Bowl bowl, String server, int port, String username, String password,
-      boolean useKey, String keyFilename, String passPhrase, int timeOut,
-      VariableSpace space, String proxyhost, int proxyport,
-      String proxyusername, String proxypassword, LogChannelInterface log ) throws KettleException {
-
-    return openSshConnection( bowl, server, port, username, password, useKey, keyFilename,
-                              passPhrase, timeOut, space, proxyhost, proxyport, proxyusername,
-                              proxypassword, null, log );
   }
 }

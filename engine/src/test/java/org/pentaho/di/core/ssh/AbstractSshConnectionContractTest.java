@@ -21,8 +21,6 @@ import org.pentaho.test.util.TestCleanupUtil;
 
 public abstract class AbstractSshConnectionContractTest {
 
-  protected abstract SshImplementation getImplementation();
-
   protected String getUsername() {
     return "test";
   }
@@ -57,15 +55,14 @@ public abstract class AbstractSshConnectionContractTest {
   public void setUp() throws Exception {
     // Generate unique filename to avoid conflicts between test runs
     tempFileName = "upload-" + UUID.randomUUID().toString() + ".txt";
-    
+
     SshConfig cfg = SshConfig.create()
       .host( "127.0.0.1" )
       .port( port )
       .username( getUsername() )
       .password( getPassword() )
       .connectTimeoutMillis( 10000 ) // 10 second connect timeout
-      .commandTimeoutMillis( 30000 ) // 30 second command timeout
-      .implementation( getImplementation() );
+      .commandTimeoutMillis( 30000 ); // 30 second command timeout
     connection = SshConnectionFactory.defaultFactory().open( cfg );
     connection.connect();
   }
@@ -75,7 +72,7 @@ public abstract class AbstractSshConnectionContractTest {
     if ( connection != null ) {
       connection.close();
     }
-    
+
     // Clean up any files that might have been created in the current working directory
     // (the SFTP server operates in the current directory)
     try {
@@ -101,17 +98,17 @@ public abstract class AbstractSshConnectionContractTest {
     SftpSession sftp = connection.openSftp();
     try {
       String content = "hello world";
-      
+
       // Use temporary filename to avoid conflicts and pollution
       sftp.upload( new ByteArrayInputStream( content.getBytes( StandardCharsets.UTF_8 ) ), tempFileName, true );
-      
+
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
       sftp.download( tempFileName, bos );
       assertEquals( content, bos.toString( StandardCharsets.UTF_8 ) );
-      
+
       // Clean up the uploaded file immediately after test
       sftp.delete( tempFileName );
-      
+
     } finally {
       sftp.close();
     }

@@ -150,13 +150,13 @@ public class MinaSshConnection implements SshConnection {
   private ClientSession establishSession( ConnectFuture cf ) throws SshConnectionException {
     logInfo( "MinaSshConnection: Connection established successfully" );
     ClientSession s = cf.getSession();
-    
+
     if ( s == null ) {
       logError( "MinaSshConnection: Session is null after connection", null );
       throw new SshConnectionException( "SSH connection failed - session is null" );
     }
 
-    logDebug( "MinaSshConnection: Session obtained: " + session.getClass().getSimpleName() );
+    logDebug( "MinaSshConnection: Session obtained: " + s.getClass().getSimpleName() );
     return s;
   }
 
