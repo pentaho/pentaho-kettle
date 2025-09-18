@@ -86,15 +86,6 @@ public class MinaSshConnection implements SshConnection {
       return true;
     } );
 
-    // Set additional properties to improve compatibility
-    client.getProperties().put( "heartbeat-interval", "0" );
-    client.getProperties().put( "heartbeat-request", "FALSE" );
-
-    // Try to set more compatible settings for older SSH servers
-    client.getProperties().put( "nio2-min-write-timeout", "30000" );
-    client.getProperties().put( "channel-session-max-packet-size", "32768" );
-    client.getProperties().put( "window-size", "2097152" );
-
     logDebug( "MinaSshConnection: Starting SSH client..." );
     client.start();
     logDebug( "MinaSshConnection: SSH client started successfully" );
