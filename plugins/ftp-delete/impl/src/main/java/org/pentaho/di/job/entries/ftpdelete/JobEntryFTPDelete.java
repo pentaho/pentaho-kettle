@@ -635,7 +635,6 @@ public class JobEntryFTPDelete extends JobEntryBase implements JobEntryInterface
     this.proxyUsername = proxyUsername;
   }
 
-  /** Needed for file list processing */
   public Result execute( Result previousResult, int nr ) {
     log.logBasic( BaseMessages.getString( PKG, "JobEntryFTPDelete.Started", serverName ) );
     RowMetaAndData resultRow = null;
