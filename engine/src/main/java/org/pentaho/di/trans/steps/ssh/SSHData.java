@@ -101,7 +101,7 @@ public class SSHData extends BaseStepData {
    * @param preferredImplementation SSH implementation to prefer (null for auto-detect)
    * @param log Optional log channel for warnings and debug info
    */
-  public static SshConnection OpenSshConnection(
+  public static SshConnection openSshConnection(
       Bowl bowl, String server, int port, String username, String password,
       boolean useKey, String keyFilename, String passPhrase, int timeOut, 
       VariableSpace space, String proxyhost, int proxyport, 
@@ -162,13 +162,13 @@ public class SSHData extends BaseStepData {
   /**
    * Convenience method that uses auto-detection for SSH implementation.
    */
-  public static SshConnection OpenSshConnection(
+  public static SshConnection openSshConnection(
       Bowl bowl, String server, int port, String username, String password,
       boolean useKey, String keyFilename, String passPhrase, int timeOut,
       VariableSpace space, String proxyhost, int proxyport,
       String proxyusername, String proxypassword, LogChannelInterface log ) throws KettleException {
 
-    return OpenSshConnection( bowl, server, port, username, password, useKey, keyFilename,
+    return openSshConnection( bowl, server, port, username, password, useKey, keyFilename,
                               passPhrase, timeOut, space, proxyhost, proxyport, proxyusername,
                               proxypassword, null, log );
   }

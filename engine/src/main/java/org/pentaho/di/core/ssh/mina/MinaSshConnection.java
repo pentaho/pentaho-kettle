@@ -149,15 +149,15 @@ public class MinaSshConnection implements SshConnection {
 
   private ClientSession establishSession( ConnectFuture cf ) throws SshConnectionException {
     logInfo( "MinaSshConnection: Connection established successfully" );
-    ClientSession session = cf.getSession();
+    ClientSession s = cf.getSession();
     
-    if ( session == null ) {
+    if ( s == null ) {
       logError( "MinaSshConnection: Session is null after connection", null );
       throw new SshConnectionException( "SSH connection failed - session is null" );
     }
 
     logDebug( "MinaSshConnection: Session obtained: " + session.getClass().getSimpleName() );
-    return session;
+    return s;
   }
 
   private void authenticateSession() throws SshConnectionException {
@@ -257,6 +257,9 @@ public class MinaSshConnection implements SshConnection {
       return new ExecResult( outStr, errStr, outStr + errStr, exit, exit != 0 );
     } catch ( SshTimeoutException e ) {
       throw e; // Re-throw timeout exceptions as-is
+    } catch ( InterruptedException e ) {
+      Thread.currentThread().interrupt(); // Restore interrupted status
+      throw new SshConnectionException( "Command execution was interrupted", e );
     } catch ( Exception e ) {
       throw new SshConnectionException( "Failed to execute command: " + command, e );
     }

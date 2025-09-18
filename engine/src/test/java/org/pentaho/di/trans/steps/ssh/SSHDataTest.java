@@ -94,7 +94,7 @@ public class SSHDataTest {
   @Test
   public void testOpenSshConnection_Password() throws Exception {
     // Test successful password authentication
-    SshConnection result = SSHData.OpenSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
+    SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
       null, 0, null, null, 0, null, null, logChannel );
     assertNotNull( "Should return a valid connection adapter", result );
   }
@@ -103,7 +103,7 @@ public class SSHDataTest {
   public void testOpenSshConnection_InvalidKey() throws Exception {
     // Test with key file that doesn't exist
     when( fileObject.exists() ).thenReturn( false );
-    SSHData.OpenSshConnection( DefaultBowl.getInstance(), server, port, null, null, true, keyFilePath,
+    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, null, null, true, keyFilePath,
       null, 0, null, null, 0, null, null, logChannel );
   }
 
@@ -117,7 +117,7 @@ public class SSHDataTest {
     when( variableSpace.environmentSubstitute( keyFilePath ) ).thenReturn( keyFilePath );
     when( variableSpace.environmentSubstitute( passPhrase ) ).thenReturn( passPhrase );
 
-    SshConnection result = SSHData.OpenSshConnection( DefaultBowl.getInstance(), server, port, username, null, true, keyFilePath,
+    SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, null, true, keyFilePath,
       passPhrase, 0, variableSpace, null, 0, null, null, logChannel );
     assertNotNull( "Should return a valid SSH connection", result );
   }
@@ -125,7 +125,7 @@ public class SSHDataTest {
   @Test
   public void testOpenSshConnection_WithProxy() throws Exception {
     // Test connection with proxy settings
-    SshConnection result = SSHData.OpenSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
+    SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
       null, 0, null, proxyHost, proxyPort, proxyUsername, proxyPassword, logChannel );
     assertNotNull( "Should return a valid SSH connection", result );
   }
@@ -133,7 +133,7 @@ public class SSHDataTest {
   @Test
   public void testOpenSshConnection_WithTimeout() throws Exception {
     // Test connection with custom timeout
-    SshConnection result = SSHData.OpenSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
+    SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
       null, 100, null, null, 0, null, null, logChannel );
     assertNotNull( "Should return a valid SSH connection", result );
   }

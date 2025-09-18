@@ -850,7 +850,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     String proxyusername = transMeta.environmentSubstitute( wProxyUsername.getText() );
     String proxypassword = Utils.resolvePassword( transMeta,  wProxyPassword.getText() );
 
-    try ( SshConnection conn = SSHData.OpenSshConnection( transMeta.getBowl(),
+    try ( SshConnection conn = SSHData.openSshConnection( transMeta.getBowl(),
           servername, nrPort, username, password, wUseKey.getSelection(), keyFilename, passphrase, timeOut,
           transMeta, proxyhost, proxyport, proxyusername, proxypassword, log ) ) {
 
