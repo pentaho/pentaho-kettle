@@ -12,15 +12,44 @@
 
 package org.pentaho.di.core.ssh;
 
-import java.io.IOException;
-
+/**
+ * SSH connection interface providing secure shell connectivity and operations.
+ * All methods throw specific SSH exceptions instead of generic exceptions for better error handling.
+ */
 public interface SshConnection extends AutoCloseable {
-  void connect() throws Exception;
+  
+  /**
+   * Establishes the SSH connection.
+   *
+   * @throws SshAuthenticationException if authentication fails
+   * @throws SshTimeoutException if connection times out
+   * @throws SshConnectionException for other connection errors
+   */
+  void connect() throws SshConnectionException;
 
-  ExecResult exec( String command, long timeoutMs ) throws IOException, Exception;
+  /**
+   * Executes a command on the remote SSH server.
+   *
+   * @param command the command to execute
+   * @param timeoutMs timeout in milliseconds
+   * @return the execution result
+   * @throws SshTimeoutException if the command times out
+   * @throws SshConnectionException for other execution errors
+   */
+  ExecResult exec( String command, long timeoutMs ) throws SshConnectionException;
 
-  SftpSession openSftp() throws IOException, Exception;
+  /**
+   * Opens an SFTP session for file operations.
+   *
+   * @return the SFTP session
+   * @throws SftpException if SFTP session creation fails
+   * @throws SshConnectionException for other connection errors
+   */
+  SftpSession openSftp() throws SshConnectionException;
 
+  /**
+   * Closes the SSH connection and releases resources.
+   */
   @Override
   void close();
 }

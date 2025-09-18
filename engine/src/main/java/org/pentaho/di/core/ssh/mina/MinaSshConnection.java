@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
@@ -32,9 +33,13 @@ import org.apache.sshd.sftp.client.SftpClientFactory;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.ssh.ExecResult;
+import org.pentaho.di.core.ssh.SftpException;
 import org.pentaho.di.core.ssh.SftpSession;
+import org.pentaho.di.core.ssh.SshAuthenticationException;
 import org.pentaho.di.core.ssh.SshConfig;
 import org.pentaho.di.core.ssh.SshConnection;
+import org.pentaho.di.core.ssh.SshConnectionException;
+import org.pentaho.di.core.ssh.SshTimeoutException;
 
 public class MinaSshConnection implements SshConnection {
   private SshClient client;
@@ -69,15 +74,27 @@ public class MinaSshConnection implements SshConnection {
   }
 
   @Override
-  public void connect() throws Exception {
+  public void connect() throws SshConnectionException {
     if ( client != null ) {
       return;
     }
 
+    logConnectionStart();
+    setupSshClient();
+    ConnectFuture connectFuture = createConnection();
+    waitForConnection( connectFuture );
+    session = establishSession( connectFuture );
+    authenticateSession();
+    configureSessionHeartbeat();
+  }
+
+  private void logConnectionStart() {
     logInfo( "MinaSshConnection: Starting connection to " + config.getHost() + ":" + config.getPort() );
     logInfo( "MinaSshConnection: Auth type: " + config.getAuthType() + ", Username: " + config.getUsername() );
     logInfo( "MinaSshConnection: Connect timeout: " + config.getConnectTimeoutMillis() + "ms" );
+  }
 
+  private void setupSshClient() {
     client = SshClient.setUpDefaultClient();
 
     // Disable strict host key checking to avoid key exchange issues
@@ -89,68 +106,112 @@ public class MinaSshConnection implements SshConnection {
     logDebug( "MinaSshConnection: Starting SSH client..." );
     client.start();
     logDebug( "MinaSshConnection: SSH client started successfully" );
+  }
 
+  private ConnectFuture createConnection() throws SshConnectionException {
     logInfo( "MinaSshConnection: Attempting connection..." );
-
-    // Create connection with more detailed error handling and retry logic
-    ConnectFuture cf;
+    
     try {
-      cf = client.connect( config.getUsername(), config.getHost(), config.getPort() );
+      ConnectFuture cf = client.connect( config.getUsername(), config.getHost(), config.getPort() );
       logDebug( "MinaSshConnection: Connection future created, waiting for completion..." );
+      return cf;
     } catch ( Exception e ) {
       logError( "MinaSshConnection: Failed to create connection: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e );
-      throw new IOException( "Failed to create SSH connection", e );
+      throw new SshConnectionException( "Failed to create SSH connection", e );
     }
+  }
 
-    // Try with a longer timeout for key exchange
+  private void waitForConnection( ConnectFuture cf ) throws SshConnectionException {
     long extendedTimeout = Math.max( config.getConnectTimeoutMillis(), 60000L ); // At least 60 seconds
-    boolean connected = cf.await( extendedTimeout );
+    boolean connected;
+    
+    try {
+      connected = cf.await( extendedTimeout );
+    } catch ( IOException e ) {
+      throw new SshConnectionException( "SSH connection failed during await", e );
+    }
+    
     logDebug( "MinaSshConnection: Connection await completed, connected: " + connected );
 
     if ( !connected ) {
       logError( "MinaSshConnection: Connection timed out after " + extendedTimeout + "ms", null );
-      throw new IOException( "SSH connection timed out after " + extendedTimeout + "ms" );
+      throw new SshTimeoutException( "SSH connection timed out after " + extendedTimeout + "ms" );
     }
 
     if ( !cf.isConnected() ) {
       Throwable cause = cf.getException();
       logError( "MinaSshConnection: Connection failed, exception: " + ( cause != null ? cause.getClass().getSimpleName() + ": " + cause.getMessage() : "null" ), cause );
-      throw new IOException( "SSH connection failed", cause );
+      throw new SshConnectionException( "SSH connection failed", cause );
     }
+  }
 
+  private ClientSession establishSession( ConnectFuture cf ) throws SshConnectionException {
     logInfo( "MinaSshConnection: Connection established successfully" );
-    session = cf.getSession();
+    ClientSession session = cf.getSession();
+    
     if ( session == null ) {
       logError( "MinaSshConnection: Session is null after connection", null );
-      throw new IOException( "SSH connection failed - session is null" );
+      throw new SshConnectionException( "SSH connection failed - session is null" );
     }
 
     logDebug( "MinaSshConnection: Session obtained: " + session.getClass().getSimpleName() );
+    return session;
+  }
 
+  private void authenticateSession() throws SshConnectionException {
     logInfo( "MinaSshConnection: Attempting authentication..." );
-    boolean authed = false;
-    if ( config.getAuthType() == SshConfig.AuthType.PUBLIC_KEY && config.getKeyPath() != null ) {
-      Path key = config.getKeyPath();
-      if ( Files.exists( key ) ) {
-        FileKeyPairProvider prov = new FileKeyPairProvider( List.of( key ) );
-        for ( KeyPair kp : prov.loadKeys( null ) ) {
-          session.addPublicKeyIdentity( kp );
-        }
-        authed = session.auth().verify( config.getConnectTimeoutMillis() ).isSuccess();
-      }
+    boolean authed = tryPublicKeyAuthentication();
+    
+    if ( !authed ) {
+      authed = tryPasswordAuthentication();
     }
-    if ( !authed && config.getPassword() != null ) {
-      logDebug( "MinaSshConnection: Trying password authentication..." );
-      session.addPasswordIdentity( config.getPassword() );
-      authed = session.auth().verify( config.getConnectTimeoutMillis() ).isSuccess();
-      logDebug( "MinaSshConnection: Password authentication result: " + authed );
-    }
+    
     if ( !authed ) {
       logError( "MinaSshConnection: Authentication failed - no valid auth method succeeded", null );
-      throw new IOException( "SSH authentication failed" );
+      throw new SshAuthenticationException( "SSH authentication failed" );
     }
 
     logInfo( "MinaSshConnection: Successfully authenticated and connected!" );
+  }
+
+  private boolean tryPublicKeyAuthentication() throws SshAuthenticationException {
+    if ( config.getAuthType() != SshConfig.AuthType.PUBLIC_KEY || config.getKeyPath() == null ) {
+      return false;
+    }
+
+    Path key = config.getKeyPath();
+    if ( !Files.exists( key ) ) {
+      return false;
+    }
+
+    try {
+      FileKeyPairProvider prov = new FileKeyPairProvider( List.of( key ) );
+      for ( KeyPair kp : prov.loadKeys( null ) ) {
+        session.addPublicKeyIdentity( kp );
+      }
+      return session.auth().verify( config.getConnectTimeoutMillis() ).isSuccess();
+    } catch ( IOException e ) {
+      throw new SshAuthenticationException( "Failed to load SSH key: " + key, e );
+    }
+  }
+
+  private boolean tryPasswordAuthentication() throws SshAuthenticationException {
+    if ( config.getPassword() == null ) {
+      return false;
+    }
+
+    logDebug( "MinaSshConnection: Trying password authentication..." );
+    try {
+      session.addPasswordIdentity( config.getPassword() );
+      boolean authed = session.auth().verify( config.getConnectTimeoutMillis() ).isSuccess();
+      logDebug( "MinaSshConnection: Password authentication result: " + authed );
+      return authed;
+    } catch ( IOException e ) {
+      throw new SshAuthenticationException( "Password authentication failed", e );
+    }
+  }
+
+  private void configureSessionHeartbeat() {
     if ( config.getCommandTimeoutMillis() > 0 ) {
       int intervalSeconds = (int) Math.max( 1, config.getCommandTimeoutMillis() / 1000 );
       // session implements SessionHeartbeatController
@@ -160,44 +221,54 @@ public class MinaSshConnection implements SshConnection {
   }
 
   @Override
-  public ExecResult exec( String command, long timeoutMs ) throws Exception {
-    ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-    ByteArrayOutputStream stderr = new ByteArrayOutputStream();
-    int exit;
-    try ( var ch = session.createExecChannel( command ) ) {
-      ch.setOut( stdout );
-      ch.setErr( stderr );
-      ch.open().verify( timeoutMs );
+  public ExecResult exec( String command, long timeoutMs ) throws SshConnectionException {
+    try {
+      ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+      ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+      int exit;
+      try ( var ch = session.createExecChannel( command ) ) {
+        ch.setOut( stdout );
+        ch.setErr( stderr );
+        ch.open().verify( timeoutMs );
 
-      // Wait for the command to complete and exit status to be available
-      Set<org.apache.sshd.client.channel.ClientChannelEvent> events = ch.waitFor(
-        EnumSet.of( org.apache.sshd.client.channel.ClientChannelEvent.CLOSED ), timeoutMs );
+        // Wait for the command to complete and exit status to be available
+        Set<ClientChannelEvent> events = ch.waitFor(
+          EnumSet.of( ClientChannelEvent.CLOSED ), timeoutMs );
 
-      // Give a bit more time for exit status to be set if the channel closed successfully
-      if ( events.contains( org.apache.sshd.client.channel.ClientChannelEvent.CLOSED ) ) {
-        // Try to get exit status with a short additional wait
-        Integer ex = ch.getExitStatus();
-        if ( ex == null ) {
-          // Wait a bit more for exit status to be set
-          Thread.sleep( 100 );
-          ex = ch.getExitStatus();
+        // Give a bit more time for exit status to be set if the channel closed successfully
+        if ( events.contains( ClientChannelEvent.CLOSED ) ) {
+          // Try to get exit status with a short additional wait
+          Integer ex = ch.getExitStatus();
+          if ( ex == null ) {
+            // Wait a bit more for exit status to be set
+            Thread.sleep( 100 );
+            ex = ch.getExitStatus();
+          }
+          exit = ex == null ? -1 : ex;
+        } else {
+          // Timeout occurred
+          throw new SshTimeoutException( "Command execution timed out after " + timeoutMs + "ms" );
         }
-        exit = ex == null ? -1 : ex;
-      } else {
-        // Timeout occurred
-        exit = -1;
       }
+      String outStr = stdout.toString( StandardCharsets.UTF_8 );
+      String errStr = stderr.toString( StandardCharsets.UTF_8 );
+      return new ExecResult( outStr, errStr, outStr + errStr, exit, exit != 0 );
+    } catch ( SshTimeoutException e ) {
+      throw e; // Re-throw timeout exceptions as-is
+    } catch ( Exception e ) {
+      throw new SshConnectionException( "Failed to execute command: " + command, e );
     }
-    String outStr = stdout.toString( StandardCharsets.UTF_8 );
-    String errStr = stderr.toString( StandardCharsets.UTF_8 );
-    return new ExecResult( outStr, errStr, outStr + errStr, exit, exit != 0 );
   }
 
   @Override
-  public SftpSession openSftp() throws IOException {
-    var factory = SftpClientFactory.instance();
-    var sftp = factory.createSftpClient( session );
-    return new MinaSftpSession( sftp );
+  public SftpSession openSftp() throws SshConnectionException {
+    try {
+      var factory = SftpClientFactory.instance();
+      var sftp = factory.createSftpClient( session );
+      return new MinaSftpSession( sftp );
+    } catch ( Exception e ) {
+      throw new SftpException( "Failed to open SFTP session", e );
+    }
   }
 
   @Override

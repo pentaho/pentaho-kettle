@@ -31,11 +31,11 @@ public interface SshConnectionFactory {
       public SshConnection open( SshConfig config, LogChannelInterface log ) throws SshConnectionException {
         SshImplementation impl = config.getImplementation() != null ? config.getImplementation()
           : SshImplementationSelector.resolve();
-        switch ( impl ) {
-          case MINA:
-            return log != null ? new MinaSshConnection( config, log ) : new MinaSshConnection( config );
-          default:
-            throw new SshConnectionException( "Unknown SSH implementation: " + impl );
+
+        if ( impl == SshImplementation.MINA ) {
+          return log != null ? new MinaSshConnection( config, log ) : new MinaSshConnection( config );
+        } else {
+          throw new SshConnectionException( "Unknown SSH implementation: " + impl );
         }
       }
     };

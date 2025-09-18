@@ -27,6 +27,7 @@ public class SshImplementationSelector {
           v = Props.getInstance().getProperty( PROP_KEY );
         }
       } catch ( Exception ignored ) {
+        // Ignore
       }
     }
     if ( v == null ) {

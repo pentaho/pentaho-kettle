@@ -121,9 +121,9 @@ public class SSH extends BaseStep {
       }
 
       // Connect if not already connected
-      if ( !data.connected ) {
-        data.sshConnection.connect();
-        data.connected = true;
+      if ( !data.isConnected() ) {
+        data.getSshConnection().connect();
+        data.setConnected( true );
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionOpened" ) );
         }
@@ -133,7 +133,7 @@ public class SSH extends BaseStep {
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "SSH.Log.RunningCommand", data.commands ) );
       }
-      ExecResult execResult = data.sshConnection.exec( data.commands, 30000L ); // 30 second timeout
+      ExecResult execResult = data.getSshConnection().exec( data.commands, 30000L ); // 30 second timeout
 
       if ( log.isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "SSH.Log.CommandRunnedCommand", data.commands, execResult
@@ -145,7 +145,7 @@ public class SSH extends BaseStep {
 
       if ( !Utils.isEmpty( data.stdTypeField ) ) {
         // Add stdtype to output
-        rowData[ index++ ] = execResult.hasErrorOutput();
+        rowData[ index ] = execResult.hasErrorOutput();
       }
 
       if ( log.isRowLevel() ) {
@@ -225,10 +225,10 @@ public class SSH extends BaseStep {
       try {
         logBasic( "SSH Step: Using modern SSH implementation" );
 
-        data.sshConnection = SSHData.OpenSshConnection(
+        data.setSshConnection( SSHData.OpenSshConnection(
           getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
           passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword,
-          meta.getSshImplementation(), log );
+          meta.getSshImplementation(), log ) );
 
         logBasic( "SSH Step: Modern SSH connection created successfully" );
 
@@ -263,8 +263,8 @@ public class SSH extends BaseStep {
 
     // Close the SSH connection
     try {
-      if ( data.sshConnection != null ) {
-        data.sshConnection.close();
+      if ( data.getSshConnection() != null ) {
+        data.getSshConnection().close();
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionClosed" ) );
         }

@@ -31,9 +31,11 @@ import org.pentaho.di.trans.step.BaseStepData;
  *
  */
 public class SSHData extends BaseStepData {
+  
+  private SshConnection sshConnection;
+  private boolean connected;
+  
   public int indexOfCommand;
-  public SshConnection sshConnection;  // Direct SSH connection
-  public boolean connected;            // Track connection state
   public boolean wroteOneRow;
   public String commands;
   public int nrInputFields;
@@ -54,6 +56,42 @@ public class SSHData extends BaseStepData {
     this.commands = null;
     this.stdOutField = null;
     this.stdTypeField = null;
+  }
+
+  /**
+   * Gets the SSH connection.
+   * 
+   * @return the SSH connection, or null if not set
+   */
+  public SshConnection getSshConnection() {
+    return sshConnection;
+  }
+
+  /**
+   * Sets the SSH connection.
+   * 
+   * @param sshConnection the SSH connection to set
+   */
+  public void setSshConnection( SshConnection sshConnection ) {
+    this.sshConnection = sshConnection;
+  }
+
+  /**
+   * Checks if the SSH connection is established.
+   * 
+   * @return true if connected, false otherwise
+   */
+  public boolean isConnected() {
+    return connected;
+  }
+
+  /**
+   * Sets the connection state.
+   * 
+   * @param connected true if connected, false otherwise
+   */
+  public void setConnected( boolean connected ) {
+    this.connected = connected;
   }
 
   /**

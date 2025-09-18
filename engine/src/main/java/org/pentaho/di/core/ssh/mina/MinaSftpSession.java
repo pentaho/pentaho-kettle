@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.sshd.sftp.client.SftpClient;
 import org.apache.sshd.sftp.client.SftpClient.Attributes;
+import org.pentaho.di.core.ssh.SftpException;
 import org.pentaho.di.core.ssh.SftpFile;
 import org.pentaho.di.core.ssh.SftpSession;
 
@@ -32,22 +33,26 @@ public class MinaSftpSession implements SftpSession {
   }
 
   @Override
-  public List<SftpFile> list( String path ) throws IOException {
-    List<SftpFile> out = new ArrayList<>();
-    for ( SftpClient.DirEntry e : client.readDir( path ) ) {
-      Attributes a = e.getAttributes();
-      Instant mtime = Instant.EPOCH;
-      if ( a.getModifyTime() != null ) {
-        // getModifyTime returns a FileTime; convert via toMillis()
-        mtime = Instant.ofEpochMilli( a.getModifyTime().toMillis() );
+  public List<SftpFile> list( String path ) throws SftpException {
+    try {
+      List<SftpFile> out = new ArrayList<>();
+      for ( SftpClient.DirEntry e : client.readDir( path ) ) {
+        Attributes a = e.getAttributes();
+        Instant mtime = Instant.EPOCH;
+        if ( a.getModifyTime() != null ) {
+          // getModifyTime returns a FileTime; convert via toMillis()
+          mtime = Instant.ofEpochMilli( a.getModifyTime().toMillis() );
+        }
+        out.add( new SftpFile( e.getFilename(), a.isDirectory(), a.getSize(), mtime ) );
       }
-      out.add( new SftpFile( e.getFilename(), a.isDirectory(), a.getSize(), mtime ) );
+      return out;
+    } catch ( IOException e ) {
+      throw new SftpException( "Failed to list directory: " + path, e );
     }
-    return out;
   }
 
   @Override
-  public boolean exists( String path ) {
+  public boolean exists( String path ) throws SftpException {
     try {
       client.stat( path );
       return true;
@@ -57,56 +62,84 @@ public class MinaSftpSession implements SftpSession {
   }
 
   @Override
-  public boolean isDirectory( String path ) throws IOException {
-    return client.stat( path ).isDirectory();
-  }
-
-  @Override
-  public long size( String path ) throws IOException {
-    return client.stat( path ).getSize();
-  }
-
-  @Override
-  public void download( String remote, OutputStream target ) throws IOException {
-    try ( InputStream in = client.read( remote ) ) {
-      in.transferTo( target );
+  public boolean isDirectory( String path ) throws SftpException {
+    try {
+      return client.stat( path ).isDirectory();
+    } catch ( IOException e ) {
+      throw new SftpException( "Failed to check if path is directory: " + path, e );
     }
   }
 
   @Override
-  public void upload( InputStream source, String remote, boolean overwrite ) throws IOException {
-    try ( SftpClient.CloseableHandle h = client.open( remote, SftpClient.OpenMode.Write, SftpClient.OpenMode.Create,
-      SftpClient.OpenMode.Truncate ) ) {
-      byte[] buf = new byte[ 8192 ];
-      int r;
-      long off = 0;
-      while ( ( r = source.read( buf ) ) >= 0 ) {
-        if ( r == 0 ) {
-          continue;
-        }
-        client.write( h, off, buf, 0, r );
-        off += r;
+  public long size( String path ) throws SftpException {
+    try {
+      return client.stat( path ).getSize();
+    } catch ( IOException e ) {
+      throw new SftpException( "Failed to get file size: " + path, e );
+    }
+  }
+
+  @Override
+  public void download( String remote, OutputStream target ) throws SftpException {
+    try {
+      try ( InputStream in = client.read( remote ) ) {
+        in.transferTo( target );
       }
+    } catch ( IOException e ) {
+      throw new SftpException( "Failed to download file: " + remote, e );
     }
   }
 
   @Override
-  public void mkdir( String path ) throws IOException {
-    client.mkdir( path );
-  }
-
-  @Override
-  public void delete( String path ) throws IOException {
-    if ( isDirectory( path ) ) {
-      client.rmdir( path );
-    } else {
-      client.remove( path );
+  public void upload( InputStream source, String remote, boolean overwrite ) throws SftpException {
+    try {
+      try ( SftpClient.CloseableHandle h = client.open( remote, SftpClient.OpenMode.Write, SftpClient.OpenMode.Create,
+        SftpClient.OpenMode.Truncate ) ) {
+        byte[] buf = new byte[ 8192 ];
+        int r;
+        long off = 0;
+        while ( ( r = source.read( buf ) ) >= 0 ) {
+          if ( r == 0 ) {
+            continue;
+          }
+          client.write( h, off, buf, 0, r );
+          off += r;
+        }
+      }
+    } catch ( IOException e ) {
+      throw new SftpException( "Failed to upload file: " + remote, e );
     }
   }
 
   @Override
-  public void rename( String oldPath, String newPath ) throws IOException {
-    client.rename( oldPath, newPath );
+  public void mkdir( String path ) throws SftpException {
+    try {
+      client.mkdir( path );
+    } catch ( IOException e ) {
+      throw new SftpException( "Failed to create directory: " + path, e );
+    }
+  }
+
+  @Override
+  public void delete( String path ) throws SftpException {
+    try {
+      if ( isDirectory( path ) ) {
+        client.rmdir( path );
+      } else {
+        client.remove( path );
+      }
+    } catch ( IOException e ) {
+      throw new SftpException( "Failed to delete: " + path, e );
+    }
+  }
+
+  @Override
+  public void rename( String oldPath, String newPath ) throws SftpException {
+    try {
+      client.rename( oldPath, newPath );
+    } catch ( IOException e ) {
+      throw new SftpException( "Failed to rename from " + oldPath + " to " + newPath, e );
+    }
   }
 
   @Override
