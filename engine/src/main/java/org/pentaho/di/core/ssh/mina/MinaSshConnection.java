@@ -13,7 +13,6 @@
 package org.pentaho.di.core.ssh.mina;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,8 +41,10 @@ import org.pentaho.di.core.ssh.SshConnectionException;
 import org.pentaho.di.core.ssh.SshTimeoutException;
 
 public class MinaSshConnection implements SshConnection {
+
   private SshClient client;
   private ClientSession session;
+
   private final SshConfig config;
   private final LogChannelInterface log;
 
