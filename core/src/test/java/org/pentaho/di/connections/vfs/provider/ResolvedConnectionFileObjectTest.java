@@ -179,12 +179,4 @@ public class ResolvedConnectionFileObjectTest {
 
     verify( resolvedFileObject, times( 2 ) ).canRenameTo( newFile );
   }
-
-  @Test
-  public void testGetAELSafeURIString() {
-
-    when( resolvedFileObject.getPublicURIString() ).thenReturn( "s3://bucket" );
-
-    assertEquals( "s3a://bucket", fileObject.getAELSafeURIString() );
-  }
 }

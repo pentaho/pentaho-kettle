@@ -49,7 +49,7 @@ import java.util.List;
 import org.apache.commons.vfs2.FileObject;
 import org.w3c.dom.Node;
 
-public abstract class AvroInputMetaBase extends BaseStepMeta implements StepMetaInterface, ResolvableResource {
+public abstract class AvroInputMetaBase extends BaseStepMeta implements StepMetaInterface {
 
   public static final Class<?> PKG = AvroInputMetaBase.class;
 
@@ -427,36 +427,6 @@ public abstract class AvroInputMetaBase extends BaseStepMeta implements StepMeta
       }
     } catch ( KettlePluginException e ) {
       throw new KettleStepException( "Unable to create value type", e );
-    }
-  }
-
-
-  @Override
-  public void resolve( Bowl bowl ) {
-    if ( dataLocation != null && !dataLocation.isEmpty() ) {
-      try {
-        String realFileName = getParentStepMeta().getParentTransMeta().environmentSubstitute( dataLocation );
-        FileObject fileObject = KettleVFS.getInstance( bowl )
-          .getFileObject( realFileName );
-        if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-          dataLocation = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
-        }
-      } catch ( KettleFileException e ) {
-        throw new RuntimeException( e );
-      }
-    }
-
-    if ( schemaLocation != null && !schemaLocation.isEmpty() ) {
-      try {
-        String realSchemaFilename = getParentStepMeta().getParentTransMeta().environmentSubstitute( schemaLocation );
-        FileObject fileObject = KettleVFS.getInstance( bowl )
-          .getFileObject( realSchemaFilename );
-        if ( AliasedFileObject.isAliasedFile( fileObject ) ) {
-          schemaLocation = ( (AliasedFileObject) fileObject ).getAELSafeURIString();
-        }
-      } catch ( KettleFileException e ) {
-        throw new RuntimeException( e );
-      }
     }
   }
 
