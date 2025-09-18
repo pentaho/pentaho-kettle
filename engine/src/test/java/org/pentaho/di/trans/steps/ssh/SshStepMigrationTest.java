@@ -64,8 +64,8 @@ public class SshStepMigrationTest {
     SSHData data = new SSHData();
 
     // Verify connection field is available
-    assertNull( "SSH connection field should be null initially", data.sshConnection );
-    assertFalse( "Connected flag should be false initially", data.connected );
+    assertNull( "SSH connection field should be null initially", data.getSshConnection() );
+    assertFalse( "Connected flag should be false initially", data.isConnected() );
 
     // Verify other fields are still properly initialized
     assertEquals( "indexOfCommand should be -1 initially", -1, data.indexOfCommand );
