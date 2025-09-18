@@ -10,41 +10,41 @@
  * Change Date: 2029-07-20
  ******************************************************************************/
 
-package org.pentaho.di.core.ssh;
+package org.pentaho.di.core.ssh.exceptions;
 
 /**
- * Exception thrown when SSH authentication fails.
- * This includes invalid credentials, key authentication failures, and permission errors.
+ * Exception thrown when SSH connection operations fail.
+ * This includes connection establishment, authentication, and configuration errors.
  */
-public class SshAuthenticationException extends SshConnectionException {
+public class SshConnectionException extends Exception {
 
   private static final long serialVersionUID = 1L;
 
   /**
-   * Constructs a new SSH authentication exception with the specified detail message.
+   * Constructs a new SSH connection exception with the specified detail message.
    *
    * @param message the detail message
    */
-  public SshAuthenticationException( String message ) {
+  public SshConnectionException( String message ) {
     super( message );
   }
 
   /**
-   * Constructs a new SSH authentication exception with the specified detail message and cause.
+   * Constructs a new SSH connection exception with the specified detail message and cause.
    *
    * @param message the detail message
    * @param cause   the cause of this exception
    */
-  public SshAuthenticationException( String message, Throwable cause ) {
+  public SshConnectionException( String message, Throwable cause ) {
     super( message, cause );
   }
 
   /**
-   * Constructs a new SSH authentication exception with the specified cause.
+   * Constructs a new SSH connection exception with the specified cause.
    *
    * @param cause the cause of this exception
    */
-  public SshAuthenticationException( Throwable cause ) {
+  public SshConnectionException( Throwable cause ) {
     super( cause );
   }
 }

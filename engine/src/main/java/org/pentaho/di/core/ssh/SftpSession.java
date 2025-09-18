@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.pentaho.di.core.ssh.exceptions.SftpException;
+
 /**
  * SFTP session interface providing secure file transfer operations.
  * All methods throw specific SFTP exceptions instead of generic IOException for better error handling.

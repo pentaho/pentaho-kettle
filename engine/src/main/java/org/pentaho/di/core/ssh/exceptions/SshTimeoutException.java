@@ -10,7 +10,7 @@
  * Change Date: 2029-07-20
  ******************************************************************************/
 
-package org.pentaho.di.core.ssh;
+package org.pentaho.di.core.ssh.exceptions;
 
 /**
  * Exception thrown when SSH connection timeouts occur.

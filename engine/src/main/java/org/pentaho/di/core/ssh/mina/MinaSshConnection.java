@@ -13,6 +13,7 @@
 package org.pentaho.di.core.ssh.mina;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,13 +33,13 @@ import org.apache.sshd.sftp.client.SftpClientFactory;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.ssh.ExecResult;
-import org.pentaho.di.core.ssh.SftpException;
 import org.pentaho.di.core.ssh.SftpSession;
-import org.pentaho.di.core.ssh.SshAuthenticationException;
 import org.pentaho.di.core.ssh.SshConfig;
 import org.pentaho.di.core.ssh.SshConnection;
-import org.pentaho.di.core.ssh.SshConnectionException;
-import org.pentaho.di.core.ssh.SshTimeoutException;
+import org.pentaho.di.core.ssh.exceptions.SftpException;
+import org.pentaho.di.core.ssh.exceptions.SshAuthenticationException;
+import org.pentaho.di.core.ssh.exceptions.SshConnectionException;
+import org.pentaho.di.core.ssh.exceptions.SshTimeoutException;
 
 public class MinaSshConnection implements SshConnection {
 

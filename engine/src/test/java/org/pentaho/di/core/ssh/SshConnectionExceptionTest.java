@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.pentaho.di.core.ssh.exceptions.SshConnectionException;
 
 /**
  * Unit tests for SshConnectionException class.

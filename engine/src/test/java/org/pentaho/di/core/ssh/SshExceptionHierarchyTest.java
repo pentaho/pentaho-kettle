@@ -16,6 +16,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.pentaho.di.core.ssh.exceptions.SftpException;
+import org.pentaho.di.core.ssh.exceptions.SshAuthenticationException;
+import org.pentaho.di.core.ssh.exceptions.SshConnectionException;
+import org.pentaho.di.core.ssh.exceptions.SshTimeoutException;
 
 /**
  * Test the SSH exception hierarchy to ensure proper inheritance and construction.

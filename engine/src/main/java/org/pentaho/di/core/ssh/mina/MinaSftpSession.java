@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.apache.sshd.sftp.client.SftpClient;
 import org.apache.sshd.sftp.client.SftpClient.Attributes;
-import org.pentaho.di.core.ssh.SftpException;
+import org.pentaho.di.core.ssh.exceptions.SftpException;
 import org.pentaho.di.core.ssh.SftpFile;
 import org.pentaho.di.core.ssh.SftpSession;
 

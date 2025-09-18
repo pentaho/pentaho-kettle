@@ -13,6 +13,7 @@
 package org.pentaho.di.core.ssh;
 
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.ssh.exceptions.SshConnectionException;
 import org.pentaho.di.core.ssh.mina.MinaSshConnection;
 
 public interface SshConnectionFactory {
