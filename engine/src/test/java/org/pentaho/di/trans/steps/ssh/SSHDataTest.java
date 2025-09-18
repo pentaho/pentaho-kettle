@@ -39,6 +39,7 @@ import static org.mockito.Mockito.when;
 public class SSHDataTest {
 
   SshConnection sshConnection;
+  SshConnectionFactory mockFactory;
 
   FileObject fileObject;
 
@@ -68,8 +69,16 @@ public class SSHDataTest {
     fileContent = mock( FileContent.class );
     variableSpace = mock( VariableSpace.class );
     logChannel = mock( LogChannelInterface.class );
+    mockFactory = mock( SshConnectionFactory.class );
+
     sshConnectionFactoryMockedStatic = mockStatic( SshConnectionFactory.class );
     kettleVFSMockedStatic = mockStatic( KettleVFS.class );
+
+    // Mock the static defaultFactory method to return our mock factory
+    sshConnectionFactoryMockedStatic.when( SshConnectionFactory::defaultFactory ).thenReturn( mockFactory );
+
+    // Mock the factory to return our mock SSH connection
+    when( mockFactory.open( any(), any() ) ).thenReturn( sshConnection );
 
     IKettleVFS ikettleVFS = mock( IKettleVFS.class );
     when( ikettleVFS.getFileObject( keyFilePath ) ).thenReturn( fileObject );
@@ -82,7 +91,7 @@ public class SSHDataTest {
     kettleVFSMockedStatic.close();
   }
 
-    @Test
+  @Test
   public void testOpenSshConnection_Password() throws Exception {
     // Test successful password authentication
     SshConnection result = SSHData.OpenSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
@@ -105,8 +114,9 @@ public class SSHDataTest {
     when( fileObject.getContent() ).thenReturn( fileContent );
     when( fileContent.getSize() ).thenReturn( 1000L );
     when( fileContent.getInputStream() ).thenReturn( new ByteArrayInputStream( new byte[] { 1, 2, 3, 4, 5 } ) );
+    when( variableSpace.environmentSubstitute( keyFilePath ) ).thenReturn( keyFilePath );
     when( variableSpace.environmentSubstitute( passPhrase ) ).thenReturn( passPhrase );
-    
+
     SshConnection result = SSHData.OpenSshConnection( DefaultBowl.getInstance(), server, port, username, null, true, keyFilePath,
       passPhrase, 0, variableSpace, null, 0, null, null, logChannel );
     assertNotNull( "Should return a valid SSH connection", result );
