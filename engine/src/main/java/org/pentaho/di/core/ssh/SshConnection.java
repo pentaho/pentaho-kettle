@@ -12,17 +12,14 @@
 
 package org.pentaho.di.core.ssh;
 
-import org.pentaho.di.core.ssh.exceptions.SftpException;
-import org.pentaho.di.core.ssh.exceptions.SshAuthenticationException;
 import org.pentaho.di.core.ssh.exceptions.SshConnectionException;
-import org.pentaho.di.core.ssh.exceptions.SshTimeoutException;
 
 /**
  * SSH connection interface providing secure shell connectivity and operations.
  * All methods throw specific SSH exceptions instead of generic exceptions for better error handling.
  */
 public interface SshConnection extends AutoCloseable {
-  
+
   /**
    * Establishes the SSH connection.
    *

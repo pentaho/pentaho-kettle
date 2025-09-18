@@ -112,7 +112,7 @@ public class MinaSshConnection implements SshConnection {
 
   private ConnectFuture createConnection() throws SshConnectionException {
     logInfo( "MinaSshConnection: Attempting connection..." );
-    
+
     try {
       ConnectFuture cf = client.connect( config.getUsername(), config.getHost(), config.getPort() );
       logDebug( "MinaSshConnection: Connection future created, waiting for completion..." );
@@ -126,13 +126,13 @@ public class MinaSshConnection implements SshConnection {
   private void waitForConnection( ConnectFuture cf ) throws SshConnectionException {
     long extendedTimeout = Math.max( config.getConnectTimeoutMillis(), 60000L ); // At least 60 seconds
     boolean connected;
-    
+
     try {
       connected = cf.await( extendedTimeout );
     } catch ( IOException e ) {
       throw new SshConnectionException( "SSH connection failed during await", e );
     }
-    
+
     logDebug( "MinaSshConnection: Connection await completed, connected: " + connected );
 
     if ( !connected ) {
@@ -163,11 +163,11 @@ public class MinaSshConnection implements SshConnection {
   private void authenticateSession() throws SshConnectionException {
     logInfo( "MinaSshConnection: Attempting authentication..." );
     boolean authed = tryPublicKeyAuthentication();
-    
+
     if ( !authed ) {
       authed = tryPasswordAuthentication();
     }
-    
+
     if ( !authed ) {
       logError( "MinaSshConnection: Authentication failed - no valid auth method succeeded", null );
       throw new SshAuthenticationException( "SSH authentication failed" );

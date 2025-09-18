@@ -23,7 +23,7 @@ import org.pentaho.di.core.ssh.exceptions.SftpException;
  * All methods throw specific SFTP exceptions instead of generic IOException for better error handling.
  */
 public interface SftpSession extends AutoCloseable {
-  
+
   /**
    * Lists files and directories in the specified remote path.
    *
