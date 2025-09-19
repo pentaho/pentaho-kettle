@@ -49,6 +49,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.ssh.SSHData;
 import org.pentaho.di.trans.steps.ssh.SSHMeta;
+import org.pentaho.di.trans.steps.ssh.SshConnectionParameters;
 import org.pentaho.di.core.ssh.SshConnection;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
@@ -850,9 +851,23 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     String proxyusername = transMeta.environmentSubstitute( wProxyUsername.getText() );
     String proxypassword = Utils.resolvePassword( transMeta,  wProxyPassword.getText() );
 
-    try ( SshConnection conn = SSHData.openSshConnection( transMeta.getBowl(),
-          servername, nrPort, username, password, wUseKey.getSelection(), keyFilename, passphrase, timeOut,
-          transMeta, proxyhost, proxyport, proxyusername, proxypassword ) ) {
+    try ( SshConnection conn = SSHData.openSshConnection(
+          SshConnectionParameters.builder()
+              .bowl( transMeta.getBowl() )
+              .server( servername )
+              .port( nrPort )
+              .username( username )
+              .password( password )
+              .useKey( wUseKey.getSelection() )
+              .keyFilename( keyFilename )
+              .passPhrase( passphrase )
+              .timeOut( timeOut )
+              .space( transMeta )
+              .proxyhost( proxyhost )
+              .proxyport( proxyport )
+              .proxyusername( proxyusername )
+              .proxypassword( proxypassword )
+              .build() ) ) {
 
       // Actually test the connection by connecting
       conn.connect();

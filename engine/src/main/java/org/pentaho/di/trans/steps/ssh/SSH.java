@@ -225,9 +225,24 @@ public class SSH extends BaseStep {
       try {
         logBasic( "SSH Step: Using modern SSH implementation" );
 
-        data.setSshConnection( SSHData.openSshConnection(
-          getTransMeta().getBowl(), servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
-          passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword ) );
+        SshConnectionParameters params = SshConnectionParameters.builder()
+            .bowl( getTransMeta().getBowl() )
+            .server( servername )
+            .port( nrPort )
+            .username( username )
+            .password( password )
+            .useKey( meta.isusePrivateKey() )
+            .keyFilename( keyFilename )
+            .passPhrase( passphrase )
+            .timeOut( timeOut )
+            .space( this )
+            .proxyhost( proxyhost )
+            .proxyport( proxyport )
+            .proxyusername( proxyusername )
+            .proxypassword( proxypassword )
+            .build();
+
+        data.setSshConnection( SSHData.openSshConnection( params ) );
 
         logBasic( "SSH Step: Modern SSH connection created successfully" );
 

@@ -108,11 +108,7 @@ public class SSHData extends BaseStepData {
    * Provides modern SSH implementation with Ed25519 support and algorithm flexibility.
    * Supports all the parameters from the original implementation including proxy settings.
    */
-  public static SshConnection openSshConnection(
-      Bowl bowl, String server, int port, String username, String password,
-      boolean useKey, String keyFilename, String passPhrase, int timeOut,
-      VariableSpace space, String proxyhost, int proxyport,
-      String proxyusername, String proxypassword ) throws KettleException {
+  public static SshConnection openSshConnection( SshConnectionParameters params ) throws KettleException {
 
     SshConnection connection = null;
     Path tempKeyFile = null;
@@ -120,16 +116,18 @@ public class SSHData extends BaseStepData {
     try {
       // Build basic SSH configuration
       SshConfig config = SshConfig.create()
-          .host( server )
-          .port( port )
-          .username( username )
-          .connectTimeoutMillis( timeOut > 0 ? timeOut * 1000 : 30000 ); // Default 30 seconds
+          .host( params.getServer() )
+          .port( params.getPort() )
+          .username( params.getUsername() )
+          .connectTimeoutMillis( params.getTimeOut() > 0 ? params.getTimeOut() * 1000 : 30000 ); // Default 30 seconds
 
       // Configure authentication
-      tempKeyFile = configureAuthentication( config, bowl, useKey, keyFilename, passPhrase, password, space );
+      tempKeyFile = configureAuthentication( config, params.getBowl(), params.isUseKey(),
+          params.getKeyFilename(), params.getPassPhrase(), params.getPassword(), params.getSpace() );
 
       // Configure proxy if specified
-      configureProxy( config, proxyhost, proxyport, proxyusername, proxypassword );
+      configureProxy( config, params.getProxyhost(), params.getProxyport(),
+          params.getProxyusername(), params.getProxypassword() );
 
       // Create and connect
       connection = SshConnectionFactory.defaultFactory().open( config );
@@ -142,11 +140,42 @@ public class SSHData extends BaseStepData {
       if ( connection != null ) {
         connection.close();
       }
-      throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ErrorConnecting", server, username ), e );
+      throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ErrorConnecting", params.getServer(), params.getUsername() ), e );
     } finally {
       // Clean up temporary key file
       cleanupTempKeyFile( tempKeyFile );
     }
+  }
+
+  /**
+   * @deprecated Use {@link #openSshConnection(SshConnectionParameters)} instead.
+   * This method is maintained for backward compatibility.
+   */
+  @Deprecated
+  public static SshConnection openSshConnection(
+      Bowl bowl, String server, int port, String username, String password,
+      boolean useKey, String keyFilename, String passPhrase, int timeOut,
+      VariableSpace space, String proxyhost, int proxyport,
+      String proxyusername, String proxypassword ) throws KettleException {
+
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( bowl )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( useKey )
+        .keyFilename( keyFilename )
+        .passPhrase( passPhrase )
+        .timeOut( timeOut )
+        .space( space )
+        .proxyhost( proxyhost )
+        .proxyport( proxyport )
+        .proxyusername( proxyusername )
+        .proxypassword( proxypassword )
+        .build();
+
+    return openSshConnection( params );
   }
 
   /**
