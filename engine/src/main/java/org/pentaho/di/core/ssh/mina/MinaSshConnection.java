@@ -79,28 +79,28 @@ public class MinaSshConnection implements SshConnection {
   private ConnectFuture createConnection() throws SshConnectionException {
     try {
       ConnectFuture cf;
-      
+
       // Check if proxy is configured
       if ( config.getProxyHost() != null && !config.getProxyHost().trim().isEmpty() ) {
         // Create HostConfigEntry with proxy jump configuration
-        String proxyJump = config.getProxyUser() != null && !config.getProxyUser().trim().isEmpty() 
+        String proxyJump = config.getProxyUser() != null && !config.getProxyUser().trim().isEmpty()
             ? config.getProxyUser() + "@" + config.getProxyHost() + ":" + config.getProxyPort()
             : config.getProxyHost() + ":" + config.getProxyPort();
-            
-        HostConfigEntry hostEntry = new HostConfigEntry( 
+
+        HostConfigEntry hostEntry = new HostConfigEntry(
             "", // hostPattern 
-            config.getHost(), 
-            config.getPort(), 
-            config.getUsername(), 
+            config.getHost(),
+            config.getPort(),
+            config.getUsername(),
             proxyJump // proxyJump parameter
         );
-        
+
         cf = client.connect( hostEntry );
       } else {
         // Direct connection without proxy
         cf = client.connect( config.getUsername(), config.getHost(), config.getPort() );
       }
-      
+
       return cf;
     } catch ( Exception e ) {
       throw new SshConnectionException( "Failed to create SSH connection", e );
@@ -162,12 +162,12 @@ public class MinaSshConnection implements SshConnection {
 
     try {
       FileKeyPairProvider prov = new FileKeyPairProvider( List.of( key ) );
-      
+
       // Set passphrase if provided
       if ( config.getPassphrase() != null && !config.getPassphrase().trim().isEmpty() ) {
         prov.setPasswordFinder( ( session, resourceKey, retryIndex ) -> config.getPassphrase() );
       }
-      
+
       for ( KeyPair kp : prov.loadKeys( null ) ) {
         session.addPublicKeyIdentity( kp );
       }

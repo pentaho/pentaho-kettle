@@ -116,7 +116,7 @@ public class SSHData extends BaseStepData {
 
     SshConnection connection = null;
     Path tempKeyFile = null;
-    
+
     try {
       // Build SSH configuration
       SshConfig config = SshConfig.create()
@@ -130,7 +130,7 @@ public class SSHData extends BaseStepData {
         if ( Utils.isEmpty( keyFilename ) ) {
           throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyFileMissing" ) );
         }
-        
+
         FileObject keyFileObject = KettleVFS.getInstance( bowl ).getFileObject( keyFilename );
         if ( !keyFileObject.exists() ) {
           throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
@@ -142,11 +142,11 @@ public class SSHData extends BaseStepData {
         try ( InputStream in = keyFileContent.getInputStream() ) {
           in.read( keyBytes );
         }
-        
+
         // Create temporary key file
         tempKeyFile = Files.createTempFile( "ssh_key_", ".pem" );
         Files.write( tempKeyFile, keyBytes );
-        
+
         config.authType( SshConfig.AuthType.PUBLIC_KEY )
               .keyPath( tempKeyFile );
         if ( !Utils.isEmpty( passPhrase ) ) {
@@ -168,7 +168,7 @@ public class SSHData extends BaseStepData {
       // Create and connect
       connection = SshConnectionFactory.defaultFactory().open( config );
       connection.connect();
-      
+
       return connection;
 
     } catch ( Exception e ) {

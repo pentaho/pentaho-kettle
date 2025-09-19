@@ -51,11 +51,11 @@ public class TestSshServer {
         }
       }
     } );
-    
+
     // Set up password authentication
     server.setPasswordAuthenticator( ( username, password, session ) -> "test".equals( username ) && "test".equals(
       password ) );
-      
+
     // Set up public key authentication - accept any key for "test" user by default
     // This can be overridden by calling setAuthorizedKey()
     server.setPublickeyAuthenticator( ( username, key, session ) -> {
@@ -86,7 +86,9 @@ public class TestSshServer {
   }
 
   public void stop() throws IOException {
-    if ( server != null ) server.stop( true );
+    if ( server != null ) {
+      server.stop( true );
+    }
   }
 
   static class EchoCommandFactory implements CommandFactory {
@@ -142,7 +144,9 @@ public class TestSshServer {
           out.write( result.getBytes( StandardCharsets.UTF_8 ) );
           out.flush();
         }
-        if ( callback != null ) callback.onExit( 0 );
+        if ( callback != null ) {
+          callback.onExit( 0 );
+        }
       } catch ( IOException e ) {
         try {
           if ( err != null ) {
@@ -151,7 +155,9 @@ public class TestSshServer {
           }
         } catch ( IOException ignored ) {
         }
-        if ( callback != null ) callback.onExit( 1 );
+        if ( callback != null ) {
+          callback.onExit( 1 );
+        }
       }
     }
   }
