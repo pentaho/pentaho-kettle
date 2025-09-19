@@ -159,7 +159,7 @@ public class MinaSshConnection implements SshConnection {
 
     try {
       KeyPairProvider keyPairProvider = null;
-      
+
       // Prefer in-memory key content over file path for security
       if ( config.getKeyContent() != null ) {
         keyPairProvider = createInMemoryKeyProvider( config.getKeyContent() );
@@ -177,7 +177,7 @@ public class MinaSshConnection implements SshConnection {
       if ( config.getPassphrase() != null && !config.getPassphrase().trim().isEmpty() ) {
         String passphrase = config.getPassphrase();
         if ( keyPairProvider instanceof FileKeyPairProvider ) {
-          ((FileKeyPairProvider) keyPairProvider).setPasswordFinder( ( session, resourceKey, retryIndex ) -> passphrase );
+          ((FileKeyPairProvider) keyPairProvider).setPasswordFinder( ( sessionResource, resourceKey, retryIndex ) -> passphrase );
         }
         // For in-memory provider, passphrase is handled during key parsing
       }
@@ -271,14 +271,14 @@ public class MinaSshConnection implements SshConnection {
    * Creates an in-memory key provider from key content bytes.
    * This avoids writing sensitive key data to the filesystem.
    */
-  private KeyPairProvider createInMemoryKeyProvider( byte[] keyContent ) throws IOException {
+  private KeyPairProvider createInMemoryKeyProvider( byte[] keyContent ) {
     return new AbstractKeyPairProvider() {
       @Override
       public Iterable<KeyPair> loadKeys( SessionContext session ) throws IOException {
         try {
           // Use SecurityUtils to parse the key content directly from input stream
           java.io.ByteArrayInputStream keyStream = new java.io.ByteArrayInputStream( keyContent );
-          return SecurityUtils.loadKeyPairIdentities( session, null, 
+          return SecurityUtils.loadKeyPairIdentities( session, null,
               keyStream, ( s, r, i ) -> config.getPassphrase() );
         } catch ( Exception e ) {
           throw new IOException( "Failed to parse SSH key content", e );
