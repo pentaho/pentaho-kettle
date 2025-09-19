@@ -13,10 +13,11 @@
 
 package org.pentaho.di.trans.steps.ssh;
 
-import java.io.CharArrayWriter;
 import java.io.InputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.bowl.Bowl;
@@ -37,6 +38,8 @@ import org.pentaho.di.trans.step.BaseStepData;
  *
  */
 public class SSHData extends BaseStepData {
+
+  private static final Class<?> PKG = SSHMeta.class; // for i18n purposes
 
   private SshConnection sshConnection;
   private boolean connected;
@@ -103,8 +106,7 @@ public class SSHData extends BaseStepData {
   /**
    * Connection method using our SSH abstraction layer.
    * Provides modern SSH implementation with Ed25519 support and algorithm flexibility.
-   * 
-   * @param preferredImplementation SSH implementation to prefer (null for auto-detect)
+   * Supports all the parameters from the original implementation including proxy settings.
    */
   public static SshConnection openSshConnection(
       Bowl bowl, String server, int port, String username, String password,
@@ -112,6 +114,9 @@ public class SSHData extends BaseStepData {
       VariableSpace space, String proxyhost, int proxyport,
       String proxyusername, String proxypassword ) throws KettleException {
 
+    SshConnection connection = null;
+    Path tempKeyFile = null;
+    
     try {
       // Build SSH configuration
       SshConfig config = SshConfig.create()
@@ -120,9 +125,30 @@ public class SSHData extends BaseStepData {
           .username( username )
           .connectTimeoutMillis( timeOut > 0 ? timeOut * 1000 : 30000 ); // Default 30 seconds
 
-      if ( useKey && !Utils.isEmpty( keyFilename ) ) {
+      // Configure authentication
+      if ( useKey ) {
+        if ( Utils.isEmpty( keyFilename ) ) {
+          throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyFileMissing" ) );
+        }
+        
+        FileObject keyFileObject = KettleVFS.getInstance( bowl ).getFileObject( keyFilename );
+        if ( !keyFileObject.exists() ) {
+          throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
+        }
+
+        // Read key file content and write to temporary file for SSH library
+        FileContent keyFileContent = keyFileObject.getContent();
+        byte[] keyBytes = new byte[(int) keyFileContent.getSize()];
+        try ( InputStream in = keyFileContent.getInputStream() ) {
+          in.read( keyBytes );
+        }
+        
+        // Create temporary key file
+        tempKeyFile = Files.createTempFile( "ssh_key_", ".pem" );
+        Files.write( tempKeyFile, keyBytes );
+        
         config.authType( SshConfig.AuthType.PUBLIC_KEY )
-              .keyPath( java.nio.file.Paths.get( space.environmentSubstitute( keyFilename ) ) );
+              .keyPath( tempKeyFile );
         if ( !Utils.isEmpty( passPhrase ) ) {
           config.passphrase( space.environmentSubstitute( passPhrase ) );
         }
@@ -131,17 +157,35 @@ public class SSHData extends BaseStepData {
               .password( password );
       }
 
-      // TODO Change the way this works so that the connection is not passed as open
-      // TODO  to fix:
-      // TODO Use try-with-resources or close this "SshConnection" in a "finally" clause.
-      // TODO Resources should be closedjava:S2095
+      // Configure proxy if specified
+      if ( !Utils.isEmpty( proxyhost ) ) {
+        config.proxy( proxyhost, proxyport );
+        if ( !Utils.isEmpty( proxyusername ) ) {
+          config.proxyAuth( proxyusername, proxypassword );
+        }
+      }
 
-      SshConnection connection = SshConnectionFactory.defaultFactory().open( config );
+      // Create and connect
+      connection = SshConnectionFactory.defaultFactory().open( config );
+      connection.connect();
+      
       return connection;
 
     } catch ( Exception e ) {
-      // Re-throw as KettleException to maintain API contract
-      throw new KettleException( "SSH connection failed: " + e.getMessage(), e );
+      // Something wrong happened - clean up and re-throw
+      if ( connection != null ) {
+        connection.close();
+      }
+      throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.ErrorConnecting", server, username ), e );
+    } finally {
+      // Clean up temporary key file
+      if ( tempKeyFile != null ) {
+        try {
+          Files.deleteIfExists( tempKeyFile );
+        } catch ( IOException e ) {
+          // Log but don't fail - cleanup is best effort
+        }
+      }
     }
   }
 }

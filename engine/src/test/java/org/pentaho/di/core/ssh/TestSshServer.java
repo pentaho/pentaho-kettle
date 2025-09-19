@@ -6,10 +6,12 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.PublicKey;
 import java.util.List;
 
 import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.common.session.SessionContext;
+import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.SshServer;
@@ -21,6 +23,8 @@ import org.apache.sshd.sftp.server.SftpSubsystemFactory;
 public class TestSshServer {
   private SshServer server;
   private int assignedPort;
+  private KeyPair serverKeyPair;
+  private PublicKey authorizedKey; // The public key that will be accepted for authentication
 
   public void start( int port ) throws Exception {
     server = SshServer.setUpDefaultServer();
@@ -33,6 +37,7 @@ public class TestSshServer {
           KeyPairGenerator kpg = KeyPairGenerator.getInstance( "RSA" );
           kpg.initialize( 2048 );
           pair = kpg.generateKeyPair();
+          serverKeyPair = pair; // Store for testing
         }
         return pair;
       }
@@ -46,8 +51,22 @@ public class TestSshServer {
         }
       }
     } );
+    
+    // Set up password authentication
     server.setPasswordAuthenticator( ( username, password, session ) -> "test".equals( username ) && "test".equals(
       password ) );
+      
+    // Set up public key authentication - accept any key for "test" user by default
+    // This can be overridden by calling setAuthorizedKey()
+    server.setPublickeyAuthenticator( ( username, key, session ) -> {
+      if ( !"test".equals( username ) ) {
+        return false;
+      }
+      if ( authorizedKey == null ) {
+        return true; // Accept any key for testing by default
+      }
+      return KeyUtils.compareKeys( key, authorizedKey );
+    } );
     server.setSubsystemFactories( List.of( new SftpSubsystemFactory() ) );
     server.setCommandFactory( new EchoCommandFactory() );
     server.start();
@@ -56,6 +75,14 @@ public class TestSshServer {
 
   public int getAssignedPort() {
     return assignedPort;
+  }
+
+  public KeyPair getServerKeyPair() {
+    return serverKeyPair;
+  }
+
+  public void setAuthorizedKey( PublicKey key ) {
+    this.authorizedKey = key;
   }
 
   public void stop() throws IOException {
