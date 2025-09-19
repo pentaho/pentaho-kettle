@@ -40,6 +40,7 @@ import org.pentaho.di.core.ssh.SshConfig;
 import org.pentaho.di.core.ssh.SshConnection;
 import org.pentaho.di.core.ssh.SshConnectionFactory;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 @RunWith( MockitoJUnitRunner.class )
@@ -55,6 +56,8 @@ public class SSHDataTest {
   private FileContent fileContent;
   @Mock
   private VariableSpace variableSpace;
+  @Mock
+  private IKettleVFS mockKettleVFS;
 
   private MockedStatic<SshConnectionFactory> factoryMockedStatic;
   private MockedStatic<KettleVFS> kettleVFSMockedStatic;
@@ -80,8 +83,8 @@ public class SSHDataTest {
 
     // Mock KettleVFS for key file operations
     kettleVFSMockedStatic = mockStatic( KettleVFS.class );
-    kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any() ) ).thenReturn( null );
-    kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any() ).getFileObject( keyFilePath ) ).thenReturn( fileObject );
+    kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any() ) ).thenReturn( mockKettleVFS );
+    when( mockKettleVFS.getFileObject( keyFilePath ) ).thenReturn( fileObject );
   }
 
   @After
@@ -124,9 +127,7 @@ public class SSHDataTest {
     // Test successful key authentication
     when( fileObject.exists() ).thenReturn( true );
     when( fileObject.getContent() ).thenReturn( fileContent );
-    when( fileContent.getSize() ).thenReturn( 1000L );
     when( fileContent.getInputStream() ).thenReturn( new ByteArrayInputStream( new byte[] { 1, 2, 3, 4, 5 } ) );
-    when( variableSpace.environmentSubstitute( keyFilePath ) ).thenReturn( keyFilePath );
     when( variableSpace.environmentSubstitute( passPhrase ) ).thenReturn( passPhrase );
 
     SshConnectionParameters params = SshConnectionParameters.builder()
@@ -249,7 +250,6 @@ public class SSHDataTest {
     // Setup key file and passphrase
     when( fileObject.exists() ).thenReturn( true );
     when( fileObject.getContent() ).thenReturn( fileContent );
-    when( fileContent.getSize() ).thenReturn( 1000L );
     when( fileContent.getInputStream() ).thenReturn( new ByteArrayInputStream( "fake-key-content".getBytes() ) );
     when( variableSpace.environmentSubstitute( passPhrase ) ).thenReturn( passPhrase );
 
@@ -280,7 +280,6 @@ public class SSHDataTest {
     // Test key authentication without passphrase
     when( fileObject.exists() ).thenReturn( true );
     when( fileObject.getContent() ).thenReturn( fileContent );
-    when( fileContent.getSize() ).thenReturn( 2048L );
     when( fileContent.getInputStream() ).thenReturn( new ByteArrayInputStream( "ssh-rsa AAAAB3...".getBytes() ) );
 
     SshConnectionParameters params = SshConnectionParameters.builder()
@@ -402,7 +401,6 @@ public class SSHDataTest {
     // Test key authentication with proxy and passphrase
     when( fileObject.exists() ).thenReturn( true );
     when( fileObject.getContent() ).thenReturn( fileContent );
-    when( fileContent.getSize() ).thenReturn( 2048L );
     when( fileContent.getInputStream() ).thenReturn( new ByteArrayInputStream( "ssh-rsa AAAAB3...".getBytes() ) );
     when( variableSpace.environmentSubstitute( passPhrase ) ).thenReturn( passPhrase );
 
