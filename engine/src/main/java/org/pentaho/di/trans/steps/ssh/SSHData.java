@@ -142,37 +142,6 @@ public class SSHData extends BaseStepData {
   }
 
   /**
-   * @deprecated Use {@link #openSshConnection(SshConnectionParameters)} instead.
-   * This method is maintained for backward compatibility.
-   */
-  @Deprecated
-  public static SshConnection openSshConnection(
-      Bowl bowl, String server, int port, String username, String password,
-      boolean useKey, String keyFilename, String passPhrase, int timeOut,
-      VariableSpace space, String proxyhost, int proxyport,
-      String proxyusername, String proxypassword ) throws KettleException {
-
-    SshConnectionParameters params = SshConnectionParameters.builder()
-        .bowl( bowl )
-        .server( server )
-        .port( port )
-        .username( username )
-        .password( password )
-        .useKey( useKey )
-        .keyFilename( keyFilename )
-        .passPhrase( passPhrase )
-        .timeOut( timeOut )
-        .space( space )
-        .proxyhost( proxyhost )
-        .proxyport( proxyport )
-        .proxyusername( proxyusername )
-        .proxypassword( proxypassword )
-        .build();
-
-    return openSshConnection( params );
-  }
-
-  /**
    * Configures authentication for the SSH connection using secure in-memory approach.
    */
   private static void configureAuthentication( SshConfig config, Bowl bowl, boolean useKey,
