@@ -30,8 +30,6 @@ import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
 import org.apache.sshd.common.session.SessionHeartbeatController;
 import org.apache.sshd.sftp.client.SftpClientFactory;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.ssh.ExecResult;
 import org.pentaho.di.core.ssh.SftpSession;
 import org.pentaho.di.core.ssh.SshConfig;
@@ -47,32 +45,9 @@ public class MinaSshConnection implements SshConnection {
   private ClientSession session;
 
   private final SshConfig config;
-  private final LogChannelInterface log;
 
   public MinaSshConnection( SshConfig config ) {
     this.config = config;
-    this.log = new LogChannel( "MinaSshConnection" );
-  }
-
-  public MinaSshConnection( SshConfig config, LogChannelInterface log ) {
-    this.config = config;
-    this.log = log != null ? log : new LogChannel( "MinaSshConnection" );
-  }
-
-  private void logInfo( String message ) {
-    log.logBasic( message );
-  }
-
-  private void logDebug( String message ) {
-    log.logDebug( message );
-  }
-
-  private void logError( String message, Throwable t ) {
-    if ( t != null ) {
-      log.logError( message, t );
-    } else {
-      log.logError( message );
-    }
   }
 
   @Override
@@ -81,7 +56,6 @@ public class MinaSshConnection implements SshConnection {
       return;
     }
 
-    logConnectionStart();
     setupSshClient();
     ConnectFuture connectFuture = createConnection();
     waitForConnection( connectFuture );
@@ -90,35 +64,22 @@ public class MinaSshConnection implements SshConnection {
     configureSessionHeartbeat();
   }
 
-  private void logConnectionStart() {
-    logInfo( "MinaSshConnection: Starting connection to " + config.getHost() + ":" + config.getPort() );
-    logInfo( "MinaSshConnection: Auth type: " + config.getAuthType() + ", Username: " + config.getUsername() );
-    logInfo( "MinaSshConnection: Connect timeout: " + config.getConnectTimeoutMillis() + "ms" );
-  }
-
   private void setupSshClient() {
     client = SshClient.setUpDefaultClient();
 
     // Disable strict host key checking to avoid key exchange issues
     client.setServerKeyVerifier( ( clientSession, remoteAddress, serverKey ) -> {
-      logDebug( "MinaSshConnection: Host key verifier called for " + remoteAddress + ", accepting key" );
       return true;
     } );
 
-    logDebug( "MinaSshConnection: Starting SSH client..." );
     client.start();
-    logDebug( "MinaSshConnection: SSH client started successfully" );
   }
 
   private ConnectFuture createConnection() throws SshConnectionException {
-    logInfo( "MinaSshConnection: Attempting connection..." );
-
     try {
       ConnectFuture cf = client.connect( config.getUsername(), config.getHost(), config.getPort() );
-      logDebug( "MinaSshConnection: Connection future created, waiting for completion..." );
       return cf;
     } catch ( Exception e ) {
-      logError( "MinaSshConnection: Failed to create connection: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e );
       throw new SshConnectionException( "Failed to create SSH connection", e );
     }
   }
@@ -133,35 +94,28 @@ public class MinaSshConnection implements SshConnection {
       throw new SshConnectionException( "SSH connection failed during await", e );
     }
 
-    logDebug( "MinaSshConnection: Connection await completed, connected: " + connected );
 
     if ( !connected ) {
-      logError( "MinaSshConnection: Connection timed out after " + extendedTimeout + "ms", null );
       throw new SshTimeoutException( "SSH connection timed out after " + extendedTimeout + "ms" );
     }
 
     if ( !cf.isConnected() ) {
       Throwable cause = cf.getException();
-      logError( "MinaSshConnection: Connection failed, exception: " + ( cause != null ? cause.getClass().getSimpleName() + ": " + cause.getMessage() : "null" ), cause );
       throw new SshConnectionException( "SSH connection failed", cause );
     }
   }
 
   private ClientSession establishSession( ConnectFuture cf ) throws SshConnectionException {
-    logInfo( "MinaSshConnection: Connection established successfully" );
     ClientSession s = cf.getSession();
 
     if ( s == null ) {
-      logError( "MinaSshConnection: Session is null after connection", null );
       throw new SshConnectionException( "SSH connection failed - session is null" );
     }
 
-    logDebug( "MinaSshConnection: Session obtained: " + s.getClass().getSimpleName() );
     return s;
   }
 
   private void authenticateSession() throws SshConnectionException {
-    logInfo( "MinaSshConnection: Attempting authentication..." );
     boolean authed = tryPublicKeyAuthentication();
 
     if ( !authed ) {
@@ -169,11 +123,8 @@ public class MinaSshConnection implements SshConnection {
     }
 
     if ( !authed ) {
-      logError( "MinaSshConnection: Authentication failed - no valid auth method succeeded", null );
       throw new SshAuthenticationException( "SSH authentication failed" );
     }
-
-    logInfo( "MinaSshConnection: Successfully authenticated and connected!" );
   }
 
   private boolean tryPublicKeyAuthentication() throws SshAuthenticationException {
@@ -202,11 +153,9 @@ public class MinaSshConnection implements SshConnection {
       return false;
     }
 
-    logDebug( "MinaSshConnection: Trying password authentication..." );
     try {
       session.addPasswordIdentity( config.getPassword() );
       boolean authed = session.auth().verify( config.getConnectTimeoutMillis() ).isSuccess();
-      logDebug( "MinaSshConnection: Password authentication result: " + authed );
       return authed;
     } catch ( IOException e ) {
       throw new SshAuthenticationException( "Password authentication failed", e );

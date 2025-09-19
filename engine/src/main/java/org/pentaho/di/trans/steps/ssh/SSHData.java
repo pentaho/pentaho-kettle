@@ -13,15 +13,22 @@
 
 package org.pentaho.di.trans.steps.ssh;
 
+import java.io.CharArrayWriter;
+import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs2.FileContent;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.ssh.SshConfig;
 import org.pentaho.di.core.ssh.SshConnection;
 import org.pentaho.di.core.ssh.SshConnectionFactory;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
 
 /**
@@ -30,10 +37,10 @@ import org.pentaho.di.trans.step.BaseStepData;
  *
  */
 public class SSHData extends BaseStepData {
-  
+
   private SshConnection sshConnection;
   private boolean connected;
-  
+
   public int indexOfCommand;
   public boolean wroteOneRow;
   public String commands;
@@ -98,13 +105,12 @@ public class SSHData extends BaseStepData {
    * Provides modern SSH implementation with Ed25519 support and algorithm flexibility.
    * 
    * @param preferredImplementation SSH implementation to prefer (null for auto-detect)
-   * @param log Optional log channel for warnings and debug info
    */
   public static SshConnection openSshConnection(
       Bowl bowl, String server, int port, String username, String password,
       boolean useKey, String keyFilename, String passPhrase, int timeOut,
       VariableSpace space, String proxyhost, int proxyport,
-      String proxyusername, String proxypassword, LogChannelInterface log ) throws KettleException {
+      String proxyusername, String proxypassword ) throws KettleException {
 
     try {
       // Build SSH configuration
@@ -125,28 +131,15 @@ public class SSHData extends BaseStepData {
               .password( password );
       }
 
-      // Set preferred implementation or let factory decide
-      if ( log != null && log.isDebug() ) {
-        log.logDebug( "Creating SSH connection using modern abstraction layer to " + server + ":" + port );
-        log.logDebug( "SSH Config - Auth type: " + config.getAuthType()
-                    + ", Connect timeout: " + config.getConnectTimeoutMillis() + "ms"
-                    + ", Command timeout: " + config.getCommandTimeoutMillis() + "ms" );
-      }
+      // TODO Change the way this works so that the connection is not passed as open
+      // TODO  to fix:
+      // TODO Use try-with-resources or close this "SshConnection" in a "finally" clause.
+      // TODO Resources should be closedjava:S2095
 
-      SshConnection connection = SshConnectionFactory.defaultFactory().open( config, log );
-      if ( log != null && log.isDebug() ) {
-        log.logDebug( "Successfully created SSH connection object, type: " + connection.getClass().getSimpleName() );
-      }
+      SshConnection connection = SshConnectionFactory.defaultFactory().open( config );
       return connection;
 
     } catch ( Exception e ) {
-      // Log the exception details for debugging
-      if ( log != null ) {
-        log.logError( "Failed to create SSH connection to " + server + ":" + port
-                    + " - Exception: " + e.getClass().getSimpleName() + ": " + e.getMessage() );
-        log.logError( "Full stack trace for SSH connection failure:", e );
-      }
-
       // Re-throw as KettleException to maintain API contract
       throw new KettleException( "SSH connection failed: " + e.getMessage(), e );
     }

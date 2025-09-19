@@ -12,26 +12,17 @@
 
 package org.pentaho.di.core.ssh;
 
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.ssh.exceptions.SshConnectionException;
 import org.pentaho.di.core.ssh.mina.MinaSshConnection;
 
 public interface SshConnectionFactory {
   SshConnection open( SshConfig config ) throws SshConnectionException;
 
-  SshConnection open( SshConfig config, LogChannelInterface log ) throws SshConnectionException;
-
   static SshConnectionFactory defaultFactory() {
     return new SshConnectionFactory() {
       @Override
       public SshConnection open( SshConfig config ) throws SshConnectionException {
-        return open( config, null );
-      }
-
-      @Override
-      public SshConnection open( SshConfig config, LogChannelInterface log ) throws SshConnectionException {
-        // Always use MINA implementation since it's the only one supported
-        return log != null ? new MinaSshConnection( config, log ) : new MinaSshConnection( config );
+        return new MinaSshConnection( config );
       }
     };
   }

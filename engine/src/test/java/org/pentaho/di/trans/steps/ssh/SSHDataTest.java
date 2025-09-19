@@ -22,7 +22,6 @@ import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.ssh.SshConnection;
 import org.pentaho.di.core.ssh.SshConnectionFactory;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -46,7 +45,6 @@ public class SSHDataTest {
   FileContent fileContent;
 
   VariableSpace variableSpace;
-  LogChannelInterface logChannel;
 
   MockedStatic<SshConnectionFactory> sshConnectionFactoryMockedStatic;
   MockedStatic<KettleVFS> kettleVFSMockedStatic;
@@ -68,7 +66,6 @@ public class SSHDataTest {
     fileObject = mock( FileObject.class );
     fileContent = mock( FileContent.class );
     variableSpace = mock( VariableSpace.class );
-    logChannel = mock( LogChannelInterface.class );
     mockFactory = mock( SshConnectionFactory.class );
 
     sshConnectionFactoryMockedStatic = mockStatic( SshConnectionFactory.class );
@@ -78,7 +75,7 @@ public class SSHDataTest {
     sshConnectionFactoryMockedStatic.when( SshConnectionFactory::defaultFactory ).thenReturn( mockFactory );
 
     // Mock the factory to return our mock SSH connection
-    when( mockFactory.open( any(), any() ) ).thenReturn( sshConnection );
+    when( mockFactory.open( any() ) ).thenReturn( sshConnection );
 
     IKettleVFS ikettleVFS = mock( IKettleVFS.class );
     when( ikettleVFS.getFileObject( keyFilePath ) ).thenReturn( fileObject );
@@ -95,7 +92,7 @@ public class SSHDataTest {
   public void testOpenSshConnection_Password() throws Exception {
     // Test successful password authentication
     SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
-      null, 0, null, null, 0, null, null, logChannel );
+      null, 0, null, null, 0, null, null );
     assertNotNull( "Should return a valid connection adapter", result );
   }
 
@@ -104,7 +101,7 @@ public class SSHDataTest {
     // Test with key file that doesn't exist
     when( fileObject.exists() ).thenReturn( false );
     SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, null, null, true, keyFilePath,
-      null, 0, null, null, 0, null, null, logChannel );
+      null, 0, null, null, 0, null, null );
   }
 
   @Test
@@ -118,7 +115,7 @@ public class SSHDataTest {
     when( variableSpace.environmentSubstitute( passPhrase ) ).thenReturn( passPhrase );
 
     SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, null, true, keyFilePath,
-      passPhrase, 0, variableSpace, null, 0, null, null, logChannel );
+      passPhrase, 0, variableSpace, null, 0, null, null );
     assertNotNull( "Should return a valid SSH connection", result );
   }
 
@@ -126,7 +123,7 @@ public class SSHDataTest {
   public void testOpenSshConnection_WithProxy() throws Exception {
     // Test connection with proxy settings
     SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
-      null, 0, null, proxyHost, proxyPort, proxyUsername, proxyPassword, logChannel );
+      null, 0, null, proxyHost, proxyPort, proxyUsername, proxyPassword );
     assertNotNull( "Should return a valid SSH connection", result );
   }
 
@@ -134,7 +131,7 @@ public class SSHDataTest {
   public void testOpenSshConnection_WithTimeout() throws Exception {
     // Test connection with custom timeout
     SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
-      null, 100, null, null, 0, null, null, logChannel );
+      null, 100, null, null, 0, null, null );
     assertNotNull( "Should return a valid SSH connection", result );
   }
 

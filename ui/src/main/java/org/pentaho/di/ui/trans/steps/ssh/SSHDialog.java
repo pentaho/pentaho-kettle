@@ -852,11 +852,11 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     try ( SshConnection conn = SSHData.openSshConnection( transMeta.getBowl(),
           servername, nrPort, username, password, wUseKey.getSelection(), keyFilename, passphrase, timeOut,
-          transMeta, proxyhost, proxyport, proxyusername, proxypassword, log ) ) {
+          transMeta, proxyhost, proxyport, proxyusername, proxypassword ) ) {
 
-        // Actually test the connection by connecting
-        conn.connect();
-        testOK = true;
+      // Actually test the connection by connecting
+      conn.connect();
+      testOK = true;
 
     } catch ( Exception e ) {
       errMsg = e.getMessage();
