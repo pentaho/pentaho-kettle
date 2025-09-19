@@ -14,9 +14,6 @@
 package org.pentaho.di.trans.steps.ssh;
 
 import java.io.InputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
@@ -107,11 +104,11 @@ public class SSHData extends BaseStepData {
    * Connection method using our SSH abstraction layer.
    * Provides modern SSH implementation with Ed25519 support and algorithm flexibility.
    * Supports all the parameters from the original implementation including proxy settings.
+   * Uses secure in-memory key handling to avoid filesystem security risks.
    */
   public static SshConnection openSshConnection( SshConnectionParameters params ) throws KettleException {
 
     SshConnection connection = null;
-    Path tempKeyFile = null;
 
     try {
       // Build basic SSH configuration
@@ -121,8 +118,8 @@ public class SSHData extends BaseStepData {
           .username( params.getUsername() )
           .connectTimeoutMillis( params.getTimeOut() > 0 ? params.getTimeOut() * 1000 : 30000 ); // Default 30 seconds
 
-      // Configure authentication
-      tempKeyFile = configureAuthentication( config, params.getBowl(), params.isUseKey(),
+      // Configure authentication - now uses secure in-memory approach
+      configureAuthentication( config, params.getBowl(), params.isUseKey(),
           params.getKeyFilename(), params.getPassPhrase(), params.getPassword(), params.getSpace() );
 
       // Configure proxy if specified
@@ -141,9 +138,6 @@ public class SSHData extends BaseStepData {
         connection.close();
       }
       throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ErrorConnecting", params.getServer(), params.getUsername() ), e );
-    } finally {
-      // Clean up temporary key file
-      cleanupTempKeyFile( tempKeyFile );
     }
   }
 
@@ -179,27 +173,23 @@ public class SSHData extends BaseStepData {
   }
 
   /**
-   * Configures authentication for the SSH connection.
-   * 
-   * @return the temporary key file path if created, null otherwise
+   * Configures authentication for the SSH connection using secure in-memory approach.
    */
-  private static Path configureAuthentication( SshConfig config, Bowl bowl, boolean useKey,
+  private static void configureAuthentication( SshConfig config, Bowl bowl, boolean useKey,
       String keyFilename, String passPhrase, String password, VariableSpace space ) throws KettleException {
 
     if ( useKey ) {
-      return configureKeyAuthentication( config, bowl, keyFilename, passPhrase, space );
+      configureKeyAuthentication( config, bowl, keyFilename, passPhrase, space );
     } else {
       config.authType( SshConfig.AuthType.PASSWORD ).password( password );
-      return null;
     }
   }
 
   /**
-   * Configures key-based authentication and creates temporary key file.
-   * 
-   * @return the temporary key file path
+   * Configures key-based authentication using secure in-memory key handling.
+   * This avoids writing sensitive key data to temporary files on the filesystem.
    */
-  private static Path configureKeyAuthentication( SshConfig config, Bowl bowl,
+  private static void configureKeyAuthentication( SshConfig config, Bowl bowl,
       String keyFilename, String passPhrase, VariableSpace space ) throws KettleException {
 
     if ( Utils.isEmpty( keyFilename ) ) {
@@ -212,28 +202,22 @@ public class SSHData extends BaseStepData {
         throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
       }
 
-      // Read key file content and write to temporary file for SSH library
+      // Read key file content into memory - no temporary file needed
       FileContent keyFileContent = keyFileObject.getContent();
       byte[] keyBytes;
       try ( InputStream in = keyFileContent.getInputStream() ) {
-        // Read all available bytes from the stream
         keyBytes = in.readAllBytes();
         if ( keyBytes.length == 0 ) {
           throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ProcessingKeyFile", keyFilename ) );
         }
       }
 
-      // Create temporary key file
-      Path tempKeyFile = Files.createTempFile( "ssh_key_", ".pem" );
-      Files.write( tempKeyFile, keyBytes );
-
-      config.authType( SshConfig.AuthType.PUBLIC_KEY ).keyPath( tempKeyFile );
+      // Configure SSH with in-memory key content - secure approach
+      config.authType( SshConfig.AuthType.PUBLIC_KEY ).keyContent( keyBytes );
 
       if ( !Utils.isEmpty( passPhrase ) ) {
         config.passphrase( space.environmentSubstitute( passPhrase ) );
       }
-
-      return tempKeyFile;
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ProcessingKeyFile", keyFilename ), e );
@@ -250,19 +234,6 @@ public class SSHData extends BaseStepData {
       config.proxy( proxyhost, proxyport );
       if ( !Utils.isEmpty( proxyusername ) ) {
         config.proxyAuth( proxyusername, proxypassword );
-      }
-    }
-  }
-
-  /**
-   * Cleans up the temporary key file.
-   */
-  private static void cleanupTempKeyFile( Path tempKeyFile ) {
-    if ( tempKeyFile != null ) {
-      try {
-        Files.deleteIfExists( tempKeyFile );
-      } catch ( IOException e ) {
-        // Log but don't fail - cleanup is best effort
       }
     }
   }

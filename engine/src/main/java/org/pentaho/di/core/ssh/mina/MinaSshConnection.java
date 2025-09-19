@@ -28,8 +28,12 @@ import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.config.hosts.HostConfigEntry;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
+import org.apache.sshd.common.keyprovider.AbstractKeyPairProvider;
 import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
+import org.apache.sshd.common.keyprovider.KeyPairProvider;
+import org.apache.sshd.common.session.SessionContext;
 import org.apache.sshd.common.session.SessionHeartbeatController;
+import org.apache.sshd.common.util.security.SecurityUtils;
 import org.apache.sshd.sftp.client.SftpClientFactory;
 import org.pentaho.di.core.ssh.ExecResult;
 import org.pentaho.di.core.ssh.SftpSession;
@@ -149,29 +153,41 @@ public class MinaSshConnection implements SshConnection {
   }
 
   private boolean tryPublicKeyAuthentication() throws SshAuthenticationException {
-    if ( config.getAuthType() != SshConfig.AuthType.PUBLIC_KEY || config.getKeyPath() == null ) {
-      return false;
-    }
-
-    Path key = config.getKeyPath();
-    if ( !Files.exists( key ) ) {
+    if ( config.getAuthType() != SshConfig.AuthType.PUBLIC_KEY ) {
       return false;
     }
 
     try {
-      FileKeyPairProvider prov = new FileKeyPairProvider( List.of( key ) );
+      KeyPairProvider keyPairProvider = null;
+      
+      // Prefer in-memory key content over file path for security
+      if ( config.getKeyContent() != null ) {
+        keyPairProvider = createInMemoryKeyProvider( config.getKeyContent() );
+      } else if ( config.getKeyPath() != null ) {
+        Path key = config.getKeyPath();
+        if ( !Files.exists( key ) ) {
+          return false;
+        }
+        keyPairProvider = new FileKeyPairProvider( List.of( key ) );
+      } else {
+        return false;
+      }
 
       // Set passphrase if provided
       if ( config.getPassphrase() != null && !config.getPassphrase().trim().isEmpty() ) {
-        prov.setPasswordFinder( ( passwordSession, resourceKey, retryIndex ) -> config.getPassphrase() );
+        String passphrase = config.getPassphrase();
+        if ( keyPairProvider instanceof FileKeyPairProvider ) {
+          ((FileKeyPairProvider) keyPairProvider).setPasswordFinder( ( session, resourceKey, retryIndex ) -> passphrase );
+        }
+        // For in-memory provider, passphrase is handled during key parsing
       }
 
-      for ( KeyPair kp : prov.loadKeys( null ) ) {
+      for ( KeyPair kp : keyPairProvider.loadKeys( null ) ) {
         session.addPublicKeyIdentity( kp );
       }
       return session.auth().verify( config.getConnectTimeoutMillis() ).isSuccess();
-    } catch ( IOException e ) {
-      throw new SshAuthenticationException( "Failed to load SSH key: " + key, e );
+    } catch ( Exception e ) {
+      throw new SshAuthenticationException( "Failed to load SSH key", e );
     }
   }
 
@@ -249,6 +265,26 @@ public class MinaSshConnection implements SshConnection {
     } catch ( Exception e ) {
       throw new SftpException( "Failed to open SFTP session", e );
     }
+  }
+
+  /**
+   * Creates an in-memory key provider from key content bytes.
+   * This avoids writing sensitive key data to the filesystem.
+   */
+  private KeyPairProvider createInMemoryKeyProvider( byte[] keyContent ) throws IOException {
+    return new AbstractKeyPairProvider() {
+      @Override
+      public Iterable<KeyPair> loadKeys( SessionContext session ) throws IOException {
+        try {
+          // Use SecurityUtils to parse the key content directly from input stream
+          java.io.ByteArrayInputStream keyStream = new java.io.ByteArrayInputStream( keyContent );
+          return SecurityUtils.loadKeyPairIdentities( session, null, 
+              keyStream, ( s, r, i ) -> config.getPassphrase() );
+        } catch ( Exception e ) {
+          throw new IOException( "Failed to parse SSH key content", e );
+        }
+      }
+    };
   }
 
   @Override

@@ -25,6 +25,7 @@ public class SshConfig {
   private String password;
   private AuthType authType = AuthType.PASSWORD;
   private Path keyPath;
+  private byte[] keyContent;
   private String passphrase;
   private String proxyHost;
   private int proxyPort;
@@ -66,6 +67,13 @@ public class SshConfig {
 
   public SshConfig keyPath( Path k ) {
     this.keyPath = k;
+    this.keyContent = null; // Clear content when path is set
+    return this;
+  }
+
+  public SshConfig keyContent( byte[] content ) {
+    this.keyContent = content != null ? content.clone() : null;
+    this.keyPath = null; // Clear path when content is set
     return this;
   }
 
@@ -128,6 +136,10 @@ public class SshConfig {
 
   public Path getKeyPath() {
     return keyPath;
+  }
+
+  public byte[] getKeyContent() {
+    return keyContent != null ? keyContent.clone() : null;
   }
 
   public String getPassphrase() {

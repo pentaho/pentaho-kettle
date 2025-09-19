@@ -18,7 +18,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,76 +29,79 @@ import org.apache.commons.vfs2.FileObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.ssh.SshConfig;
 import org.pentaho.di.core.ssh.SshConnection;
 import org.pentaho.di.core.ssh.SshConnectionFactory;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 
-
+@RunWith( MockitoJUnitRunner.class )
 public class SSHDataTest {
 
-  SshConnection sshConnection;
-  SshConnectionFactory mockFactory;
+  @Mock
+  private SshConnectionFactory mockFactory;
+  @Mock
+  private SshConnection sshConnection;
+  @Mock
+  private FileObject fileObject;
+  @Mock
+  private FileContent fileContent;
+  @Mock
+  private VariableSpace variableSpace;
 
-  FileObject fileObject;
+  private MockedStatic<SshConnectionFactory> factoryMockedStatic;
+  private MockedStatic<KettleVFS> kettleVFSMockedStatic;
 
-  FileContent fileContent;
-
-  VariableSpace variableSpace;
-
-  MockedStatic<SshConnectionFactory> sshConnectionFactoryMockedStatic;
-  MockedStatic<KettleVFS> kettleVFSMockedStatic;
-
-  String server = "testServerUrl";
-  String keyFilePath = "keyFilePath";
-  String passPhrase = "passPhrase";
-  String username = "username";
-  String password = "password";
-  String proxyUsername = "proxyUsername";
-  String proxyPassword = "proxyPassword";
-  String proxyHost = "proxyHost";
-  int port = 22;
-  int proxyPort = 23;
+  // Test data
+  private static final String server = "localhost";
+  private static final int port = 22;
+  private static final String username = "testuser";
+  private static final String password = "testpass";
+  private static final String keyFilePath = "/path/to/key.pem";
+  private static final String passPhrase = "keypassphrase";
+  private static final String proxyHost = "proxy.example.com";
+  private static final int proxyPort = 8080;
+  private static final String proxyUsername = "proxyuser";
+  private static final String proxyPassword = "proxypass";
 
   @Before
-  public void setup() throws Exception {
-    sshConnection = mock( SshConnection.class );
-    fileObject = mock( FileObject.class );
-    fileContent = mock( FileContent.class );
-    variableSpace = mock( VariableSpace.class );
-    mockFactory = mock( SshConnectionFactory.class );
+  public void setUp() throws Exception {
+    // Mock the static factory
+    factoryMockedStatic = mockStatic( SshConnectionFactory.class );
+    factoryMockedStatic.when( SshConnectionFactory::defaultFactory ).thenReturn( mockFactory );
+    when( mockFactory.open( any( SshConfig.class ) ) ).thenReturn( sshConnection );
 
-    sshConnectionFactoryMockedStatic = mockStatic( SshConnectionFactory.class );
+    // Mock KettleVFS for key file operations
     kettleVFSMockedStatic = mockStatic( KettleVFS.class );
-
-    // Mock the static defaultFactory method to return our mock factory
-    sshConnectionFactoryMockedStatic.when( SshConnectionFactory::defaultFactory ).thenReturn( mockFactory );
-
-    // Mock the factory to return our mock SSH connection
-    when( mockFactory.open( any() ) ).thenReturn( sshConnection );
-
-    IKettleVFS ikettleVFS = mock( IKettleVFS.class );
-    when( ikettleVFS.getFileObject( keyFilePath ) ).thenReturn( fileObject );
-    when( KettleVFS.getInstance( any() ) ).thenReturn( ikettleVFS );
+    kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any() ) ).thenReturn( null );
+    kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any() ).getFileObject( keyFilePath ) ).thenReturn( fileObject );
   }
 
   @After
   public void tearDown() {
-    sshConnectionFactoryMockedStatic.close();
+    factoryMockedStatic.close();
     kettleVFSMockedStatic.close();
   }
 
   @Test
   public void testOpenSshConnection_Password() throws Exception {
     // Test successful password authentication
-    SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
-      null, 0, null, null, 0, null, null );
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .build();
+    SshConnection result = SSHData.openSshConnection( params );
     assertNotNull( "Should return a valid connection adapter", result );
   }
 
@@ -107,8 +109,14 @@ public class SSHDataTest {
   public void testOpenSshConnection_InvalidKey() throws Exception {
     // Test with key file that doesn't exist
     when( fileObject.exists() ).thenReturn( false );
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, null, null, true, keyFilePath,
-      null, 0, null, null, 0, null, null );
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .useKey( true )
+        .keyFilename( keyFilePath )
+        .build();
+    SSHData.openSshConnection( params );
   }
 
   @Test
@@ -121,40 +129,71 @@ public class SSHDataTest {
     when( variableSpace.environmentSubstitute( keyFilePath ) ).thenReturn( keyFilePath );
     when( variableSpace.environmentSubstitute( passPhrase ) ).thenReturn( passPhrase );
 
-    SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, null, true, keyFilePath,
-      passPhrase, 0, variableSpace, null, 0, null, null );
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .useKey( true )
+        .keyFilename( keyFilePath )
+        .passPhrase( passPhrase )
+        .space( variableSpace )
+        .build();
+    SshConnection result = SSHData.openSshConnection( params );
     assertNotNull( "Should return a valid SSH connection", result );
   }
 
   @Test
   public void testOpenSshConnection_WithProxy() throws Exception {
     // Test connection with proxy settings
-    SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
-      null, 0, null, proxyHost, proxyPort, proxyUsername, proxyPassword );
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .proxyhost( proxyHost )
+        .proxyport( proxyPort )
+        .proxyusername( proxyUsername )
+        .proxypassword( proxyPassword )
+        .build();
+    SshConnection result = SSHData.openSshConnection( params );
     assertNotNull( "Should return a valid SSH connection", result );
   }
 
   @Test
   public void testOpenSshConnection_WithTimeout() throws Exception {
     // Test connection with custom timeout
-    SshConnection result = SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, false, null,
-      null, 100, null, null, 0, null, null );
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .timeOut( 100 )
+        .build();
+    SshConnection result = SSHData.openSshConnection( params );
     assertNotNull( "Should return a valid SSH connection", result );
   }
-
-  // ================================
-  // ADDITIONAL COMPREHENSIVE TESTS
-  // ================================
 
   @Test
   public void testPasswordAuthentication_ConfigurationVerification() throws Exception {
     // Test that password authentication sets correct SshConfig values
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, 0, null, null, 0, null, null );
-    
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .build();
+    SSHData.openSshConnection( params );
+
     ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
     verify( mockFactory ).open( configCaptor.capture() );
-    
+
     SshConfig config = configCaptor.getValue();
     assertEquals( "Host should be set", server, config.getHost() );
     assertEquals( "Port should be set", port, config.getPort() );
@@ -166,25 +205,41 @@ public class SSHDataTest {
   @Test
   public void testPasswordAuthentication_WithCustomTimeout() throws Exception {
     int customTimeout = 60; // seconds
-    
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, customTimeout, null, null, 0, null, null );
-    
+
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .timeOut( customTimeout )
+        .build();
+    SSHData.openSshConnection( params );
+
     ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
     verify( mockFactory ).open( configCaptor.capture() );
-    
+
     SshConfig config = configCaptor.getValue();
     assertEquals( "Timeout should be set in milliseconds", customTimeout * 1000L, config.getConnectTimeoutMillis() );
   }
 
   @Test
   public void testPasswordAuthentication_DefaultTimeout() throws Exception {
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, 0, null, null, 0, null, null );
-    
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .timeOut( 0 )
+        .build();
+    SSHData.openSshConnection( params );
+
     ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
     verify( mockFactory ).open( configCaptor.capture() );
-    
+
     SshConfig config = configCaptor.getValue();
     assertEquals( "Should use default timeout of 30 seconds", 30000L, config.getConnectTimeoutMillis() );
   }
@@ -198,16 +253,26 @@ public class SSHDataTest {
     when( fileContent.getInputStream() ).thenReturn( new ByteArrayInputStream( "fake-key-content".getBytes() ) );
     when( variableSpace.environmentSubstitute( passPhrase ) ).thenReturn( passPhrase );
 
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, null, 
-        true, keyFilePath, passPhrase, 0, variableSpace, null, 0, null, null );
-    
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .useKey( true )
+        .keyFilename( keyFilePath )
+        .passPhrase( passPhrase )
+        .space( variableSpace )
+        .build();
+    SSHData.openSshConnection( params );
+
     ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
     verify( mockFactory ).open( configCaptor.capture() );
-    
+
     SshConfig config = configCaptor.getValue();
     assertEquals( "Auth type should be PUBLIC_KEY", SshConfig.AuthType.PUBLIC_KEY, config.getAuthType() );
     assertEquals( "Passphrase should be set", passPhrase, config.getPassphrase() );
-    assertNotNull( "Key path should be set", config.getKeyPath() );
+    assertNotNull( "Key content should be set", config.getKeyContent() );
+    assertNull( "Key path should be null (using secure in-memory approach)", config.getKeyPath() );
   }
 
   @Test
@@ -218,30 +283,53 @@ public class SSHDataTest {
     when( fileContent.getSize() ).thenReturn( 2048L );
     when( fileContent.getInputStream() ).thenReturn( new ByteArrayInputStream( "ssh-rsa AAAAB3...".getBytes() ) );
 
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, null, 
-        true, keyFilePath, null, 0, variableSpace, null, 0, null, null );
-    
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .useKey( true )
+        .keyFilename( keyFilePath )
+        .space( variableSpace )
+        .build();
+    SSHData.openSshConnection( params );
+
     ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
     verify( mockFactory ).open( configCaptor.capture() );
-    
+
     SshConfig config = configCaptor.getValue();
     assertEquals( "Auth type should be PUBLIC_KEY", SshConfig.AuthType.PUBLIC_KEY, config.getAuthType() );
     assertNull( "Passphrase should be null", config.getPassphrase() );
-    assertNotNull( "Key path should be set", config.getKeyPath() );
+    assertNotNull( "Key content should be set", config.getKeyContent() );
+    assertNull( "Key path should be null (using secure in-memory approach)", config.getKeyPath() );
   }
 
   @Test( expected = KettleException.class )
   public void testPublicKeyAuthentication_MissingKeyFile() throws Exception {
     // Test with empty key file path
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, null, 
-        true, "", null, 0, null, null, 0, null, null );
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .useKey( true )
+        .keyFilename( "" )
+        .build();
+    SSHData.openSshConnection( params );
   }
 
   @Test( expected = KettleException.class )
   public void testPublicKeyAuthentication_NullKeyFile() throws Exception {
     // Test with null key file path
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, null, 
-        true, null, null, 0, null, null, 0, null, null );
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .useKey( true )
+        .keyFilename( null )
+        .build();
+    SSHData.openSshConnection( params );
   }
 
   @Test( expected = KettleException.class )
@@ -250,18 +338,34 @@ public class SSHDataTest {
     when( fileObject.exists() ).thenReturn( true );
     when( fileObject.getContent() ).thenThrow( new RuntimeException( "VFS error accessing file" ) );
 
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, null, 
-        true, keyFilePath, null, 0, null, null, 0, null, null );
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .useKey( true )
+        .keyFilename( keyFilePath )
+        .build();
+    SSHData.openSshConnection( params );
   }
 
   @Test
   public void testProxyConfiguration_HostAndPort() throws Exception {
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, 0, null, proxyHost, proxyPort, null, null );
-    
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .proxyhost( proxyHost )
+        .proxyport( proxyPort )
+        .build();
+    SSHData.openSshConnection( params );
+
     ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
     verify( mockFactory ).open( configCaptor.capture() );
-    
+
     SshConfig config = configCaptor.getValue();
     assertEquals( "Proxy host should be set", proxyHost, config.getProxyHost() );
     assertEquals( "Proxy port should be set", proxyPort, config.getProxyPort() );
@@ -269,96 +373,24 @@ public class SSHDataTest {
 
   @Test
   public void testProxyConfiguration_WithAuthentication() throws Exception {
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, 0, null, proxyHost, proxyPort, proxyUsername, proxyPassword );
-    
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .proxyhost( proxyHost )
+        .proxyport( proxyPort )
+        .proxyusername( proxyUsername )
+        .proxypassword( proxyPassword )
+        .build();
+    SSHData.openSshConnection( params );
+
     ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
     verify( mockFactory ).open( configCaptor.capture() );
-    
+
     SshConfig config = configCaptor.getValue();
-    assertEquals( "Proxy host should be set", proxyHost, config.getProxyHost() );
-    assertEquals( "Proxy port should be set", proxyPort, config.getProxyPort() );
-    assertEquals( "Proxy username should be set", proxyUsername, config.getProxyUser() );
-    assertEquals( "Proxy password should be set", proxyPassword, config.getProxyPassword() );
-  }
-
-  @Test
-  public void testProxyConfiguration_PartialCredentials() throws Exception {
-    // Test with proxy username but no password
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, 0, null, proxyHost, proxyPort, proxyUsername, null );
-    
-    ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
-    verify( mockFactory ).open( configCaptor.capture() );
-    
-    SshConfig config = configCaptor.getValue();
-    assertEquals( "Proxy username should be set", proxyUsername, config.getProxyUser() );
-    assertNull( "Proxy password should be null", config.getProxyPassword() );
-  }
-
-  @Test
-  public void testProxyConfiguration_EmptyHost() throws Exception {
-    // Test with empty proxy host (should not configure proxy)
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, 0, null, "", proxyPort, proxyUsername, proxyPassword );
-    
-    ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
-    verify( mockFactory ).open( configCaptor.capture() );
-    
-    SshConfig config = configCaptor.getValue();
-    assertNull( "Proxy host should not be set for empty host", config.getProxyHost() );
-  }
-
-  @Test( expected = KettleException.class )
-  public void testConnectionFailure_FactoryThrowsException() throws Exception {
-    // Test when SSH factory throws exception
-    when( mockFactory.open( any() ) ).thenThrow( new RuntimeException( "Connection failed" ) );
-    
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, 0, null, null, 0, null, null );
-  }
-
-  @Test( expected = KettleException.class )
-  public void testConnectionFailure_ConnectThrowsException() throws Exception {
-    // Test when connection.connect() throws exception
-    doThrow( new RuntimeException( "Connect failed" ) ).when( sshConnection ).connect();
-    
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, 0, null, null, 0, null, null );
-  }
-
-  @Test
-  public void testConnectionCleanup_OnError() throws Exception {
-    // Test that connection is properly closed when an error occurs
-    doThrow( new RuntimeException( "Connect failed" ) ).when( sshConnection ).connect();
-    
-    try {
-      SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-          false, null, null, 0, null, null, 0, null, null );
-      fail( "Should have thrown KettleException" );
-    } catch ( KettleException e ) {
-      // Expected
-    }
-    
-    verify( sshConnection ).close();
-  }
-
-  @Test
-  public void testCompleteConfiguration_PasswordWithProxy() throws Exception {
-    // Test password authentication with full proxy configuration
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, password, 
-        false, null, null, 120, null, proxyHost, proxyPort, proxyUsername, proxyPassword );
-    
-    ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
-    verify( mockFactory ).open( configCaptor.capture() );
-    
-    SshConfig config = configCaptor.getValue();
-    assertEquals( "Host should be set", server, config.getHost() );
-    assertEquals( "Port should be set", port, config.getPort() );
-    assertEquals( "Username should be set", username, config.getUsername() );
-    assertEquals( "Password should be set", password, config.getPassword() );
-    assertEquals( "Auth type should be PASSWORD", SshConfig.AuthType.PASSWORD, config.getAuthType() );
-    assertEquals( "Timeout should be set", 120000L, config.getConnectTimeoutMillis() );
     assertEquals( "Proxy host should be set", proxyHost, config.getProxyHost() );
     assertEquals( "Proxy port should be set", proxyPort, config.getProxyPort() );
     assertEquals( "Proxy username should be set", proxyUsername, config.getProxyUser() );
@@ -374,15 +406,30 @@ public class SSHDataTest {
     when( fileContent.getInputStream() ).thenReturn( new ByteArrayInputStream( "ssh-rsa AAAAB3...".getBytes() ) );
     when( variableSpace.environmentSubstitute( passPhrase ) ).thenReturn( passPhrase );
 
-    SSHData.openSshConnection( DefaultBowl.getInstance(), server, port, username, null, 
-        true, keyFilePath, passPhrase, 90, variableSpace, proxyHost, proxyPort, proxyUsername, proxyPassword );
-    
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .useKey( true )
+        .keyFilename( keyFilePath )
+        .passPhrase( passPhrase )
+        .timeOut( 90 )
+        .space( variableSpace )
+        .proxyhost( proxyHost )
+        .proxyport( proxyPort )
+        .proxyusername( proxyUsername )
+        .proxypassword( proxyPassword )
+        .build();
+    SSHData.openSshConnection( params );
+
     ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
     verify( mockFactory ).open( configCaptor.capture() );
-    
+
     SshConfig config = configCaptor.getValue();
     assertEquals( "Auth type should be PUBLIC_KEY", SshConfig.AuthType.PUBLIC_KEY, config.getAuthType() );
-    assertNotNull( "Key path should be set", config.getKeyPath() );
+    assertNotNull( "Key content should be set", config.getKeyContent() );
+    assertNull( "Key path should be null (using secure in-memory approach)", config.getKeyPath() );
     assertEquals( "Passphrase should be set", passPhrase, config.getPassphrase() );
     assertEquals( "Timeout should be set", 90000L, config.getConnectTimeoutMillis() );
     assertEquals( "Proxy host should be set", proxyHost, config.getProxyHost() );
@@ -391,4 +438,58 @@ public class SSHDataTest {
     assertEquals( "Proxy password should be set", proxyPassword, config.getProxyPassword() );
   }
 
+  @Test( expected = KettleException.class )
+  public void testConnectionFailure_FactoryThrowsException() throws Exception {
+    // Test when SSH factory throws exception
+    when( mockFactory.open( any() ) ).thenThrow( new RuntimeException( "Connection failed" ) );
+
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .build();
+    SSHData.openSshConnection( params );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testConnectionFailure_ConnectThrowsException() throws Exception {
+    // Test when connection.connect() throws exception
+    doThrow( new RuntimeException( "Connect failed" ) ).when( sshConnection ).connect();
+
+    SshConnectionParameters params = SshConnectionParameters.builder()
+        .bowl( DefaultBowl.getInstance() )
+        .server( server )
+        .port( port )
+        .username( username )
+        .password( password )
+        .useKey( false )
+        .build();
+    SSHData.openSshConnection( params );
+  }
+
+  @Test
+  public void testConnectionCleanup_OnError() throws Exception {
+    // Test that connection is properly closed when an error occurs
+    doThrow( new RuntimeException( "Connect failed" ) ).when( sshConnection ).connect();
+
+    try {
+      SshConnectionParameters params = SshConnectionParameters.builder()
+          .bowl( DefaultBowl.getInstance() )
+          .server( server )
+          .port( port )
+          .username( username )
+          .password( password )
+          .useKey( false )
+          .build();
+      SSHData.openSshConnection( params );
+      fail( "Should have thrown KettleException" );
+    } catch ( KettleException e ) {
+      // Expected
+    }
+
+    verify( sshConnection ).close();
+  }
 }
