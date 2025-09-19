@@ -69,9 +69,7 @@ public class MinaSshConnection implements SshConnection {
     client = SshClient.setUpDefaultClient();
 
     // Disable strict host key checking to avoid key exchange issues
-    client.setServerKeyVerifier( ( clientSession, remoteAddress, serverKey ) -> {
-      return true;
-    } );
+    client.setServerKeyVerifier( ( clientSession, remoteAddress, serverKey ) -> true );
 
     client.start();
   }
@@ -165,7 +163,7 @@ public class MinaSshConnection implements SshConnection {
 
       // Set passphrase if provided
       if ( config.getPassphrase() != null && !config.getPassphrase().trim().isEmpty() ) {
-        prov.setPasswordFinder( ( session, resourceKey, retryIndex ) -> config.getPassphrase() );
+        prov.setPasswordFinder( ( passwordSession, resourceKey, retryIndex ) -> config.getPassphrase() );
       }
 
       for ( KeyPair kp : prov.loadKeys( null ) ) {
@@ -184,8 +182,7 @@ public class MinaSshConnection implements SshConnection {
 
     try {
       session.addPasswordIdentity( config.getPassword() );
-      boolean authed = session.auth().verify( config.getConnectTimeoutMillis() ).isSuccess();
-      return authed;
+      return session.auth().verify( config.getConnectTimeoutMillis() ).isSuccess();
     } catch ( IOException e ) {
       throw new SshAuthenticationException( "Password authentication failed", e );
     }

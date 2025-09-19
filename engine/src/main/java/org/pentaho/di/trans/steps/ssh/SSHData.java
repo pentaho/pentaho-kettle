@@ -39,7 +39,7 @@ import org.pentaho.di.trans.step.BaseStepData;
  */
 public class SSHData extends BaseStepData {
 
-  private static final Class<?> PKG = SSHMeta.class; // for i18n purposes
+  private static final Class<?> PKG = SSHData.class; // for i18n purposes
 
   private SshConnection sshConnection;
   private boolean connected;
@@ -118,7 +118,7 @@ public class SSHData extends BaseStepData {
     Path tempKeyFile = null;
 
     try {
-      // Build SSH configuration
+      // Build basic SSH configuration
       SshConfig config = SshConfig.create()
           .host( server )
           .port( port )
@@ -126,44 +126,10 @@ public class SSHData extends BaseStepData {
           .connectTimeoutMillis( timeOut > 0 ? timeOut * 1000 : 30000 ); // Default 30 seconds
 
       // Configure authentication
-      if ( useKey ) {
-        if ( Utils.isEmpty( keyFilename ) ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyFileMissing" ) );
-        }
-
-        FileObject keyFileObject = KettleVFS.getInstance( bowl ).getFileObject( keyFilename );
-        if ( !keyFileObject.exists() ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
-        }
-
-        // Read key file content and write to temporary file for SSH library
-        FileContent keyFileContent = keyFileObject.getContent();
-        byte[] keyBytes = new byte[(int) keyFileContent.getSize()];
-        try ( InputStream in = keyFileContent.getInputStream() ) {
-          in.read( keyBytes );
-        }
-
-        // Create temporary key file
-        tempKeyFile = Files.createTempFile( "ssh_key_", ".pem" );
-        Files.write( tempKeyFile, keyBytes );
-
-        config.authType( SshConfig.AuthType.PUBLIC_KEY )
-              .keyPath( tempKeyFile );
-        if ( !Utils.isEmpty( passPhrase ) ) {
-          config.passphrase( space.environmentSubstitute( passPhrase ) );
-        }
-      } else {
-        config.authType( SshConfig.AuthType.PASSWORD )
-              .password( password );
-      }
+      tempKeyFile = configureAuthentication( config, bowl, useKey, keyFilename, passPhrase, password, space );
 
       // Configure proxy if specified
-      if ( !Utils.isEmpty( proxyhost ) ) {
-        config.proxy( proxyhost, proxyport );
-        if ( !Utils.isEmpty( proxyusername ) ) {
-          config.proxyAuth( proxyusername, proxypassword );
-        }
-      }
+      configureProxy( config, proxyhost, proxyport, proxyusername, proxypassword );
 
       // Create and connect
       connection = SshConnectionFactory.defaultFactory().open( config );
@@ -179,12 +145,95 @@ public class SSHData extends BaseStepData {
       throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ErrorConnecting", server, username ), e );
     } finally {
       // Clean up temporary key file
-      if ( tempKeyFile != null ) {
-        try {
-          Files.deleteIfExists( tempKeyFile );
-        } catch ( IOException e ) {
-          // Log but don't fail - cleanup is best effort
+      cleanupTempKeyFile( tempKeyFile );
+    }
+  }
+
+  /**
+   * Configures authentication for the SSH connection.
+   * 
+   * @return the temporary key file path if created, null otherwise
+   */
+  private static Path configureAuthentication( SshConfig config, Bowl bowl, boolean useKey,
+      String keyFilename, String passPhrase, String password, VariableSpace space ) throws KettleException {
+
+    if ( useKey ) {
+      return configureKeyAuthentication( config, bowl, keyFilename, passPhrase, space );
+    } else {
+      config.authType( SshConfig.AuthType.PASSWORD ).password( password );
+      return null;
+    }
+  }
+
+  /**
+   * Configures key-based authentication and creates temporary key file.
+   * 
+   * @return the temporary key file path
+   */
+  private static Path configureKeyAuthentication( SshConfig config, Bowl bowl,
+      String keyFilename, String passPhrase, VariableSpace space ) throws KettleException {
+
+    if ( Utils.isEmpty( keyFilename ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyFileMissing" ) );
+    }
+
+    try {
+      FileObject keyFileObject = KettleVFS.getInstance( bowl ).getFileObject( keyFilename );
+      if ( !keyFileObject.exists() ) {
+        throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
+      }
+
+      // Read key file content and write to temporary file for SSH library
+      FileContent keyFileContent = keyFileObject.getContent();
+      byte[] keyBytes;
+      try ( InputStream in = keyFileContent.getInputStream() ) {
+        // Read all available bytes from the stream
+        keyBytes = in.readAllBytes();
+        if ( keyBytes.length == 0 ) {
+          throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ProcessingKeyFile", keyFilename ) );
         }
+      }
+
+      // Create temporary key file
+      Path tempKeyFile = Files.createTempFile( "ssh_key_", ".pem" );
+      Files.write( tempKeyFile, keyBytes );
+
+      config.authType( SshConfig.AuthType.PUBLIC_KEY ).keyPath( tempKeyFile );
+
+      if ( !Utils.isEmpty( passPhrase ) ) {
+        config.passphrase( space.environmentSubstitute( passPhrase ) );
+      }
+
+      return tempKeyFile;
+
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ProcessingKeyFile", keyFilename ), e );
+    }
+  }
+
+  /**
+   * Configures proxy settings for the SSH connection.
+   */
+  private static void configureProxy( SshConfig config, String proxyhost, int proxyport,
+      String proxyusername, String proxypassword ) {
+
+    if ( !Utils.isEmpty( proxyhost ) ) {
+      config.proxy( proxyhost, proxyport );
+      if ( !Utils.isEmpty( proxyusername ) ) {
+        config.proxyAuth( proxyusername, proxypassword );
+      }
+    }
+  }
+
+  /**
+   * Cleans up the temporary key file.
+   */
+  private static void cleanupTempKeyFile( Path tempKeyFile ) {
+    if ( tempKeyFile != null ) {
+      try {
+        Files.deleteIfExists( tempKeyFile );
+      } catch ( IOException e ) {
+        // Log but don't fail - cleanup is best effort
       }
     }
   }
