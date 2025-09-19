@@ -365,8 +365,8 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     List<String> runConfigurations = new ArrayList<>();
     try {
       ExtensionPointHandler
-        .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.SpoonRunConfiguration.id,
-          new Object[] { runConfigurations, TransMeta.XML_TAG } );
+        .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.RunConfiguration.id,
+          new Object[] { runConfigurations, TransMeta.XML_TAG, Spoon.getInstance().getExecutionBowl() } );
     } catch ( KettleException e ) {
       // Ignore errors
     }
@@ -525,7 +525,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
     executionConfiguration.setRunConfiguration( jet.getRunConfiguration() );
     try {
-      ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.SpoonTransBeforeStart.id,
+      ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.TransBeforeStart.id,
         new Object[] { executionConfiguration, jobMeta, jobMeta, null } );
     } catch ( KettleException e ) {
       // Ignore errors

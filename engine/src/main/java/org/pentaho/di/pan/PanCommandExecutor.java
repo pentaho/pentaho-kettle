@@ -68,6 +68,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     setLog( log );
   }
 
+  public PanCommandExecutor() { }
+
   public Result execute( final Params params ) throws Throwable {
     return execute( params, null );
   }

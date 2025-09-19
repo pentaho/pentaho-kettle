@@ -1408,7 +1408,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
           executionConfiguration );
 
       try {
-        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransBeforeStart.id, new Object[] {
           executionConfiguration, jobMeta, jobMeta, spoon.getRepository()
         } );
       } catch ( KettleException e ) {
