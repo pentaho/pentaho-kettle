@@ -128,12 +128,12 @@ public class SSHData extends BaseStepData {
       // Configure authentication
       if ( useKey ) {
         if ( Utils.isEmpty( keyFilename ) ) {
-          throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyFileMissing" ) );
+          throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyFileMissing" ) );
         }
 
         FileObject keyFileObject = KettleVFS.getInstance( bowl ).getFileObject( keyFilename );
         if ( !keyFileObject.exists() ) {
-          throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
+          throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
         }
 
         // Read key file content and write to temporary file for SSH library
@@ -176,7 +176,7 @@ public class SSHData extends BaseStepData {
       if ( connection != null ) {
         connection.close();
       }
-      throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.ErrorConnecting", server, username ), e );
+      throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ErrorConnecting", server, username ), e );
     } finally {
       // Clean up temporary key file
       if ( tempKeyFile != null ) {
