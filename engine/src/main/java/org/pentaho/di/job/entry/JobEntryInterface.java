@@ -13,12 +13,9 @@
 
 package org.pentaho.di.job.entry;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
@@ -782,34 +779,7 @@ public interface JobEntryInterface {
     throw new UnsupportedOperationException( "Attemped access of getJobMet not supported by JobEntryInterface implementation" );
   }
 
-  /**
-   * Dynamically invokes a method in the JobEntry class based on the `fieldName` parameter using java reflection
-   *
-   * @param fieldName         the name of the field to be used to determine the method to invoke
-   * @param jobEntryInterface the job entry interface
-   * @param jobMeta           the job metadata
-   * @param job               the job
-   * @param queryParams       the query parameters to be passed to the invoked method
-   * @return a `JSONObject` containing the response of the invoked method and the action status
-   */
-  default JSONObject doAction( String fieldName, JobEntryInterface jobEntryInterface, JobMeta jobMeta,
-                               Job job, Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = this.getClass().getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setRepository( job.getRep() );
-      response = (JSONObject) actionMethod.invoke( this, queryParams );
-      response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.SUCCESS_RESPONSE );
-
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
-      if ( ex.getCause() instanceof KettleException ) {
-        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_RESPONSE );
-      } else {
-        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_METHOD_NOT_RESPONSE );
-      }
-      getLogChannel().logError( ex.getMessage() );
-    }
-    return response;
+  default JobEntryHelperInterface getJobEntryHelperInterface() {
+    return null; // default
   }
-
 }

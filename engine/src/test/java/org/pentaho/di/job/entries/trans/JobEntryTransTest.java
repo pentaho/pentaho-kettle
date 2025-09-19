@@ -13,34 +13,19 @@
 
 package org.pentaho.di.job.entries.trans;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -49,7 +34,6 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -57,7 +41,6 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.test.util.InternalState;
@@ -65,8 +48,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -479,56 +472,6 @@ public class JobEntryTransTest {
     //Result should have zero number of rows since the result rows has no rows but the result set was in fact updated
     //(meaning something was done that resulted in zero rows.
     assertEquals( resultToBeUpdated.getRows().size(), 0 );
-  }
-
-  @Test
-  public void testParametersAction_ReturnsParametersData() throws KettleException {
-    JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
-    LogChannelInterface logMock = mock( LogChannelInterface.class );
-    InternalState.setInternalState( jobEntryTrans, "log", logMock );
-    JobEntryInterface jobEntryInterface = mock( JobEntryInterface.class );
-    JobMeta jobMeta = mock( JobMeta.class );
-    TransMeta transMetaMock = mock( TransMeta.class );
-    Job job = mock( Job.class );
-
-    doReturn( transMetaMock ).when( jobEntryTrans ).getTransMeta( null, null, null );
-    doReturn( new String[] { "param1", "param2" } ).when( transMetaMock ).listParameters();
-    JSONObject response = jobEntryTrans.doAction( "parameters", jobEntryInterface, jobMeta, job, new HashMap<>() );
-    JSONArray parameters = (JSONArray) response.get( "parameters" );
-
-    assertNotNull( parameters );
-    assertEquals( "param1", parameters.get( 0 ) );
-    assertEquals( "param2", parameters.get( 1 ) );
-  }
-
-  @Test
-  public void testParametersAction_ThrowsException() throws KettleException {
-    JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
-    LogChannelInterface logMock = mock( LogChannelInterface.class );
-    InternalState.setInternalState( jobEntryTrans, "log", logMock );
-    JobEntryInterface jobEntryInterface = mock( JobEntryInterface.class );
-    JobMeta jobMeta = mock( JobMeta.class );
-    TransMeta transMetaMock = mock( TransMeta.class );
-    Job job = mock( Job.class );
-
-    doThrow( new KettleException() ).when( jobEntryTrans ).getTransMeta( null, null, null );
-    doReturn( new String[] { "param1", "param2" } ).when( transMetaMock ).listParameters();
-
-    JSONObject response = jobEntryTrans.doAction( "parameters", jobEntryInterface, jobMeta, job, new HashMap<>() );
-    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-  }
-
-  @Test
-  public void testInvalidAction() {
-    JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
-    LogChannelInterface logMock = mock( LogChannelInterface.class );
-    InternalState.setInternalState( jobEntryTrans, "log", logMock );
-    JobEntryInterface jobEntryInterface = mock( JobEntryInterface.class );
-    JobMeta jobMeta = mock( JobMeta.class );
-    Job job = mock( Job.class );
-
-    JSONObject response = jobEntryTrans.doAction( "InvalidMethod", jobEntryInterface, jobMeta, job, new HashMap<>() );
-    assertEquals( StepInterface.FAILURE_METHOD_NOT_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
 
   private void updateResultTest( int previousRowsResult, int newRowsResult ) {

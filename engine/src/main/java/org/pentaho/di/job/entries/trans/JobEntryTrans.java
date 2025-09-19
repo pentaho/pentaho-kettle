@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
@@ -57,6 +55,7 @@ import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
+import org.pentaho.di.job.entry.JobEntryHelperInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.JobEntryRunConfigurableInterface;
 import org.pentaho.di.job.entry.validator.AndValidator;
@@ -95,8 +94,6 @@ import org.w3c.dom.Node;
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories, JobEntryRunConfigurableInterface {
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
   public static final int IS_PENTAHO = 1;
-  private static final String PARAMETERS_DATA = "parameters";
-
   private String transname;
 
   private String filename;
@@ -1744,15 +1741,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
   }
 
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
-    JSONObject response = new JSONObject();
-    TransMeta inputTransMeta = this.getTransMeta( this.rep, this.metaStore, this.parentJobMeta );
-    String[] parametersList = inputTransMeta.listParameters();
-
-    JSONArray parametersData = new JSONArray();
-    parametersData.addAll( Arrays.asList( parametersList ) );
-    response.put( PARAMETERS_DATA, parametersData );
-    return response;
+  @Override
+  public JobEntryHelperInterface getJobEntryHelperInterface() {
+    return new JobEntryTransHelper( this );
   }
 }
