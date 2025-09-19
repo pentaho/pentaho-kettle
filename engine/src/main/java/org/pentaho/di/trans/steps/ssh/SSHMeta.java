@@ -15,9 +15,9 @@ package org.pentaho.di.trans.steps.ssh;
 
 import java.util.List;
 
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -46,16 +46,33 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import com.trilead.ssh2.Connection;
-
 /*
  * Created on 03-Juin-2008
  *
  */
 
 public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
-  static Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
-  private static int DEFAULT_PORT = 22;
+  static final Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
+  private static final int DEFAULT_PORT = 22;
+
+  // XML/Repository attribute name constants
+  private static final String ATTR_COMMAND = "command";
+  private static final String ATTR_DYNAMIC_COMMAND_FIELD = "dynamicCommandField";
+  private static final String ATTR_COMMAND_FIELD_NAME = "commandfieldname";
+  private static final String ATTR_SERVER_NAME = "servername";
+  private static final String ATTR_USER_NAME = "userName";
+  private static final String ATTR_PASSWORD = "password";
+  private static final String ATTR_USE_PRIVATE_KEY = "usePrivateKey";
+  private static final String ATTR_KEY_FILE_NAME = "keyFileName";
+  private static final String ATTR_PASS_PHRASE = "passPhrase";
+  private static final String ATTR_STD_OUT_FIELD_NAME = "stdOutFieldName";
+  private static final String ATTR_STD_ERR_FIELD_NAME = "stdErrFieldName";
+  private static final String ATTR_TIME_OUT = "timeOut";
+  private static final String ATTR_PROXY_HOST = "proxyHost";
+  private static final String ATTR_PROXY_PORT = "proxyPort";
+  private static final String ATTR_PROXY_USERNAME = "proxyUsername";
+  private static final String ATTR_PROXY_PASSWORD = "proxyPassword";
+  private static final String ATTR_PORT = "port";
 
   private String command;
   private boolean dynamicCommandField;
@@ -124,8 +141,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param serverName
-   *          The serverName to set.
+   * @param serverName The serverName to set.
    */
   public void setServerName( String serverName ) {
     this.serverName = serverName;
@@ -139,16 +155,14 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param userName
-   *          The userName to set.
+   * @param userName The userName to set.
    */
   public void setuserName( String userName ) {
     this.userName = userName;
   }
 
   /**
-   * @param password
-   *          The password to set.
+   * @param password The password to set.
    */
   public void setpassword( String password ) {
     this.password = password;
@@ -162,8 +176,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param commandfieldname
-   *          The commandfieldname to set.
+   * @param commandfieldname The commandfieldname to set.
    */
   public void setcommandfieldname( String commandfieldname ) {
     this.commandfieldname = commandfieldname;
@@ -177,8 +190,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param command
-   *          The commandfieldname to set.
+   * @param command The commandfieldname to set.
    */
   public void setCommand( String value ) {
     this.command = value;
@@ -192,8 +204,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param value
-   *          The dynamicCommandField to set.
+   * @param value The dynamicCommandField to set.
    */
   public void setDynamicCommand( boolean value ) {
     this.dynamicCommandField = value;
@@ -214,8 +225,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param port
-   *          The port to set.
+   * @param port The port to set.
    */
   public void setPort( String port ) {
     this.port = port;
@@ -233,8 +243,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param value
-   *          The keyFileName to set.
+   * @param value The keyFileName to set.
    */
   public void setKeyFileName( String value ) {
     this.keyFileName = value;
@@ -248,8 +257,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param value
-   *          The passPhrase to set.
+   * @param value The passPhrase to set.
    */
   public void setPassphrase( String value ) {
     this.passPhrase = value;
@@ -262,7 +270,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     return passPhrase;
   }
 
-  /*
+  /**
    * @param timeOut The timeOut to set.
    */
   public void setTimeOut( String timeOut ) {
@@ -277,8 +285,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param value
-   *          The stdOutFieldName to set.
+   * @param value The stdOutFieldName to set.
    */
   public void setstdOutFieldName( String value ) {
     this.stdOutFieldName = value;
@@ -292,8 +299,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param value
-   *          The stdErrFieldName to set.
+   * @param value The stdErrFieldName to set.
    */
   public void setStdErrFieldName( String value ) {
     this.stdErrFieldName = value;
@@ -307,8 +313,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param value
-   *          The proxyHost to set.
+   * @param value The proxyHost to set.
    */
   public void setProxyHost( String value ) {
     this.proxyHost = value;
@@ -322,8 +327,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param value
-   *          The proxyPort to set.
+   * @param value The proxyPort to set.
    */
   public void setProxyPort( String value ) {
     this.proxyPort = value;
@@ -337,8 +341,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param value
-   *          The proxyUsername to set.
+   * @param value The proxyUsername to set.
    */
   public void setProxyUsername( String value ) {
     this.proxyUsername = value;
@@ -352,8 +355,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param value
-   *          The proxyPassword to set.
+   * @param value The proxyPassword to set.
    */
   public void setProxyPassword( String value ) {
     this.proxyPassword = value;
@@ -370,51 +372,51 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "dynamicCommandField", dynamicCommandField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "command", command ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "commandfieldname", commandfieldname ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "port", port ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "servername", serverName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "userName", userName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_DYNAMIC_COMMAND_FIELD, dynamicCommandField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_COMMAND, command ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_COMMAND_FIELD_NAME, commandfieldname ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_PORT, port ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_SERVER_NAME, serverName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_USER_NAME, userName ) );
     retval.append( "    " ).append(
-      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "usePrivateKey", usePrivateKey ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "keyFileName", keyFileName ) );
+      XMLHandler.addTagValue( ATTR_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_USE_PRIVATE_KEY, usePrivateKey ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_KEY_FILE_NAME, keyFileName ) );
     retval.append( "    " ).append(
-      XMLHandler.addTagValue( "passPhrase", Encr.encryptPasswordIfNotUsingVariables( passPhrase ) ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "stdOutFieldName", stdOutFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "stdErrFieldName", stdErrFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "timeOut", timeOut ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyHost", proxyHost ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyPort", proxyPort ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyUsername", proxyUsername ) );
+      XMLHandler.addTagValue( ATTR_PASS_PHRASE, Encr.encryptPasswordIfNotUsingVariables( passPhrase ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_STD_OUT_FIELD_NAME, stdOutFieldName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_STD_ERR_FIELD_NAME, stdErrFieldName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_TIME_OUT, timeOut ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_PROXY_HOST, proxyHost ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_PROXY_PORT, proxyPort ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( ATTR_PROXY_USERNAME, proxyUsername ) );
     retval.append( "    " ).append(
-      XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
+      XMLHandler.addTagValue( ATTR_PROXY_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
     return retval.toString();
   }
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      dynamicCommandField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "dynamicCommandField" ) );
-      command = XMLHandler.getTagValue( stepnode, "command" );
-      commandfieldname = XMLHandler.getTagValue( stepnode, "commandfieldname" );
-      port = XMLHandler.getTagValue( stepnode, "port" );
-      serverName = XMLHandler.getTagValue( stepnode, "servername" );
-      userName = XMLHandler.getTagValue( stepnode, "userName" );
-      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "password" ) );
+      dynamicCommandField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ATTR_DYNAMIC_COMMAND_FIELD ) );
+      command = XMLHandler.getTagValue( stepnode, ATTR_COMMAND );
+      commandfieldname = XMLHandler.getTagValue( stepnode, ATTR_COMMAND_FIELD_NAME );
+      port = XMLHandler.getTagValue( stepnode, ATTR_PORT );
+      serverName = XMLHandler.getTagValue( stepnode, ATTR_SERVER_NAME );
+      userName = XMLHandler.getTagValue( stepnode, ATTR_USER_NAME );
+      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, ATTR_PASSWORD ) );
 
-      usePrivateKey = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "usePrivateKey" ) );
-      keyFileName = XMLHandler.getTagValue( stepnode, "keyFileName" );
+      usePrivateKey = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ATTR_USE_PRIVATE_KEY ) );
+      keyFileName = XMLHandler.getTagValue( stepnode, ATTR_KEY_FILE_NAME );
       passPhrase =
-        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "passPhrase" ) );
-      stdOutFieldName = XMLHandler.getTagValue( stepnode, "stdOutFieldName" );
-      stdErrFieldName = XMLHandler.getTagValue( stepnode, "stdErrFieldName" );
-      timeOut = XMLHandler.getTagValue( stepnode, "timeOut" );
-      proxyHost = XMLHandler.getTagValue( stepnode, "proxyHost" );
-      proxyPort = XMLHandler.getTagValue( stepnode, "proxyPort" );
-      proxyUsername = XMLHandler.getTagValue( stepnode, "proxyUsername" );
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, ATTR_PASS_PHRASE ) );
+      stdOutFieldName = XMLHandler.getTagValue( stepnode, ATTR_STD_OUT_FIELD_NAME );
+      stdErrFieldName = XMLHandler.getTagValue( stepnode, ATTR_STD_ERR_FIELD_NAME );
+      timeOut = XMLHandler.getTagValue( stepnode, ATTR_TIME_OUT );
+      proxyHost = XMLHandler.getTagValue( stepnode, ATTR_PROXY_HOST );
+      proxyPort = XMLHandler.getTagValue( stepnode, ATTR_PROXY_PORT );
+      proxyUsername = XMLHandler.getTagValue( stepnode, ATTR_PROXY_USERNAME );
       proxyPassword =
-        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "proxyPassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, ATTR_PROXY_PASSWORD ) );
 
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "SSHMeta.Exception.UnableToReadStepInfo" ), e );
@@ -422,29 +424,30 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases )
+    throws KettleException {
 
     try {
-      dynamicCommandField = rep.getStepAttributeBoolean( id_step, "dynamicCommandField" );
-      command = rep.getStepAttributeString( id_step, "command" );
-      commandfieldname = rep.getStepAttributeString( id_step, "commandfieldname" );
-      serverName = rep.getStepAttributeString( id_step, "servername" );
-      port = rep.getStepAttributeString( id_step, "port" );
-      userName = rep.getStepAttributeString( id_step, "userName" );
-      password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "password" ) );
+      dynamicCommandField = rep.getStepAttributeBoolean( idStep, ATTR_DYNAMIC_COMMAND_FIELD );
+      command = rep.getStepAttributeString( idStep, ATTR_COMMAND );
+      commandfieldname = rep.getStepAttributeString( idStep, ATTR_COMMAND_FIELD_NAME );
+      serverName = rep.getStepAttributeString( idStep, ATTR_SERVER_NAME );
+      port = rep.getStepAttributeString( idStep, ATTR_PORT );
+      userName = rep.getStepAttributeString( idStep, ATTR_USER_NAME );
+      password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( idStep, ATTR_PASSWORD ) );
 
-      usePrivateKey = rep.getStepAttributeBoolean( id_step, "usePrivateKey" );
-      keyFileName = rep.getStepAttributeString( id_step, "keyFileName" );
+      usePrivateKey = rep.getStepAttributeBoolean( idStep, ATTR_USE_PRIVATE_KEY );
+      keyFileName = rep.getStepAttributeString( idStep, ATTR_KEY_FILE_NAME );
       passPhrase =
-        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "passPhrase" ) );
-      stdOutFieldName = rep.getStepAttributeString( id_step, "stdOutFieldName" );
-      stdErrFieldName = rep.getStepAttributeString( id_step, "stdErrFieldName" );
-      timeOut = rep.getStepAttributeString( id_step, "timeOut" );
-      proxyHost = rep.getStepAttributeString( id_step, "proxyHost" );
-      proxyPort = rep.getStepAttributeString( id_step, "proxyPort" );
-      proxyUsername = rep.getStepAttributeString( id_step, "proxyUsername" );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( idStep, ATTR_PASS_PHRASE ) );
+      stdOutFieldName = rep.getStepAttributeString( idStep, ATTR_STD_OUT_FIELD_NAME );
+      stdErrFieldName = rep.getStepAttributeString( idStep, ATTR_STD_ERR_FIELD_NAME );
+      timeOut = rep.getStepAttributeString( idStep, ATTR_TIME_OUT );
+      proxyHost = rep.getStepAttributeString( idStep, ATTR_PROXY_HOST );
+      proxyPort = rep.getStepAttributeString( idStep, ATTR_PROXY_PORT );
+      proxyUsername = rep.getStepAttributeString( idStep, ATTR_PROXY_USERNAME );
       proxyPassword =
-        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "proxyPassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( idStep, ATTR_PROXY_PASSWORD ) );
 
     } catch ( Exception e ) {
       throw new KettleException(
@@ -453,63 +456,64 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep )
+    throws KettleException {
     try {
-      rep.saveStepAttribute( id_transformation, id_step, "dynamicCommandField", dynamicCommandField );
-      rep.saveStepAttribute( id_transformation, id_step, "command", command );
-      rep.saveStepAttribute( id_transformation, id_step, "commandfieldname", commandfieldname );
-      rep.saveStepAttribute( id_transformation, id_step, "port", port );
-      rep.saveStepAttribute( id_transformation, id_step, "servername", serverName );
-      rep.saveStepAttribute( id_transformation, id_step, "userName", userName );
-      rep.saveStepAttribute( id_transformation, id_step, "password", Encr
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_DYNAMIC_COMMAND_FIELD, dynamicCommandField );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_COMMAND, command );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_COMMAND_FIELD_NAME, commandfieldname );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_PORT, port );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_SERVER_NAME, serverName );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_USER_NAME, userName );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_PASSWORD, Encr
         .encryptPasswordIfNotUsingVariables( password ) );
 
-      rep.saveStepAttribute( id_transformation, id_step, "usePrivateKey", usePrivateKey );
-      rep.saveStepAttribute( id_transformation, id_step, "keyFileName", keyFileName );
-      rep.saveStepAttribute( id_transformation, id_step, "passPhrase", Encr
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_USE_PRIVATE_KEY, usePrivateKey );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_KEY_FILE_NAME, keyFileName );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_PASS_PHRASE, Encr
         .encryptPasswordIfNotUsingVariables( passPhrase ) );
-      rep.saveStepAttribute( id_transformation, id_step, "stdOutFieldName", stdOutFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "stdErrFieldName", stdErrFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "timeOut", timeOut );
-      rep.saveStepAttribute( id_transformation, id_step, "proxyHost", proxyHost );
-      rep.saveStepAttribute( id_transformation, id_step, "proxyPort", proxyPort );
-      rep.saveStepAttribute( id_transformation, id_step, "proxyUsername", proxyUsername );
-      rep.saveStepAttribute( id_transformation, id_step, "proxyPassword", Encr
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_STD_OUT_FIELD_NAME, stdOutFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_STD_ERR_FIELD_NAME, stdErrFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_TIME_OUT, timeOut );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_PROXY_HOST, proxyHost );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_PROXY_PORT, proxyPort );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_PROXY_USERNAME, proxyUsername );
+      rep.saveStepAttribute( idTransformation, idStep, ATTR_PROXY_PASSWORD, Encr
         .encryptPasswordIfNotUsingVariables( proxyPassword ) );
 
     } catch ( Exception e ) {
       throw new KettleException(
-        BaseMessages.getString( PKG, "SSHMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
+        BaseMessages.getString( PKG, "SSHMeta.Exception.UnableToSaveStepInfo" ) + idStep, e );
     }
   }
 
   @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
-    String error_message = "";
+    String errorMessage = "";
 
     // Target hostname
     if ( Utils.isEmpty( getServerName() ) ) {
-      error_message = BaseMessages.getString( PKG, "SSHMeta.CheckResult.TargetHostMissing" );
-      cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
+      errorMessage = BaseMessages.getString( PKG, "SSHMeta.CheckResult.TargetHostMissing" );
+      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
       remarks.add( cr );
     } else {
-      error_message = BaseMessages.getString( PKG, "SSHMeta.CheckResult.TargetHostOK" );
-      cr = new CheckResult( CheckResult.TYPE_RESULT_OK, error_message, stepMeta );
+      errorMessage = BaseMessages.getString( PKG, "SSHMeta.CheckResult.TargetHostOK" );
+      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, errorMessage, stepMeta );
       remarks.add( cr );
     }
     if ( isusePrivateKey() ) {
       String keyfilename = transMeta.environmentSubstitute( getKeyFileName() );
       if ( Utils.isEmpty( keyfilename ) ) {
-        error_message = BaseMessages.getString( PKG, "SSHMeta.CheckResult.PrivateKeyFileNameMissing" );
-        cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
+        errorMessage = BaseMessages.getString( PKG, "SSHMeta.CheckResult.PrivateKeyFileNameMissing" );
+        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
         remarks.add( cr );
       } else {
-        error_message = BaseMessages.getString( PKG, "SSHMeta.CheckResult.PrivateKeyFileNameOK" );
-        cr = new CheckResult( CheckResult.TYPE_RESULT_OK, error_message, stepMeta );
+        errorMessage = BaseMessages.getString( PKG, "SSHMeta.CheckResult.PrivateKeyFileNameOK" );
+        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, errorMessage, stepMeta );
         remarks.add( cr );
         boolean keyFileExists = false;
         try {
@@ -517,12 +521,12 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
         } catch ( Exception e ) { /* Ignore */
         }
         if ( !keyFileExists ) {
-          error_message = BaseMessages.getString( PKG, "SSHMeta.CheckResult.PrivateKeyFileNotExist", keyfilename );
-          cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
+          errorMessage = BaseMessages.getString( PKG, "SSHMeta.CheckResult.PrivateKeyFileNotExist", keyfilename );
+          cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
           remarks.add( cr );
         } else {
-          error_message = BaseMessages.getString( PKG, "SSHMeta.CheckResult.PrivateKeyFileExists", keyfilename );
-          cr = new CheckResult( CheckResult.TYPE_RESULT_OK, error_message, stepMeta );
+          errorMessage = BaseMessages.getString( PKG, "SSHMeta.CheckResult.PrivateKeyFileExists", keyfilename );
+          cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, errorMessage, stepMeta );
           remarks.add( cr );
         }
       }
@@ -531,12 +535,12 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
           PKG, "SSHMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SSHMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
@@ -545,7 +549,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void getFields( Bowl bowl, RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( !isDynamicCommand() ) {
       row.clear();
@@ -565,7 +569,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
     return new SSH( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -577,34 +581,6 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public boolean supportsErrorHandling() {
     return true;
-  }
-
-  /**
-   *
-   * @param bowl
-   * @param serveur
-   * @param port
-   * @param username
-   * @param password
-   * @param useKey
-   * @param keyFilename
-   * @param passPhrase
-   * @param timeOut
-   * @param space
-   * @param proxyhost
-   * @param proxyport
-   * @param proxyusername
-   * @param proxypassword
-   * @return
-   * @throws KettleException
-   * @deprecated Use {@link SSHData#OpenConnection(String, int, String, String, boolean, String, String, int, VariableSpace, String, int, String, String)} instead
-   */
-  @Deprecated
-  public static Connection OpenConnection( Bowl bowl, String serveur, int port, String username, String password,
-    boolean useKey, String keyFilename, String passPhrase, int timeOut, VariableSpace space, String proxyhost,
-    int proxyport, String proxyusername, String proxypassword ) throws KettleException {
-    return SSHData.OpenConnection( bowl, serveur, port, username,
-      password, useKey, keyFilename, passPhrase, timeOut, space, proxyhost, proxyport, proxyusername, proxypassword );
   }
 
   /**
