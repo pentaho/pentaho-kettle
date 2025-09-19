@@ -14,12 +14,9 @@
 package org.pentaho.di.job.entries.job;
 
 import org.apache.commons.vfs2.FileObject;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -27,6 +24,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -52,6 +50,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
+import org.pentaho.di.job.entry.JobEntryHelperInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.JobEntryRunConfigurableInterface;
 import org.pentaho.di.job.entry.validator.AndValidator;
@@ -95,7 +94,6 @@ import java.util.UUID;
 public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories, JobEntryRunConfigurableInterface {
   private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!
   public static final int IS_PENTAHO = 1;
-  private static final String PARAMETERS_DATA = "parameters";
 
   private String filename;
   private String jobname;
@@ -1775,24 +1773,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
 
-  /**
-   * Retrieves the list of parameters from the given job metadata and returns them as a JSON object.
-   * This method is called from JobEntryInterface#doAction dynamically using reflection.
-   *
-   * @param queryParams A map of query parameters (not used in this implementation).
-   * @return A JSON object containing the list of parameters under the key "parameters".
-   * @throws KettleException If an error occurs while retrieving the job metadata or parameters.
-   */
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
-    JSONObject response = new JSONObject();
-    JobMeta inputJobMeta = this.getJobMeta( this.rep, this.metaStore, this.parentJobMeta );
-    String[] parametersList = inputJobMeta.listParameters();
-
-    JSONArray parametersData = new JSONArray();
-    parametersData.addAll( Arrays.asList( parametersList ) );
-    response.put( PARAMETERS_DATA, parametersData );
-    return response;
+  @Override
+  public JobEntryHelperInterface getJobEntryHelperInterface() {
+    return new JobEntryJobHelper( this );
   }
-
 }
