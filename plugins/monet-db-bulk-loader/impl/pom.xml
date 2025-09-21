@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>monet-db-bulk-loader</artifactId>
-    <version>11.0.0.0-SNAPSHOT</version>
+    <version>11.0.0.0-108</version>
   </parent>
 
   <artifactId>monet-db-bulk-loader-plugins-impl</artifactId>
