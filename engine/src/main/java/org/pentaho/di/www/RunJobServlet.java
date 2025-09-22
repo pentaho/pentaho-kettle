@@ -29,6 +29,8 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobAdapter;
@@ -187,7 +189,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
         return;
       }
 
-      final JobMeta jobMeta = loadJob( slaveServerRepository, transOption );
+      final JobMeta jobMeta = loadJob( slaveServerRepository, transOption, getPopulatedVariableSpaceFromRequest( request, new Variables() ) );
 
       // Set the servlet parameters as variables in the transformation
       //
@@ -316,7 +318,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
     job.start();
   }
 
-  private JobMeta loadJob( Repository repository, String job ) throws KettleException {
+  private JobMeta loadJob( Repository repository, String job, VariableSpace parentVariableSpace ) throws KettleException {
 
     if ( repository == null ) {
       throw new KettleException( "Repository required." );
@@ -342,7 +344,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
 
         ObjectId jobID = repository.getJobId( name, directory );
 
-        JobMeta transJob = repository.loadJob( jobID, null );
+        JobMeta transJob = repository.loadJob( jobID, null, parentVariableSpace );
         return transJob;
       }
     }

@@ -14,6 +14,7 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -23,6 +24,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+
 
 public class BaseHttpServlet extends HttpServlet {
 
@@ -177,6 +180,21 @@ public class BaseHttpServlet extends HttpServlet {
     this.jobMap = jobMap;
     this.socketRepository = socketRepository;
     this.detections = detections;
+  }
+
+  /**
+   * Read the request parameters from the request and add it to the VariableSpace
+   * @param request Input HttpServletRequest
+   * @return VariableSpace Return the populated VariableSpace
+   */
+  protected VariableSpace getPopulatedVariableSpaceFromRequest( HttpServletRequest request, VariableSpace variableSpace ) {
+    Enumeration<?> parameterNames = request.getParameterNames();
+    while ( parameterNames.hasMoreElements() ) {
+      String parameter = (String) parameterNames.nextElement();
+      String[] values = request.getParameterValues( parameter );
+      variableSpace.setVariable( parameter, values != null && values.length > 0 ? values[0] : "" );
+    }
+    return variableSpace;
   }
 
 }

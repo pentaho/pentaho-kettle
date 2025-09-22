@@ -375,7 +375,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // Create a new variable name space as we want jobs to have their own set of variables.
       // initialize from parentJob or null
       //
-      variables.initializeVariablesFrom( parentJob );
+      if ( parentJob != null ) {
+        variables.initializeVariablesFrom( parentJob );
+      } else {
+        variables.initializeVariablesFrom( getBowl().getADefaultVariableSpace() );
+      }
       setInternalKettleVariables( variables );
       copyParametersFrom( jobMeta );
       activateParameters();
