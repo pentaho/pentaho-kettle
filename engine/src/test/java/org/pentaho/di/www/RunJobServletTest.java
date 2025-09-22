@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -127,8 +128,8 @@ public class RunJobServletTest {
     when( repository.loadRepositoryDirectoryTree() ).thenReturn( repDirInterface );
     when( repDirInterface.findDirectory( anyString() ) ).thenReturn( repDirInterface );
     when( repository.getJobId( eq( "dummyJob" ), eq( repDirInterface ) ) ).thenReturn( objId );
-    when( repository.loadJob( eq( objId ), nullable( String.class ) ) ).thenReturn( jobMeta );
     when( mockHttpServletRequest.getParameterNames() ).thenReturn( Collections.enumeration( Collections.emptyList() ) );
+    when( repository.loadJob( eq( objId ), nullable( String.class ), nullable( VariableSpace.class )  ) ).thenReturn( jobMeta );
     runJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
     verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
@@ -160,7 +161,8 @@ public class RunJobServletTest {
     when( repository.loadRepositoryDirectoryTree() ).thenReturn( repDirInterface );
     when( repDirInterface.findDirectory( anyString() ) ).thenReturn( repDirInterface );
     when( repository.getJobId( "dummyJob", repDirInterface ) ).thenReturn( objId );
-    when( repository.loadJob( objId, null ) ).thenThrow( new IdNotFoundException( "", "", RepositoryObjectType.DATABASE ) );
+    when( mockHttpServletRequest.getParameterNames() ).thenReturn( Collections.enumeration( Collections.emptyList() ) );
+    when( repository.loadJob( eq( objId ), nullable( String.class ), nullable( VariableSpace.class) ) ).thenThrow( new IdNotFoundException( "", "", RepositoryObjectType.DATABASE ) );
 
     runJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
@@ -193,7 +195,8 @@ public class RunJobServletTest {
     when( repository.loadRepositoryDirectoryTree() ).thenReturn( repDirInterface );
     when( repDirInterface.findDirectory( anyString() ) ).thenReturn( repDirInterface );
     when( repository.getJobId( "dummyJob", repDirInterface ) ).thenReturn( objId );
-    when( repository.loadJob( objId, null ) ).thenThrow( new KettleException( "The server sent HTTP status code 401" ) );
+    when( mockHttpServletRequest.getParameterNames() ).thenReturn( Collections.enumeration( Collections.emptyList() ) );
+    when( repository.loadJob( eq( objId ), nullable( String.class ), nullable( VariableSpace.class )  ) ).thenThrow( new KettleException( "The server sent HTTP status code 401" ) );
 
     runJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
@@ -226,7 +229,8 @@ public class RunJobServletTest {
     when( repository.loadRepositoryDirectoryTree() ).thenReturn( repDirInterface );
     when( repDirInterface.findDirectory( anyString() ) ).thenReturn( repDirInterface );
     when( repository.getJobId( "dummyJob", repDirInterface ) ).thenReturn( objId );
-    when( repository.loadJob( objId, null ) ).thenThrow( new KettleException( "Unable to load job" ) );
+    when( mockHttpServletRequest.getParameterNames() ).thenReturn( Collections.enumeration( Collections.emptyList() ) );
+    when( repository.loadJob( eq( objId ), nullable( String.class ), nullable( VariableSpace.class ) ) ).thenThrow( new KettleException( "Unable to load job" ) );
 
     runJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 

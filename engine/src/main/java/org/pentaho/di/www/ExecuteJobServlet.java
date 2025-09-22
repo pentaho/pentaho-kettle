@@ -36,6 +36,8 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobAdapter;
@@ -230,7 +232,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
 
     JobMeta jobMeta;
     try {
-      jobMeta = loadJob( repository, jobOption );
+      jobMeta = loadJob( repository, jobOption, getPopulatedVariableSpaceFromRequest( request , new Variables() ) );
     } catch ( KettleException ke ) {
       // Job not found in repository.
       response.setStatus( HttpServletResponse.SC_NOT_FOUND );
@@ -321,14 +323,14 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     response.setStatus( HttpServletResponse.SC_OK );
   }
 
-  private JobMeta loadJob( Repository repository, String job ) throws KettleException {
+  private JobMeta loadJob( Repository repository, String job, VariableSpace parentVariableSpace ) throws KettleException {
 
     if ( repository == null ) {
 
       // Without a repository it's a filename --> file:///foo/bar/job.kjb
       //
       // Repository doesn't need bowl-specific VFS. Use DefaultBowl.
-      JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), job, repository );
+      JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), parentVariableSpace, job, repository, null );
       return jobMeta;
 
     } else {
@@ -358,7 +360,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
         String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.JobNotFoundInDirectory", name, directoryPath );
         throw new KettleException( message );
       }
-      JobMeta jobMeta = repository.loadJob( jobID, null );
+      JobMeta jobMeta = repository.loadJob( jobID, null, parentVariableSpace );
       return jobMeta;
     }
   }

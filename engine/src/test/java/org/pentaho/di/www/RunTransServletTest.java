@@ -137,7 +137,7 @@ public class RunTransServletTest {
       .thenReturn( repositoryDirectoryInterface );
 
     TransMeta transMeta = Mockito.mock( TransMeta.class );
-    Mockito.when( repository.loadTransformation( Mockito.any(), Mockito.any() ) ).thenReturn(
+    Mockito.when( repository.loadTransformation( Mockito.any(), Mockito.any(), Mockito.any() ) ).thenReturn(
       transMeta );
 
     String testParameter = "testParameter";

@@ -30,6 +30,8 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -164,7 +166,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
     try {
 
       final Repository repository = transformationMap.getSlaveServerConfig().getRepository();
-      final TransMeta transMeta = loadTrans( repository, transOption );
+      final TransMeta transMeta = loadTrans( repository, transOption, getPopulatedVariableSpaceFromRequest( request, new Variables() ) );
 
       // Set the servlet parameters as variables in the transformation
       //
@@ -260,7 +262,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
     return new Trans( transMeta, servletLoggingObject );
   }
 
-  private TransMeta loadTrans( Repository repository, String transformationName ) throws KettleException {
+  private TransMeta loadTrans( Repository repository, String transformationName, VariableSpace parentVariableSpace ) throws KettleException {
 
     if ( repository == null ) {
       throw new KettleException( "Repository required." );
@@ -287,7 +289,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
         ObjectId transformationId = repository.getTransformationID( name, directory );
 
         // TODO BACKLOG-44138 need to pass parent variablespace
-        TransMeta transMeta = repository.loadTransformation( transformationId, null );
+        TransMeta transMeta = repository.loadTransformation( transformationId, null, parentVariableSpace );
         return transMeta;
       }
     }

@@ -34,6 +34,8 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.KettleAuthenticationException;
@@ -251,7 +253,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     try {
 
       final Repository repository = openRepository( repOption, userOption, passOption );
-      final TransMeta transMeta = loadTransformation( repository, transOption );
+      final TransMeta transMeta = loadTransformation( repository, transOption, getPopulatedVariableSpaceFromRequest( request, new Variables() ) );
 
       // Set the servlet parameters as variables in the transformation
       //
@@ -350,14 +352,14 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     }
   }
 
-  private TransMeta loadTransformation( Repository repository, String trans ) throws KettleException {
+  private TransMeta loadTransformation( Repository repository, String trans, VariableSpace parentVariableSpace ) throws KettleException {
 
     if ( repository == null ) {
 
       // Without a repository it's a filename --> file:///foo/bar/trans.ktr
       //
       // Repository doesn't need bowl-specific VFS. Use DefaultBowl.
-      TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), trans );
+      TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), trans, parentVariableSpace );
       return transMeta;
 
     } else {
@@ -386,7 +388,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
         throw new KettleException( "Unable to find transformation '" + name + "' in directory :" + directory );
       }
       // TODO BACKLOG-44138 need to pass parent variablespace
-      TransMeta transMeta = repository.loadTransformation( transformationID, null );
+      TransMeta transMeta = repository.loadTransformation( transformationID, null, parentVariableSpace );
       return transMeta;
     }
   }
@@ -427,5 +429,4 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
   public String getContextPath() {
     return CONTEXT_PATH;
   }
-
 }

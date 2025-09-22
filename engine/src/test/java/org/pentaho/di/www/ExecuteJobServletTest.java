@@ -20,6 +20,7 @@ import org.owasp.encoder.Encode;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
@@ -104,7 +105,7 @@ public class ExecuteJobServletTest {
         .findDirectory( anyString() );
       doReturn( mock( ObjectId.class ) ).when( repository )
         .getJobId( anyString(), any( RepositoryDirectoryInterface.class ) );
-      doReturn( jobMeta ).when( repository ).loadJob( any( ObjectId.class ), nullable( String.class ) );
+      doReturn( jobMeta ).when( repository ).loadJob( any( ObjectId.class ), nullable( String.class ), nullable( VariableSpace.class ) );
       doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
 
       StringWriter out = mockWriter();
