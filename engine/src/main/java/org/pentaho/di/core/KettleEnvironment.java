@@ -20,6 +20,7 @@ import org.pentaho.di.cluster.SlaveServerManager;
 import org.pentaho.di.core.auth.AuthenticationConsumerPluginType;
 import org.pentaho.di.core.auth.AuthenticationProviderPluginType;
 import org.pentaho.di.core.bowl.BowlManagerFactoryRegistry;
+import org.pentaho.di.core.bowl.CachingManagerFactory;
 import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -263,13 +264,13 @@ public class KettleEnvironment {
    */
   private static void registerSharedObjectManagersWithBowl(){
     BowlManagerFactoryRegistry registry = BowlManagerFactoryRegistry.getInstance();
-    registry.registerManagerFactory( DatabaseManagementInterface.class,
-      new DatabaseConnectionManager.DatabaseConnectionManagerFactory() );
-    registry.registerManagerFactory( SlaveServerManagementInterface.class,
-      new SlaveServerManager.SlaveServerManagerFactory() );
-    registry.registerManagerFactory( ClusterSchemaManagementInterface.class,
-      new ClusterSchemaManager.ClusterSchemaManagerFactory() );
-    registry.registerManagerFactory( PartitionSchemaManagementInterface.class,
-      new PartitionSchemaManager.PartitionSchemaManagerFactory() );
+    registry.registerManagerFactory( DatabaseManagementInterface.class, new CachingManagerFactory(
+      DatabaseManagementInterface.class, new DatabaseConnectionManager.DatabaseConnectionManagerFactory() ) );
+    registry.registerManagerFactory( SlaveServerManagementInterface.class, new CachingManagerFactory(
+      SlaveServerManagementInterface.class, new SlaveServerManager.SlaveServerManagerFactory() ) );
+    registry.registerManagerFactory( ClusterSchemaManagementInterface.class, new CachingManagerFactory(
+      ClusterSchemaManagementInterface.class, new ClusterSchemaManager.ClusterSchemaManagerFactory() ) );
+    registry.registerManagerFactory( PartitionSchemaManagementInterface.class, new CachingManagerFactory(
+      PartitionSchemaManagementInterface.class, new PartitionSchemaManager.PartitionSchemaManagerFactory() ) );
   }
 }

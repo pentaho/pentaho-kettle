@@ -29,6 +29,7 @@ import org.pentaho.di.connections.vfs.VFSLookupFilter;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.bowl.UpdateSubscriber;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.IMetaStore;
@@ -163,14 +164,14 @@ public class ConnectionManagerTest {
   @Test
   public void testSubscribers() {
 
-    class MyConnectionUpdateSubscriber implements ConnectionUpdateSubscriber {
+    class MyUpdateSubscriber implements UpdateSubscriber {
         boolean called = false;
 
         public void notifyChanged() {
           called = true;
         }
       };
-    MyConnectionUpdateSubscriber sub = new MyConnectionUpdateSubscriber();
+    MyUpdateSubscriber sub = new MyUpdateSubscriber();
 
     connectionManager.addSubscriber( sub );
     addOne();

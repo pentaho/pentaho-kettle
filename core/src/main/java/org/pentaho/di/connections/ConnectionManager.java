@@ -23,7 +23,9 @@ import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
 import org.pentaho.di.connections.vfs.VFSConnectionProvider;
 import org.pentaho.di.connections.vfs.VFSConnectionTestOptions;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.CachingManager;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.bowl.UpdateSubscriber;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
@@ -50,7 +52,7 @@ import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
  * <p>
  * Created by bmorrise on 2/3/19.
  */
-public class ConnectionManager {
+public class ConnectionManager implements CachingManager {
 
   private static final ConnectionManager instance = new ConnectionManager();
 
@@ -58,7 +60,7 @@ public class ConnectionManager {
 
   private List<LookupFilter> lookupFilters = new ArrayList<>();
 
-  private final WeakHashMap<ConnectionUpdateSubscriber, Void> changeSubscribers =
+  private final WeakHashMap<UpdateSubscriber, Void> changeSubscribers =
     new WeakHashMap<>();
 
   @NonNull
@@ -175,21 +177,27 @@ public class ConnectionManager {
    *
    * @param subscriber
    */
-  public synchronized void addSubscriber( ConnectionUpdateSubscriber subscriber ) {
+  @Override
+  public synchronized void addSubscriber( UpdateSubscriber subscriber ) {
     changeSubscribers.put( subscriber, null );
   }
 
   private void notifySubscribers() {
     // operate on a copy
-    Set<ConnectionUpdateSubscriber> subs;
+    Set<UpdateSubscriber> subs;
     synchronized( this ) {
       subs = new HashSet<>( changeSubscribers.keySet() );
     }
-    for ( ConnectionUpdateSubscriber subscriber : subs ) {
+    for ( UpdateSubscriber subscriber : subs ) {
       if ( subscriber != null ) {
         subscriber.notifyChanged();
       }
     }
+  }
+
+  @Override
+  public void notifyChanged() {
+    reset();
   }
 
   /**
