@@ -254,7 +254,7 @@ public class BlockUntilStepsFinishDialog extends BaseStepDialog implements StepD
       ti.setText( 0, "" + ( i + 1 ) );
       if ( input.getStepName()[i] != null ) {
         ti.setText( 1, input.getStepName()[i] );
-        ti.setText( 2, "" + Const.toInt( input.getStepCopyNr()[i], 0 ) );
+        ti.setText( 2, input.getStepCopyNr()[i] );
       }
     }
 
@@ -286,7 +286,7 @@ public class BlockUntilStepsFinishDialog extends BaseStepDialog implements StepD
       if ( tm != null ) {
         //CHECKSTYLE:Indentation:OFF
         input.getStepName()[i] = tm.getName();
-        input.getStepCopyNr()[i] = String.valueOf( Const.toInt( ti.getText( 2 ), 0 ) );
+        input.getStepCopyNr()[i] = ti.getText( 2 );
       }
 
     }
