@@ -81,7 +81,7 @@ public class TransExecutorHelperTest {
   }
 
   @Test
-  public void testGetParametersFromTrans_returnsParameters() {
+  public void testStepAction_whenParametersMethod_thenReturnsParameters() {
     JSONObject response = underTest.stepAction( "parameters", transMeta, null );
 
     JSONArray parameters = (JSONArray) response.get( "parameters" );
@@ -96,7 +96,7 @@ public class TransExecutorHelperTest {
   }
 
   @Test
-  public void testGetParametersFromTrans_throwsException() throws KettleException {
+  public void testStepAction_whenParametersMethodThrowsException_thenReturnsFailureResponse() throws KettleException {
     when( transMeta.getParameterDescription( anyString() ) ).thenThrow( new UnknownParamException() );
     JSONObject response = underTest.stepAction( "parameters", transMeta, null );
 
@@ -105,15 +105,17 @@ public class TransExecutorHelperTest {
   }
 
   @Test
-  public void testIsTranValid_withValidTransformation() {
+  public void testStepAction_whenIsTransValidWithValidTransformation_thenReturnsTransPresentTrue() {
     JSONObject response = underTest.stepAction( "isTransValid", transMeta, null );
 
-    assertNotNull( response ); assertTrue( response.containsKey( "transPresent" ) );
+    assertNotNull( response );
+    assertTrue( response.containsKey( "transPresent" ) );
     assertTrue( response.get( "transPresent" ) instanceof Boolean );
   }
 
   @Test
-  public void testIsTranValid_withInValidTransformation() throws Exception {
+  public void testStepAction_whenIsTransValidWithInvalidTransformation_thenReturnsTransPresentFalseAndErrorMessage()
+    throws Exception {
     doThrow( new KettleException( "Invalid transformation" ) ).when( underTest )
       .loadExecutorTransMeta( transMeta, transExecutorMeta );
 
@@ -124,10 +126,12 @@ public class TransExecutorHelperTest {
     assertTrue( response.containsKey( "errorMessage" ) );
   }
 
-  @Test public void testHandleStepAction_whenMethodNameIsInvalid() {
+  @Test
+  public void testStepAction_whenMethodNameIsInvalid_thenReturnsFailureMethodNotFound() {
     JSONObject response = underTest.stepAction( "invalidMethod", transMeta, null );
 
-    assertNotNull( response ); assertEquals( FAILURE_METHOD_NOT_FOUND_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertEquals( FAILURE_METHOD_NOT_FOUND_RESPONSE, response.get( ACTION_STATUS ) );
   }
 
   @Test

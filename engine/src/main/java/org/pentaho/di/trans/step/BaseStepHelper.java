@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * Base implementation of {@link StepHelperInterface} providing shared infrastructure for executing
- * UI-triggered "step actions".
+ * UI-triggered "step actions" and other common methods.
  * <p>
  * Step actions are step-specific, non-runtime operations initiated from a step dialog (e.g. fetching
  * external metadata, validating configuration, testing connections). They do <strong>not</strong>
@@ -67,6 +67,7 @@ public abstract class BaseStepHelper implements StepHelperInterface {
    * @return A JSON object containing the action status and any additional response data.
    */
   @Override
+  @SuppressWarnings( "unchecked" )
   public JSONObject stepAction( String method, TransMeta transMeta, Map<String, String> queryParams ) {
     JSONObject response;
     try {
