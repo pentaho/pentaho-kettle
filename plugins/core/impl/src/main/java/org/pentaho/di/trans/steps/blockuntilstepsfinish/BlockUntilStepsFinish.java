@@ -79,7 +79,7 @@ public class BlockUntilStepsFinish extends BaseStep implements StepInterface {
           }
         }
 
-        int CopyNr = Const.toInt( meta.getStepCopyNr()[i], 0 );
+        int CopyNr = Const.toInt( environmentSubstitute(meta.getStepCopyNr()[i]), 0 );
         StepInterface step = getDispatcher().findBaseSteps( stepnames[i] ).get( CopyNr );
         if ( step == null ) {
           throw new KettleException( "Erreur finding step [" + stepnames[i] + "] nr copy=" + CopyNr + "!" );
