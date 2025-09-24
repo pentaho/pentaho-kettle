@@ -1404,7 +1404,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     wPassword.setText( Const.NVL( jobEntry.getPassword(), "" ) );
     wFtpDirectory.setText( Const.NVL( jobEntry.getFtpDirectory(), "" ) );
     wWildcard.setText( Const.NVL( jobEntry.getWildcard(), "" ) );
-    wTimeout.setText( "" + jobEntry.getTimeout() );
+    wTimeout.setText( jobEntry.getTimeout() );
     wActive.setSelection( jobEntry.isActiveConnection() );
 
     wuseProxy.setSelection( jobEntry.isUseProxy() );
@@ -1464,7 +1464,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     jobEntry.setPassword( wPassword.getText() );
     jobEntry.setFtpDirectory( wFtpDirectory.getText() );
     jobEntry.setWildcard( wWildcard.getText() );
-    jobEntry.setTimeout( Const.toInt( wTimeout.getText(), 10000 ) );
+    jobEntry.setTimeout( wTimeout.getText() );
     jobEntry.setActiveConnection( wActive.getSelection() );
 
     jobEntry.setUseProxy( wuseProxy.getSelection() );

@@ -89,7 +89,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
   private String wildcard;
 
-  private int timeout;
+  private String timeout;
 
   private boolean activeConnection;
 
@@ -238,7 +238,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "password" ) );
       ftpDirectory = XMLHandler.getTagValue( entrynode, "ftpdirectory" );
       wildcard = XMLHandler.getTagValue( entrynode, "wildcard" );
-      timeout = Const.toInt( XMLHandler.getTagValue( entrynode, "timeout" ), 10000 );
+      timeout = XMLHandler.getTagValue( entrynode, "timeout" );
       activeConnection = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "active" ) );
 
       useproxy = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "useproxy" ) );
@@ -280,7 +280,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
         Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
       ftpDirectory = rep.getJobEntryAttributeString( id_jobentry, "ftpdirectory" );
       wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
-      timeout = (int) rep.getJobEntryAttributeInteger( id_jobentry, "timeout" );
+      timeout = rep.getJobEntryAttributeString( id_jobentry, "timeout" );
       activeConnection = rep.getJobEntryAttributeBoolean( id_jobentry, "active" );
 
       copyprevious = rep.getJobEntryAttributeBoolean( id_jobentry, "copyprevious" );
@@ -541,14 +541,14 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
    * @param timeout
    *          The timeout to set.
    */
-  public void setTimeout( int timeout ) {
+  public void setTimeout( String timeout ) {
     this.timeout = timeout;
   }
 
   /**
    * @return Returns the timeout.
    */
-  public int getTimeout() {
+  public String getTimeout() {
     return timeout;
   }
 
@@ -688,6 +688,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       if ( copyprevious ) {
         realFtpDirectory = "";
       }
+      int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 0 );
       if ( protocol.equals( PROTOCOL_FTP ) ) {
         // If socks proxy server was provided
         if ( !Utils.isEmpty( socksProxyHost ) ) {
@@ -719,12 +720,12 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
         // establish the connection
         FTPConnect(
           realservername, realUsername, realPassword, realserverport, realFtpDirectory, realproxyhost,
-          realproxyusername, realproxypassword, realproxyport, timeout );
+          realproxyusername, realproxypassword, realproxyport, timeoutValue );
 
         filelist = ftpclient.dir();
       } else if ( protocol.equals( PROTOCOL_FTPS ) ) {
         // establish the secure connection
-        FTPSConnect( realservername, realUsername, realserverport, realPassword, realFtpDirectory, timeout );
+        FTPSConnect( realservername, realUsername, realserverport, realPassword, realFtpDirectory, timeoutValue );
         // Get all the files in the current directory...
         filelist = ftpsclient.getFileNames();
       } else if ( protocol.equals( PROTOCOL_SFTP ) ) {
@@ -949,9 +950,10 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       }
     }
 
-    if ( timeout > 0 ) {
+    int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 0 );
+    if ( timeoutValue > 0 ) {
       // Use timeout
-      conn.connect( null, 0, timeout * 1000 );
+      conn.connect( null, 0, timeoutValue * 1000 );
 
     } else {
       // Cache Host Key
