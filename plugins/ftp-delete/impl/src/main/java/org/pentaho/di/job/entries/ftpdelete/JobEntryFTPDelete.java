@@ -688,7 +688,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       if ( copyprevious ) {
         realFtpDirectory = "";
       }
-      int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 0 );
+      int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 10000 );
       if ( protocol.equals( PROTOCOL_FTP ) ) {
         // If socks proxy server was provided
         if ( !Utils.isEmpty( socksProxyHost ) ) {
@@ -950,7 +950,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       }
     }
 
-    int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 0 );
+    int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 10000 );
     if ( timeoutValue > 0 ) {
       // Use timeout
       conn.connect( null, 0, timeoutValue * 1000 );
