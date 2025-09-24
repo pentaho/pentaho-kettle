@@ -1,16 +1,18 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-  <id>osgi</id>
+  <id>pdi-samples-ce</id>
   <formats>
     <format>zip</format>
   </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
-  <componentDescriptors>
-    <componentDescriptor>src/assembly-common/component.xml</componentDescriptor>
-  </componentDescriptors>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <baseDirectory>samples</baseDirectory>
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}/src/main/resources-standard</directory>
+      <directory>${project.basedir}/src/main/resources</directory>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${assembly.dir}</directory>
       <outputDirectory>.</outputDirectory>
     </fileSet>
   </fileSets>
