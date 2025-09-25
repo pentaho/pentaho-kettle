@@ -326,9 +326,16 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     try {
       JsonInputMeta jsonInputMeta = (JsonInputMeta) getStepMetaInterface();
       FileInputList fileInputList = jsonInputMeta.getFiles( getTransMeta().getBowl(), getTransMeta() );
+      if ( fileInputList == null || fileInputList.getFiles() == null || fileInputList.getFiles().isEmpty() ) {
+        return buildErrorResponse(
+          "JsonInput.Error.UnableToView.Label",
+          "JsonInput.Error.NoInputSpecified.Message"
+        );
+      }
       String[] files = fileInputList.getFileStrings();
 
-      InputStream inputStream = KettleVFS.getInstance( getTransMeta().getBowl() ).getInputStream( files[ 0 ], getTransMeta() );
+      InputStream inputStream = KettleVFS.getInstance( getTransMeta().getBowl() ).getInputStream( files[ 0 ],
+              getTransMeta() );
       // Parse the JSON file
       JsonSampler jsonSampler = new JsonSampler( getTransMeta().getBowl() );
       JsonFactory jsonFactory = new MappingJsonFactory();
@@ -339,12 +346,22 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       response.put( "data", jsonObject );
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
     } catch ( Exception e ) {
-      log.logError( "Error in selectFields: " + e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-      response.put( "errorMessage", e.getMessage() );
+      log.logError( "Error in selectFields", e );
+      return buildErrorResponse(
+        "JsonInput.Error.UnableToView.Label",
+        "JsonInput.Error.UnableToView.Message"
+      );
     }
 
     return response;
+  }
+
+  private JSONObject buildErrorResponse( String labelKey, String messageKey ) {
+    JSONObject errorResponse = new JSONObject();
+    errorResponse.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+    errorResponse.put( "errorLabel", BaseMessages.getString( PKG, labelKey ) );
+    errorResponse.put( "errorMessage", BaseMessages.getString( PKG, messageKey ) );
+    return errorResponse;
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
