@@ -20,15 +20,16 @@ import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.metastore.MetaStoreConst;
+import org.pentaho.di.pan.executors.ClusteredTransExecutorService;
+import org.pentaho.di.pan.executors.LocalTransExecutorService;
+import org.pentaho.di.pan.executors.RemoteTransExecutorService;
+import org.pentaho.di.pan.executors.TransExecutorService;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.DefaultTransFactoryManager;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.cluster.TransSplitter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,10 +46,14 @@ public class PanTransformationDelegate {
   private LogChannelInterface log;
   private Repository repository;
 
-  private static final String DASHES = "-----------------------------------------------------";
+  private final Map<String, TransExecutorService> transformationExecutorServiceMap = Map.of(
+    "LOCAL", new LocalTransExecutorService(),
+    "REMOTE", new RemoteTransExecutorService(),
+    "CLUSTERED", new ClusteredTransExecutorService()
+  );
 
   public PanTransformationDelegate( LogChannelInterface log ) {
-    this.log = log;
+    this( log, null );
   }
 
   public PanTransformationDelegate( LogChannelInterface log, Repository repository ) {
@@ -120,180 +125,16 @@ public class PanTransformationDelegate {
                                               TransExecutionConfiguration executionConfiguration,
                                               String[] arguments ) throws KettleException {
 
-    // Is this a local execution?
     if ( executionConfiguration.isExecutingLocally() ) {
-      return executeLocally( transMeta, executionConfiguration, arguments );
-
+      return transformationExecutorServiceMap.get( "LOCAL" ).execute( log, transMeta, repository, executionConfiguration, arguments );
     } else if ( executionConfiguration.isExecutingRemotely() ) {
-      return executeRemotely( transMeta, executionConfiguration );
-
+      return transformationExecutorServiceMap.get( "REMOTE" ).execute( log, transMeta, repository, executionConfiguration, arguments );
     } else if ( executionConfiguration.isExecutingClustered() ) {
-      return executeClustered( transMeta, executionConfiguration );
+      return transformationExecutorServiceMap.get( "CLUSTERED" ).execute( log, transMeta, repository, executionConfiguration, arguments );
 
     } else {
       throw new KettleException( BaseMessages.getString( pkg, "PanTransformationDelegate.Error.NoExecutionTypeSpecified" ) );
     }
-  }
-
-  /**
-   * Execute transformation locally.
-   */
-  private Result executeLocally( TransMeta transMeta,
-                                 TransExecutionConfiguration executionConfiguration,
-                                 String[] arguments ) throws KettleException {
-
-    log.logBasic( BaseMessages.getString( pkg, "PanTransformationDelegate.Log.ExecutingLocally" ) );
-
-    Trans trans = DefaultTransFactoryManager.getInstance().getTransFactory( executionConfiguration.getRunConfiguration() ).create( transMeta, transMeta );
-    trans.setRepository( repository );
-    trans.setMetaStore( MetaStoreConst.getDefaultMetastore() );
-
-    // Copy execution configuration settings
-    trans.setLogLevel( executionConfiguration.getLogLevel() );
-    trans.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
-    trans.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
-
-    // Apply variables from execution configuration
-    Map<String, String> variables = executionConfiguration.getVariables();
-    for ( Map.Entry<String, String> entry : variables.entrySet() ) {
-      trans.setVariable( entry.getKey(), entry.getValue() );
-    }
-
-    // Prepare and start execution
-    trans.prepareExecution( arguments );
-    trans.startThreads();
-
-    // Wait for completion
-    trans.waitUntilFinished();
-
-    return trans.getResult();
-  }
-
-  /**
-   * Execute transformation remotely.
-   */
-  private Result executeRemotely( TransMeta transMeta,
-                                  TransExecutionConfiguration executionConfiguration ) throws KettleException {
-
-    log.logBasic( BaseMessages.getString( pkg, "PanTransformationDelegate.Log.ExecutingRemotely" ) );
-
-    if ( executionConfiguration.getRemoteServer() == null ) {
-      throw new KettleException( BaseMessages.getString( pkg, "PanTransformationDelegate.Error.NoRemoteServerSpecified" ) );
-    }
-
-    // Send transformation to slave server
-    String carteObjectId = Trans.sendToSlaveServer( transMeta, executionConfiguration, repository, MetaStoreConst.getDefaultMetastore() );
-
-    // Monitor remote transformation
-    monitorRemoteTransformation( transMeta, carteObjectId, executionConfiguration.getRemoteServer() );
-
-    // For command-line execution, we typically return a simple success result
-    // In a real implementation, you might want to fetch the actual result from the remote server
-    Result result = new Result();
-    result.setResult( true );
-    return result;
-  }
-
-  /**
-   * Execute transformation in clustered mode.
-   */
-  protected Result executeClustered( TransMeta transMeta,
-                                   TransExecutionConfiguration executionConfiguration ) throws KettleException {
-
-    log.logBasic( BaseMessages.getString( pkg, "PanTransformationDelegate.Log.ExecutingClustered" ) );
-
-    try {
-      final TransSplitter transSplitter = new TransSplitter( transMeta );
-      transSplitter.splitOriginalTransformation();
-
-      // Inject certain internal variables to make it more intuitive
-      for ( String transVar : Const.INTERNAL_TRANS_VARIABLES ) {
-        executionConfiguration.getVariables().put( transVar, transMeta.getVariable( transVar ) );
-      }
-
-      // Parameters override the variables
-      TransMeta originalTransformation = transSplitter.getOriginalTransformation();
-      for ( String param : originalTransformation.listParameters() ) {
-        String value = Const.NVL( originalTransformation.getParameterValue( param ),
-          Const.NVL( originalTransformation.getParameterDefault( param ),
-            originalTransformation.getVariable( param ) ) );
-        if ( !Utils.isEmpty( value ) ) {
-          executionConfiguration.getVariables().put( param, value );
-        }
-      }
-      executeClustered( transSplitter, executionConfiguration );
-      // Monitor clustered transformation
-      Trans.monitorClusteredTransformation( log, transSplitter, null );
-      Result result = Trans.getClusteredTransformationResult( log, transSplitter, null );
-
-      logClusteredResults( transMeta, result );
-
-      return result;
-
-    } catch ( Exception e ) {
-      throw new KettleException( e );
-    }
-  }
-
-  public void executeClustered( TransSplitter transSplitter, TransExecutionConfiguration executionConfiguration )
-    throws KettleException {
-    // Execute clustered transformation
-    try {
-      Trans.executeClustered( transSplitter, executionConfiguration );
-    } catch ( Exception e ) {
-      cleanupClusterAfterError( transSplitter, e );
-    }
-  }
-  public void cleanupClusterAfterError( TransSplitter transSplitter, Exception e ) throws KettleException {
-    // Clean up cluster in case of error
-    try {
-      Trans.cleanupCluster( log, transSplitter );
-    } catch ( Exception cleanupException ) {
-      throw new KettleException( "Error executing transformation and error cleaning up cluster", e );
-    }
-  }
-
-  /**
-   * Monitor remote transformation execution.
-   */
-  protected void monitorRemoteTransformation( final TransMeta transMeta,
-                                            final String carteObjectId,
-                                            final SlaveServer remoteSlaveServer ) {
-
-    // Launch in a separate thread to prevent blocking
-    Thread monitorThread = new Thread( () ->
-      Trans.monitorRemoteTransformation( log, carteObjectId, transMeta.toString(), remoteSlaveServer )
-    );
-
-    monitorThread.setName( "Monitor remote transformation '" + transMeta.getName()
-      + "', carte object id=" + carteObjectId
-      + ", slave server: " + remoteSlaveServer.getName() );
-    monitorThread.start();
-
-    // For command-line execution, we might want to wait for completion
-    try {
-      monitorThread.join();
-    } catch ( InterruptedException e ) {
-      log.logError( "Interrupted while monitoring remote transformation", e );
-      Thread.currentThread().interrupt();
-    }
-  }
-
-  /**
-   * Log clustered transformation results.
-   */
-  protected void logClusteredResults( TransMeta transMeta, Result result ) {
-    log.logBasic( DASHES );
-    log.logBasic( "Got result back from clustered transformation:" );
-    log.logBasic( transMeta + DASHES );
-    log.logBasic( transMeta + " Errors : " + result.getNrErrors() );
-    log.logBasic( transMeta + " Input : " + result.getNrLinesInput() );
-    log.logBasic( transMeta + " Output : " + result.getNrLinesOutput() );
-    log.logBasic( transMeta + " Updated : " + result.getNrLinesUpdated() );
-    log.logBasic( transMeta + " Read : " + result.getNrLinesRead() );
-    log.logBasic( transMeta + " Written : " + result.getNrLinesWritten() );
-    log.logBasic( transMeta + " Rejected : " + result.getNrLinesRejected() );
-    log.logBasic( transMeta + DASHES );
   }
 
   /**

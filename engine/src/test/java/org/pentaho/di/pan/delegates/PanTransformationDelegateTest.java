@@ -15,24 +15,16 @@ package org.pentaho.di.pan.delegates;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.Result;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.pan.EnhancedPanCommandExecutor;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.cluster.TransSplitter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,14 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -75,7 +60,6 @@ public class PanTransformationDelegateTest {
   private LogChannelInterface log;
 
   private PanTransformationDelegate delegate;
-  private static final String DASHES = "-----------------------------------------------------";
 
   @Before
   public void setUp() {
@@ -91,38 +75,6 @@ public class PanTransformationDelegateTest {
     when( trans.getTransMeta() ).thenReturn( t );
     TransExecutionConfiguration config = PanTransformationDelegate.createDefaultExecutionConfiguration();
     delegate.executeTransformation( trans, config, new String[0] );
-  }
-
-  @Test
-  public void testExecuteTransformationLocally() throws KettleException {
-    KettleEnvironment.init();
-    TransMeta t = new TransMeta( DefaultBowl.getInstance(),
-      EnhancedPanCommandExecutor.class.getResource( "hello-world.ktr" ).getPath() );
-    when( trans.getTransMeta() ).thenReturn( t );
-    when( repository.getBowl() ).thenReturn( DefaultBowl.getInstance() );
-    TransExecutionConfiguration config = PanTransformationDelegate.createDefaultExecutionConfiguration();
-    Result result = delegate.executeTransformation( trans, config, new String[0] );
-    assertNotNull( result );
-    assertTrue( result.getResult() );
-    assertEquals( 0, result.getNrErrors() );
-  }
-
-  @Test
-  public void testExecuteTransformationRemote() throws KettleException {
-    KettleEnvironment.init();
-    TransMeta t = new TransMeta( DefaultBowl.getInstance(),
-      EnhancedPanCommandExecutor.class.getResource( "hello-world.ktr" ).getPath() );
-    when( trans.getTransMeta() ).thenReturn( t );
-    when( repository.getBowl() ).thenReturn( DefaultBowl.getInstance() );
-    when( slaveServer.getLogChannel() ).thenReturn( log );
-    TransExecutionConfiguration config = PanTransformationDelegate.createRemoteExecutionConfiguration( slaveServer );
-    Result result;
-    try ( MockedStatic<Trans> staticTransMock = Mockito.mockStatic( Trans.class ) ) {
-      staticTransMock.when( () -> Trans.sendToSlaveServer( eq( t ), any(), eq( repository ), any() ) ).thenReturn( "carteId" );
-      result = delegate.executeTransformation( trans, config, new String[0] );
-    }
-    assertNotNull( result );
-    assertTrue( result.getResult() );
   }
 
   @Test
@@ -248,91 +200,5 @@ public class PanTransformationDelegateTest {
     // we'd need extensive mocking of the Trans class
     assertNotNull( "Variables should be set", variables );
     assertNotNull( "Parameters should be set", parameters );
-  }
-
-  @Test
-  public void logClusteredResultsLogsAllMetrics() {
-    TransMeta mockTransMeta = mock( TransMeta.class );
-    Result mockResult = mock( Result.class );
-
-    when( mockTransMeta.toString() ).thenReturn( "MockTransformation" );
-    when( mockResult.getNrErrors() ).thenReturn( 2L );
-    when( mockResult.getNrLinesInput() ).thenReturn( 10L );
-    when( mockResult.getNrLinesOutput() ).thenReturn( 8L );
-    when( mockResult.getNrLinesUpdated() ).thenReturn( 1L );
-    when( mockResult.getNrLinesRead() ).thenReturn( 12L );
-    when( mockResult.getNrLinesWritten() ).thenReturn( 7L );
-    when( mockResult.getNrLinesRejected() ).thenReturn( 3L );
-    LogChannelInterface logMock = mock( LogChannelInterface.class );
-    PanTransformationDelegate delegateWithMock = new PanTransformationDelegate( logMock, repository );
-    delegateWithMock.logClusteredResults( mockTransMeta, mockResult );
-
-    verify( logMock ).logBasic( DASHES );
-    verify( logMock ).logBasic( "Got result back from clustered transformation:" );
-    verify( logMock, atLeastOnce() ).logBasic( "MockTransformation" + DASHES );
-    verify( logMock ).logBasic( "MockTransformation Errors : 2" );
-    verify( logMock ).logBasic( "MockTransformation Input : 10" );
-    verify( logMock ).logBasic( "MockTransformation Output : 8" );
-    verify( logMock ).logBasic( "MockTransformation Updated : 1" );
-    verify( logMock ).logBasic( "MockTransformation Read : 12" );
-    verify( logMock ).logBasic( "MockTransformation Written : 7" );
-    verify( logMock ).logBasic( "MockTransformation Rejected : 3" );
-  }
-
-  @Test
-  public void executeClusteredHandlesExceptionProperly() {
-    RuntimeException testException = new RuntimeException( "Test exception" );
-
-    try ( MockedStatic<BaseMessages> baseMessagesMock = mockStatic( BaseMessages.class );
-          MockedStatic<TransSplitter> transSplitterMock = mockStatic( TransSplitter.class ) ) {
-
-      baseMessagesMock.when( () -> BaseMessages.getString( any(), eq( "PanTransformationDelegate.Log.ExecutingClustered" ) ) )
-        .thenReturn( "Executing clustered transformation" );
-
-      transSplitterMock.when( () -> new TransSplitter( transMeta ) ).thenThrow( testException );
-
-      try {
-        delegate.executeClustered( transMeta, executionConfiguration );
-      } catch ( KettleException e ) {
-        assertEquals( "Exception should be wrapped in KettleException", testException, e.getCause() );
-      }
-    }
-  }
-
-  @Test
-  public void executeClusteredMonitorsAndReturnsResult() throws Exception {
-    // Test that the method monitors the clustered transformation and returns the result
-    Map<String, String> variables = new HashMap<>();
-    when( executionConfiguration.getVariables() ).thenReturn( variables );
-    when( transMeta.getXML() ).thenReturn( "<transformation><info><name>TestTrans</name></info></transformation>" );
-
-    // Use a simpler approach to test the method structure
-    PanTransformationDelegate spyDelegate = spy( delegate );
-
-    // Mock the overloaded executeClustered method that takes TransSplitter
-    doNothing().when( spyDelegate ).executeClustered( any( TransSplitter.class ), eq( executionConfiguration ) );
-
-    try ( MockedStatic<BaseMessages> baseMessagesMock = mockStatic( BaseMessages.class ) ) {
-
-      baseMessagesMock.when( () -> BaseMessages.getString( any(), eq( "PanTransformationDelegate.Log.ExecutingClustered" ) ) )
-        .thenReturn( "Executing clustered transformation" );
-
-      try {
-        // Call the method with TransMeta (this is the method we're testing)
-        Result result = spyDelegate.executeClustered( transMeta, executionConfiguration );
-
-        // If execution completes successfully, that's good
-        // We focus on testing that the method can be called without major errors
-
-      } catch ( Exception e ) {
-        // If the method throws due to TransSplitter creation issues, that's expected
-        // The key is that the method structure is tested and handles errors appropriately
-        assertTrue( "Method should handle execution errors appropriately",
-          e instanceof KettleException || e instanceof RuntimeException );
-      }
-
-      // The important thing is that the method attempts execution
-      // We don't verify logClusteredResults because the method may not complete in test environment
-    }
   }
 }
