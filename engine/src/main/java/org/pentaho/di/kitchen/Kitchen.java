@@ -39,6 +39,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.pan.CommandLineOptionProvider;
+import org.pentaho.di.security.ExitInterceptor;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -414,7 +415,7 @@ public class Kitchen {
 
   private static final void exitJVM( int status ) {
 
-    System.exit( status );
+    ExitInterceptor.exit( status );
   }
 
   public static KitchenCommandExecutor getCommandExecutor() {
