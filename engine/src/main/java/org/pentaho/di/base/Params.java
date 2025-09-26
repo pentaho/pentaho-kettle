@@ -53,6 +53,7 @@ public class Params implements IParams {
   private NamedParams namedParams;
   private NamedParams customNamedParams;
   private NamedParams pluginNamedParams;
+  private String runConfiguration;
 
   private Params() {
 
@@ -89,6 +90,7 @@ public class Params implements IParams {
     private NamedParams namedParams;
     private NamedParams customNamedParams;
     private NamedParams pluginNamedParams;
+    private String runConfiguration;
 
     public Builder() {
       this( java.util.UUID.randomUUID().toString() );
@@ -243,6 +245,11 @@ public class Params implements IParams {
       return this;
     }
 
+    public Builder runConfiguration( String runConfiguration ) {
+      this.runConfiguration = runConfiguration;
+      return this;
+    }
+
     public Params build() {
       Params params = new Params();
       params.uuid = uuid;
@@ -276,6 +283,7 @@ public class Params implements IParams {
       params.namedParams = namedParams;
       params.customNamedParams = customNamedParams;
       params.pluginNamedParams = pluginNamedParams;
+      params.runConfiguration = runConfiguration;
 
 
       return params;
@@ -577,6 +585,14 @@ public class Params implements IParams {
     }
 
     return customParams;
+  }
+
+  public String getRunConfiguration() {
+    return runConfiguration;
+  }
+
+  public void setRunConfiguration( String runConfiguration ) {
+    this.runConfiguration = runConfiguration;
   }
 
   @Override

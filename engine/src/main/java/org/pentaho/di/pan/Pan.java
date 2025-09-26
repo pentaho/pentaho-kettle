@@ -49,7 +49,7 @@ public class Pan {
 
   private static FileLoggingEventListener fileLoggingEventListener;
 
-  private static PanCommandExecutor commandExecutor;
+  private static EnhancedPanCommandExecutor commandExecutor;
 
   public static void main( String[] a ) throws Exception {
     try {
@@ -71,6 +71,7 @@ public class Pan {
       StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
       StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
       StringBuilder optionBase64Zip, optionUuid;
+      StringBuilder optionRunConfiguration = new StringBuilder();
 
       NamedParams optionParams = new NamedParamsDefault();
 
@@ -156,7 +157,10 @@ public class Pan {
             new StringBuilder(), false, true ),
           new CommandLineOption(
             "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
-            new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
+            new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption,
+          new CommandLineOption(
+            "runConfig", BaseMessages.getString( PKG, "Pan.ComdLine.RunConfiguration" ),
+            optionRunConfiguration ) };
 
       // Get command line Parameters added by plugins
       NamedParams pluginNamedParams = getPluginNamedParams( log );
@@ -225,7 +229,7 @@ public class Pan {
       // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
       if ( getCommandExecutor() == null ) {
-        setCommandExecutor( new PanCommandExecutor( PKG, log ) ); // init
+        setCommandExecutor( new EnhancedPanCommandExecutor( PKG, log ) ); // init
       }
 
       if ( !Utils.isEmpty( optionVersion ) ) {
@@ -271,6 +275,7 @@ public class Pan {
         .base64Zip( optionBase64Zip.toString() )
         .namedParams( optionParams )
         .pluginNamedParams( pluginNamedParams )
+        .runConfiguration( optionRunConfiguration.toString() )
         .build();
 
       Result rslt = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] ) );
@@ -343,10 +348,10 @@ public class Pan {
    */
   protected static void configureParameters( Trans trans, NamedParams optionParams,
                                              TransMeta transMeta ) throws UnknownParamException {
-    PanCommandExecutor.configureParameters( trans, optionParams, transMeta );
+    EnhancedPanCommandExecutor.configureParameters( trans, optionParams, transMeta );
   }
 
-  private static final void exitJVM( int status ) {
+  private static void exitJVM( int status ) {
 
     // Let's not forget to close the log file we're writing to...
     //
@@ -363,11 +368,11 @@ public class Pan {
     System.exit( status );
   }
 
-  public static PanCommandExecutor getCommandExecutor() {
+  public static EnhancedPanCommandExecutor getCommandExecutor() {
     return commandExecutor;
   }
 
-  public static void setCommandExecutor( PanCommandExecutor commandExecutor ) {
+  public static void setCommandExecutor( EnhancedPanCommandExecutor commandExecutor ) {
     Pan.commandExecutor = commandExecutor;
   }
 }

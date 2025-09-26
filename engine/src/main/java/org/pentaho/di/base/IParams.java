@@ -216,4 +216,8 @@ public interface IParams extends Serializable {
    * @return  Map custom plugin named parameter key/value pairs
    */
   Map<String, String> getPluginParams();
+  /**
+   * @return runConfiguration the name of the run configuration to use
+   */
+  String getRunConfiguration();
 }
