@@ -96,7 +96,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
   private boolean binaryMode;
 
-  private int timeout;
+  private String timeout;
 
   private boolean remove;
 
@@ -195,6 +195,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     nr_limit = "10";
     port = "21";
     socksProxyPort = "1080";
+    timeout = "0";
     success_condition = SUCCESS_IF_NO_ERRORS;
     ifFileExists = ifFileExistsSkip;
     SifFileExists = SifFileExistsSkip;
@@ -282,7 +283,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       targetDirectory = XMLHandler.getTagValue( entrynode, "targetdirectory" );
       wildcard = XMLHandler.getTagValue( entrynode, "wildcard" );
       binaryMode = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "binary" ) );
-      timeout = Const.toInt( XMLHandler.getTagValue( entrynode, "timeout" ), 10000 );
+      timeout = XMLHandler.getTagValue( entrynode, "timeout" );
       remove = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "remove" ) );
       onlyGettingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "only_new" ) );
       activeConnection = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "active" ) );
@@ -356,7 +357,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       targetDirectory = rep.getJobEntryAttributeString( id_jobentry, "targetdirectory" );
       wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
       binaryMode = rep.getJobEntryAttributeBoolean( id_jobentry, "binary" );
-      timeout = (int) rep.getJobEntryAttributeInteger( id_jobentry, "timeout" );
+      timeout = rep.getJobEntryAttributeString( id_jobentry, "timeout" );
       remove = rep.getJobEntryAttributeBoolean( id_jobentry, "remove" );
       onlyGettingNewFiles = rep.getJobEntryAttributeBoolean( id_jobentry, "only_new" );
       activeConnection = rep.getJobEntryAttributeBoolean( id_jobentry, "active" );
@@ -694,14 +695,14 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
    * @param timeout
    *          The timeout to set.
    */
-  public void setTimeout( int timeout ) {
+  public void setTimeout( String timeout ) {
     this.timeout = timeout;
   }
 
   /**
    * @return Returns the timeout.
    */
-  public int getTimeout() {
+  public String getTimeout() {
     return timeout;
   }
 
@@ -956,9 +957,9 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       }
 
       // Set the timeout
-      ftpclient.setTimeout( timeout );
+      ftpclient.setTimeout( Const.toInt( environmentSubstitute( timeout ), 10000 ) );
       if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetTimeout", String.valueOf( timeout ) ) );
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetTimeout", String.valueOf( environmentSubstitute( timeout ) ) ) );
       }
 
       ftpclient.setControlEncoding( controlEncoding );
