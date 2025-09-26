@@ -23,11 +23,16 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.simplemapping.SimpleMappingHelper;
+import org.pentaho.di.trans.steps.simplemapping.SimpleMappingMeta;
 
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 public class JmsConsumerMetaTest {
@@ -56,5 +61,15 @@ public class JmsConsumerMetaTest {
     variables.setVariable( "testOne", "changedValue" );
     JmsConsumerMeta jmsMetaWithVars = (JmsConsumerMeta) jmsMeta.withVariables( variables );
     assertEquals( "changedValue", jmsMetaWithVars.jmsDelegate.amqUrl );
+  }
+
+  @Test
+  public void testGetStepHelperInterface() {
+    JmsConsumerMeta jmsConsumerMeta = new JmsConsumerMeta();
+    StepHelperInterface stepHelperInterface = jmsConsumerMeta.getStepHelperInterface();
+
+    assertNotNull( "StepHelperInterface should not be null", stepHelperInterface );
+    assertTrue( "StepHelperInterface should be an instance of JmsConsumerHelper",
+        stepHelperInterface instanceof JmsConsumerHelper );
   }
 }

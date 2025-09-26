@@ -29,6 +29,7 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
@@ -38,6 +39,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -214,5 +216,13 @@ public class MetaInjectMetaTest {
         variables ) );
   }
 
+  @Test
+  public void testGetStepHelperInterface() {
+    MetaInjectMeta injectMeta = new MetaInjectMeta();
+    StepHelperInterface stepHelperInterface = injectMeta.getStepHelperInterface();
 
+    assertNotNull( "StepHelperInterface should not be null", stepHelperInterface );
+    assertTrue( "StepHelperInterface should be an instance of MetaInjectHelper",
+        stepHelperInterface instanceof MetaInjectHelper );
+  }
 }

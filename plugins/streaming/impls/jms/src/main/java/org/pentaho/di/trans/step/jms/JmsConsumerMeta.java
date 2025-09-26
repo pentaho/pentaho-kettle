@@ -27,6 +27,7 @@ import org.pentaho.di.trans.ISubTransAwareMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -143,6 +144,11 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
 
   @Override public StepDataInterface getStepData() {
     return new GenericStepData();
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new JmsConsumerHelper( this );
   }
 
   /**
