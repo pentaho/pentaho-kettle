@@ -1,7 +1,5 @@
 package org.pentaho.di.repovfs.plugin.vfs;
 
-import org.pentaho.di.repovfs.vfs.JCRSolutionFileProvider;
-
 import org.pentaho.di.connections.annotations.Encrypted;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -16,10 +14,15 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// even though we don't want to persist, this is still needed by ConnectionManager.clone
+// even though we don't want to persist, MetaStore annotations are still needed by ConnectionManager.clone
 @MetaStoreElementType( name = "Pentaho repository connection", description = "A VFS connection to the Pentaho Repository" )
 /** Information needed to connect to the repository */
 public class RepoVfsDetails extends BaseVFSConnectionDetails {
+
+  public static enum RepoType {
+    LOCAL,
+    REMOTE
+  }
 
   private static Logger log = LoggerFactory.getLogger( RepoVfsDetails.class );
 
@@ -41,6 +44,9 @@ public class RepoVfsDetails extends BaseVFSConnectionDetails {
   @Encrypted
   private String pass;
 
+  @MetaStoreAttribute
+  private RepoType repoType;
+
   @Override
   public String getName() {
     return name;
@@ -53,7 +59,7 @@ public class RepoVfsDetails extends BaseVFSConnectionDetails {
 
   @Override
   public String getType() {
-    return JCRSolutionFileProvider.SCHEME;
+    return RepoVfsPdiProvider.KEY;
   }
 
   @Override
@@ -118,7 +124,6 @@ public class RepoVfsDetails extends BaseVFSConnectionDetails {
 
   @Override
   public String getDomain() {
-
     return tryParseUrl().map( url -> {
       String domain = url.getHost();
       int port = url.getPort();
@@ -128,7 +133,6 @@ public class RepoVfsDetails extends BaseVFSConnectionDetails {
         return domain;
       }
     } ).orElse( "" );
-
   }
 
   @Override
@@ -136,9 +140,21 @@ public class RepoVfsDetails extends BaseVFSConnectionDetails {
     return tryParseUrl().map( URL::getPath ).orElse( "/" );
   }
 
+  public RepoType getRepoType() {
+    return repoType;
+  }
+
+  public void setRepoType( RepoType repoType ) {
+    this.repoType = repoType;
+  }
+
+  public boolean isRemote() {
+    return repoType == RepoType.REMOTE;
+  }
+
   @Override
   public String toString() {
-    return String.format( "name: '%s', url: '%s', user: '%s', pass: %s, description: '%s'", name, url, user,
-      pass == null ? "<null>" : "***", description );
+    return String.format( "name: '%s', url: '%s', user: '%s', pass: %s, description: '%s', type: %s", name, url, user,
+      pass == null ? "<null>" : "***", description, repoType );
   }
 }

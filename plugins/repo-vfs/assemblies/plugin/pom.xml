@@ -79,6 +79,11 @@
       </exclusions>
     </dependency>
     <dependency>
+      <artifactId>repo-vfs-server-local</artifactId>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <artifactId>repo-vfs-spoon</artifactId>
       <groupId>org.pentaho.di.plugins</groupId>
       <version>${project.version}</version>
