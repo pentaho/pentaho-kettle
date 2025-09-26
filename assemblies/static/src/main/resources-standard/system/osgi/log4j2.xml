@@ -10,7 +10,7 @@
    | website: https://logging.apache.org/log4j/2.x/manual/configuration.html
  -->
 
-<Configuration name="PentahoKettle" status="ERROR" dest="out">
+<Configuration name="PentahoKettle" status="ERROR" dest="out" monitorInterval="30">
 
    <Appenders>
 
