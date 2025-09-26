@@ -13,15 +13,20 @@
 
 package org.pentaho.di.shared;
 
+import org.pentaho.di.core.bowl.CachingManager;
+import org.pentaho.di.core.bowl.UpdateSubscriber;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.RepositoryElementInterface;
 
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.WeakHashMap;
 
 /**
  * This class uses the SharedObjectsIO to retrieve and save shared objects. This is used by the UI.
@@ -30,9 +35,10 @@ import java.util.stream.Collectors;
  * written through this interface will be reflected.
  */
 public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T> & RepositoryElementInterface>
-  implements SharedObjectsManagementInterface<T> {
+  implements SharedObjectsManagementInterface<T>, CachingManager {
 
   protected SharedObjectsIO sharedObjectsIO;
+  private final WeakHashMap<UpdateSubscriber, Void> changeSubscribers = new WeakHashMap<>();
 
   private Map<String, T> sharedObjectsMap = new HashMap<>();
   private volatile boolean initialized = false;
@@ -104,6 +110,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
     T readBack = createSharedObjectUsingNode( readBackNode );
 
     sharedObjectsMap.put( name, readBack.makeClone() );
+    notifySubscribers();
   }
 
   /**
@@ -154,13 +161,53 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
       this.sharedObjectsIO.delete( sharedObjectType, existingName );
       sharedObjectsMap.remove( existingName );
     }
+    notifySubscribers();
   }
 
   @Override
   public synchronized void clear( ) throws KettleException {
     this.sharedObjectsIO.clear( sharedObjectType );
+    reset();
+    notifySubscribers();
+  }
+
+  /**
+   * resets the caches in this manager.
+  */
+  public synchronized void reset() {
     sharedObjectsMap.clear();
     initialized = false;
+  }
+
+  /**
+   * Subscribe to changes made to this Manager instance.
+   * <p>
+   * Note that this implementation uses a WeakReference to retain the connection to the subscriber, so the caller should
+   * hold onto this object as long as it needs to be called for changes.
+   *
+   * @param subscriber
+   */
+  @Override
+  public synchronized void addSubscriber( UpdateSubscriber subscriber ) {
+    changeSubscribers.put( subscriber, null );
+  }
+
+  private void notifySubscribers() {
+    // operate on a copy
+    Set<UpdateSubscriber> subs;
+    synchronized( this ) {
+      subs = new HashSet<>( changeSubscribers.keySet() );
+    }
+    for ( UpdateSubscriber subscriber : subs ) {
+      if ( subscriber != null ) {
+        subscriber.notifyChanged();
+      }
+    }
+  }
+
+  @Override
+  public void notifyChanged() {
+    reset();
   }
 
 }

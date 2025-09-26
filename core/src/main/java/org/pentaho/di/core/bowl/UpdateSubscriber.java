@@ -11,14 +11,14 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.connections;
+package org.pentaho.di.core.bowl;
 
 /**
- * Interface to be notified by ConnectionManager when changes are made.
+ * Interface to be notified by a Manager when changes are made.
  *
  */
 @FunctionalInterface
-public interface ConnectionUpdateSubscriber {
+public interface UpdateSubscriber {
 
   /**
    * Notify that any write operation was performed (create/update/delete)

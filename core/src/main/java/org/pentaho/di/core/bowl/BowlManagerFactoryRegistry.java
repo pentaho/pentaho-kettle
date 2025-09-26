@@ -13,13 +13,10 @@
 package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.ConnectionUpdateSubscriber;
 import org.pentaho.di.core.exception.KettleException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
-
 
 /**
  * A Registry that holds Factories that generate Manager classes from a Bowl.
@@ -32,26 +29,10 @@ public class BowlManagerFactoryRegistry {
 
   private final Map<Class<?>, ManagerFactory<?>> factories = new HashMap<>();
 
-  private static class ConnectionManagerFactory implements ManagerFactory<ConnectionManager> {
-    // need to hang onto the subscriber as long as the Bowl exists
-    private final WeakHashMap<Bowl, ConnectionUpdateSubscriber> subscribers = new WeakHashMap<>();
-
-    public ConnectionManager apply( Bowl bowl ) throws KettleException {
-      ConnectionManager connectionManager = ConnectionManager.getInstance( bowl );
-      if ( !bowl.getParentBowls().isEmpty() ) {
-        ConnectionUpdateSubscriber subscriber = connectionManager::reset;
-        for ( Bowl parentBowl : bowl.getParentBowls() ) {
-          parentBowl.getManager( ConnectionManager.class ).addSubscriber( subscriber );
-        }
-        subscribers.put( bowl, subscriber );
-      }
-      return connectionManager;
-    }
-  }
-
   private BowlManagerFactoryRegistry() {
     // initialize manager factories from core
-    registerManagerFactory( ConnectionManager.class, new ConnectionManagerFactory() );
+    registerManagerFactory( ConnectionManager.class, new CachingManagerFactory<ConnectionManager>(
+      ConnectionManager.class, ConnectionManager::getInstance ) );
   }
 
   public static BowlManagerFactoryRegistry getInstance() {
