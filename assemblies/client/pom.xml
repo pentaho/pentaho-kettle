@@ -30,6 +30,54 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-static</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-plugins</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-libs</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di</groupId>
+      <artifactId>pdi-samples</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-application-launcher</artifactId>
       <version>${pentaho-launcher.version}</version>
@@ -97,386 +145,26 @@
       </exclusions>
     </dependency>
   </dependencies>
-
-  <profiles>
-
-    <profile>
-      <id>default-no-osgi</id>
-      <activation>
-        <property>
-          <name>!osgi</name>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-static</artifactId>
-          <version>${project.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-plugins</artifactId>
-          <version>${project.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-libs</artifactId>
-          <version>${project.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-samples</artifactId>
-          <version>${project.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>assembly_package</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <configuration>
-                  <descriptors>
-                    <descriptor>${basedir}/src/assemblies/assembly.xml</descriptor>
-                  </descriptors>
-                  <appendAssemblyId>false</appendAssemblyId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>osgi</id>
-      <activation>
-        <property>
-          <name>osgi</name>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-static</artifactId>
-          <version>${project.version}</version>
-          <classifier>osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-plugins</artifactId>
-          <version>${project.version}</version>
-          <classifier>osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-libs</artifactId>
-          <version>${project.version}</version>
-          <classifier>osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-samples</artifactId>
-          <version>${project.version}</version>
-          <classifier>osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.hitachivantara.karaf.assemblies</groupId>
-          <artifactId>client</artifactId>
-          <version>${pentaho-karaf.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-
-          <plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-karaf</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>unpack</goal>
-                </goals>
-                <configuration>
-                  <artifactItems>
-                    <artifactItem>
-                      <groupId>org.hitachivantara.karaf.assemblies</groupId>
-                      <artifactId>client</artifactId>
-                      <type>zip</type>
-                    </artifactItem>
-                  </artifactItems>
-                  <outputDirectory>${assembly.dir}/system/karaf</outputDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>assembly_package</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <configuration>
-                  <descriptors>
-                    <descriptor>${basedir}/src/assemblies/assembly-osgi.xml</descriptor>
-                  </descriptors>
-                  <appendAssemblyId>true</appendAssemblyId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.codehaus.gmaven</groupId>
-            <artifactId>groovy-maven-plugin</artifactId>
-            <version>2.1.1</version>
-            <executions>
-              <execution>
-                <id>generate-hadoop-addon</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <source>
-                    println( "INFO: generating ${project.artifactId}-${project.version}-hadoop-addon.zip ..." );
-                    //<![CDATA[
-
-                    import java.util.HashMap;
-                    import java.util.Map;
-                    import java.util.Enumeration;
-                    import java.io.File;
-                    import java.io.IOException;
-                    import java.io.FileInputStream;
-                    import java.io.FileOutputStream;
-                    import java.net.URI;
-                    import java.util.zip.ZipEntry;
-                    import java.util.zip.ZipFile;
-                    import java.util.zip.ZipInputStream;
-                    import java.util.zip.ZipOutputStream;
-                    
-                    import org.apache.commons.io.IOUtils;
-
-                    try {                    
-                    
-                      File noOsgiZip = new File( project.build.directory.toString() + "/${project.artifactId}-${project.version}.zip" );
-                      if ( !noOsgiZip.exists() ) {
-                        println("ERROR: " + project.build.directory.toString() + "/${project.artifactId}-${project.version}.zip not found");
-                        throw new RuntimeException( 
-                          "ensure you have not run 'clean' prior to executing this profile and that you've executed the 'default' profile");
-                      }
-                    
-                      File osgiZip = new File( project.build.directory.toString() + "/${project.artifactId}-${project.version}-osgi.zip" );
-                    
-                      int i = 0;
-                      Map<String,Long> noOsgiZipFileChecksumMap = new HashMap<String,Long>();
-                      ZipFile noOsgiZipFile = new ZipFile( noOsgiZip );
-                      Enumeration noOsgiEnum = noOsgiZipFile.entries();
-                      while ( noOsgiEnum.hasMoreElements() ) {
-                        ZipEntry entry = (ZipEntry) noOsgiEnum.nextElement();
-                        noOsgiZipFileChecksumMap.put( entry.getName(), (Long) entry.getCrc() );
-                        i++;
-                      }
-
-                      ZipOutputStream zipOutputStream = 
-                        new ZipOutputStream( 
-                          new FileOutputStream( 
-                            new File( project.build.directory.toString() + "/${project.artifactId}-${project.version}-hadoop-addon.zip" )
-                          )
-                        );
-
-                      int j = 0;
-                      int k = 0;
-                      int l = 0;
-                      boolean copyFile = false;
-                      ZipFile osgiZipFile = new ZipFile( osgiZip );
-                      Enumeration osgiEnum = osgiZipFile.entries();
-                      while ( osgiEnum.hasMoreElements() ) {
-                        ZipEntry entry = (ZipEntry) osgiEnum.nextElement();
-                        String name = entry.getName();
-                        Long crc = entry.getCrc();
-                        if ( !noOsgiZipFileChecksumMap.containsKey(name) ) {
-                          copyFile = true;
-                          k++;
-                        } else if ( !crc.equals( noOsgiZipFileChecksumMap.get(name) ) ) {
-                          println( name + " has different crc" );
-                          copyFile = true;
-                          l++;
-                        }
-                        if ( copyFile ) {
-                          ZipEntry newEntry = new ZipEntry( entry.getName() );
-                          zipOutputStream.putNextEntry( newEntry );
-                          IOUtils.copy( osgiZipFile.getInputStream( entry ), zipOutputStream );
-                          zipOutputStream.closeEntry();
-                        }
-                        copyFile = false;
-                        j++;
-                      }
-                      ZipEntry readmeEntry = new ZipEntry( "data-integration/HADOOP_ADDON_README" );
-                      zipOutputStream.putNextEntry( readmeEntry );
-                      IOUtils.copy( new FileInputStream( new File ( project.basedir.toString() + "/src/main/docs/addon.README" ) ), zipOutputStream );
-                      ZipEntry batchFileEntry = new ZipEntry( "data-integration/uninstall-hadoop-addon.bat" );
-                      zipOutputStream.putNextEntry( batchFileEntry );
-                      IOUtils.copy( new FileInputStream( new File ( project.basedir.toString() + "/src/main/resources-addon/uninstall-hadoop-addon.bat" ) ), zipOutputStream );
-                      ZipEntry shellFileEntry = new ZipEntry( "data-integration/uninstall-hadoop-addon.sh" );
-                      zipOutputStream.putNextEntry( shellFileEntry );
-                      IOUtils.copy( new FileInputStream( new File ( project.basedir.toString() + "/src/main/resources-addon/uninstall-hadoop-addon.sh" ) ), zipOutputStream );
-
-                      zipOutputStream.closeEntry();
-
-
-                      println( "osgi: " + j + " files");
-                      println( "noOsgi: " + i + " files" );
-                      println( "missing files: " + k );
-                      println( "changed files: " + l );
-
-                      zipOutputStream.finish();
-                      zipOutputStream.close();
-                      noOsgiZipFile.close();
-                      osgiZipFile.close();
-
-                    } catch( IOException ioe) {
-                      throw new RuntimeException( ioe );
-                    }
-
-                    //]]>
-                  </source>
-                </configuration>
-              </execution>
-            </executions>
-            <dependencies>
-              <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons-io.version}</version>
-              </dependency>
-            </dependencies>
-          </plugin>
-
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>3.3.0</version>
-            <executions>
-              <execution>
-                <id>attach-hadoop-addon-artifact</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>attach-artifact</goal>
-                </goals>
-                <configuration>
-                  <artifacts>
-                    <artifact>
-                      <file>${project.build.directory}/${project.artifactId}-${project.version}-hadoop-addon.zip</file>
-                      <type>zip</type>
-                      <classifier>hadoop-addon</classifier>
-                    </artifact>
-                  </artifacts>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-        </plugins>
-      </build>
-    </profile>
-
-  </profiles>
-
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
+        <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <id>rename-unpacked-dependencies</id>
-            <phase>process-resources</phase>
+            <id>assembly_package</id>
+            <phase>package</phase>
             <goals>
-              <goal>run</goal>
+              <goal>single</goal>
             </goals>
             <configuration>
-              <target>
-                <echo message="Moving unpacked dependencies to the right place..."/>
-                <move file="${assembly.dir}/pdi-websocket-daemon" tofile="${assembly.dir}/adaptive-execution" failonerror="false"/>
-              </target>
+              <descriptors>
+                <descriptor>src/assembly/assembly.xml</descriptor>
+              </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
-
 </project>
