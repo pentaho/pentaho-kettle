@@ -26,7 +26,6 @@
     <module>lib</module>
     <module>plugins</module>
     <module>client</module>
-    <module>core</module>
   </modules>
 
   <profiles>
