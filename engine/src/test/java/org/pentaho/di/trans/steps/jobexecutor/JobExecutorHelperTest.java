@@ -38,6 +38,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.pentaho.di.trans.step.BaseStepHelper.IS_VALID_REFERENCE;
 import static org.pentaho.di.trans.step.BaseStepHelper.REFERENCE_PATH;
 import static org.pentaho.di.trans.step.StepHelperInterface.ACTION_STATUS;
 import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_METHOD_NOT_FOUND_RESPONSE;
@@ -150,21 +151,45 @@ public class JobExecutorHelperTest {
 
   @Test
   public void testReferencePath() {
-    when( jobExecutorMeta.getDirectoryPath() ).thenReturn( "/path" );
-    when( jobExecutorMeta.getJobName() ).thenReturn( "jobName" );
-    when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
-    JSONObject response = jobExecutorHelper.stepAction( REFERENCE_PATH, transMeta, null );
+    try ( MockedStatic<JobExecutorMeta> jobExecutorMetaMockedStatic = mockStatic( JobExecutorMeta.class ) ) {
+      jobExecutorMetaMockedStatic.when( () ->  JobExecutorMeta.loadJobMeta( transMeta.getBowl(), jobExecutorMeta, jobExecutorMeta.getRepository(), transMeta ) )
+          .thenReturn( jobMeta );
+      when( jobExecutorMeta.getDirectoryPath() ).thenReturn( "/path" );
+      when( jobExecutorMeta.getJobName() ).thenReturn( "jobName" );
+      when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+      JSONObject response = jobExecutorHelper.stepAction( REFERENCE_PATH, transMeta, null );
 
-    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
-    assertNotNull( response );
-    assertNotNull( response.get( REFERENCE_PATH ) );
-    assertEquals( "/path/jobName", response.get( REFERENCE_PATH ) );
+      assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+      assertNotNull( response );
+      assertNotNull( response.get( REFERENCE_PATH ) );
+      assertEquals( "/path/jobName", response.get( REFERENCE_PATH ) );
+      assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+    }
+  }
+
+  @Test
+  public void testReferencePath_throwsException() {
+    try ( MockedStatic<JobExecutorMeta> jobExecutorMetaMockedStatic = mockStatic( JobExecutorMeta.class ) ) {
+      jobExecutorMetaMockedStatic.when( () ->  JobExecutorMeta.loadJobMeta( transMeta.getBowl(), jobExecutorMeta, jobExecutorMeta.getRepository(), transMeta ) )
+          .thenThrow( new KettleException( "invalid_job" ) );
+      when( jobExecutorMeta.getDirectoryPath() ).thenReturn( "/path" );
+      when( jobExecutorMeta.getJobName() ).thenReturn( "jobName" );
+      when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+      JSONObject response = jobExecutorHelper.stepAction( REFERENCE_PATH, transMeta, null );
+
+      assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+      assertNotNull( response );
+      assertNotNull( response.get( REFERENCE_PATH ) );
+      assertEquals( "/path/jobName", response.get( REFERENCE_PATH ) );
+      assertEquals( false, response.get( IS_VALID_REFERENCE ) );
+    }
   }
 
   @Test
   public void testHandleStepAction_whenMethodNameIsInvalid() {
     JSONObject response = jobExecutorHelper.stepAction( "invalidMethod", transMeta, null );
 
-    assertNotNull( response ); assertEquals( FAILURE_METHOD_NOT_FOUND_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertEquals( FAILURE_METHOD_NOT_FOUND_RESPONSE, response.get( ACTION_STATUS ) );
   }
 }

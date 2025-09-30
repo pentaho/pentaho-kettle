@@ -25,13 +25,18 @@ import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static org.pentaho.di.job.entries.trans.JobEntryTransHelper.JOB_ENTRY_TRANS_REFERENCE_PATH;
 import static org.pentaho.di.job.entries.trans.JobEntryTransHelper.PARAMETERS;
-import static org.pentaho.di.trans.step.StepHelperInterface.ACTION_STATUS;
-import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_METHOD_NOT_FOUND_RESPONSE;
+import static org.pentaho.di.job.entry.BaseJobEntryHelper.IS_VALID_REFERENCE;
+import static org.pentaho.di.job.entry.JobEntryHelperInterface.ACTION_STATUS;
+import static org.pentaho.di.job.entry.JobEntryHelperInterface.FAILURE_METHOD_NOT_FOUND_RESPONSE;
+import static org.pentaho.di.job.entry.JobEntryHelperInterface.SUCCESS_RESPONSE;
 
 public class JobEntryTransHelperTest {
   private static final String TEST_PARAM_1 = "param1";
@@ -72,9 +77,40 @@ public class JobEntryTransHelperTest {
   }
 
   @Test
+  public void testReferencePath() throws KettleException {
+    doReturn( transMeta ).when( jobEntryTrans ).getTransMeta( null, null, jobMeta );
+    when( jobEntryTrans.getDirectory() ).thenReturn( "/path" );
+    when( jobEntryTrans.getTransname() ).thenReturn( "transName" );
+    when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    JSONObject response = jobEntryTransHelper.jobEntryAction( JOB_ENTRY_TRANS_REFERENCE_PATH, jobMeta, null );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( JOB_ENTRY_TRANS_REFERENCE_PATH ) );
+    assertEquals( "/path/transName", response.get( JOB_ENTRY_TRANS_REFERENCE_PATH ) );
+    assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+  }
+
+  @Test
+  public void testReferencePath_throwsException() throws KettleException {
+    doThrow( new KettleException( "Invalid transformation" ) ).when( jobEntryTrans ).getTransMeta( null, null, jobMeta );
+    when( jobEntryTrans.getDirectory() ).thenReturn( "/path" );
+    when( jobEntryTrans.getTransname() ).thenReturn( "transName" );
+    when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    JSONObject response = jobEntryTransHelper.jobEntryAction( JOB_ENTRY_TRANS_REFERENCE_PATH, jobMeta, null );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( JOB_ENTRY_TRANS_REFERENCE_PATH ) );
+    assertEquals( "/path/transName", response.get( JOB_ENTRY_TRANS_REFERENCE_PATH ) );
+    assertEquals( false, response.get( IS_VALID_REFERENCE ) );
+  }
+
+  @Test
   public void testHandleStepAction_whenMethodNameIsInvalid() {
     JSONObject response = jobEntryTransHelper.handleJobEntryAction( "invalidMethod", jobMeta, null );
 
-    assertNotNull( response ); assertEquals( FAILURE_METHOD_NOT_FOUND_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertEquals( FAILURE_METHOD_NOT_FOUND_RESPONSE, response.get( ACTION_STATUS ) );
   }
 }

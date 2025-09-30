@@ -24,6 +24,7 @@ import java.util.Map;
 public class JobEntryJobHelper extends BaseJobEntryHelper {
 
   protected static final String PARAMETERS = "parameters";
+  protected static final String JOB_ENTRY_JOB_REFERENCE_PATH = "referencePath";
   private final JobEntryJob jobEntryJob;
 
   public JobEntryJobHelper( JobEntryJob jobEntryJob ) {
@@ -36,12 +37,14 @@ public class JobEntryJobHelper extends BaseJobEntryHelper {
   @Override
   protected JSONObject handleJobEntryAction( String method, JobMeta jobMeta, Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
-    if ( !PARAMETERS.equalsIgnoreCase( method ) ) {
+    if ( method.equals( JOB_ENTRY_JOB_REFERENCE_PATH ) ) {
+      response = getReferencePath( jobMeta );
+    } else if ( method.equals( PARAMETERS ) ) {
+      response = getParametersFromJob( jobMeta );
+    } else {
       response.put( ACTION_STATUS, FAILURE_METHOD_NOT_FOUND_RESPONSE );
-      return response;
     }
 
-    response = getParametersFromJob( jobMeta );
     return response;
   }
 
@@ -66,6 +69,28 @@ public class JobEntryJobHelper extends BaseJobEntryHelper {
       response.put( "error", kettleException.getMessage() );
     }
 
+    return response;
+  }
+
+  /**
+   * Retrieves the reference path of the job associated with the job entry.
+   * @param jobMeta The job metadata containing the job entry.
+   * @return A JSON object containing:
+   * - "referencePath": The reference path of the job.
+   * - "isValidReference": A boolean indicating if the reference is valid.
+   * - "isTransReference": A boolean indicating if the reference is a job.
+   */
+  public JSONObject getReferencePath( JobMeta jobMeta ) {
+    JSONObject response = new JSONObject();
+    try {
+      response.put( JOB_ENTRY_JOB_REFERENCE_PATH, getReferencePath( jobMeta, jobEntryJob.getDirectory(), jobEntryJob.getJobName() ) );
+      jobEntryJob.getJobMeta( jobMeta.getRepository(), null, jobMeta );
+      response.put( IS_VALID_REFERENCE, true );
+      response.put( IS_TRANS_REFERENCE, false );
+    } catch ( Exception exception ) {
+      response.put( IS_VALID_REFERENCE, false );
+      response.put( IS_TRANS_REFERENCE, false );
+    }
     return response;
   }
 }

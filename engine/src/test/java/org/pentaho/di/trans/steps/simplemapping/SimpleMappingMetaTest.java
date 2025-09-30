@@ -24,12 +24,16 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.MappingIODefinitionLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.MappingParametersLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.ObjectIdLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.ObjectLocationSpecificationMethodLoadSaveValidator;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class SimpleMappingMetaTest {
   LoadSaveTester loadSaveTester;
@@ -64,4 +68,13 @@ public class SimpleMappingMetaTest {
     loadSaveTester.testSerialization();
   }
 
+  @Test
+  public void testGetStepHelperInterface() {
+    SimpleMappingMeta simpleMappingMeta = new SimpleMappingMeta();
+    StepHelperInterface stepHelperInterface = simpleMappingMeta.getStepHelperInterface();
+
+    assertNotNull( "StepHelperInterface should not be null", stepHelperInterface );
+    assertTrue( "StepHelperInterface should be an instance of SimpleMappingHelper",
+        stepHelperInterface instanceof SimpleMappingHelper );
+  }
 }

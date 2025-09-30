@@ -47,6 +47,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -548,5 +549,10 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
 
   public IMetaStore getMetaStore() {
     return metaStore;
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new SingleThreaderHelper( this );
   }
 }
