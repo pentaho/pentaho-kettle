@@ -71,6 +71,7 @@ public class Pan {
       StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
       StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
       StringBuilder optionBase64Zip, optionUuid;
+      StringBuilder optionRunConfiguration = new StringBuilder();
 
       NamedParams optionParams = new NamedParamsDefault();
 
@@ -156,7 +157,10 @@ public class Pan {
             new StringBuilder(), false, true ),
           new CommandLineOption(
             "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
-            new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
+            new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption,
+          new CommandLineOption(
+            "runConfig", BaseMessages.getString( PKG, "Pan.ComdLine.RunConfiguration" ),
+            optionRunConfiguration ) };
 
       // Get command line Parameters added by plugins
       NamedParams pluginNamedParams = getPluginNamedParams( log );
@@ -271,6 +275,7 @@ public class Pan {
         .base64Zip( optionBase64Zip.toString() )
         .namedParams( optionParams )
         .pluginNamedParams( pluginNamedParams )
+        .runConfiguration( optionRunConfiguration.toString() )
         .build();
 
       Result rslt = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] ) );
@@ -346,7 +351,7 @@ public class Pan {
     PanCommandExecutor.configureParameters( trans, optionParams, transMeta );
   }
 
-  private static final void exitJVM( int status ) {
+  private static void exitJVM( int status ) {
 
     // Let's not forget to close the log file we're writing to...
     //
