@@ -33,6 +33,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.kitchen.Kitchen;
+import org.pentaho.di.security.ExitInterceptor;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
@@ -365,7 +366,7 @@ public class Pan {
       KettleLogStore.getAppender().removeLoggingEventListener( fileLoggingEventListener );
     }
 
-    System.exit( status );
+    ExitInterceptor.exit( status );
   }
 
   public static PanCommandExecutor getCommandExecutor() {
