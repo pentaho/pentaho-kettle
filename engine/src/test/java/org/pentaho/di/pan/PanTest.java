@@ -23,6 +23,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.repository.RepositoriesMeta;
@@ -153,7 +154,7 @@ public class PanTest {
     when( mockRepositoriesMeta.nrRepositories() ).thenReturn( 1 );
     when( mockRepositoriesMeta.getRepository( 0 ) ).thenReturn( mockRepositoryMeta );
 
-    PanCommandExecutor testPanCommandExecutor = new PanCommandExecutorForTesting( null, null, mockRepositoriesMeta );
+    PanCommandExecutorForTesting testPanCommandExecutor = new PanCommandExecutorForTesting( null, null, mockRepositoriesMeta );
 
     origSysOut = System.out;
     origSysErr = System.err;
@@ -201,7 +202,7 @@ public class PanTest {
     when( mockRepository.getDirectoryNames( any() ) ).thenReturn( new String[]{ DUMMY_DIR_1, DUMMY_DIR_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    PanCommandExecutor testPanCommandExecutor =
+    PanCommandExecutorForTesting testPanCommandExecutor =
       new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
     origSysOut = System.out;
@@ -250,7 +251,7 @@ public class PanTest {
     when( mockRepository.getTransformationNames( any(), anyBoolean() ) ).thenReturn( new String[]{ DUMMY_TRANS_1, DUMMY_TRANS_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    PanCommandExecutor testPanCommandExecutor =
+    PanCommandExecutorForTesting testPanCommandExecutor =
       new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
     origSysOut = System.out;
@@ -295,7 +296,7 @@ public class PanTest {
 
     public PanCommandExecutorForTesting( Repository testRepository, RepositoryMeta testRepositoryMeta,
                                          RepositoriesMeta testRepositoriesMeta ) {
-      super( Pan.class );
+      super( Pan.class, new LogChannel( Pan.STRING_PAN ) );
       this.testRepository = testRepository;
       this.testRepositoryMeta = testRepositoryMeta;
       this.testRepositoriesMeta = testRepositoriesMeta;
