@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.xmljoin;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -221,7 +222,11 @@ public class XMLJoin extends BaseStep implements StepInterface {
     }
 
     try {
-      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      TransformerFactory factory = TransformerFactory.newInstance();
+      factory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
+      factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
+      factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "" );
+      Transformer transformer = factory.newTransformer();
 
       if ( meta.getEncoding() != null ) {
         transformer.setOutputProperty( OutputKeys.ENCODING, meta.getEncoding() );

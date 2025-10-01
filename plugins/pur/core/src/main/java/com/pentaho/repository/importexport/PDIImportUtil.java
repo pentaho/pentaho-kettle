@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -75,6 +76,12 @@ public class PDIImportUtil {
     } catch ( ParserConfigurationException e ) {
       log.logError( e.getLocalizedMessage() );
       factory = DocumentBuilderFactory.newInstance();
+      try {
+        factory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
+        factory.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", true );
+      } catch ( ParserConfigurationException ex ) {
+        throw new RuntimeException( ex );
+      }
     }
     DocumentBuilder builder = null;
     Document doc = null;
@@ -109,6 +116,9 @@ public class PDIImportUtil {
       StringWriter stringWriter = new StringWriter();
       Result result = new StreamResult( stringWriter );
       TransformerFactory factory = TransformerFactory.newInstance();
+      factory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
+      factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
+      factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "" );
       Transformer transformer = factory.newTransformer();
       transformer.transform( source, result );
       return stringWriter.getBuffer().toString();
