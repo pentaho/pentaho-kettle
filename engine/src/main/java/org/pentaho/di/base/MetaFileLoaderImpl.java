@@ -12,10 +12,9 @@
 
 package org.pentaho.di.base;
 
-import org.apache.commons.lang.StringUtils;
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
@@ -38,6 +37,8 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+
+import org.apache.commons.lang.StringUtils;
 
 import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY;
 import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;
@@ -285,7 +286,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
 
     if ( theMeta == null ) {
       theMeta = isTransMeta()
-        ? (T) new TransMeta( bowl, realFilename, metaStore, null, true, transSpace, null )
+        ? (T) new TransMeta( bowl, realFilename, metaStore, rep, true, transSpace, null )
         : (T) new JobMeta( bowl, jobSpace, realFilename, rep, metaStore, null );
       idContainer[ 0 ] = realFilename;  //only pass back the id used in the cache, if a cache entry should be created
     }

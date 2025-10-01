@@ -15,13 +15,6 @@
 
 package org.pentaho.di.trans;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.vfs2.FileName;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
@@ -97,8 +90,8 @@ import org.pentaho.di.shared.ChangeTrackingPartitionSchemaManager;
 import org.pentaho.di.shared.PassthroughClusterSchemaManager;
 import org.pentaho.di.shared.PassthroughPartitionSchemaManager;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.shared.SharedObjectUtil;
+import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -115,10 +108,9 @@ import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -134,6 +126,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * This class defines information about a transformation and offers methods to save and load it from XML or a PDI
@@ -3011,7 +3011,11 @@ public class TransMeta extends AbstractMeta
     // OK, try to load using the VFS stuff...
     Document doc = null;
     try {
-      if (parentVariableSpace == null ) {
+      // start by inheriting the bowl from the argument. It might get overwritten later. 
+      if ( bowl != null ) {
+        setBowl( bowl );
+      }
+      if ( parentVariableSpace == null ) {
         parentVariableSpace = new Variables();
         // load globals
         parentVariableSpace.initializeVariablesFrom( null );
@@ -5406,13 +5410,18 @@ public class TransMeta extends AbstractMeta
       updateFields( maxDateConnection, newDatabaseMeta );
     }
 
-    for ( StepMeta step : getSteps() ) {
-      DatabaseMeta[] dbs = step.getStepMetaInterface().getUsedDatabaseConnections();
-      if ( dbs != null ) {
-        for ( DatabaseMeta db : dbs ) {
-          Optional<DatabaseMeta> newDatabaseMeta =
-            Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
-          updateFields( db, newDatabaseMeta );
+    if ( getSteps() != null ) {
+      for ( StepMeta step : getSteps() ) {
+        StepMetaInterface stepMetaInterface = step.getStepMetaInterface();
+        if ( stepMetaInterface != null ) {
+          DatabaseMeta[] dbs = stepMetaInterface.getUsedDatabaseConnections();
+          if ( dbs != null ) {
+            for ( DatabaseMeta db : dbs ) {
+              Optional<DatabaseMeta> newDatabaseMeta =
+                Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
+              updateFields( db, newDatabaseMeta );
+            }
+          }
         }
       }
     }
