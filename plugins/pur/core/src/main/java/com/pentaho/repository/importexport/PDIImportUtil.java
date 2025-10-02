@@ -80,7 +80,7 @@ public class PDIImportUtil {
         factory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
         factory.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", true );
       } catch ( ParserConfigurationException ex ) {
-        throw new RuntimeException( ex );
+        log.logError( ex.getMessage() );
       }
     }
     DocumentBuilder builder = null;
