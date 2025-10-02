@@ -324,7 +324,7 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
         TableItem ti = wFields.table.getItem( i );
         if ( jobEntry.getConnections()[i] != null ) {
           ti.setText( 1, jobEntry.getConnections()[i].getName() );
-          ti.setText( 2, "" + Const.toInt( jobEntry.getWaitfors()[i], 0 ) );
+          ti.setText( 2, jobEntry.getWaitfors()[i] );
           ti.setText( 3, JobEntryCheckDbConnections.getWaitTimeDesc( jobEntry.getWaittimes()[i] ) );
         }
       }
@@ -363,7 +363,7 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
       DatabaseMeta dbMeta = jobMeta.findDatabase( arg );
       if ( dbMeta != null ) {
         connections[i] = dbMeta;
-        waitfors[i] = "" + Const.toInt( wFields.getNonEmpty( i ).getText( 2 ), 0 );
+        waitfors[i] = wFields.getNonEmpty( i ).getText( 2 );
         waittimes[i] =
           JobEntryCheckDbConnections.getWaitTimeByDesc( wFields.getNonEmpty( i ).getText( 3 ) );
       }
