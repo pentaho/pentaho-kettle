@@ -23,7 +23,11 @@
 package org.pentaho.di.repository;
 
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
+import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.bowl.BaseBowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.bowl.UpdateSubscriber;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -40,11 +44,31 @@ public class RepositoryBowl extends BaseBowl implements HasRepositoryInterface{
 
   private final Repository repository;
   private final RepositorySharedObjectsIO sharedObjectsIO;
+  // Need to hang on to this reference until 'this' goes out of scope.
+  private UpdateSubscriber defaultBowlUpdater;
 
   public RepositoryBowl( Repository repository ) {
     this.repository = Objects.requireNonNull( repository );
     this.sharedObjectsIO = new RepositorySharedObjectsIO( repository, () ->
       getManager( SlaveServerManagementInterface.class ).getAll() );
+  }
+
+  @Override
+  public <T> T getManager( Class<T> managerClass) throws KettleException {
+    T manager = super.getManager( managerClass );
+    synchronized( this ) {
+      if ( defaultBowlUpdater == null && managerClass == ConnectionManager.class ) {
+        // Ensure changes to this Bowl's VFS connections propagate back to the DefaultBowl's VFS connections
+        // This allows backwards-compatible steps that use backwards-compatible APIs that use DefaultBowl to see changes
+        // written through this RepositoryBowl.
+        ConnectionManager mgr = (ConnectionManager) manager;
+        ConnectionManager defaultMgr = DefaultBowl.getInstance().getManager( ConnectionManager.class );
+        defaultBowlUpdater = defaultMgr::notifyChanged;
+        // inform the Default manager about changes in our connections
+        mgr.addSubscriber( defaultBowlUpdater );
+      }
+    }
+    return manager;
   }
 
   @Override
