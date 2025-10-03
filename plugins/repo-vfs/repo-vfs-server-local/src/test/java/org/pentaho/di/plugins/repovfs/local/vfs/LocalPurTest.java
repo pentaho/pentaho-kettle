@@ -16,7 +16,6 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
 import org.pentaho.platform.plugin.services.importexport.StreamConverter;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
-import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository;
 import org.pentaho.test.platform.repository2.unified.MockUnifiedRepository;
 import org.pentaho.test.platform.repository2.unified.MockUnifiedRepository.ICurrentUserProvider;
 
@@ -24,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,16 +34,12 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 public class LocalPurTest {
 
   private static DefaultFileSystemManager fsm;
 
-  //TODO: per test?
   private static MockUnifiedRepository repository;
 
   @BeforeAll
@@ -58,12 +52,6 @@ public class LocalPurTest {
     fsm = (DefaultFileSystemManager) VFS.getManager();
     fsm.removeProvider( LocalPurProvider.SCHEME );
     fsm.addProvider( LocalPurProvider.SCHEME, new TestLocalPurProvider( repository ) );
-  }
-
-
-  @BeforeEach
-  void setUp() {
-    //TODO:
   }
 
   private static MockUnifiedRepository createMockRepository( ICurrentUserProvider userProvider ) {
@@ -171,109 +159,6 @@ public class LocalPurTest {
       assertEquals( "move-content", content );
     }
   }
-
-  @Disabled
-  @Test
-  void testMoveFolderWithFilesInside() throws Exception {
-    // TODO: API says it moves files and folders recursively, but mock isn't complying
-    // Create source folder and files inside
-    FileObject baseFolder = fsm.resolveFile( url( "/testMoveFolderWithFilesInside/" ) );
-    baseFolder.createFolder();
-
-    FileObject srcFolder = baseFolder.resolveFile( "sourceFolder" );
-    srcFolder.createFolder();
-    FileObject file1 = srcFolder.resolveFile( "file1.txt" );
-    file1.createFile();
-    writeToFile( file1, "file1-content" );
-    FileObject file2 = srcFolder.resolveFile( "file2.txt" );
-    file2.createFile();
-    writeToFile( file2, "file2-content" );
-
-    // Create destination folder
-    FileObject destFolder = baseFolder.resolveFile( "movedFolder" );
-
-    // Move the folder
-    srcFolder.moveTo( destFolder );
-
-    // Source folder should not exist
-    assertFalse( srcFolder.exists() );
-    // Destination folder should exist
-    assertTrue( destFolder.exists() );
-    assertTrue( destFolder.isFolder() );
-
-    // Files inside destination folder should exist and have correct content
-    FileObject movedFile1 = destFolder.resolveFile( "file1.txt" );
-    FileObject movedFile2 = destFolder.resolveFile( "file2.txt" );
-
-    assertTrue(  baseFolder.resolveFile( "movedFolder/file1.txt" ) .exists() );
-
-    assertTrue( movedFile1.exists() );
-    assertTrue( movedFile2.exists() );
-
-    try ( InputStream is1 = movedFile1.getContent().getInputStream() ) {
-      String content1 = IOUtils.toString( is1, StandardCharsets.UTF_8 );
-      assertEquals( "file1-content", content1 );
-    }
-    try ( InputStream is2 = movedFile2.getContent().getInputStream() ) {
-      String content2 = IOUtils.toString( is2, StandardCharsets.UTF_8 );
-      assertEquals( "file2-content", content2 );
-    }
-  }
-
-  @Disabled
-  @Test
-  void testMoveFolderWithFilesInside_fileRepo(@TempDir Path tempDir) throws Exception {
-
-    String scheme = "local-file-repo";
-    FileSystemBackedUnifiedRepository fileRepo = new FileSystemBackedUnifiedRepository( tempDir.toFile() );
-    DefaultFileSystemManager localFsm = (DefaultFileSystemManager) VFS.getManager();
-    localFsm.removeProvider( scheme );
-    localFsm.addProvider( scheme, new TestLocalPurProvider( fileRepo ) );
-
-    // Create source folder and files inside
-    FileObject baseFolder = localFsm.resolveFile( scheme + ":///testMoveFolderWithFilesInside/" );
-    baseFolder.createFolder();
-
-    FileObject srcFolder = baseFolder.resolveFile( "sourceFolder" );
-    srcFolder.createFolder();
-    FileObject file1 = srcFolder.resolveFile( "file1.txt" );
-    file1.createFile();
-    writeToFile( file1, "file1-content" );
-    FileObject file2 = srcFolder.resolveFile( "file2.txt" );
-    file2.createFile();
-    writeToFile( file2, "file2-content" );
-
-    // Create destination folder
-    FileObject destFolder = baseFolder.resolveFile( "movedFolder" );
-
-    // Move the folder
-    srcFolder.moveTo( destFolder );
-
-    // Source folder should not exist
-    assertFalse( srcFolder.exists() );
-    // Destination folder should exist
-    assertTrue( destFolder.exists() );
-    assertTrue( destFolder.isFolder() );
-
-    // Files inside destination folder should exist and have correct content
-    FileObject movedFile1 = destFolder.resolveFile( "file1.txt" );
-    FileObject movedFile2 = destFolder.resolveFile( "file2.txt" );
-
-    assertTrue( baseFolder.resolveFile( "movedFolder/file1.txt" ).exists() );
-
-    assertTrue( movedFile1.exists() );
-    assertTrue( movedFile2.exists() );
-
-    try ( InputStream is1 = movedFile1.getContent().getInputStream() ) {
-      String content1 = IOUtils.toString( is1, StandardCharsets.UTF_8 );
-      assertEquals( "file1-content", content1 );
-    }
-    try ( InputStream is2 = movedFile2.getContent().getInputStream() ) {
-      String content2 = IOUtils.toString( is2, StandardCharsets.UTF_8 );
-      assertEquals( "file2-content", content2 );
-    }
-  }
-
 
   private void writeToFile( FileObject file1, String textContent ) throws IOException, FileSystemException {
     try ( var out = file1.getContent().getOutputStream() ) {

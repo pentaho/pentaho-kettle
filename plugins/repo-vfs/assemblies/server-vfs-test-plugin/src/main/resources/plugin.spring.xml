@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--===========================================================================
+HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
+Copyright 2025 Hitachi Vantara. All rights reserved.
+NOTICE: All information including source code contained herein is, and
+remains the sole property of Hitachi Vantara and its licensors. The intellectual
+and technical concepts contained herein are proprietary and confidential
+to, and are trade secrets of Hitachi Vantara and may be covered by U.S. and foreign
+patents, or patents in process, and are protected by trade secret and
+copyright laws. The receipt or possession of this source code and/or related
+information does not convey or imply any rights to reproduce, disclose or
+distribute its contents, or to manufacture, use, or sell anything that it
+may describe, in whole or in part. Any reproduction, modification, distribution,
+or public display of this information without the express written authorization
+from Hitachi Vantara is strictly prohibited and in violation of applicable laws and
+international treaties. Access to the source code contained herein is strictly
+prohibited to anyone except those individuals and entities who have executed
+confidentiality and non-disclosure agreements or other agreements with Hitachi Vantara,
+explicitly covering such access.
+============================================================================-->
+<!--
+This is a Spring file that defines how Pentaho system objects are created and managed.
+An implementation of IPentahoObjectFactory, such as WebSpringPentahoObjectFactory, is
+responsible for serving objects to callers based on this file.
+Possible values for scope attribute:
+*singleton* - each request for this object returns the same instance
+*prototype* - each request for this object returns a new instance
+*session* - each request for this object within a session returns the same instance
+default-lazy-init is set to true since some of these object make calls into
+PentahoSystem which is initialized after Spring
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:ws="http://jax-ws.dev.java.net/spring/core"
+       xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
+       xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
+       xmlns:swm="http://www.hitachivantara.com/schema/security/web/model/spring"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
+            http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+            http://jax-ws.dev.java.net/spring/core http://jax-ws.dev.java.net/spring/core.xsd
+            http://jax-ws.dev.java.net/spring/servlet http://jax-ws.dev.java.net/spring/servlet.xsd
+            http://www.hitachivantara.com/schema/security/web/model/spring http://www.hitachivantara.com/schema/security/web/model/spring/hv-swm-spring.xsd"
+       default-lazy-init="true">
+
+
+  <context:annotation-config/>
+  <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
+
+  <!-- Register with PentahoSystem -->
+  <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer"
+        scope="singleton"/>
+
+  <!-- Our RESTish API -->
+  <bean class="org.pentaho.di.plugins.repovfs.test.server.VfsResource" scope="session" />
+
+
+</beans>
