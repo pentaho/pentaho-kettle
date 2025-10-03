@@ -40,7 +40,7 @@ public class RepositoryTypeGuesser {
 
   private static boolean isRepoLocal( Repository diRepo ) {
     // kinda shady but this might be the best guess
-    boolean hasPhonyPass = "ignore".equals( diRepo.getUserInfo().getPassword() );
+    boolean hasPhonyPass = "ignore".equals( diRepo.getUserInfo().getPassword() ) || "".equals( diRepo.getUserInfo().getPassword() );
     log.debug( "repo named {} {}", diRepo.getName(), hasPhonyPass ? "has phony pass" : "" );
     return diRepo.getName().equals( "singleDiServerInstance" ) && hasPhonyPass;
   }
@@ -79,7 +79,7 @@ public class RepositoryTypeGuesser {
   }
 
   private void logFlags() {
-    log.debug( "flags: single? {}, remote? {}, server? {}", isRemoteDiServerInstance(), isRemoteDiServerInstance(), isServer() );
+    log.debug( "flags: single? {}, remote? {}, server? {}", isSingleDiServerInstance(), isRemoteDiServerInstance(), isServer() );
   }
 
 }
