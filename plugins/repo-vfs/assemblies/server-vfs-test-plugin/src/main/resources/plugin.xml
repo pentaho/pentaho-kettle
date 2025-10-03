@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin title="VFS Test Plugin" xmlns:pen="http://www.pentaho.org/2008/xul" name="vfs-test-plugin">
+
+
+  <static-paths>
+  </static-paths>
+
+
+</plugin>

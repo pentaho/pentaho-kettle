@@ -19,6 +19,7 @@
 
   <modules>
     <module>plugin</module>
+    <module>server-vfs-test-plugin</module>
   </modules>
 
 </project>

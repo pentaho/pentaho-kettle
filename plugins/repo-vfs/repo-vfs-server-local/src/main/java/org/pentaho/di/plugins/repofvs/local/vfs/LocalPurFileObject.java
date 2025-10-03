@@ -1,5 +1,6 @@
 package org.pentaho.di.plugins.repofvs.local.vfs;
 
+import org.pentaho.di.connections.vfs.provider.ConnectionFileObject;
 import org.pentaho.platform.api.repository2.unified.Converter;
 import org.pentaho.platform.api.repository2.unified.IRepositoryContentConverterHandler;
 import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
@@ -15,8 +16,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Optional;
 
+import com.google.common.base.Objects;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -32,6 +35,8 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
 
   private static final Logger log = LoggerFactory.getLogger( LocalPurFileObject.class );
 
+  private static final String DEFAULT_MIME = "text/plain";
+
   private final IUnifiedRepository pur;
   private final IRepositoryContentConverterHandler converterHandler;
   private RepositoryFile file;
@@ -45,7 +50,7 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
    log.debug( "{}({})", getClass().getSimpleName(), fileName );
   }
 
-    @Override
+  @Override
   protected boolean doIsReadable() throws Exception {
     return true;
   }
@@ -60,8 +65,19 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
   }
 
   @Override
+  protected boolean doIsExecutable() throws Exception {
+    return file.isSchedulable();
+  }
+
+  @Override
   protected long doGetContentSize() throws Exception {
     return file.getFileSize();
+  }
+
+  @Override
+  protected long doGetLastModifiedTime() throws Exception {
+    Date date = file.getLastModifiedDate();
+    return date == null ? 0 : date.getTime();
   }
 
   @Override
@@ -77,12 +93,8 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
 
   @Override
   protected String[] doListChildren() throws Exception {
-    log.debug( "{}.doListChildren", getName() );
-
-
     // getChildren says it receives a path but it actually wants the ID...
     RepositoryRequest req = new RepositoryRequest( file.getId().toString(), true, 1, null );
-
     return pur.getChildren( req ).stream()
       .map( RepositoryFile::getName ).toArray( String[]::new );
   }
@@ -90,6 +102,18 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
   @Override
   protected boolean doIsHidden() throws Exception {
     return file.isHidden();
+  }
+
+  @Override
+  protected boolean doIsSameFile( FileObject destFile ) throws FileSystemException {
+    if ( !exists() ) {
+      // this is super's implementation
+      return false;
+    }
+    if ( destFile instanceof LocalPurFileObject localDestFile ) {
+      return Objects.equal( this.file.getId(), localDestFile.file.getId() );
+    }
+    return false;
   }
 
   @Override
@@ -158,11 +182,33 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
     }
   }
 
+  @Override
+  public void moveTo( FileObject destFile ) throws FileSystemException {
+    if ( isSameFile( destFile ) ) {
+      return;
+    }
+    if ( canRenameTo( destFile ) ) {
+      // within the same filesystem we can delegate to abtract impl
+      super.moveTo( destFile );
+    } else {
+      destFile.copyFrom( this, Selectors.SELECT_ALL );
+      delete();
+    }
+  }
+
+  @Override
+  public boolean canRenameTo( FileObject newfile ) {
+    // we need to override while pvfs shadows this
+    if ( newfile instanceof ConnectionFileObject conObj ) {
+      return super.canRenameTo( conObj.getResolvedFileObject() );
+    }
+    return super.canRenameTo( newfile );
+  }
+
   private IRepositoryFileData getEmptyFileData() {
-    //TODO: MIME
-    // there is a bean for this
+    // there is a bean to get the right metadata, but reading and writing via vfs seems to work with a placeholder.
     return new SimpleRepositoryFileData( new ByteArrayInputStream( new byte[ 0 ] ), StandardCharsets.UTF_8.name(),
-      "text/plain" );
+      DEFAULT_MIME );
   }
 
   @Override
@@ -171,7 +217,7 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
   }
 
   @Override
-  protected void doRename( FileObject newFile ) throws Exception {
+  protected void doRename( FileObject newFile ) throws FileSystemException {
     final String newPath = newFile.getName().getPath();
     pur.moveFile( file.getId(), newPath, null );
     newFile.refresh();
