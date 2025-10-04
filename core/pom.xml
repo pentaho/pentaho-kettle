@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-core</artifactId>
-  <version>11.0.0.0-SNAPSHOT</version>
+  <version>11.0.0.0-135</version>
   <packaging>jar</packaging>
 
   <name>PDI Core</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>11.0.0.0-SNAPSHOT</version>
+    <version>11.0.0.0-135</version>
   </parent>
 
   <properties>
@@ -33,7 +33,7 @@
     <jcifs.version>1.3.3</jcifs.version>
     <xmlunit.version>1.5</xmlunit.version>
     <joda.version>2.10.2</joda.version>
-    <encryption-support.version>11.0.0.0-SNAPSHOT</encryption-support.version>
+    <encryption-support.version>11.0.0.0-135</encryption-support.version>
     <com.github.spotbugs.annotations.version>4.2.3</com.github.spotbugs.annotations.version>
   </properties>
 
