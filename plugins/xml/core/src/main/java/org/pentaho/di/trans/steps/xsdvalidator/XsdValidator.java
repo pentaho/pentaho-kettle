@@ -182,6 +182,9 @@ public class XsdValidator extends BaseStep implements StepInterface {
       try {
 
         SchemaFactory factoryXSDValidator = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+        factoryXSDValidator.setFeature(
+          XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factoryXSDValidator.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
         xsdfile = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( xsdfilename, getTransMeta() );
 

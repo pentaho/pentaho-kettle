@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -171,6 +172,9 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
         if ( xmlfile.exists() && xsdfile.exists() ) {
 
           SchemaFactory factorytXSDValidator_1 = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
+          factorytXSDValidator_1.setFeature(
+            XMLConstants.FEATURE_SECURE_PROCESSING, true);
+          factorytXSDValidator_1.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
           // Get XSD File
           File XSDFile = new File( KettleVFS.getFilename( xsdfile ) );

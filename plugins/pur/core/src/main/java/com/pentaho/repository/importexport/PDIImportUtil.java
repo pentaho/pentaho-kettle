@@ -19,13 +19,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -48,7 +48,7 @@ public class PDIImportUtil {
 
   /**
    * Connects to the PDI repository
-   * 
+   *
    * @param repositoryName
    * @return
    * @throws KettleException
@@ -69,38 +69,43 @@ public class PDIImportUtil {
    * @return instance of {@link Document}, if xml is loaded successfully null in case any error occurred during loading
    */
   public static Document loadXMLFrom( InputStream is ) {
-    DocumentBuilderFactory factory;
-    try {
-      factory = XMLParserFactoryProducer.createSecureDocBuilderFactory();
-    } catch ( ParserConfigurationException e ) {
-      log.logError( e.getLocalizedMessage() );
-      factory = DocumentBuilderFactory.newInstance();
-    }
-    DocumentBuilder builder = null;
+    DocumentBuilderFactory factory = getSecureDocumentBuilderFactory();
     Document doc = null;
-    try {
-      builder = factory.newDocumentBuilder();
-    } catch ( ParserConfigurationException ex ) {
-      // ignore
-    }
-    try {
-      File file = File.createTempFile( "tempFile", "temp" );
-      file.deleteOnExit();
-      FileOutputStream fous = new FileOutputStream( file );
-      IOUtils.copy( is, fous );
-      fous.flush();
-      fous.close();
-      doc = builder.parse( file );
-    } catch ( IOException | SAXException e ) {
-      log.logError( e.getLocalizedMessage() );
-    } finally {
+    if (factory != null) {
       try {
-        is.close();
-      } catch ( IOException e ) {
-        // nothing to do here
+        File file = File.createTempFile("tempFile", "temp");
+        file.deleteOnExit();
+        FileOutputStream fous = new FileOutputStream(file);
+        IOUtils.copy(is, fous);
+        fous.flush();
+        fous.close();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        doc = builder.parse(file);
+      } catch (IOException | SAXException | ParserConfigurationException e) {
+        log.logError(e.getLocalizedMessage());
+      } finally {
+        IOUtils.closeQuietly(is);
       }
     }
     return doc;
+  }
+
+  private static DocumentBuilderFactory getSecureDocumentBuilderFactory() {
+    DocumentBuilderFactory factory;
+    try {
+      factory = XMLParserFactoryProducer.createSecureDocBuilderFactory();
+    } catch (ParserConfigurationException e) {
+      log.logError(e.getLocalizedMessage());
+      factory = DocumentBuilderFactory.newInstance();
+      try {
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      } catch (ParserConfigurationException ex) {
+        log.logError(ex.getMessage());
+        factory = null;
+      }
+    }
+    return factory;
   }
 
   public static String asXml( Document document ) {
@@ -109,12 +114,12 @@ public class PDIImportUtil {
       StringWriter stringWriter = new StringWriter();
       Result result = new StreamResult( stringWriter );
       TransformerFactory factory = TransformerFactory.newInstance();
+      factory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
+      factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
+      factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "" );
       Transformer transformer = factory.newTransformer();
       transformer.transform( source, result );
       return stringWriter.getBuffer().toString();
-    } catch ( TransformerConfigurationException e ) {
-      e.printStackTrace();
-      return null;
     } catch ( TransformerException e ) {
       e.printStackTrace();
       return null;
