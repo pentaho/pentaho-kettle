@@ -1067,7 +1067,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     wWildcard.setText( Const.NVL( jobEntry.getWildcard(), "" ) );
     wRemove.setSelection( jobEntry.getRemove() );
     wBinaryMode.setSelection( jobEntry.isBinaryMode() );
-    wTimeout.setText( "" + jobEntry.getTimeout() );
+    wTimeout.setText( jobEntry.getTimeout() );
     wOnlyNew.setSelection( jobEntry.isOnlyPuttingNewFiles() );
     wActive.setSelection( jobEntry.isActiveConnection() );
     wControlEncoding.setText( jobEntry.getControlEncoding() );
@@ -1109,7 +1109,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     jobEntry.setWildcard( wWildcard.getText() );
     jobEntry.setRemove( wRemove.getSelection() );
     jobEntry.setBinaryMode( wBinaryMode.getSelection() );
-    jobEntry.setTimeout( Const.toInt( wTimeout.getText(), 10000 ) );
+    jobEntry.setTimeout( wTimeout.getText() );
     jobEntry.setOnlyPuttingNewFiles( wOnlyNew.getSelection() );
     jobEntry.setActiveConnection( wActive.getSelection() );
     jobEntry.setControlEncoding( wControlEncoding.getText() );
