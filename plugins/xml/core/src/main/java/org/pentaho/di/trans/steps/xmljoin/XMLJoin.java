@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.xmljoin;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -221,19 +222,23 @@ public class XMLJoin extends BaseStep implements StepInterface {
     }
 
     try {
-      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      TransformerFactory factory = TransformerFactory.newInstance();
+      factory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
+      factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
+      factory.setAttribute( XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "" );
+      Transformer newTransformer = factory.newTransformer();
 
       if ( meta.getEncoding() != null ) {
-        transformer.setOutputProperty( OutputKeys.ENCODING, meta.getEncoding() );
+        newTransformer.setOutputProperty( OutputKeys.ENCODING, meta.getEncoding() );
       }
 
       if ( meta.isOmitXMLHeader() ) {
-        transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
+        newTransformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
       }
 
-      transformer.setOutputProperty( OutputKeys.INDENT, "no" );
+      newTransformer.setOutputProperty( OutputKeys.INDENT, "no" );
 
-      setTransformer( transformer );
+      setTransformer( newTransformer );
 
       // See if a main step is supplied: in that case move the corresponding rowset to position 0
       //
