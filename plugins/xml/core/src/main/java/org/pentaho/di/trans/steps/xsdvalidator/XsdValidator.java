@@ -151,7 +151,6 @@ public class XsdValidator extends BaseStep implements StepInterface {
             }
           }
         }
-
       } else {
         // XML stream field is missing !
         logError( BaseMessages.getString( PKG, "XsdValidator.Log.Error.XmlStreamFieldMissing" ) );
@@ -160,7 +159,6 @@ public class XsdValidator extends BaseStep implements StepInterface {
     }
 
     try {
-
       // Get the XML field value
       String XMLFieldvalue = getInputRowMeta().getString( row, data.xmlindex );
 
@@ -180,11 +178,11 @@ public class XsdValidator extends BaseStep implements StepInterface {
       FileObject xsdfile = null;
       String validationmsg = null;
       try {
-
         SchemaFactory factoryXSDValidator = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-        factoryXSDValidator.setFeature(
-          XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        factoryXSDValidator.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factoryXSDValidator.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
+        factoryXSDValidator.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", true );
+        factoryXSDValidator.setProperty( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
+        factoryXSDValidator.setProperty( XMLConstants.ACCESS_EXTERNAL_SCHEMA, "" );
 
         xsdfile = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( xsdfilename, getTransMeta() );
 
@@ -247,9 +245,7 @@ public class XsdValidator extends BaseStep implements StepInterface {
 
         isvalid = true;
 
-      } catch ( SAXException ex ) {
-        validationmsg = ex.getMessage();
-      } catch ( IOException ex ) {
+      } catch ( SAXException | IOException ex ) {
         validationmsg = ex.getMessage();
       } finally {
         try {
@@ -309,7 +305,6 @@ public class XsdValidator extends BaseStep implements StepInterface {
     }
 
     return true;
-
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -329,5 +324,4 @@ public class XsdValidator extends BaseStep implements StepInterface {
 
     super.dispose( smi, sdi );
   }
-
 }

@@ -84,7 +84,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     super( n, "" );
     xmlfilename = null;
     xsdfilename = null;
-    allowExternalEntities = Boolean.valueOf( System.getProperties().getProperty( Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION, Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT ) );
+    allowExternalEntities = Boolean.parseBoolean( System.getProperties().getProperty( Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION, Const.ALLOW_EXTERNAL_ENTITIES_FOR_XSD_VALIDATION_DEFAULT ) );
   }
 
   public JobEntryXSDValidator() {
@@ -92,12 +92,11 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
   }
 
   public Object clone() {
-    JobEntryXSDValidator je = (JobEntryXSDValidator) super.clone();
-    return je;
+      return super.clone();
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 50 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "xmlfilename", xmlfilename ) );
@@ -164,23 +163,23 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     FileObject xsdfile = null;
 
     try {
-
       if ( xmlfilename != null && xsdfilename != null ) {
         xmlfile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realxmlfilename, this );
         xsdfile = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( realxsdfilename, this );
 
         if ( xmlfile.exists() && xsdfile.exists() ) {
 
-          SchemaFactory factorytXSDValidator_1 = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
-          factorytXSDValidator_1.setFeature(
-            XMLConstants.FEATURE_SECURE_PROCESSING, true);
-          factorytXSDValidator_1.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+          SchemaFactory factorytXSDValidator = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
+          factorytXSDValidator.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true );
+          factorytXSDValidator.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", true );
+          factorytXSDValidator.setProperty( XMLConstants.ACCESS_EXTERNAL_DTD, "" );
+          factorytXSDValidator.setProperty( XMLConstants.ACCESS_EXTERNAL_SCHEMA, "" );
 
           // Get XSD File
           File XSDFile = new File( KettleVFS.getFilename( xsdfile ) );
-          Schema SchematXSD = factorytXSDValidator_1.newSchema( XSDFile );
+          Schema schematXSD = factorytXSDValidator.newSchema( XSDFile );
 
-          Validator xsdValidator = SchematXSD.newValidator();
+          Validator xsdValidator = schematXSD.newValidator();
 
           // Prevent against XML Entity Expansion (XEE) attacks.
           // https://www.owasp.org/index.php/XML_Security_Cheat_Sheet#XML_Entity_Expansion
@@ -196,17 +195,15 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
           }
 
           // Get XML File
-          File xmlfiletXSDValidator_1 = new File( KettleVFS.getFilename( xmlfile ) );
+          File xmlfiletXSDValidator = new File( KettleVFS.getFilename( xmlfile ) );
+          Source sourcetXSDValidator = new StreamSource( xmlfiletXSDValidator );
 
-          Source sourcetXSDValidator_1 = new StreamSource( xmlfiletXSDValidator_1 );
-
-          xsdValidator.validate( sourcetXSDValidator_1 );
+          xsdValidator.validate( sourcetXSDValidator );
 
           // Everything is OK
           result.setResult( true );
 
         } else {
-
           if ( !xmlfile.exists() ) {
             logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" ) + realxmlfilename
                 + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
@@ -218,17 +215,14 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
           result.setResult( false );
           result.setNrErrors( 1 );
         }
-
       } else {
         logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.AllFilesNotNull.Label" ) );
         result.setResult( false );
         result.setNrErrors( 1 );
       }
-
     } catch ( SAXException ex ) {
       logError( "Error :" + ex.getMessage() );
     } catch ( Exception e ) {
-
       logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXSDValidator.Label" )
           + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXML1.Label" ) + realxmlfilename
           + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXML2.Label" )
@@ -245,7 +239,6 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
         if ( xsdfile != null ) {
           xsdfile.close();
         }
-
       } catch ( IOException e ) {
         // Ignore errors
       }
@@ -304,5 +297,4 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     andValidator().validate( jobMeta.getBowl(), this, "xsdFilename", remarks, ctx );
     andValidator().validate( jobMeta.getBowl(), this, "xmlFilename", remarks, ctx );
   }
-
 }
