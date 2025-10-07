@@ -73,12 +73,12 @@ import com.enterprisedt.net.ftp.FTPTransferType;
  *
  */
 
-@JobEntry(id = "FTP",
-        name = "JobEntry.FTP.TypeDesc",
-        description = "JobEntry.FTP.Tooltip",
-        categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
-        i18nPackageName = "org.pentaho.di.job.entries.ftp",
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+a+file+with+FTP")
+@JobEntry( id = "FTP",
+  name = "JobEntry.FTP.TypeDesc",
+  description = "JobEntry.FTP.Tooltip",
+  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
+  i18nPackageName = "org.pentaho.di.job.entries.ftp",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+a+file+with+FTP" )
 public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryFTP.class; // for i18n purposes, needed by Translator2!!
 
@@ -272,7 +272,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
-    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
+                       Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       port = XMLHandler.getTagValue( entrynode, "port" );
@@ -346,7 +346,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-    List<SlaveServer> slaveServers ) throws KettleException {
+                       List<SlaveServer> slaveServers ) throws KettleException {
     try {
       port = rep.getJobEntryAttributeString( id_jobentry, "port" );
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
@@ -957,9 +957,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       }
 
       // Set the timeout
-      ftpclient.setTimeout( Const.toInt( environmentSubstitute( timeout ), 10000 ) );
+      int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 10000 );
+      ftpclient.setTimeout( timeoutValue );
       if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetTimeout", String.valueOf( environmentSubstitute( timeout ) ) ) );
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.SetTimeout", String.valueOf( timeoutValue ) ) );
       }
 
       ftpclient.setControlEncoding( controlEncoding );
@@ -999,9 +1000,9 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
           + ( !Utils.isEmpty( proxyUsername ) ? " " + environmentSubstitute( proxyUsername ) : "" );
 
       String realPassword =
-              Utils.resolvePassword( this, password )
+        Utils.resolvePassword( this, password )
           + ( !Utils.isEmpty( proxyPassword ) ? " "
-            + Utils.resolvePassword( this, proxyPassword ) : "" );
+          + Utils.resolvePassword( this, proxyPassword ) : "" );
 
       ftpclient.login( realUsername, realPassword );
       // Remove password from logging, you don't know where it ends up.
@@ -1164,7 +1165,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   private void downloadFile( FTPClient ftpclient, String filename, String realMoveToFolder, Job parentJob,
-    Result result ) throws Exception {
+                             Result result ) throws Exception {
     String localFilename = filename;
     targetFilename = KettleVFS.getFilename( KettleVFS.getFileObject( returnTargetFilename( localFilename ) ) );
 
@@ -1264,7 +1265,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
     if ( ( NrErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
       || ( NrfilesRetrieved >= limitFiles && getSuccessCondition().equals(
-        SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED ) )
+      SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED ) )
       || ( NrErrors <= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
@@ -1425,16 +1426,16 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     Repository repository, IMetaStore metaStore ) {
     JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator().validate(
       this, "targetDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator(),
-          JobEntryValidatorUtils.fileExistsValidator() ) );
+        JobEntryValidatorUtils.fileExistsValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
   }
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
@@ -1488,7 +1489,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         Class<?> clazz = null;
         Object parserInstance = null;
         for ( int i = 0; i < parserClasses.length; i++ ) {
-          cName = parserClasses[i].trim();
+          cName = parserClasses[ i ].trim();
           if ( cName.length() > 0 ) {
             try {
               clazz = Class.forName( cName );
