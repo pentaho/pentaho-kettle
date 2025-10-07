@@ -68,11 +68,11 @@ import com.enterprisedt.net.ftp.FTPTransferType;
  */
 
 @JobEntry( id = "FTP_PUT", name = "JobEntry.FTPPUT.TypeDesc",
-        i18nPackageName = "org.pentaho.di.job.entries.ftpput",
-        description = "JobEntry.FTPPUT.Tooltip",
-        categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
-        image = "ui/images/PFTP.svg",
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/Put+a+file+with+FTP" )
+  i18nPackageName = "org.pentaho.di.job.entries.ftpput",
+  description = "JobEntry.FTPPUT.Tooltip",
+  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
+  image = "ui/images/PFTP.svg",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Put+a+file+with+FTP" )
 public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface {
   public static final String STRING_Y = "Y";
   private static Class<?> PKG = JobEntryFTPPUT.class; // for i18n purposes, needed by Translator2!!
@@ -110,7 +110,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   private String localDirectory;
   private String wildcard;
   private boolean binaryMode;
-  private int timeout;
+  private String timeout;
   private boolean remove;
   private boolean onlyPuttingNewFiles; /* Don't overwrite files */
   private boolean activeConnection;
@@ -146,6 +146,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     remoteDirectory = null;
     localDirectory = null;
     setControlEncoding( DEFAULT_CONTROL_ENCODING );
+    timeout = "0";
   }
 
   public JobEntryFTPPUT() {
@@ -186,7 +187,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
     retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SOCKSPROXY_HOST, socksProxyHost ) );
     retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SOCKSPROXY_PORT, socksProxyPort ) );
-    retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SOCKSPROXY_USERNAME, socksProxyUsername ) );
+    retval.append( XML_TAG_INDENT2 )
+      .append( XMLHandler.addTagValue( XML_TAG_SOCKSPROXY_USERNAME, socksProxyUsername ) );
     retval.append( XML_TAG_INDENT2 ).append( XMLHandler.addTagValue( XML_TAG_SOCKSPROXY_PASSWORD,
       Encr.encryptPasswordIfNotUsingVariables( socksProxyPassword ) ) );
 
@@ -206,7 +208,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       localDirectory = XMLHandler.getTagValue( entrynode, XML_TAG_LOCAL_DIRECTORY );
       wildcard = XMLHandler.getTagValue( entrynode, XML_TAG_WILDCARD );
       binaryMode = STRING_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, XML_TAG_BINARY ) );
-      timeout = Const.toInt( XMLHandler.getTagValue( entrynode, XML_TAG_TIMEOUT ), 10000 );
+      timeout = XMLHandler.getTagValue( entrynode, XML_TAG_TIMEOUT );
       remove = STRING_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, XML_TAG_REMOVE ) );
       onlyPuttingNewFiles = STRING_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, XML_TAG_ONLY_NEW ) );
       activeConnection = STRING_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, XML_TAG_ACTIVE ) );
@@ -246,7 +248,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       localDirectory = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_LOCAL_DIRECTORY );
       wildcard = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_WILDCARD );
       binaryMode = rep.getJobEntryAttributeBoolean( jobEntryId, XML_TAG_BINARY );
-      timeout = (int) rep.getJobEntryAttributeInteger( jobEntryId, XML_TAG_TIMEOUT );
+      timeout = rep.getJobEntryAttributeString( jobEntryId, XML_TAG_TIMEOUT );
       remove = rep.getJobEntryAttributeBoolean( jobEntryId, XML_TAG_REMOVE );
       onlyPuttingNewFiles = rep.getJobEntryAttributeBoolean( jobEntryId, XML_TAG_ONLY_NEW );
       activeConnection = rep.getJobEntryAttributeBoolean( jobEntryId, XML_TAG_ACTIVE );
@@ -328,14 +330,14 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   /**
    * @param timeout The timeout to set.
    */
-  public void setTimeout( int timeout ) {
+  public void setTimeout( String timeout ) {
     this.timeout = timeout;
   }
 
   /**
    * @return Returns the timeout.
    */
-  public int getTimeout() {
+  public String getTimeout() {
     return timeout;
   }
 
@@ -813,12 +815,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     }
 
     // Set the timeout
-    if ( timeout > 0 ) {
-      ftpClient.setTimeout( timeout );
-      if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetTimeout", "" + timeout ) );
-      }
+    int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 10000 );
+    ftpClient.setTimeout( timeoutValue );
+    if ( log.isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetTimeout", String.valueOf( timeoutValue ) ) );
     }
+
 
     ftpClient.setControlEncoding( controlEncoding );
     if ( log.isDetailed() ) {
@@ -874,16 +876,16 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
                      Repository repository, IMetaStore metaStore ) {
     JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverName", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(),
       this, XML_TAG_LOCAL_DIRECTORY, remarks, AndValidator.putValidators(
-          JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
+        JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "userName", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(),this, XML_TAG_PASSWORD, remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, XML_TAG_PASSWORD, remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverPort", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
   /**
