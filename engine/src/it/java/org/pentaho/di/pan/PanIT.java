@@ -62,20 +62,10 @@ public class PanIT {
     KTRS_TO_FAIL.put( "fail_on_prep_hello_world.ktr", CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode() );
   };
 
-  private SecurityManager oldSecurityManager;
-
   @Before
   public void setUp() throws KettleException {
     KettleEnvironment.init();
-    oldSecurityManager = System.getSecurityManager();
-    System.setSecurityManager( new PanIT.MySecurityManager( oldSecurityManager ) );
   }
-
-  @After
-  public void tearDown() {
-    System.setSecurityManager( oldSecurityManager );
-  }
-
 
   @Test
   public void testArchivedTransExecution() throws Exception {
