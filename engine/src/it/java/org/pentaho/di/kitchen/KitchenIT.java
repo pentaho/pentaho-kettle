@@ -40,7 +40,6 @@ public class KitchenIT {
 
   private PrintStream oldOut;
   private PrintStream oldErr;
-  private SecurityManager oldSecurityManager;
 
   private static final String JOB_EXEC_RESULT_FALSE = "(result=[false])";
   private static final String JOB_EXEC_RESULT_TRUE = "(result=[true])";
@@ -60,18 +59,6 @@ public class KitchenIT {
     "fail_on_prep_hello_world.kjb",
     "missing_referenced_ktr.kjb"
   };
-
-  @Before
-  public void setUp() {
-    oldSecurityManager = System.getSecurityManager();
-    System.setSecurityManager( new MySecurityManager( oldSecurityManager ) );
-  }
-
-  @After
-  public void tearDown() {
-    System.setSecurityManager( oldSecurityManager );
-  }
-
 
   @Test
   public void testArchivedJobsExecution() throws Exception {
@@ -287,25 +274,4 @@ public class KitchenIT {
     }
   }
 
-  public class MySecurityManager extends SecurityManager {
-
-    private SecurityManager baseSecurityManager;
-
-    public MySecurityManager( SecurityManager baseSecurityManager ) {
-      this.baseSecurityManager = baseSecurityManager;
-    }
-
-    @Override
-    public void checkPermission( Permission permission ) {
-      if ( permission.getName().startsWith( "exitVM" ) ) {
-        throw new SecurityException( "System exit not allowed" );
-      }
-      if ( baseSecurityManager != null ) {
-        baseSecurityManager.checkPermission( permission );
-      } else {
-        return;
-      }
-    }
-
-  }
 }
