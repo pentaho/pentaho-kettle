@@ -203,4 +203,13 @@ public interface PluginInterface {
     }
     return pluginProps;
   }
+  
+  /**
+   * @return a boolean that indicates if this plugin id is deprecated. The getSuggestion()
+   * should be used when deprecated to indicate an id of a replacement plugin id.
+   */
+  default boolean isDeprecated() {
+    return false;
+  }
+  
 }
