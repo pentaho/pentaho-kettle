@@ -157,6 +157,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
           if ( isFailOfFolderExists() ) {
             // Folder exists and fail flag is on.
             result.setResult( false );
+            result.setNrErrors( 1 );
             if ( isFolder ) {
               logError( "Folder [" + realFoldername + "] exists, failing." );
             } else {
@@ -192,6 +193,8 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
       }
     } else {
       logError( "No Foldername is defined." );
+      result.setResult( false );
+      result.setNrErrors( 1 );
     }
 
     return result;
