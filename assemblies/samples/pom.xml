@@ -41,41 +41,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- create the sample database, properties were read with properties-maven-plugin earlier -->
-      <!--
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>sql-maven-plugin</artifactId>
-        <version>${sql-maven-plugin.version}</version>
-        <configuration>
-          <driver>${sample.db.driver}</driver>
-          <url>${sample.db.url}${assembly.dir}/db/${sample.db.name}</url>
-          <username>${sample.db.user}</username>
-          <password>${sample.db.password}</password>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <srcFiles>
-                <srcFile>src/main/resources/db/backup.sql</srcFile>
-              </srcFiles>
-              <forceMojoExecution>true</forceMojoExecution>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>

@@ -309,10 +309,6 @@
 
     <!-- Third-party JDBC dependencies -->
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
     </dependency>
