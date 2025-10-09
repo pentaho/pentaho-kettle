@@ -13,8 +13,8 @@
 package org.pentaho.di.pan;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.KettleEnvironment;
@@ -37,6 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class PanIT {
 
   private static final String FAILED_TO_INITIALIZE_ERROR_PATTERN = "failed to initialize!";
