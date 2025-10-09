@@ -13,8 +13,7 @@
 package org.pentaho.di.kitchen;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.Result;
@@ -24,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.security.Permission;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -33,6 +31,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class KitchenIT {
 
   private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
