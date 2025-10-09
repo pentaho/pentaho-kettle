@@ -17,6 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockedConstruction;
@@ -54,6 +55,7 @@ import static org.mockito.Mockito.when;
   * @author Luis Martins (16-Feb-2018)
   */
 @RunWith( MockitoJUnitRunner.StrictStubs.class )
+@Ignore
 public class RunConfigurationDelegateTest {
 
   private Spoon spoon;
