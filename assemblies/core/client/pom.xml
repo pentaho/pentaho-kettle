@@ -95,10 +95,10 @@
   <profiles>
 
     <profile>
-      <id>default-no-osgi</id>
+      <id>default</id>
       <activation>
         <property>
-          <name>!osgi</name>
+          <name>genera</name>
         </property>
       </activation>
       <dependencies>
@@ -141,7 +141,7 @@
                 </goals>
                 <configuration>
                   <descriptors>
-                    <descriptor>${basedir}/src/assemblies/assembly.xml</descriptor>
+                    <descriptor>src/assembly/assembly.xml</descriptor>
                   </descriptors>
                   <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
@@ -151,101 +151,5 @@
         </plugins>
       </build>
     </profile>
-
-    <profile>
-      <id>osgi</id>
-      <activation>
-        <property>
-          <name>osgi</name>
-        </property>
-      </activation>
-      <dependencies>
-        <!-- PDI Assemblies -->
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-core-static</artifactId>
-          <version>${project.version}</version>
-          <classifier>osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.pentaho.di</groupId>
-          <artifactId>pdi-core-libs</artifactId>
-          <version>${project.version}</version>
-          <classifier>osgi</classifier>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.hitachivantara.karaf.assemblies</groupId>
-          <artifactId>client</artifactId>
-          <version>${pentaho-karaf.version}</version>
-          <type>zip</type>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-karaf</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>unpack</goal>
-                </goals>
-                <configuration>
-                  <artifactItems>
-                    <artifactItem>
-                      <groupId>org.hitachivantara.karaf.assemblies</groupId>
-                      <artifactId>client</artifactId>
-                      <type>zip</type>
-                    </artifactItem>
-                  </artifactItems>
-                  <outputDirectory>${assembly.dir}/system/karaf</outputDirectory>
-                  <excludes>**/etc-pan/*.cfg,**/etc-kitchen/*.cfg,**/etc-scale/*.cfg,system/org/pentaho/hadoop/shims/</excludes>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>assembly_package</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <configuration>
-                  <descriptors>
-                    <descriptor>${basedir}/src/assemblies/assembly-osgi.xml</descriptor>
-                  </descriptors>
-                  <appendAssemblyId>true</appendAssemblyId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
   </profiles>
 </project>
