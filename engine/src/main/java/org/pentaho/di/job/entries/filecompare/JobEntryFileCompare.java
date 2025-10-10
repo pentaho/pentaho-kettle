@@ -222,6 +222,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
             result.setResult( true );
           } else {
             result.setResult( false );
+            result.setNrErrors( 1 );
           }
 
           // add filename to result filenames
@@ -247,6 +248,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
           result.setNrErrors( 1 );
         }
       } else {
+        result.setResult( false );
+        result.setNrErrors( 1 );
         logError( BaseMessages.getString( PKG, "JobEntryFileCompare.ERROR_0006_Need_Two_Filenames" ) );
       }
     } catch ( Exception e ) {
