@@ -270,7 +270,9 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       //
       job.addJobListener( new JobAdapter() {
         public void jobFinished( Job job ) {
-          repository.disconnect();
+          if ( repository != null ) {
+            repository.disconnect();
+          }
         }
       } );
 
