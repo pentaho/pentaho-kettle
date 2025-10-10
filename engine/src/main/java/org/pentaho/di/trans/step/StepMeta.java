@@ -39,6 +39,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -168,8 +169,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   public StepMeta( String stepname, StepMetaInterface stepMetaInterface ) {
     if ( stepMetaInterface != null ) {
       PluginRegistry registry = PluginRegistry.getInstance();
-      this.stepid = registry.getPluginId( StepPluginType.class, stepMetaInterface );
-      setDeprecationAndSuggestedStep();
+      PluginInterface pi = registry.getPlugin( StepPluginType.class, stepMetaInterface );
+      if( pi != null && !Utils.isEmpty( pi.getIds()[0] ) ) {
+        this.stepid = pi.getIds()[0];
+        if( pi.isDeprecated() ) {
+          this.isDeprecated = true;
+          this.suggestion = Const.NVL( pi.getSuggestion(), "" );
+        }
+      }
     }
     this.name = stepname;
     setStepMetaInterface( stepMetaInterface );
@@ -293,10 +300,13 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     try {
       name = XMLHandler.getTagValue( stepnode, "name" );
       stepid = XMLHandler.getTagValue( stepnode, "type" );
-      setDeprecationAndSuggestedStep();
 
       // Create a new StepMetaInterface object...
       PluginInterface sp = registry.findPluginWithId( StepPluginType.class, stepid, true );
+      if( sp != null && sp.isDeprecated() ) {
+        this.isDeprecated = true;
+        this.suggestion = Const.NVL( sp.getSuggestion(), "" );
+      }
 
       if ( sp == null ) {
         setStepMetaInterface( new MissingTrans( name, stepid ) );
@@ -1143,21 +1153,6 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       return null;
     }
     return attributes.get( key );
-  }
-
-  private void setDeprecationAndSuggestedStep() {
-    PluginRegistry registry = PluginRegistry.getInstance();
-    final List<PluginInterface> deprecatedSteps = registry.getPluginsByCategory( StepPluginType.class,
-      BaseMessages.getString( PKG, "BaseStep.Category.Deprecated" ) );
-    for ( PluginInterface p : deprecatedSteps ) {
-      String[] ids = p.getIds();
-      if ( !ArrayUtils.isEmpty( ids ) && ids[0].equals( this.stepid ) ) {
-        this.isDeprecated = true;
-        this.suggestion = registry.findPluginWithId( StepPluginType.class, this.stepid ) != null
-          ? registry.findPluginWithId( StepPluginType.class, this.stepid ).getSuggestion() : "";
-        break;
-      }
-    }
   }
 
   public boolean isMissing() {

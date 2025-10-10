@@ -490,16 +490,12 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   }
 
   private void setDeprecationAndSuggestedJobEntry() {
-    PluginRegistry registry = PluginRegistry.getInstance();
-    final List<PluginInterface> deprecatedJobEntries = registry.getPluginsByCategory( JobEntryPluginType.class,
-      BaseMessages.getString( JobMeta.class, "JobCategory.Category.Deprecated" ) );
-    for ( PluginInterface p : deprecatedJobEntries ) {
-      String[] ids = p.getIds();
-      if ( !ArrayUtils.isEmpty( ids ) && ids[0].equals( this.entry != null ? this.entry.getPluginId() : "" ) ) {
+    if( this.entry != null ) {
+      PluginRegistry registry = PluginRegistry.getInstance();
+      PluginInterface pi = registry.getPlugin( JobEntryPluginType.class, this.entry.getPluginId() );
+      if( pi != null && pi.isDeprecated() ) {
         this.isDeprecated = true;
-        this.suggestion = registry.findPluginWithId( JobEntryPluginType.class, this.entry.getPluginId() ) != null
-          ? registry.findPluginWithId( JobEntryPluginType.class, this.entry.getPluginId() ).getSuggestion() : "";
-        break;
+        this.suggestion = Const.NVL( pi.getSuggestion(), "" );
       }
     }
   }

@@ -57,6 +57,8 @@ import org.w3c.dom.Node;
 public abstract class BasePluginType implements PluginTypeInterface {
   protected static final Class<?> PKG = BasePluginType.class; // for i18n purposes, needed by Translator2!!
 
+  protected static final String DEPRECATED_CATEGORY_KEY = "PluginRegistry.Category.Deprecated";
+  
   protected String id;
   protected String name;
   protected List<PluginFolderInterface> pluginFolders;
@@ -510,6 +512,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
         }
       }
 
+      boolean deprecated = !Utils.isEmpty( category ) ? category.toLowerCase().contains( "deprecated" ) : false;
+      
       // Localized categories, descriptions and tool tips
       //
       Map<String, String> localizedCategories = readPluginLocale( pluginNode, "localized_category", "category" );
@@ -518,7 +522,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
       Map<String, String> localDescriptions =
         readPluginLocale( pluginNode, "localized_description", "description" );
       description = getAlternativeTranslation( description, localDescriptions );
-      description += addDeprecation( category );
+      description += addDeprecation( deprecated );
 
       suggestion = getAlternativeTranslation( suggestion, localDescriptions );
 
@@ -554,14 +558,15 @@ public abstract class BasePluginType implements PluginTypeInterface {
         classMap.put( entry.getKey(), clzName );
       }
 
-      PluginInterface pluginInterface =
+      Plugin plugin =
         new Plugin(
           idAttr.split( "," ), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip,
           iconFilename, false, nativePlugin, classMap, jarFiles, errorHelpFileFull, pluginFolder,
           documentationUrl, casesUrl, forumUrl, suggestion );
-      registry.registerPlugin( pluginType, pluginInterface );
+      plugin.setDeprecated( deprecated );
+      registry.registerPlugin( pluginType, plugin );
 
-      return pluginInterface;
+      return plugin;
     } catch ( Exception e ) {
       throw new KettlePluginException( BaseMessages.getString(
         PKG, "BasePluginType.RuntimeError.UnableToReadPluginXML.PLUGIN0001" ), e );
@@ -790,6 +795,15 @@ public abstract class BasePluginType implements PluginTypeInterface {
   protected abstract String extractCasesUrl( java.lang.annotation.Annotation annotation );
 
   protected abstract String extractForumUrl( java.lang.annotation.Annotation annotation );
+  
+  /**
+   * Some annotations may now have a "deprecated" annotation property
+   * @param annotation  The annotation to extract a deprecated property from
+   * @return  A boolean where <code>true</code> represents a deprecated plugin annotation
+   */
+  protected boolean extractDeprecated( java.lang.annotation.Annotation annotation ) {
+    return false;
+  }
 
   @SuppressWarnings( "squid:S1172" )  //Overriding classes use the parameter
   protected String extractClassLoaderGroup( java.lang.annotation.Annotation annotation ) {
@@ -867,7 +881,14 @@ public abstract class BasePluginType implements PluginTypeInterface {
     String altPackageName = clazz.getPackage().getName();
     String pluginName = getTranslation( extractName( annotation ), packageName, altPackageName, clazz );
     String description = getTranslation( extractDesc( annotation ), packageName, altPackageName, clazz );
-    String category = getTranslation( extractCategory( annotation ), packageName, altPackageName, clazz );
+    
+    String category = extractCategory( annotation );
+    
+    //deprecation is either based on a deprecated annotation or a category that contains "deprecated" in the translation key
+    boolean deprecated = extractDeprecated( annotation ) ||
+            ( !Utils.isEmpty( category ) ? category.toLowerCase().contains( "deprecated" ) : false );
+    category = getTranslation( category, packageName, altPackageName, clazz );
+
     String imageFile = extractImageFile( annotation );
     boolean separateClassLoader = extractSeparateClassLoader( annotation );
     String documentationUrl = extractDocumentationUrl( annotation );
@@ -876,7 +897,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
     String suggestion = getTranslation( extractSuggestion( annotation ), packageName, altPackageName, clazz );
     String classLoaderGroup = extractClassLoaderGroup( annotation );
 
-    pluginName += addDeprecation( category );
+    pluginName += addDeprecation( deprecated );
 
     Map<Class<?>, String> classMap = new HashMap<>();
 
@@ -886,12 +907,13 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
     addExtraClasses( classMap, clazz, annotation );
 
-    PluginInterface plugin =
+    Plugin plugin =
       new Plugin(
         ids, this.getClass(), mainType.value(), category, pluginName, description, imageFile, separateClassLoader,
         classLoaderGroup, nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl,
         casesUrl, forumUrl, suggestion );
-
+    plugin.setDeprecated( deprecated );
+    
     ParentFirst parentFirstAnnotation = clazz.getAnnotation( ParentFirst.class );
     if ( parentFirstAnnotation != null ) {
       registry.addParentClassLoaderPatterns( plugin, parentFirstAnnotation.patterns() );
@@ -913,10 +935,9 @@ public abstract class BasePluginType implements PluginTypeInterface {
    */
   protected abstract void addExtraClasses( Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation );
 
-  private String addDeprecation( String category ) {
-    String deprecated = BaseMessages.getString( PKG, "PluginRegistry.Category.Deprecated" );
-    if ( deprecated.equals( category )  ) {
-      return " (" + deprecated.toLowerCase() + ")";
+  private String addDeprecation( boolean deprecated ) {
+    if ( deprecated ) {
+      return " (" + BaseMessages.getString( PKG, DEPRECATED_CATEGORY_KEY ).toLowerCase() + ")";
     }
     return "";
   }
