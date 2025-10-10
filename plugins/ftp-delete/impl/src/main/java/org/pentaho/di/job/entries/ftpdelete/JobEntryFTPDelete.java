@@ -18,12 +18,9 @@ import org.pentaho.di.job.entries.ftpsget.FTPSConnection;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,10 +53,11 @@ import org.w3c.dom.Node;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
-import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.HTTPProxyData;
-import com.trilead.ssh2.SFTPv3Client;
-import com.trilead.ssh2.SFTPv3DirectoryEntry;
+import org.pentaho.di.core.ssh.SftpFile;
+import org.pentaho.di.core.ssh.SftpSession;
+import org.pentaho.di.core.ssh.SshConfig;
+import org.pentaho.di.core.ssh.SshConnection;
+import org.pentaho.di.core.ssh.SshConnectionFactory;
 
 /**
  * This defines an FTP job entry.
@@ -74,7 +72,7 @@ import com.trilead.ssh2.SFTPv3DirectoryEntry;
         categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
         image = "ui/images/FTPD.svg",
         documentationUrl = "http://wiki.pentaho.com/display/EAI/FTP+Delete" )
-public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEntryInterface {
+public class JobEntryFTPDelete extends JobEntryBase implements JobEntryInterface {
   private static Class<?> PKG = JobEntryFTPDelete.class; // for i18n purposes, needed by Translator2!!
 
   private String serverName;
@@ -127,6 +125,8 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
   public static final String PROTOCOL_SSH = "SSH";
 
+  private static final String ERROR_QUITTING_KEY = "JobEntryFTPDelete.ErrorQuitting";
+
   public String SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED = "success_when_at_least";
 
   public String SUCCESS_IF_ERRORS_LESS = "success_if_errors_less";
@@ -157,7 +157,9 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
   SFTPClient sftpclient = null;
 
-  SFTPv3Client sshclient = null;
+  SshConnection sshConnection = null;
+
+  SftpSession sftpSession = null;
 
   public JobEntryFTPDelete( String n ) {
     super( n, "" );
@@ -177,6 +179,58 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
   public JobEntryFTPDelete() {
     this( "" );
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( !super.equals( obj ) ) {
+      return false;
+    }
+    if ( !( obj instanceof JobEntryFTPDelete ) ) {
+      return false;
+    }
+
+    JobEntryFTPDelete other = (JobEntryFTPDelete) obj;
+    return java.util.Objects.equals( serverName, other.serverName )
+        && java.util.Objects.equals( port, other.port )
+        && java.util.Objects.equals( userName, other.userName )
+        && java.util.Objects.equals( password, other.password )
+        && java.util.Objects.equals( ftpDirectory, other.ftpDirectory )
+        && java.util.Objects.equals( wildcard, other.wildcard )
+        && timeout == other.timeout
+        && activeConnection == other.activeConnection
+        && publicpublickey == other.publicpublickey
+        && java.util.Objects.equals( keyFilename, other.keyFilename )
+        && java.util.Objects.equals( keyFilePass, other.keyFilePass )
+        && useproxy == other.useproxy
+        && java.util.Objects.equals( proxyHost, other.proxyHost )
+        && java.util.Objects.equals( proxyPort, other.proxyPort )
+        && java.util.Objects.equals( proxyUsername, other.proxyUsername )
+        && java.util.Objects.equals( proxyPassword, other.proxyPassword )
+        && java.util.Objects.equals( socksProxyHost, other.socksProxyHost )
+        && java.util.Objects.equals( socksProxyPort, other.socksProxyPort )
+        && java.util.Objects.equals( socksProxyUsername, other.socksProxyUsername )
+        && java.util.Objects.equals( socksProxyPassword, other.socksProxyPassword )
+        && java.util.Objects.equals( protocol, other.protocol )
+        && java.util.Objects.equals( nr_limit_success, other.nr_limit_success )
+        && java.util.Objects.equals( success_condition, other.success_condition )
+        && copyprevious == other.copyprevious
+        && FTPSConnectionType == other.FTPSConnectionType;
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(
+        super.hashCode(),
+        serverName, port, userName, password, ftpDirectory, wildcard, timeout,
+        activeConnection, publicpublickey, keyFilename, keyFilePass, useproxy,
+        proxyHost, proxyPort, proxyUsername, proxyPassword,
+        socksProxyHost, socksProxyPort, socksProxyUsername, socksProxyPassword,
+        protocol, nr_limit_success, success_condition, copyprevious, FTPSConnectionType
+    );
   }
 
   public Object clone() {
@@ -636,9 +690,6 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     this.proxyUsername = proxyUsername;
   }
 
-  /** Needed for the Vector coming from sshclient.ls() *
-   */
-  @SuppressWarnings( "unchecked" )
   public Result execute( Result previousResult, int nr ) {
     log.logBasic( BaseMessages.getString( PKG, "JobEntryFTPDelete.Started", serverName ) );
     RowMetaAndData resultRow = null;
@@ -748,42 +799,24 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           sourceFolder = "./";
         }
 
-        // NOTE: Source of the unchecked warning suppression for the declaration of this method.
-        Vector<SFTPv3DirectoryEntry> vfilelist = sshclient.ls( sourceFolder );
-        if ( vfilelist != null ) {
-          // Make one pass through the vfilelist to get an accurate count
-          // Using the two-pass method with arrays is faster than using ArrayList
-          int fileCount = 0;
-          Iterator<SFTPv3DirectoryEntry> iterator = vfilelist.iterator();
-          while ( iterator.hasNext() ) {
-            SFTPv3DirectoryEntry dirEntry = iterator.next();
-
-            if ( dirEntry != null
-              && !dirEntry.filename.equals( "." ) && !dirEntry.filename.equals( ".." )
-              && !isDirectory( sshclient, sourceFolder + dirEntry.filename ) ) {
-              fileCount++;
+        // Use MINA SSHD SFTP session to list files
+        List<SftpFile> sftpFiles = sftpSession.list( sourceFolder );
+        if ( sftpFiles != null ) {
+          // Filter out directories and special entries
+          List<String> fileNames = new java.util.ArrayList<>();
+          for ( SftpFile sftpFile : sftpFiles ) {
+            if ( sftpFile != null
+              && !sftpFile.getName().equals( "." ) && !sftpFile.getName().equals( ".." )
+              && !sftpFile.isDirectory() ) {
+              fileNames.add( sftpFile.getName() );
             }
           }
-
-          // Now that we have the correct count, create and fill in the array
-          filelist = new String[fileCount];
-          iterator = vfilelist.iterator();
-          int i = 0;
-          while ( iterator.hasNext() ) {
-            SFTPv3DirectoryEntry dirEntry = iterator.next();
-
-            if ( dirEntry != null
-              && !dirEntry.filename.equals( "." ) && !dirEntry.filename.equals( ".." )
-              && !isDirectory( sshclient, sourceFolder + dirEntry.filename ) ) {
-              filelist[i] = dirEntry.filename;
-              i++;
-            }
-          }
+          filelist = fileNames.toArray( new String[0] );
         }
       }
 
       if ( isDetailed() ) {
-        logDetailed( "JobEntryFTPDelete.FoundNFiles", String.valueOf( filelist.length ) );
+        logDetailed( "JobEntryFTPDelete.FoundNFiles", String.valueOf( filelist != null ? filelist.length : 0 ) );
       }
       int found = filelist == null ? 0 : filelist.length;
       if ( found == 0 ) {
@@ -816,7 +849,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       }
 
       // Get the files in the list...
-      for ( int i = 0; i < filelist.length && !parentJob.isStopped(); i++ ) {
+      for ( int i = 0; filelist != null && i < filelist.length && !parentJob.isStopped(); i++ ) {
         if ( successConditionBroken ) {
           throw new Exception( BaseMessages.getString( PKG, "JobEntryFTPDelete.SuccesConditionBroken" ) );
         }
@@ -851,7 +884,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
             } else if ( protocol.equals( PROTOCOL_SFTP ) ) {
               sftpclient.delete( filelist[i] );
             } else if ( protocol.equals( PROTOCOL_SSH ) ) {
-              sshclient.rm( sourceFolder + filelist[i] );
+              sftpSession.delete( sourceFolder + filelist[i] );
             }
             if ( isDetailed() ) {
               logDetailed( "JobEntryFTPDelete.RemotefileDeleted", filelist[i] );
@@ -878,14 +911,14 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           ftpclient.quit();
           ftpclient = null;
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage() ) );
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
         }
       }
       if ( ftpsclient != null ) {
         try {
           ftpsclient.disconnect();
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage() ) );
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
         }
       }
       if ( sftpclient != null ) {
@@ -893,15 +926,23 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           sftpclient.disconnect();
           sftpclient = null;
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage() ) );
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
         }
       }
-      if ( sshclient != null ) {
+      if ( sftpSession != null ) {
         try {
-          sshclient.close();
-          sshclient = null;
+          sftpSession.close();
+          sftpSession = null;
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage() ) );
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
+        }
+      }
+      if ( sshConnection != null ) {
+        try {
+          sshConnection.close();
+          sshConnection = null;
+        } catch ( Exception e ) {
+          logError( BaseMessages.getString( PKG, ERROR_QUITTING_KEY, e.getMessage() ) );
         }
       }
 
@@ -915,67 +956,49 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     return result;
   }
 
-  /**
-   * Checks if file is a directory
-   *
-   * @param sftpClient
-   * @param filename
-   * @return true, if filename is a directory
-   */
-  public boolean isDirectory( SFTPv3Client sftpClient, String filename ) {
-    try {
-      return sftpClient.stat( filename ).isDirectory();
-    } catch ( Exception e ) {
-      // Ignore FTP errors
-    }
-    return false;
-  }
-
   private void SSHConnect( String realservername, String realserverpassword, int realserverport,
     String realUsername, String realPassword, String realproxyhost, String realproxyusername,
     String realproxypassword, int realproxyport, String realkeyFilename, String realkeyPass ) throws Exception {
 
-    /* Create a connection instance */
+    // Create SSH configuration
+    SshConfig config = SshConfig.create()
+      .host( realservername )
+      .port( realserverport )
+      .username( realUsername );
 
-    Connection conn = new Connection( realservername, realserverport );
+    // Set authentication method
+    if ( publicpublickey && !Utils.isEmpty( realkeyFilename ) ) {
+      config.authType( SshConfig.AuthType.PUBLIC_KEY )
+        .keyPath( java.nio.file.Paths.get( realkeyFilename ) );
+      if ( !Utils.isEmpty( realkeyPass ) ) {
+        config.passphrase( realkeyPass ); // Key passphrase
+      }
+    } else {
+      config.authType( SshConfig.AuthType.PASSWORD )
+        .password( realserverpassword );
+    }
 
-    /* We want to connect through a HTTP proxy */
-    if ( useproxy ) {
-      conn.setProxyData( new HTTPProxyData( realproxyhost, realproxyport ) );
-
-      /* Now connect */
-      // if the proxy requires basic authentication:
-      if ( !Utils.isEmpty( realproxyusername ) || !Utils.isEmpty( realproxypassword ) ) {
-        conn
-          .setProxyData( new HTTPProxyData( realproxyhost, realproxyport, realproxyusername, realproxypassword ) );
+    // Add proxy support if needed
+    if ( useproxy && !Utils.isEmpty( realproxyhost ) ) {
+      config.proxy( realproxyhost, realproxyport );
+      if ( !Utils.isEmpty( realproxyusername ) && !Utils.isEmpty( realproxypassword ) ) {
+        config.proxyAuth( realproxyusername, realproxypassword );
       }
     }
 
     int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 10000 );
     if ( timeoutValue > 0 ) {
       // Use timeout
-      conn.connect( null, 0, timeoutValue * 1000 );
-
-    } else {
-      // Cache Host Key
-      conn.connect();
+      config.connectTimeoutMillis( timeoutValue );
+      config.commandTimeoutMillis( timeoutValue );
     }
 
-    // Authenticate
+    // Create SSH connection
+    sshConnection = SshConnectionFactory.defaultFactory().open( config );
+    sshConnection.connect();
 
-    boolean isAuthenticated = false;
-    if ( publicpublickey ) {
-      isAuthenticated = conn.authenticateWithPublicKey( realUsername, new File( realkeyFilename ), realkeyPass );
-    } else {
-      isAuthenticated = conn.authenticateWithPassword( realUsername, realserverpassword );
-    }
-
-    if ( !isAuthenticated ) {
-      throw new Exception( "Can not connect to " );
-    }
-
-    sshclient = new SFTPv3Client( conn );
-
+    // Open SFTP session
+    sftpSession = sshConnection.openSftp();
   }
 
   private void SFTPConnect( String realservername, String realusername, int realport, String realpassword,
@@ -1067,7 +1090,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
     // Create ftp client to host:port ...
     ftpclient = new FTPClient();
-    ftpclient.setControlEncoding("UTF-8");
+    ftpclient.setControlEncoding( "UTF-8" );
     ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
     if ( realport != 0 ) {
       ftpclient.setRemotePort( realport );
