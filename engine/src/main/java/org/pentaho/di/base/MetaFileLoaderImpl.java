@@ -163,7 +163,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             // repository
             if ( rep == null ) {
               theMeta = isTransMeta()
-                      ? (T) new TransMeta( bowl, realFilename, metaStore, null, true,
+                      ? (T) new TransMeta( bowl, realFilename, metaStore, rep, true,
                                            jobEntryBase.getParentVariableSpace(), null )
                       : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), realFilename, rep, metaStore,
                                          null );
@@ -193,7 +193,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             if ( theMeta == null ) {
               if ( isTransMeta() ) {
                 theMeta =
-                  (T) new TransMeta( bowl, metaPath, metaStore, null, true, jobEntryBase.getParentVariableSpace(),
+                  (T) new TransMeta( bowl, metaPath, metaStore, rep, true, jobEntryBase.getParentVariableSpace(),
                                      null );
               } else {
                 theMeta = (T) new JobMeta( bowl, tmpSpace, metaPath, rep, metaStore, null );
@@ -322,9 +322,9 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
 
     T theMeta = null;
     if ( isTransMeta() ) {
-      theMeta = (T) rep.loadTransformation( realName, repositoryDirectory, null, true, null );
+      theMeta = (T) rep.loadTransformation( realName, repositoryDirectory, null, true, null, tmpSpace );
     } else {
-      JobMeta jobMeta = rep.loadJob( realName, repositoryDirectory, null, null );
+      JobMeta jobMeta = rep.loadJob( realName, repositoryDirectory, null, null, tmpSpace );
       if ( jobMeta != null ) {
         jobMeta.initializeVariablesFrom( tmpSpace );
       }
@@ -436,8 +436,8 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
               if ( repdir != null ) {
                 try {
                   // reads the last revision in the repository...
-                  theMeta = isTransMeta() ? (T) rep.loadTransformation( realMetaName, repdir, null, true, null )
-                    : (T) rep.loadJob( realMetaName, repdir, null, null );
+                  theMeta = isTransMeta() ? (T) rep.loadTransformation( realMetaName, repdir, null, true, null, tmpSpace )
+                    : (T) rep.loadJob( realMetaName, repdir, null, null, tmpSpace );
                   if ( theMeta != null ) {
                     idContainer[ 0 ] = cacheKey;
                   }

@@ -12,14 +12,9 @@
 
 package org.pentaho.di.base;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
@@ -37,8 +32,15 @@ import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
 import java.io.File;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -130,6 +132,7 @@ public class MetaFileLoaderImplTest {
   public void getMetaForStepAsJobFromFileSystemTest() throws Exception {
     setupJobExecutorMeta();
     specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+    when( repository.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<JobMeta>( baseStepMeta, specificationMethod );
     JobMeta jobMeta = (JobMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
     validateFirstJobMetaAccess( jobMeta );
@@ -207,7 +210,7 @@ public class MetaFileLoaderImplTest {
     when( repository.loadRepositoryDirectoryTree() ).thenReturn( rdi );
     JobMeta jobMeta = new JobMeta();
     jobMeta.setName( stripExtension( JOB_FILE ) );
-    when( repository.loadJob( JOB_FILE, rdi, null, null ) ).thenReturn( jobMeta );
+    when( repository.loadJob( eq( JOB_FILE ), eq( rdi ), eq( null ), eq( null ), any( VariableSpace.class ) ) ).thenReturn( jobMeta );
   }
 
   private String convertToRepoKeyPath( String fileKeyPath ) {
@@ -242,7 +245,7 @@ public class MetaFileLoaderImplTest {
     when( repository.loadRepositoryDirectoryTree() ).thenReturn( rdi );
     TransMeta transMeta = new TransMeta();
     transMeta.setName( stripExtension( TRANS_FILE ) );
-    when( repository.loadTransformation( TRANS_FILE, rdi, null, true, null ) ).thenReturn( transMeta );
+    when( repository.loadTransformation( eq( TRANS_FILE ), eq( rdi ), eq( null ), eq( true ), eq( null ), any( VariableSpace.class ) ) ).thenReturn( transMeta );
   }
 
   private void setupJobExecutorMeta() throws Exception {
@@ -272,7 +275,7 @@ public class MetaFileLoaderImplTest {
     when( repository.findDirectory( jobExecutorMeta.getDirectoryPath() ) ).thenReturn( rdi );
     JobMeta jobMeta = new JobMeta();
     jobMeta.setName( stripExtension( JOB_FILE ) );
-    when( repository.loadJob( JOB_FILE, rdi, null, null ) ).thenReturn( jobMeta );
+    when( repository.loadJob( eq( JOB_FILE ), eq( rdi ), eq( null ), eq( null ), any( VariableSpace.class ) ) ).thenReturn( jobMeta );
   }
 
   private void setupTransExecutorMeta() throws Exception {
@@ -301,7 +304,7 @@ public class MetaFileLoaderImplTest {
     when( repository.findDirectory( transExecutorMeta.getDirectoryPath() ) ).thenReturn( rdi );
     TransMeta transMeta = new TransMeta();
     transMeta.setName( stripExtension( TRANS_FILE ) );
-    when( repository.loadTransformation( TRANS_FILE, rdi, null, true, null ) ).thenReturn( transMeta );
+    when( repository.loadTransformation( eq( TRANS_FILE ), eq( rdi ), eq( null ), eq( true ), eq( null ), any( VariableSpace.class ) ) ).thenReturn( transMeta );
   }
 
   private void validateFirstJobMetaAccess( JobMeta jobMeta ) {

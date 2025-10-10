@@ -13,23 +13,13 @@
 
 package org.pentaho.di.www;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.UUID;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
@@ -41,6 +31,15 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+
+import com.google.common.annotations.VisibleForTesting;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.UUID;
 
 public class RunTransServlet extends BaseHttpServlet implements CartePluginInterface {
 
@@ -252,6 +251,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
         throw new KettleException( "Error executing Transformation: " + logging, executionException );
       }
     } catch ( Exception ex ) {
+      logError( "Error occurred while executing transformation", ex );
       out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
         PKG, "RunTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }

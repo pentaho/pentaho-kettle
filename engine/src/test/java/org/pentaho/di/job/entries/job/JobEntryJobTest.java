@@ -13,11 +13,6 @@
 
 package org.pentaho.di.job.entries.job;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.MockedConstruction;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -35,20 +30,26 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
-import org.w3c.dom.Node;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.MockedConstruction;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.w3c.dom.Node;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -312,7 +313,7 @@ public class JobEntryJobTest {
       jej.getJobMeta( repository, store, space );
 
       assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jej.getSpecificationMethod() );
-      verify( repository, times( 1 ) ).loadJob( JOB_ENTRY_FILE_NAME, directory, null, null );
+      verify( repository, times( 1 ) ).loadJob( eq( JOB_ENTRY_FILE_NAME ), eq( directory ), eq( null ), eq( null ), any( VariableSpace.class ) );
     }
   }
 
@@ -405,7 +406,7 @@ public class JobEntryJobTest {
       jej.getJobMeta( repository, store, space );
 
       assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jej.getSpecificationMethod() );
-      verify( repository, times( 1 ) ).loadJob( JOB_ENTRY_FILE_NAME, directory, null, null );
+      verify( repository, times( 1 ) ).loadJob( eq( JOB_ENTRY_FILE_NAME ), eq( directory ), eq( null ), eq( null ), any( VariableSpace.class ) );
     }
   }
 
@@ -532,7 +533,7 @@ public class JobEntryJobTest {
       jej.getJobMeta( myrepo, store, space );
 
       assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jej.getSpecificationMethod() );
-      verify( myrepo, times( 1 ) ).loadJob( JOB_ENTRY_FILE_NAME, directory, null, null );
+      verify( myrepo, times( 1 ) ).loadJob( eq( JOB_ENTRY_FILE_NAME ), eq( directory ), eq( null ), eq( null ), any( VariableSpace.class ) );
     }
   }
 
@@ -655,7 +656,7 @@ public class JobEntryJobTest {
       jej.getJobMeta( myrepo, store, space );
 
       assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jej.getSpecificationMethod() );
-      verify( myrepo, times( 1 ) ).loadJob( "job.kjb", directory, null, null );
+      verify( myrepo, times( 1 ) ).loadJob( eq( "job.kjb" ), eq( directory ), eq( null ), eq( null ), any( VariableSpace.class ) );
     }
   }
 
@@ -689,7 +690,7 @@ public class JobEntryJobTest {
       jej.getJobMeta( myrepo, store, space );
 
       assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jej.getSpecificationMethod() );
-      verify( myrepo, times( 1 ) ).loadJob( "job.kjb", directory, null, null );
+      verify( myrepo, times( 1 ) ).loadJob( eq( "job.kjb" ), eq( directory ), eq( null ), eq( null ), any( VariableSpace.class ) );
     }
   }
 
@@ -752,7 +753,7 @@ public class JobEntryJobTest {
       jej.getJobMeta( myrepo, store, space );
 
       assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jej.getSpecificationMethod() );
-      verify( myrepo, times( 1 ) ).loadJob( JOB_ENTRY_FILE_NAME, directory, null, null );
+      verify( myrepo, times( 1 ) ).loadJob( eq( JOB_ENTRY_FILE_NAME ), eq( directory ), eq( null ), eq( null ), any( VariableSpace.class ) );
     }
   }
 
