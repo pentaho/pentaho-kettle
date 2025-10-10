@@ -70,7 +70,7 @@ public class JobEntryFilesExistTest {
     Result res = entry.execute( new Result(), 0 );
 
     assertFalse( "Entry should fail", res.getResult() );
-    assertEquals( "Files not found. Result is false. But... No of errors should be zero", 0, res.getNrErrors() );
+    assertEquals( "Files not found. Result is false. Number of errors should be one", 1, res.getNrErrors() );
   }
 
   @Test

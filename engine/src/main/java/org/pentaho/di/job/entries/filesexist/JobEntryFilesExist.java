@@ -207,6 +207,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
             }
           } else {
             missingfiles++;
+            nrErrors++;
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString(
                 PKG, "JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername ) );
