@@ -13,18 +13,19 @@
 
 package org.pentaho.di.core.vfs.configuration;
 
-import java.io.IOException;
-
-import org.apache.commons.vfs2.FileSystemConfigBuilder;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileSystemOptions;
-import org.apache.commons.vfs2.FileSystem;
-import org.apache.commons.vfs2.util.DelegatingFileSystemOptionsBuilder;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.BowlReference;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
+
+import java.io.IOException;
+import org.apache.commons.vfs2.FileSystem;
+import org.apache.commons.vfs2.FileSystemConfigBuilder;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemOptions;
+import org.apache.commons.vfs2.util.DelegatingFileSystemOptionsBuilder;
 
 /**
  * A generic FileSystemConfigBuilder that inserts parameters and values as literally specified.
@@ -146,11 +147,12 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
 
   @Override
   public void setBowl( FileSystemOptions opts, Bowl bowl ) {
-    super.setParam( opts, BOWL_KEY, bowl );
+    super.setParam( opts, BOWL_KEY, new BowlReference( bowl ) );
   }
 
   @Override
   public Bowl getBowl( FileSystemOptions opts ) {
-    return super.getParam( opts, BOWL_KEY );
+    BowlReference bowlRef = (BowlReference) super.getParam( opts, BOWL_KEY );
+    return bowlRef != null ? bowlRef.getBowl() : null;
   }
 }

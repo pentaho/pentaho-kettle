@@ -13,17 +13,6 @@
 
 package org.pentaho.di.connections.vfs.provider;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
-import org.apache.commons.vfs2.Capability;
-import org.apache.commons.vfs2.FileName;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystem;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileSystemOptions;
-import org.apache.commons.vfs2.provider.AbstractFileName;
-import org.apache.commons.vfs2.provider.AbstractFileObject;
-import org.apache.commons.vfs2.provider.AbstractFileSystem;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
@@ -38,16 +27,29 @@ import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
 import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
 import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Objects;
+import org.apache.commons.vfs2.Capability;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystem;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemOptions;
+import org.apache.commons.vfs2.provider.AbstractFileName;
+import org.apache.commons.vfs2.provider.AbstractFileObject;
+import org.apache.commons.vfs2.provider.AbstractFileSystem;
 
 public class ConnectionFileSystem extends AbstractFileSystem implements FileSystem {
 
   public static final String CONNECTION = "connection";
 
+  // Weak reference to allow Bowls to be garbage collected when no longer in use.
   @NonNull
-  private final ConnectionManager connectionManager;
+  private final WeakReference<ConnectionManager> connectionManager;
 
   @NonNull
   private final VFSConnectionManagerHelper vfsConnectionManagerHelper;
@@ -58,7 +60,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
                                @NonNull VFSConnectionManagerHelper vfsConnectionManagerHelper ) {
     super( rootName, null, fileSystemOptions );
 
-    this.connectionManager = Objects.requireNonNull( connectionManager );
+    this.connectionManager = new WeakReference( Objects.requireNonNull( connectionManager ) );
     this.vfsConnectionManagerHelper = Objects.requireNonNull( vfsConnectionManagerHelper );
   }
 
@@ -66,6 +68,10 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
   protected FileObject createFile( AbstractFileName fileName ) throws Exception {
     ConnectionFileName pvfsFileName = (ConnectionFileName) fileName;
 
+    ConnectionManager locConnMgr = this.connectionManager.get();
+    if ( locConnMgr == null ) {
+      throw new KettleVFSFileSystemException( "ConnectionFileSystem.ConnectionManagerGone" );
+    }
     // 1. pvfs:// has no associated connection, so no provider file object.
     String connectionName = pvfsFileName.getConnection();
     if ( connectionName == null ) {
@@ -73,7 +79,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     }
 
     // 2. A file name that references a connection that does not exist.
-    VFSConnectionDetails details = connectionManager.getDetails( connectionName );
+    VFSConnectionDetails details = locConnMgr.getDetails( connectionName );
     if ( details == null ) {
       return new UndefinedConnectionFileObject( pvfsFileName, this );
     }
@@ -88,8 +94,8 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
 
     // 4. Normal case, for which there is an associated provider file object.
     FileName providerFileName = vfsConnectionManagerHelper
-      .getExistingProvider( connectionManager, details )
-      .getFileNameTransformer( connectionManager )
+      .getExistingProvider( locConnMgr, details )
+      .getFileNameTransformer( locConnMgr )
       .toProviderFileName( pvfsFileName, details );
 
     AbstractFileObject<?> providerFileObject =
@@ -129,12 +135,16 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
   protected ConnectionFileName toPvfsFileName( @NonNull FileName providerFileName, @NonNull String connectionName )
     throws FileSystemException {
 
-    VFSConnectionDetails details = getExistingConnectionDetails( connectionName );
+    ConnectionManager locConnMgr = this.connectionManager.get();
+    if ( locConnMgr == null ) {
+      throw new KettleVFSFileSystemException( "ConnectionFileSystem.ConnectionManagerGone" );
+    }
+    VFSConnectionDetails details = getExistingConnectionDetails( locConnMgr, connectionName );
 
     try {
       return vfsConnectionManagerHelper
-        .getExistingProvider( connectionManager, details )
-        .getFileNameTransformer( connectionManager )
+        .getExistingProvider( locConnMgr, details )
+        .getFileNameTransformer( locConnMgr )
         .toPvfsFileName( providerFileName, details );
     } catch ( KettleException e ) {
       throw new KettleVFSFileSystemException(
@@ -171,10 +181,10 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
   }
 
   @NonNull
-  private VFSConnectionDetails getExistingConnectionDetails( @NonNull String connectionName )
+  private VFSConnectionDetails getExistingConnectionDetails( @NonNull ConnectionManager manager, @NonNull String connectionName )
     throws KettleVFSFileSystemException {
     try {
-      return connectionManager.getExistingDetails( connectionName );
+      return manager.getExistingDetails( connectionName );
     } catch ( KettleException e ) {
       throw new KettleVFSFileSystemException( "ConnectionFileSystem.ExpectedConnectionNotFound", connectionName, e );
     }
