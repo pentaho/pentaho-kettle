@@ -14,6 +14,7 @@ package org.pentaho.di.base;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -245,7 +246,7 @@ public class MetaFileLoaderImplTest {
     when( repository.loadRepositoryDirectoryTree() ).thenReturn( rdi );
     TransMeta transMeta = new TransMeta();
     transMeta.setName( stripExtension( TRANS_FILE ) );
-    when( repository.loadTransformation( eq( TRANS_FILE ), eq( rdi ), eq( null ), eq( true ), eq( null ), any( VariableSpace.class ) ) ).thenReturn( transMeta );
+    when( repository.loadTransformation( any( Bowl.class ), eq( TRANS_FILE ), eq( rdi ), eq( null ), eq( true ), eq( null ), any( VariableSpace.class ) ) ).thenReturn( transMeta );
   }
 
   private void setupJobExecutorMeta() throws Exception {
@@ -304,7 +305,7 @@ public class MetaFileLoaderImplTest {
     when( repository.findDirectory( transExecutorMeta.getDirectoryPath() ) ).thenReturn( rdi );
     TransMeta transMeta = new TransMeta();
     transMeta.setName( stripExtension( TRANS_FILE ) );
-    when( repository.loadTransformation( eq( TRANS_FILE ), eq( rdi ), eq( null ), eq( true ), eq( null ), any( VariableSpace.class ) ) ).thenReturn( transMeta );
+    when( repository.loadTransformation( any( Bowl.class ), eq( TRANS_FILE ), eq( rdi ), eq( null ), eq( true ), eq( null ), any( VariableSpace.class ) ) ).thenReturn( transMeta );
   }
 
   private void validateFirstJobMetaAccess( JobMeta jobMeta ) {

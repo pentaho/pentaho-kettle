@@ -14,48 +14,11 @@
 
 package org.pentaho.di.trans;
 
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Queue;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-import com.google.common.base.Preconditions;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.vfs2.FileName;
-import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.base.IMetaFileCache;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.ConnectionUtil;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ExecutorInterface;
 import org.pentaho.di.core.ExtensionDataInterface;
@@ -66,6 +29,8 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.SingleRowRowSet;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseTransactionListener;
@@ -104,7 +69,9 @@ import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.ConnectionUtil;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -143,14 +110,47 @@ import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.metastore.api.IMetaStore;
+
+import com.google.common.base.Preconditions;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.BIT_STATUS_SUM;
 import static org.pentaho.di.trans.Trans.BitMaskStatus.FINISHED;
-import static org.pentaho.di.trans.Trans.BitMaskStatus.RUNNING;
-import static org.pentaho.di.trans.Trans.BitMaskStatus.STOPPED;
-import static org.pentaho.di.trans.Trans.BitMaskStatus.PREPARING;
 import static org.pentaho.di.trans.Trans.BitMaskStatus.INITIALIZING;
 import static org.pentaho.di.trans.Trans.BitMaskStatus.PAUSED;
-import static org.pentaho.di.trans.Trans.BitMaskStatus.BIT_STATUS_SUM;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.PREPARING;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.RUNNING;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.STOPPED;
 
 
 /**
@@ -608,6 +608,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     this.containerObjectId = transMeta.getContainerObjectId();
 
     setParent( parent );
+    setRepository( transMeta.getRepository() );
 
     initializeVariablesFrom( transMeta );
     copyParametersFrom( transMeta );

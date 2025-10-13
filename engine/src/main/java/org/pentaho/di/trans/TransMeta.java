@@ -461,6 +461,23 @@ public class TransMeta extends AbstractMeta
     initializeVariablesFrom( parent );
   }
 
+  /**
+   * Builds a new empty transformation with a set of variables to inherit from.
+   *
+   * @param bowl
+   *          the bowl to inherit from
+   * @param parent
+   *          the variable space to inherit from
+   */
+  public TransMeta( Bowl bowl, Repository rep, VariableSpace parent ) {
+    clear();
+    this.repository = rep;
+    if ( bowl != null ) {
+      setBowl( bowl );
+    } 
+    initializeVariablesFrom( parent );
+  }
+
   public TransMeta( String filename, String name ) {
     clear();
     setFilename( filename );

@@ -352,7 +352,7 @@ public class JobEntryTransTest {
     meta.setVariable( param3, childValue3 );
 
     Mockito.doReturn( meta ).when( rep )
-      .loadTransformation( Mockito.eq( "test.ktr" ), Mockito.any(), Mockito.any(), Mockito.anyBoolean(),
+      .loadTransformation( Mockito.any( Bowl.class ), Mockito.eq( "test.ktr" ), Mockito.any(), Mockito.any(), Mockito.anyBoolean(),
         Mockito.any(), Mockito.any() );
 
     VariableSpace parentSpace = new Variables();
@@ -401,7 +401,7 @@ public class JobEntryTransTest {
     meta.setVariable( param2, "childValue2 should be override" );
 
     Mockito.doReturn( meta ).when( rep )
-            .loadTransformation( Mockito.eq( "test" ), Mockito.any(), Mockito.any(), Mockito.anyBoolean(),
+            .loadTransformation( Mockito.any( Bowl.class ), Mockito.eq( "test" ), Mockito.any(), Mockito.any(), Mockito.anyBoolean(),
                     Mockito.any(), Mockito.any() );
 
     VariableSpace parentSpace = new Variables();
