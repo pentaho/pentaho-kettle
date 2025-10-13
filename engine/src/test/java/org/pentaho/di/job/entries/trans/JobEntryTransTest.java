@@ -13,10 +13,6 @@
 
 package org.pentaho.di.job.entries.trans;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -44,13 +40,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.test.util.InternalState;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,9 +48,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -353,7 +353,7 @@ public class JobEntryTransTest {
 
     Mockito.doReturn( meta ).when( rep )
       .loadTransformation( Mockito.eq( "test.ktr" ), Mockito.any(), Mockito.any(), Mockito.anyBoolean(),
-        Mockito.any() );
+        Mockito.any(), Mockito.any() );
 
     VariableSpace parentSpace = new Variables();
     parentSpace.setVariable( param1, parentValue1 );
@@ -402,7 +402,7 @@ public class JobEntryTransTest {
 
     Mockito.doReturn( meta ).when( rep )
             .loadTransformation( Mockito.eq( "test" ), Mockito.any(), Mockito.any(), Mockito.anyBoolean(),
-                    Mockito.any() );
+                    Mockito.any(), Mockito.any() );
 
     VariableSpace parentSpace = new Variables();
     parentSpace.setVariable( param1, parentValue1 );
