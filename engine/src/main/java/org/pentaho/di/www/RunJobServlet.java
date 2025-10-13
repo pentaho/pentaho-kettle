@@ -13,15 +13,6 @@
 
 package org.pentaho.di.www;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.UUID;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
@@ -41,6 +32,14 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.UUID;
 
 public class RunJobServlet extends BaseHttpServlet implements CartePluginInterface {
 
@@ -238,7 +237,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
 
       // Create the transformation and store in the list...
       //
-      final Job job = new Job( repository, jobMeta, servletLoggingObject );
+      final Job job = new Job( repository != null ? repository : slaveServerRepository, jobMeta, servletLoggingObject );
 
       // Setting variables
       //

@@ -12,18 +12,13 @@
 
 package org.pentaho.di.trans;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 import org.pentaho.di.base.MetaFileLoaderImpl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
@@ -37,12 +32,18 @@ import org.pentaho.metastore.api.IMetaStore;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
@@ -98,12 +99,12 @@ public class StepWithMappingMetaTest {
     } ).when( rep ).findDirectory( anyString() );
 
     Mockito.doAnswer( (Answer<TransMeta>) invocation -> {
-      final String originalArgument = (String) ( invocation.getArguments() )[ 0 ];
+      final String originalArgument = (String) ( invocation.getArguments() )[ 1 ];
       // be sure that transformation name was resolved correctly
       assertEquals( fileName, originalArgument );
       return mock( TransMeta.class );
-    } ).when( rep ).loadTransformation( anyString(), nullable( RepositoryDirectoryInterface.class ),
-      nullable( ProgressMonitorListener.class ), anyBoolean(), nullable( String.class ) );
+    } ).when( rep ).loadTransformation( any( Bowl.class ), anyString(), nullable( RepositoryDirectoryInterface.class ),
+      nullable( ProgressMonitorListener.class ), anyBoolean(), nullable( String.class ), nullable( VariableSpace.class ) );
 
     StepWithMappingMeta.loadMappingMeta( DefaultBowl.getInstance(), mappingMetaMock, rep, null, variables, true );
   }
@@ -178,7 +179,7 @@ public class StepWithMappingMetaTest {
     TransMeta child = new TransMeta();
     child.setVariable( childParam, childValue );
     child.setVariable( paramOverwrite, childValue );
-    Mockito.doReturn( child ).when( rep ).loadTransformation( anyString(), any(), any(), anyBoolean(), any() );
+    Mockito.doReturn( child ).when( rep ).loadTransformation( any( Bowl.class), anyString(), any(), any(), anyBoolean(), any(), nullable( VariableSpace.class ) );
 
     TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( DefaultBowl.getInstance(), mappingMetaMock, rep, null,
       variables, true );
@@ -363,15 +364,15 @@ public class StepWithMappingMetaTest {
     RepositoryDirectoryInterface directoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
     Mockito.doReturn( directoryInterface ).when( rep ).findDirectory( anyString() );
     Mockito.doReturn( new TransMeta() ).when( rep )
-      .loadTransformation( anyString(), any(), any(), anyBoolean(), any() );
+      .loadTransformation( any( Bowl.class ), anyString(), any(), any(), anyBoolean(), any(), nullable( VariableSpace.class) );
 
     TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( DefaultBowl.getInstance(), mappingMetaMock, rep, null,
       parent, true );
 
     Assert.assertNotNull( transMeta );
     Mockito.verify( rep, Mockito.times( 1 ) ).findDirectory( Mockito.eq( transDirectory ) );
-    Mockito.verify( rep, Mockito.times( 1 ) ).loadTransformation( Mockito.eq( transName ),
-      Mockito.eq( directoryInterface ), Mockito.eq( null ), Mockito.eq( true ), Mockito.eq( null ) );
+    Mockito.verify( rep, Mockito.times( 1 ) ).loadTransformation( Mockito.eq( DefaultBowl.getInstance() ), Mockito.eq( transName ),
+      Mockito.eq( directoryInterface ), Mockito.eq( null ), Mockito.eq( true ), Mockito.eq( null ), nullable( VariableSpace.class ) );
   }
 
   @Test

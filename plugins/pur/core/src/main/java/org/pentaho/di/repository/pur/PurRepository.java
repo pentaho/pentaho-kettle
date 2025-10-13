@@ -14,13 +14,14 @@
 
 package org.pentaho.di.repository.pur;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.annotations.RepositoryPlugin;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
@@ -93,7 +94,6 @@ import org.pentaho.platform.repository.RepositoryFilenameUtils;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
 import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
 
-import javax.xml.namespace.QName;
 import jakarta.xml.ws.Service;
 import jakarta.xml.ws.soap.SOAPFaultException;
 import java.io.File;
@@ -119,6 +119,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import javax.xml.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -2422,11 +2424,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                                        final ProgressMonitorListener monitor, final boolean setInternalVariables,
                                        final String versionId )
   throws KettleException {
-    return loadTransformation( transName, parentDir, monitor, setInternalVariables, versionId, null );
+    return loadTransformation( DefaultBowl.getInstance(), transName, parentDir, monitor, setInternalVariables, versionId, null );
   }
 
   @Override
-  public TransMeta loadTransformation( final String transName, final RepositoryDirectoryInterface parentDir,
+  public TransMeta loadTransformation( final Bowl bowl, final String transName, final RepositoryDirectoryInterface parentDir,
                                        final ProgressMonitorListener monitor, final boolean setInternalVariables,
                                        final String versionId, VariableSpace parent )
   throws KettleException {
@@ -2476,7 +2478,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       }
 
       revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionId );
-      TransMeta transMeta = buildTransMeta( file, parentDir, data, revision, parent );
+      TransMeta transMeta = buildTransMeta( bowl, file, parentDir, data, revision, parent );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
       return transMeta;
     } catch ( final KettleException ke ) {
@@ -2487,17 +2489,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     }
   }
 
-  private TransMeta buildTransMeta( final RepositoryFile file, final RepositoryDirectoryInterface parentDir,
+  private TransMeta buildTransMeta( final Bowl bowl, final RepositoryFile file, 
+                                    final RepositoryDirectoryInterface parentDir,
                                     final NodeRepositoryFileData data, final ObjectRevision revision,
                                     final VariableSpace parent )
     throws KettleException {
-    TransMeta transMeta = new TransMeta( parent );
+    TransMeta transMeta = new TransMeta( bowl, this, parent );
     transMeta.setName( file.getTitle() );
     transMeta.setFilename( file.getPath() );
     transMeta.setDescription( file.getDescription() );
     transMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
     transMeta.setObjectRevision( revision );
-    transMeta.setRepository( this );
     transMeta.setRepositoryDirectory( parentDir );
     transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransSharedObjectsLoaded.id, transMeta );
@@ -2552,7 +2554,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         }
         TransMeta
           transMeta =
-          buildTransMeta( file, findDirectory( dirPath ), fileData, createObjectRevision( version ), null );
+          buildTransMeta( null, file, findDirectory( dirPath ), fileData, createObjectRevision( version ), null );
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
         transformations.add( transMeta );
       } catch ( Exception ex ) {

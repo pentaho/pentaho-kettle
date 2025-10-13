@@ -168,7 +168,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
                       : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), realFilename, rep, metaStore,
                                          null );
             } else {
-              theMeta = getMetaFromRepository( rep, r, realFilename, tmpSpace );
+              theMeta = getMetaFromRepository( bowl, rep, r, realFilename, tmpSpace );
             }
             if ( theMeta != null ) {
               idContainer[ 0 ] = realFilename;
@@ -207,9 +207,9 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
                 theMeta = rep == null
                   ? (T) new TransMeta( bowl, metaPath, metaStore, null, true, jobEntryBase.getParentVariableSpace(),
                                        null )
-                  : getMetaFromRepository( rep, r, metaPath, tmpSpace );
+                  : getMetaFromRepository( bowl, rep, r, metaPath, tmpSpace );
               } else {
-                theMeta = getMetaFromRepository( rep, r, metaPath, tmpSpace );
+                theMeta = getMetaFromRepository( bowl, rep, r, metaPath, tmpSpace );
               }
               if ( theMeta != null ) {
                 idContainer[ 0 ] = metaPath;
@@ -293,7 +293,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
     return theMeta;
   }
 
-  private T getMetaFromRepository( Repository rep, CurrentDirectoryResolver r, String metaPath, VariableSpace tmpSpace )
+  private T getMetaFromRepository( Bowl bowl, Repository rep, CurrentDirectoryResolver r, String metaPath, VariableSpace tmpSpace )
     throws KettleException {
     String realName = "";
     String realDirectory = "/";
@@ -322,7 +322,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
 
     T theMeta = null;
     if ( isTransMeta() ) {
-      theMeta = (T) rep.loadTransformation( realName, repositoryDirectory, null, true, null, tmpSpace );
+      theMeta = (T) rep.loadTransformation( bowl, realName, repositoryDirectory, null, true, null, tmpSpace );
     } else {
       JobMeta jobMeta = rep.loadJob( realName, repositoryDirectory, null, null, tmpSpace );
       if ( jobMeta != null ) {
@@ -385,7 +385,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             // OK, load the meta-data from file...
             // Don't set internal variables: they belong to the parent thread!
             if ( rep != null ) {
-              theMeta = getMetaFromRepository2( realFilename, rep, r, idContainer );
+              theMeta = getMetaFromRepository2( bowl, realFilename, rep, r, idContainer );
             }
             if ( theMeta == null ) {
               theMeta = attemptLoadMeta( bowl, realFilename, rep, metaStore, null, tmpSpace, idContainer );
@@ -436,7 +436,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
               if ( repdir != null ) {
                 try {
                   // reads the last revision in the repository...
-                  theMeta = isTransMeta() ? (T) rep.loadTransformation( realMetaName, repdir, null, true, null, tmpSpace )
+                  theMeta = isTransMeta() ? (T) rep.loadTransformation( bowl, realMetaName, repdir, null, true, null, tmpSpace )
                     : (T) rep.loadJob( realMetaName, repdir, null, null, tmpSpace );
                   if ( theMeta != null ) {
                     idContainer[ 0 ] = cacheKey;
@@ -523,7 +523,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
     return tmpSpace;
   }
 
-  private T getMetaFromRepository2( String realFilename, Repository rep, CurrentDirectoryResolver r,
+  private T getMetaFromRepository2( Bowl bowl, String realFilename, Repository rep, CurrentDirectoryResolver r,
                                     String[] idContainer ) throws KettleException {
     T theMeta = null;
 
@@ -533,7 +533,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       String dirStr = normalizedFilename.substring( 0, normalizedFilename.lastIndexOf( "/" ) );
       String tmpFilename = normalizedFilename.substring( normalizedFilename.lastIndexOf( "/" ) + 1 );
       RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
-      theMeta = isTransMeta() ? (T) rep.loadTransformation( tmpFilename, dir, null, true, null )
+      theMeta = isTransMeta() ? (T) rep.loadTransformation( bowl, tmpFilename, dir, null, true, null, null )
         : (T) rep.loadJob( tmpFilename, dir, null, null );
     } catch ( KettleException ke ) {
       // try without extension
@@ -544,7 +544,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             normalizedFilename.indexOf( "." + extension ) );
           String dirStr = normalizedFilename.substring( 0, normalizedFilename.lastIndexOf( "/" ) );
           RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
-          theMeta = isTransMeta() ? (T) rep.loadTransformation( tmpFilename, dir, null, true, null )
+          theMeta = isTransMeta() ? (T) rep.loadTransformation( bowl, tmpFilename, dir, null, true, null, null )
             : (T) rep.loadJob( tmpFilename, dir, null, null );
         } catch ( KettleException ke2 ) {
           // fall back to try loading from file system (transMeta is going to be null)

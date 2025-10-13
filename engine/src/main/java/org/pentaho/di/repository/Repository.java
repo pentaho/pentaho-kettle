@@ -13,16 +13,11 @@
 
 package org.pentaho.di.repository;
 
-import java.net.URI;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
@@ -33,6 +28,11 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+
+import java.net.URI;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 public interface Repository {
 
@@ -210,7 +210,7 @@ public interface Repository {
    * @param parent
    *          The parent VariableSpace. Used in the initial load of the Transformation
    */
-  default TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
+  default TransMeta loadTransformation( Bowl bowl, String transname, RepositoryDirectoryInterface repdir,
     ProgressMonitorListener monitor, boolean setInternalVariables, String revision, VariableSpace parent )
     throws KettleException {
     return loadTransformation( transname, repdir, monitor, setInternalVariables, revision );
