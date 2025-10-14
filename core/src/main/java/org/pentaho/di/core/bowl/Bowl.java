@@ -13,11 +13,12 @@
 package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -94,5 +95,11 @@ public interface Bowl {
    */
   String getLevelDisplayName();
 
-
+  /**
+   * Get the path of this bowl if applicable
+   * @return the path if applicable
+   */
+  default Optional<String> getBowlPath() {
+    return Optional.empty();
+  }
 }
