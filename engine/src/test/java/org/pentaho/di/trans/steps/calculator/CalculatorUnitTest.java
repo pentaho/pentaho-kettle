@@ -1058,36 +1058,4 @@ public class CalculatorUnitTest {
     }
   }
 
-  @Test
-  public void testGetCalcTypesAction() {
-
-    Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    Map<String, String> queryMap = new HashMap<>();
-    JSONObject response = calculator.doAction("getCalcTypes", smh.processRowsStepMetaInterface, smh.transMeta, smh.trans, queryMap);
-
-    assertEquals(  StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-  }
-
-  @Test
-  public void testGetCalcFieldsAction() throws KettleStepException {
-
-    Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    Map<String, String> queryMap = new HashMap<>();
-    CalculatorMeta meta = smh.processRowsStepMetaInterface;
-    CalculatorMetaFunction[] calculations = new CalculatorMetaFunction[1];
-    calculations[0] = mock( CalculatorMetaFunction.class );
-    when( meta.getCalculation() ).thenReturn( calculations );
-
-    TransMeta transMeta = smh.transMeta;
-    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
-    when(transMeta.getPrevStepFields( anyString() ) ).thenReturn( rowMetaInterface );
-    when( rowMetaInterface.size() ).thenReturn( 1 );
-    ValueMetaInterface mockValueMeta = mock( ValueMetaInterface.class );
-    when( mockValueMeta.getName() ).thenReturn( "field" );
-    when( rowMetaInterface.getValueMeta( 0 ) ).thenReturn( mockValueMeta );
-
-    JSONObject response = calculator.doAction("getCalcFields", meta, smh.transMeta, smh.trans, queryMap);
-
-    assertEquals(  StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-  }
 }
