@@ -1,0 +1,28 @@
+<assembly>
+    <id>s3-plugin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <baseDirectory>pentaho-s3-vfs-plugin</baseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>pentaho:pentaho-s3-vfs:jar</include>
+            </includes>
+            <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/lib</outputDirectory>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}.${artifact.extension}
+            </outputFileNameMapping>
+            <includes>
+                <include>com.amazonaws:aws-java-sdk-core</include>
+                <include>com.amazonaws:aws-java-sdk-s3</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+</assembly>
