@@ -40,6 +40,10 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.PluginDialog;
+import org.pentaho.di.core.ssh.SshConnection;
+import org.pentaho.di.core.ssh.SshConfig;
+import org.pentaho.di.core.ssh.SshConnectionFactory;
+import org.pentaho.di.core.ssh.SftpSession;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
@@ -63,10 +67,6 @@ import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.enterprisedt.net.ftp.FTPClient;
-import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.HTTPProxyData;
-import com.trilead.ssh2.SFTPv3Client;
-import com.trilead.ssh2.SFTPv3FileAttributes;
 
 /**
  * This dialog allows you to edit the FTP Delete job entry settings.
@@ -231,7 +231,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
   private FTPSConnection ftpsclient = null;
   private FTPClient ftpclient = null;
   private SFTPClient sftpclient = null;
-  private Connection conn = null;
+  private SshConnection conn = null;
   private String pwdFolder = null;
 
   private static final String[] FILETYPES = new String[] {
@@ -1074,22 +1074,15 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
   }
 
   /**
-   * Checks if a directory exists
+   * Checks if a directory exists using MINA SSHD
    *
-   * @param sftpClient
+   * @param sftpSession
    * @param directory
    * @return true, if directory exists
    */
-  public boolean sshDirectoryExists( SFTPv3Client sftpClient, String directory ) {
+  public boolean sshDirectoryExists( SftpSession sftpSession, String directory ) {
     try {
-      SFTPv3FileAttributes attributes = sftpClient.stat( directory );
-
-      if ( attributes != null ) {
-        return ( attributes.isDirectory() );
-      } else {
-        return false;
-      }
-
+      return sftpSession.exists( directory ) && sftpSession.isDirectory( directory );
     } catch ( Exception e ) {
       return false;
     }
@@ -1116,9 +1109,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
             sftpclient.chdir( realfoldername );
             folderexists = true;
           } else if ( wProtocol.getText().equals( JobEntryFTPDelete.PROTOCOL_SSH ) ) {
-            SFTPv3Client client = new SFTPv3Client( conn );
-            boolean folderexist = sshDirectoryExists( client, realfoldername );
-            client.close();
+            SftpSession sftpSession = conn.openSftp();
+            boolean folderexist = sshDirectoryExists( sftpSession, realfoldername );
+            sftpSession.close();
             if ( folderexist ) {
               // Folder exists
               folderexists = true;
@@ -1149,17 +1142,17 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
   }
 
   private boolean connect() {
-    boolean connexion = false;
+    boolean connection = false;
     if ( wProtocol.getText().equals( JobEntryFTPDelete.PROTOCOL_FTP ) ) {
-      connexion = connectToFTP();
+      connection = connectToFTP();
     } else if ( wProtocol.getText().equals( JobEntryFTPDelete.PROTOCOL_FTPS ) ) {
-      connexion = connectToFTPS();
+      connection = connectToFTPS();
     } else if ( wProtocol.getText().equals( JobEntryFTPDelete.PROTOCOL_SFTP ) ) {
-      connexion = connectToSFTP();
+      connection = connectToSFTP();
     } else if ( wProtocol.getText().equals( JobEntryFTPDelete.PROTOCOL_SSH ) ) {
-      connexion = connectToSSH();
+      connection = connectToSSH();
     }
-    return connexion;
+    return connection;
   }
 
   private void test() {
@@ -1324,39 +1317,39 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     boolean retval = false;
     try {
       if ( conn == null ) { // Create a connection instance
-        conn =
-          new Connection( jobMeta.environmentSubstitute( wServerName.getText() ), Const.toInt( jobMeta
-            .environmentSubstitute( wPort.getText() ), 22 ) );
+        SshConfig config = SshConfig.create()
+          .host( jobMeta.environmentSubstitute( wServerName.getText() ) )
+          .port( Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 22 ) );
 
         /* We want to connect through a HTTP proxy */
         if ( wuseProxy.getSelection() ) {
           /* Now connect */
           // if the proxy requires basic authentication:
           if ( !Utils.isEmpty( wProxyUsername.getText() ) ) {
-            conn.setProxyData( new HTTPProxyData(
-              jobMeta.environmentSubstitute( wProxyHost.getText() ), Const.toInt( wProxyPort.getText(), 22 ),
-              jobMeta.environmentSubstitute( wProxyUsername.getText() ),
-                    Utils.resolvePassword( jobMeta, wProxyPassword.getText() ) ) );
+            config.proxy( jobMeta.environmentSubstitute( wProxyHost.getText() ), 
+                         Const.toInt( wProxyPort.getText(), 22 ) )
+              .proxyAuth( jobMeta.environmentSubstitute( wProxyUsername.getText() ),
+                         Utils.resolvePassword( jobMeta, wProxyPassword.getText() ) );
           } else {
-            conn.setProxyData( new HTTPProxyData( jobMeta.environmentSubstitute( wProxyHost.getText() ), Const
-              .toInt( wProxyPort.getText(), 22 ) ) );
+            config.proxy( jobMeta.environmentSubstitute( wProxyHost.getText() ),
+                         Const.toInt( wProxyPort.getText(), 22 ) );
           }
         }
 
-        conn.connect();
-
-        // Authenticate
+        // Configure authentication
         if ( wusePublicKey.getSelection() ) {
-          retval =
-            conn.authenticateWithPublicKey(
-              jobMeta.environmentSubstitute( wUserName.getText() ), new java.io.File( jobMeta
-                .environmentSubstitute( wKeyFilename.getText() ) ), jobMeta
-                .environmentSubstitute( wkeyfilePass.getText() ) );
+          config.username( jobMeta.environmentSubstitute( wUserName.getText() ) )
+            .authType( SshConfig.AuthType.PUBLIC_KEY )
+            .keyPath( java.nio.file.Paths.get( jobMeta.environmentSubstitute( wKeyFilename.getText() ) ) )
+            .passphrase( jobMeta.environmentSubstitute( wkeyfilePass.getText() ) );
         } else {
-          retval =
-            conn.authenticateWithPassword( jobMeta.environmentSubstitute( wUserName.getText() ),
-                    Utils.resolvePassword( jobMeta, wPassword.getText() ) );
+          config.username( jobMeta.environmentSubstitute( wUserName.getText() ) )
+            .authType( SshConfig.AuthType.PASSWORD )
+            .password( Utils.resolvePassword( jobMeta, wPassword.getText() ) );
         }
+
+        conn = SshConnectionFactory.defaultFactory().open( config );
+        conn.connect();
       }
 
       retval = true;

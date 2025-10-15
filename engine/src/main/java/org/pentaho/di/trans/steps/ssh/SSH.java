@@ -18,16 +18,14 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.ssh.ExecResult;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import com.trilead.ssh2.Session;
 
 /**
  * Write commands to SSH *
@@ -37,8 +35,8 @@ import com.trilead.ssh2.Session;
  *
  */
 
-public class SSH extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
+public class SSH extends BaseStep {
+  private static final Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SSHMeta meta;
   private SSHData data;
@@ -105,13 +103,12 @@ public class SSH extends BaseStep implements StepInterface {
       this.setInputRowMeta( imeta );
     }
     // Reserve room
-    Object[] rowData = new Object[data.nrOutputFields];
+    Object[] rowData = new Object[ data.nrOutputFields ];
     for ( int i = 0; i < data.nrInputFields; i++ ) {
-      rowData[i] = row[i]; // no data is changed, clone is not needed here.
+      rowData[ i ] = row[ i ]; // no data is changed, clone is not needed here.
     }
     int index = data.nrInputFields;
 
-    Session session = null;
     try {
       if ( meta.isDynamicCommand() ) {
         // get commands
@@ -121,31 +118,32 @@ public class SSH extends BaseStep implements StepInterface {
         }
       }
 
-      // Open a session
-      session = data.conn.openSession();
-      if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionOpened" ) );
+      // Connect if not already connected
+      if ( !data.isConnected() ) {
+        data.getSshConnection().connect();
+        data.setConnected( true );
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionOpened" ) );
+        }
       }
 
       // execute commands
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "SSH.Log.RunningCommand", data.commands ) );
       }
-      session.execCommand( data.commands );
+      ExecResult execResult = data.getSshConnection().exec( data.commands, 30000L ); // 30 second timeout
 
-      // Read Stdout, Sterr and exitStatus
-      SessionResult sessionresult = new SessionResult( session );
       if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "SSH.Log.CommandRunnedCommand", data.commands, sessionresult
-          .getStdOut(), sessionresult.getStdErr() ) );
+        logDebug( BaseMessages.getString( PKG, "SSH.Log.CommandRunnedCommand", data.commands, execResult
+          .getStdout(), execResult.getStderr() ) );
       }
 
       // Add stdout to output
-      rowData[index++] = sessionresult.getStd();
+      rowData[ index++ ] = execResult.getCombined();
 
       if ( !Utils.isEmpty( data.stdTypeField ) ) {
         // Add stdtype to output
-        rowData[index++] = sessionresult.isStdTypeErr();
+        rowData[ index ] = execResult.hasErrorOutput();
       }
 
       if ( log.isRowLevel() ) {
@@ -179,12 +177,7 @@ public class SSH extends BaseStep implements StepInterface {
         putError( getInputRowMeta(), row, 1, errorMessage, null, "SSH001" );
       }
     } finally {
-      if ( session != null ) {
-        session.close();
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.SessionClosed" ) );
-        }
-      }
+      // No session cleanup needed - connection lifecycle is managed separately
     }
 
     return true;
@@ -228,17 +221,44 @@ public class SSH extends BaseStep implements StepInterface {
       data.stdTypeField = environmentSubstitute( meta.getStdErrFieldName() );
 
       try {
-        // Open connection
-        data.conn =
-          SSHData.OpenConnection(
-            servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename, passphrase, timeOut,
-            this, proxyhost, proxyport, proxyusername, proxypassword );
+        logBasic( "Creating SSH connection" );
 
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionOpened" ) );
-        }
+        SshConnectionParameters params = SshConnectionParameters.builder()
+            .bowl( getTransMeta().getBowl() )
+            .server( servername )
+            .port( nrPort )
+            .username( username )
+            .password( password )
+            .useKey( meta.isusePrivateKey() )
+            .keyFilename( keyFilename )
+            .passPhrase( passphrase )
+            .timeOut( timeOut )
+            .space( this )
+            .proxyhost( proxyhost )
+            .proxyport( proxyport )
+            .proxyusername( proxyusername )
+            .proxypassword( proxypassword )
+            .build();
+
+        data.setSshConnection( SSHData.openSshConnection( params, log ) );
+
+        logBasic( "SSH connection created successfully" );
 
       } catch ( Exception e ) {
+        logError( "SSH connection initialization failed:" );
+        logError( "  Server: " + servername + ":" + nrPort );
+        logError( "  Username: " + username );
+        logError( "  Use Private Key: " + meta.isusePrivateKey() );
+        if ( meta.isusePrivateKey() ) {
+          logError( "  Key File: " + keyFilename );
+        }
+        logError( "  Timeout: " + timeOut + "ms" );
+        logError( "  Error: " + e.getClass().getSimpleName() + ": " + e.getMessage() );
+
+        if ( log.isDebug() ) {
+          logError( "Full stack trace:", e );
+        }
+
         logError( BaseMessages.getString( PKG, "SSH.Error.OpeningConnection", e.getMessage() ) );
         return false;
       }
@@ -253,11 +273,16 @@ public class SSH extends BaseStep implements StepInterface {
     meta = (SSHMeta) smi;
     data = (SSHData) sdi;
 
-    if ( data.conn != null ) {
-      data.conn.close();
-      if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionClosed" ) );
+    // Close the SSH connection
+    try {
+      if ( data.getSshConnection() != null ) {
+        data.getSshConnection().close();
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionClosed" ) );
+        }
       }
+    } catch ( Exception e ) {
+      logError( "Error closing SSH connection: " + e.getMessage() );
     }
 
     super.dispose( smi, sdi );
