@@ -21,17 +21,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.apache.commons.vfs2.FileObject;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -945,14 +941,4 @@ public class GroupBy extends BaseStep implements StepInterface {
   public GroupByMeta getMeta() {
     return meta;
   }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject typeGroupCodeAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    JSONArray typeValues = new JSONArray();
-    typeValues.addAll( Arrays.asList( GroupByMeta.typeGroupCode ) );
-    response.put( "typeGroupCode", typeValues );
-    return response;
-  }
-
 }
