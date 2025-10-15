@@ -13,7 +13,6 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
-
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.SlaveServerManagementInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -90,6 +89,8 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate<SlaveServer> {
 
   public void newSlaveServer() {
     SlaveServer slaveServer = new SlaveServer();
+    slaveServer.initializeVariablesFrom( spoon.getADefaultVariableSpace() );
+
     try {
       SlaveServerManagementInterface slaveServerManagementInterface =
         spoon.getManagementBowl().getManager( SlaveServerManagementInterface.class );
@@ -109,6 +110,8 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate<SlaveServer> {
 
   public void edit( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer ) {
     String originalName = slaveServer.getName().trim();
+    slaveServer.initializeVariablesFrom( spoon.getADefaultVariableSpace() );
+
     try {
       SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), slaveServer, slaveServerManager.getAll() );
       if ( dialog.open() ) {
@@ -156,6 +159,8 @@ public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate<SlaveServer> {
 
   public void dupeSlaveServer( SlaveServerManagementInterface slaveServerManager, SlaveServer slaveServer ) {
     ShowEditDialog<SlaveServer> sed = ( ss, servers ) -> {
+      ss.initializeVariablesFrom( spoon.getADefaultVariableSpace() );
+
       SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), ss, servers );
       if ( dialog.open() ) {
         slaveServerManager.add( ss );

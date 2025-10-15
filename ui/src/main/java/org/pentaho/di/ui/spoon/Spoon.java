@@ -1368,6 +1368,36 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  /**
+   * Gets a variablespace for use in the current context. Uses the current Bowl, current tab,
+   * and any variables set in the "Set Environment Variables" dialog. Note that this VariableSpace
+   * is only relevant on the current tab.
+   */
+  public VariableSpace getADefaultVariableSpace() {
+    VariableSpace space;
+    AbstractMeta abstractMeta = getActiveTransformationOrJob();
+    if ( abstractMeta != null ) {
+      space = new Variables();
+      space.initializeVariablesFrom( abstractMeta );
+    } else {
+      space = getExecutionBowl().getADefaultVariableSpace();
+    }
+
+    for ( int i = 0; i < variables.size(); i++ ) {
+      try {
+        String name = variables.getValueMeta( i ).getName();
+        String value = variables.getString( i, "" );
+
+        space.setVariable( name, value );
+      } catch ( KettleValueException e ) {
+        // Just eat the exception. getString() should never give an
+        // exception.
+        log.logDebug( "Unexpected exception occurred : " + e.getMessage() );
+      }
+    }
+    return space;
+  }
+
   public void setVariables() {
     // work with a local copy, and get a baseline before modification.
     RowMetaAndData locvariables = variables.clone();

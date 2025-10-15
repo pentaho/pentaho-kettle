@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
+
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
@@ -38,6 +39,7 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate<ClusterSche
   public void newClusteringSchema( TransMeta transMeta ) {
     try {
       ClusterSchema clusterSchema = new ClusterSchema();
+      clusterSchema.initializeVariablesFrom( spoon.getADefaultVariableSpace() );
 
       // management bowl for managing, checking for duplicates
       ClusterSchemaManagementInterface clusterSchemaManagementInterface =
@@ -68,6 +70,8 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate<ClusterSche
   public void editClusterSchema( TransMeta transMeta, ClusterSchemaManagementInterface manager, ClusterSchema clusterSchema ) {
     String originalName = clusterSchema.getName().trim();
     try {
+      clusterSchema.initializeVariablesFrom( spoon.getADefaultVariableSpace() );
+
       // execution bowl for listing all slave servers
       SlaveServerManagementInterface slaveServerManagementInterface =
         spoon.getExecutionBowl().getManager( SlaveServerManagementInterface.class );
@@ -144,6 +148,8 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate<ClusterSche
 
   public void dupeClusterSchema( ClusterSchemaManagementInterface clusterSchemaManager, ClusterSchema clusterSchema ) {
     ShowEditDialog<ClusterSchema> sed = ( cs, clusters ) -> {
+      cs.initializeVariablesFrom( spoon.getADefaultVariableSpace() );
+
       SlaveServerManagementInterface slaveServerManagementInterface =
         spoon.getExecutionBowl().getManager( SlaveServerManagementInterface.class );
       List<SlaveServer> slaveServers = slaveServerManagementInterface.getAll();

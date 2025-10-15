@@ -17,8 +17,10 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
+
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.partition.PartitionSchemaManagementInterface;
@@ -36,6 +38,7 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<Partition
 
   public void newPartitioningSchema( TransMeta transMeta ) {
     PartitionSchema partitionSchema = new PartitionSchema();
+    
     try {
       PartitionSchemaManagementInterface partitionSchemaManagementInterface =
           spoon.getManagementBowl().getManager( PartitionSchemaManagementInterface.class );
@@ -45,10 +48,11 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<Partition
 
       List<DatabaseMeta> databaseMetas = transMeta != null ? transMeta.getDatabases() :
         databaseManagementInterface.getAll();
+      VariableSpace variableSpace = spoon.getADefaultVariableSpace();
 
       PartitionSchemaDialog dialog =
           new PartitionSchemaDialog( spoon.getShell(), partitionSchema, partitionSchemaManagementInterface.getAll(),
-                    databaseMetas, spoon.getManagementBowl().getADefaultVariableSpace() );
+                    databaseMetas, variableSpace );
       if ( dialog.open() ) {
         List<PartitionSchema> partitions = partitionSchemaManagementInterface.getAll();
         if ( isDuplicate( partitions, partitionSchema ) ) {
@@ -77,9 +81,10 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<Partition
       List<DatabaseMeta> databaseMetas = transMeta != null ? transMeta.getDatabases() :
         databaseManagementInterface.getAll();
 
+      VariableSpace variableSpace = spoon.getADefaultVariableSpace();
       PartitionSchemaDialog dialog =
         new PartitionSchemaDialog( spoon.getShell(), partitionSchema, partitionSchemaManager.getAll(),
-                      databaseMetas, spoon.getManagementBowl().getADefaultVariableSpace() );
+                      databaseMetas, variableSpace );
       if ( dialog.open() ) {
         String newName = partitionSchema.getName().trim();
         // This should be case insensitive. We only need to remove if the name changed beyond case. The Managers handle
@@ -149,8 +154,9 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate<Partition
     ShowEditDialog<PartitionSchema> sed = ( ps, servers ) -> {
       DatabaseManagementInterface databaseManagementInterface =  spoon.getExecutionBowl().getManager( DatabaseManagementInterface.class );
 
+      VariableSpace variableSpace = spoon.getADefaultVariableSpace();
       PartitionSchemaDialog dialog = new PartitionSchemaDialog( spoon.getShell(), ps, servers,
-         databaseManagementInterface.getAll(), spoon.getManagementBowl().getADefaultVariableSpace() );
+         databaseManagementInterface.getAll(), variableSpace );
       if ( dialog.open() ) {
         partitionSchemaManager.add( ps );
       }
