@@ -14,20 +14,10 @@
 package org.pentaho.di.trans.steps.concatfields;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
@@ -402,50 +392,5 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     // but we try to avoid
   }
 
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
-    JSONObject jsonObject = new JSONObject();
-    JSONArray concatFields = new JSONArray();
-    ObjectMapper objectMapper = new ObjectMapper();
-    for ( ConcatFieldDTO concatField : getUpdatedConcatFields() ) {
-      concatFields.add( objectMapper.readTree( objectMapper.writeValueAsString( concatField ) ) );
-    }
-    jsonObject.put( "updatedData", concatFields );
-    return jsonObject;
-  }
-
-  private List<ConcatFieldDTO> getUpdatedConcatFields() {
-    ConcatFieldsMeta concatFieldsMeta = (ConcatFieldsMeta) getStepMetaInterface();
-    List<ConcatFieldDTO> excelFileFields = new ArrayList<>();
-    for ( TextFileField item : concatFieldsMeta.getOutputFields() ) {
-      ConcatFieldDTO concatFieldDTO = new ConcatFieldDTO();
-      concatFieldDTO.setName( item.getName() );
-      concatFieldDTO.setType( item.getTypeDesc() );
-      concatFieldDTO.setFormat( formatType( item.getType() ) );
-      concatFieldDTO.setLength( StringUtils.EMPTY );
-      concatFieldDTO.setPrecision( StringUtils.EMPTY );
-      concatFieldDTO.setCurrency( item.getCurrencySymbol() );
-      concatFieldDTO.setDecimal( item.getDecimalSymbol() );
-      concatFieldDTO.setGroup( item.getGroupingSymbol() );
-      concatFieldDTO.setTrimType( "both" );
-      concatFieldDTO.setNullif( item.getNullString() );
-      excelFileFields.add( concatFieldDTO );
-    }
-    return excelFileFields;
-  }
-
-  public String formatType( int type ) {
-    switch ( type ) {
-      case ValueMetaInterface.TYPE_STRING:
-        return "";
-      case ValueMetaInterface.TYPE_INTEGER:
-        return "0";
-      case ValueMetaInterface.TYPE_NUMBER:
-        return "0.#####";
-      default:
-        break;
-    }
-    return null;
-  }
 
 }

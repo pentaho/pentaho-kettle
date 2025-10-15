@@ -61,6 +61,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.concatfields.ConcatFields;
+import org.pentaho.di.trans.steps.concatfields.ConcatFieldsHelper;
 import org.pentaho.di.trans.steps.concatfields.ConcatFieldsMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -1051,11 +1052,9 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
       trans.rowsets = new ArrayList<>();
 
       getInfo( input );
-      ConcatFields step = (ConcatFields) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
-      step.setStepMetaInterface( input );
-
-      String formatTypeResponse = step.formatType( type );
-      item.setText( 3, formatTypeResponse);
+      ConcatFieldsHelper helper = new ConcatFieldsHelper();
+      String formatTypeResponse = helper.formatType( type );
+      item.setText( 3, formatTypeResponse != null ? formatTypeResponse : "" );
     }
 
     for ( int i = 0; i < input.getOutputFields().length; i++ ) {
