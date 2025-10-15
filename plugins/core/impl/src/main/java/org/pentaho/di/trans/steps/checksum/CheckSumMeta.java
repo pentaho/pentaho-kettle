@@ -41,6 +41,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -675,6 +676,11 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new CheckSum( stepMeta, stepDataInterface, cnr, tr, trans );
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new CheckSumHelper();
   }
 
   @Override
