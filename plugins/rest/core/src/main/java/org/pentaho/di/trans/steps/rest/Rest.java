@@ -13,6 +13,19 @@
 
 package org.pentaho.di.trans.steps.rest;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.List;
+
+import javax.net.ssl.SSLContext;
+
+
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
@@ -36,29 +49,16 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.util.HttpClientManager;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.util.List;
+
 
 /**
  * @author Samatar
@@ -319,36 +319,26 @@ public class Rest extends BaseStep implements StepInterface {
         }
       }
       // SSL TRUST STORE CONFIGURATION
-      if ( !Utils.isEmpty( data.trustStoreFile ) && !meta.isIgnoreSsl() ) {
-        setTrustStoreFile();
-      }
-      if ( meta.isIgnoreSsl() ) {
-        setTrustAll();
-      }
+      setSSLConfiguration( data );
 
     }
   }
 
-  private void setTrustAll() throws KettleException {
+  protected void setSSLConfiguration(RestData data) throws KettleException {
     try {
-      SSLContext ctx = HttpClientManager.getTrustAllSslContext();
-
+      SSLContext ctx;
+      FileInputStream trustStoreFileStream = null;
+      if (data.trustStoreFile != null) {
+    	  trustStoreFileStream = new FileInputStream( data.trustStoreFile );
+      }
+      
+      ctx = HttpClientManager.getSslContext(meta.isIgnoreSsl(), 
+    		  						trustStoreFileStream, 
+    		  						data.trustStorePassword);
       data.sslContext = ctx;
-    } catch ( NoSuchAlgorithmException e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
-    } catch ( KeyManagementException e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
-    }
-  }
+      
 
-  private void setTrustStoreFile() throws KettleException {
-    try ( FileInputStream trustFileStream = new FileInputStream( data.trustStoreFile ) ) {
-
-      SSLContext ctx =
-        HttpClientManager.getSslContextWithTrustStoreFile(
-          trustFileStream, data.trustStorePassword );
-
-      data.sslContext = ctx;
+      
     } catch ( NoSuchAlgorithmException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
     } catch ( KeyStoreException e ) {
@@ -362,40 +352,13 @@ public class Rest extends BaseStep implements StepInterface {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.IOException" ), e );
     } catch ( KeyManagementException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
+    } catch ( UnrecoverableKeyException e ) {
+	  throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
     }
   }
+  
+  
 
-  protected SSLContext getSslContext( String trustFile, String trustStorePassword )
-    throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException,
-    UnrecoverableKeyException {
-
-    try ( FileInputStream trustFileStream = new FileInputStream( trustFile );
-          FileInputStream keyStoreFileStream = new FileInputStream( trustFile ) ) {
-
-
-      TrustManagerFactory tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
-      // Using null here initialises the TMF with the default trust store.
-      tmf.init( (KeyStore) null );
-
-      // Load the trustStore which needs to be imported
-      KeyStore trustStore = KeyStore.getInstance( KeyStore.getDefaultType() );
-      trustStore.load( trustFileStream, trustStorePassword.toCharArray() );
-
-      tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
-      tmf.init( trustStore );
-
-      KeyStore identityKeyStore = KeyStore.getInstance( KeyStore.getDefaultType() );
-      identityKeyStore.load( keyStoreFileStream, trustStorePassword.toCharArray() );
-      KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
-      kmf.init( identityKeyStore, trustStorePassword.toCharArray() );
-
-
-      SSLContext sslContext = SSLContext.getInstance( "TLSv1.2" );
-      sslContext.init( kmf.getKeyManagers(), tmf.getTrustManagers(), null );
-
-      return sslContext;
-    }
-  }
 
   protected MultivaluedMap<String, Object> searchForHeaders( Response response ) {
     return response.getHeaders();
