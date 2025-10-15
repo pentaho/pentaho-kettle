@@ -13,7 +13,6 @@
 
 package org.pentaho.di.trans.steps.systemdata;
 
-import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,15 +23,10 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -130,15 +124,5 @@ public class SystemDataTest {
     assertFalse( systemData.processRow( systemDataMeta, systemDataData ) );
     Object[] out = systemData.getOutputRow();
     assertArrayEquals( expectedRow, out );
-  }
-
-  @Test
-  public void testTypeAction() {
-    SystemData systemData =
-        new SystemData( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
-            stepMockHelper.trans );
-    Map<String, String> queryMap = new HashMap<>();
-    JSONObject response = systemData.doAction( "type", stepMockHelper.processRowsStepMetaInterface, stepMockHelper.transMeta, stepMockHelper.trans, queryMap );
-    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
   }
 }
