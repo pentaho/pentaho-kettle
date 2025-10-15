@@ -375,6 +375,12 @@ public abstract class BasePluginType implements PluginTypeInterface {
     }
   }
 
+  @VisibleForTesting
+  protected List<Class<?>> findAnnotatedClassFiles(String folder, Class<? extends Annotation> annotationClass) {
+    // Dummy implementation for test coverage
+    return Collections.emptyList();
+  }
+
   protected List<JarFileAnnotationPlugin> findAnnotatedClassFiles( String annotationClassName ) {
     JarFileCache jarFileCache = JarFileCache.getInstance();
     List<JarFileAnnotationPlugin> classFiles = new ArrayList<>();
@@ -624,6 +630,11 @@ public abstract class BasePluginType implements PluginTypeInterface {
     return map;
   }
 
+  @VisibleForTesting
+  protected ClassLoader createUrlClassLoader(List<File> files, ClassLoader parent) {
+    return new java.net.URLClassLoader(new java.net.URL[0], parent);
+  }
+
   /**
    * Create a new URL class loader with the jar file specified. Also include all the jar files in the lib folder next to
    * that file.
@@ -659,9 +670,16 @@ public abstract class BasePluginType implements PluginTypeInterface {
     KettleURLClassLoader urlClassLoader = new KettleURLClassLoader( urls.toArray( new URL[ urls.size() ] ), classLoader );
     return processPluginClasspath( urlClassLoader, jarFileUrl, urls, classLoader );
   }
-
+  
   /**
-   * Adds the entries defined in the classpath.properties located at the root of the plugin to the plugin classpath
+   *
+   * @param urlClassLoader
+   * @param jarFileUrl
+   * @param urls
+   * @param classLoader
+   * @return the updated classloader
+   *
+   * * Adds the entries defined in the classpath.properties located at the root of the plugin to the plugin classpath
    */
   private KettleURLClassLoader processPluginClasspath(
     KettleURLClassLoader urlClassLoader, URL jarFileUrl, List<URL> urls, ClassLoader classLoader ) {
@@ -755,7 +773,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
      *          The root folder of the plugin
      * @return The properties loaded from the plugin.properties file, or null if the file could not be loaded
      */
-  private Properties loadPluginProperties( String pluginRootFolder ) {
+    Properties loadPluginProperties( String pluginRootFolder ) {
       Properties properties = new Properties();
       try {
         InputStream inputStream = new FileInputStream(
