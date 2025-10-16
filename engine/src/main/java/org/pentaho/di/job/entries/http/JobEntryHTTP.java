@@ -274,9 +274,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       proxyPort = rep.getJobEntryAttributeString( id_jobentry, "proxy_port" ); // backward compatible.
 
       nonProxyHosts = rep.getJobEntryAttributeString( id_jobentry, "non_proxy_hosts" );
-      addfilenameresult =
-        "Y".equalsIgnoreCase( Const
-          .NVL( rep.getJobEntryAttributeString( id_jobentry, "addfilenameresult" ), "Y" ) );
+      addfilenameresult = rep.getJobEntryAttributeBoolean( id_jobentry, "addfilenameresult" );
 
       // How many headerName?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "header_name" );
