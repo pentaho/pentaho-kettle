@@ -14,13 +14,9 @@
 package org.pentaho.di.trans.steps.mergejoin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -456,46 +452,6 @@ public class MergeJoin extends BaseStep implements StepInterface {
     }
     // we got here, all seems to be ok.
     return true;
-  }
-
-  /**
-   * Retrieves the keys of the previous steps in the transformation and returns them as a JSON object.
-   * This method is invoked dynamically using reflection from StepInterface#doAction method.
-   *
-   * @param queryParams A map of query parameters (not used in this implementation).
-   * @return A JSON object containing:
-   *         - "stepKeys": A JSON object where each key is the name of a step, and the value is an array of field names
-   *           from that step.
-   * @throws KettleException If an error occurs while retrieving the step fields.
-   */
-  @SuppressWarnings( "java:S1144" ) // Using reflection, this method is being invoked
-  public JSONObject previousKeysAction( Map<String, String> queryParams ) throws KettleException {
-    JSONObject response = new JSONObject();
-    JSONObject keys = new JSONObject();
-    try {
-      MergeJoinMeta joinMeta = (MergeJoinMeta) getStepMetaInterface();
-      List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
-
-      for ( StreamInterface stream : infoStreams ) {
-        StepMeta stepMeta = stream.getStepMeta();
-        if ( stepMeta != null ) {
-          RowMetaInterface prev = getTransMeta().getStepFields( stepMeta );
-          JSONArray keysList = new JSONArray();
-          if ( prev != null ) {
-            keysList.addAll( Arrays.asList( prev.getFieldNames() ) );
-          }
-          keys.put( stepMeta.getName(), keysList );
-        }
-      }
-      response.put( "stepKeys", keys );
-    } catch ( KettleException e ) {
-      log.logError( e.getMessage() );
-      throw new KettleException( BaseMessages.getString( PKG, "MergeJoin.Exception.ErrorGettingFields" ) );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
-    return response;
   }
 
 }
