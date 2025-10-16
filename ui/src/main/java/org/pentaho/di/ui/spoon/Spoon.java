@@ -4287,56 +4287,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Set for the existing transformation the ID at -1!
       transMeta.setObjectId( null );
 
-      // Keep track of the old databases for now.
-      List<DatabaseMeta> oldDatabases = transMeta.getDatabases();
-
-      // In order to re-match the databases on name (not content), we
-      // need to load the databases from the new repository.
-      // NOTE: for purposes such as DEVELOP - TEST - PRODUCTION
-      // cycles.
-
-      try {
-        // first clear the list of databases, partition schemas, slave
-        // servers, clusters
-        transMeta.getDatabaseManagementInterface().clear();
-        transMeta.setPartitionSchemas( new ArrayList<PartitionSchema>() );
-        transMeta.setSlaveServers( new ArrayList<SlaveServer>() );
-        transMeta.setClusterSchemas( new ArrayList<ClusterSchema>() );
-
-
-        // Then we need to re-match the databases at save time...
-        for ( DatabaseMeta oldDatabase : oldDatabases ) {
-          DatabaseMeta newDatabase = DatabaseMeta.findDatabase( transMeta.getDatabases(), oldDatabase.getName() );
-
-          // If it exists, change the settings...
-          if ( newDatabase != null ) {
-            //
-            // A database connection with the same name exists in
-            // the new repository.
-            // Change the old connections to reflect the settings in
-            // the new repository
-            //
-            oldDatabase.setDatabaseInterface( newDatabase.getDatabaseInterface() );
-          } else {
-            if ( saveOldDatabases ) {
-              //
-              // The old database is not present in the new
-              // repository: simply add it to the list.
-              // When the transformation gets saved, it will be added
-              // to the repository.
-              //
-              transMeta.getDatabaseManagementInterface().add( oldDatabase );
-            }
-          }
-        }
-      } catch ( KettleException e ) {
-        new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTabName(
-            transMeta, true ) ), e
-        );
-      }
-
       if ( repository != null ) {
         try {
           // For the existing transformation, change the directory too:
