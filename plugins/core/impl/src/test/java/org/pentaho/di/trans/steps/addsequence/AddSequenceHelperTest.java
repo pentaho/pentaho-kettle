@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -22,7 +21,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AddSequenceTest  {
+public class AddSequenceHelperTest {
 
   private StepMockHelper<AddSequenceMeta, AddSequenceData> stepMockHelper;
 
@@ -43,9 +42,7 @@ public class AddSequenceTest  {
   @Test
   public void testDoAction(){
 
-    AddSequence step = new AddSequence( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface,
-        0, stepMockHelper.transMeta, stepMockHelper.trans );
-    step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+    AddSequenceHelper step = new AddSequenceHelper(  );
     Map<String, String> queryMap = new HashMap<>();
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
     when( stepMockHelper.transMeta.findDatabase( any() )).thenReturn( dbMeta );
@@ -54,9 +51,26 @@ public class AddSequenceTest  {
       when( mockDB.getSequences() ).thenReturn( new String[]{ "sequence1", "sequence2" } );
     });
 
-    JSONObject response = step.doAction("getSequence", stepMockHelper.initStepMetaInterface, stepMockHelper.transMeta,
-        stepMockHelper.trans, queryMap );
+    JSONObject response = step.handleStepAction("getSequence", stepMockHelper.transMeta, queryMap );
     assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+
+    mockConstructDB.close();
+  }
+
+  @Test
+  public void testDoActionDefaultCase(){
+
+    AddSequenceHelper step = new AddSequenceHelper(  );
+    Map<String, String> queryMap = new HashMap<>();
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    when( stepMockHelper.transMeta.findDatabase( any() )).thenReturn( dbMeta );
+    MockedConstruction<Database> mockConstructDB = Mockito.mockConstruction( Database.class, ( mockDB, jobContext ) -> {
+      doNothing().when( mockDB ).connect();
+      when( mockDB.getSequences() ).thenReturn( new String[]{ "sequence1", "sequence2" } );
+    });
+
+    JSONObject response = step.handleStepAction("dummy", stepMockHelper.transMeta, queryMap );
+    assertEquals( StepInterface.FAILURE_METHOD_NOT_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
 
     mockConstructDB.close();
   }
