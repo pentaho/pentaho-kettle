@@ -24,7 +24,6 @@ import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.client.RequestEntityProcessing;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.uri.UriComponent;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
@@ -58,9 +57,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Samatar
@@ -626,24 +623,6 @@ public class Rest extends BaseStep implements StepInterface {
     data.indexOfHeaderFields = null;
     data.paramNames = null;
     super.dispose( smi, sdi );
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject applicationTypesAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    JSONArray applicationTypes = new JSONArray();
-    applicationTypes.addAll( Arrays.asList( RestMeta.APPLICATION_TYPES ) );
-    response.put( "applicationTypes", applicationTypes );
-    return response;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject httpMethodsAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    JSONArray httpMethods = new JSONArray();
-    httpMethods.addAll( Arrays.asList( RestMeta.HTTP_METHODS ) );
-    response.put( "httpMethods", httpMethods );
-    return response;
   }
 
 }
