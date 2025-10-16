@@ -13,13 +13,6 @@
 
 package org.pentaho.di.trans.steps.streamlookup;
 
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.util.Collections;
-import java.util.Map;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -40,7 +33,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.util.Collections;
 
 /**
  * Looks up information by first reading data into a hash table (in memory)
@@ -53,7 +49,6 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
  */
 public class StreamLookup extends BaseStep implements StepInterface {
   private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!!
-  private static final String ERROR_MESSAGE = "errorMessage";
 
   private StreamLookupMeta meta;
   private StreamLookupData data;
@@ -481,98 +476,5 @@ public class StreamLookup extends BaseStep implements StepInterface {
     data.longIndex = null;
 
     super.dispose( smi, sdi );
-  }
-
-  /**
-   * Retrieves the list of fields from the specified lookup step and returns them as a JSON object.
-   * This method is invoked dynamically using reflection from StepInterface#doAction method.
-   *
-   * @param queryParams A map of query parameters (not used in this implementation).
-   * @return A JSON object containing the list of lookup fields under the key "lookupFields" or an error message if retrieval fails.
-   */
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject lookupFieldsAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    StreamLookupMeta streamLookupMeta = (StreamLookupMeta) getStepMetaInterface();
-    StreamInterface infoStream = streamLookupMeta.getStepIOMeta().getInfoStreams().get( 0 );
-    if ( Utils.isEmpty( infoStream.getStepname() ) ) {
-      response.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "StreamLookup.StepNameRequired.ErrorMessage" ) );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-      return response;
-    }
-
-    StepMeta lookupStepMeta = getTransMeta().findStep( infoStream.getStepname() );
-    JSONArray lookupFields = new JSONArray();
-    if ( lookupStepMeta != null ) {
-      try {
-        RowMetaInterface row = getTransMeta().getStepFields( lookupStepMeta );
-        for ( int i = 0; i < row.size(); i++ ) {
-          JSONObject lookupField = new JSONObject();
-          lookupField.put( "name", row.getValueMeta( i ).getName() );
-          lookupField.put( "id", row.getValueMeta( i ).getName() );
-          lookupField.put( "type", row.getValueMeta( i ).getTypeDesc() );
-          lookupFields.add( lookupField );
-        }
-      } catch ( KettleException e ) {
-        logError( "It was not possible to retrieve the list of fields for step [" + infoStream.getStepname() + "]!" );
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-        return response;
-      }
-    }
-
-    response.put( "lookupFields", lookupFields );
-    return response;
-  }
-
-  /**
-   * Retrieves the fields from the previous step or the specified lookup step and returns them as a JSON object.
-   * This method is invoked dynamically using reflection from StepInterface#doAction method.
-   *
-   * @param queryParams A map of query parameters (not used in this implementation).
-   * @return A JSON object containing the list of fields under the key "fields" or an error message if retrieval fails.
-   */
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getFieldsAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    StreamLookupMeta streamLookupMeta = (StreamLookupMeta) getStepMetaInterface();
-    JSONArray fields = new JSONArray();
-    try {
-      RowMetaInterface previousFieldsRowMeta = getTransMeta().getPrevStepFields( streamLookupMeta.getParentStepMeta().getName() );
-      if ( previousFieldsRowMeta != null && !previousFieldsRowMeta.isEmpty() ) {
-        for ( int i = 0; i < previousFieldsRowMeta.size(); i++ ) {
-          JSONObject field = new JSONObject();
-          field.put( "name", previousFieldsRowMeta.getValueMeta( i ).getName() );
-          fields.add( field );
-        }
-      } else {
-        StreamInterface infoStream = streamLookupMeta.getStepIOMeta().getInfoStreams().get( 0 );
-        if ( Utils.isEmpty( infoStream.getStepname() ) ) {
-          response.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "StreamLookup.StepNameRequired.ErrorMessage" ) );
-          response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-          return response;
-        }
-
-        RowMetaInterface stepFields = getTransMeta().getStepFields( infoStream.getStepname() );
-        if ( stepFields == null || stepFields.isEmpty() ) {
-          response.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "StreamLookup.CouldNotFindFields.ErrorMessage" ) );
-          response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-          return response;
-        }
-
-        for ( int i = 0; i < stepFields.size(); i++ ) {
-          JSONObject field = new JSONObject();
-          field.put( "name", stepFields.getValueMeta( i ).getName() );
-          fields.add( field );
-        }
-      }
-    } catch ( KettleException ke ) {
-      logError( "Error while retrieving the fields from the step", ke.getMessage() );
-      response.put( ERROR_MESSAGE, ke.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-      return response;
-    }
-
-    response.put( "fields", fields );
-    return response;
   }
 }
