@@ -1,0 +1,14 @@
+<providers>
+  <provider class-name="org.pentaho.s3a.vfs.S3AFileProvider">
+    <scheme name="s3a"/>
+    <if-available class-name="com.amazonaws.services.s3.AmazonS3"/>
+  </provider>
+  <provider class-name="org.pentaho.s3n.vfs.S3NFileProvider">
+    <scheme name="s3n"/>
+    <if-available class-name="com.amazonaws.services.s3.AmazonS3"/>
+  </provider>
+  <provider class-name="org.pentaho.s3.vfs.S3FileProvider">
+    <scheme name="s3"/>
+    <if-available class-name="com.amazonaws.services.s3.AmazonS3"/>
+  </provider>
+</providers>

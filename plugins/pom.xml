@@ -106,6 +106,7 @@
         <module>email-messages</module>
         <module>mail-job</module>
         <module>repo-vfs</module>
+        <module>s3-vfs</module>
       </modules>
     </profile>
 
