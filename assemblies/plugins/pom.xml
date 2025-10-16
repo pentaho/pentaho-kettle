@@ -610,7 +610,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
+      <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-s3-vfs-plugin</artifactId>
       <version>${pentaho-s3-vfs-plugin.version}</version>
       <type>zip</type>
