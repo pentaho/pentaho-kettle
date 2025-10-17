@@ -9262,6 +9262,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return rep;
   }
 
+  public void setRepositoryOnActiveMetas( Repository rep ) {
+    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
+      Object managedObject = entry.getObject().getManagedObject();
+      if ( managedObject instanceof AbstractMeta meta ) {
+        meta.setRepository( rep );
+      }
+    }
+  }
+
   public void setRepository( Repository rep ) {
     this.rep = rep;
 
@@ -9292,6 +9301,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     ConnectionManager.getInstance().reset();
+    setRepositoryOnActiveMetas( rep );
+
     // Registering the UI Support classes
     UISupportRegistery.getInstance().registerUISupport(
       RepositorySecurityProvider.class, BaseRepositoryExplorerUISupport.class );
