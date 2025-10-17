@@ -90,6 +90,9 @@ class ResolvedConnectionFileObject extends ConnectionFileObject {
 
   @Override
   public boolean canRenameTo( FileObject newfile ) {
+    if ( newfile instanceof ConnectionFileObject wrapper ) {
+      return resolvedFileObject.canRenameTo( wrapper.getResolvedFileObject() );
+    }
     return resolvedFileObject.canRenameTo( newfile );
   }
 }

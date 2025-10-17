@@ -95,7 +95,11 @@ public abstract class ConnectionFileObject extends AbstractFileObject<Connection
 
   @Override
   public void copyFrom( FileObject file, FileSelector selector ) throws FileSystemException {
-    requireResolvedFileObject().copyFrom( file, selector );
+    if ( file instanceof ConnectionFileObject wrapper ) {
+      requireResolvedFileObject().copyFrom( wrapper.getResolvedFileObject(), selector );
+    } else {
+      requireResolvedFileObject().copyFrom( file, selector );
+    }
   }
 
   @Override
@@ -199,7 +203,11 @@ public abstract class ConnectionFileObject extends AbstractFileObject<Connection
 
   @Override
   public void moveTo( FileObject destFile ) throws FileSystemException {
-    requireResolvedFileObject().moveTo( destFile );
+    if ( destFile instanceof ConnectionFileObject wrapper ) {
+      requireResolvedFileObject().moveTo( wrapper.getResolvedFileObject() );
+    } else {
+      requireResolvedFileObject().moveTo( destFile );
+    }
   }
 
   @Override
