@@ -48,6 +48,7 @@
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>Saxon-HE</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.xmlresolver</groupId>
