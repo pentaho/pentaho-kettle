@@ -113,6 +113,15 @@ public class LocalPurTest {
   }
 
   @Test
+  void testCreatedFileExists() throws Exception {
+    FileObject newFolder = fsm.resolveFile( url( "/testCreatedFileExists/" ) );
+    newFolder.createFolder();
+    FileObject newFile = newFolder.resolveFile( "spanking_new_file.txt" );
+    newFile.createFile();
+    assertTrue( newFile.exists() );
+  }
+
+  @Test
   void testDeleteFolderWithFiles() throws Exception {
     FileObject newFolder = fsm.resolveFile( url( "/multiFileDelete/" ) );
     newFolder.createFolder();
