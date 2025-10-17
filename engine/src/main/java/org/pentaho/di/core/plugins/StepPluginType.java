@@ -190,4 +190,9 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
   protected String extractSuggestion( Annotation annotation ) {
     return ( (Step) annotation ).suggestion();
   }
+  
+  @Override
+  protected boolean extractDeprecated( Annotation annotation ) {
+    return ( (Step) annotation ).deprecated();
+  }
 }

@@ -59,4 +59,6 @@ public @interface JobEntry {
 
   String suggestion() default "";
 
+  boolean deprecated() default false;
+  
 }

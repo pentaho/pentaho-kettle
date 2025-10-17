@@ -76,4 +76,6 @@ public @interface Step {
   String forumUrl() default "";
 
   String suggestion() default "";
+  
+  boolean deprecated() default false;
 }
