@@ -39,6 +39,7 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
 
   private final IUnifiedRepository pur;
   private final IRepositoryContentConverterHandler converterHandler;
+  // the underlying file, should never be null
   private RepositoryFile file;
 
   protected LocalPurFileObject( AbstractFileName fileName, LocalPurFileSystem fileSystem, RepositoryFile file ) {
@@ -169,16 +170,23 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
 
   @Override
   public void createFile() throws FileSystemException {
-    if ( !exists() ) {
-      Serializable parentId = getRepoParentId().orElseThrow(
-        () -> new FileSystemException( "vfs.provider/create-file.error", file.getName() ) );
-      if ( file.isFolder() ) {
-        file = changeFolderStatus(file, false);
+    synchronized ( getFileSystem() ) {
+      if ( !exists() ) {
+        Serializable parentId = getRepoParentId().orElseThrow(
+          () -> new FileSystemException( "vfs.provider/create-file.error", getName() ) );
+        if ( file.isFolder() ) {
+          file = changeFolderStatus( file, false );
+        }
+        file = pur.createFile( parentId, file, getEmptyFileData(), null );
+        try {
+          handleCreate( FileType.FILE );
+        } catch ( Exception e ) {
+          throw new FileSystemException( "vfs.provider/create-file.error", getName(), e );
+        }
+      } else {
+        // get the error if not a file
+        super.createFile();
       }
-      file = pur.createFile( parentId, file, getEmptyFileData(), null );
-    } else {
-      // get the error
-      super.createFile();
     }
   }
 
@@ -234,7 +242,9 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
   }
 
   private void invalidateFile() {
-    this.file = new RepositoryFile.Builder( this.file ).id( null ).build();
+    if ( this.file.getId() != null ) {
+      this.file = new RepositoryFile.Builder( this.file ).id( null ).build();
+    }
   }
 
 }
