@@ -40,6 +40,7 @@ import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -66,11 +67,8 @@ public class PluginRegistry {
 
   private static final PluginRegistry pluginRegistry = new PluginRegistry();
 
-//  private static final List<PluginTypeInterface> pluginTypes = new ArrayList<>();
-//  private static final List<PluginRegistryExtension> extensions = new ArrayList<>();
   private static final Set<PluginTypeInterface> pluginTypes = Collections.newSetFromMap( new ConcurrentHashMap<PluginTypeInterface, Boolean>() );
   private static final Set<PluginRegistryExtension> extensions = Collections.newSetFromMap( new ConcurrentHashMap<PluginRegistryExtension, Boolean>() );
-  private static final ReentrantReadWriteLock staticLock = new ReentrantReadWriteLock();
 
   private static final String SUPPLEMENTALS_SUFFIX = "-supplementals";
 
@@ -84,7 +82,8 @@ public class PluginRegistry {
   private final Map<String, URLClassLoader> classLoaderGroupsMap = new HashMap<>();
   private final Map<String, URLClassLoader> folderBasedClassLoaderMap = new HashMap<>();
 
-  private final Map<Class<? extends PluginTypeInterface>, Set<String>> categoryMap = new HashMap<>();
+  // categoryMap is now a cache instead of actively tracking during registerPlugin for lazy instantiation (only used by UI)
+  private final Map<Class<? extends PluginTypeInterface>, Collection<String>> categoryMap = new HashMap<>();
   private final Map<PluginInterface, String[]> parentClassloaderPatternMap = new HashMap<>();
 
   private final Map<Class<? extends PluginTypeInterface>, Set<PluginTypeListener>> listeners = new HashMap<>();
@@ -145,10 +144,9 @@ public class PluginRegistry {
     try {
       pluginMap.computeIfAbsent( pluginType, k -> new TreeSet<>( Plugin.nullStringComparator ) );
 
-      // Keep track of the categories separately for performance reasons...
-      //
-      categoryMap.computeIfAbsent( pluginType, k -> new TreeSet<>(
-        getNaturalCategoriesOrderComparator( pluginType ) ) );
+      //reset category map cache for the plugin type (if it exists)
+      categoryMap.remove( pluginType );
+      
     } finally {
       lock.writeLock().unlock();
     }
@@ -157,6 +155,10 @@ public class PluginRegistry {
   public void removePlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin ) {
     lock.writeLock().lock();
     try {
+      
+      //Remove the category cache
+      categoryMap.remove( pluginType );
+      
       URLClassLoader ucl;
       Set<PluginInterface> list = pluginMap.get( pluginType );
       if ( list != null ) {
@@ -229,12 +231,9 @@ public class PluginRegistry {
         changed = true;
       }
 
-      if ( !Utils.isEmpty( plugin.getCategory() ) ) {
-        // Keep categories sorted in the natural order here too!
-        //
-        categoryMap.computeIfAbsent( pluginType, k -> new TreeSet<>( getNaturalCategoriesOrderComparator( pluginType ) ) )
-          .add( plugin.getCategory() );
-      }
+      //Clear the category map cache for this plugin type. We will only cache the values on calls to getCategories
+      categoryMap.remove( pluginType );
+      
     } finally {
       lock.writeLock().unlock();
       Set<PluginTypeListener> listeners = this.listeners.get( pluginType );
@@ -328,12 +327,35 @@ public class PluginRegistry {
    *         registry in any way.
    */
   public List<String> getCategories( Class<? extends PluginTypeInterface> pluginType ) {
+    
+    // First attempt to read the cache for the category
     lock.readLock().lock();
     try {
-      return new ArrayList<>( categoryMap.get( pluginType ) );
+      Collection<String> categories = categoryMap.get( pluginType );
+      if( categories != null ) {
+        return new ArrayList<>( categories );
+      }
     } finally {
       lock.readLock().unlock();
     }
+    
+    /*
+     * The category cache for the pluginType does not exist, obtain the write lock, compute the cache, and return
+     */
+    lock.writeLock().lock();
+    try {
+      return new ArrayList<>( categoryMap.computeIfAbsent( pluginType, 
+        k -> getPlugins( pluginType )
+          .stream()
+          .map( PluginInterface::getCategory )
+          .filter( c -> !Utils.isEmpty( c ) )
+          .sorted( getNaturalCategoriesOrderComparator( pluginType ) )
+          .distinct()
+          .collect( Collectors.toList() ) ) );
+    } finally {
+      lock.writeLock().unlock();
+    }
+
   }
 
   /**

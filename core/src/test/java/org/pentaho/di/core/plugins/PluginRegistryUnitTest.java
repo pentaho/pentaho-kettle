@@ -189,4 +189,33 @@ public class PluginRegistryUnitTest {
     registry.registerPlugin( ValueMetaPluginType.class, plugin );
     verify( plugin, atLeast( 4 ) ).merge( any() );
   }
+  
+  @Test
+  public void testCategoryMap() throws KettlePluginException {
+    
+    PluginRegistry registry = PluginRegistry.getInstance();
+    
+    PluginInterface plugin = mock( PluginInterface.class );
+    when( plugin.getIds() ).thenReturn( new String[] { "mock" } );
+    when( plugin.getCategory() ).thenReturn( "mockCategory" );
+    when( plugin.matches( any() ) ).thenReturn( true );
+    doReturn( ValueMetaPluginType.class ).when( plugin ).getPluginType();
+
+    //Register
+    registry.registerPlugin( ValueMetaPluginType.class, plugin );
+    
+    //Test compute
+    assertEquals( 1, registry.getCategories( ValueMetaPluginType.class ).size() );
+    
+    //Test recall cache
+    assertEquals( 1, registry.getCategories( ValueMetaPluginType.class ).size() );
+    
+    //Test cache clear
+    registry.removePlugin( ValueMetaPluginType.class, plugin );
+    assertEquals( 0, registry.getCategories( ValueMetaPluginType.class ).size() );
+    
+    //Test re-cache
+    registry.registerPlugin( ValueMetaPluginType.class, plugin );
+    assertEquals( 1, registry.getCategories( ValueMetaPluginType.class ).size() );
+  }
 }
