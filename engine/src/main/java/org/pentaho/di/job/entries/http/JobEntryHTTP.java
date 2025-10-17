@@ -95,6 +95,30 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   private static final String TARGETFILE_FIELDNAME = "DESTINATION";
   private static final String SCHEMA_FILE = "file";
 
+  private static final String STR_10_SPACES = "          ";
+  private static final String STR_6_SPACES = "      ";
+
+  private static final String TAG_URL = "url";
+  private static final String TAG_TARGET_FILENAME = "targetfilename";
+  private static final String TAG_FILE_APPENDED = "file_appended";
+  private static final String TAG_DATE_TIME_ADDED = "date_time_added";
+  private static final String TAG_TARGET_FILENAME_EXTENSION = "targetfilename_extension";
+  private static final String TAG_TARGET_FILENAME_EXTENTION = "targetfilename_extention";
+  private static final String TAG_UPLOAD_FILENAME = "uploadfilename";
+  private static final String TAG_RUN_EVERY_ROW = "run_every_row";
+  private static final String TAG_URL_FIELDNAME = "url_fieldname";
+  private static final String TAG_UPLOAD_FIELDNAME = "upload_fieldname";
+  private static final String TAG_DEST_FIELDNAME = "dest_fieldname";
+  private static final String TAG_USERNAME = "username";
+  private static final String TAG_PASSWORD = "password";
+  private static final String TAG_PROXY_HOST = "proxy_host";
+  private static final String TAG_PROXY_PORT = "proxy_port";
+  private static final String TAG_NON_PROXY_HOSTS = "non_proxy_hosts";
+  private static final String TAG_ADD_FILENAME_RESULT = "addfilenameresult";
+  private static final String TAG_HEADERS = "headers";
+  private static final String TAG_HEADER = "header";
+  private static final String TAG_HEADER_NAME = "header_name";
+  private static final String TAG_HEADER_VALUE = "header_value";
 
   // Base info
   private String url;
@@ -171,37 +195,37 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
     retval.append( super.getXML() );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "url", url ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "targetfilename", targetFilename ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "file_appended", fileAppended ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_added", dateTimeAdded ) );
+    retval.append( STR_6_SPACES ).append(XMLHandler.addTagValue(TAG_URL, url));
+    retval.append( STR_6_SPACES ).append(XMLHandler.addTagValue(TAG_TARGET_FILENAME, targetFilename));
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_FILE_APPENDED, fileAppended ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_DATE_TIME_ADDED, dateTimeAdded ) );
     retval
-      .append( "      " ).append( XMLHandler.addTagValue( "targetfilename_extension", targetFilenameExtension ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "uploadfilename", uploadFilename ) );
+      .append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_TARGET_FILENAME_EXTENSION, targetFilenameExtension ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_UPLOAD_FILENAME, uploadFilename ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "run_every_row", runForEveryRow ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "url_fieldname", urlFieldname ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "upload_fieldname", uploadFieldname ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "dest_fieldname", destinationFieldname ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_RUN_EVERY_ROW, runForEveryRow ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_URL_FIELDNAME, urlFieldname ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_UPLOAD_FIELDNAME, uploadFieldname ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_DEST_FIELDNAME, destinationFieldname ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "username", username ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USERNAME, username ) );
+    retval.append( STR_6_SPACES ).append(
+      XMLHandler.addTagValue( TAG_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( password ) ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_host", proxyHostname ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_port", proxyPort ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "non_proxy_hosts", nonProxyHosts ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "addfilenameresult", addfilenameresult ) );
-    retval.append( "      <headers>" ).append( Const.CR );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_PROXY_HOST, proxyHostname ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_PROXY_PORT, proxyPort ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_NON_PROXY_HOSTS, nonProxyHosts ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_ADD_FILENAME_RESULT, addfilenameresult ) );
+    retval.append( "      <" ).append( TAG_HEADERS ).append( '>' ).append( Const.CR );
     if ( headerName != null ) {
       for ( int i = 0; i < headerName.length; i++ ) {
-        retval.append( "        <header>" ).append( Const.CR );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "header_name", headerName[ i ] ) );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "header_value", headerValue[ i ] ) );
-        retval.append( "        </header>" ).append( Const.CR );
+        retval.append( "        <" ).append( TAG_HEADER ).append( '>' ).append( Const.CR );
+        retval.append( STR_10_SPACES ).append( XMLHandler.addTagValue( TAG_HEADER_NAME, headerName[ i ] ) );
+        retval.append( STR_10_SPACES ).append( XMLHandler.addTagValue( TAG_HEADER_VALUE, headerValue[ i ] ) );
+        retval.append( "        </" ).append( TAG_HEADER ).append( '>' ).append( Const.CR );
       }
     }
-    retval.append( "      </headers>" ).append( Const.CR );
+    retval.append( "      </" ).append( TAG_HEADERS ).append( '>' ).append( Const.CR );
 
     return retval.toString();
   }
@@ -211,37 +235,37 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
                        Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
-      url = XMLHandler.getTagValue( entrynode, "url" );
-      targetFilename = XMLHandler.getTagValue( entrynode, "targetfilename" );
-      fileAppended = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "file_appended" ) );
-      dateTimeAdded = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "date_time_added" ) );
-      targetFilenameExtension = Const.NVL( XMLHandler.getTagValue( entrynode, "targetfilename_extension" ),
-        XMLHandler.getTagValue( entrynode, "targetfilename_extention" ) );
+      url = XMLHandler.getTagValue( entrynode, TAG_URL );
+      targetFilename = XMLHandler.getTagValue( entrynode, TAG_TARGET_FILENAME );
+      fileAppended = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_FILE_APPENDED ) );
+      dateTimeAdded = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_DATE_TIME_ADDED ) );
+      targetFilenameExtension = Const.NVL( XMLHandler.getTagValue( entrynode, TAG_TARGET_FILENAME_EXTENSION ),
+        XMLHandler.getTagValue( entrynode, TAG_TARGET_FILENAME_EXTENTION ) );
 
-      uploadFilename = XMLHandler.getTagValue( entrynode, "uploadfilename" );
+      uploadFilename = XMLHandler.getTagValue( entrynode, TAG_UPLOAD_FILENAME );
 
-      urlFieldname = XMLHandler.getTagValue( entrynode, "url_fieldname" );
-      uploadFieldname = XMLHandler.getTagValue( entrynode, "upload_fieldname" );
-      destinationFieldname = XMLHandler.getTagValue( entrynode, "dest_fieldname" );
-      runForEveryRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "run_every_row" ) );
+      urlFieldname = XMLHandler.getTagValue( entrynode, TAG_URL_FIELDNAME );
+      uploadFieldname = XMLHandler.getTagValue( entrynode, TAG_UPLOAD_FIELDNAME );
+      destinationFieldname = XMLHandler.getTagValue( entrynode, TAG_DEST_FIELDNAME );
+      runForEveryRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_RUN_EVERY_ROW ) );
 
-      username = XMLHandler.getTagValue( entrynode, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "password" ) );
+      username = XMLHandler.getTagValue( entrynode, TAG_USERNAME );
+      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, TAG_PASSWORD ) );
 
-      proxyHostname = XMLHandler.getTagValue( entrynode, "proxy_host" );
-      proxyPort = XMLHandler.getTagValue( entrynode, "proxy_port" );
-      nonProxyHosts = XMLHandler.getTagValue( entrynode, "non_proxy_hosts" );
+      proxyHostname = XMLHandler.getTagValue( entrynode, TAG_PROXY_HOST );
+      proxyPort = XMLHandler.getTagValue( entrynode, TAG_PROXY_PORT );
+      nonProxyHosts = XMLHandler.getTagValue( entrynode, TAG_NON_PROXY_HOSTS );
       addfilenameresult =
-        "Y".equalsIgnoreCase( Const.NVL( XMLHandler.getTagValue( entrynode, "addfilenameresult" ), "Y" ) );
-      Node headers = XMLHandler.getSubNode( entrynode, "headers" );
+        "Y".equalsIgnoreCase( Const.NVL( XMLHandler.getTagValue( entrynode, TAG_ADD_FILENAME_RESULT ), "Y" ) );
+      Node headers = XMLHandler.getSubNode( entrynode, TAG_HEADERS );
 
       // How many field headerName?
-      int nrHeaders = XMLHandler.countNodes( headers, "header" );
+      int nrHeaders = XMLHandler.countNodes( headers, TAG_HEADER );
       allocate( nrHeaders );
       for ( int i = 0; i < nrHeaders; i++ ) {
-        Node fnode = XMLHandler.getSubNodeByNr( headers, "header", i );
-        headerName[ i ] = XMLHandler.getTagValue( fnode, "header_name" );
-        headerValue[ i ] = XMLHandler.getTagValue( fnode, "header_value" );
+        Node fnode = XMLHandler.getSubNodeByNr( headers, TAG_HEADER, i );
+        headerName[ i ] = XMLHandler.getTagValue( fnode, TAG_HEADER_NAME );
+        headerValue[ i ] = XMLHandler.getTagValue( fnode, TAG_HEADER_VALUE );
       }
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( "Unable to load job entry of type 'HTTP' from XML node", xe );
@@ -249,82 +273,80 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   @Override
-  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId idJobEntry, List<DatabaseMeta> databases,
                        List<SlaveServer> slaveServers ) throws KettleException {
     try {
-      url = rep.getJobEntryAttributeString( id_jobentry, "url" );
-      targetFilename = rep.getJobEntryAttributeString( id_jobentry, "targetfilename" );
-      fileAppended = rep.getJobEntryAttributeBoolean( id_jobentry, "file_appended" );
-      dateTimeAdded = rep.getJobEntryAttributeBoolean( id_jobentry, "date_time_added" );
-      targetFilenameExtension = Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "targetfilename_extension" ),
-        rep.getJobEntryAttributeString( id_jobentry, "targetfilename_extention" ) );
+      url = rep.getJobEntryAttributeString( idJobEntry, TAG_URL );
+      targetFilename = rep.getJobEntryAttributeString( idJobEntry, TAG_TARGET_FILENAME );
+      fileAppended = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_FILE_APPENDED );
+      dateTimeAdded = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_DATE_TIME_ADDED );
+      targetFilenameExtension = Const.NVL( rep.getJobEntryAttributeString( idJobEntry, TAG_TARGET_FILENAME_EXTENSION ),
+        rep.getJobEntryAttributeString( idJobEntry, TAG_TARGET_FILENAME_EXTENTION ) );
 
-      uploadFilename = rep.getJobEntryAttributeString( id_jobentry, "uploadfilename" );
+      uploadFilename = rep.getJobEntryAttributeString( idJobEntry, TAG_UPLOAD_FILENAME );
 
-      urlFieldname = rep.getJobEntryAttributeString( id_jobentry, "url_fieldname" );
-      uploadFieldname = rep.getJobEntryAttributeString( id_jobentry, "upload_fieldname" );
-      destinationFieldname = rep.getJobEntryAttributeString( id_jobentry, "dest_fieldname" );
-      runForEveryRow = rep.getJobEntryAttributeBoolean( id_jobentry, "run_every_row" );
+      urlFieldname = rep.getJobEntryAttributeString( idJobEntry, TAG_URL_FIELDNAME );
+      uploadFieldname = rep.getJobEntryAttributeString( idJobEntry, TAG_UPLOAD_FIELDNAME );
+      destinationFieldname = rep.getJobEntryAttributeString( idJobEntry, TAG_DEST_FIELDNAME );
+      runForEveryRow = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_RUN_EVERY_ROW );
 
-      username = rep.getJobEntryAttributeString( id_jobentry, "username" );
+      username = rep.getJobEntryAttributeString( idJobEntry, TAG_USERNAME );
       password =
-        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( idJobEntry, TAG_PASSWORD ) );
 
-      proxyHostname = rep.getJobEntryAttributeString( id_jobentry, "proxy_host" );
-      proxyPort = rep.getJobEntryAttributeString( id_jobentry, "proxy_port" ); // backward compatible.
+      proxyHostname = rep.getJobEntryAttributeString( idJobEntry, TAG_PROXY_HOST );
+      proxyPort = rep.getJobEntryAttributeString( idJobEntry, TAG_PROXY_PORT ); // backward compatible.
 
-      nonProxyHosts = rep.getJobEntryAttributeString( id_jobentry, "non_proxy_hosts" );
-      addfilenameresult =
-        "Y".equalsIgnoreCase( Const
-          .NVL( rep.getJobEntryAttributeString( id_jobentry, "addfilenameresult" ), "Y" ) );
+      nonProxyHosts = rep.getJobEntryAttributeString( idJobEntry, TAG_NON_PROXY_HOSTS );
+      addfilenameresult = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_ADD_FILENAME_RESULT );
 
       // How many headerName?
-      int argnr = rep.countNrJobEntryAttributes( id_jobentry, "header_name" );
+      int argnr = rep.countNrJobEntryAttributes( idJobEntry, TAG_HEADER_NAME );
       allocate( argnr );
 
       for ( int a = 0; a < argnr; a++ ) {
-        headerName[ a ] = rep.getJobEntryAttributeString( id_jobentry, a, "header_name" );
-        headerValue[ a ] = rep.getJobEntryAttributeString( id_jobentry, a, "header_value" );
+        headerName[ a ] = rep.getJobEntryAttributeString( idJobEntry, a, TAG_HEADER_NAME );
+        headerValue[ a ] = rep.getJobEntryAttributeString( idJobEntry, a, TAG_HEADER_VALUE );
       }
     } catch ( KettleException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'HTTP' from the repository for id_jobentry="
-        + id_jobentry, dbe );
+      throw new KettleException( "Unable to load job entry of type 'HTTP' from the repository for idJobEntry="
+        + idJobEntry, dbe );
     }
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idJob ) throws KettleException {
     try {
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "url", url );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "targetfilename", targetFilename );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "file_appended", fileAppended );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "date_time_added", dateTimeAdded );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "targetfilename_extension", targetFilenameExtension );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_URL, url );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_TARGET_FILENAME, targetFilename );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_FILE_APPENDED, fileAppended );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_DATE_TIME_ADDED, dateTimeAdded );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_TARGET_FILENAME_EXTENSION, targetFilenameExtension );
 
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "uploadfilename", uploadFilename );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_UPLOAD_FILENAME, uploadFilename );
 
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "url_fieldname", urlFieldname );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "upload_fieldname", uploadFieldname );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "dest_fieldname", destinationFieldname );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "run_every_row", runForEveryRow );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_URL_FIELDNAME, urlFieldname );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_UPLOAD_FIELDNAME, uploadFieldname );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_DEST_FIELDNAME, destinationFieldname );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_RUN_EVERY_ROW, runForEveryRow );
 
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "username", username );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_USERNAME, username );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_PASSWORD, Encr
         .encryptPasswordIfNotUsingVariables( password ) );
 
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_host", proxyHostname );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_port", proxyPort );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "non_proxy_hosts", nonProxyHosts );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "addfilenameresult", addfilenameresult );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_PROXY_HOST, proxyHostname );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_PROXY_PORT, proxyPort );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_NON_PROXY_HOSTS, nonProxyHosts );
+      rep.saveJobEntryAttribute( idJob, getObjectId(), TAG_ADD_FILENAME_RESULT, addfilenameresult );
       if ( headerName != null ) {
         for ( int i = 0; i < headerName.length; i++ ) {
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "header_name", headerName[ i ] );
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "header_value", headerValue[ i ] );
+          rep.saveJobEntryAttribute( idJob, getObjectId(), i, TAG_HEADER_NAME, headerName[ i ] );
+          rep.saveJobEntryAttribute( idJob, getObjectId(), i, TAG_HEADER_VALUE, headerValue[ i ] );
         }
       }
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException(
-        "Unable to load job entry of type 'HTTP' to the repository for id_job=" + id_job, dbe );
+        "Unable to load job entry of type 'HTTP' to the repository for idJob=" + idJob, dbe );
     }
   }
 
@@ -368,8 +390,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     return addfilenameresult;
   }
 
-  public void setAddFilenameToResult( boolean addfilenameresult ) {
-    this.addfilenameresult = addfilenameresult;
+  public void setAddFilenameToResult( boolean addFilenameResult ) {
+    this.addfilenameresult = addFilenameResult;
   }
 
   public String getPassword() {
@@ -439,25 +461,10 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
     // Get previous result rows...
     List<RowMetaAndData> resultRows;
-    String urlFieldnameToUse, uploadFieldnameToUse, destinationFieldnameToUse;
 
-    if ( Utils.isEmpty( urlFieldname ) ) {
-      urlFieldnameToUse = URL_FIELDNAME;
-    } else {
-      urlFieldnameToUse = urlFieldname;
-    }
-
-    if ( Utils.isEmpty( uploadFieldname ) ) {
-      uploadFieldnameToUse = UPLOADFILE_FIELDNAME;
-    } else {
-      uploadFieldnameToUse = uploadFieldname;
-    }
-
-    if ( Utils.isEmpty( destinationFieldname ) ) {
-      destinationFieldnameToUse = TARGETFILE_FIELDNAME;
-    } else {
-      destinationFieldnameToUse = destinationFieldname;
-    }
+    String urlFieldnameToUse = Utils.isEmpty( urlFieldname ) ? URL_FIELDNAME : urlFieldname;
+    String uploadFieldnameToUse = Utils.isEmpty( uploadFieldname ) ? UPLOADFILE_FIELDNAME : uploadFieldname;
+    String destinationFieldnameToUse = Utils.isEmpty( destinationFieldname ) ? TARGETFILE_FIELDNAME : destinationFieldname;
 
     if ( runForEveryRow ) {
       resultRows = previousResult.getRows();
@@ -467,14 +474,11 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         return result;
       }
     } else {
-      resultRows = new ArrayList<RowMetaAndData>();
+      resultRows = new ArrayList<>();
       RowMetaAndData row = new RowMetaAndData();
-      row.addValue(
-        new ValueMetaString( urlFieldnameToUse ), environmentSubstitute( url ) );
-      row.addValue(
-        new ValueMetaString( uploadFieldnameToUse ), environmentSubstitute( uploadFilename ) );
-      row.addValue(
-        new ValueMetaString( destinationFieldnameToUse ), environmentSubstitute( targetFilename ) );
+      row.addValue( new ValueMetaString( urlFieldnameToUse ), environmentSubstitute( url ) );
+      row.addValue( new ValueMetaString( uploadFieldnameToUse ), environmentSubstitute( uploadFilename ) );
+      row.addValue( new ValueMetaString( destinationFieldnameToUse ), environmentSubstitute( targetFilename ) );
       resultRows.add( row );
     }
 
@@ -562,9 +566,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           logError( BaseMessages.getString( PKG, "JobHTTP.Error.CanNotCloseStream", e.getMessage() ) );
           result.setNrErrors( 1 );
         }
-
       }
-
     }
 
     return result;
@@ -666,8 +668,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       HttpHost target = new HttpHost( uri.getHost(), uri.getPort(), uri.getScheme() );
       // Create AuthCache instance
       AuthCache authCache = new BasicAuthCache();
-      // Generate BASIC scheme object and add it to the local
-      // auth cache
+      // Generate BASIC scheme object and add it to the local auth cache
       BasicScheme basicAuth = new BasicScheme();
       authCache.put( target, basicAuth );
       // Add AuthCache to the execution context
@@ -682,7 +683,6 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     if ( HttpStatus.SC_OK != responseStatusCode ) {
       throw new KettleException( "StatusCode: " + responseStatusCode );
     }
-
 
     if ( log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.StartReadingReply" ) );
@@ -849,5 +849,4 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "proxyPort", remarks,
       AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
-
 }
