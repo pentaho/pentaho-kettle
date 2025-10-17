@@ -23,8 +23,11 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+
+import static org.pentaho.di.core.util.Assert.assertNotNull;
 
 public class AddSequenceMetaTest {
 
@@ -51,5 +54,12 @@ public class AddSequenceMetaTest {
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( AddSequenceMeta.class, attributes, getterMap, setterMap, fieldValidators, typeValidators );
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testGetHelper() {
+    AddSequenceMeta meta = new AddSequenceMeta();
+    StepHelperInterface stepHelper = meta.getStepHelperInterface();
+    assertNotNull( stepHelper );
   }
 }
