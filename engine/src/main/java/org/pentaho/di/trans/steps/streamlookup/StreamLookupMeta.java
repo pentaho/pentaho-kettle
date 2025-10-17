@@ -13,10 +13,10 @@
 
 package org.pentaho.di.trans.steps.streamlookup;
 
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -36,6 +36,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
@@ -690,5 +691,10 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       valueDefault = newValueDefault;
     }
 
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new StreamLookupStepHelper( this );
   }
 }
