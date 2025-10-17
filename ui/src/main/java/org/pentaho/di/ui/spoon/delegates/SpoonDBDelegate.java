@@ -14,12 +14,13 @@
 package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
+
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.DBCache;
@@ -33,7 +34,6 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -76,6 +76,10 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
 
   public void editConnection( DatabaseManagementInterface dbManager, DatabaseMeta databaseMeta ) {
     String originalName = databaseMeta.getName();
+    AbstractMeta abstractMeta = spoon.getActiveTransformationOrJob();
+    if ( abstractMeta != null ) {
+      databaseMeta.shareVariablesWith( abstractMeta );
+    }
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
     if ( getDatabaseDialog().getDatabaseMeta() == null ) {
       return;
@@ -130,6 +134,10 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
       databaseMetaCopy.setName( newName );
       databaseMetaCopy.setDisplayName( newName );
 
+      AbstractMeta abstractMeta = spoon.getActiveTransformationOrJob();
+      if ( abstractMeta != null ) {
+        databaseMetaCopy.shareVariablesWith( abstractMeta );
+      }
       getDatabaseDialog().setDatabaseMeta( databaseMetaCopy );
       if ( getDatabaseDialog().getDatabaseMeta() == null ) {
         return;
@@ -460,6 +468,10 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
 
   public void newConnection( ) {
     DatabaseMeta databaseMeta = new DatabaseMeta();
+    AbstractMeta abstractMeta = spoon.getActiveTransformationOrJob();
+    if ( abstractMeta != null ) {
+      databaseMeta.shareVariablesWith( abstractMeta );
+    }
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
     try {
       DatabaseManagementInterface databaseManagementInterface = spoon.getManagementBowl().getManager( DatabaseManagementInterface.class );
@@ -483,40 +495,6 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
       new ErrorDialog( spoon.getShell(),
                        BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
                        BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), exception );
-    }
-  }
-
-  public void newConnection( Optional<VariableSpace> varspace, DatabaseManagementInterface dbMgr ) {
-    final DatabaseMeta databaseMeta = new DatabaseMeta();
-    varspace.ifPresentOrElse( v -> databaseMeta.shareVariablesWith( v ),
-      () -> databaseMeta.initializeVariablesFrom( null ) );
-
-    getDatabaseDialog().setDatabaseMeta( databaseMeta );
-    if ( getDatabaseDialog().getDatabaseMeta() == null ) {
-      return;
-    }
-
-    String con_name = getDatabaseDialog().open();
-    if ( !Utils.isEmpty( con_name ) ) {
-      con_name = con_name.trim();
-      DatabaseMeta newDatabaseMeta = getDatabaseDialog().getDatabaseMeta();
-
-      try {
-        if ( dbMgr.get( con_name ) == null ) {
-          dbMgr.add( newDatabaseMeta );
-          // TODO UNDO. No clue what the int should be
-          //spoon.addUndoNew( (UndoInterface) meta, new DatabaseMeta[]{(DatabaseMeta) newDatabaseMeta
-          //        .clone()}, new int[]{hasDatabasesInterface.indexOfDatabase( newDatabaseMeta )} );
-          spoon.refreshDbConnection( con_name );
-          refreshTree();
-        } else {
-          DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), newDatabaseMeta );
-        }
-      } catch ( KettleException exception ) {
-        new ErrorDialog( spoon.getShell(),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", newDatabaseMeta.getName() ), exception );
-      }
     }
   }
 

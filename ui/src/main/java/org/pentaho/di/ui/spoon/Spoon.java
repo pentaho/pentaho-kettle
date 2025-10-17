@@ -8259,7 +8259,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return getActiveTransformationOrJob();
   }
 
-  private AbstractMeta getActiveTransformationOrJob() {
+  public AbstractMeta getActiveTransformationOrJob() {
     TransMeta transMeta = getActiveTransformation();
     if ( transMeta != null ) {
       return transMeta;
