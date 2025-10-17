@@ -376,7 +376,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
   }
 
   @VisibleForTesting
-  protected List<Class<?>> findAnnotatedClassFiles(String folder, Class<? extends Annotation> annotationClass) {
+  protected List<Class<?>> findAnnotatedClassFiles( String folder, Class<? extends Annotation> annotationClass ) {
     // Dummy implementation for test coverage
     return Collections.emptyList();
   }
@@ -484,7 +484,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
     PluginInterface stepPlugin =
       new Plugin(
         new String[] { id }, pluginType, mainClassTypesAnnotation.value(), cat, name, desc, image, false,
-        false, classMap, new ArrayList<String>(), null, null, null, null, null );
+        false, classMap, new ArrayList<>(), null, null, null, null, null );
     registry.registerPlugin( pluginType, stepPlugin );
   }
 
@@ -631,8 +631,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
   }
 
   @VisibleForTesting
-  protected ClassLoader createUrlClassLoader(List<File> files, ClassLoader parent) {
-    return new java.net.URLClassLoader(new java.net.URL[0], parent);
+  protected ClassLoader createUrlClassLoader( List<File> files, ClassLoader parent ) {
+    return new java.net.URLClassLoader( new java.net.URL[0], parent );
   }
 
   /**
@@ -667,7 +667,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
     urls.add( jarFileUrl );
 
-    KettleURLClassLoader urlClassLoader = new KettleURLClassLoader( urls.toArray( new URL[ urls.size() ] ), classLoader );
+    KettleURLClassLoader urlClassLoader = new KettleURLClassLoader( urls.toArray( new URL[ 0 ] ), classLoader );
     return processPluginClasspath( urlClassLoader, jarFileUrl, urls, classLoader );
   }
   
@@ -681,20 +681,22 @@ public abstract class BasePluginType implements PluginTypeInterface {
    *
    * * Adds the entries defined in the classpath.properties located at the root of the plugin to the plugin classpath
    */
+  @SuppressWarnings("java:S3776")
   private KettleURLClassLoader processPluginClasspath(
     KettleURLClassLoader urlClassLoader, URL jarFileUrl, List<URL> urls, ClassLoader classLoader ) {
     try {
       String pluginRootFolderName = new File( URLDecoder.decode( jarFileUrl.getFile(), "UTF-8" ) ).getParent();
       File pluginRootFolder = new File( pluginRootFolderName );
-      if( pluginRootFolder.exists() ) {
+      if ( pluginRootFolder.exists() ) {
         File classPathFile = new File( pluginRootFolder, "classpath.properties" );
         if ( classPathFile.exists() ) {
-          FileInputStream classPathFileInputStream = new FileInputStream( classPathFile );
           Properties classPathProperties = new Properties();
-          classPathProperties.load( classPathFileInputStream );
+          try ( FileInputStream classPathFileInputStream = new FileInputStream( classPathFile ) ) {
+            classPathProperties.load( classPathFileInputStream );
+          }
           String classpathProperty = classPathProperties.getProperty( "classpath" );
           classpathProperty = processClasspath( pluginRootFolderName, classpathProperty );
-          String[] sourceDirectories = classpathProperty.split( ":" );
+          String[] sourceDirectories = classpathProperty != null ? classpathProperty.split( ":" ) : new String[ 0 ];
           for ( String sourceDirectory : sourceDirectories ) {
             File sourceDirectoryFile = new File( pluginRootFolder, sourceDirectory );
             if ( sourceDirectoryFile.getCanonicalFile().exists() ) {
@@ -709,7 +711,6 @@ public abstract class BasePluginType implements PluginTypeInterface {
           urlClassLoader = new KettleURLClassLoader( urls.toArray( new URL[ urls.size() ] ), classLoader );
         }
       }
-
     } catch ( Exception e ) {
       LogChannel.GENERAL.logError( e.getMessage() );
     }
@@ -728,16 +729,14 @@ public abstract class BasePluginType implements PluginTypeInterface {
      */
   private String processClasspath( String pluginRootFolder, final String classpath ) {
     if ( classpath == null || !classpath.contains( CLASSPATH_VARIABLE_START_DELIMITER ) ) {
-        return classpath;
+      return classpath;
     }
     List<String> classpathVariables = getVariables( classpath );
     Properties pluginProperties = loadPluginProperties( pluginRootFolder );
     AtomicReference<String> newClasspath = new AtomicReference<>( classpath );
-    classpathVariables.forEach(variable -> {
-      newClasspath.set(newClasspath.get().replace(
-              CLASSPATH_VARIABLE_START_DELIMITER + variable + CLASSPATH_VARIABLE_END_DELIMITER,
-              pluginProperties.getProperty(variable, "") ) );
-    } );
+    classpathVariables.forEach( variable -> newClasspath.set( newClasspath.get().replace(
+            CLASSPATH_VARIABLE_START_DELIMITER + variable + CLASSPATH_VARIABLE_END_DELIMITER,
+            pluginProperties.getProperty( variable, "" ) ) ) );
     return newClasspath.get();
   }
 
@@ -749,43 +748,41 @@ public abstract class BasePluginType implements PluginTypeInterface {
      * @return A list of variable names found in the classpath
      */
   private List<String> getVariables( String classpath ) {
-      if ( classpath == null || !classpath.contains( CLASSPATH_VARIABLE_START_DELIMITER ) ) {
-        return new ArrayList<>();
-      }
-      List<String> variables = new ArrayList<>();
-      int startIndex = 0;
-      while ( ( startIndex = classpath.indexOf( CLASSPATH_VARIABLE_START_DELIMITER, startIndex ) ) != -1 ) {
+    if ( classpath == null || !classpath.contains( CLASSPATH_VARIABLE_START_DELIMITER ) ) {
+      return new ArrayList<>();
+    }
+    List<String> variables = new ArrayList<>();
+    int startIndex = 0;
+    while ( ( startIndex = classpath.indexOf( CLASSPATH_VARIABLE_START_DELIMITER, startIndex ) ) != -1 ) {
       int endIndex = classpath.indexOf( CLASSPATH_VARIABLE_END_DELIMITER, startIndex );
       if ( endIndex == -1 ) {
-          break; // No closing brace found
+        break; // No closing brace found
       }
       String variableName = classpath.substring( startIndex + 2, endIndex );
       variables.add( variableName );
       startIndex = endIndex + 1; // Move past the closing brace
-      }
-      return variables;
+    }
+    return variables;
   }
 
-    /**
-     * Load the plugin properties file from the plugin root folder.
-     *
-     * @param pluginRootFolder
-     *          The root folder of the plugin
-     * @return The properties loaded from the plugin.properties file, or null if the file could not be loaded
-     */
-    Properties loadPluginProperties( String pluginRootFolder ) {
-      Properties properties = new Properties();
-      try {
-        InputStream inputStream = new FileInputStream(
-                pluginRootFolder + Const.FILE_SEPARATOR + PLUGIN_PROPERTIES_FILE_NAME );
-        properties.load( inputStream );
-      } catch ( Exception e ) {
-        LogChannel.GENERAL.logError( "Error loading plugin.properties", e );
-        return null;
-      }
-      return properties;
+  /**
+   * Load the plugin properties file from the plugin root folder.
+   *
+   * @param pluginRootFolder
+   *          The root folder of the plugin
+   * @return The properties loaded from the plugin.properties file, or null if the file could not be loaded
+   */
+  Properties loadPluginProperties( String pluginRootFolder ) {
+    Properties properties = new Properties();
+    String propertiesFilePath = pluginRootFolder + Const.FILE_SEPARATOR + PLUGIN_PROPERTIES_FILE_NAME;
+    try ( InputStream inputStream = new FileInputStream( propertiesFilePath ) ) {
+      properties.load( inputStream );
+    } catch ( Exception e ) {
+      LogChannel.GENERAL.logError( "Error loading plugin.properties", e );
+      return null;
+    }
+    return properties;
   }
-
 
   protected abstract String extractID( java.lang.annotation.Annotation annotation );
 
