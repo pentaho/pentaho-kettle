@@ -1900,7 +1900,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
           WorkbookFactory.getWorkbook( transMeta.getBowl(), info.getSpreadSheetType(),
             KettleVFS.getFilename( fileObject ), info.getEncoding(), wPassword.getText() );
 
-        ExcelInput.getSheetNames( sheetnames, workbook );
+        ExcelInputHelper.getSheetNames( sheetnames, workbook );
       } catch ( Exception e ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
@@ -1958,7 +1958,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         getInfo( input );
         ExcelInput step = (ExcelInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
         step.setStepMetaInterface( input );
-        step.processingWorkbook( fields, info, workbook );
+        ExcelInputHelper helper = ( ExcelInputHelper ) input.getStepHelperInterface();
+        helper.processingWorkbook( fields, info, workbook );
 
         workbook.close();
       } catch ( Exception e ) {
