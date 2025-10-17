@@ -21,13 +21,18 @@ import org.pentaho.di.trans.step.StepInterface;
 import java.util.Map;
 
 public class CheckSumHelper extends BaseStepHelper {
-
+  public static final String CHECKSUM_TYPE_RESPONSE_KEY = "checkSumType";
+  public static final String RESULT_TYPE_RESPONSE_KEY = "resultType";
+  public static final String EVALUATION_METHOD_RESPONSE_KEY = "evaluationMethod";
+  public static final String DEFAULT_VALUES_ACTION = "getDefaultValues";
+  public static final String DEFAULT_VALUES = "defaultValues";
   private static final String CHECKSUM_TYPES = "getCheckSumTypes";
   private static final String EVALUATION_METHODS = "getEvaluationMethods";
   private static final String RESULT_TYPES = "getResultTypes";
+  private final CheckSumMeta checkSumMeta;
 
-  public CheckSumHelper() {
-    super();
+  public CheckSumHelper( CheckSumMeta checkSumMeta ) {
+    this.checkSumMeta = checkSumMeta;
   }
 
   /**
@@ -46,6 +51,9 @@ public class CheckSumHelper extends BaseStepHelper {
         break;
       case RESULT_TYPES:
         response = resultTypes();
+        break;
+      case DEFAULT_VALUES_ACTION:
+        response = getDefaultValues();
         break;
       default:
         response.put( ACTION_STATUS, FAILURE_METHOD_NOT_FOUND_RESPONSE );
@@ -104,6 +112,24 @@ public class CheckSumHelper extends BaseStepHelper {
     }
 
     response.put( "resultTypes", resultTypes );
+    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+    return response;
+  }
+
+  /**
+   * Retrieves the default values for the CheckSum step.
+   */
+  public JSONObject getDefaultValues() {
+    JSONObject defaultValues = new JSONObject();
+    JSONObject response = new JSONObject();
+    checkSumMeta.setDefault();
+    String checkSumType = checkSumMeta.getCheckSumType();
+    String resultType = CheckSumMeta.resultTypeCode[ checkSumMeta.getResultType() ];
+    String evaluationMethod = CheckSumMeta.EVALUATION_METHOD_CODES[ checkSumMeta.getEvaluationMethod() ];
+    defaultValues.put( CHECKSUM_TYPE_RESPONSE_KEY, checkSumType );
+    defaultValues.put( RESULT_TYPE_RESPONSE_KEY, resultType );
+    defaultValues.put( EVALUATION_METHOD_RESPONSE_KEY, evaluationMethod );
+    response.put( DEFAULT_VALUES, defaultValues );
     response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
     return response;
   }

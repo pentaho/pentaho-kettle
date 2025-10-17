@@ -680,7 +680,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public StepHelperInterface getStepHelperInterface() {
-    return new CheckSumHelper();
+    return new CheckSumHelper( this );
   }
 
   @Override
