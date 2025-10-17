@@ -32,7 +32,6 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
 
   public static Comparator<PluginInterface> nullStringComparator =
     ( p1, p2 ) -> new CompareToBuilder()
-      .append( p1.getName(), p2.getName(), Comparator.nullsLast( String::compareToIgnoreCase ) )
       .append( p1.getIds(), p2.getIds() )
       .toComparison();
 
