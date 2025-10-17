@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.databaselookup;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
@@ -174,5 +176,13 @@ public class DatabaseLookupMetaTest implements InitializerInterface<StepMetaInte
     assertTrue( Arrays.equals( meta.getReturnValueDefaultType(), aClone.getReturnValueDefaultType() ) );
     assertEquals( meta.getOrderByClause(), aClone.getOrderByClause() );
     assertEquals( meta.getXML(), aClone.getXML() );
+  }
+
+  @Test
+  public void getStepHelperInterface_ReturnsNonNullHelperInstance() {
+    DatabaseLookupMeta databaseLookupMeta = new DatabaseLookupMeta();
+    StepHelperInterface result = databaseLookupMeta.getStepHelperInterface();
+    assertNotNull( result );
+    assertTrue( result instanceof DatabaseLookupHelper );
   }
 }
