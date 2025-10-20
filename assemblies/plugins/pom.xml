@@ -11,23 +11,23 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>11.0.0.0-SNAPSHOT</version>
+    <version>11.0.0.0-167</version>
   </parent>
 
   <properties>
     <!-- plugins -->
     <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
-    <big-data-plugin.version>11.0.0.0-SNAPSHOT</big-data-plugin.version>
+    <big-data-plugin.version>11.0.0.0-167</big-data-plugin.version>
     <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
     <kettle-shapefilereader-plugin.version>${project.version}</kettle-shapefilereader-plugin.version>
     <kettle-drools8-plugin.version>${project.version}</kettle-drools8-plugin.version>
     <kettle-gpload-plugin.version>${project.version}</kettle-gpload-plugin.version>
     <kettle-hl7-plugin.version>${project.version}</kettle-hl7-plugin.version>
     <mail-job-plugin.version>${project.version}</mail-job-plugin.version>
-    <pdi-salesforce-plugin.version>11.0.0.0-SNAPSHOT</pdi-salesforce-plugin.version>
+    <pdi-salesforce-plugin.version>11.0.0.0-167</pdi-salesforce-plugin.version>
     <monet-db-bulk-loader-plugin.version>${project.version}</monet-db-bulk-loader-plugin.version>
     <yaml-input-plugin.version>${project.version}</yaml-input-plugin.version>
-    <pentaho-reporting-plugin.version>11.0.0.0-SNAPSHOT</pentaho-reporting-plugin.version>
+    <pentaho-reporting-plugin.version>11.0.0.0-167</pentaho-reporting-plugin.version>
     <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
     <get-file-sftp-plugin.version>${project.version}</get-file-sftp-plugin.version>
     <ftps-plugin.version>${project.version}</ftps-plugin.version>
@@ -45,13 +45,13 @@
     <random-cc-number-generator-plugin.version>${project.version}</random-cc-number-generator-plugin.version>
     <credit-card-validator-plugin.version>${project.version}</credit-card-validator-plugin.version>
     <mondrianinput-plugin.version>${project.version}</mondrianinput-plugin.version>
-    <pdi-sap-plugin.version>11.0.0.0-SNAPSHOT</pdi-sap-plugin.version>
+    <pdi-sap-plugin.version>11.0.0.0-167</pdi-sap-plugin.version>
     <jms-streaming-plugin.version>${project.version}</jms-streaming-plugin.version>
     <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
-    <pdi-platform-utils-plugin.version>11.0.0.0-SNAPSHOT</pdi-platform-utils-plugin.version>
-    <vertica-bulkloader-plugin.version>11.0.0.0-SNAPSHOT</vertica-bulkloader-plugin.version>
-    <pdi-pur-plugin.version>11.0.0.0-SNAPSHOT</pdi-pur-plugin.version>
-    <pentaho-mongodb-plugin.version>11.0.0.0-SNAPSHOT</pentaho-mongodb-plugin.version>
+    <pdi-platform-utils-plugin.version>11.0.0.0-167</pdi-platform-utils-plugin.version>
+    <vertica-bulkloader-plugin.version>11.0.0.0-167</vertica-bulkloader-plugin.version>
+    <pdi-pur-plugin.version>11.0.0.0-167</pdi-pur-plugin.version>
+    <pentaho-mongodb-plugin.version>11.0.0.0-167</pentaho-mongodb-plugin.version>
     <engine-configuration-plugin.version>${project.version}</engine-configuration-plugin.version>
     <metastore-locator-plugin.version>${project.version}</metastore-locator-plugin.version>
     <repository-locator-plugin.version>${project.version}</repository-locator-plugin.version>
@@ -64,10 +64,10 @@
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
     <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
     <mail-plugin.version>${project.version}</mail-plugin.version>
-    <pentaho-metaverse.version>11.0.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <pdi-xml-plugin.version>11.0.0.0-SNAPSHOT</pdi-xml-plugin.version>
-    <pdi-json-plugin.version>11.0.0.0-SNAPSHOT</pdi-json-plugin.version>
-    <pdi-rest-plugin.version>${project.version}</pdi-rest-plugin.version>
+    <pentaho-metaverse.version>11.0.0.0-167</pentaho-metaverse.version>
+    <pdi-xml-plugin.version>11.0.0.0-167</pdi-xml-plugin.version>
+    <pdi-json-plugin.version>11.0.0.0-167</pdi-json-plugin.version>
+    <pdi-rest-plugin.version>11.0.0.0-167</pdi-rest-plugin.version>
     <get-repository-names-plugin.version>${project.version}</get-repository-names-plugin.version>
     <connected-to-repository-plugin.version>${project.version}</connected-to-repository-plugin.version>
     <export-repository-plugin.version>${project.version}</export-repository-plugin.version>
