@@ -102,4 +102,10 @@ public interface Bowl {
   default Optional<String> getBowlPath() {
     return Optional.empty();
   }
+
+  /**
+   * Clear any cached objects in the Bowl and its Managers
+   */
+  void clearCache();
+
 }

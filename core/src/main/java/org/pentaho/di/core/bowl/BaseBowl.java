@@ -65,5 +65,12 @@ public abstract class BaseBowl implements Bowl {
   public String getLevelDisplayName() {
     return "";
   }
+
+  @Override
+  public void clearCache() {
+    // note that most metastores do not cache, caching is usually done in MetastoreFactory
+    clearManagers();
+    getSharedObjectsIO().clearCache();
+  }
 }
 
