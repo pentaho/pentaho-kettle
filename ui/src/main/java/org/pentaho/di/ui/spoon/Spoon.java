@@ -2580,33 +2580,28 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( baseCategory.equalsIgnoreCase( JobEntryPluginType.GENERAL_CATEGORY ) ) {
           generalItem = item;
         }
+        
+        List<PluginInterface> categoryJobEntries = baseJobEntries.stream()
+            .filter( entry -> entry.getCategory().equalsIgnoreCase( baseCategory ) )
+            .filter( entry -> !JobMeta.STRING_SPECIAL.equals( entry.getIds()[0] ) )
+            .sorted( Comparator.comparing( PluginInterface::getName ) )
+            .collect( Collectors.toList() );
 
-        for ( int j = 0; j < baseJobEntries.size(); j++ ) {
-          if ( !baseJobEntries.get( j ).getIds()[ 0 ].equals( JobMeta.STRING_SPECIAL ) ) {
-            if ( baseJobEntries.get( j ).getCategory().equalsIgnoreCase( baseCategory ) ) {
-              final Image jobEntryImage =
-                  GUIResource.getInstance().getImagesJobentriesSmall().get( baseJobEntries.get( j ).getIds()[0] );
-              String pluginName = Const.NVL( baseJobEntries.get( j ).getName(), "" );
-              String pluginDescription = Const.NVL( baseJobEntries.get( j ).getDescription(), "" );
+        for( PluginInterface categoryEntry : categoryJobEntries ) {
 
-              if ( !filterMatch( pluginName ) && !filterMatch( pluginDescription ) ) {
-                continue;
-              }
+            final Image jobEntryImage =
+                GUIResource.getInstance().getImagesJobentriesSmall().get( categoryEntry.getIds()[0] );
+            String pluginName = Const.NVL( categoryEntry.getName(), "" );
+            String pluginDescription = Const.NVL( categoryEntry.getDescription(), "" );
 
-              TreeItem stepItem = createTreeItem( item, pluginName, jobEntryImage );
-              stepItem.addListener( SWT.Selection, new Listener() {
-
-                @Override
-                public void handleEvent( Event arg0 ) {
-                  System.out.println( "Tree item Listener fired" );
-                }
-              } );
-              // if (isPlugin)
-              // stepItem.setFont(GUIResource.getInstance().getFontBold());
-
-              coreJobToolTipMap.put( pluginName, pluginDescription );
+            if ( !filterMatch( pluginName ) && !filterMatch( pluginDescription ) ) {
+              continue;
             }
-          }
+
+            TreeItem entryItem = createTreeItem( item, pluginName, jobEntryImage );
+            entryItem.addListener( SWT.Selection, ( e ) -> System.out.println( "Tree item Listener fired" ) );
+
+            coreJobToolTipMap.put( pluginName, pluginDescription );
         }
       }
 
