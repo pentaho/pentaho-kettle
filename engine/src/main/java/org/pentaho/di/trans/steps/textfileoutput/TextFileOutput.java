@@ -21,16 +21,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.WriterOutputStream;
@@ -1023,90 +1015,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
   }
 
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
-    JSONObject jsonObject = new JSONObject();
-    JSONArray textFileFields = new JSONArray();
-    ObjectMapper objectMapper = new ObjectMapper();
-    for ( TextFileOutputFieldDTO textFileOutputFieldDTO : getUpdatedTextFields() ) {
-      textFileFields.add( objectMapper.readTree( objectMapper.writeValueAsString( textFileOutputFieldDTO ) ) );
-    }
-    jsonObject.put( "updatedData", textFileFields );
-    return jsonObject;
-  }
 
-  public List<TextFileOutputFieldDTO> getUpdatedTextFields() {
-    TextFileOutputMeta tfoi = (TextFileOutputMeta) getStepMetaInterface();
-    List<TextFileOutputFieldDTO> textFileFields = new ArrayList<>();
-
-    for ( TextFileField textFileField : tfoi.getOutputFields() ) {
-      TextFileOutputFieldDTO updatedTextFileField = new TextFileOutputFieldDTO();
-      updatedTextFileField.setName( textFileField.getName() );
-      updatedTextFileField.setType( textFileField.getTypeDesc() );
-
-      switch ( textFileField.getType() ) {
-        case ValueMetaInterface.TYPE_STRING:
-          updatedTextFileField.setFormat( StringUtils.EMPTY );
-          break;
-        case ValueMetaInterface.TYPE_INTEGER:
-          updatedTextFileField.setFormat( "0" );
-          break;
-        case ValueMetaInterface.TYPE_NUMBER:
-          updatedTextFileField.setFormat( "0.#####" );
-          break;
-        default:
-          break;
-      }
-      updatedTextFileField.setLength( StringUtils.EMPTY );
-      updatedTextFileField.setPrecision( StringUtils.EMPTY );
-      updatedTextFileField.setCurrency( textFileField.getCurrencySymbol() );
-      updatedTextFileField.setDecimal( textFileField.getDecimalSymbol() );
-      updatedTextFileField.setGroup( textFileField.getGroupingSymbol() );
-      updatedTextFileField.setTrimType( "both" );
-      updatedTextFileField.setNullif( textFileField.getNullString() );
-
-      textFileFields.add( updatedTextFileField );
-    }
-    return textFileFields;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getFormatsAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    JSONArray array = new JSONArray();
-    for ( String format : TextFileOutputMeta.formatMapperLineTerminator ) {
-      // add e.g. TextFileOutputDialog.Format.DOS, .UNIX, .CR, .None
-      array.add( BaseMessages.getString( PKG, "TextFileOutputDialog.Format." + format ) );
-    }
-    response.put( "formats", array );
-    return response;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject showFilesAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-
-    String filter = queryParams.get( "filter" );
-    String isRegex = queryParams.get( "isRegex" );
-
-    TextFileOutputMeta tfoi = (TextFileOutputMeta) getStepMetaInterface();
-
-    JSONArray filteredFiles = new JSONArray();
-    for ( String file : tfoi.getFiles( getTransMeta() ) ) {
-      if ( Boolean.parseBoolean( isRegex ) ) {
-        Matcher matcher = Pattern.compile( filter ).matcher( file );
-        if ( matcher.matches() ) {
-          filteredFiles.add( file );
-        }
-      } else if ( StringUtils.isBlank( filter ) || StringUtils.contains( file.toUpperCase(), filter.toUpperCase() ) ) {
-        filteredFiles.add( file );
-      }
-    }
-
-    response.put( "files", filteredFiles );
-
-    return response;
-  }
 
   /**
    * @return writeEnclosure based on fieldName and ValueMetaInterface value

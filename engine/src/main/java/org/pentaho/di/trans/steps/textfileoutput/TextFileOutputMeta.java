@@ -39,6 +39,7 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -1143,6 +1144,10 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   @Override
   public boolean passDataToServletOutput() {
     return servletOutput;
+  }
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new TextFileOutputHelper();
   }
 
   /**
