@@ -54,6 +54,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   private String casesUrl;
   private String forumUrl;
   private String suggestion;
+  private boolean deprecated;
 
   /**
    * @param ids
@@ -486,4 +487,13 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
     this.classLoaderGroup = classLoaderGroup;
   }
 
+  @Override
+  public boolean isDeprecated() {
+    return deprecated;
+  }
+  
+  public void setDeprecated( boolean deprecated ) {
+    this.deprecated = deprecated;
+  }
+  
 }
