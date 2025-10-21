@@ -107,4 +107,9 @@ public class DefaultBowl extends BaseBowl {
     return BaseMessages.getString( PKG, "Default.Level.Name" );
   }
 
+  @Override
+  public void clearCache() {
+    super.clearCache();
+    ConnectionManager.getInstance().reset();
+  }
 }

@@ -113,7 +113,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   public void closeDialog() {
     lastClicked = CANCELLED;
     this.dialog.hide();
-    Spoon.getInstance().refreshTree();
+    Spoon.getInstance().forceRefreshTree();
 
     // listeners may remove themselves, old-style iteration
     for ( int i = 0; i < listeners.size(); i++ ) {

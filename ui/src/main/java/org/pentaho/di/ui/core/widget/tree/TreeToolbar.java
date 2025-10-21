@@ -38,10 +38,15 @@ public class TreeToolbar extends Composite {
 
   private PropsUI props = PropsUI.getInstance();
   private Text selectionFilter;
+  private ToolItem refreshButton;
   private ToolItem expandAll;
   private ToolItem collapseAll;
 
   public TreeToolbar( Composite composite, int i ) {
+    this( composite, i, false );
+  }
+  
+  public TreeToolbar( Composite composite, int i, boolean includeRefresh ) {
     super( composite, i );
 
     FormLayout formLayout = new FormLayout();
@@ -65,6 +70,10 @@ public class TreeToolbar extends Composite {
     /*
     This contains a map with all the unnamed transformation (just a filename)
    */
+    if ( includeRefresh ) {
+      refreshButton = new ToolItem( treeTb, SWT.PUSH );
+      refreshButton.setImage( GUIResource.getInstance().getImageRefreshEnabled() );
+    }
     expandAll = new ToolItem( treeTb, SWT.PUSH );
     expandAll.setImage( GUIResource.getInstance().getImageExpandAll() );
     collapseAll = new ToolItem( treeTb, SWT.PUSH );
@@ -139,6 +148,10 @@ public class TreeToolbar extends Composite {
 
   public void addSearchModifyListener( ModifyListener modifyListener ) {
     selectionFilter.addModifyListener( modifyListener );
+  }
+
+  public void addRefreshListener( SelectionAdapter selectionAdapter ) {
+    refreshButton.addSelectionListener( selectionAdapter );
   }
 
   public void addExpandAllListener( SelectionAdapter selectionAdapter ) {

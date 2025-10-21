@@ -101,4 +101,9 @@ public class MemorySharedObjectsIO implements SharedObjectsIO {
     return storageMap.computeIfAbsent( type, k -> new HashMap<>() );
   }
 
+  @Override
+  public void clearCache() {
+    // No "caching" in memory implementation. The data is the data. 
+  }
+
 }

@@ -2040,7 +2040,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     viewComposite.setLayout( new FormLayout()  );
     viewComposite.setBackground( GUIResource.getInstance().getColorDemoGray() );
 
-    viewTreeToolbar = new TreeToolbar( viewComposite, SWT.NONE );
+    viewTreeToolbar = new TreeToolbar( viewComposite, SWT.NONE, true );
     FormData fdTreeToolbar = new FormData();
     fdTreeToolbar.left = new FormAttachment( 0 );
     fdTreeToolbar.right = new FormAttachment( 100 );
@@ -2068,6 +2068,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
         tidyBranches( selectionTree.getItems(), false );
+      }
+    } );
+
+    viewTreeToolbar.addRefreshListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent selectionEvent ) {
+        forceRefreshTree();
       }
     } );
 
@@ -4311,9 +4318,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void clearSharedObjectCache() throws KettleException {
-    if ( rep != null ) {
-      rep.clearSharedObjectCache();
-    }
+    // forceRefreshTree is now a superset of just clearing the shared object cache
+    forceRefreshTree();
   }
 
   public void exploreRepository() {
@@ -6929,6 +6935,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void forceRefreshTree() {
+    // refresh underlying data
+    globalManagementBowl.clearCache();
+    managementBowl.clearCache();
+    executionBowl.clearCache();
+
     if ( selectionTreeManager != null ) {
       selectionTreeManager.updateAll();
       refreshTree();

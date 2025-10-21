@@ -212,5 +212,10 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
       repository.save( repoElement, Const.VERSION_COMMENT_EDIT_VERSION, null );
     }
   }
+
+  @Override
+  public void clearCache() {
+    repository.clearSharedObjectCache();
+  }
 }
 

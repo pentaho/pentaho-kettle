@@ -87,6 +87,11 @@ public interface SharedObjectsIO {
    */
   void clear( String type ) throws KettleException;
 
+  /**
+   * Clear any cached objects in the SharedObjectsIO
+   */
+  void clearCache();
+
   static String findSharedObjectIgnoreCase( String name, Set<String> existingKeys ) {
     for ( String key : existingKeys ) {
       if ( key.equalsIgnoreCase( name ) ) {

@@ -82,4 +82,11 @@ public class DelegatingSharedObjectsIO implements SharedObjectsIO {
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
     throw new UnsupportedOperationException( "Read-only data structure" );
   }
+
+  @Override
+  public void clearCache() {
+    for ( SharedObjectsIO store : stores ) {
+      store.clearCache();
+    }
+  }
 }

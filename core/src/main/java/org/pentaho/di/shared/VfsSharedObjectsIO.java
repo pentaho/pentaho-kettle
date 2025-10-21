@@ -102,6 +102,15 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
     return getNodesMapForType( type );
   }
 
+  @Override
+  public synchronized void clearCache() {
+    connectionsNodes.clear();
+    slaveServersNodes.clear();
+    partitionSchemaNodes.clear();
+    clusterSchemaNodes.clear();
+    isInitialized = false;
+  }
+
   /**
    * Loads the shared objects in the map. The map will be of the form <String, Node>
    * where key can be {"connection", "slaveserver", "partitionschema" or  clusterschema"} and
