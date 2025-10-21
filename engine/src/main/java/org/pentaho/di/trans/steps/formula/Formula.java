@@ -16,10 +16,7 @@ package org.pentaho.di.trans.steps.formula;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Map;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -28,7 +25,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -36,10 +32,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.libformula.editor.FormulaEvaluator;
-import org.pentaho.libformula.editor.FormulaMessage;
-import org.pentaho.libformula.editor.function.FunctionDescription;
-import org.pentaho.libformula.editor.function.FunctionLib;
 import org.pentaho.reporting.libraries.formula.LibFormulaErrorValue;
 import org.pentaho.reporting.libraries.formula.parser.FormulaParser;
 
@@ -52,9 +44,6 @@ import org.pentaho.reporting.libraries.formula.parser.FormulaParser;
 public class Formula extends BaseStep implements StepInterface {
   private FormulaMeta meta;
   private FormulaData data;
-  private String[] keyWords;
-  private static final String ERROR = "error";
-
   public Formula( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -301,149 +290,4 @@ public class Formula extends BaseStep implements StepInterface {
     return false;
   }
 
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject evaluateFormulaAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    try {
-      String formula = queryParams.get( "formulaSyntax" );
-      if ( formula == null || formula.trim().isEmpty() ) {
-        response.put( ERROR, "No formula provided." );
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-        return response;
-      }
-
-      // Load keyWords from functions.xml if not already loaded.
-      getKeyWords( response );
-      if ( response.get( StepInterface.ACTION_STATUS ) != null
-          && response.get( StepInterface.ACTION_STATUS ).equals( StepInterface.FAILURE_RESPONSE ) ) {
-        return response;
-      }
-
-      // Determine input fields: use query param if provided, otherwise use getInputRowMeta()
-      String[] evalInputFields = getEvalInputFields( queryParams.get( "inputFields" ) );
-
-      // Create a new FormulaEvaluator instance.
-      FormulaEvaluator evaluator = new FormulaEvaluator( this.keyWords, evalInputFields );
-
-      // Evaluate the formula.
-      Map<String, FormulaMessage> messages = evaluator.evaluateFormula( formula );
-      buildEvaluationMessageResponse( response, messages );
-    } catch ( Exception e ) {
-      response.put( ERROR, e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
-    return response;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject formulaTreeDataAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    try {
-      // Load the function library from functions.xml.
-      // Adjust the file path if necessary.
-      FunctionLib functionLib = new FunctionLib( "functions.xml" );
-
-      // Get all function categories.
-      String[] categories = functionLib.getFunctionCategories();
-      JSONArray categoryArray = new JSONArray();
-
-      // Iterate over each category.
-      for ( int i = 0; i < categories.length; i++ ) {
-        String category = categories[ i ];
-        String displayCategory = category;
-        // If the category starts with "%" use i18n lookup.
-        if ( category.startsWith( "%" ) ) {
-          displayCategory = BaseMessages.getString( FunctionLib.class, category.substring( 1 ) );
-        }
-
-        JSONObject categoryObj = new JSONObject();
-        categoryObj.put( "category", displayCategory );
-
-        // Get the functions for this category.
-        String[] fnames = functionLib.getFunctionsForACategory( category );
-        JSONArray functionsArray = new JSONArray();
-        for ( String fname : fnames ) {
-          JSONObject funcObj = new JSONObject();
-          funcObj.put( "name", fname );
-
-          // Retrieve function details.
-         FunctionDescription fd = functionLib.getFunctionDescription( fname );
-          if ( fd != null ) {
-            // Assume these getters exist in FunctionDescription.
-            funcObj.put( "description", fd.getDescription() );
-            funcObj.put( "syntax", fd.getSyntax() );
-            funcObj.put( "returns", fd.getReturns() );
-            funcObj.put( "constraints", fd.getConstraints() );
-            funcObj.put( "semantics", fd.getSemantics() );
-            funcObj.put( "htmlreport", fd.getHtmlReport() );
-          }
-          functionsArray.add( funcObj );
-        }
-        categoryObj.put( "functions", functionsArray );
-        categoryArray.add( categoryObj );
-      }
-      response.put( "functionTree", categoryArray );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( Exception e ) {
-      response.put( ERROR, e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE  );
-    }
-    return response;
-  }
-
-  private void buildEvaluationMessageResponse( JSONObject response, Map<String, FormulaMessage> messages ) {
-    JSONArray messagesArray = new JSONArray();
-    for ( FormulaMessage msg : messages.values() ) {
-      JSONObject msgJson = new JSONObject();
-      msgJson.put( "message", msg.toString() );
-      msgJson.put( "type", msg.getType() );
-      msgJson.put( "subject", msg.getSubject() );
-      msgJson.put( "detail", msg.getMessage() );
-      if ( msg.getPosition() != null ) {
-        JSONObject posJson = new JSONObject();
-        posJson.put( "startLine", msg.getPosition().getStartLine() );
-        posJson.put( "startColumn", msg.getPosition().getStartColumn() );
-        posJson.put( "endLine", msg.getPosition().getEndLine() );
-        posJson.put( "endColumn", msg.getPosition().getEndColumn() );
-        msgJson.put( "position", posJson );
-      }
-      messagesArray.add( msgJson );
-    }
-
-    response.put( "messages", messagesArray );
-    response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-  }
-
-  private String[] getEvalInputFields( String inputFieldsParam ) {
-    String[] evalInputFields;
-    if ( inputFieldsParam != null && !inputFieldsParam.trim().isEmpty() ) {
-      evalInputFields = inputFieldsParam.split( "," );
-      for ( int i = 0; i < evalInputFields.length; i++ ) {
-        evalInputFields[ i ] = evalInputFields[ i ].trim();
-      }
-    } else {
-      RowMetaInterface inputMeta = getInputRowMeta();
-      if ( inputMeta != null ) {
-        evalInputFields = inputMeta.getFieldNames();
-      } else {
-        evalInputFields = new String[ 0 ];
-      }
-    }
-
-    return evalInputFields;
-  }
-
-  private void getKeyWords( JSONObject response ) {
-    if ( this.keyWords == null ) {
-      try {
-        // Adjust the package if necessary.
-        FunctionLib functionLib = new FunctionLib( "functions.xml" );
-        this.keyWords = functionLib.getFunctionNames();
-      } catch ( Exception e ) {
-        this.keyWords = new String[0];
-        response.put( ERROR, "Error loading function keywords: " + e.getMessage() );
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-      }
-    }
-  }
 }
