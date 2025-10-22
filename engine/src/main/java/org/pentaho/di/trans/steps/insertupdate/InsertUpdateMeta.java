@@ -43,6 +43,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.*;
 import org.pentaho.di.trans.step.utils.RowMetaUtils;
 import org.pentaho.metastore.api.IMetaStore;
@@ -424,6 +425,10 @@ public class InsertUpdateMeta extends BaseDatabaseStepMeta implements StepMetaIn
     }
   }
 
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new InsertUpdateHelper();
+  }
   @Override
   public void getFields( Bowl bowl, RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
