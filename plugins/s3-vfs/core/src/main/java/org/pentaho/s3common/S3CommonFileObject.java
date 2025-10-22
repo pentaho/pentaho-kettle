@@ -450,6 +450,7 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
    */
   private void copySingleFileFrom( final FileObject src, final S3CommonFileObject dst ) throws FileSystemException {
     S3CommonFileObject s3Src = extractDelegateS3FileObject( src );
+    FileSystemException copyException = null;
     if ( s3Src != null ) {
       // S3 to S3 copy
       try {
@@ -458,6 +459,7 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
         fileSystem.copy( s3Src, dst );
         return;
       } catch ( FileSystemException e ) {
+        copyException = e; // This way we can preserve the original exception if upload also fails
         logger.warn( "S3->S3 copy failed, falling back to S3 upload: {}", e.getMessage(), e );
         // fallback to TransferManager upload below
       }
@@ -466,8 +468,12 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
     try {
       logger.info( "Uploading to S3 from {} to {}", src.getName(), this.getName() );
       fileSystem.upload( src, dst );
-    } catch ( Exception e ) {
-      logger.error( "Upload failed: {}", e.getMessage(), e );
+    } catch ( FileSystemException e ) {
+      if ( copyException != null ) {
+        // Both copy and upload failed - add copy exception as suppressed to preserve both stack traces
+        e.addSuppressed( copyException );
+      }
+      throw new FileSystemException( "vfs.provider/copy-file.error", src, this, e );
     }
   }
 
