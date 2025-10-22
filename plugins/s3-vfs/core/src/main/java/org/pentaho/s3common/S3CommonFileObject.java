@@ -468,8 +468,6 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
       fileSystem.upload( src, dst );
     } catch ( Exception e ) {
       logger.error( "Upload failed: {}", e.getMessage(), e );
-      throw new FileSystemException( "vfs.provider.s3/transfer.upload-failed",
-        src.getName().getURI(), this.getQualifiedName(), e );
     }
   }
 
