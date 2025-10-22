@@ -28,6 +28,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
+import org.apache.commons.vfs2.util.FileObjectUtils;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,7 +220,7 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
   }
 
   @Override
-  @SuppressWarnings("java:S2139") // Logging for traceability while allowing the exception to propagate normally
+  @SuppressWarnings( "java:S2139" ) // Logging for traceability while allowing the exception to propagate normally
   public void doAttach() throws Exception {
     logger.trace( "Attach called on {}", getQualifiedName() );
     injectType( FileType.IMAGINARY );
@@ -366,35 +367,107 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
   }
 
   /**
-   * Copies the content of the specified file to this file, using server-side multipart copy if both files are
-   * S3FileObjects in the same region.
+   * Copies the content of the specified file to this file
+   * Uses server-side multipart copy on large files, if both files are S3FileObjects.
    * If the source is not an S3FileObject or is in a different region, it uses TransferManager to upload the content.
+   * Supports both files and folders as source and destination. Empty source folders are not valid for S3 destination and will be ignored.
    *
-   * @param file     The source file to copy from.
-   * @param selector A FileSelector to filter which files to copy.
+   * @param file     The FileObject to copy.
+   * @param selector The FileSelector.
    * @throws FileSystemException If an error occurs during the copy operation.
    */
   @Override
   public void copyFrom( final FileObject file, final FileSelector selector ) throws FileSystemException {
-    S3CommonFileObject s3Src = extractDelegateS3FileObject( file );
+    if ( !FileObjectUtils.exists( file ) ) {
+      throw new FileSystemException( "vfs.provider/copy-missing-file.error", file );
+    }
+
+    // Locate the files to copy across
+    final ArrayList<FileObject> files = new ArrayList<>();
+    file.findFiles( selector, false, files );
+
+    // Copy everything across
+    for ( final FileObject srcFile : files ) {
+      // Skip folders - they will be created automatically when their files are copied, and empty folders do not exist in S3
+      if ( srcFile.getType() == FileType.FOLDER ) {
+        continue;
+      }
+
+      // Calculate the destination key preserving folder structure
+      final S3CommonFileObject dstFile = calculateDestination( file, srcFile );
+
+      // Copy the individual file
+      copySingleFileFrom( srcFile, dstFile );
+    }
+  }
+
+  /**
+   * Calculates the destination S3CommonFileObject for a source file being copied.
+   * Preserves the folder structure by calculating the relative path from the source base to the source file.
+   *
+   * @param srcBase The base source folder/file
+   * @param srcFile The specific source file being copied
+   * @return The destination S3CommonFileObject with the correct key
+   * @throws FileSystemException if destination calculation fails
+   */
+  private S3CommonFileObject calculateDestination( final FileObject srcBase, final FileObject srcFile )
+    throws FileSystemException {
+    // If destination (this) is a file, use it as-is
+    if ( getType() == FileType.FILE ) {
+      return this;
+    }
+
+    // Destination is a folder - calculate the relative path to preserve structure
+    try {
+      String relativePath = srcBase.getName().getRelativeName( srcFile.getName() );
+      if ( relativePath == null || relativePath.isEmpty() ) {
+        relativePath = srcFile.getName().getBaseName();
+      }
+
+      // Build the destination key: current key + relative path
+      String dstKey = this.key;
+      if ( !dstKey.isEmpty() && !dstKey.endsWith( DELIMITER ) ) {
+        dstKey += DELIMITER;
+      }
+      dstKey += relativePath;
+
+      // Create a new S3CommonFileObject with the calculated key
+      return (S3CommonFileObject) fileSystem.resolveFile( getName().getRoot() + DELIMITER + bucketName + DELIMITER + dstKey );
+    } catch ( Exception e ) {
+      throw new FileSystemException( "vfs.provider/copy-file.error", srcFile, this, e );
+    }
+  }
+
+  /**
+   * Copies a single file (folders are not supported as both src and dst) from the specified source
+   * to the specified destination S3CommonFileObject.
+   * Uses S3 server-side copy if both source and destination are S3CommonFileObject.
+   * Falls back to S3 upload if server-side copy fails or if the source is not an S3CommonFileObject.
+   *
+   * @param src The source FileObject to copy from
+   * @param dst The destination S3CommonFileObject to copy to
+   * @throws FileSystemException If an error occurs during the copy operation.
+   */
+  private void copySingleFileFrom( final FileObject src, final S3CommonFileObject dst ) throws FileSystemException {
+    S3CommonFileObject s3Src = extractDelegateS3FileObject( src );
     if ( s3Src != null ) {
       // S3 to S3 copy
       try {
-        logger.info( "Attempting S3->S3 server-side multipart copy from {} to {}",
+        logger.info( "Attempting S3->S3 copy from {} to {}",
           s3Src.getQualifiedName(), this.getQualifiedName() );
-        fileSystem.copy( s3Src, this );
+        fileSystem.copy( s3Src, dst );
         return;
       } catch ( FileSystemException e ) {
-        logger.warn( "S3->S3 multipart copy failed, falling back to TransferManager upload: {}", e.getMessage(), e );
+        logger.warn( "S3->S3 copy failed, falling back to S3 upload: {}", e.getMessage(), e );
         // fallback to TransferManager upload below
       }
     }
-    // For non-S3FileObject or fallback, use TransferManager upload
+    // For non-S3FileObject or fallback, use S3 upload
     try {
-      logger.info( "Uploading to S3 using TransferManager from {} to {}", file.getName(), this.getName() );
-      fileSystem.upload( file, this );
+      logger.info( "Uploading to S3 from {} to {}", src.getName(), this.getName() );
+      fileSystem.upload( src, dst );
     } catch ( Exception e ) {
-      logger.error( "TransferManager upload failed, falling back to default copy: {}", e.getMessage(), e );
+      logger.error( "Upload failed: {}", e.getMessage(), e );
     }
   }
 

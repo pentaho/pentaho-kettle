@@ -31,7 +31,6 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -137,24 +136,6 @@ public class S3TransferManagerTest {
     java.lang.reflect.Field bucketField = S3CommonFileObject.class.getDeclaredField( "bucketName" );
     bucketField.setAccessible( true );
     bucketField.set( src, null );
-    s3TransferManager.copy( src, dst );
-  }
-
-  @Test( expected = FileSystemException.class )
-  public void testCopy_ReadAccessDenied() throws FileSystemException {
-    var s3Client = mock( com.amazonaws.services.s3.AmazonS3.class );
-    when( transferManager.getAmazonS3Client() ).thenReturn( s3Client );
-    doThrow( new AmazonClientException( "no read" ) ).when( s3Client ).getObjectMetadata( anyString(), anyString() );
-    s3TransferManager.copy( src, dst );
-  }
-
-  @Test( expected = FileSystemException.class )
-  public void testCopy_WriteAccessDenied() throws FileSystemException {
-    var s3Client = mock( com.amazonaws.services.s3.AmazonS3.class );
-    when( transferManager.getAmazonS3Client() ).thenReturn( s3Client );
-    // Read access OK
-    // Write access denied
-    doThrow( new AmazonClientException( "no write" ) ).when( s3Client ).putObject( anyString(), contains( ".acltest-" ), anyString() );
     s3TransferManager.copy( src, dst );
   }
 

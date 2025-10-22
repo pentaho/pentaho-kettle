@@ -58,7 +58,6 @@ public class S3TransferManager {
         dst != null ? dst.getQualifiedName() : "null" );
     }
     try {
-      testConnection( src, dst );
       Copy copy = getTransferManager().copy(
         src.bucketName, src.key,
         dst.bucketName, dst.key
@@ -73,30 +72,6 @@ public class S3TransferManager {
     } catch ( AmazonClientException e ) {
       throw new FileSystemException( "vfs.provider.s3/transfer.error",
                                      src.getQualifiedName(), dst.getQualifiedName(), e );
-    }
-  }
-
-  /**
-   * Checks if the S3 client has read access to the source object and write access to the destination bucket.
-   * Throws FileSystemException if access is denied.
-   */
-  private void testConnection( S3CommonFileObject src, S3CommonFileObject dst ) throws FileSystemException {
-    // Check read access to source object
-    try {
-      getTransferManager().getAmazonS3Client().getObjectMetadata( src.bucketName, src.key );
-      logger.debug( "Read access to source object: {}", src.getQualifiedName() );
-    } catch ( AmazonClientException e ) {
-      throw new FileSystemException( "vfs.provider.s3/transfer.no-read-access", src.getQualifiedName(), e );
-    }
-
-    // Check write access to destination bucket (try to put a zero-byte object and delete it)
-    String testKey = dst.key + ".acltest-" + System.currentTimeMillis();
-    try {
-      getTransferManager().getAmazonS3Client().putObject( dst.bucketName, testKey, "" );
-      getTransferManager().getAmazonS3Client().deleteObject( dst.bucketName, testKey );
-      logger.debug( "Write access to destination bucket: {}", dst.bucketName );
-    } catch ( AmazonClientException e ) {
-      throw new FileSystemException( "vfs.provider.s3/transfer.no-write-access", dst.bucketName, e );
     }
   }
 
