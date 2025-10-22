@@ -1024,4 +1024,9 @@ public class TableOutputMeta extends BaseDatabaseStepMeta implements StepMetaInt
     }
   }
 
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new TableOutputHelper();
+  }
+
 }
