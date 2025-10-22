@@ -1029,7 +1029,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( fileTransfer.isSupportedType( event.currentDataType ) ) {
           String[] files = (String[]) event.data;
           for ( String file : files ) {
-            openFile( file, false );
+            openFile( file, null, false, true );
           }
         }
       }
@@ -5179,6 +5179,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void openFile( String filename, VariableSpace variableSpace, boolean importFile ) {
+    openFile( filename, variableSpace, importFile, false );
+  }
+
+  public void openFile( String filename, VariableSpace variableSpace, boolean importFile, boolean forceLocalFile ) {
     // Open the XML and see what's in there.
     // We expect a single <transformation> or <job> root at this time...
 
@@ -5186,7 +5190,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean fileExists = false;
     boolean loaded = false;
 
-    if ( rep != null && !importFile ) {
+    if ( rep != null && !importFile && !forceLocalFile ) {
       // load from the repository
       try {
         Path filePath = Paths.get( filename );
