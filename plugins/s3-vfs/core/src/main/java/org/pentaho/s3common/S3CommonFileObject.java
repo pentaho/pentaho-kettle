@@ -395,7 +395,7 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
 
       // Calculate the destination key preserving folder structure
       final S3CommonFileObject dstFile = calculateDestination( file, srcFile );
-      
+
       // Copy the individual file
       copySingleFileFrom( srcFile, dstFile );
     }
