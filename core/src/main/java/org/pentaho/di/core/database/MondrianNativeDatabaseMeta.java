@@ -35,7 +35,6 @@ public class MondrianNativeDatabaseMeta extends BaseDatabaseMeta implements Data
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    // jdbc:mondrian:Datasource=jdbc/SampleData;Catalog=./foodmart/FoodMart.xml;
     return "jdbc:mondrian:Datasource=jdbc/" + databaseName + ";Catalog=" + hostname;
   }
 
