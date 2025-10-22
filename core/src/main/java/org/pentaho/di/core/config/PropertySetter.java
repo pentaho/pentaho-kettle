@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ognl.OgnlContext;
+import ognl.Ognl;
 import ognl.OgnlException;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -33,10 +34,9 @@ public class PropertySetter {
 
   public static final String OGNL = "ognl";
   public static final String I18N = "i18n";
-
   private Map<String, OgnlExpression> ognlExpressions = new HashMap<>();
 
-  private OgnlContext octx = new OgnlContext();
+  private OgnlContext octx = Ognl.createDefaultContext( this );
 
   // this should not be a static/factory method in order to allow caching of
   // compiled ognl expressions

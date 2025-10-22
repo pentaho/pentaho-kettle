@@ -26,7 +26,7 @@
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
     <jug-lgpl.version>2.0.0</jug-lgpl.version>
-    <ognl.version>2.6.9</ognl.version>
+    <ognl.version>3.4.7</ognl.version>
     <scannotation.version>1.0.2</scannotation.version>
     <com.wcohen.secondstring.version>0.1</com.wcohen.secondstring.version>
     <javassist.version>3.20.0-GA</javassist.version>
