@@ -367,10 +367,10 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
   }
 
   /**
-   * Copies the content of the specified file to this file, using server-side multipart copy if both files are
-   * S3FileObjects in the same region.
+   * Copies the content of the specified file to this file
+   * Uses server-side multipart copy on large files, if both files are S3FileObjects.
    * If the source is not an S3FileObject or is in a different region, it uses TransferManager to upload the content.
-   * Supports both files and folders - folder handling is done automatically by the TransferManager.
+   * Supports both files and folders as source and destination. Empty source folders are not valid for S3 destination and will be ignored.
    *
    * @param file     The FileObject to copy.
    * @param selector The FileSelector.
@@ -388,7 +388,7 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
 
     // Copy everything across
     for ( final FileObject srcFile : files ) {
-      // Skip folders - they will be created automatically when their files are copied
+      // Skip folders - they will be created automatically when their files are copied, and empty folders do not exist in S3
       if ( srcFile.getType() == FileType.FOLDER ) {
         continue;
       }
@@ -438,6 +438,16 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
     }
   }
 
+  /**
+   * Copies a single file (folders are not supported as both src and dst) from the specified source
+   * to the specified destination S3CommonFileObject.
+   * Uses S3 server-side copy if both source and destination are S3CommonFileObject.
+   * Falls back to S3 upload if server-side copy fails or if the source is not an S3CommonFileObject.
+   *
+   * @param src The source FileObject to copy from
+   * @param dst The destination S3CommonFileObject to copy to
+   * @throws FileSystemException If an error occurs during the copy operation.
+   */
   private void copySingleFileFrom( final FileObject src, final S3CommonFileObject dst ) throws FileSystemException {
     S3CommonFileObject s3Src = extractDelegateS3FileObject( src );
     if ( s3Src != null ) {
@@ -448,16 +458,16 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
         fileSystem.copy( s3Src, dst );
         return;
       } catch ( FileSystemException e ) {
-        logger.warn( "S3->S3 copy failed, falling back to TransferManager upload: {}", e.getMessage(), e );
+        logger.warn( "S3->S3 copy failed, falling back to S3 upload: {}", e.getMessage(), e );
         // fallback to TransferManager upload below
       }
     }
-    // For non-S3FileObject or fallback, use TransferManager upload
+    // For non-S3FileObject or fallback, use S3 upload
     try {
-      logger.info( "Uploading to S3 using TransferManager from {} to {}", src.getName(), this.getName() );
+      logger.info( "Uploading to S3 from {} to {}", src.getName(), this.getName() );
       fileSystem.upload( src, dst );
     } catch ( Exception e ) {
-      logger.error( "TransferManager upload failed: {}", e.getMessage(), e );
+      logger.error( "Upload failed: {}", e.getMessage(), e );
       throw new FileSystemException( "vfs.provider.s3/transfer.upload-failed",
         src.getName().getURI(), this.getQualifiedName(), e );
     }
