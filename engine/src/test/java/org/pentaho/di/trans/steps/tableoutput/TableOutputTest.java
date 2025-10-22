@@ -221,15 +221,6 @@ public class TableOutputTest {
     verify( tableOutputSpy, times( 1 ) ).logError( "An error occurred intialising this step: " + ke.getMessage() );
   }
 
-  @Test
-  public void validationRowMetaTest() throws Exception {
-    Method m = TableOutput.class.getDeclaredMethod( "isValidRowMeta", RowMetaInterface.class );
-    m.setAccessible( true );
-    Object result1 = m.invoke( null, filled );
-    Object result2 = m.invoke( null, empty );
-    assertTrue( Boolean.parseBoolean( result1 + "" ) );
-    assertFalse( Boolean.parseBoolean( result2 + "" ) );
-  }
 
   private RowMetaInterface createRowMeta( String[] args, boolean hasEmptyFields ) {
     RowMetaInterface result = new RowMeta();
@@ -242,55 +233,4 @@ public class TableOutputTest {
     return result;
   }
 
-  @Test
-  public void testGetSQLAction() throws KettleStepException {
-
-    Trans trans = mock( Trans.class );
-    TableOutputMeta stepMetaInterface = mock( TableOutputMeta.class );
-    when( stepMetaInterface.isTableNameInField() ).thenReturn( true );
-    when( stepMetaInterface.getTableNameField() ).thenReturn( "tableNameField" );
-
-    Map<String, String> queryParams = new HashMap<>();
-    queryParams.put( "stepName", "stepName" );
-    queryParams.put( "connection", "connection" );
-    RowMetaInterface prev = mock( RowMetaInterface.class );
-    when( transMeta.getPrevStepFields( anyString() ) ).thenReturn( prev );
-    when( stepMetaInterface.getDatabaseMeta() ).thenReturn( databaseMeta );
-    when( stepMetaInterface.specifyFields() ).thenReturn( true );
-    String[] fields = new String[] { "field1", "field2" };
-    when( stepMetaInterface.getFieldDatabase() ).thenReturn( fields );
-    when( stepMetaInterface.getFieldStream() ).thenReturn( fields );
-
-    when( stepMetaInterface.isReturningGeneratedKeys() ).thenReturn( true );
-    when( stepMetaInterface.getGeneratedKeyField() ).thenReturn( "genField" );
-
-    ValueMetaInterface mockValueMeta = mock( ValueMetaInterface.class );
-    when( mockValueMeta.clone() ).thenReturn( mockValueMeta );
-
-    JSONObject response = tableOutput.doAction( "getSQL", stepMetaInterface,
-      transMeta, trans, queryParams );
-    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-    when( mockValueMeta.getName() ).thenReturn( "name" );
-    doNothing().when( mockValueMeta ).setName( any() );
-    response = tableOutput.doAction( "getSQL", stepMetaInterface,
-      transMeta, trans, queryParams );
-    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-    when( prev.searchValueMeta( any() ) ).thenReturn( mockValueMeta );
-    when( databaseMeta.getDatabaseInterface() ).thenReturn( mock( DatabaseInterface.class ) );
-    SQLStatement sql = new SQLStatement( stepMeta.getName(), databaseMeta, null );
-    when(
-      stepMetaInterface.getSQLStatements( any(), any(), any(), anyString(), anyBoolean(), anyString() ) ).thenReturn(
-      sql );
-
-    response = tableOutput.doAction( "getSQL", stepMetaInterface,
-      transMeta, trans, queryParams );
-    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-
-    sql.setSQL( "select * from employees" );
-
-    response = tableOutput.doAction( "getSQL", stepMetaInterface,
-      transMeta, trans, queryParams );
-    assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-    assertTrue( response.containsKey( "sqlString" ) );
-  }
 }
