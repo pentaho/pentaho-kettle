@@ -210,4 +210,9 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
     reset();
   }
 
+  @Override
+  public void clearCache() {
+    reset();
+  }
+
 }

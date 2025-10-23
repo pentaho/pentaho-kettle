@@ -13,7 +13,6 @@
 package org.pentaho.di.core.bowl;
 
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.core.exception.KettleException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +38,15 @@ public class BowlManagerFactoryRegistry {
     return instance;
   }
 
+  /**
+   * Register a ManagerFactory for the given manager class.
+   * </p>
+   * Any manager that caches objects should implement CachingManager so that cached objects can be cleared when
+   * refreshing the UI. See BaseBowl.clearManagers() and CachingManager.notifyChanged().
+   * @param <T> the type of object being managed
+   * @param managerClass the interface class of the manager
+   * @param factoryMethod a method to create a new manager instance from a Bowl
+   */
   public synchronized <T> void registerManagerFactory( Class<T> managerClass, ManagerFactory<T> factoryMethod ) {
     factories.put( managerClass, factoryMethod );
   }

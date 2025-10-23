@@ -56,7 +56,9 @@ public abstract class BaseBowl implements Bowl {
     parentBowls.add( parent );
   }
 
-  // use with caution.
+  // use with caution. Clears all manager instances.
+  // Other parts of the code rely on WeakReferences to managers to allow them to be GC'd when no
+  // longer in use. This should generally only be used in tests
   public synchronized void clearManagers() {
     managerInstances.clear();
   }
@@ -69,7 +71,11 @@ public abstract class BaseBowl implements Bowl {
   @Override
   public void clearCache() {
     // note that most metastores do not cache, caching is usually done in MetastoreFactory
-    clearManagers();
+    for ( Object managerObj : managerInstances.values() ) {
+      if ( managerObj instanceof CachingManager manager ) {
+        manager.clearCache();
+      }
+    }
     getSharedObjectsIO().clearCache();
   }
 }
