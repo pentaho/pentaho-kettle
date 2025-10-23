@@ -95,11 +95,7 @@ public abstract class ConnectionFileObject extends AbstractFileObject<Connection
 
   @Override
   public void copyFrom( FileObject file, FileSelector selector ) throws FileSystemException {
-    if ( file instanceof ConnectionFileObject wrapper ) {
-      requireResolvedFileObject().copyFrom( wrapper.getResolvedFileObject(), selector );
-    } else {
-      requireResolvedFileObject().copyFrom( file, selector );
-    }
+    requireResolvedFileObject().copyFrom( file, selector );
   }
 
   @Override
