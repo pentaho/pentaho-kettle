@@ -21,4 +21,10 @@ public interface CachingManager {
    *
    */
   void notifyChanged();
+
+  /**
+   * clearCache is called to clear any cached data held by this manager.
+   * This may have slightly different behavior than notifyChanged, so the APIs are separate.
+   */
+  void clearCache();
 }

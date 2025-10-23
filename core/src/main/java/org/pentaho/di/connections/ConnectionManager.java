@@ -200,6 +200,11 @@ public class ConnectionManager implements CachingManager {
     reset();
   }
 
+  @Override
+  public void clearCache() {
+    reset();
+  }
+
   /**
    * This getter should not generally be used because it is limited to the global scope. It would be better to have
    * almost all callers use Bowl.getManager( ConnectionManager.class ).
