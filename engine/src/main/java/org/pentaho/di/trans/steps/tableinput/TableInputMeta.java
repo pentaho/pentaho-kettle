@@ -662,4 +662,9 @@ public class TableInputMeta extends BaseDatabaseStepMeta implements StepMetaInte
   public StepMeta getLookupFromStep() {
     return getStepIOMeta().getInfoStreams().get( 0 ).getStepMeta();
   }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new TableInputHelper();
+  }
 }
