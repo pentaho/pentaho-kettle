@@ -17,6 +17,7 @@ import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -200,14 +201,17 @@ public class JsonOutput extends BaseStep implements StepInterface {
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject showFileNameAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
-    JsonOutputMeta jsonOutputMeta = ( JsonOutputMeta ) getStepMetaInterface();
+    JsonOutputMeta jsonOutputMeta = (JsonOutputMeta) getStepMetaInterface();
 
     JSONArray fileList = new JSONArray();
     startProcessingDate = new Date();
 
-    if ( jsonOutputMeta.getFileName() != null && !jsonOutputMeta.getFileName().isEmpty() ) {
-      String fileName = jsonOutputMeta.buildFilename( jsonOutputMeta.getFileName(), startProcessingDate );
-      fileList.add( fileName );
+    String fileName = Const.NVL( jsonOutputMeta.getFileName(), "" );
+    int nrRowsInBloc = Const.toInt( jsonOutputMeta.getNrRowsInBloc(), 1 );
+    int filesToShow = ( nrRowsInBloc <= 1 ) ? 1 : Math.min( 3, nrRowsInBloc );
+    for ( int i = 0; i < filesToShow; i++ ) {
+      String filename = buildName( jsonOutputMeta, fileName, nrRowsInBloc, i );
+      fileList.add( filename );
     }
 
     if ( fileList.isEmpty() ) {
@@ -218,6 +222,30 @@ public class JsonOutput extends BaseStep implements StepInterface {
 
     response.put( "files", fileList );
     return response;
+  }
+
+  private String buildName( JsonOutputMeta jsonOutputMeta, String baseFileName, int nrRowsInBloc, int index ) {
+    StringBuilder filename = new StringBuilder( baseFileName );
+    SimpleDateFormat daf = new SimpleDateFormat();
+    // Add date if enabled
+    if ( jsonOutputMeta.isDateInFilename() ) {
+      daf.applyPattern( "yyyyMMdd" );
+      filename.append( "_" ).append( daf.format( startProcessingDate ) );
+    }
+    // Add time if enabled
+    if ( jsonOutputMeta.isTimeInFilename() ) {
+      daf.applyPattern( "HHmmss" );
+      filename.append( "_" ).append( daf.format( startProcessingDate ) );
+    }
+    // Add index for multiple files
+    if ( nrRowsInBloc > 1 ) {
+      filename.append( "_" ).append( index );
+    }
+    // Add extension
+    if ( !Utils.isEmpty( jsonOutputMeta.getExtension() ) ) {
+      filename.append( "." ).append( jsonOutputMeta.getExtension() );
+    }
+    return filename.toString();
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
