@@ -13,20 +13,15 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.SSLContext;
-
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
@@ -50,23 +45,23 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.util.HttpClientManager;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
+import javax.net.ssl.SSLContext;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.List;
 
 /**
  * @author Samatar
  * @since 16-jan-2011
  */
-
 public class Rest extends BaseStep implements StepInterface {
-  private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
 
   private RestMeta meta;
   private RestData data;
@@ -135,10 +130,10 @@ public class Rest extends BaseStep implements StepInterface {
         String value = data.inputRowMeta.getString( rowData, data.indexOfMatrixParamFields[ i ] );
         if ( isDebug() ) {
           logDebug(
-              BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[ i ], value ) );
+            BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[ i ], value ) );
         }
         builder = builder.matrixParam( data.matrixParamNames[ i ],
-                                       UriComponent.encode( value, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED ) );
+          UriComponent.encode( value, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED ) );
       }
       target = client.target( builder.build() );
     }
@@ -224,11 +219,11 @@ public class Rest extends BaseStep implements StepInterface {
         if ( null != contentType ) {
           response =
             invocationBuilder.method(
-                RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, contentType ) );
+              RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, contentType ) );
         } else {
           response =
             invocationBuilder.method(
-                RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, data.mediaType ) );
+              RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, data.mediaType ) );
         }
       } else {
         throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
@@ -240,7 +235,7 @@ public class Rest extends BaseStep implements StepInterface {
     long responseTime = System.currentTimeMillis() - startTime;
     if ( isDetailed() ) {
       logDetailed(
-          BaseMessages.getString( PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
+        BaseMessages.getString( PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
     }
 
     // Get status
@@ -320,25 +315,22 @@ public class Rest extends BaseStep implements StepInterface {
       }
       // SSL TRUST STORE CONFIGURATION
       setSSLConfiguration( data );
-
     }
   }
 
-  protected void setSSLConfiguration(RestData data) throws KettleException {
+  protected void setSSLConfiguration( RestData data ) throws KettleException {
     try {
       SSLContext ctx;
       FileInputStream trustStoreFileStream = null;
-      if (data.trustStoreFile != null) {
-    	  trustStoreFileStream = new FileInputStream( data.trustStoreFile );
+      if ( data.trustStoreFile != null ) {
+        trustStoreFileStream = new FileInputStream( data.trustStoreFile );
       }
-      
-      ctx = HttpClientManager.getSslContext(meta.isIgnoreSsl(), 
-    		  						trustStoreFileStream, 
-    		  						data.trustStorePassword);
-      data.sslContext = ctx;
-      
 
-      
+      ctx = HttpClientManager.getSslContext( meta.isIgnoreSsl(),
+        trustStoreFileStream,
+        data.trustStorePassword );
+      data.sslContext = ctx;
+
     } catch ( NoSuchAlgorithmException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
     } catch ( KeyStoreException e ) {
@@ -353,12 +345,9 @@ public class Rest extends BaseStep implements StepInterface {
     } catch ( KeyManagementException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
     } catch ( UnrecoverableKeyException e ) {
-	  throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
     }
   }
-  
-  
-
 
   protected MultivaluedMap<String, Object> searchForHeaders( Response response ) {
     return response.getHeaders();
@@ -375,12 +364,13 @@ public class Rest extends BaseStep implements StepInterface {
       setOutputDone();
       return false;
     }
+
     if ( first ) {
       first = false;
       data.inputRowMeta = getInputRowMeta();
       data.outputRowMeta = data.inputRowMeta.clone();
       meta.getFields( getTransMeta().getBowl(), data.outputRowMeta, getStepname(), null, null, this, repository,
-                      metaStore );
+        metaStore );
 
       // Let's set URL
       if ( meta.isUrlInField() ) {
@@ -402,6 +392,7 @@ public class Rest extends BaseStep implements StepInterface {
         // Static URL
         data.realUrl = environmentSubstitute( meta.getUrl() );
       }
+
       // Check Method
       if ( meta.isDynamicMethod() ) {
         String field = environmentSubstitute( meta.getMethodFieldName() );
@@ -414,6 +405,7 @@ public class Rest extends BaseStep implements StepInterface {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
         }
       }
+
       // set Headers
       int nrargs = meta.getHeaderName() == null ? 0 : meta.getHeaderName().length;
       if ( nrargs > 0 ) {
@@ -456,6 +448,7 @@ public class Rest extends BaseStep implements StepInterface {
           }
           data.useParams = true;
         }
+
         int nrmatrixparams = meta.getMatrixParameterField() == null ? 0 : meta.getMatrixParameterField().length;
         if ( nrmatrixparams > 0 ) {
           data.nrMatrixParams = nrmatrixparams;
@@ -488,6 +481,7 @@ public class Rest extends BaseStep implements StepInterface {
         }
       }
     } // end if first
+
     try {
       Object[] outputRowData = callRest( r );
       putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
@@ -588,5 +582,4 @@ public class Rest extends BaseStep implements StepInterface {
     data.paramNames = null;
     super.dispose( smi, sdi );
   }
-
 }
