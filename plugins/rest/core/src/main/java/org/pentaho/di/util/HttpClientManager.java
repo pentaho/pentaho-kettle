@@ -31,8 +31,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -76,9 +76,9 @@ public class HttpClientManager {
     private int socketTimeout;
     private HttpHost proxy;
     private boolean ignoreSsl;
-    private FileInputStream trustStoreStream;
+    private InputStream trustStoreStream;
     private String trustStorePassword;
-    private FileInputStream keyStoreStream;
+    private InputStream keyStoreStream;
     private String keyStorePassword;
     private String keyPassword;
 
@@ -94,10 +94,9 @@ public class HttpClientManager {
 
     public HttpClientBuilderFacade setCredentials(
       String user, String password, AuthScope authScope ) {
-      CredentialsProvider provider = new BasicCredentialsProvider();
-      UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( user, password );
-      provider.setCredentials( authScope, credentials );
-      this.provider = provider;
+      CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+      credentialsProvider.setCredentials( authScope, new UsernamePasswordCredentials( user, password ) );
+      this.provider = credentialsProvider;
       return this;
     }
 
@@ -124,13 +123,13 @@ public class HttpClientManager {
       this.ignoreSsl = ignoreSsl;
     }
 
-    public HttpClientBuilderFacade setTrustStore( FileInputStream trustStoreStream, String trustStorePassword ) {
+    public HttpClientBuilderFacade setTrustStore( InputStream trustStoreStream, String trustStorePassword ) {
       this.trustStoreStream = trustStoreStream;
       this.trustStorePassword = trustStorePassword;
       return this;
     }
 
-    public HttpClientBuilderFacade setKeyStore( FileInputStream keyStoreStream, String keyStorePassword,
+    public HttpClientBuilderFacade setKeyStore( InputStream keyStoreStream, String keyStorePassword,
                                                 String keyPassword ) {
       this.keyStoreStream = keyStoreStream;
       this.keyStorePassword = keyStorePassword;
@@ -176,21 +175,20 @@ public class HttpClientManager {
     }
   }
 
-  public static SSLContext getSslContext( boolean ignoreSSLValidation, FileInputStream trustFileStream,
+  public static SSLContext getSslContext( boolean ignoreSSLValidation, InputStream trustFileStream,
                                           String trustStorePassword )
     throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException,
     UnrecoverableKeyException {
     return getSslContext( ignoreSSLValidation, trustFileStream, trustStorePassword, null, null, null );
   }
 
-  public static SSLContext getSslContext( boolean ignoreSSLValidation, FileInputStream trustFileStream,
-                                          String trustStorePassword,
-                                          FileInputStream keyStoreFileStream, String keyStorePassword,
-                                          String keyPassword )
+  public static SSLContext getSslContext( boolean ignoreSSLValidation, InputStream trustFileStream,
+                                          String trustStorePassword, InputStream keyStoreFileStream,
+                                          String keyStorePassword, String keyPassword )
     throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException,
     UnrecoverableKeyException {
 
-    String SSLContextProtocol = ignoreSSLValidation ? "SSL" : "TLSv1.2";
+    String sslContextProtocol = ignoreSSLValidation ? "SSL" : "TLSv1.2";
     TrustManager[] trustManagers = null;
     KeyManager[] keyManagers = null;
 
@@ -255,7 +253,7 @@ public class HttpClientManager {
       keyManagers = kmf.getKeyManagers();
     }
 
-    SSLContext sslContext = SSLContext.getInstance( SSLContextProtocol );
+    SSLContext sslContext = SSLContext.getInstance( sslContextProtocol );
     sslContext.init( keyManagers, trustManagers, new java.security.SecureRandom() );
 
     return sslContext;
@@ -263,7 +261,7 @@ public class HttpClientManager {
 
   /**
    * @deprecated This method is deprecated because is replaced by getSSLContext.
-   * Use {@link #getSslContext(boolean, FileInputStream, String)} instead.
+   * Use {@link #getSslContext(boolean, InputStream, String)} instead.
    */
   @Deprecated
   public static SSLContext getTrustAllSslContext() throws NoSuchAlgorithmException, KeyManagementException {
@@ -277,12 +275,11 @@ public class HttpClientManager {
 
   /**
    * @deprecated This method is deprecated because is replaced by getSSLContext.
-   * Use {@link #getSslContext(boolean, FileInputStream, String)} instead.
+   * Use {@link #getSslContext(boolean, InputStream, String)} instead.
    */
   @Deprecated
-  public static SSLContext getSslContextWithTrustStoreFile( FileInputStream trustFileStream, String trustStorePassword )
-    throws NoSuchAlgorithmException, KeyStoreException,
-    IOException, CertificateException, KeyManagementException {
+  public static SSLContext getSslContextWithTrustStoreFile( InputStream trustFileStream, String trustStorePassword )
+    throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException {
     try {
       return getSslContext( false, trustFileStream, trustStorePassword );
     } catch ( UnrecoverableKeyException e ) {
