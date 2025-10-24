@@ -538,7 +538,7 @@ public class JsonOutputTest extends TestCase {
   }
 
   @Test
-  public void testShowFileNameAction_WithFileName() throws Exception {
+  public void testShowFileNameAction() throws Exception {
     JsonOutput jsonOutput = setupOutput();
     Method method = JsonOutput.class.getDeclaredMethod( "showFileNameAction", Map.class );
 
@@ -548,6 +548,7 @@ public class JsonOutputTest extends TestCase {
     jsonOutputMeta.setExtension( "js" );
     jsonOutputMeta.setTimeInFilename( true );
     jsonOutputMeta.setDateInFilename( true );
+    jsonOutputMeta.setNrRowsInBloc( "1" );
 
     jsonOutput.setStepMetaInterface( jsonOutputMeta );
 
@@ -564,23 +565,31 @@ public class JsonOutputTest extends TestCase {
   }
 
   @Test
-  public void testShowFileNameAction_NoFileName() throws Exception {
+  public void testShowFileNameAction_withNrRowsInBlocs() throws Exception {
     JsonOutput jsonOutput = setupOutput();
 
     JsonOutputMeta jsonOutputMeta = new JsonOutputMeta();
     jsonOutputMeta.setOperationType( JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE );
-    jsonOutputMeta.setFileName( "" );
+    jsonOutputMeta.setFileName( "test" );
+    jsonOutputMeta.setExtension( "json" );
+    jsonOutputMeta.setNrRowsInBloc( "5" );
 
     jsonOutput.setStepMetaInterface( jsonOutputMeta );
 
     Method method = JsonOutput.class.getDeclaredMethod( "showFileNameAction", Map.class );
 
-    JSONObject jsonObject = ( JSONObject ) method.invoke( jsonOutput, new HashMap<>( ) );
+    JSONObject jsonObject = (JSONObject) method.invoke( jsonOutput, new HashMap<>( ) );
 
     assertNotNull( jsonObject );
-    assertTrue( jsonObject.containsKey( "message" ) );
-    assertEquals( "No files found!  Please check the filename/directory and options.",
-            jsonObject.get( "message" ) );
+    assertTrue( jsonObject.containsKey( "files" ) );
+    assertEquals( StepInterface.SUCCESS_RESPONSE, jsonObject.get( StepInterface.ACTION_STATUS ) );
+
+    JSONArray fileList = (JSONArray) jsonObject.get( "files" );
+    assertNotNull( fileList );
+    assertEquals( 3, fileList.size() ); // Should show max 3 files when nrRowsInBloc > 3
+    assertTrue( fileList.get( 0 ).toString().contains( "test_0" ) );
+    assertTrue( fileList.get( 1 ).toString().contains( "test_1" ) );
+    assertTrue( fileList.get( 2 ).toString().contains( "test_2" ) );
   }
 
 }
