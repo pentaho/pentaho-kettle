@@ -22,11 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.common.usermodel.HyperlinkType;
@@ -58,8 +55,6 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -990,40 +985,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     }
   }
 
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getFilesAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    ExcelWriterStepMeta excelWriterStepMeta = (ExcelWriterStepMeta) getStepMetaInterface();
-    String[] files = excelWriterStepMeta.getFiles( getTransMeta() );
-    JSONArray fileList = new JSONArray();
-    for ( String file : files ) {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.put( "name", file );
-      fileList.add( jsonObject );
-    }
-    response.put( "files", fileList );
-    return response;
-  }
 
 
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getFormatsAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    try {
-      String[] formats = getFormats();
-      JSONArray formatList = new JSONArray();
-      for ( String format : formats ) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put( "name", format );
-        formatList.add( jsonObject );
-      }
-      response.put( "formats", formatList );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
-    return response;
-  }
 
   public String[] getFormats() {
     // Prepare a list of possible formats, filtering reserved internal formats away
@@ -1041,18 +1004,6 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     Collections.sort( nonReservedFormats );
     formats = nonReservedFormats.toArray( new String[ 0 ] );
     return formats;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
-    JSONObject jsonObject = new JSONObject();
-    JSONArray excelFileFields = new JSONArray();
-    ObjectMapper objectMapper = new ObjectMapper();
-    for ( ExcelWriterStepFieldDTO excelWriterStepField : getUpdatedExcelFields() ) {
-      excelFileFields.add( objectMapper.readTree( objectMapper.writeValueAsString( excelWriterStepField ) ) );
-    }
-    jsonObject.put( "updatedData", excelFileFields );
-    return jsonObject;
   }
 
   private List<ExcelWriterStepFieldDTO> getUpdatedExcelFields() {

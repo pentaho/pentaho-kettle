@@ -19,8 +19,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +50,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -385,69 +382,6 @@ public class ExcelWriterStepTest {
     trans = mock( Trans.class );
     stepMetaInterface = mock( ExcelWriterStepMeta.class );
     queryParams = new HashMap<>();
-  }
-
-  @Test
-  public void testGetFilesAction() {
-    setUpForDoActions();
-
-    JSONObject response = step.doAction( "getFiles", stepMetaInterface,
-      transMeta, trans, queryParams );
-    assertNotNull( response );
-
-    String[] files = new String[ 2 ];
-    files[ 0 ] = "file1";
-    when( stepMetaInterface.getFiles( any() ) ).thenReturn( files );
-    response = step.doAction( "getFiles", stepMetaInterface,
-      transMeta, trans, queryParams );
-    assertNotNull( response );
-    assertEquals( files.length, response.size() );
-  }
-
-  @Test
-  public void testGetFormatsAction() {
-    setUpForDoActions();
-    JSONObject response = step.doAction( "getFormats", stepMetaInterface,
-      transMeta, trans, queryParams );
-    JSONArray formatList = (JSONArray) response.get( "formats" );
-    assertTrue( formatList.size() > 0 );
-
-    when(step.getFormats()).thenReturn( null );
-    response = step.doAction( "getFormats", stepMetaInterface,
-      transMeta, trans, queryParams );
-    assertNotNull( response );
-  }
-
-  @Test
-  public void testFormatType(){
-    assertEquals( "", step.formatType( ValueMetaInterface.TYPE_STRING ) );
-    assertEquals( "0", step.formatType( ValueMetaInterface.TYPE_INTEGER ) );
-    assertEquals( "0.#####", step.formatType( ValueMetaInterface.TYPE_NUMBER ) );
-    assertEquals( null, step.formatType( ValueMetaInterface.TYPE_DATE ) );
-  }
-  @Test
-  public void testSetMinimalWidthAction() {
-    setUpForDoActions();
-
-    ExcelWriterStepField[] fields = new ExcelWriterStepField[ 1 ];
-    ExcelWriterStepField field = new ExcelWriterStepField();
-    field.setName( "name" );
-    field.setType( ValueMetaInterface.TYPE_STRING );
-    field.setFormat( "format" );
-    field.setType( "typeDesc" );
-    field.setCommentField( "commentField" );
-    field.setCommentAuthorField( "commentAuthorField" );
-    field.setStyleCell( "styleCell" );
-    field.setTitleStyleCell( "titleStyleCell" );
-    field.setFormula( true );
-    field.setTitle( "title" );
-    field.setHyperlinkField( "hyperlinkField" );
-    fields[ 0 ] = field;
-    when( stepMetaInterface.getOutputFields() ).thenReturn( fields );
-
-    JSONObject response = step.doAction( "setMinimalWidth", stepMetaInterface,
-      transMeta, trans, queryParams );
-    assertNotNull( response );
   }
 
   /**

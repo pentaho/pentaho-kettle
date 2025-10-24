@@ -48,6 +48,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
@@ -1237,6 +1238,10 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   @Override
   public String[] getUsedLibraries() {
     return new String[0];
+  }
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new ExcelWriterStepHelper();
   }
 
   /**
