@@ -19,20 +19,11 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.ssl.SSLContexts;
-import org.apache.http.ssl.TrustStrategy;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -133,13 +124,14 @@ public class HttpClientManager {
       this.ignoreSsl = ignoreSsl;
     }
 
-    public HttpClientBuilderFacade setTrustStore(FileInputStream trustStoreStream, String trustStorePassword) {
+    public HttpClientBuilderFacade setTrustStore( FileInputStream trustStoreStream, String trustStorePassword ) {
       this.trustStoreStream = trustStoreStream;
       this.trustStorePassword = trustStorePassword;
       return this;
     }
 
-    public HttpClientBuilderFacade setKeyStore(FileInputStream keyStoreStream, String keyStorePassword, String keyPassword) {
+    public HttpClientBuilderFacade setKeyStore( FileInputStream keyStoreStream, String keyStorePassword,
+                                                String keyPassword ) {
       this.keyStoreStream = keyStoreStream;
       this.keyStorePassword = keyStorePassword;
       this.keyPassword = keyPassword;
@@ -171,7 +163,9 @@ public class HttpClientManager {
 
       if ( trustStoreStream != null || keyStoreStream != null || ignoreSsl ) {
         try {
-          SSLContext sslContext = HttpClientManager.getSslContext( ignoreSsl, trustStoreStream, trustStorePassword, keyStoreStream, keyStorePassword, keyPassword );
+          SSLContext sslContext =
+            HttpClientManager.getSslContext( ignoreSsl, trustStoreStream, trustStorePassword, keyStoreStream,
+              keyStorePassword, keyPassword );
           httpClientBuilder.setSSLContext( sslContext );
         } catch ( Exception e ) {
           throw new RuntimeException( "Failed to set SSL context: " + e.getMessage(), e );
@@ -182,46 +176,49 @@ public class HttpClientManager {
     }
   }
 
-
-  public static SSLContext getSslContext(boolean ignoreSSLValidation, FileInputStream trustFileStream, String trustStorePassword)
-	      throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException, UnrecoverableKeyException {
-	  return getSslContext(ignoreSSLValidation,trustFileStream,trustStorePassword,null,null,null);
+  public static SSLContext getSslContext( boolean ignoreSSLValidation, FileInputStream trustFileStream,
+                                          String trustStorePassword )
+    throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException,
+    UnrecoverableKeyException {
+    return getSslContext( ignoreSSLValidation, trustFileStream, trustStorePassword, null, null, null );
   }
 
-  
-  public static SSLContext getSslContext(boolean ignoreSSLValidation, FileInputStream trustFileStream, String trustStorePassword,
-      FileInputStream keyStoreFileStream, String keyStorePassword, String keyPassword)
-      throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException, UnrecoverableKeyException {
+  public static SSLContext getSslContext( boolean ignoreSSLValidation, FileInputStream trustFileStream,
+                                          String trustStorePassword,
+                                          FileInputStream keyStoreFileStream, String keyStorePassword,
+                                          String keyPassword )
+    throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException,
+    UnrecoverableKeyException {
 
     String SSLContextProtocol = ignoreSSLValidation ? "SSL" : "TLSv1.2";
     TrustManager[] trustManagers = null;
     KeyManager[] keyManagers = null;
 
-    if (ignoreSSLValidation) {
+    if ( ignoreSSLValidation ) {
       trustManagers = new TrustManager[] {
         new X509TrustManager() {
           public java.security.cert.X509Certificate[] getAcceptedIssuers() {
             return null;
           }
 
-          public void checkClientTrusted(X509Certificate[] certs, String authType) {
+          public void checkClientTrusted( X509Certificate[] certs, String authType ) {
           }
 
-          public void checkServerTrusted(X509Certificate[] certs, String authType) {
+          public void checkServerTrusted( X509Certificate[] certs, String authType ) {
           }
         }
       };
-    } else if (trustFileStream != null) {
-      TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-      trustStore.load(trustFileStream, trustStorePassword != null ? trustStorePassword.toCharArray() : null);
+    } else if ( trustFileStream != null ) {
+      TrustManagerFactory tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
+      KeyStore trustStore = KeyStore.getInstance( KeyStore.getDefaultType() );
+      trustStore.load( trustFileStream, trustStorePassword != null ? trustStorePassword.toCharArray() : null );
       trustFileStream.close();
 
-      tmf.init(trustStore);
+      tmf.init( trustStore );
 
       X509TrustManager trustManager = null;
-      for (TrustManager tm : tmf.getTrustManagers()) {
-        if (tm instanceof X509TrustManager) {
+      for ( TrustManager tm : tmf.getTrustManagers() ) {
+        if ( tm instanceof X509TrustManager ) {
           trustManager = (X509TrustManager) tm;
           break;
         }
@@ -236,62 +233,61 @@ public class HttpClientManager {
           }
 
           @Override
-          public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-            finalTrustManager.checkServerTrusted(chain, authType);
+          public void checkServerTrusted( X509Certificate[] chain, String authType ) throws CertificateException {
+            finalTrustManager.checkServerTrusted( chain, authType );
           }
 
           @Override
-          public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-            finalTrustManager.checkClientTrusted(chain, authType);
+          public void checkClientTrusted( X509Certificate[] chain, String authType ) throws CertificateException {
+            finalTrustManager.checkClientTrusted( chain, authType );
           }
         }
       };
     }
 
-    if (keyStoreFileStream != null) {
-      KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-      keyStore.load(keyStoreFileStream, keyStorePassword != null ? keyStorePassword.toCharArray() : null);
+    if ( keyStoreFileStream != null ) {
+      KeyStore keyStore = KeyStore.getInstance( KeyStore.getDefaultType() );
+      keyStore.load( keyStoreFileStream, keyStorePassword != null ? keyStorePassword.toCharArray() : null );
       keyStoreFileStream.close();
 
-      KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(keyStore, keyPassword != null ? keyPassword.toCharArray() : null);
+      KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
+      kmf.init( keyStore, keyPassword != null ? keyPassword.toCharArray() : null );
       keyManagers = kmf.getKeyManagers();
     }
 
-    SSLContext sslContext = SSLContext.getInstance(SSLContextProtocol);
-    sslContext.init(keyManagers, trustManagers, new java.security.SecureRandom());
+    SSLContext sslContext = SSLContext.getInstance( SSLContextProtocol );
+    sslContext.init( keyManagers, trustManagers, new java.security.SecureRandom() );
 
     return sslContext;
   }
 
   /**
-   * @deprecated This method is deprecated because is replaced by getSSLContext. 
-   *             Use {@link #getSslContext(boolean, FileInputStream, String)} instead.
+   * @deprecated This method is deprecated because is replaced by getSSLContext.
+   * Use {@link #getSslContext(boolean, FileInputStream, String)} instead.
    */
   @Deprecated
   public static SSLContext getTrustAllSslContext() throws NoSuchAlgorithmException, KeyManagementException {
     try {
-      return getSslContext(true, null, null, null, null, null);
-    } catch (UnrecoverableKeyException | IOException | CertificateException | KeyStoreException e) {
-      // This should never happen since we're passing null for keystore parameters
-      throw new KeyManagementException("Unexpected error: " + e.getMessage(), e );
-    }  
-  }
-
-  /**
-   * @deprecated This method is deprecated because is replaced by getSSLContext. 
-   *             Use {@link #getSslContext(boolean, FileInputStream, String)} instead.
-   */
-  @Deprecated
-  public static SSLContext getSslContextWithTrustStoreFile( FileInputStream trustFileStream, String trustStorePassword)
-    throws NoSuchAlgorithmException, KeyStoreException,
-    IOException, CertificateException, KeyManagementException {
-    try {
-      return getSslContext( false,trustFileStream, trustStorePassword);
-    } catch ( UnrecoverableKeyException e ) {
+      return getSslContext( true, null, null, null, null, null );
+    } catch ( UnrecoverableKeyException | IOException | CertificateException | KeyStoreException e ) {
       // This should never happen since we're passing null for keystore parameters
       throw new KeyManagementException( "Unexpected error: " + e.getMessage(), e );
     }
   }
 
+  /**
+   * @deprecated This method is deprecated because is replaced by getSSLContext.
+   * Use {@link #getSslContext(boolean, FileInputStream, String)} instead.
+   */
+  @Deprecated
+  public static SSLContext getSslContextWithTrustStoreFile( FileInputStream trustFileStream, String trustStorePassword )
+    throws NoSuchAlgorithmException, KeyStoreException,
+    IOException, CertificateException, KeyManagementException {
+    try {
+      return getSslContext( false, trustFileStream, trustStorePassword );
+    } catch ( UnrecoverableKeyException e ) {
+      // This should never happen since we're passing null for keystore parameters
+      throw new KeyManagementException( "Unexpected error: " + e.getMessage(), e );
+    }
+  }
 }
