@@ -34,7 +34,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -45,10 +47,9 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.util.HttpClientManager;
 
-import javax.net.ssl.SSLContext;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -71,18 +72,11 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   protected Object[] callRest( Object[] rowData ) throws KettleException {
-
-    Client client = null;
-    try {
-      client = getClient( rowData );
+    try ( Client client = getClient( rowData ) ) {
       WebTarget target = buildRequest( client, rowData );
       return invokeRequest( target, rowData );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CanNotReadURL", data.realUrl ), e );
-    } finally {
-      if ( client != null ) {
-        client.close();
-      }
     }
   }
 
@@ -98,11 +92,11 @@ public class Rest extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.MethodMissing" ) );
       }
     }
-    Client client = null;
+
     if ( isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", data.realUrl ) );
     }
-    //      // Register a custom StringMessageBodyWriter to solve PDI-17423
+    // Register a custom StringMessageBodyWriter to solve PDI-17423
     ClientBuilder clientBuilder = ClientBuilder.newBuilder();
     clientBuilder
       .withConfig( data.config )
@@ -111,7 +105,7 @@ public class Rest extends BaseStep implements StepInterface {
       clientBuilder.sslContext( data.sslContext );
       clientBuilder.hostnameVerifier( ( s1, s2 ) -> true );
     }
-    client = clientBuilder.build();
+    Client client = clientBuilder.build();
     if ( data.basicAuthentication != null ) {
       client.register( data.basicAuthentication );
     }
@@ -119,9 +113,8 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   protected WebTarget buildRequest( Client client, Object[] rowData ) throws KettleException {
-    WebTarget target = null;
     // create a target object, which encapsulates a web resource for the client
-    target = client.target( data.realUrl );
+    WebTarget target = client.target( data.realUrl );
 
     if ( data.useMatrixParams ) {
       // Add matrix parameters
@@ -192,7 +185,7 @@ public class Rest extends BaseStep implements StepInterface {
         logDebug( BaseMessages.getString( PKG, "Rest.Log.BodyValue", entityString ) );
       }
     }
-    boolean debug = true;
+
     try {
       if ( data.method.equals( RestMeta.HTTP_METHOD_GET ) ) {
         response = invocationBuilder.get( Response.class );
@@ -200,7 +193,6 @@ public class Rest extends BaseStep implements StepInterface {
         if ( null != contentType ) {
           response = invocationBuilder.post( Entity.entity( entityString, contentType ) );
         } else {
-          //            response = builder.type( data.mediaType ).post( ClientResponse.class, entityString );
           response = invocationBuilder.post( Entity.entity( entityString, data.mediaType ) );
         }
       } else if ( data.method.equals( RestMeta.HTTP_METHOD_PUT ) ) {
@@ -320,16 +312,9 @@ public class Rest extends BaseStep implements StepInterface {
 
   protected void setSSLConfiguration( RestData data ) throws KettleException {
     try {
-      SSLContext ctx;
-      FileInputStream trustStoreFileStream = null;
-      if ( data.trustStoreFile != null ) {
-        trustStoreFileStream = new FileInputStream( data.trustStoreFile );
-      }
-
-      ctx = HttpClientManager.getSslContext( meta.isIgnoreSsl(),
-        trustStoreFileStream,
+      data.sslContext = HttpClientManager.getSslContext( meta.isIgnoreSsl(),
+        getInputStream( data.trustStoreFile ),
         data.trustStorePassword );
-      data.sslContext = ctx;
 
     } catch ( NoSuchAlgorithmException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
@@ -338,21 +323,39 @@ public class Rest extends BaseStep implements StepInterface {
     } catch ( CertificateException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CertificateException" ), e );
     } catch ( FileNotFoundException e ) {
-      throw new KettleException(
-        BaseMessages.getString( PKG, "Rest.Error.FileNotFound", data.trustStoreFile ), e );
+      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.FileNotFound", data.trustStoreFile ), e );
     } catch ( IOException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.IOException" ), e );
-    } catch ( KeyManagementException e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
-    } catch ( UnrecoverableKeyException e ) {
+    } catch ( KeyManagementException | UnrecoverableKeyException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
     }
+  }
+
+  /**
+   * Get an InputStream for the file with the given name.
+   * If the file name is empty or null, returns null.
+   *
+   * @param fileName the file name to get InputStream from
+   * @return InputStream for the given file, <code>null</code> if the given file name is empty or null
+   * @throws KettleException if any error occurs while getting the InputStream
+   */
+  protected InputStream getInputStream( String fileName ) throws KettleException {
+    InputStream inputStream = null;
+
+    if ( !StringUtil.isEmpty( fileName ) ) {
+      fileName = fileName.trim();
+      if ( !StringUtil.isEmpty( fileName ) ) {
+        inputStream = KettleVFS.getInstance( this.getTransMeta().getBowl() ).getInputStream( fileName );
+      }
+    }
+    return inputStream;
   }
 
   protected MultivaluedMap<String, Object> searchForHeaders( Response response ) {
     return response.getHeaders();
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (RestMeta) smi;
     data = (RestData) sdi;
@@ -485,17 +488,13 @@ public class Rest extends BaseStep implements StepInterface {
     try {
       Object[] outputRowData = callRest( r );
       putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
-      if ( checkFeedback( getLinesRead() ) ) {
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "Rest.LineNumber" ) + getLinesRead() );
-        }
+      if ( isDetailed() && checkFeedback( getLinesRead() ) ) {
+        logDetailed( BaseMessages.getString( PKG, "Rest.LineNumber" ) + getLinesRead() );
       }
     } catch ( KettleException e ) {
-      boolean sendToErrorRow = false;
-      String errorMessage = null;
       if ( getStepMeta().isDoingErrorHandling() ) {
-        sendToErrorRow = true;
-        errorMessage = e.toString();
+        // Simply add this row to the error row
+        putError( getInputRowMeta(), r, 1, e.toString(), null, "Rest001" );
       } else {
         logError( BaseMessages.getString( PKG, "Rest.ErrorInStepRunning" ) + e.getMessage() );
         setErrors( 1 );
@@ -504,14 +503,11 @@ public class Rest extends BaseStep implements StepInterface {
         setOutputDone(); // signal end to receiver(s)
         return false;
       }
-      if ( sendToErrorRow ) {
-        // Simply add this row to the error row
-        putError( getInputRowMeta(), r, 1, errorMessage, null, "Rest001" );
-      }
     }
     return true;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (RestMeta) smi;
     data = (RestData) sdi;
@@ -541,26 +537,8 @@ public class Rest extends BaseStep implements StepInterface {
       data.trustStorePassword =
         Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getTrustStorePassword() ) );
 
-      String applicationType = Const.NVL( meta.getApplicationType(), "" );
-      if ( applicationType.equals( RestMeta.APPLICATION_TYPE_XML ) ) {
-        data.mediaType = MediaType.APPLICATION_XML_TYPE;
-      } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_JSON ) ) {
-        data.mediaType = MediaType.APPLICATION_JSON_TYPE;
-      } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_OCTET_STREAM ) ) {
-        data.mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
-      } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_XHTML ) ) {
-        data.mediaType = MediaType.APPLICATION_XHTML_XML_TYPE;
-      } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_FORM_URLENCODED ) ) {
-        data.mediaType = MediaType.APPLICATION_FORM_URLENCODED_TYPE;
-      } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_ATOM_XML ) ) {
-        data.mediaType = MediaType.APPLICATION_ATOM_XML_TYPE;
-      } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_SVG_XML ) ) {
-        data.mediaType = MediaType.APPLICATION_SVG_XML_TYPE;
-      } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_TEXT_XML ) ) {
-        data.mediaType = MediaType.TEXT_XML_TYPE;
-      } else {
-        data.mediaType = MediaType.TEXT_PLAIN_TYPE;
-      }
+      calcMediaType();
+
       try {
         setConfig();
       } catch ( Exception e ) {
@@ -572,6 +550,30 @@ public class Rest extends BaseStep implements StepInterface {
     return false;
   }
 
+  private void calcMediaType() {
+    String applicationType = Const.NVL( meta.getApplicationType(), "" );
+    if ( applicationType.equals( RestMeta.APPLICATION_TYPE_XML ) ) {
+      data.mediaType = MediaType.APPLICATION_XML_TYPE;
+    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_JSON ) ) {
+      data.mediaType = MediaType.APPLICATION_JSON_TYPE;
+    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_OCTET_STREAM ) ) {
+      data.mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_XHTML ) ) {
+      data.mediaType = MediaType.APPLICATION_XHTML_XML_TYPE;
+    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_FORM_URLENCODED ) ) {
+      data.mediaType = MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_ATOM_XML ) ) {
+      data.mediaType = MediaType.APPLICATION_ATOM_XML_TYPE;
+    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_SVG_XML ) ) {
+      data.mediaType = MediaType.APPLICATION_SVG_XML_TYPE;
+    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_TEXT_XML ) ) {
+      data.mediaType = MediaType.TEXT_XML_TYPE;
+    } else {
+      data.mediaType = MediaType.TEXT_PLAIN_TYPE;
+    }
+  }
+
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (RestMeta) smi;
     data = (RestData) sdi;
@@ -580,6 +582,7 @@ public class Rest extends BaseStep implements StepInterface {
     data.headerNames = null;
     data.indexOfHeaderFields = null;
     data.paramNames = null;
+
     super.dispose( smi, sdi );
   }
 }
