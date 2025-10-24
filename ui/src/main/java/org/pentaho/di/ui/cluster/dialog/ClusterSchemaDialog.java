@@ -87,6 +87,7 @@ public class ClusterSchemaDialog extends Dialog {
   private int middle;
   private int margin;
 
+  // also use this for variable replacement
   private ClusterSchema originalSchema;
   private boolean ok;
 
@@ -185,7 +186,7 @@ public class ClusterSchemaDialog extends Dialog {
     fdlPort.right = new FormAttachment( middle, 0 );
     wlPort.setLayoutData( fdlPort );
 
-    wPort = new TextVar( clusterSchema, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPort = new TextVar( originalSchema, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     FormData fdPort = new FormData();
@@ -204,7 +205,7 @@ public class ClusterSchemaDialog extends Dialog {
     fdlBufferSize.right = new FormAttachment( middle, 0 );
     wlBufferSize.setLayoutData( fdlBufferSize );
 
-    wBufferSize = new TextVar( clusterSchema, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wBufferSize = new TextVar( originalSchema, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wBufferSize );
     wBufferSize.addModifyListener( lsMod );
     FormData fdBufferSize = new FormData();
@@ -223,7 +224,7 @@ public class ClusterSchemaDialog extends Dialog {
     fdlFlushInterval.right = new FormAttachment( middle, 0 );
     wlFlushInterval.setLayoutData( fdlFlushInterval );
 
-    wFlushInterval = new TextVar( clusterSchema, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wFlushInterval = new TextVar( originalSchema, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wFlushInterval );
     wFlushInterval.addModifyListener( lsMod );
     FormData fdFlushInterval = new FormData();
