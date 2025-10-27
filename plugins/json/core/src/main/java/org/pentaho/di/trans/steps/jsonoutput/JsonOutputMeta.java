@@ -38,6 +38,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
@@ -629,5 +630,10 @@ public class JsonOutputMeta extends BaseFileOutputMeta {
     return super.writesToFile()
       && ( getOperationType() == JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE
       || getOperationType() == JsonOutputMeta.OPERATION_TYPE_BOTH );
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new JsonOutputHelper();
   }
 }
