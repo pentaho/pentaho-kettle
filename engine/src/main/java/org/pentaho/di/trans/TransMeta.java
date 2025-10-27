@@ -92,6 +92,7 @@ import org.pentaho.di.shared.PassthroughPartitionSchemaManager;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.shared.SharedObjectsIO;
+import org.pentaho.di.shared.VariableSharingClusterSchemaManager;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -174,8 +175,8 @@ public class TransMeta extends AbstractMeta
   protected ChangeTrackingClusterSchemaManager localClusterSchemaManager =
     new ChangeTrackingClusterSchemaManager( new PassthroughClusterSchemaManager( localSharedObjects,
       () -> readSlaveServerManager.getAll() ) );
-  protected ClusterSchemaManagementInterface readClusterSchemaManager =
-    new PassthroughClusterSchemaManager( combinedSharedObjects, () -> readSlaveServerManager.getAll() );
+  protected ClusterSchemaManagementInterface readClusterSchemaManager = new VariableSharingClusterSchemaManager( this, 
+    new PassthroughClusterSchemaManager( combinedSharedObjects, () -> readSlaveServerManager.getAll() ) );
 
   protected PartitionSchemaManagementInterface readPartitionSchemaManager =
     new PassthroughPartitionSchemaManager( combinedSharedObjects );
@@ -749,10 +750,12 @@ public class TransMeta extends AbstractMeta
     localClusterSchemaManager =
       new ChangeTrackingClusterSchemaManager( new PassthroughClusterSchemaManager( localSharedObjects,
         () -> readSlaveServerManager.getAll() ) );
-    readClusterSchemaManager = new PassthroughClusterSchemaManager( combinedSharedObjects,
-      () -> readSlaveServerManager.getAll() );
+    readClusterSchemaManager = new VariableSharingClusterSchemaManager( this, new PassthroughClusterSchemaManager( combinedSharedObjects,
+      () -> readSlaveServerManager.getAll() ) );
     localPartitionSchemaMgr = new ChangeTrackingPartitionSchemaManager(
         new PassthroughPartitionSchemaManager( localSharedObjects ) );
+    // Partition Schemas don't use variables the same way, so we don't need to share them here. 
+    // See PartitionSchema.expandPartitionsDynamically()
     readPartitionSchemaManager = new PassthroughPartitionSchemaManager( combinedSharedObjects );
   }
 
