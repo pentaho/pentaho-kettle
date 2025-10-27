@@ -24,6 +24,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepHelper;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -60,7 +61,8 @@ public abstract class SalesforceStepDialog extends BaseStepDialog implements Ste
       SalesforceStep step = (SalesforceStep) meta.getStep( stepMeta, meta.getStepData(), 0, transMeta, trans );
       step.setStepMetaInterface( meta );
       realUsername = transMeta.environmentSubstitute( meta.getUsername() );
-      successConnection = step.testConnection();
+      SalesforceStepHelper salesforceStepHelper = (SalesforceStepHelper) meta.getStepHelperInterface();
+      successConnection = salesforceStepHelper.testConnection( transMeta );
     } catch ( Exception e ) {
       successConnection = false;
       msgError = e.getMessage();

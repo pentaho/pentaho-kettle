@@ -62,6 +62,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepHelper;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforceinsert.SalesforceInsertMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
@@ -1072,7 +1073,9 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
         step.setStepMetaInterface( meta );
         String selectedField = wModule.getText();
         wModule.removeAll();
-        wModule.setItems( step.getModules( "false" ) );
+        SalesforceStepHelper salesforceStepHelper = (SalesforceStepHelper) meta.getStepHelperInterface();
+        String[] modules = salesforceStepHelper.getModules( transMeta, "false" );
+        wModule.setItems( modules );
 
         if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );

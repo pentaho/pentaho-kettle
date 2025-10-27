@@ -13,23 +13,9 @@
 
 package org.pentaho.di.trans.steps.salesforceinsert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.bind.XmlObject;
-import org.json.simple.JSONObject;
+import com.sforce.ws.wsdl.Constants;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,8 +37,17 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 
-import com.sforce.soap.partner.sobject.SObject;
-import com.sforce.ws.wsdl.Constants;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SalesforceInsertTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -229,25 +224,4 @@ public class SalesforceInsertTest {
     XmlObject sObject = data.sfBuffer[ 0 ].getChild( ACCOUNT_ID );
     Assert.assertEquals( sObject.getValue(), 1 );
   }
-
-  @Test
-  public void testModulesAction() {
-    SalesforceInsert sfInputStep =
-      new SalesforceInsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    Map<String, String> queryParams = new HashMap<>();
-    JSONObject response = sfInputStep.modulesAction( queryParams );
-    assertTrue( response.containsKey( "actionStatus" ) );
-  }
-
-  @Test
-  public void test_testButtonAction() {
-    SalesforceInsert sfInputStep =
-      new SalesforceInsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    Map<String, String> queryParams = new HashMap<>();
-
-    JSONObject response = sfInputStep.testButtonAction( queryParams );
-    assertTrue( response.containsKey( "connectionStatus" ) );
-  }
-
-
 }

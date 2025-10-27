@@ -13,22 +13,8 @@
 
 package org.pentaho.di.trans.steps.salesforceupdate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import org.json.simple.JSONObject;
+import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.wsdl.Constants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -48,8 +34,17 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 
-import com.sforce.soap.partner.sobject.SObject;
-import com.sforce.ws.wsdl.Constants;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SalesforceUpdateTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -206,24 +201,4 @@ public class SalesforceUpdateTest {
     doReturn( useExternalId ).when( meta ).getUseExternalId();
     return meta;
   }
-
-  @Test
-  public void testModulesAction() {
-    SalesforceUpdate salesforceUpdate =
-      new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    Map<String, String> queryParams = new HashMap<>();
-    JSONObject response = salesforceUpdate.modulesAction( queryParams );
-    assertTrue( response.containsKey( "actionStatus" ) );
-  }
-
-  @Test
-  public void test_testButtonAction() {
-    SalesforceUpdate salesforceUpdate =
-      new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    Map<String, String> queryParams = new HashMap<>();
-
-    JSONObject response = salesforceUpdate.testButtonAction( queryParams );
-    assertTrue( response.containsKey( "connectionStatus" ) );
-  }
-
 }

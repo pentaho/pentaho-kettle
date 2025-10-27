@@ -62,11 +62,13 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.steps.salesforce.SOQLValuesHighlight;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepHelper;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforceinput.FieldDTO;
 import org.pentaho.di.trans.steps.salesforceinput.FieldsResponse;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInput;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputField;
+import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputHelper;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -1383,9 +1385,8 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       getInfo( meta );
       // Clear Fields Grid
       wFields.removeAll();
-      SalesforceInput step = (SalesforceInput) meta.getStep( stepMeta, meta.getStepData(), 0, transMeta, trans );
-      step.setStepMetaInterface( meta );
-      FieldsResponse fieldsResponse = step.getFields();
+      SalesforceInputHelper salesforceInputHelper = (SalesforceInputHelper) meta.getStepHelperInterface();
+      FieldsResponse fieldsResponse = salesforceInputHelper.getFields( transMeta );
 
       for ( FieldDTO field : fieldsResponse.fieldDTOList ) {
         addFieldToTable(
@@ -1735,7 +1736,8 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
 
         gotModule = true;
         getModulesListError = false;
-        String[] modules = step.getModules( "true" );
+        SalesforceStepHelper salesforceStepHelper = (SalesforceStepHelper) meta.getStepHelperInterface();
+        String[] modules = salesforceStepHelper.getModules( transMeta, "true" );
         if ( modules != null && modules.length > 0 ) {
           // populate Combo
           wModule.setItems( modules );
