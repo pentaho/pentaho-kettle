@@ -51,6 +51,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -1366,6 +1367,11 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
     return FileInputList.createFileList(
         bowl, space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
         inputFiles.fileRequired, inputFiles.includeSubFolderBoolean() );
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new TextFileInputHelper();
   }
 
   /**
