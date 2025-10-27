@@ -16,26 +16,15 @@ package org.pentaho.di.trans.steps.jsoninput;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.MappingJsonFactory;
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -51,9 +40,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.file.BaseFileInputStep;
 import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
 import org.pentaho.di.trans.steps.jsoninput.exception.JsonInputException;
-import org.pentaho.di.trans.steps.jsoninput.json.JsonSampler;
-import org.pentaho.di.trans.steps.jsoninput.json.node.Node;
-import org.pentaho.di.trans.steps.jsoninput.json.node.ValueNode;
 import org.pentaho.di.trans.steps.jsoninput.reader.FastJsonReader;
 import org.pentaho.di.trans.steps.jsoninput.reader.InputsReader;
 import org.pentaho.di.trans.steps.jsoninput.reader.RowOutputConverter;
@@ -247,142 +233,6 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       }
     }
     return true;
-  }
-
-  /**
-   * Extracts distinct key-value pairs from the JSON structure.
-   *
-   * @param node The root node of the JSON structure.
-   * @return A JSONObject containing the distinct key-value pairs.
-   */
-  public JSONObject convertToJsonObject( Node node ) {
-    JSONObject response = new JSONObject();
-    if ( Objects.nonNull( node ) ) {
-      if ( OBJECT.equals( node.getType() ) ) {
-        response.put( node.getKey() == null ? StringUtils.EMPTY : node.getKey(), processObject( node ) );
-      } else if ( ARRAY.equals( node.getType() ) ) {
-        response.put( node.getKey(), processArray( node ) );
-      } else {
-        response.put( node.getKey(), processValues( node ) );
-      }
-    }
-    return response;
-  }
-
-  /**
-   * Processes a value node and returns its value.
-   *
-   * @param node The value node.
-   * @return The value of the node.
-   */
-  private Object processValues( Node node ) {
-    return ( (ValueNode) node ).getValue();
-  }
-
-  /**
-   * Processes an array node and returns a JSONArray.
-   *
-   * @param node The array node.
-   * @return A JSONArray representing the array.
-   */
-  private JSONArray processArray( Node node ) {
-    JSONArray array = new JSONArray();
-    for ( Node child : node.getChildren() ) {
-      if ( OBJECT.equals( child.getType() ) ) {
-        array.add( processObject( child ) );
-      } else if ( ARRAY.equals( child.getType() ) ) {
-        array.add( processArray( child ) );
-      } else {
-        array.add( processValues( child ) );
-      }
-    }
-    return array;
-  }
-
-  /**
-   * Processes an object node and returns a JSONObject.
-   *
-   * @param node The object node.
-   * @return A JSONObject representing the object.
-   */
-  private Map<String, Object> processObject( Node node ) {
-    Map<String, Object> linkedHashMap = new LinkedHashMap<>();
-    for ( Node child : node.getChildren() ) {
-      if ( OBJECT.equals( child.getType() ) ) {
-        linkedHashMap.put( child.getKey(), processObject( child ) );
-      } else if ( ARRAY.equals( child.getType() ) ) {
-        linkedHashMap.put( child.getKey(), processArray( child ) );
-      } else {
-        linkedHashMap.put( child.getKey(), processValues( child ) );
-      }
-    }
-    return linkedHashMap;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject selectFieldsAction( Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-
-    try {
-      JsonInputMeta jsonInputMeta = (JsonInputMeta) getStepMetaInterface();
-      FileInputList fileInputList = jsonInputMeta.getFiles( getTransMeta().getBowl(), getTransMeta() );
-      if ( fileInputList == null || fileInputList.getFiles() == null || fileInputList.getFiles().isEmpty() ) {
-        return buildErrorResponse(
-          "JsonInput.Error.UnableToView.Label",
-          "JsonInput.Error.NoInputSpecified.Message"
-        );
-      }
-      String[] files = fileInputList.getFileStrings();
-
-      InputStream inputStream = KettleVFS.getInstance( getTransMeta().getBowl() ).getInputStream( files[ 0 ],
-              getTransMeta() );
-      // Parse the JSON file
-      JsonSampler jsonSampler = new JsonSampler( getTransMeta().getBowl() );
-      JsonFactory jsonFactory = new MappingJsonFactory();
-      JsonParser jsonParser = jsonFactory.createParser( inputStream );
-      Node rootNode = jsonSampler.getNode( jsonParser );
-
-      JSONObject jsonObject = convertToJsonObject( rootNode );
-      response.put( "data", jsonObject );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( Exception e ) {
-      log.logError( "Error in selectFields", e );
-      return buildErrorResponse(
-        "JsonInput.Error.UnableToView.Label",
-        "JsonInput.Error.UnableToView.Message"
-      );
-    }
-
-    return response;
-  }
-
-  private JSONObject buildErrorResponse( String labelKey, String messageKey ) {
-    JSONObject errorResponse = new JSONObject();
-    errorResponse.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    errorResponse.put( "errorLabel", BaseMessages.getString( PKG, labelKey ) );
-    errorResponse.put( "errorMessage", BaseMessages.getString( PKG, messageKey ) );
-    return errorResponse;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getFilesAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-
-    JsonInputMeta jsonInputMeta = (JsonInputMeta) getStepMetaInterface();
-    FileInputList fileInputList = jsonInputMeta.getFiles( getTransMeta().getBowl(), getTransMeta() );
-    String[] files = fileInputList.getFileStrings();
-
-    JSONArray fileList = new JSONArray();
-
-    if ( files == null || files.length == 0 ) {
-      response.put( "message", BaseMessages.getString( PKG, "JsonInputDialog.NoFilesFound.DialogMessage" ) );
-    } else {
-      fileList.addAll( Arrays.asList( files ) );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    }
-
-    response.put( "files", fileList );
-    return response;
   }
 
   @Override
