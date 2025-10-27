@@ -505,7 +505,14 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
     if ( rootNode.hasProperty( PROP_DATABASE_LOG ) ) {
       String id = rootNode.getProperty( PROP_DATABASE_LOG ).getRef().getId().toString();
-      DatabaseMeta conn = DatabaseMeta.findDatabase( transMeta.getDatabases(), new StringObjectId( id ) );
+      ObjectId objectId = new StringObjectId( id );
+      DatabaseMeta conn = DatabaseMeta.findDatabase( transMeta.getDatabases(), objectId );
+      if ( conn == null) {
+        // the referenced ObjectId is not in the current set of DBs. It may have been overridden by another.
+        // Try to find the original DB and load the overriding one by name.
+        DatabaseMeta orig = repo.loadDatabaseMeta( objectId, null );
+        conn = DatabaseMeta.findDatabase( transMeta.getDatabases(), orig.getName() );
+      }
       transMeta.getTransLogTable().setConnectionName( conn.getName() );
     }
     transMeta.getTransLogTable().setTableName( getString( rootNode, PROP_TABLE_NAME_LOG ) );
