@@ -73,14 +73,8 @@ public class PDIImportUtil {
     Document doc = null;
     if (factory != null) {
       try {
-        File file = File.createTempFile("tempFile", "temp");
-        file.deleteOnExit();
-        FileOutputStream fous = new FileOutputStream(file);
-        IOUtils.copy(is, fous);
-        fous.flush();
-        fous.close();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        doc = builder.parse(file);
+        doc = builder.parse( is );
       } catch (IOException | SAXException | ParserConfigurationException e) {
         log.logError(e.getLocalizedMessage());
       } finally {
