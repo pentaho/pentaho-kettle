@@ -68,6 +68,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.shared.ChangeTrackingDatabaseManager;
+import org.pentaho.di.shared.ChangeTrackingSlaveServerManager;
 import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.DelegatingSharedObjectsIO;
 import org.pentaho.di.shared.MemorySharedObjectsIO;
@@ -76,6 +77,8 @@ import org.pentaho.di.shared.PassthroughSlaveServerManager;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.shared.SharedObjectsIO;
+import org.pentaho.di.shared.VariableSharingDatabaseManager;
+import org.pentaho.di.shared.VariableSharingSlaveServerManager;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
@@ -243,10 +246,17 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   // important, these need to be updated if the bowl is changed.
   protected SharedObjectsIO combinedSharedObjects =
       new DelegatingSharedObjectsIO( bowl.getSharedObjectsIO(), localSharedObjects );
-  protected DatabaseManagementInterface readDbManager = new PassthroughDbConnectionManager( combinedSharedObjects );
+  protected DatabaseManagementInterface readDbManager = new VariableSharingDatabaseManager( this, 
+      new PassthroughDbConnectionManager( combinedSharedObjects ) );
 
-  protected SlaveServerManagementInterface readSlaveServerManager =
-      new PassthroughSlaveServerManager( combinedSharedObjects );
+  protected SlaveServerManagementInterface readSlaveServerManager = new VariableSharingSlaveServerManager( this, 
+      new ChangeTrackingSlaveServerManager( new PassthroughSlaveServerManager( combinedSharedObjects ) ) );
+
+  protected ChangeTrackingDatabaseManager localDbMgr =
+    new ChangeTrackingDatabaseManager( new PassthroughDbConnectionManager( localSharedObjects ) );
+  protected SlaveServerManagementInterface localSlaveServerMgr = 
+    new ChangeTrackingSlaveServerManager( new PassthroughSlaveServerManager( localSharedObjects ) );
+
 
   protected void initializeSharedObjects() {
     // NOTE: this has to assign new objects, not just clear existing ones, because it is used in clone(), and
@@ -259,16 +269,14 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     combinedSharedObjects =
       new DelegatingSharedObjectsIO( bowl.getSharedObjectsIO(), localSharedObjects );
 
-    readDbManager = new PassthroughDbConnectionManager( combinedSharedObjects );
+    readDbManager = new VariableSharingDatabaseManager( this, 
+      new PassthroughDbConnectionManager( combinedSharedObjects ) );
     localDbMgr = new ChangeTrackingDatabaseManager( new PassthroughDbConnectionManager( localSharedObjects ) );
-    
-    readSlaveServerManager = new PassthroughSlaveServerManager( combinedSharedObjects );
-    localSlaveServerMgr = new PassthroughSlaveServerManager( localSharedObjects );
-  }
 
-  protected ChangeTrackingDatabaseManager localDbMgr =
-    new ChangeTrackingDatabaseManager( new PassthroughDbConnectionManager( localSharedObjects ) );
-  protected SlaveServerManagementInterface localSlaveServerMgr = new PassthroughSlaveServerManager( localSharedObjects );
+    readSlaveServerManager = new VariableSharingSlaveServerManager( this,
+      new PassthroughSlaveServerManager( combinedSharedObjects ) );
+    localSlaveServerMgr = new ChangeTrackingSlaveServerManager( new PassthroughSlaveServerManager( localSharedObjects ) );
+  }
 
   @Override
   public ObjectId getObjectId() {
