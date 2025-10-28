@@ -13,7 +13,6 @@ import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.pentaho.di.repovfs.cfg.JCRSolutionConfig;
 import org.pentaho.di.repovfs.repo.RepositoryClient;
 import org.pentaho.di.repovfs.repo.RepositoryClient.RepositoryClientException;
 
@@ -29,9 +28,9 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.google.common.base.Objects;
 
@@ -42,14 +41,48 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
 
   private final RepositoryClient repoClient;
 
+  private final RemoteFile file;
+
   public JCRSolutionFileObject( final AbstractFileName name,
                                  final JCRSolutionFileSystem fileSystem,
-                                 JCRSolutionConfig config,
                                  final RepositoryClient repoClient ) {
     super( name, fileSystem );
     this.repoClient = repoClient;
-
+    this.file = new RemoteFile( new RepoFetcher() );
     log.debug( "{}({})", getClass().getSimpleName(), name );
+  }
+
+  @Override
+  protected void doAttach() throws Exception {
+    log.debug( "attach {}", getName() );
+    file.attach();
+  }
+
+  @Override
+  protected void doDetach() throws Exception {
+    log.debug( "dettach {}", getName() );
+    file.detach();
+  }
+
+  private class RepoFetcher implements RemoteFile.Fetcher {
+
+    private final String[] path = computeFileNames( getName() );
+
+    @Override
+    public Optional<RepositoryFileDto> fetchFileInfo() {
+      try {
+        return repoClient.getFileInfo( path );
+      } catch ( RepositoryClientException e ) {
+        log.error( "Unable to fetch remote file", e );
+        return Optional.empty();
+      }
+    }
+
+    @Override
+    public Optional<RepositoryFileTreeDto> fetchFileTree() {
+      return repoClient.fetchChildTree( path );
+    }
+
   }
 
   @Override
@@ -72,40 +105,71 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
    */
   @Override
   protected FileType doGetType() throws Exception {
+    // will be attached at this point
     if ( getName().getDepth() < 2 ) {
       return FileType.FOLDER;
     }
-    if ( !nodeExists( getName() ) ) {
-      return FileType.IMAGINARY;
+    return file.getFile().map( fileDto -> fileDto.isFolder() ? FileType.FOLDER : FileType.FILE )
+      .orElse( FileType.IMAGINARY );
+  }
+
+  @Override
+  public FileObject[] getChildren() throws FileSystemException {
+    FileObject[] children = super.getChildren();
+
+    if ( file.getChildrenCache().isPresent() ) {
+      // we already fetched the children, let's reuse the dtos
+      var cachedChildren = file.getChildrenCache().get();
+      if ( cachedChildren.length != children.length ) {
+        // supposed to be in sync, this should never happen
+        log.error( "Children cache mismatch" );
+        return children;
+      }
+      for ( int i = 0; i < children.length; i++ ) {
+        if ( children[i] instanceof JCRSolutionFileObject child ) {
+          child.preAttach( cachedChildren[i] );
+        }
+      }
     }
-    if ( isDirectory() ) {
-      return FileType.FOLDER;
-    }
-    return FileType.FILE;
+    return children;
   }
 
   /**
    * Lists the children of this file.  Is only called if {@link #doGetType}
-   * returns {@link org.apache.commons.vfs2.FileType#FOLDER}.  The return value of this method
+   * returns {@link org.apache.commons.vfs2.FileType#FOLDER}. The return value of this method
    * is cached, so the implementation can be expensive.
    */
   @Override
   protected String[] doListChildren() throws Exception {
     log.debug( "{}.doListChildren", getName() );
 
-    final List<RepositoryFileTreeDto> children = getChildren( getName() );
-    final String[] childrenArray = new String[ children.size() ];
-    for ( int i = 0; i < children.size(); i++ ) {
-      final RepositoryFileTreeDto repositoryFileTreeDto = children.get( i );
-      if ( repositoryFileTreeDto == null ) {
-        continue;
-      }
+    return getChildrenNames();
+  }
 
-      final RepositoryFileDto file = getFileDto( repositoryFileTreeDto );
-      childrenArray[ i ] =
-        file.getName().replaceAll( "\\%", "%25" ).replaceAll( "\\!", "%21" ).replaceAll( "\\+", "%2B" );
+  private String[] getChildrenNames() {
+    RepositoryFileDto[] children = file.getChildrenCache().orElseGet( this::fetchChildren );
+    if ( file.getChildrenCache().isEmpty() ) {
+      file.setChildrenCache( children );
     }
-    return childrenArray;
+    return Stream.of( children ).map( this::getChildName ).toArray( String[]::new );
+  }
+
+  public void preAttach( RepositoryFileDto fileDto ) {
+    file.attachToFile( Optional.of( fileDto ) );
+    ensureAttached();
+  }
+
+  private void ensureAttached() {
+    try {
+      // since attach() is private, this is one way to call it
+      getType();
+    } catch ( FileSystemException e ) {
+      log.error( "Unable to read type", e );
+    }
+  }
+
+  private String getChildName( RepositoryFileDto child ) {
+    return child.getName().replace( "%", "%25" ).replace( "!", "%21" ).replace( "+", "%2B" );
   }
 
   /**
@@ -155,9 +219,7 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
 
   /** returns `RepositoryFileDto` for this file or throws */
   private RepositoryFileDto getFileDto() throws FileSystemException {
-    String[] fileName = computeFileNames( getName() );
-    RepositoryFileTreeDto fileInfo = lookupNodeOrThrow( fileName );
-    return getFileDto( fileInfo );
+    return file.getFile().orElseThrow( () -> new FileSystemException( FILE_NOT_FOUND, getName() ) );
   }
 
   /**
@@ -167,21 +229,18 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
    * This implementation throws an exception.
    */
   @Override
-  protected void doSetAttribute( final String atttrName, final Object value ) throws Exception {
+  protected void doSetAttribute( final String atttrName, final Object value ) throws FileSystemException {
     if ( "description".equals( atttrName ) ) {
       if ( value instanceof String ) {
-        setDescription( getName(), String.valueOf( value ) );
+        setDescription( String.valueOf( value ) );
       } else {
-        setDescription( getName(), null );
+        setDescription( null );
       }
     }
   }
 
-  private void setDescription( final FileName file, final String description ) throws FileSystemException {
-    final String[] fileName = computeFileNames( file );
-    final RepositoryFileTreeDto fileInfo = lookupNodeOrThrow( fileName );
-    final RepositoryFileDto fileDto = getFileDto( fileInfo );
-    fileDto.setDescription( description );
+  private void setDescription( String description ) throws FileSystemException {
+    getFileDto().setDescription( description );
   }
 
   /**
@@ -224,34 +283,19 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
    */
   @Override
   protected void doCreateFolder() throws Exception {
-    if ( !nodeExists( getName() ) || !isDirectory() ) {
-      repoClient.createFolder( getName().getPath() );
-    }
+    repoClient.createFolder( getName().getPath() );
   }
 
   @Override
   public void refresh() throws FileSystemException {
     log.debug( "refreshing {}", getName() );
     super.refresh();
-    clearCache();
-  }
-
-  private void clearCache() {
-    repoClient.clearCache( computeFileNames( getName() ) );
-  }
-
-  private void clearParentCache() {
-    FileName parent = getName().getParent();
-    if ( parent != null ) {
-      repoClient.clearCache( computeFileNames( parent ) );
-    } else {
-      repoClient.refreshRoot();
-    }
   }
 
   @Override
   public void moveTo( FileObject destFile ) throws FileSystemException {
     try {
+      ensureAttached();
       if ( haveSameName( this, destFile ) ) {
         callRepoMove( destFile.getParent() );
       } else if ( haveSameParent( this, destFile ) && haveSameExtension( this, destFile ) ) {
@@ -265,6 +309,11 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
         delete();
       }
     } catch ( RepositoryClientException e ) {
+      throw new FileSystemException( e );
+    }
+    try {
+      handleDelete();
+    } catch ( Exception e ) {
       throw new FileSystemException( e );
     }
   }
@@ -294,7 +343,7 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
       log.debug( "Creating target folder {} for move", targetFolder.getName() );
       targetFolder.createFolder();
     }
-    RepositoryFileDto thisFile = getFile( getName() );
+    RepositoryFileDto thisFile = getFileDto();
     String[] destPath = computeFileNames( targetFolder.getName() );
     log.debug( "Optimized move call" );
     repoClient.moveTo( thisFile, destPath );
@@ -339,9 +388,8 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
   @Override
   protected void doDelete() throws FileSystemException {
     log.debug( "deleting {}", getName() );
-    final RepositoryFileDto file = getFile( getName() );
     try {
-      repoClient.delete( file );
+      repoClient.delete( getFileDto() );
     } catch ( RepositoryClientException e ) {
       throw new FileSystemException( e );
     }
@@ -350,27 +398,12 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
   @Override
   protected void onChildrenChanged( FileName child, FileType newType ) throws Exception {
     super.onChildrenChanged( child, newType );
-    clearCache();
+    refresh();
   }
 
-  private RepositoryFileDto getFile( FileName name ) throws FileSystemException {
-
-    if ( name == null ) {
-      throw new FileSystemException( FILE_NOT_FOUND );
-    }
-
-    final String[] pathArray = computeFileNames( name );
-    final RepositoryFileTreeDto fileInfo = lookupNodeOrThrow( pathArray );
-
-    return getFileDto( fileInfo );
-  }
-
-  private RepositoryFileTreeDto lookupNodeOrThrow( String[] path ) throws FileSystemException {
-    try {
-      return repoClient.lookupNode( path ).orElseThrow( () -> new FileSystemException( FILE_NOT_FOUND, getName() ) );
-    } catch ( RepositoryClientException e ) {
-      throw new FileSystemException( e );
-    }
+  @Override
+  protected void onChange() throws Exception {
+    refresh();
   }
 
   private static String[] computeFileNames( FileName file ) {
@@ -382,7 +415,7 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
       } catch ( UnsupportedEncodingException e ) {
         name = file.getBaseName().trim();
       }
-      if ( StringUtils.isNotEmpty(name) ) {
+      if ( StringUtils.isNotEmpty( name ) ) {
         stack.push( name );
       }
       file = file.getParent();
@@ -396,20 +429,6 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
     return result;
   }
 
-  /** If this is a directory. Must have checked if exists first */
-  private boolean isDirectory() throws FileSystemException {
-    return getFileDto().isFolder();
-  }
-
-  private boolean nodeExists( final FileName file ) throws FileSystemException {
-    final String[] fileName = computeFileNames( file );
-    try {
-      return repoClient.lookupNode( fileName ).isPresent();
-    } catch ( RepositoryClientException e ) {
-      throw new FileSystemException( e );
-    }
-  }
-
   @Override
   public void createFile() throws FileSystemException {
     log.debug( "new file: {}", getName() );
@@ -418,7 +437,6 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
     } else {
       super.createFile();
     }
-    clearParentCache();
   }
 
   private boolean isKettleFile( String fileName ) {
@@ -431,21 +449,8 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
     }
   }
 
-  private RepositoryFileDto getFileDto( final RepositoryFileTreeDto child ) throws FileSystemException {
-    final RepositoryFileDto file = child.getFile();
-    if ( file == null ) {
-      throw new FileSystemException(
-        "BI-Server returned a RepositoryFileTreeDto without an attached RepositoryFileDto!" );
-    }
-    return file;
-  }
-
-  private List<RepositoryFileTreeDto> getChildren( final FileName parent ) throws FileSystemException {
-    final String[] pathArray = computeFileNames( parent );
-    final RepositoryFileTreeDto fileInfo = lookupNodeOrThrow( pathArray );
-
-    final List<RepositoryFileTreeDto> childNodes = fileInfo.getChildren();
-    return childNodes == null ? Collections.<RepositoryFileTreeDto>emptyList() : childNodes;
+  private RepositoryFileDto[] fetchChildren() {
+    return repoClient.fetchChildren( computeFileNames( getName() ) );
   }
 
 }
