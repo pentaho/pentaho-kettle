@@ -13,6 +13,7 @@
 package org.pentaho.di.base;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
@@ -67,11 +68,13 @@ public class MetaFileLoaderImplTest {
   public void setUp() throws Exception {
     oldSystemParam = System.getProperty( Const.KETTLE_USE_META_FILE_CACHE );
     System.setProperty( Const.KETTLE_USE_META_FILE_CACHE, "Y" );
+    KettleClientEnvironment.init();
   }
 
   @After
   public void tearDown() {
     System.setProperty( Const.KETTLE_USE_META_FILE_CACHE, null == oldSystemParam ? "" : oldSystemParam );
+    KettleClientEnvironment.reset();
   }
 
   @Test
