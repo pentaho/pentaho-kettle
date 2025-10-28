@@ -15,6 +15,7 @@ package org.pentaho.di.job.entries.trans;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -51,7 +52,9 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -74,6 +77,16 @@ public class JobEntryTransTest {
   private final String JOB_ENTRY_FILE_NAME = "JobEntryFileName";
   private final String JOB_ENTRY_FILE_DIRECTORY = "JobEntryFileDirectory";
   private final String JOB_ENTRY_DESCRIPTION = "JobEntryDescription";
+
+  @Before
+  public void setUp() throws Exception {
+    KettleClientEnvironment.init();
+  }
+
+  @After
+  public void tearDown() {
+    KettleClientEnvironment.reset();
+  }
 
   //prepare xml for use
   public Node getEntryNode( boolean includeTransname, ObjectLocationSpecificationMethod method )
