@@ -54,7 +54,7 @@ class RepositoryClientMoveTest {
   @Test
   void testRenameFile() throws Exception {
     boolean[] called = new boolean[] { false };
-    final String renameCall = "/pentaho/api/repo/files/%3Apublic%3Aprojecting%3Asomething/rename";
+    final String renameCall = "/pentaho/api/repo/files/:public:projecting:something/rename";
     server.when( request().withMethod( HttpMethod.PUT ).withPath( renameCall )
       .withQueryStringParameter( new Parameter( "newName", "anything" ) ) )
       .respond( req -> {
@@ -74,7 +74,7 @@ class RepositoryClientMoveTest {
   @Test
   void testMoveFile() throws Exception {
     boolean[] called = new boolean[] { false };
-    final String moveCall = "/pentaho/api/repo/files/%3Apublic/move";
+    final String moveCall = "/pentaho/api/repo/files/:public/move";
     final String somethingId = "37c81de7-a430-4efd-a4ee-d95404867237";
     server.when( request().withMethod( HttpMethod.PUT ).withPath( moveCall )
       .withBody( somethingId ) )

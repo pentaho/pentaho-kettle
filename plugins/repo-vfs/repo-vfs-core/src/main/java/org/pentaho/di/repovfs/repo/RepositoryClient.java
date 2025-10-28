@@ -18,7 +18,6 @@ import org.glassfish.jersey.client.ClientResponse;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.eclipse.jetty.util.MultiPartWriter;
 import org.owasp.encoder.Encode;
@@ -40,26 +39,18 @@ import java.io.InputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
- * Handles calls to server and serdes, holds a cached tree
+ * Handles calls to server and (de)serialization
  */
 public class RepositoryClient {
   private static final Logger log = LoggerFactory.getLogger( RepositoryClient.class );
 
-  // ":" --> "%3A"
-  private static final String ENCODED_COLON = RepositoryPathEncoder.encodeURIComponent( ":" );
-
   private Client client;
   private String url;
-  private RepositoryFileTreeDto root;
-  private long refreshTime;
-
-  private final boolean loadTreePartially;
 
   private final JCRSolutionConfig cfg;
 
@@ -93,7 +84,6 @@ public class RepositoryClient {
     CookieHandler.setDefault( new CookieManager( null, CookiePolicy.ACCEPT_ALL ) );
 
     this.client = createClient( cfg, auth );
-    this.loadTreePartially = cfg.isPartialLoading();
   }
 
   private static Client createClient( JCRSolutionConfig cfg, BasicAuthentication auth ) {
@@ -130,88 +120,25 @@ public class RepositoryClient {
     } );
   }
 
-  /** Clear the cached file tree */
-  public void refreshRoot() {
-    log.debug( "refreshing root.." );
-    RepositoryFileTreeDto tree;
-    if ( loadTreePartially ) {
-      WebTarget target = client.target( url + cfg.getRepositoryPartialRootSvc() );
-      tree = target.path( "" ).request( MediaType.APPLICATION_XML_TYPE ).get( RepositoryFileTreeDto.class );
-      tree = proxyRoot( tree );
-    } else {
-      WebTarget target = client.target( url + cfg.getRepositorySvc() );
-      tree = target.path( "" ).request( MediaType.APPLICATION_XML_TYPE ).get( RepositoryFileTreeDto.class );
-    }
-    setRoot( tree );
-  }
-
-  public void clearCache( String[] path ) {
-    try {
-      if ( loadTreePartially ) {
-        lookupNode( path ).ifPresent( treeDto -> {
-          if ( treeDto instanceof RepositoryFileTreeDtoProxy ) {
-            RepositoryFileTreeDtoProxy proxy = (RepositoryFileTreeDtoProxy) treeDto;
-            proxy.clearCache();
-            if ( log.isDebugEnabled() ) {
-              log.debug( "cache cleared for {} ", StringUtils.join( path, "/" ) );
-            }
-          } else {
-            log.warn( "No proxy on partially loaded tree at path", StringUtils.join( path, "/" ) );
-            this.root = null;
-          }
-        } );
-
-      } else {
-        this.root = null;
-        log.debug( "cache cleared at root" );
-      }
-    } catch ( RepositoryClientException e ) {
-      log.error( "Error refreshing folder: {}", StringUtils.join( path, "/" ), e );
-    }
-  }
-
-  private RepositoryFileTreeDto fetchChildren( String path ) {
-    String encodedPath = encodePathForRequest( path );
+  private RepositoryFileTreeDto fetchChildren( String encodedPath ) {
     String childrenUrl = cfg.getRepositoryPartialSvc( encodedPath );
 
     WebTarget target = client.target( url + childrenUrl );
     return target.path( "" ).request( MediaType.APPLICATION_XML_TYPE ).get( RepositoryFileTreeDto.class );
-
   }
 
-  /** Load the children of the given path into the cached tree */
-  public List<RepositoryFileTreeDto> loadChildren( String path ) {
-    log.debug( "loadChildren({})", path );
-    RepositoryFileTreeDto element = fetchChildren( path );
-    List<RepositoryFileTreeDto> tree;
-    if ( element == null || element.getChildren() == null ) {
-      tree = Collections.emptyList();
-    } else {
-      List<RepositoryFileTreeDto> children = element.getChildren();
-      tree = new ArrayList<RepositoryFileTreeDto>( children.size() );
-      for ( RepositoryFileTreeDto child : children ) {
-        RepositoryFileTreeDtoProxy dto = new RepositoryFileTreeDtoProxy( child, this );
-        tree.add( dto );
-      }
-    }
-    return tree;
+  public Optional<RepositoryFileTreeDto> fetchChildTree( String[] parent ) {
+    return Optional.ofNullable( fetchChildren( encodePath( parent ) ) );
   }
 
-  private RepositoryFileTreeDtoProxy proxyRoot( RepositoryFileTreeDto original ) {
-    // save it, as proxy will replace the list with empty
-    List<RepositoryFileTreeDto> originalChildren = original.getChildren();
-    RepositoryFileTreeDtoProxy proxy = new RepositoryFileTreeDtoProxy( original, this );
-    if ( originalChildren == null ) {
-      proxy.setChildren( Collections.<RepositoryFileTreeDto>emptyList() );
-    } else {
-      // pre-populating root's direct children
-      List<RepositoryFileTreeDto> proxiedChildren = new ArrayList<RepositoryFileTreeDto>( originalChildren.size() );
-      for ( RepositoryFileTreeDto child : originalChildren ) {
-        proxiedChildren.add( new RepositoryFileTreeDtoProxy( child, this ) );
-      }
-      proxy.setChildren( proxiedChildren );
+  /** Fetch children from repository */
+  public RepositoryFileDto[] fetchChildren( String[] parentPath ) {
+    String encodedPath = encodePath( parentPath );
+    RepositoryFileTreeDto tree = fetchChildren( encodedPath );
+    if ( tree == null || tree.getChildren() == null ) {
+      return new RepositoryFileDto[0];
     }
-    return proxy;
+    return tree.getChildren().stream().map( RepositoryFileTreeDto::getFile ).toArray( RepositoryFileDto[]::new );
   }
 
   /** Create folder with given path */
@@ -230,31 +157,8 @@ public class RepositoryClient {
     }
   }
 
-  /**
-   * Make a colon-separated path with encoded fragments
-   */
-  public static String encodePathForRequest( String path ) {
-    String pathEncoded = RepositoryPathEncoder.encodeRepositoryPath( path );
-    String utf8 = RepositoryPathEncoder.encodeURIComponent( pathEncoded );
-    // replace encoded colons with original
-    return utf8.replaceAll( ENCODED_COLON, ":" );
-  }
-
   public RepositoryFileTreeDto getRoot() {
-    if ( root == null ) {
-      refreshRoot();
-    }
-
-    return root;
-  }
-
-  public void setRoot( final RepositoryFileTreeDto root ) {
-    if ( root == null ) {
-      throw new NullPointerException();
-    }
-
-    this.refreshTime = System.currentTimeMillis();
-    this.root = root;
+    return fetchChildTree( new String[0] ).orElse( null );
   }
 
   /** Download file contents */
@@ -281,14 +185,6 @@ public class RepositoryClient {
     }
   }
 
-  public long getRefreshTime() {
-    return refreshTime;
-  }
-
-  public void setRefreshTime( final long refreshTime ) {
-    this.refreshTime = refreshTime;
-  }
-
   /** Delete file or folder */
   public void delete( RepositoryFileDto file ) throws RepositoryClientException {
     final WebTarget target = client.target( url + cfg.getDeleteFileOrFolderUrl() );
@@ -297,45 +193,6 @@ public class RepositoryClient {
     if ( response == null || response.getStatus() != Response.Status.OK.getStatusCode() ) {
       throw new RepositoryClientException( "Failed with error-code " + response.getStatus() );
     }
-  }
-
-  /** Search for the given path, filling the cache tree along the way */
-  public Optional<RepositoryFileTreeDto> lookupNode( final String[] path ) throws RepositoryClientException {
-    if ( log.isTraceEnabled() ) {
-      log.trace( "lookupNode: {}", StringUtils.join( path, "/" ) );
-    }
-    if ( root == null ) {
-      refreshRoot();
-    }
-    if ( path.length == 0 ) {
-      return Optional.of( root );
-    }
-    if ( "".equals( path[ 0 ] ) ) {
-      if ( path.length == 1 ) {
-        return Optional.of( root );
-      }
-    }
-    RepositoryFileTreeDto element = root;
-    for ( final String pathSegment : path ) {
-      RepositoryFileTreeDto name = null;
-      final List<RepositoryFileTreeDto> children = element.getChildren();
-      if ( children == null ) {
-        return Optional.empty();
-      }
-
-      for ( final RepositoryFileTreeDto child : children ) {
-        final RepositoryFileDto file = getFileDto( child );
-        if ( pathSegment.equals( file.getName() ) ) {
-          name = child;
-          break;
-        }
-      }
-      if ( name == null ) {
-        return Optional.empty();
-      }
-      element = name;
-    }
-    return Optional.ofNullable( element );
   }
 
   /** Upload file with given data to the server */
@@ -382,9 +239,26 @@ public class RepositoryClient {
     throwOnError( response );
   }
 
+  public Optional<RepositoryFileDto> getFileInfo( String[] path ) throws RepositoryClientException {
+    String encodedPath = encodePath( path );
+    String svc = cfg.getFileInfoSvc( encodedPath );
+    var target = client.target( url + svc );
+    var response = target.request( MediaType.APPLICATION_XML_TYPE ).get();
+    switch ( response.getStatus() ) {
+      case HttpStatus.SC_OK:
+        return Optional.of( response.readEntity( RepositoryFileDto.class ) );
+      case HttpStatus.SC_NO_CONTENT:
+        // 204 is used for not found
+        return Optional.empty();
+      default:
+        throwOnError( response );
+        // unreachable
+        return Optional.empty();
+    }
+  }
+
   private static String encodePath( String[] path ) {
-    String repoPath = ":" + StringUtils.join( path, ":" );
-    return Encode.forUriComponent( repoPath );
+    return ":" + Stream.of( path ).map( Encode::forUriComponent ).collect( Collectors.joining( ":" ) );
   }
 
   private void throwOnError( final Response response ) throws RepositoryClientException {
@@ -410,14 +284,5 @@ public class RepositoryClient {
   private static String encodePath( String path ) {
     String repoEncoded = RepositoryPathEncoder.encodeRepositoryPath( path );
     return Encode.forUriComponent( repoEncoded );
-  }
-
-  private RepositoryFileDto getFileDto( final RepositoryFileTreeDto child ) throws RepositoryClientException {
-    final RepositoryFileDto file = child.getFile();
-    if ( file == null ) {
-      throw new RepositoryClientException(
-        "BI-Server returned a RepositoryFileTreeDto without an attached RepositoryFileDto!" );
-    }
-    return file;
   }
 }

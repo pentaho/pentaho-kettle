@@ -82,4 +82,8 @@ public class JCRSolutionConfig {
     return cfg.parseProperty( "PartialLoading", Boolean::parseBoolean ).orElse( true );
   }
 
+  public String getFileInfoSvc( String path ) {
+    return MessageFormat.format( cfg.getMandatoryProperty( "URL.Path.GetFileInfoSvc" ), path );
+  }
+
 }

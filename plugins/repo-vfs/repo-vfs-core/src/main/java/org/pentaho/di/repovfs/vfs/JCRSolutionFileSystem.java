@@ -19,26 +19,28 @@ import java.util.Collection;
  * Adapted from Report Designer's libpensol
  */
 public class JCRSolutionFileSystem extends AbstractFileSystem {
-  private RepositoryClient solutionFileModel;
+  private RepositoryClient repoClient;
   public static final String LAST_REFRESH_TIME_ATTRIBUTE = "lastRefreshTime";
 
-  private final JCRSolutionConfig cfg;
   private long refreshTime;
 
   public JCRSolutionFileSystem( final FileName rootName,
                                 final FileSystemOptions fileSystemOptions,
                                 JCRSolutionConfig config,
-                                final RepositoryClient solutionFileModel ) {
+                                final RepositoryClient repositoryClient ) {
     super( rootName, null, fileSystemOptions );
-    this.solutionFileModel = solutionFileModel;
-    cfg = config;
+    this.repoClient = repositoryClient;
+  }
+
+  public RepositoryClient getRepositoryClient() {
+    return repoClient;
   }
 
   /**
    * Creates a file object.  This method is called only if the requested file is not cached.
    */
   protected FileObject createFile( final AbstractFileName name ) throws Exception {
-    return new JCRSolutionFileObject( name, this, cfg, solutionFileModel );
+    return new JCRSolutionFileObject( name, this, repoClient );
   }
 
   /**

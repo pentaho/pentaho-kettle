@@ -66,7 +66,8 @@ public class VFSBrowseTest {
 
   @Test
   void testResolveFile() throws Exception {
-    FileObject file = fsm.resolveFile( baseUrl + "/public/projecting/something/results.xls", opts );
+    FileObject folder = fsm.resolveFile( baseUrl + "/public/projecting/something/", opts );
+    FileObject file = folder.getChild( "results.xls" );
     assertTrue( file.exists() );
     assertTrue( file.isFile() );
   }
@@ -75,6 +76,19 @@ public class VFSBrowseTest {
   void testResolveFileNotThere() throws Exception {
     FileObject notThere = fsm.resolveFile( baseUrl + "/public/nope/not_there.txt", opts );
     assertFalse( notThere.exists() );
+  }
+
+  @Test
+  void testBrowseTreeDtoToKtrVfs() throws Exception {
+    FileObject curr = fsm.resolveFile( baseUrl + "/", opts );
+    curr = curr.getChild( "public" );
+    assertTrue( curr.isFolder() );
+    curr = curr.getChild( "projecting" );
+    assertTrue( curr.isFolder() );
+    curr = curr.getChild( "something" );
+    assertTrue( curr.isFolder() );
+    curr = curr.getChild( "dum.ktr" );
+    assertFalse( curr.isFolder() );
   }
 
 }
