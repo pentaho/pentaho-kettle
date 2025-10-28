@@ -50,6 +50,7 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -1140,6 +1141,10 @@ public class JsonInputMeta extends
   @Override
   public String getEncoding() {
     return "UTF-8";
+  }
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new JsonInputHelper();
   }
 
   // Needed for PDI-19138 purposes
