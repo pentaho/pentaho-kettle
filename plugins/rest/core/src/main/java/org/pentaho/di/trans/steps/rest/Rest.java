@@ -33,6 +33,7 @@ import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
@@ -64,6 +65,8 @@ import java.util.List;
 public class Rest extends BaseStep implements StepInterface {
   private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private static final String HEADER_CONTENT_TYPE = "Content-Type";
+
   private RestMeta meta;
   private RestData data;
 
@@ -85,6 +88,7 @@ public class Rest extends BaseStep implements StepInterface {
     if ( meta.isUrlInField() ) {
       data.realUrl = data.inputRowMeta.getString( rowData, data.indexOfUrlField );
     }
+
     // get dynamic method?
     if ( meta.isDynamicMethod() ) {
       data.method = data.inputRowMeta.getString( rowData, data.indexOfMethod );
@@ -96,19 +100,21 @@ public class Rest extends BaseStep implements StepInterface {
     if ( isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", data.realUrl ) );
     }
+
     // Register a custom StringMessageBodyWriter to solve PDI-17423
     ClientBuilder clientBuilder = ClientBuilder.newBuilder();
-    clientBuilder
-      .withConfig( data.config )
-      .property( HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true );
+    clientBuilder.withConfig( data.config ).property( HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true );
+
     if ( meta.isIgnoreSsl() || !Utils.isEmpty( data.trustStoreFile ) ) {
       clientBuilder.sslContext( data.sslContext );
       clientBuilder.hostnameVerifier( ( s1, s2 ) -> true );
     }
+
     Client client = clientBuilder.build();
     if ( data.basicAuthentication != null ) {
       client.register( data.basicAuthentication );
     }
+
     return client;
   }
 
@@ -142,9 +148,11 @@ public class Rest extends BaseStep implements StepInterface {
           UriComponent.encode( value, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED ) );
       }
     }
+
     if ( isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", target.getUri() ) );
     }
+
     return target;
   }
 
@@ -159,24 +167,8 @@ public class Rest extends BaseStep implements StepInterface {
 
     Invocation.Builder invocationBuilder = target.request();
 
-    String contentType = null; // media type override, if not null
-    if ( data.useHeaders ) {
-      // Add headers
-      for ( int i = 0; i < data.nrheader; i++ ) {
-        String value = data.inputRowMeta.getString( rowData, data.indexOfHeaderFields[ i ] );
+    String contentType = calcContentType( rowData, invocationBuilder );
 
-        // unsure if an already set header will be returned to builder
-        invocationBuilder.header( data.headerNames[ i ], value );
-        if ( "Content-Type".equals( data.headerNames[ i ] ) ) {
-          contentType = value;
-        }
-        if ( isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "Rest.Log.HeaderValue", data.headerNames[ i ], value ) );
-        }
-      }
-    }
-
-    Response response;
     String entityString = "";
     if ( data.useBody ) {
       // Set Http request entity
@@ -186,43 +178,8 @@ public class Rest extends BaseStep implements StepInterface {
       }
     }
 
-    try {
-      if ( data.method.equals( RestMeta.HTTP_METHOD_GET ) ) {
-        response = invocationBuilder.get( Response.class );
-      } else if ( data.method.equals( RestMeta.HTTP_METHOD_POST ) ) {
-        if ( null != contentType ) {
-          response = invocationBuilder.post( Entity.entity( entityString, contentType ) );
-        } else {
-          response = invocationBuilder.post( Entity.entity( entityString, data.mediaType ) );
-        }
-      } else if ( data.method.equals( RestMeta.HTTP_METHOD_PUT ) ) {
-        if ( null != contentType ) {
-          response = invocationBuilder.put( Entity.entity( entityString, contentType ) );
-        } else {
-          response = invocationBuilder.put( Entity.entity( entityString, data.mediaType ) );
-        }
-      } else if ( data.method.equals( RestMeta.HTTP_METHOD_DELETE ) ) {
-        response = invocationBuilder.delete();
-      } else if ( data.method.equals( RestMeta.HTTP_METHOD_HEAD ) ) {
-        response = invocationBuilder.head();
-      } else if ( data.method.equals( RestMeta.HTTP_METHOD_OPTIONS ) ) {
-        response = invocationBuilder.options();
-      } else if ( data.method.equals( RestMeta.HTTP_METHOD_PATCH ) ) {
-        if ( null != contentType ) {
-          response =
-            invocationBuilder.method(
-              RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, contentType ) );
-        } else {
-          response =
-            invocationBuilder.method(
-              RestMeta.HTTP_METHOD_PATCH, Entity.entity( entityString, data.mediaType ) );
-        }
-      } else {
-        throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
-      }
-    } catch ( Exception e ) {
-      throw new KettleException( "Request could not be processed", e );
-    }
+    Response response = getResponse( invocationBuilder, contentType, entityString );
+
     // Get response time
     long responseTime = System.currentTimeMillis() - startTime;
     if ( isDetailed() ) {
@@ -239,25 +196,12 @@ public class Rest extends BaseStep implements StepInterface {
 
     // Get Response
     String body;
-    String headerString = null;
     try {
       body = response.readEntity( String.class );
     } catch ( Exception ex ) {
       body = "";
     }
-    // get Header
-    MultivaluedMap<String, Object> headers = searchForHeaders( response );
-    JSONObject json = new JSONObject();
-    for ( java.util.Map.Entry<String, List<Object>> entry : headers.entrySet() ) {
-      String name = entry.getKey();
-      List<Object> value = entry.getValue();
-      if ( value.size() > 1 ) {
-        json.put( name, value );
-      } else {
-        json.put( name, value.get( 0 ) );
-      }
-    }
-    headerString = json.toJSONString();
+
     // for output
     int returnFieldsOffset = data.inputRowMeta.size();
     // add response to output
@@ -279,9 +223,109 @@ public class Rest extends BaseStep implements StepInterface {
     }
     // add response header to output
     if ( !Utils.isEmpty( data.resultHeaderFieldName ) ) {
-      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString );
+      newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, getHeaderFromResponse( response ) );
     }
     return newRow;
+  }
+
+  /**
+   * Calculate content type from headers if any
+   *
+   * @param rowData
+   * @param invocationBuilder
+   * @return content type if any
+   * @throws KettleValueException
+   */
+  private String calcContentType( Object[] rowData, Invocation.Builder invocationBuilder ) throws KettleValueException {
+    String contentType = null;
+    if ( data.useHeaders ) {
+      // Add headers
+      for ( int i = 0; i < data.nrheader; i++ ) {
+        String value = data.inputRowMeta.getString( rowData, data.indexOfHeaderFields[ i ] );
+
+        // unsure if an already set header will be returned to builder
+        invocationBuilder.header( data.headerNames[ i ], value );
+        if ( HEADER_CONTENT_TYPE.equals( data.headerNames[ i ] ) ) {
+          contentType = value;
+        }
+        if ( isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "Rest.Log.HeaderValue", data.headerNames[ i ], value ) );
+        }
+      }
+    }
+    return contentType;
+  }
+
+  /**
+   * Invoke the request based on the method
+   *
+   * @param invocationBuilder
+   * @param contentType
+   * @param entityString
+   * @return the response from the server
+   * @throws KettleException in case the request could not be processed
+   */
+  private Response getResponse( Invocation.Builder invocationBuilder, String contentType, String entityString )
+    throws KettleException {
+    Response response;
+    try {
+      switch ( data.method ) {
+        case RestMeta.HTTP_METHOD_GET -> response = invocationBuilder.get( Response.class );
+        case RestMeta.HTTP_METHOD_POST -> response = invocationBuilder.post( getEntity( contentType, entityString ) );
+        case RestMeta.HTTP_METHOD_PUT -> response = invocationBuilder.put( getEntity( contentType, entityString ) );
+        case RestMeta.HTTP_METHOD_DELETE -> response = invocationBuilder.delete();
+        case RestMeta.HTTP_METHOD_HEAD -> response = invocationBuilder.head();
+        case RestMeta.HTTP_METHOD_OPTIONS -> response = invocationBuilder.options();
+        case RestMeta.HTTP_METHOD_PATCH ->
+          response = invocationBuilder.method( RestMeta.HTTP_METHOD_PATCH, getEntity( contentType, entityString ) );
+        default -> throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
+      }
+    } catch ( Exception e ) {
+      throw new KettleException( "Request could not be processed", e );
+    }
+    return response;
+  }
+
+  /**
+   * Get entity for request using the given content type or the default one
+   *
+   * @param contentType  the content type
+   * @param entityString the entity string
+   * @return
+   */
+  private Entity<?> getEntity( String contentType, String entityString ) {
+    Entity<?> entity;
+
+    if ( null != contentType ) {
+      entity = Entity.entity( entityString, contentType );
+    } else {
+      entity = Entity.entity( entityString, data.mediaType );
+    }
+
+    return entity;
+  }
+
+  /**
+   * Get headers from response and return then as a json string
+   *
+   * @param response the response object from which to extract headers
+   * @return json string representing the headers of the given response
+   */
+  private String getHeaderFromResponse( Response response ) {
+    MultivaluedMap<String, Object> headers = searchForHeaders( response );
+    JSONObject json = new JSONObject();
+
+    for ( java.util.Map.Entry<String, List<Object>> entry : headers.entrySet() ) {
+      String name = entry.getKey();
+      List<Object> value = entry.getValue();
+      if ( value.size() > 1 ) {
+        json.put( name, value );
+      } else {
+        json.put( name, value.get( 0 ) );
+      }
+    }
+
+    return json.toJSONString();
   }
 
   private void setConfig() throws KettleException {
@@ -376,118 +420,30 @@ public class Rest extends BaseStep implements StepInterface {
         metaStore );
 
       // Let's set URL
-      if ( meta.isUrlInField() ) {
-        if ( Utils.isEmpty( meta.getUrlField() ) ) {
-          logError( BaseMessages.getString( PKG, "Rest.Log.NoField" ) );
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Log.NoField" ) );
-        }
-        // cache the position of the field
-        if ( data.indexOfUrlField < 0 ) {
-          String realUrlfieldName = environmentSubstitute( meta.getUrlField() );
-          data.indexOfUrlField = data.inputRowMeta.indexOfValue( realUrlfieldName );
-          if ( data.indexOfUrlField < 0 ) {
-            // The field is unreachable !
-            throw new KettleException(
-              BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", realUrlfieldName ) );
-          }
-        }
-      } else {
-        // Static URL
-        data.realUrl = environmentSubstitute( meta.getUrl() );
-      }
+      calcURL();
 
       // Check Method
-      if ( meta.isDynamicMethod() ) {
-        String field = environmentSubstitute( meta.getMethodFieldName() );
-        if ( Utils.isEmpty( field ) ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.MethodFieldMissing" ) );
-        }
-        data.indexOfMethod = data.inputRowMeta.indexOfValue( field );
-        if ( data.indexOfMethod < 0 ) {
-          // The field is unreachable !
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
-        }
-      }
+      calcMethod();
 
       // set Headers
-      int nrargs = meta.getHeaderName() == null ? 0 : meta.getHeaderName().length;
-      if ( nrargs > 0 ) {
-        data.nrheader = nrargs;
-        data.indexOfHeaderFields = new int[ nrargs ];
-        data.headerNames = new String[ nrargs ];
-        for ( int i = 0; i < nrargs; i++ ) {
-          // split into body / header
-          data.headerNames[ i ] = environmentSubstitute( meta.getHeaderName()[ i ] );
-          String field = environmentSubstitute( meta.getHeaderField()[ i ] );
-          if ( Utils.isEmpty( field ) ) {
-            throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.HeaderFieldEmpty" ) );
-          }
-          data.indexOfHeaderFields[ i ] = data.inputRowMeta.indexOfValue( field );
-          if ( data.indexOfHeaderFields[ i ] < 0 ) {
-            throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
-          }
-        }
-        data.useHeaders = true;
-      }
+      calcHeaders();
 
       String substitutedMethod = environmentSubstitute( meta.getMethod() );
-      if ( RestMeta.isActiveParameters( substitutedMethod ) ) {
-        // Parameters
-        int nrparams = meta.getParameterField() == null ? 0 : meta.getParameterField().length;
-        if ( nrparams > 0 ) {
-          data.nrParams = nrparams;
-          data.paramNames = new String[ nrparams ];
-          data.indexOfParamFields = new int[ nrparams ];
-          for ( int i = 0; i < nrparams; i++ ) {
-            data.paramNames[ i ] = environmentSubstitute( meta.getParameterName()[ i ] );
-            String field = environmentSubstitute( meta.getParameterField()[ i ] );
-            if ( Utils.isEmpty( field ) ) {
-              throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ParamFieldEmpty" ) );
-            }
-            data.indexOfParamFields[ i ] = data.inputRowMeta.indexOfValue( field );
-            if ( data.indexOfParamFields[ i ] < 0 ) {
-              throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
-            }
-          }
-          data.useParams = true;
-        }
 
-        int nrmatrixparams = meta.getMatrixParameterField() == null ? 0 : meta.getMatrixParameterField().length;
-        if ( nrmatrixparams > 0 ) {
-          data.nrMatrixParams = nrmatrixparams;
-          data.matrixParamNames = new String[ nrmatrixparams ];
-          data.indexOfMatrixParamFields = new int[ nrmatrixparams ];
-          for ( int i = 0; i < nrmatrixparams; i++ ) {
-            data.matrixParamNames[ i ] = environmentSubstitute( meta.getMatrixParameterName()[ i ] );
-            String field = environmentSubstitute( meta.getMatrixParameterField()[ i ] );
-            if ( Utils.isEmpty( field ) ) {
-              throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.MatrixParamFieldEmpty" ) );
-            }
-            data.indexOfMatrixParamFields[ i ] = data.inputRowMeta.indexOfValue( field );
-            if ( data.indexOfMatrixParamFields[ i ] < 0 ) {
-              throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
-            }
-          }
-          data.useMatrixParams = true;
-        }
+      // Set Parameters
+      if ( RestMeta.isActiveParameters( substitutedMethod ) ) {
+        calcParameters();
       }
 
       // Do we need to set body
       if ( RestMeta.isActiveBody( substitutedMethod ) ) {
-        String field = environmentSubstitute( meta.getBodyField() );
-        if ( !Utils.isEmpty( field ) ) {
-          data.indexOfBodyField = data.inputRowMeta.indexOfValue( field );
-          if ( data.indexOfBodyField < 0 ) {
-            throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
-          }
-          data.useBody = true;
-        }
+        calcBody();
       }
     } // end if first
 
     try {
       Object[] outputRowData = callRest( r );
-      putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
+      putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s)
       if ( isDetailed() && checkFeedback( getLinesRead() ) ) {
         logDetailed( BaseMessages.getString( PKG, "Rest.LineNumber" ) + getLinesRead() );
       }
@@ -505,6 +461,141 @@ public class Rest extends BaseStep implements StepInterface {
       }
     }
     return true;
+  }
+
+  /**
+   * Calculate URL
+   *
+   * @throws KettleException
+   */
+  private void calcURL() throws KettleException {
+    if ( meta.isUrlInField() ) {
+      if ( Utils.isEmpty( meta.getUrlField() ) ) {
+        logError( BaseMessages.getString( PKG, "Rest.Log.NoField" ) );
+        throw new KettleException( BaseMessages.getString( PKG, "Rest.Log.NoField" ) );
+      }
+      // cache the position of the field
+      if ( data.indexOfUrlField < 0 ) {
+        String realUrlfieldName = environmentSubstitute( meta.getUrlField() );
+        data.indexOfUrlField = data.inputRowMeta.indexOfValue( realUrlfieldName );
+        if ( data.indexOfUrlField < 0 ) {
+          // The field is unreachable !
+          throw new KettleException(
+            BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", realUrlfieldName ) );
+        }
+      }
+    } else {
+      // Static URL
+      data.realUrl = environmentSubstitute( meta.getUrl() );
+    }
+  }
+
+  /**
+   * Calculate method
+   *
+   * @throws KettleException
+   */
+  private void calcMethod() throws KettleException {
+    if ( meta.isDynamicMethod() ) {
+      String field = environmentSubstitute( meta.getMethodFieldName() );
+      if ( Utils.isEmpty( field ) ) {
+        throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.MethodFieldMissing" ) );
+      }
+      data.indexOfMethod = data.inputRowMeta.indexOfValue( field );
+      if ( data.indexOfMethod < 0 ) {
+        // The field is unreachable !
+        throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
+      }
+    }
+  }
+
+  /**
+   * Calculate headers
+   *
+   * @throws KettleException
+   */
+  private void calcHeaders() throws KettleException {
+    int nrArgs = meta.getHeaderName() == null ? 0 : meta.getHeaderName().length;
+    if ( nrArgs > 0 ) {
+      data.nrheader = nrArgs;
+      data.indexOfHeaderFields = new int[ nrArgs ];
+      data.headerNames = new String[ nrArgs ];
+      for ( int i = 0; i < nrArgs; i++ ) {
+        // split into body / header
+        data.headerNames[ i ] = environmentSubstitute( meta.getHeaderName()[ i ] );
+        String field = environmentSubstitute( meta.getHeaderField()[ i ] );
+        if ( Utils.isEmpty( field ) ) {
+          throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.HeaderFieldEmpty" ) );
+        }
+        data.indexOfHeaderFields[ i ] = data.inputRowMeta.indexOfValue( field );
+        if ( data.indexOfHeaderFields[ i ] < 0 ) {
+          throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
+        }
+      }
+      data.useHeaders = true;
+    }
+  }
+
+  /**
+   * Calculate the parameters
+   *
+   * @throws KettleException
+   */
+  private void calcParameters() throws KettleException {
+    // Parameters
+    int nrParams = meta.getParameterField() == null ? 0 : meta.getParameterField().length;
+    if ( nrParams > 0 ) {
+      data.nrParams = nrParams;
+      data.paramNames = new String[ nrParams ];
+      data.indexOfParamFields = new int[ nrParams ];
+      for ( int i = 0; i < nrParams; i++ ) {
+        data.paramNames[ i ] = environmentSubstitute( meta.getParameterName()[ i ] );
+        String field = environmentSubstitute( meta.getParameterField()[ i ] );
+        if ( Utils.isEmpty( field ) ) {
+          throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ParamFieldEmpty" ) );
+        }
+        data.indexOfParamFields[ i ] = data.inputRowMeta.indexOfValue( field );
+        if ( data.indexOfParamFields[ i ] < 0 ) {
+          throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
+        }
+      }
+      data.useParams = true;
+    }
+
+    int nrMatrixParams = meta.getMatrixParameterField() == null ? 0 : meta.getMatrixParameterField().length;
+    if ( nrMatrixParams > 0 ) {
+      data.nrMatrixParams = nrMatrixParams;
+      data.matrixParamNames = new String[ nrMatrixParams ];
+      data.indexOfMatrixParamFields = new int[ nrMatrixParams ];
+      for ( int i = 0; i < nrMatrixParams; i++ ) {
+        data.matrixParamNames[ i ] = environmentSubstitute( meta.getMatrixParameterName()[ i ] );
+        String field = environmentSubstitute( meta.getMatrixParameterField()[ i ] );
+        if ( Utils.isEmpty( field ) ) {
+          throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.MatrixParamFieldEmpty" ) );
+        }
+        data.indexOfMatrixParamFields[ i ] = data.inputRowMeta.indexOfValue( field );
+        if ( data.indexOfMatrixParamFields[ i ] < 0 ) {
+          throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
+        }
+      }
+      data.useMatrixParams = true;
+    }
+  }
+
+  /**
+   * Calculate body
+   *
+   * @throws KettleException
+   */
+  private void calcBody() throws KettleException {
+    String field = environmentSubstitute( meta.getBodyField() );
+    if ( !Utils.isEmpty( field ) ) {
+      data.indexOfBodyField = data.inputRowMeta.indexOfValue( field );
+      if ( data.indexOfBodyField < 0 ) {
+        throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
+      }
+      data.useBody = true;
+    }
   }
 
   @Override
@@ -550,26 +641,21 @@ public class Rest extends BaseStep implements StepInterface {
     return false;
   }
 
+  /**
+   * Calculate media type based on the application type
+   */
   private void calcMediaType() {
     String applicationType = Const.NVL( meta.getApplicationType(), "" );
-    if ( applicationType.equals( RestMeta.APPLICATION_TYPE_XML ) ) {
-      data.mediaType = MediaType.APPLICATION_XML_TYPE;
-    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_JSON ) ) {
-      data.mediaType = MediaType.APPLICATION_JSON_TYPE;
-    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_OCTET_STREAM ) ) {
-      data.mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
-    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_XHTML ) ) {
-      data.mediaType = MediaType.APPLICATION_XHTML_XML_TYPE;
-    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_FORM_URLENCODED ) ) {
-      data.mediaType = MediaType.APPLICATION_FORM_URLENCODED_TYPE;
-    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_ATOM_XML ) ) {
-      data.mediaType = MediaType.APPLICATION_ATOM_XML_TYPE;
-    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_SVG_XML ) ) {
-      data.mediaType = MediaType.APPLICATION_SVG_XML_TYPE;
-    } else if ( applicationType.equals( RestMeta.APPLICATION_TYPE_TEXT_XML ) ) {
-      data.mediaType = MediaType.TEXT_XML_TYPE;
-    } else {
-      data.mediaType = MediaType.TEXT_PLAIN_TYPE;
+    switch ( applicationType ) {
+      case RestMeta.APPLICATION_TYPE_XML -> data.mediaType = MediaType.APPLICATION_XML_TYPE;
+      case RestMeta.APPLICATION_TYPE_JSON -> data.mediaType = MediaType.APPLICATION_JSON_TYPE;
+      case RestMeta.APPLICATION_TYPE_OCTET_STREAM -> data.mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+      case RestMeta.APPLICATION_TYPE_XHTML -> data.mediaType = MediaType.APPLICATION_XHTML_XML_TYPE;
+      case RestMeta.APPLICATION_TYPE_FORM_URLENCODED -> data.mediaType = MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+      case RestMeta.APPLICATION_TYPE_ATOM_XML -> data.mediaType = MediaType.APPLICATION_ATOM_XML_TYPE;
+      case RestMeta.APPLICATION_TYPE_SVG_XML -> data.mediaType = MediaType.APPLICATION_SVG_XML_TYPE;
+      case RestMeta.APPLICATION_TYPE_TEXT_XML -> data.mediaType = MediaType.TEXT_XML_TYPE;
+      default -> data.mediaType = MediaType.TEXT_PLAIN_TYPE;
     }
   }
 
