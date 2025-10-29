@@ -14,23 +14,18 @@
 package org.pentaho.di.job.entries.waitforfile;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
-
-import java.util.List;
-
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -38,6 +33,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -45,6 +42,8 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * This defines a 'wait for file' job entry. Its use is to wait for a file to appear.
@@ -158,6 +157,12 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     return environmentSubstitute( getFilename() );
   }
 
+  // Utility to mark the result as unsuccessful and track errors
+  private void registerFailure( Result result ) {
+    result.setResult( false );
+    result.setNrErrors( result.getNrErrors() + 1 );
+  }
+
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
@@ -265,7 +270,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
                 if ( log.isBasic() ) {
                   logBasic( "Didn't detect file [" + realFilename + "] before timeout, failure" );
                 }
-                result.setResult( false );
+                registerFailure( result );
               }
             }
 
@@ -292,7 +297,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
               }
             } catch ( InterruptedException e ) {
               // something strange happened
-              result.setResult( false );
+              registerFailure( result );
               continueLoop = false;
             }
           }
@@ -317,7 +322,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
               Thread.sleep( iCycleTime * 1000 );
             } catch ( InterruptedException e ) {
               // something strange happened
-              result.setResult( false );
+              registerFailure( result );
               continueLoop = false;
             }
             oldSize = newSize;
@@ -336,6 +341,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
         }
       } catch ( Exception e ) {
         logBasic( "Exception while waiting for file [" + realFilename + "] to stop growing", e );
+        registerFailure( result );
       } finally {
         if ( fileObject != null ) {
           try {
