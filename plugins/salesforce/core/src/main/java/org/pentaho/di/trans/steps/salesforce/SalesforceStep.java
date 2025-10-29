@@ -13,14 +13,7 @@
 
 package org.pentaho.di.trans.steps.salesforce;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TimeZone;
-
 import com.google.common.primitives.Ints;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -34,6 +27,9 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.util.Calendar;
+import java.util.TimeZone;
 
 
 public abstract class SalesforceStep extends BaseStep implements StepInterface {
@@ -137,80 +133,4 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
     }
     return value;
   }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject testButtonAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    boolean successConnection = testConnection();
-    response.put( "connectionStatus", successConnection );
-    return response;
-  }
-
-  public boolean testConnection() {
-    boolean successConnection = true;
-    SalesforceConnection connection = null;
-    try {
-      connection = getConnection();
-    } catch ( Exception e ) {
-      successConnection = false;
-      logError( e.getMessage() );
-    } finally {
-      if ( connection != null ) {
-        try {
-          connection.close();
-        } catch ( Exception e ) {
-          //Ignore
-          logError( e.getMessage() );
-        }
-      }
-    }
-    return successConnection;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject modulesAction( Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    try {
-      String[] modules = getModules( queryParams.get( "moduleFlag" ) );
-      JSONArray modulesList = new JSONArray();
-      Collections.addAll( modulesList, modules );
-      response.put( "modules", modulesList );
-    } catch ( Exception e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-    }
-    return response;
-  }
-
-  public String[] getModules( String moduleFlag ) throws KettleException {
-    SalesforceConnection connection = getConnection();
-    return connection.getAllAvailableObjects( Boolean.parseBoolean( moduleFlag ) );
-  }
-
-  protected SalesforceConnection getConnection() throws KettleException {
-    SalesforceConnection connection = null;
-    try {
-      SalesforceStepMeta salesforceStepMeta = (SalesforceStepMeta) getStepMetaInterface();
-      String realURL = getTransMeta().environmentSubstitute( salesforceStepMeta.getTargetURL() );
-      String realUsername = getTransMeta().environmentSubstitute( salesforceStepMeta.getUsername() );
-      String realPassword = Utils.resolvePassword( getTransMeta(), salesforceStepMeta.getPassword() );
-      int realTimeOut = Const.toInt( getTransMeta().environmentSubstitute( salesforceStepMeta.getTimeout() ), 0 );
-
-      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
-      connection.setTimeOut( realTimeOut );
-      connection.connect();
-      return connection;
-    } catch ( Exception e ) {
-      throw new KettleException( e );
-    } finally {
-      if ( connection != null ) {
-        try {
-          connection.close();
-        } catch ( Exception e ) { /* Ignore */
-          logError( e.getMessage() );
-        }
-      }
-    }
-  }
-
 }

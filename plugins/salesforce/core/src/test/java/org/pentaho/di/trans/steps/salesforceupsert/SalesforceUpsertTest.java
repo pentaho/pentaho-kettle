@@ -13,23 +13,9 @@
 
 package org.pentaho.di.trans.steps.salesforceupsert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.bind.XmlObject;
-import org.json.simple.JSONObject;
+import com.sforce.ws.wsdl.Constants;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,10 +37,18 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 
-import com.sforce.soap.partner.sobject.SObject;
-import com.sforce.ws.wsdl.Constants;
-
 import javax.xml.namespace.QName;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SalesforceUpsertTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -259,24 +253,4 @@ public class SalesforceUpsertTest {
     Assert.assertEquals( parentValue, sobjPass.getField( parentParam ) );
     Assert.assertEquals( childValue, ( (SObject) sobjPass.getField( child ) ).getField( childParam ) );
   }
-
-  @Test
-  public void testModulesAction() {
-    SalesforceUpsert salesforceUpsert =
-      new SalesforceUpsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    Map<String, String> queryParams = new HashMap<>();
-    JSONObject response = salesforceUpsert.modulesAction( queryParams );
-    assertTrue ( response.containsKey( "actionStatus" ) );
-  }
-
-  @Test
-  public void test_testButtonAction() {
-    SalesforceUpsert salesforceUpsert =
-      new SalesforceUpsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    Map<String, String> queryParams = new HashMap<>();
-
-    JSONObject response = salesforceUpsert.testButtonAction( queryParams );
-    assertTrue ( response.containsKey( "connectionStatus" ) );
-  }
-
 }

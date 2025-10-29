@@ -13,11 +13,10 @@
 
 package org.pentaho.di.trans.steps.salesforcedelete;
 
-import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -25,8 +24,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
-
-import java.util.Map;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
@@ -245,17 +242,4 @@ public class SalesforceDelete extends SalesforceStep {
     }
     super.dispose( smi, sdi );
   }
-
-  @SuppressWarnings( "java:S1185" ) //This is being called using reflection(doAction)
-  @Override
-  public JSONObject testButtonAction( Map<String, String> queryParams ) {
-    return super.testButtonAction( queryParams );
-  }
-
-  @Override
-  public JSONObject modulesAction( Map<String, String> queryParams ) {
-    queryParams.put( "moduleFlag", "false" );
-    return super.modulesAction( queryParams );
-  }
-
 }
