@@ -21,7 +21,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.annotations.RepositoryPlugin;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
@@ -2424,7 +2423,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                                        final ProgressMonitorListener monitor, final boolean setInternalVariables,
                                        final String versionId )
   throws KettleException {
-    return loadTransformation( DefaultBowl.getInstance(), transName, parentDir, monitor, setInternalVariables, versionId, null );
+    return loadTransformation( this.getBowl(), transName, parentDir, monitor, setInternalVariables, versionId, null );
   }
 
   @Override
