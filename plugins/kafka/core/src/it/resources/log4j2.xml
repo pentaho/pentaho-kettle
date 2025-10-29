@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration>
+    <Console name="consoleAppender">
+        <PatternLayout>
+            <Pattern>%d %-5p  [%c{1}] %m %n</Pattern>
+        </PatternLayout>
+    </Console>
+
+    <Loggers>
+        <logger name="org.pentaho.metaverse" level="debug" additivity="false">
+            <appender-ref ref="consoleAppender"/>
+        </logger>
+        <root level="warn">
+            <appender-ref ref="consoleAppender"/>
+        </root>
+    </Loggers>
+</Configuration>

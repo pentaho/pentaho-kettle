@@ -78,6 +78,7 @@
     <get-file-with-ftp.version>${project.version}</get-file-with-ftp.version>
     <msg-box-info.version>${project.version}</msg-box-info.version>
     <repo-vfs.version>${project.version}</repo-vfs.version>
+    <pentaho-streaming-kafka-plugin.version>${project.version}</pentaho-streaming-kafka-plugin.version>
   </properties>
 
   <dependencies>
@@ -829,6 +830,18 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>repo-vfs-plugin-assembly</artifactId>
       <version>${repo-vfs.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-streaming-kafka-plugin</artifactId>
+      <version>${pentaho-streaming-kafka-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
