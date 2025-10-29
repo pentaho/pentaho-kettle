@@ -1,0 +1,141 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
+       default-lazy-init="true">
+
+  <!-- Configure our graph using the SynchronizedGraphFactory and a configuration file -->
+  <bean id="MetaverseGraphImpl" class="org.pentaho.metaverse.graph.SynchronizedGraphFactory" factory-method="open">
+    <constructor-arg value="src/it/resources/graph.properties"/>
+  </bean>
+
+  <bean id="IMetaverseBuilder" class="org.pentaho.metaverse.impl.MetaverseBuilder" scope="singleton">
+    <constructor-arg ref="MetaverseGraphImpl"/>
+  </bean>
+
+  <bean id="IMetaverseObjectFactory" class="org.pentaho.metaverse.api.MetaverseObjectFactory" scope="singleton"/>
+
+  <bean id="TransformationAnalyzer" class="org.pentaho.metaverse.analyzer.kettle.TransformationAnalyzer"/>
+
+  <bean id="GroupByStepAnalyzer" class="org.pentaho.metaverse.analyzer.kettle.step.groupby.GroupByStepAnalyzer"/>
+  <bean id="RowsToResultStepAnalyzer"
+        class="org.pentaho.metaverse.analyzer.kettle.step.rowstoresult.RowsToResultStepAnalyzer"/>
+  <bean id="RowsFromResultStepAnalyzer"
+        class="org.pentaho.metaverse.analyzer.kettle.step.rowsfromresult.RowsFromResultStepAnalyzer"/>
+
+  <bean id="IDocumentListener" class="org.pentaho.metaverse.impl.DocumentController" scope="singleton">
+    <property name="metaverseBuilder" ref="IMetaverseBuilder"/>
+    <property name="documentAnalyzers">
+      <list>
+        <ref bean="TransformationAnalyzer"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="IDocumentController" class="org.pentaho.metaverse.impl.DocumentController" scope="singleton">
+    <property name="metaverseBuilder" ref="IMetaverseBuilder"/>
+    <property name="metaverseObjectFactory" ref="IMetaverseObjectFactory"/>
+    <property name="documentAnalyzers">
+      <list>
+        <ref bean="TransformationAnalyzer"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="IStepAnalyzerProvider" class="org.pentaho.metaverse.analyzer.kettle.step.StepAnalyzerProvider"
+        scope="singleton">
+    <property name="stepAnalyzers">
+      <list>
+        <ref bean="RowsToResultStepAnalyzer"/>
+        <ref bean="RowsFromResultStepAnalyzer"/>
+        <ref bean="GroupByStepAnalyzer"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="IStepExternalResourceConsumerProvider"
+        class="org.pentaho.metaverse.analyzer.kettle.step.StepExternalResourceConsumerProvider"
+        scope="singleton">
+  </bean>
+
+  <bean id="lineageRepo" class="org.pentaho.metaverse.impl.model.kettle.LineageRepository" scope="singleton"/>
+  <bean id="lineageReadRepo" class="org.pentaho.metaverse.impl.model.kettle.LineageRepository" scope="singleton"/>
+
+  <bean id="baseStepMetaJsonSerializer" class="org.pentaho.metaverse.impl.model.kettle.json.BaseStepMetaJsonSerializer"
+        scope="singleton">
+    <constructor-arg value="org.pentaho.di.trans.step.BaseStepMeta" type="java.lang.Class"/>
+    <constructor-arg ref="lineageRepo"/>
+    <property name="stepAnalyzerProvider" ref="IStepAnalyzerProvider"/>
+    <property name="stepExternalResourceConsumerProvider" ref="IStepExternalResourceConsumerProvider"/>
+  </bean>
+  <bean id="transMetaJsonSerializer" class="org.pentaho.metaverse.impl.model.kettle.json.TransMetaJsonSerializer"
+        scope="singleton">
+    <constructor-arg value="org.pentaho.di.trans.TransMeta" type="java.lang.Class"/>
+    <property name="lineageRepository" ref="lineageRepo"/>
+  </bean>
+
+  <bean id="transMetaJsonDeserializer" class="org.pentaho.metaverse.impl.model.kettle.json.TransMetaJsonDeserializer"
+        scope="singleton">
+    <constructor-arg value="org.pentaho.di.trans.TransMeta" type="java.lang.Class"/>
+    <constructor-arg ref="lineageReadRepo"/>
+  </bean>
+
+  <bean id="kettleObjectMapper" class="org.pentaho.metaverse.impl.model.kettle.json.KettleObjectMapper"
+        scope="singleton">
+    <constructor-arg>
+      <list>
+        <ref bean="baseStepMetaJsonSerializer"/>
+        <ref bean="transMetaJsonSerializer"/>
+      </list>
+    </constructor-arg>
+    <constructor-arg>
+      <list>
+        <ref bean="transMetaJsonDeserializer"/>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="IMetaverseReader" class="org.pentaho.metaverse.graph.BlueprintsGraphMetaverseReader" scope="singleton">
+    <constructor-arg ref="MetaverseGraphImpl"/>
+  </bean>
+
+  <!-- Lineage writers -->
+  <bean id="graphCsvWriter" class="org.pentaho.metaverse.graph.GraphCsvWriter"/>
+  <bean id="graphSONWriter" class="org.pentaho.metaverse.graph.GraphSONWriter"/>
+  <bean id="graphMLWriter" class="org.pentaho.metaverse.graph.GraphMLWriter"/>
+
+  <bean id="lineageWriter" class="org.pentaho.metaverse.impl.LineageWriter" scope="singleton">
+    <property name="graphWriter" ref="graphSONWriter"/>
+  </bean>
+
+  <bean id="FileSystemLocator" class="org.pentaho.metaverse.locator.FileSystemLocator" scope="singleton">
+    <constructor-arg>
+      <list>
+        <ref bean="IDocumentListener"/>
+      </list>
+    </constructor-arg>
+    <property name="repositoryId" value="FILE_SYSTEM_REPO"/>
+    <property name="metaverseBuilder" ref="IMetaverseBuilder"/>
+    <property name="rootFolder" value="src/it/resources/repo"/>
+  </bean>
+
+  <bean id="IDocumentLocatorProvider" class="org.pentaho.metaverse.impl.MetaverseDocumentLocatorProvider"
+        scope="singleton">
+    <constructor-arg>
+      <set>
+        <ref bean="FileSystemLocator"/>
+      </set>
+    </constructor-arg>
+  </bean>
+
+  <bean id="MetaverseGraphImplPrototype" class="org.pentaho.metaverse.graph.SynchronizedGraphFactory" scope="prototype">
+    <constructor-arg>
+      <map>
+        <entry key="blueprints.graph" value="com.tinkerpop.blueprints.impls.tg.TinkerGraph"/>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="IMetaverseBuilderPrototype" class="org.pentaho.metaverse.impl.MetaverseBuilder" scope="prototype">
+    <constructor-arg ref="MetaverseGraphImplPrototype"/>
+  </bean>
+
+</beans>

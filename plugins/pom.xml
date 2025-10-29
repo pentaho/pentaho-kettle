@@ -107,6 +107,7 @@
         <module>mail-job</module>
         <module>repo-vfs</module>
         <module>s3-vfs</module>
+        <module>kafka</module>
       </modules>
     </profile>
 
