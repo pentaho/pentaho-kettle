@@ -82,7 +82,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileFilter;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileInput;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInputHelper;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -2599,7 +2599,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   @Override
   public String[] getFieldNames( final TextFileInputMeta meta ) {
-    return getTextFileInput().getFieldNames( meta );
+    TextFileInputHelper helper = (TextFileInputHelper) input.getStepHelperInterface();
+    return helper.getFieldNames( meta );
   }
 
   public static int guessPrecision( double d ) {
@@ -2728,16 +2729,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   // Get the first x lines
   private List<String> getFirst( int nrlines, boolean skipHeaders ) throws KettleException {
-    TextFileInput step = getTextFileInput();
-    step.setStepMetaInterface( input );
-    return step.getFirst( nrlines, skipHeaders );
-  }
-
-  private TextFileInput getTextFileInput() {
-    Trans trans = new Trans( transMeta, null );
-    trans.rowsets = new ArrayList<>();
-    getInfo( input, true );
-    return (TextFileInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
+    TextFileInputHelper helper = (TextFileInputHelper) input.getStepHelperInterface();
+    return helper.getFirst( input, transMeta, nrlines, skipHeaders );
   }
 
   private void getFixed() {
@@ -2750,9 +2743,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     try {
       List<String> rows = getFirst( 50, false );
-      TextFileInput step = (TextFileInput) input.getStep( stepMeta, input.getStepData(), 0, transMeta, trans );
-      step.setStepMetaInterface( input );
-      fields = step.getFields( info, rows );
+      TextFileInputHelper helper = (TextFileInputHelper) input.getStepHelperInterface();
+      fields = helper.getFields( info, rows );
 
       final TextFileImportWizardPage1 page1 = new TextFileImportWizardPage1( "1", props, rows, fields );
       page1.createControl( sh );
