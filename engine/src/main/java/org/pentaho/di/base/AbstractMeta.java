@@ -433,6 +433,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public void setBowl( Bowl bowl ) {
     this.bowl = Objects.requireNonNull( bowl );
+    // clearing cache just before loading shared objects ensures that the loaded file will have the 
+    // most recent config. 
+    bowl.clearCache();
     initializeNonLocalSharedObjects();
     // now that the bowl has changed, make sure we have up-to-date DatabaseMetas.
     allDatabasesUpdated();
