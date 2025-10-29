@@ -54,6 +54,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -941,6 +942,11 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     } catch ( final KettleFileException e ) {
       return null;
     }
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new CsvInputHelper();
   }
 
 }

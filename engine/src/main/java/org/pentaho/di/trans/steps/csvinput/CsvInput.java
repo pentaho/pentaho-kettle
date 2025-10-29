@@ -1179,37 +1179,6 @@ public class CsvInput extends BaseStep implements StepInterface, CsvInputAwareSt
       return environmentSubstitute( filename );
     }
   }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getFieldsAction( Map<String, String> queryParams )
-    throws KettleException, JsonProcessingException {
-    return populateMeta( queryParams );
-  }
-
-  // This method contains code extracted from textfileinput/TextFileCSVImportProgressDialog class
-  // to get Fields data and Fields summary statistics
-  private JSONObject populateMeta( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
-    JSONObject response = new JSONObject();
-    String isSampleSummary = queryParams.get( "isSampleSummary" );
-    int samples = Integer.parseInt( Objects.toString( queryParams.get( "noOfFields" ), "0" ) );
-
-    TransMeta transMeta = getTransMeta();
-    CsvInputAwareMeta csvInputAwareMeta = (CsvInputAwareMeta) getStepMetaInterface();
-    final InputStream inputStream = getInputStream( csvInputAwareMeta );
-    final BufferedInputStreamReader reader = getBufferedReader( csvInputAwareMeta, inputStream );
-    meta = (CsvInputMeta) getStepMetaInterface();
-    String[] fieldNames = getFieldNames( csvInputAwareMeta );
-    meta.setFields( fieldNames );
-
-    CsvFileImportProcessor processor =
-      new CsvFileImportProcessor( meta, transMeta, reader, samples, Boolean.parseBoolean( isSampleSummary ) );
-    String summary = processor.analyzeFile( true );
-
-    response.put( "fields", convertFieldsToJsonArray( processor.getInputFieldsDto() ) );
-    response.put( "summary", summary );
-    return response;
-  }
-
   public InputStream getInputStream( final CsvInputAwareMeta meta ) {
     InputStream inputStream = null;
     try {
