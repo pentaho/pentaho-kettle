@@ -18,8 +18,13 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
+
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.BaseBowl;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
@@ -54,6 +59,7 @@ import org.pentaho.di.repository.RepositoryBowl;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.MemorySharedObjectsIO;
+import org.pentaho.di.shared.SharedObjectsIO;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 
@@ -77,6 +83,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -258,6 +265,39 @@ public class AbstractMetaTest {
     assertTrue( meta.haveConnectionsChanged() );
     meta.clearChangedDatabases();
     assertFalse( meta.haveConnectionsChanged() );
+  }
+
+  @Test
+  public void testBowlClearCache() throws Exception {
+    MemorySharedObjectsIO sharedObjectsIO = new MemorySharedObjectsIO();
+
+    Bowl bowl = mock( BaseBowl.class );
+    when( bowl.getSharedObjectsIO() ).thenReturn( sharedObjectsIO );
+
+    AbstractMetaStub meta = new AbstractMetaStub();
+    meta.setBowl( bowl );
+    List<DatabaseMeta> databases = meta.getDatabases();
+    assertEquals( 0, databases.size() );
+
+    doAnswer( new Answer<Void>() {
+      public Void answer( InvocationOnMock invocation ) {
+        // write directly to the SharedObjectsIO to simulate another process having done the write
+        DatabaseMeta dbMeta = new DatabaseMeta();
+        dbMeta.setName( "foo" );
+        try {
+        sharedObjectsIO.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "foo",
+          dbMeta.toNode());
+        } catch ( KettleException e ) {
+          throw new RuntimeException( e );
+        }
+        return null;
+      }
+    } ).when( bowl ).clearCache();
+
+    AbstractMetaStub meta2 = new AbstractMetaStub();
+    meta2.setBowl( bowl );
+    List<DatabaseMeta> databases2 = meta2.getDatabases();
+    assertEquals( 1, databases2.size() );
   }
 
   @Test
