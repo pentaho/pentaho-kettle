@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>infobright-bulk-loader-assemblies</artifactId>
-    <version>11.0.0.0-196</version>
+    <version>11.0.0.0-latest</version>
   </parent>
 
   <artifactId>infobright-bulk-loader-plugins</artifactId>
-  <version>11.0.0.0-196</version>
+  <version>11.0.0.0-latest</version>
   <packaging>pom</packaging>
 
   <name>PDI infobright-bulk-loader Plugins Distribution</name>

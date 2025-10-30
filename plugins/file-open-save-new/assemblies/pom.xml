@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>file-open-save-new</artifactId>
-    <version>11.0.0.0-196</version>
+    <version>11.0.0.0-latest</version>
   </parent>
 
   <artifactId>file-open-save-new-assemblies</artifactId>
-  <version>11.0.0.0-196</version>
+  <version>11.0.0.0-latest</version>
   <packaging>pom</packaging>
 
   <name>PDI File Open and Save New Plugin Assemblies</name>

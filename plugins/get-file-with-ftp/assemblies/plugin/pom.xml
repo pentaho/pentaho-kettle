@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>get-file-with-ftp-assemblies</artifactId>
-    <version>11.0.0.0-196</version>
+    <version>11.0.0.0-latest</version>
   </parent>
 
   <artifactId>get-file-with-ftp-plugins</artifactId>
-  <version>11.0.0.0-196</version>
+  <version>11.0.0.0-latest</version>
   <packaging>pom</packaging>
 
   <name>PDI Get file with FTP Plugins Distribution</name>

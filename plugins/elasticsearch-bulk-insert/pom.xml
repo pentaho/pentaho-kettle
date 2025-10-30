@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>11.0.0.0-196</version>
+    <version>11.0.0.0-latest</version>
   </parent>
 
   <artifactId>elasticsearch-bulk-insert</artifactId>
-  <version>11.0.0.0-196</version>
+  <version>11.0.0.0-latest</version>
   <packaging>pom</packaging>
 
   <name>PDI Elasticsearch Bulk Insert Plugin</name>

@@ -7,7 +7,7 @@
   <parent>
     <artifactId>salesforce</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
-    <version>11.0.0.0-196</version>
+    <version>11.0.0.0-latest</version>
   </parent>
 
   <artifactId>salesforce-assemblies</artifactId>

@@ -5,17 +5,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>kafka-assemblies</artifactId>
-    <version>11.0.0.0-196</version>
+    <version>11.0.0.0-latest</version>
   </parent>
 
   <artifactId>pentaho-streaming-kafka-plugin</artifactId>
-  <version>11.0.0.0-196</version>
+  <version>11.0.0.0-latest</version>
   <packaging>pom</packaging>
 
   <name>PDI Kafka Plugin Distribution</name>
 
   <properties>
-    <project.revision>11.0.0.0-196</project.revision>
+    <project.revision>11.0.0.0-latest</project.revision>
   </properties>
 
   <dependencies>

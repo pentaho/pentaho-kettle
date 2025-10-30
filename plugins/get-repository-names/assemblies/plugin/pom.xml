@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>get-repository-names-assemblies</artifactId>
-    <version>11.0.0.0-196</version>
+    <version>11.0.0.0-latest</version>
   </parent>
 
   <artifactId>get-repository-names-plugins</artifactId>
-  <version>11.0.0.0-196</version>
+  <version>11.0.0.0-latest</version>
   <packaging>pom</packaging>
 
   <name>PDI Get Repository Names Plugins Distribution</name>
