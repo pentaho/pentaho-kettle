@@ -69,12 +69,11 @@ public class RestMetaTest {
         "parameterName", "matrixParameterField", "matrixParameterName", "fieldName", "resultCodeFieldName",
         "responseTimeFieldName", "responseHeaderFieldName" );
 
-    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
-      new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap = new HashMap<>();
 
     // Arrays need to be consistent length
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
+      new ArrayLoadSaveValidator<>( new StringLoadSaveValidator(), 25 );
     fieldLoadSaveValidatorAttributeMap.put( "headerField", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "headerName", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "parameterField", stringArrayLoadSaveValidator );
@@ -83,9 +82,9 @@ public class RestMetaTest {
     fieldLoadSaveValidatorAttributeMap.put( "matrixParameterName", stringArrayLoadSaveValidator );
 
     LoadSaveTester<RestMeta> loadSaveTester =
-      new LoadSaveTester<RestMeta>( RestMeta.class, attributes, new HashMap<String, String>(),
-        new HashMap<String, String>(), fieldLoadSaveValidatorAttributeMap,
-        new HashMap<String, FieldLoadSaveValidator<?>>() );
+      new LoadSaveTester<>( RestMeta.class, attributes, new HashMap<>(),
+        new HashMap<>(), fieldLoadSaveValidatorAttributeMap,
+        new HashMap<>() );
 
     loadSaveTester.testSerialization();
   }
@@ -93,7 +92,7 @@ public class RestMetaTest {
   @Test
   public void testStepChecks() {
     RestMeta meta = new RestMeta();
-    List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
+    List<CheckResultInterface> remarks = new ArrayList<>();
     TransMeta transMeta = new TransMeta();
     StepMeta step = new StepMeta();
     RowMetaInterface prev = new RowMeta();
