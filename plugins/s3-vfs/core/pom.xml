@@ -7,13 +7,13 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>s3-vfs</artifactId>
-    <version>11.0.0.0-latest</version>
+    <version>11.0.0.0-SNAPSHOT</version>
   </parent>
 
 
   <groupId>pentaho</groupId>
   <artifactId>pentaho-s3-vfs</artifactId>
-  <version>11.0.0.0-latest</version>
+  <version>11.0.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <licenses>
