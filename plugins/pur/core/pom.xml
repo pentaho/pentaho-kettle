@@ -5,25 +5,25 @@
 
   <artifactId>pdi-pur-plugin-core</artifactId>
   <packaging>jar</packaging>
-  <version>11.0.0.0-SNAPSHOT</version>
+  <version>11.0.0.0-196</version>
 
   <name>PDI PUR Plugin Core</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pur</artifactId>
-    <version>11.0.0.0-SNAPSHOT</version>
+    <version>11.0.0.0-196</version>
   </parent>
 
   <properties>
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
 
     <!-- Kettle dependencies -->
-    <pdi.version>11.0.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>11.0.0.0-196</pdi.version>
 
     <!-- Pentaho dependenceis -->
-    <platform.version>11.0.0.0-SNAPSHOT</platform.version>
-    <pentaho-json.version>11.0.0.0-SNAPSHOT</pentaho-json.version>
+    <platform.version>11.0.0.0-196</platform.version>
+    <pentaho-json.version>11.0.0.0-196</pentaho-json.version>
 
     <!-- Third party dependencies -->
     <encoder.version>1.2</encoder.version>
@@ -35,7 +35,7 @@
     <se-jcr.version>0.9</se-jcr.version>
     <jcr.version>2.0</jcr.version>
     <derby.version>10.17.1.0</derby.version>
-    <commons-database.version>11.0.0.0-SNAPSHOT</commons-database.version>
+    <commons-database.version>11.0.0.0-196</commons-database.version>
 
     <!-- Wadl2Java Settings -->
     <wadl2java.generated-class-name>Localhost_PentahoPlugin</wadl2java.generated-class-name>
