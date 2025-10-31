@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>kafka</artifactId>
-    <version>11.0.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>kafka-plugin-core</artifactId>
-  <version>11.0.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
@@ -18,7 +18,7 @@
   <properties>
     <publish-sonar-phase>site</publish-sonar-phase>
     <!-- Dependency versions -->
-    <pentaho-metaverse.version>11.0.0.0-SNAPSHOT</pentaho-metaverse.version>
+    <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <dependency.com.tinkerpop.frames.version>2.5.0</dependency.com.tinkerpop.frames.version>
     <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
     <osgi.version>8.0.0</osgi.version>
