@@ -787,7 +787,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       return RequiredFilesCode[0];
     }
   }
-
+//blah blah
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
       includeFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_INCLUDE ) );
