@@ -779,6 +779,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
   public String getRequiredFilesCode( String tt ) {
     if ( tt == null ) {
+      // more blah blah
       return RequiredFilesCode[0];
     }
     if ( tt.equals( RequiredFilesDesc[1] ) ) {

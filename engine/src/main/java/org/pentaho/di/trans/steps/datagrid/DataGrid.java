@@ -44,7 +44,7 @@ public class DataGrid extends BaseStep implements StepInterface {
   public DataGrid( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
-
+    // even more foo bar
     meta = (DataGridMeta) getStepMeta().getStepMetaInterface();
     data = (DataGridData) stepDataInterface;
   }
