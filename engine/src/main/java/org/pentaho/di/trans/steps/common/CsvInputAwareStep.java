@@ -121,7 +121,7 @@ public interface CsvInputAwareStep {
   /**
    * Returns the {@link InputStreamReader} corresponding to the csv file, or null if the file cannot be read.
    *
-   * @return the {@link InputStreamReader} corresponding to the csv file, or null if the file cannot be read
+   * @return the {@link InputStreamReader} corresponding to the csv file, or null if the file cannot be read.
    */
   default InputStreamReader getReader( final CsvInputAwareMeta meta, final InputStream inputStream ) {
     InputStreamReader reader = null;

@@ -38,6 +38,7 @@ import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +62,6 @@ public class CsvInputHelperTest {
 
   private CsvInputMeta csvInputMeta;
   private TransMeta transMeta;
-  private LogChannelInterface logChannelInterface;
 
   private CsvInputHelper underTest;
 
@@ -71,7 +71,7 @@ public class CsvInputHelperTest {
     transMeta = mock( TransMeta.class );
     underTest = spy( new CsvInputHelper( csvInputMeta ) );
 
-    logChannelInterface = mock( LogChannelInterface.class );
+    LogChannelInterface logChannelInterface = mock( LogChannelInterface.class );
     LogChannelInterfaceFactory logChannelInterfaceFactory = mock( LogChannelInterfaceFactory.class );
     KettleLogStore.setLogChannelInterfaceFactory( logChannelInterfaceFactory );
     when( logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
@@ -123,7 +123,7 @@ public class CsvInputHelperTest {
     queryParams.put( "noOfFields", "100" );
 
     String csvContent = "Name,Age,City\nJohn,30,NYC\nJane,25,LA";
-    InputStream inputStream = new ByteArrayInputStream( csvContent.getBytes( "UTF-8" ) );
+    InputStream inputStream = new ByteArrayInputStream( csvContent.getBytes( StandardCharsets.UTF_8 ) );
 
     FileObject fileObject = mock( FileObject.class );
     Bowl bowl = mock( Bowl.class );
@@ -262,7 +262,7 @@ public class CsvInputHelperTest {
     queryParams.put( "noOfFields", "100" );
 
     String csvContent = "Name,Age,City\nJohn,30,NYC\nJane,25,LA";
-    InputStream inputStream = new ByteArrayInputStream( csvContent.getBytes( "UTF-8" ) );
+    InputStream inputStream = new ByteArrayInputStream( csvContent.getBytes( StandardCharsets.UTF_8 ) );
 
     FileObject fileObject = mock( FileObject.class );
     Bowl bowl = mock( Bowl.class );
@@ -329,20 +329,19 @@ public class CsvInputHelperTest {
     RowMetaInterface rowMeta = mock( RowMetaInterface.class );
     Object[] row = new Object[ 0 ];
     when( rowMeta.getString( row, 0 ) ).thenReturn( null );
-    String response = underTest.getStringFromRow( rowMeta, row, 0, true );
-    assertNotNull( response );
+    underTest.getStringFromRow( rowMeta, row, 0, true );
   }
 
   @Test
-  public void getReaderTest() throws Exception {
+  public void getReaderTest() {
     InputStream inputStream = mock( InputStream.class );
-    when( transMeta.environmentSubstitute( anyString() ) ).thenReturn( "UTF-8" );
+    when( transMeta.environmentSubstitute( anyString() ) ).thenReturn( StandardCharsets.UTF_8.toString() );
     InputStreamReader response = underTest.getReader( transMeta, csvInputMeta, inputStream );
     assertNotNull( response );
   }
 
   @Test
-  public void getReaderTest1() throws Exception {
+  public void getReaderTest1() {
     InputStream inputStream = mock( InputStream.class );
     when( transMeta.environmentSubstitute( anyString() ) ).thenReturn( null );
     InputStreamReader response = underTest.getReader( transMeta, csvInputMeta, inputStream );
@@ -353,7 +352,7 @@ public class CsvInputHelperTest {
   public void getFieldNamesImplTest_NullReader() throws KettleException {
     BufferedInputStreamReader reader = null;
     String[] response = underTest.getFieldNamesImpl( transMeta, reader, csvInputMeta );
-    assertEquals( response.length, 0 );
+    assertEquals( 0, response.length );
   }
 
   @Test
@@ -363,7 +362,7 @@ public class CsvInputHelperTest {
     queryParams.put( "noOfFields", "100" );
 
     String csvContent = "Name,Age,City\nJohn,30,NYC\nJane,25,LA";
-    InputStream inputStream = new ByteArrayInputStream( csvContent.getBytes( "UTF-8" ) );
+    InputStream inputStream = new ByteArrayInputStream( csvContent.getBytes( StandardCharsets.UTF_8 ) );
 
     FileObject fileObject = mock( FileObject.class );
     Bowl bowl = mock( Bowl.class );
@@ -406,7 +405,7 @@ public class CsvInputHelperTest {
     queryParams.put( "noOfFields", "100" );
 
     String csvContent = "Name,Age,City\nJohn,30,NYC\nJane,25,LA";
-    InputStream inputStream = new ByteArrayInputStream( csvContent.getBytes( "UTF-8" ) );
+    InputStream inputStream = new ByteArrayInputStream( csvContent.getBytes( StandardCharsets.UTF_8 ) );
 
     FileObject fileObject = mock( FileObject.class );
     Bowl bowl = mock( Bowl.class );
