@@ -2600,7 +2600,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   @Override
   public String[] getFieldNames( final TextFileInputMeta meta ) {
     TextFileInputHelper helper = (TextFileInputHelper) input.getStepHelperInterface();
-    return helper.getFieldNames( meta );
+    return helper.getFieldNames( transMeta, meta );
   }
 
   public static int guessPrecision( double d ) {

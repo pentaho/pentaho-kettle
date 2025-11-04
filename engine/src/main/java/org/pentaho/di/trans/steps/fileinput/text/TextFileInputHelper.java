@@ -32,8 +32,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepHelper;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.steps.common.CsvInputAwareHelper;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
-import org.pentaho.di.trans.steps.common.CsvInputAwareStep;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 
 import java.io.InputStream;
@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Vector;
 
-public class TextFileInputHelper extends BaseStepHelper implements CsvInputAwareStep {
+public class TextFileInputHelper extends BaseStepHelper implements CsvInputAwareHelper {
 
   private static final Class<?> PKG = TextFileInputHelper.class;
 
@@ -59,26 +59,10 @@ public class TextFileInputHelper extends BaseStepHelper implements CsvInputAware
   private static final String SET_MINIMAL_WIDTH = "setMinimalWidth";
   private static final String STEP_NAME = "stepName";
 
-  private TransMeta transMeta;
   TextFileInputMeta meta;
-
-  @Override
-  public TransMeta getTransMeta() {
-    return transMeta;
-  }
 
   public TextFileInputHelper( TextFileInputMeta textFileInputMeta ) {
     this.meta = textFileInputMeta;
-  }
-
-  /**
-   * A setter is used since it is not a singleton class and every object by default has a null value.
-   *
-   * @param transMeta
-   */
-
-  public void setTransMeta( TransMeta transMeta ) {
-    this.transMeta = transMeta;
   }
 
   @Override
@@ -87,7 +71,6 @@ public class TextFileInputHelper extends BaseStepHelper implements CsvInputAware
     try {
       switch ( method ) {
         case GET_FIELDS:
-          setTransMeta( transMeta );
           response = getFieldsAction( transMeta, queryParams );
           break;
         case GET_FIELD_NAMES:
@@ -194,9 +177,9 @@ public class TextFileInputHelper extends BaseStepHelper implements CsvInputAware
     int samples = Integer.parseInt( Objects.toString( queryParams.get( "noOfFields" ), "0" ) );
     CsvInputAwareMeta csvInputAwareMeta =
       (CsvInputAwareMeta) transMeta.findStep( queryParams.get( STEP_NAME ) ).getStepMetaInterface();
-    final InputStream inputStream = getInputStream( csvInputAwareMeta );
-    final BufferedInputStreamReader reader = getBufferedReader( csvInputAwareMeta, inputStream );
-    String[] fieldNames = getFieldNames( csvInputAwareMeta );
+    final InputStream inputStream = getInputStream( transMeta, csvInputAwareMeta );
+    final BufferedInputStreamReader reader = getBufferedReader( transMeta, csvInputAwareMeta, inputStream );
+    String[] fieldNames = getFieldNames( transMeta, csvInputAwareMeta );
     meta.setFields( fieldNames );
 
     TextFileCsvFileTypeImportProcessor processor =
@@ -213,7 +196,7 @@ public class TextFileInputHelper extends BaseStepHelper implements CsvInputAware
   public JSONObject getFieldNamesAction( TransMeta transMeta, Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
-    String[] fieldNames = getFieldNames( meta );
+    String[] fieldNames = getFieldNames( transMeta, meta );
     Collections.addAll( jsonArray, fieldNames );
     response.put( "fieldNames", jsonArray );
     return response;
@@ -301,11 +284,11 @@ public class TextFileInputHelper extends BaseStepHelper implements CsvInputAware
   }
 
   @Override
-  public InputStream getInputStream( final CsvInputAwareMeta meta ) {
+  public InputStream getInputStream( TransMeta transMeta, final CsvInputAwareMeta meta ) {
     InputStream fileInputStream = null;
     CompressionInputStream inputStream = null;
     try {
-      FileObject fileObject = meta.getHeaderFileObject( getTransMeta() );
+      FileObject fileObject = meta.getHeaderFileObject( transMeta );
       fileInputStream = KettleVFS.getInputStream( fileObject );
       CompressionProvider provider = CompressionProviderFactory.getInstance().createCompressionProviderInstance(
         ( (TextFileInputMeta) meta ).content.fileCompression );
