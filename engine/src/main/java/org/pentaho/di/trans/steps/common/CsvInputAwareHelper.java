@@ -28,6 +28,7 @@ import org.pentaho.di.trans.steps.csvinput.CsvInput;
 import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputFieldDTO;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 
 import java.io.IOException;
@@ -81,8 +82,13 @@ public interface CsvInputAwareHelper {
     final String line = TextFileInputUtils.getLine( logChannel(), reader, encodingType, meta.getFileFormatTypeNr(),
       new StringBuilder( 1000 ), enclosure, escapeCharacter );
     if ( !StringUtils.isBlank( line ) ) {
-      fieldNames = CsvInput.guessStringsFromLine( logChannel(), line, delimiter, enclosure,
-        meta.getEscapeCharacter() );
+      if ( meta instanceof TextFileInputMeta ) {
+        fieldNames = TextFileInputUtils.guessStringsFromLine( transMeta.getParentVariableSpace(), logChannel(),
+          line, (TextFileInputMeta) meta, delimiter, enclosure, meta.getEscapeCharacter() );
+      } else {
+        fieldNames = CsvInput.guessStringsFromLine( logChannel(), line, delimiter, enclosure,
+          meta.getEscapeCharacter() );
+      }
     }
     if ( Utils.isEmpty( fieldNames ) ) {
       logError( BaseMessages.getString( "Dialog.ErrorGettingFields.Message" ) );
