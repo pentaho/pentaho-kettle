@@ -28,6 +28,7 @@ import org.pentaho.di.plugins.fileopensave.providers.repository.model.Repository
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryTree;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -186,12 +187,14 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
     for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
       ObjectId objectID;
       try {
+        RepositoryDirectoryInterface directory = spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() );
+        if ( directory == null ) {
+          continue;
+        }
         if ( lastUsedFile.isTransformation() ) {
-          objectID = spoonInstance.rep.getTransformationID( lastUsedFile.getFilename(),
-            spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() ) );
+          objectID = spoonInstance.rep.getTransformationID( lastUsedFile.getFilename(), directory );
         } else {
-          objectID = spoonInstance.rep.getJobId( lastUsedFile.getFilename(),
-            spoonInstance.rep.findDirectory( lastUsedFile.getDirectory() ) );
+          objectID = spoonInstance.rep.getJobId( lastUsedFile.getFilename(), directory );
         }
       } catch ( KettleException | IllegalAccessError e ) {
         objectID = null;
