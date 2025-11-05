@@ -530,18 +530,21 @@ public class JobMeta extends AbstractMeta
   @Override
   public void allDatabasesUpdated() {
     List<DatabaseMeta> allDbs = getDatabases();
-    for ( JobEntryCopy jobEntryCopy : getJobCopies() ) {
-      DatabaseMeta[] dbs = jobEntryCopy.getEntry().getUsedDatabaseConnections();
-      if ( dbs != null ) {
-        for ( DatabaseMeta db : dbs ) {
-          if ( db != null ) {
-            Optional<DatabaseMeta> newDatabaseMeta =
-              Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
-            updateFields( db, newDatabaseMeta );
+    List<JobEntryCopy> jobEntryCopies = getJobCopies();
+    if ( jobEntryCopies != null ) {
+      for ( JobEntryCopy jobEntryCopy : jobEntryCopies ) {
+        DatabaseMeta[] dbs = jobEntryCopy.getEntry().getUsedDatabaseConnections();
+        if ( dbs != null ) {
+          for ( DatabaseMeta db : dbs ) {
+            if ( db != null ) {
+              Optional<DatabaseMeta> newDatabaseMeta =
+                Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
+              updateFields( db, newDatabaseMeta );
+            }
           }
         }
-      }
-    }
+      } 
+    } 
   }
 
   private Set<DatabaseMeta> getUsedDatabaseMetas() {
@@ -853,7 +856,7 @@ public class JobMeta extends AbstractMeta
       OverwritePrompter prompter ) throws KettleXMLException {
     this.initializeVariablesFrom( parentSpace );
     this.metaStore = metaStore;
-    this.bowl = Objects.requireNonNull( bowl );
+    setBowl( bowl );
     try {
       // OK, try to load using the VFS stuff...
       Document doc = XMLHandler.loadXMLFile( KettleVFS.getInstance( bowl ).getFileObject( fname, this ) );
