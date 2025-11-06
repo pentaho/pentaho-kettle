@@ -54,19 +54,15 @@ public class HttpClientManager {
   private static final int CONNECTIONS_PER_ROUTE = 100;
   private static final int TOTAL_CONNECTIONS = 200;
 
-  private static HttpClientManager httpClientManager;
-  private static PoolingHttpClientConnectionManager manager;
+  private static final HttpClientManager httpClientManager = new HttpClientManager();
+  private final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
 
   private HttpClientManager() {
-    manager = new PoolingHttpClientConnectionManager();
     manager.setDefaultMaxPerRoute( CONNECTIONS_PER_ROUTE );
     manager.setMaxTotal( TOTAL_CONNECTIONS );
   }
 
   public static HttpClientManager getInstance() {
-    if ( httpClientManager == null ) {
-      httpClientManager = new HttpClientManager();
-    }
     return httpClientManager;
   }
 
@@ -128,8 +124,9 @@ public class HttpClientManager {
       return this;
     }
 
-    public void ignoreSsl( boolean ignoreSsl ) {
+    public HttpClientBuilderFacade ignoreSsl( boolean ignoreSsl ) {
       this.ignoreSsl = ignoreSsl;
+      return this;
     }
 
     public HttpClientBuilderFacade setTrustStore( InputStream trustStoreStream, String trustStorePassword ) {
@@ -155,7 +152,7 @@ public class HttpClientManager {
         requestConfigBuilder.setSocketTimeout( socketTimeout );
       }
       if ( connectionTimeout > 0 ) {
-        requestConfigBuilder.setConnectTimeout( socketTimeout );
+        requestConfigBuilder.setConnectTimeout( connectionTimeout );
       }
       if ( proxy != null ) {
         requestConfigBuilder.setProxy( proxy );
@@ -196,7 +193,7 @@ public class HttpClientManager {
     throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, KeyManagementException,
     UnrecoverableKeyException {
 
-    String sslContextProtocol = ignoreSSLValidation ? "SSL" : "TLSv1.2";
+    String sslContextProtocol = ignoreSSLValidation ? "SSL" : "TLS";
     TrustManager[] trustManagers = null;
     KeyManager[] keyManagers = null;
 
