@@ -81,7 +81,6 @@ public class SalesforceStepHelper extends BaseStepHelper  {
           connection.close();
         } catch ( Exception e ) {
           //Ignore
-          log.logError( e.getMessage() );
         }
       }
     }
@@ -126,7 +125,6 @@ public class SalesforceStepHelper extends BaseStepHelper  {
         try {
           connection.close();
         } catch ( Exception e ) { /* Ignore */
-          log.logError( e.getMessage() );
         }
       }
     }
