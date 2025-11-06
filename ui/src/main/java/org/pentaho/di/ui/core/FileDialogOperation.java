@@ -31,7 +31,8 @@ public class FileDialogOperation {
   /** Will be called whenever files are loaded by this dialog */
   public interface FileLoadListener {
     void onFileLoaded( FileLookupInfo file );
-    void reset();
+    /** forget about anything to do with file or its children */
+    void reset( FileLookupInfo file );
   }
 
   /** File information and lookup */

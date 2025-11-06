@@ -66,7 +66,11 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
   @Override
   public List<TestFile> getFiles( Bowl bowl, TestFile file, String filters, VariableSpace space ) {
     List<TestFile> files = new ArrayList<>();
-    testFileSystem.get( file.getPath() ).forEach( testFile -> {
+    List<TestFile> testFiles = testFileSystem.get( file.getPath() );
+    if ( testFiles == null ) {
+      return files;
+    }
+    testFiles.forEach( testFile -> {
       if ( testFile instanceof TestDirectory ) {
         files.add( TestDirectory.create( testFile.getName(), testFile.getPath(), testFile.getParent() ) );
       } else if ( Utils.matches(testFile.getName(), filters) ) {
@@ -206,46 +210,47 @@ public class TestFileProvider extends BaseFileProvider<TestFile> {
     files1.add( TestDirectory.create( "directory2", "/directory2", "/" ) );
     files1.add( TestDirectory.create( "directory3", "/directory3", "/" ) );
     files1.add( TestDirectory.create( "directory4", "/directory4", "/" ) );
+    files1.add( TestDirectory.create( "directory45", "/directory45", "/" ) );
     fileSystem.put( "/", files1 );
 
     List<TestFile> files2 = new ArrayList<>();
-    files2.add( TestFile.create( "file1", "/directory1/file1", "/" ) );
-    files2.add( TestFile.create( "file2", "/directory1/file2", "/" ) );
-    files2.add( TestFile.create( "file3", "/directory1/file3", "/" ) );
-    files2.add( TestFile.create( "file4", "/directory1/file4", "/" ) );
-    files2.add( TestDirectory.create( "directory1", "/directory1/directory1", "/" ) );
-    files2.add( TestDirectory.create( "directory2", "/directory1/directory2", "/" ) );
-    files2.add( TestDirectory.create( "directory3", "/directory1/directory3", "/" ) );
-    files2.add( TestDirectory.create( "directory4", "/directory1/directory4", "/" ) );
+    files2.add( TestFile.create( "file1", "/directory1/file1", "/directory1" ) );
+    files2.add( TestFile.create( "file2", "/directory1/file2", "/directory1" ) );
+    files2.add( TestFile.create( "file3", "/directory1/file3", "/directory1" ) );
+    files2.add( TestFile.create( "file4", "/directory1/file4", "/directory1" ) );
+    files2.add( TestDirectory.create( "directory1", "/directory1/directory1", "/directory1" ) );
+    files2.add( TestDirectory.create( "directory2", "/directory1/directory2", "/directory1" ) );
+    files2.add( TestDirectory.create( "directory3", "/directory1/directory3", "/directory1" ) );
+    files2.add( TestDirectory.create( "directory4", "/directory1/directory4", "/directory1" ) );
     fileSystem.put( "/directory1", files2 );
 
     List<TestFile> files3 = new ArrayList<>();
-    files3.add( TestFile.create( "file1", "/directory2/file1", "/" ) );
-    files3.add( TestFile.create( "file2", "/directory2/file2", "/" ) );
-    files3.add( TestFile.create( "file3", "/directory2/file3", "/" ) );
-    files3.add( TestFile.create( "file4", "/directory2/file4", "/" ) );
-    files3.add( TestDirectory.create( "directory1", "/directory2/directory1", "/" ) );
-    files3.add( TestDirectory.create( "directory2", "/directory2/directory2", "/" ) );
-    files3.add( TestDirectory.create( "directory3", "/directory2/directory3", "/" ) );
-    files3.add( TestDirectory.create( "directory4", "/directory2/directory4", "/" ) );
+    files3.add( TestFile.create( "file1", "/directory2/file1", "/directory2" ) );
+    files3.add( TestFile.create( "file2", "/directory2/file2", "/directory2" ) );
+    files3.add( TestFile.create( "file3", "/directory2/file3", "/directory2" ) );
+    files3.add( TestFile.create( "file4", "/directory2/file4", "/directory2" ) );
+    files3.add( TestDirectory.create( "directory1", "/directory2/directory1", "/directory2" ) );
+    files3.add( TestDirectory.create( "directory2", "/directory2/directory2", "/directory2" ) );
+    files3.add( TestDirectory.create( "directory3", "/directory2/directory3", "/directory2" ) );
+    files3.add( TestDirectory.create( "directory4", "/directory2/directory4", "/directory2" ) );
     fileSystem.put( "/directory2", files3 );
 
     List<TestFile> files4 = new ArrayList<>();
-    files4.add( TestFile.create( "file1", "/directory3/file1", "/" ) );
-    files4.add( TestFile.create( "file2", "/directory3/file2", "/" ) );
-    files4.add( TestFile.create( "file3", "/directory3/file3", "/" ) );
-    files4.add( TestFile.create( "file4", "/directory3/file4", "/" ) );
-    files4.add( TestDirectory.create( "directory1", "/directory3/directory1", "/" ) );
-    files4.add( TestDirectory.create( "directory2", "/directory3/directory2", "/" ) );
-    files4.add( TestDirectory.create( "directory3", "/directory3/directory3", "/" ) );
-    files4.add( TestDirectory.create( "directory4", "/directory3/directory4", "/" ) );
+    files4.add( TestFile.create( "file1", "/directory3/file1", "/directory3" ) );
+    files4.add( TestFile.create( "file2", "/directory3/file2", "/directory3" ) );
+    files4.add( TestFile.create( "file3", "/directory3/file3", "/directory3" ) );
+    files4.add( TestFile.create( "file4", "/directory3/file4", "/directory3" ) );
+    files4.add( TestDirectory.create( "directory1", "/directory3/directory1", "/directory3" ) );
+    files4.add( TestDirectory.create( "directory2", "/directory3/directory2", "/directory3" ) );
+    files4.add( TestDirectory.create( "directory3", "/directory3/directory3", "/directory3" ) );
+    files4.add( TestDirectory.create( "directory4", "/directory3/directory4", "/directory3" ) );
     fileSystem.put( "/directory3", files4 );
 
     List<TestFile> files5 = new ArrayList<>();
-    files5.add( TestDirectory.create( "directory1", "/directory4/directory1", "/" ) );
-    files5.add( TestDirectory.create( "directory2", "/directory4/directory2", "/" ) );
-    files5.add( TestDirectory.create( "directory3", "/directory4/directory3", "/" ) );
-    files5.add( TestDirectory.create( "directory4", "/directory4/directory4", "/" ) );
+    files5.add( TestDirectory.create( "directory1", "/directory4/directory1", "/directory4" ) );
+    files5.add( TestDirectory.create( "directory2", "/directory4/directory2", "/directory4" ) );
+    files5.add( TestDirectory.create( "directory3", "/directory4/directory3", "/directory4" ) );
+    files5.add( TestDirectory.create( "directory4", "/directory4/directory4", "/directory4" ) );
     fileSystem.put( "/directory4", files5 );
 
     return fileSystem;
