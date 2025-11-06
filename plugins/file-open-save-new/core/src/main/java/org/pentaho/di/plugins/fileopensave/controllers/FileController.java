@@ -300,6 +300,14 @@ public class FileController {
     return null;
   }
 
+  public void refreshListener( File file ) {
+    fileListener.ifPresent( listener -> {
+      FileLookupInfo fileInfo = toLookupInfo( file );
+      listener.reset( fileInfo );
+      listener.onFileLoaded( fileInfo );
+    } );
+  }
+
   private FileLookupInfo toLookupInfo( File file ) {
     return new FileLookupInfo() {
 
@@ -320,7 +328,12 @@ public class FileController {
 
       @Override
       public boolean hasChildFile( String filter ) {
-        Predicate<File> fileFilter = f -> org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( f.getName(), filter );
+        Predicate<File> fileFilter = f -> {
+          String separator = f.getPath().contains( "/" ) ? "/" : "\\";
+          String path = f.getPath();
+          String fname = path.substring( path.lastIndexOf( separator ) + 1 );
+          return org.pentaho.di.plugins.fileopensave.api.providers.Utils.matches( fname, filter );
+        };
         Predicate<File> notDir = f -> !(f instanceof Directory);
         try {
           FileProvider<File> fileProvider = providerService.get( file.getProvider() );

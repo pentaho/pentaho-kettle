@@ -1172,8 +1172,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     TreeSelection treeViewerSelection = (TreeSelection) ( treeViewer.getSelection() );
     FileProvider fileProvider = null;
 
-    Spoon.getInstance().getFileLoadListener().ifPresent( FileLoadListener::reset );
-
     // Refresh the current element of the treeViewer
     if ( !treeViewerSelection.isEmpty() ) {
       if ( treeViewerSelection.getFirstElement() instanceof Tree ) {
@@ -1188,13 +1186,15 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         }
         treeViewer.collapseAll();
       } else {
+        File file = (File) treeViewerSelection.getFirstElement();
         try {
           fileProvider =
-            ProviderServiceService.get().get( ( (File) treeViewerSelection.getFirstElement() ).getProvider() );
+            ProviderServiceService.get().get( file.getProvider() );
         } catch ( Exception ex ) {
           log.logDebug( "Unable to find provider" );
         }
-        fileController.clearCache( (File) ( treeViewerSelection.getFirstElement() ) );
+        fileController.refreshListener( file );
+        fileController.clearCache( file );
       }
       if ( fileProvider != null ) {
         fileProvider.clearProviderCache();

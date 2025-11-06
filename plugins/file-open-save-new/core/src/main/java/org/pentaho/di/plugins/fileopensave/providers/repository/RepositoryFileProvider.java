@@ -71,7 +71,7 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   public static final String TRANSFORMATION = "transformation";
   public static final String JOB = "job";
   public static final String FOLDER = "folder";
-  public static final String FILTER = "*.ktr|*.kjb";
+  public static final String FILTER = "*";
 
   private RepositoryDirectoryInterface rootDirectory;
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
