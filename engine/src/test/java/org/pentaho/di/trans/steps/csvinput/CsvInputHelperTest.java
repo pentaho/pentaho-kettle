@@ -30,9 +30,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.vfs.KettleVFSImpl;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.CsvFileImportProcessor;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputFieldDTO;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 
 import java.io.ByteArrayInputStream;
@@ -48,10 +50,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.trans.step.StepHelperInterface.ACTION_STATUS;
 import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_METHOD_NOT_FOUND_RESPONSE;
@@ -322,6 +328,169 @@ public class CsvInputHelperTest {
     response = underTest.getStringFromRow( rowMeta, row, 0, true );
     assertNotNull( response );
   }
+
+  @Test( expected = KettleException.class )
+  public void testGetStringFromRow_ShouldThrowKettleException_WhenRowMetaThrowsException() throws KettleException {
+    RowMetaInterface rowMeta = mock( RowMetaInterface.class );
+    doThrow( new RuntimeException( "Simulated exception" ) )
+      .when( rowMeta )
+      .getString( any( Object[].class ), anyInt() );
+
+    Object[] row = new Object[] { "data" };
+
+    underTest.getStringFromRow( rowMeta, row, 0, true );
+  }
+
+  @Test
+  public void testGetFieldNamesImpl_WhenMetaIsTextFileInputMeta_ShouldInvokeGuessStringsFromLine() throws Exception {
+    TransMeta tMeta = mock( TransMeta.class );
+    when( tMeta.environmentSubstitute( anyString() ) ).thenAnswer( i -> i.getArgument( 0 ) );
+    when( tMeta.getParentVariableSpace() ).thenReturn( tMeta );
+
+    TextFileInputMeta textFileInputMeta = new TextFileInputMeta();
+    textFileInputMeta.content.fileType = "CSV";
+    textFileInputMeta.content.separator = ",";
+    textFileInputMeta.content.enclosure = "\"";
+    textFileInputMeta.content.escapeCharacter = "\\";
+    textFileInputMeta.content.fileFormat = "mixed";
+    textFileInputMeta.content.encoding = "UTF-8";
+    textFileInputMeta.content.header = true;
+
+    BufferedInputStreamReader reader = mock( BufferedInputStreamReader.class );
+    when( reader.getEncoding() ).thenReturn( "UTF-8" );
+
+    LogChannelInterface mockLog = mock( LogChannelInterface.class );
+    CsvInputHelper helper = spy( new CsvInputHelper( csvInputMeta ) );
+    doReturn( mockLog ).when( helper ).logChannel();
+
+    try ( MockedStatic<TextFileInputUtils> utils = mockStatic( TextFileInputUtils.class ) ) {
+      utils.when( () -> TextFileInputUtils.getLine(
+          any(), any(), any(), anyInt(), any(), any(), any() ) )
+        .thenReturn( "A,B,C" );
+
+      utils.when( () -> TextFileInputUtils.guessStringsFromLine(
+          any(), any(), eq( "A,B,C" ), any( TextFileInputMeta.class ),
+          eq( "," ), eq( "\"" ), eq( "\\" ) ) )
+        .thenReturn( new String[] { "A", "B", "C" } );
+
+      String[] result = helper.getFieldNamesImpl( tMeta, reader, textFileInputMeta );
+
+      assertNotNull( result );
+      assertEquals( 3, result.length );
+      assertEquals( "A", result[ 0 ] );
+      assertEquals( "B", result[ 1 ] );
+      assertEquals( "C", result[ 2 ] );
+
+      utils.verify( () -> TextFileInputUtils.guessStringsFromLine(
+        any(), any(), eq( "A,B,C" ), any( TextFileInputMeta.class ),
+        eq( "," ), eq( "\"" ), eq( "\\" )
+      ) );
+    }
+  }
+
+  @Test
+  public void testGetFieldNamesImpl_WhenFieldNamesEmpty_ShouldLogErrorAndReturnEmpty() throws Exception {
+    TransMeta tMeta = mock( TransMeta.class );
+    when( tMeta.environmentSubstitute( anyString() ) ).thenAnswer( i -> i.getArgument( 0 ) );
+
+    CsvInputAwareMeta meta = mock( CsvInputAwareMeta.class );
+    when( meta.getDelimiter() ).thenReturn( "," );
+    when( meta.getEnclosure() ).thenReturn( "\"" );
+    when( meta.getEscapeCharacter() ).thenReturn( "\\" );
+    when( meta.getFileFormatTypeNr() ).thenReturn( 0 );
+    when( meta.hasHeader() ).thenReturn( true );
+
+    BufferedInputStreamReader reader = mock( BufferedInputStreamReader.class );
+    when( reader.getEncoding() ).thenReturn( "UTF-8" );
+
+    LogChannelInterface mockLog = mock( LogChannelInterface.class );
+    CsvInputHelper helper = spy( new CsvInputHelper( csvInputMeta ) );
+    doReturn( mockLog ).when( helper ).logChannel();
+
+    try ( MockedStatic<TextFileInputUtils> utils = mockStatic( TextFileInputUtils.class ) ) {
+      utils.when( () -> TextFileInputUtils.getLine( any(), any(), any(), anyInt(), any(), any(), any() ) )
+        .thenReturn( "   " );
+
+      String[] result = helper.getFieldNamesImpl( tMeta, reader, meta );
+
+      assertNotNull( result );
+      assertEquals( 0, result.length );
+
+      verify( mockLog ).logError( contains( "Unable to get fields" ) );
+    }
+  }
+
+  @Test
+  public void testGetFieldNamesImpl_ShouldTrimEnclosuresFromFieldNames() throws Exception {
+    TransMeta tMeta = mock( TransMeta.class );
+    when( tMeta.environmentSubstitute( anyString() ) ).thenAnswer( i -> i.getArgument( 0 ) );
+
+    CsvInputAwareMeta meta = mock( CsvInputAwareMeta.class );
+    when( meta.getDelimiter() ).thenReturn( "," );
+    when( meta.getEnclosure() ).thenReturn( "\"" );
+    when( meta.getEscapeCharacter() ).thenReturn( "\\" );
+    when( meta.getFileFormatTypeNr() ).thenReturn( 0 );
+    when( meta.hasHeader() ).thenReturn( true );
+
+    BufferedInputStreamReader reader = mock( BufferedInputStreamReader.class );
+    when( reader.getEncoding() ).thenReturn( "UTF-8" );
+
+    LogChannelInterface mockLog = mock( LogChannelInterface.class );
+    CsvInputHelper helper = spy( new CsvInputHelper( csvInputMeta ) );
+    doReturn( mockLog ).when( helper ).logChannel();
+
+
+    try ( MockedStatic<TextFileInputUtils> utils = mockStatic( TextFileInputUtils.class );
+          MockedStatic<CsvInput> csv = mockStatic( CsvInput.class ) ) {
+
+      utils.when( () -> TextFileInputUtils.getLine( any(), any(), any(), anyInt(), any(), any(), any() ) )
+        .thenReturn( "\"Name\",\"City\"" );
+
+      csv.when( () -> CsvInput.guessStringsFromLine( any(), anyString(), anyString(), anyString(), anyString() ) )
+        .thenReturn( new String[] { "\"Name\"", "\"City\"" } );
+
+      String[] result = helper.getFieldNamesImpl( tMeta, reader, meta );
+
+      assertNotNull( result );
+      assertEquals( 2, result.length );
+      assertEquals( "Name", result[ 0 ] );
+      assertEquals( "City", result[ 1 ] );
+    }
+  }
+
+  @Test
+  public void testGetFieldNamesImpl_WhenMetaIsNotTextFileInputMeta_ShouldUseCsvInputGuess() throws Exception {
+    TransMeta tMeta = mock( TransMeta.class );
+    when( tMeta.environmentSubstitute( anyString() ) ).thenAnswer( i -> i.getArgument( 0 ) );
+
+    CsvInputAwareMeta meta = mock( CsvInputAwareMeta.class );
+    when( meta.getDelimiter() ).thenReturn( "," );
+    when( meta.getEnclosure() ).thenReturn( "\"" );
+    when( meta.getEscapeCharacter() ).thenReturn( "\\" );
+    when( meta.getFileFormatTypeNr() ).thenReturn( 0 );
+    when( meta.hasHeader() ).thenReturn( true );
+
+    BufferedInputStreamReader reader = mock( BufferedInputStreamReader.class );
+    when( reader.getEncoding() ).thenReturn( "UTF-8" );
+
+    try ( MockedStatic<TextFileInputUtils> utils = mockStatic( TextFileInputUtils.class );
+          MockedStatic<CsvInput> csv = mockStatic( CsvInput.class ) ) {
+
+      // Simulate a valid line
+      utils.when( () -> TextFileInputUtils.getLine( any(), any(), any(), anyInt(), any(), any(), any() ) )
+        .thenReturn( "a,b,c" );
+
+      csv.when( () -> CsvInput.guessStringsFromLine( any(), anyString(), anyString(), anyString(), anyString() ) )
+        .thenReturn( new String[] { "A", "B", "C" } );
+
+      String[] result = underTest.getFieldNamesImpl( tMeta, reader, meta );
+
+      assertNotNull( result );
+      assertEquals( 3, result.length );
+      assertEquals( "A", result[ 0 ] );
+    }
+  }
+
 
   @Test( expected = KettleException.class )
   public void getStringFromRowNullTest() throws KettleException {

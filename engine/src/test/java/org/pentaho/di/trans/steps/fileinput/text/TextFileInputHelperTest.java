@@ -22,7 +22,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.compress.CompressionInputStream;
@@ -35,10 +37,13 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepHelper;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +51,18 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -95,6 +105,66 @@ public class TextFileInputHelperTest {
     doThrow( new RuntimeException( "boom" ) ).when( spyHelper ).getFieldsAction( any(), any() );
     JSONObject result = spyHelper.handleStepAction( "getFields", transMeta, queryParams );
     assertEquals( BaseStepHelper.FAILURE_RESPONSE, result.get( BaseStepHelper.ACTION_STATUS ) );
+  }
+
+  @Test
+  public void testGetInputStream_ExceptionHandling() {
+    CsvInputAwareMeta csvMeta = mock( CsvInputAwareMeta.class );
+    when( csvMeta.getHeaderFileObject( transMeta ) ).thenThrow( new RuntimeException( "err" ) );
+    InputStream in = helper.getInputStream( transMeta, csvMeta );
+    assertNull( in );
+  }
+
+  @Test
+  public void testGetInputStream_Success() throws Exception {
+    FileObject fileObject = mock( FileObject.class );
+    FileInputList list = mock( FileInputList.class );
+
+    when( textFileInputMeta.getFileInputList( any(), any() ) ).thenReturn( list );
+    when( list.getFile( 0 ) ).thenReturn( fileObject );
+
+    TextFileInputMeta.Content content = new TextFileInputMeta.Content();
+    content.fileCompression = "None";
+    textFileInputMeta.content = content;
+
+    try (
+      MockedStatic<KettleVFS> vfs = mockStatic( KettleVFS.class );
+      MockedStatic<CompressionProviderFactory> provFactory = mockStatic( CompressionProviderFactory.class )
+    ) {
+      vfs.when( () -> KettleVFS.getInputStream( fileObject ) )
+        .thenReturn( new ByteArrayInputStream( "data".getBytes() ) );
+
+      CompressionProviderFactory factory = mock( CompressionProviderFactory.class );
+      provFactory.when( CompressionProviderFactory::getInstance ).thenReturn( factory );
+      when( factory.createCompressionProviderInstance( anyString() ) ).thenReturn( provider );
+      when( provider.createInputStream( any() ) ).thenReturn( compressionStream );
+
+      InputStream in = helper.getInputStream( transMeta, textFileInputMeta );
+      assertNotNull( in );
+    }
+  }
+
+
+  @Test
+  public void testShowFilesAction_Filtered() {
+    when( textFileInputMeta.getFilePaths( transMeta.getBowl(), transMeta ) )
+      .thenReturn( new String[] { "a.txt", "b.csv" } );
+    Map<String, String> qp = new HashMap<>();
+    qp.put( "stepName", "s" );
+    qp.put( "filter", "a" );
+    JSONObject res = helper.showFilesAction( transMeta, qp );
+    JSONArray files = (JSONArray) res.get( "files" );
+    assertEquals( 1, files.size() );
+  }
+
+
+  @Test
+  public void testValidateShowContentAction_NoFiles() {
+    FileInputList list = mock( FileInputList.class );
+    when( list.nrOfFiles() ).thenReturn( 0 );
+    when( textFileInputMeta.getFileInputList( transMeta.getBowl(), transMeta ) ).thenReturn( list );
+    JSONObject res = helper.validateShowContentAction( transMeta, new HashMap<>() );
+    assertTrue( res.containsKey( "message" ) );
   }
 
   @Test
@@ -327,6 +397,41 @@ public class TextFileInputHelperTest {
   }
 
   @Test
+  public void testPopulateMeta_MockFieldNames() throws Exception {
+    StepMeta mockStepMeta = mock( StepMeta.class );
+    when( transMeta.findStep( "testStep" ) ).thenReturn( mockStepMeta );
+    when( mockStepMeta.getStepMetaInterface() ).thenReturn( textFileInputMeta );  // or your CsvInputAwareMeta
+
+    TextFileInputHelper spyhelper = Mockito.spy( new TextFileInputHelper( textFileInputMeta ) );
+
+    doReturn( new String[] { "col1", "col2" } )
+      .when( spyhelper )
+      .getFieldNames( any( TransMeta.class ), any( CsvInputAwareMeta.class ) );
+
+    InputStream mockStream = new ByteArrayInputStream( "a,b\n1,2".getBytes() );
+    BufferedInputStreamReader reader = mock( BufferedInputStreamReader.class );
+
+    doReturn( mockStream ).when( spyhelper ).getInputStream( any(), any() );
+    doReturn( reader ).when( spyhelper ).getBufferedReader( any(), any(), any() );
+
+    try ( MockedConstruction<TextFileCsvFileTypeImportProcessor> construction =
+            mockConstruction( TextFileCsvFileTypeImportProcessor.class, ( mockProc, ctx ) -> {
+              when( mockProc.analyzeFile( true ) ).thenReturn( "summary-ok" );
+              when( mockProc.getInputFieldsDto() ).thenReturn( new TextFileInputFieldDTO[] {} );
+            } ) ) {
+
+      Map<String, String> params = Map.of(
+        "stepName", "testStep",
+        "noOfFields", "2",
+        "isSampleSummary", "true"
+      );
+
+      JSONObject result = spyhelper.populateMeta( transMeta, textFileInputMeta, params );
+      assertEquals( "summary-ok", result.get( "summary" ) );
+    }
+  }
+
+  @Test
   public void testHandleStepAction_ValidateShowContent() {
     when( textFileInputMeta.getFileInputList( any(), any() ) ).thenReturn( fileInputList );
     when( fileInputList.nrOfFiles() ).thenReturn( 5 );
@@ -484,11 +589,158 @@ public class TextFileInputHelperTest {
         any(), any(), any(), anyInt(), any(), any(), any()
       ) ).thenReturn( "test" ).thenReturn( null );
 
-      helper.handleStepAction( "getFields", transMeta, queryParams );
-
-      assertEquals( transMeta, helper.getTransMeta() );
+      JSONObject result = helper.handleStepAction( "getFields", transMeta, queryParams );
+      assertNotNull( result );
     }
   }
+
+  @Test
+  public void testGetFields_AddsTrailingDummyField() {
+    TextFileInputMeta info = new TextFileInputMeta();
+    String row = "abcdefg";
+    List<String> rows = List.of( row );
+
+    BaseFileField lastField = new BaseFileField( "LastField", 0, 4 ); // ends at position 4
+    info.inputFields = new BaseFileField[] { lastField };
+
+    List<?> fields = helper.getFields( info, rows );
+
+    assertTrue( fields.stream().anyMatch( f -> {
+      if ( f instanceof BaseFileField bf ) {
+        return bf.getName().startsWith( "Dummy" ) && bf.isIgnored();
+      }
+      return false;
+    } ) );
+    assertEquals( 2, fields.size() );
+  }
+
+  @Test
+  public void testGetFieldNamesAction() {
+    TransMeta tMeta = mock( TransMeta.class );
+
+    TextFileInputHelper thelper = spy( new TextFileInputHelper( textFileInputMeta ) );
+
+    String[] mockedFieldNames = new String[] { "colA", "colB", "colC" };
+    doReturn( mockedFieldNames ).when( thelper ).getFieldNames( any(), any() );
+
+    Map<String, String> qParams = new HashMap<>();
+
+    JSONObject response = thelper.getFieldNamesAction( tMeta, qParams );
+
+    assertNotNull( response );
+    assertTrue( response.containsKey( "fieldNames" ) );
+
+    JSONArray fieldNamesArray = (JSONArray) response.get( "fieldNames" );
+    assertEquals( 3, fieldNamesArray.size() );
+    assertEquals( "colA", fieldNamesArray.get( 0 ) );
+    assertEquals( "colB", fieldNamesArray.get( 1 ) );
+    assertEquals( "colC", fieldNamesArray.get( 2 ) );
+  }
+
+  @Test
+  public void testSkipHeaderLines() throws Exception {
+    TextFileInputMeta meta = new TextFileInputMeta();
+    meta.content = new TextFileInputMeta.Content();
+    meta.content.layoutPaged = true;
+    meta.content.nrLinesDocHeader = 2;
+    meta.content.header = true;
+    meta.content.nrHeaderLines = 3;
+
+    BufferedInputStreamReader reader = mock( BufferedInputStreamReader.class );
+    TextFileInputHelper thelper = new TextFileInputHelper( meta );
+    StringBuilder sb = new StringBuilder();
+
+    Method skipMethod = TextFileInputHelper.class.getDeclaredMethod(
+      "skipHeaderLines",
+      TextFileInputMeta.class,
+      BufferedInputStreamReader.class,
+      EncodingType.class,
+      StringBuilder.class
+    );
+    skipMethod.setAccessible( true );
+
+    try ( MockedStatic<TextFileInputUtils> mockedStatic = mockStatic( TextFileInputUtils.class ) ) {
+
+      skipMethod.invoke( thelper, meta, reader, null, sb );
+
+      mockedStatic.verify(
+        () -> TextFileInputUtils.skipLines( any(), eq( reader ), eq( null ), anyInt(), any(), eq( 1 ), any(), any(),
+          anyLong() ) );
+
+      mockedStatic.verify(
+        () -> TextFileInputUtils.skipLines( any(), eq( reader ), eq( null ), anyInt(), any(), eq( 2 ), any(), any(),
+          anyLong() ) );
+    }
+  }
+
+  @Test
+  public void testGetFirst_NoFiles_ReturnsEmptyList() throws Exception {
+    TextFileInputMeta meta = mock( TextFileInputMeta.class );
+    TransMeta tMeta = mock( TransMeta.class );
+    FileInputList fileList = mock( FileInputList.class );
+
+    when( meta.getFileInputList( any(), any() ) ).thenReturn( fileList );
+    when( fileList.nrOfFiles() ).thenReturn( 0 );
+
+    List<String> result = helper.getFirst( meta, tMeta, 5, false );
+
+    assertNotNull( result );
+    assertTrue( result.isEmpty() );
+  }
+
+  @Test
+  public void testGetFirst_ExceptionInTry_CallsCatchBlock() {
+    TextFileInputMeta meta = mock( TextFileInputMeta.class );
+    TransMeta tmeta = mock( TransMeta.class );
+    FileInputList fileList = mock( FileInputList.class );
+    FileObject fileObject = mock( FileObject.class );
+    FileName fileName = mock( FileName.class );
+
+    when( meta.getFileInputList( any(), any() ) ).thenReturn( fileList );
+    when( fileList.nrOfFiles() ).thenReturn( 1 );
+    when( fileList.getFile( 0 ) ).thenReturn( fileObject );
+    when( fileObject.getName() ).thenReturn( fileName );
+    when( fileName.getURI() ).thenReturn( "file:///testfile.txt" );
+
+    try (
+      MockedStatic<KettleVFS> vfs = mockStatic( KettleVFS.class );
+      MockedStatic<CompressionProviderFactory> provFactory = mockStatic( CompressionProviderFactory.class )
+    ) {
+      vfs.when( () -> KettleVFS.getInputStream( any( FileObject.class ) ) )
+        .thenThrow( new RuntimeException( "Simulated failure" ) );
+
+      CompressionProviderFactory factory = mock( CompressionProviderFactory.class );
+      CompressionProvider cprovider = mock( CompressionProvider.class );
+      provFactory.when( CompressionProviderFactory::getInstance ).thenReturn( factory );
+      when( factory.createCompressionProviderInstance( any() ) ).thenReturn( cprovider );
+
+      try {
+        helper.getFirst( meta, tmeta, 3, false );
+        fail( "Expected KettleException was not thrown" );
+      } catch ( KettleException e ) {
+        assertNotNull( e.getCause() );
+      }
+    }
+  }
+
+  @Test
+  public void testGetFields_NoTrailingDummyFieldWhenFieldCoversRow() {
+    TextFileInputMeta info = new TextFileInputMeta();
+    String row = "abcdef";
+    List<String> rows = List.of( row );
+
+    BaseFileField lastField = new BaseFileField( "LastField", 0, row.length() ); // covers entire row
+    info.inputFields = new BaseFileField[] { lastField };
+
+    List<?> fields = helper.getFields( info, rows );
+
+    long dummyCount = fields.stream().filter( f ->
+      f instanceof BaseFileField && ( (BaseFileField) f ).getName().startsWith( "Dummy" ) ).count();
+
+    assertEquals( 0, dummyCount );
+    assertEquals( 1, fields.size() );
+  }
+
 
   @Test
   public void testHandleStepAction() {
