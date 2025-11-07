@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import javax.mail.Flags.Flag;
+import jakarta.mail.Flags.Flag;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;

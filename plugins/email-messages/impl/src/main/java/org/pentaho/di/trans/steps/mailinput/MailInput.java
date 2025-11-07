@@ -19,8 +19,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.mail.Header;
-import javax.mail.Message;
+import jakarta.mail.Header;
+import jakarta.mail.Message;
 import java.util.Properties;
 
 import org.apache.commons.collections.iterators.ArrayIterator;

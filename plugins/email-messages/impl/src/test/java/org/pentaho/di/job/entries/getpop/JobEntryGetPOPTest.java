@@ -21,13 +21,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.Message;
-import javax.mail.Flags.Flag;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.MessagingException;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.Message;
+import jakarta.mail.Flags.Flag;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.MessagingException;
 
 import org.junit.Before;
 import org.junit.Test;

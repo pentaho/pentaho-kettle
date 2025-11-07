@@ -18,7 +18,7 @@ import org.pentaho.di.core.annotations.PluginDialog;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import javax.mail.Folder;
+import jakarta.mail.Folder;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
