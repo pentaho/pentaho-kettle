@@ -942,7 +942,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     wWildcard.setText( Const.NVL( jobEntry.getWildcard(), "" ) );
     wRemove.setSelection( jobEntry.getRemove() );
     wBinaryMode.setSelection( jobEntry.isBinaryMode() );
-    wTimeout.setText( "" + jobEntry.getTimeout() );
+    wTimeout.setText( jobEntry.getTimeout() );
     wOnlyNew.setSelection( jobEntry.isOnlyPuttingNewFiles() );
     wActive.setSelection( jobEntry.isActiveConnection() );
 
@@ -980,7 +980,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     jobEntry.setWildcard( wWildcard.getText() );
     jobEntry.setRemove( wRemove.getSelection() );
     jobEntry.setBinaryMode( wBinaryMode.getSelection() );
-    jobEntry.setTimeout( Const.toInt( wTimeout.getText(), 10000 ) );
+    jobEntry.setTimeout( wTimeout.getText() );
     jobEntry.setOnlyPuttingNewFiles( wOnlyNew.getSelection() );
     jobEntry.setActiveConnection( wActive.getSelection() );
 

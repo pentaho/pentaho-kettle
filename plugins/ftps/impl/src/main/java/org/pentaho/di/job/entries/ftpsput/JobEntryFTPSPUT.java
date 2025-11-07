@@ -72,7 +72,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
   private String localDirectory;
   private String wildcard;
   private boolean binaryMode;
-  private int timeout;
+  private String timeout;
   private boolean remove;
   private boolean onlyPuttingNewFiles; /* Don't overwrite files */
   private boolean activeConnection;
@@ -93,6 +93,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
     remoteDirectory = null;
     localDirectory = null;
     connectionType = FTPSConnection.CONNECTION_TYPE_FTP;
+    timeout = "0";
   }
 
   public JobEntryFTPSPUT() {
@@ -145,7 +146,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       localDirectory = XMLHandler.getTagValue( entrynode, "localDirectory" );
       wildcard = XMLHandler.getTagValue( entrynode, "wildcard" );
       binaryMode = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "binary" ) );
-      timeout = Const.toInt( XMLHandler.getTagValue( entrynode, "timeout" ), 10000 );
+      timeout = XMLHandler.getTagValue( entrynode, "timeout" );
       remove = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "remove" ) );
       onlyPuttingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "only_new" ) );
       activeConnection = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "active" ) );
@@ -174,7 +175,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       localDirectory = rep.getJobEntryAttributeString( id_jobentry, "localDirectory" );
       wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
       binaryMode = rep.getJobEntryAttributeBoolean( id_jobentry, "binary" );
-      timeout = (int) rep.getJobEntryAttributeInteger( id_jobentry, "timeout" );
+      timeout = rep.getJobEntryAttributeString( id_jobentry, "timeout" );
       remove = rep.getJobEntryAttributeBoolean( id_jobentry, "remove" );
       onlyPuttingNewFiles = rep.getJobEntryAttributeBoolean( id_jobentry, "only_new" );
       activeConnection = rep.getJobEntryAttributeBoolean( id_jobentry, "active" );
@@ -240,14 +241,14 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
    * @param timeout
    *          The timeout to set.
    */
-  public void setTimeout( int timeout ) {
+  public void setTimeout( String timeout ) {
     this.timeout = timeout;
   }
 
   /**
    * @return Returns the timeout.
    */
-  public int getTimeout() {
+  public String getTimeout() {
     return timeout;
   }
 
@@ -513,19 +514,19 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       if ( !localFiles.exists() ) {
         // if local directory uses ${ signature this will be fail to MessageFormat.format ...
         String error = BaseMessages.getString(
-            PKG, "JobFTPSPUT.LocalFileDirectoryNotExists" ) + realLocalDirectory;
+          PKG, "JobFTPSPUT.LocalFileDirectoryNotExists" ) + realLocalDirectory;
         throw new Exception( error );
       }
 
       File[] children = localFiles.listFiles();
       for ( int i = 0; i < children.length; i++ ) {
         // Get filename of file or directory
-        if ( !children[i].isDirectory() ) {
-          myFileList.add( children[i].getName() );
+        if ( !children[ i ].isDirectory() ) {
+          myFileList.add( children[ i ].getName() );
         }
       }
 
-      String[] filelist = new String[myFileList.size()];
+      String[] filelist = new String[ myFileList.size() ];
       myFileList.toArray( filelist );
 
       if ( isDetailed() ) {
@@ -545,31 +546,31 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 
         // First see if the file matches the regular expression!
         if ( pattern != null ) {
-          Matcher matcher = pattern.matcher( filelist[i] );
+          Matcher matcher = pattern.matcher( filelist[ i ] );
           getIt = matcher.matches();
         }
 
         if ( getIt ) {
           // File exists?
-          boolean fileExist = connection.isFileExists( filelist[i] );
+          boolean fileExist = connection.isFileExists( filelist[ i ] );
 
           if ( isDebug() ) {
             if ( fileExist ) {
-              logDebug( BaseMessages.getString( PKG, "JobFTPSPUT.Log.FileExists", filelist[i] ) );
+              logDebug( BaseMessages.getString( PKG, "JobFTPSPUT.Log.FileExists", filelist[ i ] ) );
             } else {
-              logDebug( BaseMessages.getString( PKG, "JobFTPSPUT.Log.FileDoesNotExists", filelist[i] ) );
+              logDebug( BaseMessages.getString( PKG, "JobFTPSPUT.Log.FileDoesNotExists", filelist[ i ] ) );
             }
           }
 
           if ( !fileExist || ( !onlyPuttingNewFiles && fileExist ) ) {
 
-            String localFilename = realLocalDirectory + Const.FILE_SEPARATOR + filelist[i];
+            String localFilename = realLocalDirectory + Const.FILE_SEPARATOR + filelist[ i ];
             if ( isDebug() ) {
               logDebug( BaseMessages.getString(
                 PKG, "JobFTPSPUT.Log.PuttingFileToRemoteDirectory", localFilename, realRemoteDirectory ) );
             }
 
-            connection.uploadFile( localFilename, filelist[i] );
+            connection.uploadFile( localFilename, filelist[ i ] );
 
             filesput++;
 
@@ -623,18 +624,18 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     Repository repository, IMetaStore metaStore ) {
     JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator().validate(
       this, "localDirectory", remarks, AndValidator.putValidators(
-          JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
+        JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "serverPort", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
   void buildFTPSConnection( FTPSConnection connection ) throws Exception {
@@ -679,9 +680,10 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
     }
 
     // Set the timeout
-    connection.setTimeOut( timeout );
+    int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 10000 );
+    connection.setTimeOut( timeoutValue );
     if ( isDetailed() ) {
-      logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetTimeout", timeout ) );
+      logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetTimeout", String.valueOf( timeoutValue ) ) );
     }
 
     // login to FTPS host ...

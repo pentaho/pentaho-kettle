@@ -1391,7 +1391,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     wTargetDirectory.setText( Const.NVL( jobEntry.getTargetDirectory(), "" ) );
     wWildcard.setText( Const.NVL( jobEntry.getWildcard(), "" ) );
     wBinaryMode.setSelection( jobEntry.isBinaryMode() );
-    wTimeout.setText( "" + jobEntry.getTimeout() );
+    wTimeout.setText( jobEntry.getTimeout() );
     wRemove.setSelection( jobEntry.getRemove() );
     wOnlyNew.setSelection( jobEntry.isOnlyGettingNewFiles() );
     wActive.setSelection( jobEntry.isActiveConnection() );
@@ -1458,7 +1458,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     jobEntry.setTargetDirectory( wTargetDirectory.getText() );
     jobEntry.setWildcard( wWildcard.getText() );
     jobEntry.setBinaryMode( wBinaryMode.getSelection() );
-    jobEntry.setTimeout( Const.toInt( wTimeout.getText(), 10000 ) );
+    jobEntry.setTimeout( wTimeout.getText() );
     jobEntry.setRemove( wRemove.getSelection() );
     jobEntry.setOnlyGettingNewFiles( wOnlyNew.getSelection() );
     jobEntry.setActiveConnection( wActive.getSelection() );

@@ -60,11 +60,11 @@ import java.util.regex.Pattern;
  *
  */
 @JobEntry( id = "FTPS_GET", name = "JobEntry.FTPSGet.TypeDesc",
-        i18nPackageName = "org.pentaho.di.job.entries.ftpsget",
-        description = "JobEntry.FTPSGet.Tooltip",
-        categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
-        image = "GFTPS.svg",
-        documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+a+file+with+FTPS" )
+  i18nPackageName = "org.pentaho.di.job.entries.ftpsget",
+  description = "JobEntry.FTPSGet.Tooltip",
+  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer",
+  image = "GFTPS.svg",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+a+file+with+FTPS" )
 public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryFTPSGet.class; // for i18n purposes, needed by Translator2!!
 
@@ -75,7 +75,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
   private String targetDirectory;
   private String wildcard;
   private boolean binaryMode;
-  private int timeout;
+  private String timeout;
   private boolean remove;
   private boolean onlyGettingNewFiles; /* Don't overwrite files */
   private boolean activeConnection;
@@ -143,6 +143,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     isaddresult = true;
     createmovefolder = false;
     connectionType = FTPSConnection.CONNECTION_TYPE_FTP;
+    timeout = "0";
   }
 
   public JobEntryFTPSGet() {
@@ -201,7 +202,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
   }
 
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
-    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
+                       Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       port = XMLHandler.getTagValue( entrynode, "port" );
@@ -212,7 +213,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       targetDirectory = XMLHandler.getTagValue( entrynode, "targetdirectory" );
       wildcard = XMLHandler.getTagValue( entrynode, "wildcard" );
       binaryMode = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "binary" ) );
-      timeout = Const.toInt( XMLHandler.getTagValue( entrynode, "timeout" ), 10000 );
+      timeout = XMLHandler.getTagValue( entrynode, "timeout" );
       remove = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "remove" ) );
       onlyGettingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "only_new" ) );
       activeConnection = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "active" ) );
@@ -256,7 +257,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-    List<SlaveServer> slaveServers ) throws KettleException {
+                       List<SlaveServer> slaveServers ) throws KettleException {
     try {
       port = rep.getJobEntryAttributeString( id_jobentry, "port" );
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
@@ -267,7 +268,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       targetDirectory = rep.getJobEntryAttributeString( id_jobentry, "targetdirectory" );
       wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
       binaryMode = rep.getJobEntryAttributeBoolean( id_jobentry, "binary" );
-      timeout = (int) rep.getJobEntryAttributeInteger( id_jobentry, "timeout" );
+      timeout = rep.getJobEntryAttributeString( id_jobentry, "timeout" );
       remove = rep.getJobEntryAttributeBoolean( id_jobentry, "remove" );
       onlyGettingNewFiles = rep.getJobEntryAttributeBoolean( id_jobentry, "only_new" );
       activeConnection = rep.getJobEntryAttributeBoolean( id_jobentry, "active" );
@@ -582,14 +583,14 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
    * @param timeout
    *          The timeout to set.
    */
-  public void setTimeout( int timeout ) {
+  public void setTimeout( String timeout ) {
     this.timeout = timeout;
   }
 
   /**
    * @return Returns the timeout.
    */
-  public int getTimeout() {
+  public String getTimeout() {
     return timeout;
   }
 
@@ -693,9 +694,9 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 
   public static String getFileExistsAction( int actionId ) {
     if ( actionId < 0 || actionId >= FILE_EXISTS_ACTIONS.length ) {
-      return FILE_EXISTS_ACTIONS[0];
+      return FILE_EXISTS_ACTIONS[ 0 ];
     }
-    return FILE_EXISTS_ACTIONS[actionId];
+    return FILE_EXISTS_ACTIONS[ actionId ];
   }
 
   public static int getFileExistsIndex( String desc ) {
@@ -704,13 +705,14 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       return result;
     }
     for ( int i = 0; i < FILE_EXISTS_ACTIONS.length; i++ ) {
-      if ( desc.equalsIgnoreCase( FILE_EXISTS_ACTIONS[i] ) ) {
+      if ( desc.equalsIgnoreCase( FILE_EXISTS_ACTIONS[ i ] ) ) {
         result = i;
         break;
       }
     }
     return result;
   }
+
   public Result execute( Result previousResult, int nr ) throws KettleException {
     // LogWriter log = LogWriter.getInstance();
     logBasic( BaseMessages.getString( PKG, "JobEntryFTPS.Started", serverName ) );
@@ -824,7 +826,8 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     return result;
   }
 
-  private void downloadFiles( FTPSConnection connection, String folder, Pattern pattern, Result result ) throws KettleException {
+  private void downloadFiles( FTPSConnection connection, String folder, Pattern pattern, Result result )
+    throws KettleException {
 
     List<FTPFile> fileList = connection.getFileList( folder );
     if ( isDetailed() ) {
@@ -975,7 +978,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 
     if ( ( NrErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
       || ( NrfilesRetrieved >= limitFiles && getSuccessCondition().equals(
-        SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED ) )
+      SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED ) )
       || ( NrErrors <= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
@@ -1005,9 +1008,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
   }
 
   /**
-   * @param string
-   *          the filename from the FTPS server
-   *
+   * @param string the filename from the FTPS server
    * @return the calculated target filename
    */
   private String returnTargetFilename( String filename ) {
@@ -1066,10 +1067,8 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
    * See if the filename on the FTPS server needs downloading. The default is to check the presence of the file in the
    * target directory. If you need other functionality, extend this class and build it into a plugin.
    *
-   * @param filename
-   *          The local filename to check
-   * @param remoteFileSize
-   *          The size of the remote file
+   * @param filename       The local filename to check
+   * @param remoteFileSize The size of the remote file
    * @return true if the file needs downloading
    */
   protected boolean needsDownload( String filename ) {
@@ -1130,16 +1129,14 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
   }
 
   /**
-   * @param connectionType
-   *          the connectionType to set
+   * @param connectionType the connectionType to set
    */
   public void setConnectionType( int type ) {
     connectionType = type;
   }
 
   /**
-   * @param activeConnection
-   *          the activeConnection to set
+   * @param activeConnection the activeConnection to set
    */
   public void setActiveConnection( boolean passive ) {
     this.activeConnection = passive;
@@ -1158,18 +1155,18 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     Repository repository, IMetaStore metaStore ) {
     JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator().validate(
       this, "localDirectory", remarks, AndValidator.putValidators(
-          JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
+        JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "serverPort", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
+      AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
   void buildFTPSConnection( FTPSConnection connection ) throws Exception {
@@ -1214,9 +1211,10 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     }
 
     // Set the timeout
-    connection.setTimeOut( timeout );
+    int timeoutValue = Const.toInt( environmentSubstitute( timeout ), 10000 );
+    connection.setTimeOut( timeoutValue );
     if ( isDetailed() ) {
-      logDetailed( BaseMessages.getString( PKG, "JobEntryFTPS.SetTimeout", String.valueOf( timeout ) ) );
+      logDetailed( BaseMessages.getString( PKG, "JobEntryFTPS.SetTimeout", String.valueOf( timeoutValue ) ) );
     }
 
     // login to FTPS host ...

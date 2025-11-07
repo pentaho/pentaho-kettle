@@ -78,7 +78,7 @@ public class JobEntryFTPPUTTest {
 
   @Test
   public void createFtpClient_UsesTimeoutIfSet() throws Exception {
-    entry.setTimeout( 10 );
+    entry.setTimeout( "10" );
     entry.createAndSetUpFtpClient();
     verify( ftpClient ).setTimeout( 10 );
   }
