@@ -15,9 +15,9 @@ package org.pentaho.di.trans.steps.mailinput;
 
 import java.util.Iterator;
 
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 
 public class BatchFolderIterator implements Iterator<Message> {
 

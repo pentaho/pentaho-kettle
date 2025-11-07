@@ -17,9 +17,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 
 import junit.framework.Assert;
 

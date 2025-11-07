@@ -15,8 +15,8 @@ package org.pentaho.di.trans.steps.mailinput;
 
 import java.util.Iterator;
 
-import javax.mail.Message;
-import javax.mail.search.SearchTerm;
+import jakarta.mail.Message;
+import jakarta.mail.search.SearchTerm;
 
 public class SearchEnabledFolderIterator implements Iterator<Message> {
 

@@ -15,7 +15,7 @@ package org.pentaho.di.trans.steps.mailinput;
 
 import java.util.Iterator;
 
-import javax.mail.Message;
+import jakarta.mail.Message;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.job.entries.getpop.MailConnection;

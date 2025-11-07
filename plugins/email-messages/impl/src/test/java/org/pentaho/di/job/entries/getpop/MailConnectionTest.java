@@ -23,9 +23,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
-import javax.mail.Folder;
-import javax.mail.MessagingException;
-import javax.mail.Store;
+import jakarta.mail.Folder;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Store;
 import java.io.File;
 import java.io.IOException;
 
