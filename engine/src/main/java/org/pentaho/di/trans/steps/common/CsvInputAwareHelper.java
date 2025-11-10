@@ -13,11 +13,6 @@
 
 package org.pentaho.di.trans.steps.common;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.DecimalFormat;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
@@ -33,10 +28,14 @@ import org.pentaho.di.trans.steps.csvinput.CsvInput;
 import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputFieldDTO;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 
-public interface CsvInputAwareStep {
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+
+public interface CsvInputAwareHelper {
 
   /**
    * Retrieves the field names from the CSV input metadata.
@@ -44,11 +43,11 @@ public interface CsvInputAwareStep {
    * @param meta the CSV input metadata
    * @return an array of field names
    */
-  default String[] getFieldNames( final CsvInputAwareMeta meta ) {
+  default String[] getFieldNames( final TransMeta transMeta, final CsvInputAwareMeta meta ) {
     String[] fieldNames = new String[] {};
-    try ( InputStream inputStream = getInputStream( meta ) ) {
-      final BufferedInputStreamReader reader = getBufferedReader( meta, inputStream );
-      fieldNames = getFieldNamesImpl( reader, meta );
+    try ( InputStream inputStream = getInputStream( transMeta, meta ) ) {
+      final BufferedInputStreamReader reader = getBufferedReader( transMeta, meta, inputStream );
+      fieldNames = getFieldNamesImpl( transMeta, reader, meta );
     } catch ( final KettleException | IOException e ) {
       logError( BaseMessages.getString( "Dialog.ErrorGettingFields.Message" ), e );
     }
@@ -63,7 +62,8 @@ public interface CsvInputAwareStep {
    * @return an array of field names
    * @throws KettleException if an error occurs while retrieving the field names
    */
-  default String[] getFieldNamesImpl( final BufferedInputStreamReader reader, final CsvInputAwareMeta meta )
+  default String[] getFieldNamesImpl( final TransMeta transMeta, final BufferedInputStreamReader reader,
+                                      final CsvInputAwareMeta meta )
     throws KettleException {
 
     String[] fieldNames = new String[] {};
@@ -71,9 +71,9 @@ public interface CsvInputAwareStep {
       logError( BaseMessages.getString( "Dialog.ErrorGettingFields.Message" ) );
       return fieldNames;
     }
-    final String delimiter = getTransMeta().environmentSubstitute( meta.getDelimiter() );
-    final String enclosure = getTransMeta().environmentSubstitute( meta.getEnclosure() );
-    final String escapeCharacter = getTransMeta().environmentSubstitute( meta.getEscapeCharacter() );
+    final String delimiter = transMeta.environmentSubstitute( meta.getDelimiter() );
+    final String enclosure = transMeta.environmentSubstitute( meta.getEnclosure() );
+    final String escapeCharacter = transMeta.environmentSubstitute( meta.getEscapeCharacter() );
 
     final EncodingType encodingType = EncodingType.guessEncodingType( reader.getEncoding() );
 
@@ -81,13 +81,8 @@ public interface CsvInputAwareStep {
     final String line = TextFileInputUtils.getLine( logChannel(), reader, encodingType, meta.getFileFormatTypeNr(),
       new StringBuilder( 1000 ), enclosure, escapeCharacter );
     if ( !StringUtils.isBlank( line ) ) {
-      if ( meta instanceof TextFileInputMeta ) {
-        fieldNames = TextFileInputUtils.guessStringsFromLine( getTransMeta().getParentVariableSpace(), logChannel(),
-          line, (TextFileInputMeta) meta, delimiter, enclosure, meta.getEscapeCharacter() );
-      } else {
-        fieldNames = CsvInput.guessStringsFromLine( logChannel(), line, delimiter, enclosure,
-          meta.getEscapeCharacter() );
-      }
+      fieldNames = CsvInput.guessStringsFromLine( logChannel(), line, delimiter, enclosure,
+        meta.getEscapeCharacter() );
     }
     if ( Utils.isEmpty( fieldNames ) ) {
       logError( BaseMessages.getString( "Dialog.ErrorGettingFields.Message" ) );
@@ -121,12 +116,13 @@ public interface CsvInputAwareStep {
   /**
    * Returns the {@link InputStreamReader} corresponding to the csv file, or null if the file cannot be read.
    *
-   * @return the {@link InputStreamReader} corresponding to the csv file, or null if the file cannot be read.
+   * @return the {@link InputStreamReader} corresponding to the csv file, or null if the file cannot be read
    */
-  default InputStreamReader getReader( final CsvInputAwareMeta meta, final InputStream inputStream ) {
+  default InputStreamReader getReader( final TransMeta transMeta, final CsvInputAwareMeta meta,
+                                       final InputStream inputStream ) {
     InputStreamReader reader = null;
     try {
-      String realEncoding = getTransMeta().environmentSubstitute( meta.getEncoding() );
+      String realEncoding = transMeta.environmentSubstitute( meta.getEncoding() );
       if ( Utils.isEmpty( realEncoding ) ) {
         reader = new InputStreamReader( inputStream );
       } else {
@@ -209,9 +205,11 @@ public interface CsvInputAwareStep {
    * @param inputStream the input stream to read from
    * @return a BufferedInputStreamReader for reading the CSV file
    */
-  default BufferedInputStreamReader getBufferedReader( final CsvInputAwareMeta meta, final InputStream inputStream ) {
-    return new BufferedInputStreamReader( getReader( meta, inputStream ) );
+  default BufferedInputStreamReader getBufferedReader( final TransMeta transMeta, final CsvInputAwareMeta meta,
+                                                       final InputStream inputStream ) {
+    return new BufferedInputStreamReader( getReader( transMeta, meta, inputStream ) );
   }
+
 
   /**
    * Logs an error message along with an exception.
@@ -237,10 +235,8 @@ public interface CsvInputAwareStep {
    *
    * @return the {@link InputStream} corresponding to the csv file, or null if the file cannot be read
    */
-  InputStream getInputStream( final CsvInputAwareMeta meta );
+  InputStream getInputStream( final TransMeta transMeta, final CsvInputAwareMeta meta );
 
   LogChannelInterface logChannel();
-
-  TransMeta getTransMeta();
 
 }
