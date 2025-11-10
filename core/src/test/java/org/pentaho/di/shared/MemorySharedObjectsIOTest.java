@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho
  *
@@ -44,38 +45,50 @@ public class MemorySharedObjectsIOTest {
   @Before
   public void setup() throws Exception {
     db_type = String.valueOf( SharedObjectsIO.SharedObjectType.CONNECTION );
-    sharedObjectsIO = new MemorySharedObjectsIO( );
+    sharedObjectsIO = new MemorySharedObjectsIO();
 
   }
 
   @Test
   public void testSaveSharedObject() throws Exception {
-    String connectionName = "NewConn";
-    // Create a new DatabaseMeta object
-    DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
-    sharedObjectsIO.saveSharedObject( db_type, dbMeta.getName(), dbMeta.toNode() );
+    try {
+      sharedObjectsIO.lock();
 
-    // Create another connection with same name different case
-    dbMeta = createDatabaseMeta( "NEWCONN" );
-    sharedObjectsIO.saveSharedObject( db_type, dbMeta.getName(), dbMeta.toNode() );
+      String connectionName = "NewConn";
+      // Create a new DatabaseMeta object
+      DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
+      sharedObjectsIO.saveSharedObject( db_type, dbMeta.getName(), dbMeta.toNode() );
 
-    Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( db_type );
-    assertEquals( 1, nodeMap.size() );
+      // Create another connection with same name different case
+      dbMeta = createDatabaseMeta( "NEWCONN" );
+      sharedObjectsIO.saveSharedObject( db_type, dbMeta.getName(), dbMeta.toNode() );
 
-    Node node = sharedObjectsIO.getSharedObject( db_type, dbMeta.getName() );
-    assertEquals( "NEWCONN", XMLHandler.getTagValue( node, "name" ) );
+      Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( db_type );
+      assertEquals( 1, nodeMap.size() );
+
+      Node node = sharedObjectsIO.getSharedObject( db_type, dbMeta.getName() );
+      assertEquals( "NEWCONN", XMLHandler.getTagValue( node, "name" ) );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   @Test
   public void testGetSharedObjectCaseInsensitive() throws Exception {
-    String connectionName = "NewConn";
-    // Create a new DatabaseMeta object
-    DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
-    sharedObjectsIO.saveSharedObject( db_type, dbMeta.getName(), dbMeta.toNode() );
+    try {
+      sharedObjectsIO.lock();
+      String connectionName = "NewConn";
+      // Create a new DatabaseMeta object
+      DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
+      sharedObjectsIO.saveSharedObject( db_type, dbMeta.getName(), dbMeta.toNode() );
 
-    Node node = sharedObjectsIO.getSharedObject( db_type, "NEWCONN" );
-    assertEquals( connectionName, XMLHandler.getTagValue( node, "name" ) );
+      Node node = sharedObjectsIO.getSharedObject( db_type, "NEWCONN" );
+      assertEquals( connectionName, XMLHandler.getTagValue( node, "name" ) );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
+
   private DatabaseMeta createDatabaseMeta( String name ) {
     DatabaseMeta dbMeta = new DatabaseMeta();
     dbMeta.setName( name );

@@ -594,9 +594,9 @@ public class TransMeta extends AbstractMeta
    * @return a real clone of the calling object
    */
   public Object realClone( boolean doClear ) {
-
+    TransMeta transMeta = null;
     try {
-      TransMeta transMeta = (TransMeta) super.clone();
+      transMeta = (TransMeta) super.clone();
       if ( doClear ) {
         transMeta.clear();
       } else {
@@ -609,6 +609,10 @@ public class TransMeta extends AbstractMeta
         transMeta.namedParams = new NamedParamsDefault();
         transMeta.stepChangeListeners = new ArrayList<>();
       }
+      // lock these after the object cloning is done
+      localSharedObjects.lock();
+      transMeta.localSharedObjects.lock();
+
       // Copy the Nodes to avoid converting from/to XML.
       String dbType = SharedObjectsIO.SharedObjectType.CONNECTION.getName();
       for ( Map.Entry<String, Node> entry : localSharedObjects.getSharedObjects( dbType ).entrySet() ) {
@@ -668,6 +672,11 @@ public class TransMeta extends AbstractMeta
     } catch ( Exception e ) {
       e.printStackTrace();
       return null;
+    } finally {
+      if ( transMeta != null ) {
+        transMeta.localSharedObjects.unlock();
+      }
+      localSharedObjects.unlock();
     }
   }
 

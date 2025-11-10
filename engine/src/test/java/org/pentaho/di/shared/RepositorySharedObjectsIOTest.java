@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho
  *
@@ -68,218 +69,250 @@ public class RepositorySharedObjectsIOTest {
 
   @Test
   public void testSave() throws Exception {
-    DatabaseMeta db = new DatabaseMeta();
-    db.setName( "foo" );
-    db.setDBName( "bar" );
+    try {
+      shared.lock();
+      DatabaseMeta db = new DatabaseMeta();
+      db.setName( "foo" );
+      db.setDBName( "bar" );
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
 
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
+      Node node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+      assertNotNull( node );
+      DatabaseMeta readDb = new DatabaseMeta( node );
+      assertNotNull( readDb.getObjectId() );
 
-    Node node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
-    assertNotNull( node );
-    DatabaseMeta readDb = new DatabaseMeta( node );
-    assertNotNull( readDb.getObjectId() );
+      node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "FOO" );
+      assertNotNull( node );
 
-    node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "FOO" );
-    assertNotNull( node );
-
-    Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
-    assertNotNull( dbs );
-    assertEquals( 1, dbs.size() );
-    assertNotNull( dbs.get( "foo" ) );
-    readDb = new DatabaseMeta( dbs.get( "foo" ) );
-    assertNotNull( readDb.getObjectId() );
-    // Should not throw.
-    assertNull( shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "bar" ) );
+      Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+      assertNotNull( dbs );
+      assertEquals( 1, dbs.size() );
+      assertNotNull( dbs.get( "foo" ) );
+      readDb = new DatabaseMeta( dbs.get( "foo" ) );
+      assertNotNull( readDb.getObjectId() );
+      // Should not throw.
+      assertNull( shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "bar" ) );
+    } finally {
+      shared.unlock();
+    }
   }
 
   @Test
   public void testUpdate() throws Exception {
-    DatabaseMeta db = new DatabaseMeta();
-    db.setName( "foo" );
-    db.setDBName( "bar" );
+    try {
+      shared.lock();
+      DatabaseMeta db = new DatabaseMeta();
+      db.setName( "foo" );
+      db.setDBName( "bar" );
 
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
 
-    Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
-    assertEquals( 1, dbs.size() );
-    Node createdNode = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
-    assertNotNull( createdNode );
+      Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+      assertEquals( 1, dbs.size() );
+      Node createdNode = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+      assertNotNull( createdNode );
 
-    DatabaseMeta afterCreate = new DatabaseMeta( createdNode );
+      DatabaseMeta afterCreate = new DatabaseMeta( createdNode );
 
-    db.setServername( "testing" );
+      db.setServername( "testing" );
 
-    // should replace the existing item.
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName().toUpperCase(),
-      db.toNode() );
+      // should replace the existing item.
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName().toUpperCase(),
+        db.toNode() );
 
-    dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
-    assertEquals( 1, dbs.size() );
-    Node updatedNode = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
-    assertNotNull( updatedNode );
+      dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+      assertEquals( 1, dbs.size() );
+      Node updatedNode = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+      assertNotNull( updatedNode );
 
-    DatabaseMeta afterUpdate = new DatabaseMeta( updatedNode );
+      DatabaseMeta afterUpdate = new DatabaseMeta( updatedNode );
 
-    assertEquals( db.getDescription(), afterUpdate.getDescription() );
+      assertEquals( db.getDescription(), afterUpdate.getDescription() );
 
-    assertNull( afterCreate.getServername() );
-    assertEquals( "testing", afterUpdate.getServername() );
+      assertNull( afterCreate.getServername() );
+      assertEquals( "testing", afterUpdate.getServername() );
+    } finally {
+      shared.unlock();
+    }
   }
 
   @Test
   public void testDelete() throws Exception {
-    DatabaseMeta db = new DatabaseMeta();
-    db.setName( "foo" );
-    db.setDBName( "bar" );
+    try {
+      shared.lock();
+      DatabaseMeta db = new DatabaseMeta();
+      db.setName( "foo" );
+      db.setDBName( "bar" );
 
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
 
-    Node node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
-    assertNotNull( node );
+      Node node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+      assertNotNull( node );
 
-    Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
-    assertNotNull( dbs );
-    assertEquals( 1, dbs.size() );
-    assertNotNull( dbs.get( "foo" ) );
+      Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+      assertNotNull( dbs );
+      assertEquals( 1, dbs.size() );
+      assertNotNull( dbs.get( "foo" ) );
 
-    shared.delete( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "foo" );
+      shared.delete( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "foo" );
 
-    node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
-    assertNull( node );
+      node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+      assertNull( node );
 
-    dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
-    assertNotNull( dbs );
-    assertEquals( 0, dbs.size() );
+      dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+      assertNotNull( dbs );
+      assertEquals( 0, dbs.size() );
+    } finally {
+      shared.unlock();
+    }
   }
 
   @Test
   public void testDeleteDifferentCase() throws Exception {
-    DatabaseMeta db = new DatabaseMeta();
-    db.setName( "foo" );
-    db.setDBName( "bar" );
+    try {
+      shared.lock();
+      DatabaseMeta db = new DatabaseMeta();
+      db.setName( "foo" );
+      db.setDBName( "bar" );
 
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
 
-    Node node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
-    assertNotNull( node );
+      Node node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+      assertNotNull( node );
 
-    Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
-    assertNotNull( dbs );
-    assertEquals( 1, dbs.size() );
-    assertNotNull( dbs.get( "foo" ) );
+      Map<String, Node> dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+      assertNotNull( dbs );
+      assertEquals( 1, dbs.size() );
+      assertNotNull( dbs.get( "foo" ) );
 
-    shared.delete( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "FOO" );
+      shared.delete( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "FOO" );
 
-    node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
-    assertNull( node );
+      node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName() );
+      assertNull( node );
 
-    node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "FOO" );
-    assertNull( node );
+      node = shared.getSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "FOO" );
+      assertNull( node );
 
-    dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
-    assertNotNull( dbs );
-    assertEquals( 0, dbs.size() );
+      dbs = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+      assertNotNull( dbs );
+      assertEquals( 0, dbs.size() );
+    } finally {
+      shared.unlock();
+    }
   }
 
   @Test
   public void testOtherTypes() throws Exception {
-    //test the non-db types.
-    SlaveServer slaveServer = new SlaveServer();
-    slaveServer.setName( "slave 1" );
+    try {
+      //test the non-db types.
+      SlaveServer slaveServer = new SlaveServer();
+      slaveServer.setName( "slave 1" );
 
-    PartitionSchema partitionSchema = new PartitionSchema();
-    partitionSchema.setName( "pschema 1" );
+      PartitionSchema partitionSchema = new PartitionSchema();
+      partitionSchema.setName( "pschema 1" );
 
-    ClusterSchema clusterSchema = new ClusterSchema();
-    clusterSchema.setName( "Cluster Schema 1" );
-    clusterSchema.setSlaveServers( Collections.singletonList( slaveServer ) );
+      ClusterSchema clusterSchema = new ClusterSchema();
+      clusterSchema.setName( "Cluster Schema 1" );
+      clusterSchema.setSlaveServers( Collections.singletonList( slaveServer ) );
 
-    shared = new RepositorySharedObjectsIO( rep, () -> Collections.singletonList( slaveServer ) );
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName(), slaveServer.getName(),
-      slaveServer.toNode() );
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName(), partitionSchema.getName(),
-      partitionSchema.toNode() );
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName(), clusterSchema.getName(),
-      clusterSchema.toNode() );
+      shared = new RepositorySharedObjectsIO( rep, () -> Collections.singletonList( slaveServer ) );
+      shared.lock();
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName(), slaveServer.getName(),
+        slaveServer.toNode() );
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName(), partitionSchema.getName(),
+        partitionSchema.toNode() );
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName(), clusterSchema.getName(),
+        clusterSchema.toNode() );
 
-    SlaveServer readSlaveServer = new SlaveServer( shared.getSharedObject(
-      SharedObjectsIO.SharedObjectType.SLAVESERVER.getName(), slaveServer.getName() ) );
+      SlaveServer readSlaveServer = new SlaveServer( shared.getSharedObject(
+        SharedObjectsIO.SharedObjectType.SLAVESERVER.getName(), slaveServer.getName() ) );
 
-    PartitionSchema readPartitionSchema = new PartitionSchema( shared.getSharedObject(
-      SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName(), partitionSchema.getName() ) );
+      PartitionSchema readPartitionSchema = new PartitionSchema( shared.getSharedObject(
+        SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName(), partitionSchema.getName() ) );
 
-    ClusterSchema readClusterSchema = new ClusterSchema( shared.getSharedObject( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName(), clusterSchema.getName() ), Collections.singletonList( slaveServer ) );
+      ClusterSchema readClusterSchema = new ClusterSchema( shared.getSharedObject(
+        SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName(), clusterSchema.getName() ), Collections.singletonList(
+          slaveServer ) );
 
-    assertNotNull( readSlaveServer );
-    assertNotNull( readSlaveServer.getObjectId() );
-    assertNotNull( readPartitionSchema );
-    assertNotNull( readPartitionSchema.getObjectId() );
-    assertNotNull( readClusterSchema );
-    assertEquals( 1, readClusterSchema.getSlaveServers().size() );
-    assertNotNull( readClusterSchema.getObjectId() );
+      assertNotNull( readSlaveServer );
+      assertNotNull( readSlaveServer.getObjectId() );
+      assertNotNull( readPartitionSchema );
+      assertNotNull( readPartitionSchema.getObjectId() );
+      assertNotNull( readClusterSchema );
+      assertEquals( 1, readClusterSchema.getSlaveServers().size() );
+      assertNotNull( readClusterSchema.getObjectId() );
 
-    Map<String, Node> readObjects = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName() );
-    assertEquals( 1, readObjects.size() );
-    readSlaveServer = new SlaveServer( readObjects.get( slaveServer.getName() ) );
-    assertNotNull( readSlaveServer );
-    assertNotNull( readSlaveServer.getObjectId() );
+      Map<String, Node> readObjects = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName() );
+      assertEquals( 1, readObjects.size() );
+      readSlaveServer = new SlaveServer( readObjects.get( slaveServer.getName() ) );
+      assertNotNull( readSlaveServer );
+      assertNotNull( readSlaveServer.getObjectId() );
 
-    readObjects = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName() );
-    assertEquals( 1, readObjects.size() );
-    readPartitionSchema = new PartitionSchema( readObjects.get( partitionSchema.getName() ) );
-    assertNotNull( readPartitionSchema );
-    assertNotNull( readPartitionSchema.getObjectId() );
+      readObjects = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName() );
+      assertEquals( 1, readObjects.size() );
+      readPartitionSchema = new PartitionSchema( readObjects.get( partitionSchema.getName() ) );
+      assertNotNull( readPartitionSchema );
+      assertNotNull( readPartitionSchema.getObjectId() );
 
-    readObjects = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName() );
-    assertEquals( 1, readObjects.size() );
-    readClusterSchema = new ClusterSchema( readObjects.get( clusterSchema.getName() ),
-      Collections.singletonList( slaveServer ) );
-    assertNotNull( readClusterSchema );
-    assertNotNull( readClusterSchema.getObjectId() );
+      readObjects = shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName() );
+      assertEquals( 1, readObjects.size() );
+      readClusterSchema = new ClusterSchema( readObjects.get( clusterSchema.getName() ),
+        Collections.singletonList( slaveServer ) );
+      assertNotNull( readClusterSchema );
+      assertNotNull( readClusterSchema.getObjectId() );
 
-    shared.delete( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName(), slaveServer.getName() );
-    shared.delete( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName(), partitionSchema.getName() );
-    shared.delete( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName(), clusterSchema.getName() );
+      shared.delete( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName(), slaveServer.getName() );
+      shared.delete( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName(), partitionSchema.getName() );
+      shared.delete( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName(), clusterSchema.getName() );
 
-    assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName() ).size() );
-    assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName() ).size() );
-    assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName() ).size() );
+      assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName() ).size() );
+      assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName() ).size() );
+      assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName() ).size() );
+    } finally {
+      shared.unlock();
+    }
   }
 
   @Test
   public void testClear() throws Exception {
-    DatabaseMeta db = new DatabaseMeta();
-    db.setName( "foo" );
-    db.setDBName( "bar" );
+    try {
 
-    SlaveServer slaveServer = new SlaveServer();
-    slaveServer.setName( "slave 1" );
+      DatabaseMeta db = new DatabaseMeta();
+      db.setName( "foo" );
+      db.setDBName( "bar" );
 
-    PartitionSchema partitionSchema = new PartitionSchema();
-    partitionSchema.setName( "pschema 1" );
+      SlaveServer slaveServer = new SlaveServer();
+      slaveServer.setName( "slave 1" );
 
-    ClusterSchema clusterSchema = new ClusterSchema();
-    clusterSchema.setName( "Cluster Schema 1" );
-    clusterSchema.setSlaveServers( Collections.singletonList( slaveServer ) );
+      PartitionSchema partitionSchema = new PartitionSchema();
+      partitionSchema.setName( "pschema 1" );
 
-    shared = new RepositorySharedObjectsIO( rep, () -> Collections.singletonList( slaveServer ) );
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName(), slaveServer.getName(),
-      slaveServer.toNode() );
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName(), partitionSchema.getName(),
-      partitionSchema.toNode() );
-    shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName(), clusterSchema.getName(),
-      clusterSchema.toNode() );
+      ClusterSchema clusterSchema = new ClusterSchema();
+      clusterSchema.setName( "Cluster Schema 1" );
+      clusterSchema.setSlaveServers( Collections.singletonList( slaveServer ) );
 
-    shared.clear( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
-    shared.clear( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName() );
-    shared.clear( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName() );
-    shared.clear( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName() );
+      shared = new RepositorySharedObjectsIO( rep, () -> Collections.singletonList( slaveServer ) );
+      shared.lock();
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), db.getName(), db.toNode() );
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName(), slaveServer.getName(),
+        slaveServer.toNode() );
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName(), partitionSchema.getName(),
+        partitionSchema.toNode() );
+      shared.saveSharedObject( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName(), clusterSchema.getName(),
+        clusterSchema.toNode() );
 
-    assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() ).size() );
-    assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName() ).size() );
-    assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName() ).size() );
-    assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName() ).size() );
+      shared.clear( SharedObjectsIO.SharedObjectType.CONNECTION.getName() );
+      shared.clear( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName() );
+      shared.clear( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName() );
+      shared.clear( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName() );
+
+      assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CONNECTION.getName() ).size() );
+      assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.SLAVESERVER.getName() ).size() );
+      assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.PARTITIONSCHEMA.getName() ).size() );
+      assertEquals( 0, shared.getSharedObjects( SharedObjectsIO.SharedObjectType.CLUSTERSCHEMA.getName() ).size() );
+    } finally {
+      shared.unlock();
+    }
   }
 
 }

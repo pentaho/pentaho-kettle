@@ -285,10 +285,13 @@ public class AbstractMetaTest {
         DatabaseMeta dbMeta = new DatabaseMeta();
         dbMeta.setName( "foo" );
         try {
-        sharedObjectsIO.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "foo",
-          dbMeta.toNode());
+          sharedObjectsIO.lock();
+          sharedObjectsIO.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "foo",
+            dbMeta.toNode());
         } catch ( KettleException e ) {
           throw new RuntimeException( e );
+        } finally {
+          sharedObjectsIO.unlock();
         }
         return null;
       }

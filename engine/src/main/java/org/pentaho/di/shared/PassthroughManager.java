@@ -49,22 +49,35 @@ public abstract class PassthroughManager<T extends SharedObjectInterface<T> & Re
 
   @Override
   public void add( T object ) throws KettleException {
-    Node node = object.toNode();
-    sharedObjectsIO.saveSharedObject( type, object.getName(), node );
+    try {
+      sharedObjectsIO.lock();
+      Node node = object.toNode();
+      sharedObjectsIO.saveSharedObject( type, object.getName(), node );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   @Override
   public T get( String name) throws KettleException {
-    Node node = sharedObjectsIO.getSharedObject( type, name );
-    if ( node == null ) {
-      return null;
-    }
+    try {
+      sharedObjectsIO.lock();
+      Node node = sharedObjectsIO.getSharedObject( type, name );
+      if ( node == null ) {
+        return null;
+      }
 
-    return createSharedObjectUsingNode( node );
+      return createSharedObjectUsingNode( node );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   @Override
   public List<T> getAll( ) throws KettleException {
+    try {
+      sharedObjectsIO.lock();
+    
     Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( type );
     List<T> result = new ArrayList<>( nodeMap.size() );
 
@@ -72,6 +85,9 @@ public abstract class PassthroughManager<T extends SharedObjectInterface<T> & Re
       result.add( createSharedObjectUsingNode( node ) );
     }
     return result;
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   @Override

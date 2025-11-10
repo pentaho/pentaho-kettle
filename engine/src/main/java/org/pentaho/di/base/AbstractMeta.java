@@ -261,6 +261,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected void initializeSharedObjects() {
     // NOTE: this has to assign new objects, not just clear existing ones, because it is used in clone(), and
     // updating the original objects will update the source of the clone.
+    localSharedObjects.assertUnlocked();
     localSharedObjects = new MemorySharedObjectsIO();
     initializeNonLocalSharedObjects();
   }
