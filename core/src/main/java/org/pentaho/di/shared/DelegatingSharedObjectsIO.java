@@ -25,6 +25,9 @@ import org.w3c.dom.Node;
 
 /**
  * A Read-only wrapper around multiple other SharedObjectsIO implementations that combines them by precedence order.
+ * <p>
+ * Concurrency Note: Locks will be taken on all the delegated SharedObjectsIO instances in the order they were provided. 
+ * This requires that stores are always provided in the same order to avoid deadlocks.
  *
  */
 public class DelegatingSharedObjectsIO implements SharedObjectsIO {
@@ -89,4 +92,20 @@ public class DelegatingSharedObjectsIO implements SharedObjectsIO {
       store.clearCache();
     }
   }
+
+  @Override
+  public void lock() {
+    for ( SharedObjectsIO store : stores ) {
+      store.lock();
+    }
+  }
+
+  @Override
+  public void unlock() { 
+    // unlock in reverse order
+    for ( int i = stores.size() - 1; i >= 0; i-- ) {
+      stores.get( i ).unlock();
+    }
+  }
+
 }

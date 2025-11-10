@@ -22,6 +22,10 @@ import org.w3c.dom.Node;
 /**
  * This interface provide methods to retrieve and save the shared objects defined in shared.xml irrespective of
  * where the shared objects are persisted.
+ * </p>
+ * Concurrency note: Because the Node class is completely non-thread-safe, even for read-only access, callers must use 
+ * lock() before calling any method that operates on Nodes, and unlock() after all interactions with those Node objects 
+ * are complete. Non-Node API methods are thread-safe.
  */
 public interface SharedObjectsIO {
 
@@ -100,5 +104,16 @@ public interface SharedObjectsIO {
     }
     return null;
   }
+
+  /** 
+   * Lock the SharedObjectsIO for exclusive access. This lock should be held while interacting with any Node objects
+   * returned by this SharedObjectsIO.
+   */
+  void lock();
+
+  /** 
+   * Unlock the SharedObjectsIO after exclusive access is no longer needed.
+   */
+  void unlock();
 
 }

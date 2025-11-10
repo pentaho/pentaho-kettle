@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho
  *
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 import org.w3c.dom.Node;
 
 /**
@@ -43,6 +45,7 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
 
   private final Repository repository;
   private final SlaveServersSupplier slaveServerSupplier;
+  private final ReentrantLock lock = new ReentrantLock();
 
   public RepositorySharedObjectsIO( Repository repository, SlaveServersSupplier slaveServerSupplier ) {
     this.repository = Objects.requireNonNull( repository );
@@ -57,48 +60,48 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
       // use the methods that support caching
       RepositoryExtended extended = (RepositoryExtended) repository;
       switch ( objectType ) {
-          case CONNECTION:
-            objects = extended.getConnections( true );
-            break;
-          case SLAVESERVER:
-            objects = extended.getSlaveServers( true );
-            break;
-          case PARTITIONSCHEMA:
-            objects = extended.getPartitions( true );
-            break;
-          case CLUSTERSCHEMA:
-            objects = extended.getClusters( true );
-            break;
+        case CONNECTION:
+          objects = extended.getConnections( true );
+          break;
+        case SLAVESERVER:
+          objects = extended.getSlaveServers( true );
+          break;
+        case PARTITIONSCHEMA:
+          objects = extended.getPartitions( true );
+          break;
+        case CLUSTERSCHEMA:
+          objects = extended.getClusters( true );
+          break;
       }
     } else {
       switch ( objectType ) {
-          case CONNECTION:
-            objects = repository.readDatabases();
-            break;
-          case SLAVESERVER:
-            objects = repository.getSlaveServers();
-            break;
-          case PARTITIONSCHEMA:
-            ObjectId[] psids = repository.getPartitionSchemaIDs( false );
-            List<PartitionSchema> pss = new ArrayList<>();
-            if ( psids != null ) {
-              for ( ObjectId id : psids ) {
-                pss.add( repository.loadPartitionSchema( id, null ) );
-              }
+        case CONNECTION:
+          objects = repository.readDatabases();
+          break;
+        case SLAVESERVER:
+          objects = repository.getSlaveServers();
+          break;
+        case PARTITIONSCHEMA:
+          ObjectId[] psids = repository.getPartitionSchemaIDs( false );
+          List<PartitionSchema> pss = new ArrayList<>();
+          if ( psids != null ) {
+            for ( ObjectId id : psids ) {
+              pss.add( repository.loadPartitionSchema( id, null ) );
             }
-            objects = pss;
-            break;
-          case CLUSTERSCHEMA:
-            ObjectId[] csids = repository.getClusterIDs( false );
-            List<ClusterSchema> css = new ArrayList<>();
-            if ( csids != null ) {
-              List<SlaveServer> sss = slaveServerSupplier.get();
-              for ( ObjectId id : csids ) {
-                css.add( repository.loadClusterSchema( id, sss, null ) );
-              }
+          }
+          objects = pss;
+          break;
+        case CLUSTERSCHEMA:
+          ObjectId[] csids = repository.getClusterIDs( false );
+          List<ClusterSchema> css = new ArrayList<>();
+          if ( csids != null ) {
+            List<SlaveServer> sss = slaveServerSupplier.get();
+            for ( ObjectId id : csids ) {
+              css.add( repository.loadClusterSchema( id, sss, null ) );
             }
-            objects = css;
-            break;
+          }
+          objects = css;
+          break;
       }
     }
     if ( objects != null ) {
@@ -119,9 +122,11 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
 
   @Override
   public void clear( String type ) throws KettleException {
-    SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
-    ObjectId[] ids = null;
-    switch ( objectType ) {
+    try {
+      lock();
+      SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
+      ObjectId[] ids = null;
+      switch ( objectType ) {
         case CONNECTION:
           String[] names = repository.getDatabaseNames( false );
           for ( String name : names ) {
@@ -146,46 +151,54 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
             repository.deleteClusterSchema( id );
           }
           break;
+      }
+    } finally {
+      unlock();
     }
   }
 
   @Override
   public void delete( String type, String name ) throws KettleException {
-    SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
+    try {
+      lock();
+      SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
 
-    Map<String, Node> nodeMap = getSharedObjects( type );
-    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() );
-    if ( existingName == null ) {
-      existingName = name;
+      Map<String, Node> nodeMap = getSharedObjects( type );
+      String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() );
+      if ( existingName == null ) {
+        existingName = name;
+      }
+
+      deleteInner( objectType, existingName );
+    } finally {
+      unlock();
     }
-
-    deleteInner( objectType, existingName );
   }
 
   private void deleteInner( SharedObjectType objectType, String existingName ) throws KettleException {
     ObjectId id;
     switch ( objectType ) {
-        case CONNECTION:
-          repository.deleteDatabaseMeta( existingName );
-          break;
-        case SLAVESERVER:
-          id = repository.getSlaveID( existingName );
-          if ( id != null ) {
-            repository.deleteSlave( id );
-          }
-          break;
-        case PARTITIONSCHEMA:
-          id = repository.getPartitionSchemaID( existingName );
-          if ( id != null ) {
-            repository.deletePartitionSchema( id );
-          }
-          break;
-        case CLUSTERSCHEMA:
-          id = repository.getClusterID( existingName );
-          if ( id != null ) {
-            repository.deleteClusterSchema( id );
-          }
-          break;
+      case CONNECTION:
+        repository.deleteDatabaseMeta( existingName );
+        break;
+      case SLAVESERVER:
+        id = repository.getSlaveID( existingName );
+        if ( id != null ) {
+          repository.deleteSlave( id );
+        }
+        break;
+      case PARTITIONSCHEMA:
+        id = repository.getPartitionSchemaID( existingName );
+        if ( id != null ) {
+          repository.deletePartitionSchema( id );
+        }
+        break;
+      case CLUSTERSCHEMA:
+        id = repository.getClusterID( existingName );
+        if ( id != null ) {
+          repository.deleteClusterSchema( id );
+        }
+        break;
     }
   }
 
@@ -195,18 +208,18 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
 
     RepositoryElementInterface repoElement = null;
     switch ( objectType ) {
-        case CONNECTION:
-          repoElement = new DatabaseMeta( node );
-          break;
-        case SLAVESERVER:
-          repoElement = new SlaveServer( node );
-          break;
-        case PARTITIONSCHEMA:
-          repoElement = new PartitionSchema( node );
-          break;
-        case CLUSTERSCHEMA:
-          repoElement = new ClusterSchema( node, slaveServerSupplier.get() );
-          break;
+      case CONNECTION:
+        repoElement = new DatabaseMeta( node );
+        break;
+      case SLAVESERVER:
+        repoElement = new SlaveServer( node );
+        break;
+      case PARTITIONSCHEMA:
+        repoElement = new PartitionSchema( node );
+        break;
+      case CLUSTERSCHEMA:
+        repoElement = new ClusterSchema( node, slaveServerSupplier.get() );
+        break;
     }
     if ( repoElement != null ) {
       repository.save( repoElement, Const.VERSION_COMMENT_EDIT_VERSION, null );
@@ -215,7 +228,22 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
 
   @Override
   public void clearCache() {
-    repository.clearSharedObjectCache();
+    try {
+      lock();
+      repository.clearSharedObjectCache();
+    } finally {
+      unlock();
+    }
+  }
+
+  @Override
+  public void lock() {
+    lock.lock();
+  }
+
+  @Override
+  public void unlock() {
+    lock.unlock();
   }
 }
 

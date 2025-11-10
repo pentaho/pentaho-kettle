@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho
  *
@@ -35,7 +36,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -53,6 +54,8 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   private static final Class<?> PKG = VfsSharedObjectsIO.class; // for i18n purposes, needed by Translator2!!
   private static final Logger log = LoggerFactory.getLogger( VfsSharedObjectsIO.class );
 
+  private final ReentrantLock lock = new ReentrantLock();
+
   String sharedObjectFile;
   String rootFolder;
   private static final String XML_TAG = "sharedobjects";
@@ -64,6 +67,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
 
   private boolean isInitialized = false;
   private Bowl bowl;
+
   /**
    * Creates the instance of VfsSharedObjectsIO using the default location of the shared file.
    *
@@ -88,12 +92,14 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   /**
    * Return the Map of names and the corresponding nodes for the given shared object type.
    * The parsing of shared.xml happens when this method is called.
+   * 
    * @param type
    * @return Map<String, Node>
    * @throws KettleXMLException
    */
   @Override
-  public synchronized Map<String, Node> getSharedObjects( String type ) throws KettleXMLException {
+  public Map<String, Node> getSharedObjects( String type ) throws KettleXMLException {
+    checkLock();
     if ( !isInitialized ) {
       // Load the shared.xml file
       loadSharedObjectNodeMap( sharedObjectFile );
@@ -103,17 +109,22 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   }
 
   @Override
-  public synchronized void clearCache() {
-    connectionsNodes.clear();
-    slaveServersNodes.clear();
-    partitionSchemaNodes.clear();
-    clusterSchemaNodes.clear();
-    isInitialized = false;
+  public void clearCache() {
+    try {
+      lock();
+      connectionsNodes.clear();
+      slaveServersNodes.clear();
+      partitionSchemaNodes.clear();
+      clusterSchemaNodes.clear();
+      isInitialized = false;
+    } finally {
+      unlock();
+    }
   }
 
   /**
    * Loads the shared objects in the map. The map will be of the form <String, Node>
-   * where key can be {"connection", "slaveserver", "partitionschema" or  clusterschema"} and
+   * where key can be {"connection", "slaveserver", "partitionschema" or clusterschema"} and
    * value will be xml Node.
    *
    * @param pathToSharedObjectFile The path to the shared object file
@@ -159,6 +170,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   /**
    * Return the complete path to the shared.xml. If the given path is blank,
    * it returns the default location of file.
+   * 
    * @param path the root folder for shared object file
    * @return
    */
@@ -175,6 +187,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   /**
    * Returns the default location of shared.xml. If checks the kettle environment varibale and if that is not set
    * retruns the location in user's home folder.
+   * 
    * @return String
    */
   private static String getDefaultSharedObjectFileLocation() {
@@ -192,6 +205,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   /**
    * Save the name and the node for the given Shared Object Type in the file. If the SharedObject name exist but in a
    * different case, the existing entry will be deleted and the new entry will be saved with provided name
+   * 
    * @param type The SharedObject type
    * @param name The name of the SharedObject for a given type
    * @param node The xml node that containing the details of the SharedObject
@@ -199,6 +213,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    */
   @Override
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
+    checkLock();
     // Get the map for the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
 
@@ -237,7 +252,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   protected void writeToFile( FileObject fileObject, Optional<String> backupFileName )
     throws IOException, KettleException {
     try ( OutputStream outputStream = KettleVFS.getInstance( bowl ).getOutputStream( fileObject, false );
-         PrintStream out = new PrintStream( outputStream ) ) {
+          PrintStream out = new PrintStream( outputStream ) ) {
 
       out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
       out.println( "<" + XML_TAG + ">" );
@@ -293,7 +308,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
     FileObject srcFile = vfs.getFileObject( src );
     FileObject destFile = vfs.getFileObject( dest );
     try ( InputStream in = KettleVFS.getInputStream( srcFile );
-         OutputStream out = vfs.getOutputStream( destFile, false ) ) {
+          OutputStream out = vfs.getOutputStream( destFile, false ) ) {
       IOUtils.copy( in, out );
     }
     return true;
@@ -302,13 +317,16 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   /**
    * Return the node for the given SharedObject type and name. The lookup for the SharedObject
    * using the name will be case-insensitive
-   * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and clusterschema"
+   * 
+   * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and
+   *             clusterschema"
    * @param name The name is the name of the sharedObject
    * @return
    * @throws KettleXMLException
    */
   @Override
   public Node getSharedObject( String type, String name ) throws KettleException {
+    checkLock();
     // Get the Map using the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
     return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() ) );
@@ -316,42 +334,72 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
 
   /**
    * Delete the SharedObject for the given type and name. The delete operation will be case-insensitive.
-   * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and clusterschema"
+   * 
+   * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and
+   *             clusterschema"
    * @param name The name is the name of the sharedObject
    * @throws KettleException
    */
   @Override
   public void delete( String type, String name ) throws KettleException {
-    // Get the nodeMap for the type
-    Map<String, Node> nodeTypeMap = getNodesMapForType( type );
-    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeTypeMap.keySet() );
-    if ( existingName != null ) {
-      nodeTypeMap.remove( existingName );
-      saveToFile();
+    try {
+      lock();
+      // Get the nodeMap for the type
+      Map<String, Node> nodeTypeMap = getNodesMapForType( type );
+      String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeTypeMap.keySet() );
+      if ( existingName != null ) {
+        nodeTypeMap.remove( existingName );
+        saveToFile();
+      }
+    } finally {
+      unlock();
     }
   }
 
   @Override
   public void clear( String type ) throws KettleException {
-    switch ( SharedObjectType.valueOf( type.toUpperCase() ) ) {
-      case CONNECTION:
-        connectionsNodes.clear();
-        break;
-      case SLAVESERVER:
-        slaveServersNodes.clear();
-        break;
-      case PARTITIONSCHEMA:
-        partitionSchemaNodes.clear();
-        break;
-      case CLUSTERSCHEMA:
-        clusterSchemaNodes.clear();
-        break;
-      default:
-        // unsupported type
-        log.error( " Invalid Shared Object type " + type );
-        throw new KettleXMLException( "Invalid shared object type " + type );
+    try {
+      lock();
+      switch ( SharedObjectType.valueOf( type.toUpperCase() ) ) {
+        case CONNECTION:
+          connectionsNodes.clear();
+          break;
+        case SLAVESERVER:
+          slaveServersNodes.clear();
+          break;
+        case PARTITIONSCHEMA:
+          partitionSchemaNodes.clear();
+          break;
+        case CLUSTERSCHEMA:
+          clusterSchemaNodes.clear();
+          break;
+        default:
+          // unsupported type
+          log.error( " Invalid Shared Object type " + type );
+          throw new KettleXMLException( "Invalid shared object type " + type );
+      }
+      saveToFile();
+    } finally {
+      unlock();
     }
-    saveToFile();
+  }
+
+  @Override
+  public void lock() {
+    // Lock the SharedObjectsIO for exclusive access
+    lock.lock();
+  }
+
+  @Override
+  public void unlock() {
+    // Unlock the SharedObjectsIO after exclusive access is no longer needed
+    lock.unlock();
+  }
+
+  private void checkLock() {
+    if ( !lock.isHeldByCurrentThread() ) {
+      throw new IllegalStateException( "SharedObjectsIO lock must be held when accessing Node objects" );
+    }
   }
 
   private Map<String, Node> getNodesMapForType( String type ) throws KettleXMLException {
