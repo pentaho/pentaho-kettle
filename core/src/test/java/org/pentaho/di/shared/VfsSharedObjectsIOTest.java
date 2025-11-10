@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho
  *
@@ -37,9 +38,9 @@ public class VfsSharedObjectsIOTest {
   private static final String ROOT_FILE_PATH = "ram:///config";
   private static final String SHARED_FILE = "shared.xml";
   private static final String CONN_STR = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <sharedobjects> "
-                  + " <connection> <name>postgres-docker</name> <server>localhost</server> <type>POSTGRESQL</type> "
-                  +  " <access>Native</access> <database>sampledata</database> <port>5435</port> <username>postgres</username> "
-                  +  " </connection> </sharedobjects>";
+    + " <connection> <name>postgres-docker</name> <server>localhost</server> <type>POSTGRESQL</type> "
+    + " <access>Native</access> <database>sampledata</database> <port>5435</port> <username>postgres</username> "
+    + " </connection> </sharedobjects>";
 
   private String db_type;
 
@@ -52,12 +53,12 @@ public class VfsSharedObjectsIOTest {
   }
 
   @Before
-  public void setup()  {
+  public void setup() {
     db_type = String.valueOf( SharedObjectsIO.SharedObjectType.CONNECTION );
   }
 
   @Test
-  public void testGetSharedObjects()  throws Exception {
+  public void testGetSharedObjects() throws Exception {
     // Prepare the test shared.xml
     FileObject projectDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( ROOT_FILE_PATH );
     projectDirectory.createFolder();
@@ -69,19 +70,25 @@ public class VfsSharedObjectsIOTest {
     }
 
     SharedObjectsIO sharedObjectsIO = new VfsSharedObjectsIO( ROOT_FILE_PATH, DefaultBowl.getInstance() );
-    Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( "connection" );
-    assertEquals( 1, nodesMap.size() );
+    try {
+      sharedObjectsIO.lock();
+      Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( "connection" );
+      assertEquals( 1, nodesMap.size() );
 
-    //Get the key
-    Map.Entry<String, Node> entry = nodesMap.entrySet().iterator().next();
-    String key = entry.getKey();
-    Node node = entry.getValue();
-    assertEquals( "postgres-docker", key );
-    validateNode( node );
+      //Get the key
+      Map.Entry<String, Node> entry = nodesMap.entrySet().iterator().next();
+      String key = entry.getKey();
+      Node node = entry.getValue();
+      assertEquals( "postgres-docker", key );
+      validateNode( node );
 
-    // close the file
-    sharedFile.close();
+      // close the file
+      sharedFile.close();
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
+
   private void validateNode( Node node ) {
     assertEquals( "localhost", XMLHandler.getTagValue( node, "server" ) );
     assertEquals( "POSTGRESQL", XMLHandler.getTagValue( node, "type" ) );
@@ -96,75 +103,96 @@ public class VfsSharedObjectsIOTest {
     projectDirectory.createFolder();
 
     SharedObjectsIO sharedObjectsIO = new VfsSharedObjectsIO( ROOT_FILE_PATH, DefaultBowl.getInstance() );
-    String type = String.valueOf( SharedObjectsIO.SharedObjectType.CONNECTION );
-    String connectionName = "NewConn";
-    // Create a new DatabaseMeta object
-    DatabaseMeta databaseMeta = new DatabaseMeta( connectionName, "Infobright", "JDBC", null, "stub:stub", null, null, null );
-    sharedObjectsIO.saveSharedObject( type, connectionName,
-      XMLHandler.getSubNode( XMLHandler.loadXMLString( databaseMeta.getXML() ), type ) );
+    try {
+      sharedObjectsIO.lock();
 
-    // Verify that the new connection is saved
-    Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( type );
-    assertEquals( 1, nodesMap.size() );
+      String type = String.valueOf( SharedObjectsIO.SharedObjectType.CONNECTION );
+      String connectionName = "NewConn";
+      // Create a new DatabaseMeta object
+      DatabaseMeta databaseMeta = new DatabaseMeta( connectionName, "Infobright", "JDBC", null, "stub:stub", null, null,
+        null );
+      sharedObjectsIO.saveSharedObject( type, connectionName,
+        XMLHandler.getSubNode( XMLHandler.loadXMLString( databaseMeta.getXML() ), type ) );
 
-    //Get the key
-    Map.Entry<String, Node> entry = nodesMap.entrySet().iterator().next();
-    String key = entry.getKey();
-    assertEquals( connectionName, key );
+      // Verify that the new connection is saved
+      Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( type );
+      assertEquals( 1, nodesMap.size() );
 
+      //Get the key
+      Map.Entry<String, Node> entry = nodesMap.entrySet().iterator().next();
+      String key = entry.getKey();
+      assertEquals( connectionName, key );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   @Test
   public void testSaveSharedObjectCaseInsensitive() throws Exception {
     SharedObjectsIO sharedObjectsIO = createVfsSharedObject( ROOT_FILE_PATH );
+    try {
+      sharedObjectsIO.lock();
 
-    // Create a new DatabaseMeta object
-    String connectionName = "NewConn";
-    DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
-    sharedObjectsIO.saveSharedObject( db_type, connectionName, dbMeta.toNode() );
+      // Create a new DatabaseMeta object
+      String connectionName = "NewConn";
+      DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
+      sharedObjectsIO.saveSharedObject( db_type, connectionName, dbMeta.toNode() );
 
-    // Add another connection with same name different case
-    String newConnectionName = "newconn";
-    dbMeta = createDatabaseMeta( newConnectionName );
-    sharedObjectsIO.saveSharedObject( db_type, newConnectionName, dbMeta.toNode() );
+      // Add another connection with same name different case
+      String newConnectionName = "newconn";
+      dbMeta = createDatabaseMeta( newConnectionName );
+      sharedObjectsIO.saveSharedObject( db_type, newConnectionName, dbMeta.toNode() );
 
-    // Verify that there is only one entry in the map
-    Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( db_type );
-    assertEquals( 1, nodesMap.size() );
+      // Verify that there is only one entry in the map
+      Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( db_type );
+      assertEquals( 1, nodesMap.size() );
 
-    //Get the key
-    Map.Entry<String, Node> entry = nodesMap.entrySet().iterator().next();
-    String key = entry.getKey();
-    assertEquals( newConnectionName, key );
+      //Get the key
+      Map.Entry<String, Node> entry = nodesMap.entrySet().iterator().next();
+      String key = entry.getKey();
+      assertEquals( newConnectionName, key );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   @Test
   public void testGetSharedObjectCaseInsensitive() throws Exception {
     SharedObjectsIO sharedObjectsIO = createVfsSharedObject( ROOT_FILE_PATH );
+    try {
+      sharedObjectsIO.lock();
 
-    String connectionName = "NewConn";
-    // Create a new DatabaseMeta object
-    DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
-    sharedObjectsIO.saveSharedObject( db_type, connectionName, dbMeta.toNode() );
+      String connectionName = "NewConn";
+      // Create a new DatabaseMeta object
+      DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
+      sharedObjectsIO.saveSharedObject( db_type, connectionName, dbMeta.toNode() );
 
-    // Get the SharedObject with case-insensitive name
-    Node node = sharedObjectsIO.getSharedObject( db_type, "newconn" );
-    assertEquals( connectionName, XMLHandler.getTagValue( node, "name" ) );
+      // Get the SharedObject with case-insensitive name
+      Node node = sharedObjectsIO.getSharedObject( db_type, "newconn" );
+      assertEquals( connectionName, XMLHandler.getTagValue( node, "name" ) );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   @Test
   public void testDeleteCaseInsensitive() throws Exception {
     SharedObjectsIO sharedObjectsIO = createVfsSharedObject( ROOT_FILE_PATH );
+    try {
+      sharedObjectsIO.lock();
 
-    String connectionName = "NewConn";
-    // Create a new DatabaseMeta object
-    DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
-    sharedObjectsIO.saveSharedObject( db_type, dbMeta.getName(), dbMeta.toNode() );
+      String connectionName = "NewConn";
+      // Create a new DatabaseMeta object
+      DatabaseMeta dbMeta = createDatabaseMeta( connectionName );
+      sharedObjectsIO.saveSharedObject( db_type, dbMeta.getName(), dbMeta.toNode() );
 
-    // Delete the SharedObject
-    sharedObjectsIO.delete( db_type, "newconn" );
-    Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( db_type );
-    assertEquals( 0, nodesMap.size() );
+      // Delete the SharedObject
+      sharedObjectsIO.delete( db_type, "newconn" );
+      Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( db_type );
+      assertEquals( 0, nodesMap.size() );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   private VfsSharedObjectsIO createVfsSharedObject( String rootPath ) throws Exception {
