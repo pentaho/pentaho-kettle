@@ -137,15 +137,6 @@ import org.w3c.dom.Node;
 
 public interface JobEntryInterface {
 
-  String ACTION_STATUS = "actionStatus";
-  String ERROR_DETAILS = "errorDetails";
-  String SUCCESS_RESPONSE = "Action successful";
-  String FAILURE_RESPONSE = "Action failed";
-  String FAILURE_METHOD_NOT_RESPONSE = "Action failed with method not found";
-  String STATUS = "Status";
-  int SUCCESS_STATUS = 1;
-  int FAILURE_STATUS = -1;
-  int NOT_EXECUTED_STATUS = 0;
 
   /**
    * Execute the job entry. The previous result and number of rows are provided to the method for the purpose of

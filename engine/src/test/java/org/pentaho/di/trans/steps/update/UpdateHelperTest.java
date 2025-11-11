@@ -8,7 +8,6 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -23,20 +22,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
-public class UpdateTest {
+public class UpdateHelperTest {
 
-  private Trans trans;
   private TransMeta transMeta;
   private StepMeta stepMeta;
 
   private UpdateMeta updateMeta;
 
-  private Update update;
+  private UpdateHelper update;
   private RowMeta rowMeta;
 
   @Before
   public void setup() {
-    trans = mock( Trans.class );
     transMeta = mock( TransMeta.class );
     rowMeta = mock( RowMeta.class );
     stepMeta = mock( StepMeta.class );
@@ -44,7 +41,7 @@ public class UpdateTest {
     when( stepMeta.getName() ).thenReturn( "update" );
     UpdateData updateData = mock( UpdateData.class );
     updateMeta = mock( UpdateMeta.class );
-    update = new Update( stepMeta, updateData, 1, transMeta, trans );
+    update = new UpdateHelper( updateMeta );
   }
 
   @Test
@@ -55,8 +52,7 @@ public class UpdateTest {
     try ( MockedConstruction<StepMeta> ignored = mockConstruction( StepMeta.class, ( mock, context ) -> when( updateMeta.getSQLStatements( transMeta, mock, rowMeta, null, null ) ).thenReturn( sqlStatement ) ) ) {
       when( transMeta.getPrevStepFields( anyString() ) ).thenReturn( rowMeta );
       when( updateMeta.getParentStepMeta() ).thenReturn( stepMeta );
-      JSONObject response = update.doAction( "getSQL", updateMeta,
-        transMeta, trans, new HashMap<>() );
+      JSONObject response = update.handleStepAction( "getSQL", transMeta, new HashMap<>() );
       assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
       assertTrue( response.containsKey( "sql" ) );
     }
@@ -71,7 +67,7 @@ public class UpdateTest {
     try ( MockedConstruction<StepMeta> ignored = mockConstruction( StepMeta.class, ( mock, context ) -> when( updateMeta.getSQLStatements( transMeta, mock, rowMeta, null, null ) ).thenReturn( sqlStatement ) ) ) {
       when( transMeta.getPrevStepFields( anyString() ) ).thenReturn( rowMeta );
       when( updateMeta.getParentStepMeta() ).thenReturn( stepMeta );
-      JSONObject response = update.doAction( "getSQL", updateMeta, transMeta, trans, new HashMap<>() );
+      JSONObject response = update.handleStepAction( "getSQL", transMeta, new HashMap<>() );
       assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
       assertEquals( "Some error occurred", response.get( "errorMessage" ) );
     }
@@ -85,7 +81,7 @@ public class UpdateTest {
     try ( MockedConstruction<StepMeta> ignored = mockConstruction( StepMeta.class, ( mock, context ) -> when( updateMeta.getSQLStatements( transMeta, mock, rowMeta, null, null ) ).thenReturn( sqlStatement ) ) ) {
       when( transMeta.getPrevStepFields( anyString() ) ).thenReturn( rowMeta );
       when( updateMeta.getParentStepMeta() ).thenReturn( stepMeta );
-      JSONObject response = update.doAction( "getSQL", updateMeta, transMeta, trans, new HashMap<>() );
+      JSONObject response = update.handleStepAction( "getSQL", transMeta,new HashMap<>() );
       assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
       assertTrue( response.containsKey( "errorMessage" ) );
     }
@@ -97,7 +93,7 @@ public class UpdateTest {
       .thenThrow( new KettleStepException( "Exception occurred" ) ) ) ) {
       when( transMeta.getPrevStepFields( anyString() ) ).thenReturn( rowMeta );
       when( updateMeta.getParentStepMeta() ).thenReturn( stepMeta );
-      JSONObject response = update.doAction( "getSQL", updateMeta, transMeta, trans, new HashMap<>() );
+      JSONObject response = update.handleStepAction( "getSQL", transMeta, new HashMap<>() );
       assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
       assertEquals( "Exception occurred", response.get( "errorMessage" ).toString().trim() );
     }
