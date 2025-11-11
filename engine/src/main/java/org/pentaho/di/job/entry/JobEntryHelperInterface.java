@@ -35,6 +35,9 @@ public interface JobEntryHelperInterface {
   String SUCCESS_RESPONSE = "Action successful";
   String FAILURE_RESPONSE = "Action failed";
   String FAILURE_METHOD_NOT_FOUND_RESPONSE = "Action failed with method not found";
+  int SUCCESS_STATUS = 1;
+  int FAILURE_STATUS = -1;
+  int NOT_EXECUTED_STATUS = 0;
 
   /**
    * Default implementation for performing a job entry action.
