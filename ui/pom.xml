@@ -56,6 +56,12 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-vfs-browser</artifactId>
       <version>${pentaho-vfs-browser.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.mail</groupId>
+          <artifactId>javax.mail</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>

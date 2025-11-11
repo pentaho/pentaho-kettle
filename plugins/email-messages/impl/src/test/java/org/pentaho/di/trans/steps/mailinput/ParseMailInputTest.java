@@ -27,10 +27,10 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
-import javax.mail.Address;
-import javax.mail.Header;
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import jakarta.mail.Address;
+import jakarta.mail.Header;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.AfterClass;
