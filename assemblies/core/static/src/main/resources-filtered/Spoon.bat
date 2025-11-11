@@ -13,7 +13,7 @@ REM ****************************************************************************
 
 setlocal
 
-cd /D %~dp0
+cd /D "%~dp0"
 
 REM **************************************************
 REM ** Set console window properties                **
@@ -25,15 +25,15 @@ REM COLOR F0
 :: ** Kettle home                                  **
 :: **************************************************
 
-if "%KETTLE_DIR%"=="" set KETTLE_DIR=%~dp0
-if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
+if "%KETTLE_DIR%"=="" set "KETTLE_DIR=%~dp0"
+if %KETTLE_DIR:~-1%==\ set "KETTLE_DIR=%KETTLE_DIR:~0,-1%"
 
-cd %KETTLE_DIR%
+cd "%KETTLE_DIR%"
 
 REM Special console/debug options when called from SpoonConsole.bat or SpoonDebug.bat
-if "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=java.exe
-if not "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=javaw.exe
-set IS64BITJAVA=0
+if "%SPOON_CONSOLE%"=="1" set "PENTAHO_JAVA=java.exe"
+if not "%SPOON_CONSOLE%"=="1" set "PENTAHO_JAVA=javaw.exe"
+set "IS64BITJAVA=0"
 
 call "%~dp0set-pentaho-env.bat"
 
@@ -76,34 +76,34 @@ IF %IS64BITJAVA% == 1 GOTO :USE64
 REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
-set LIBSPATH=libswt\win32
+set "LIBSPATH=libswt\win32"
 GOTO :CONTINUE
 :USE64
 REM ===========================================
 REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
 
-set LIBSPATH=libswt\win64
-set SWTJAR=..\libswt\win64
+set "LIBSPATH=libswt\win64"
+set "SWTJAR=..\libswt\win64"
 :CONTINUE
 popd
 
 REM **************************************************
 REM ** Setup Karaf endorsed libraries directory     **
 REM **************************************************
-set JAVA_ENDORSED_DIRS=
-set JAVA_LOCALE_COMPAT=
-set JAVA_ADD_OPENS=
+set "JAVA_ENDORSED_DIRS="
+set "JAVA_LOCALE_COMPAT="
+set "JAVA_ADD_OPENS="
 
 IF NOT %ISJAVA8% == 1 GOTO :SKIPENDORSEDJARS
 
-if not "%_PENTAHO_JAVA_HOME%" == "" set JAVA_ENDORSED_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\endorsed;%_PENTAHO_JAVA_HOME%\lib\endorsed;
-set JAVA_ENDORSED_DIRS="-Djava.endorsed.dirs=%JAVA_ENDORSED_DIRS%%KETTLE_DIR%\system\karaf\lib\endorsed"
+if not "%_PENTAHO_JAVA_HOME%" == "" set "JAVA_ENDORSED_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\endorsed;%_PENTAHO_JAVA_HOME%\lib\endorsed;"
+set "JAVA_ENDORSED_DIRS=-Djava.endorsed.dirs=%JAVA_ENDORSED_DIRS%%KETTLE_DIR%\system\karaf\lib\endorsed"
 GOTO :COLLECTARGUMENTS
 
 :SKIPENDORSEDJARS
 REM required for Java 11 date/time formatting backwards compatibility
-set JAVA_LOCALE_COMPAT=-Djava.locale.providers=COMPAT,SPI
+set "JAVA_LOCALE_COMPAT=-Djava.locale.providers=COMPAT,SPI"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang=ALL-UNNAMED"
 set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.io=ALL-UNNAMED"
@@ -129,10 +129,10 @@ REM **********************
 REM   Collect arguments
 REM **********************
 
-set _cmdline=
+set "_cmdline="
 :TopArg
 if %1!==! goto EndArg
-set _cmdline=%_cmdline% %1
+set "_cmdline=%_cmdline% %1"
 shift
 goto TopArg
 :EndArg
@@ -143,25 +143,25 @@ REM ** Change 2048m to higher values in case you run out of memory  **
 REM ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
 REM ******************************************************************
 
-if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS="-Xms1024m" "-Xmx2048m"
+if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set "PENTAHO_DI_JAVA_OPTIONS=-Xms1024m -Xmx2048m"
 
-set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Djava.library.path=%LIBSPATH%;%HADOOP_HOME%/bin" %JAVA_ENDORSED_DIRS% %JAVA_LOCALE_COMPAT% "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
+set "OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% -Djava.library.path=%LIBSPATH%;%HADOOP_HOME%/bin %JAVA_ENDORSED_DIRS% %JAVA_LOCALE_COMPAT% -DKETTLE_HOME=%KETTLE_HOME% -DKETTLE_REPOSITORY=%KETTLE_REPOSITORY% -DKETTLE_USER=%KETTLE_USER% -DKETTLE_PASSWORD=%KETTLE_PASSWORD% -DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES% -DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT% -DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
 
 REM Add this option to allow orc's compatibility with protobuf-java 3.25.6 libraries
-set OPT=%OPT% "-Dcom.google.protobuf.use_unsafe_pre22_gencode=true"
+set "OPT=%OPT% -Dcom.google.protobuf.use_unsafe_pre22_gencode=true"
 
 REM Force SWT to use Edge instead of Internet Explorer (not supported by Pentaho anymore)
-set OPT=%OPT% "-Dorg.eclipse.swt.browser.DefaultType=edge"
+set "OPT=%OPT% -Dorg.eclipse.swt.browser.DefaultType=edge"
 
 REM ***************
 REM ** Run...    **
 REM ***************
 
-if %STARTTITLE%!==! SET STARTTITLE="Spoon"
+if %STARTTITLE%!==! SET "STARTTITLE=Spoon"
 REM Eventually call java instead of javaw and do not run in a separate window
-if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start %STARTTITLE%
+if not "%SPOON_CONSOLE%"=="1" set "SPOON_START_OPTION=start %STARTTITLE%"
 
 @echo on
-%SPOON_START_OPTION% "%_PENTAHO_JAVA%" %JAVA_ADD_OPENS% %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
+%SPOON_START_OPTION% "%_PENTAHO_JAVA%" %JAVA_ADD_OPENS% %OPT% -jar launcher\launcher.jar -lib "..\%LIBSPATH%" %_cmdline%
 @echo off
 if "%SPOON_PAUSE%"=="1" pause

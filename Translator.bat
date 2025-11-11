@@ -13,8 +13,8 @@ REM ****************************************************************************
 
 setlocal 
 
-set XMLFILE=%1%
-set SRCDIR=%2%
+set "XMLFILE=%1%"
+set "SRCDIR=%2%"
 
 echo XMLFILE=%XMLFILE%
 echo SRCDIR=%SRCDIR%
@@ -46,14 +46,14 @@ IF %IS64BITJAVA% == 1 GOTO :USE64
 REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
-set LIBSPATH=libswt\win32
+set "LIBSPATH=libswt\win32"
 GOTO :CONTINUE
 :USE64
 REM ===========================================
 REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
-set LIBSPATH=libswt\win64
-set SWTJAR=..\libswt\win64
+set "LIBSPATH=libswt\win64"
+set "SWTJAR=..\libswt\win64"
 :CONTINUE
 
 REM ******************************************************************
@@ -61,15 +61,15 @@ REM ** Set java runtime options                                     **
 REM ** Change 512m to higher values in case you run out of memory   **
 REM ******************************************************************
 
-set OPT="-Xmx512m"
+set "OPT=-Xmx512m"
 
 REM ***************
 REM ** Run...    **
 REM ***************
 
 REM Eventually call java instead of javaw and do not run in a separate window
-set TRANSLATOR_START_OPTION=start "Translator"
+set "TRANSLATOR_START_OPTION=start "Translator""
 
 @echo on
-%TRANSLATOR_START_OPTION% java %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% -main org.pentaho.di.ui.i18n.editor.Translator2 %XMLFILE% %SRCDIR%
+%TRANSLATOR_START_OPTION% java %OPT% -jar launcher\launcher.jar -lib "..\%LIBSPATH%" -main org.pentaho.di.ui.i18n.editor.Translator2 "%XMLFILE%" "%SRCDIR%"
 @echo off

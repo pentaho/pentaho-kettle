@@ -18,12 +18,12 @@
 # ** Gtk2 and Fte enabled.
 # **************************************************
 
-# set MOZILLA_FIVE_HOME=/usr/local/mozilla
-# set LD_LIBRARY_PATH=/usr/local/mozilla
+# set MOZILLA_FIVE_HOME="/usr/local/mozilla"
+# set LD_LIBRARY_PATH="/usr/local/mozilla"
 
 # Try to guess xulrunner location - change this if you need to
-MOZILLA_FIVE_HOME=$(find /usr/lib -maxdepth 1 -name xulrunner-[0-9]* | head -1)
-LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
+MOZILLA_FIVE_HOME="$(find /usr/lib -maxdepth 1 -name xulrunner-[0-9]* | head -1)"
+LD_LIBRARY_PATH="${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}"
 export MOZILLA_FIVE_HOME LD_LIBRARY_PATH
 
 # Fix for GTK Windows issues with SWT
@@ -61,7 +61,7 @@ STARTUP="$BASEDIR/launcher/launcher.jar"
 
 if [ -z "$IS_YARN" ]; then
 	# Go to directory where spoon.sh located
-	cd $BASEDIR
+	cd "$BASEDIR"
 else
 	cd "$BASEDIR"
 fi
@@ -72,11 +72,11 @@ case `uname -s` in
 		case $ARCH in
 
 			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/aix/
+				LIBPATH="$CURRENTDIR/../libswt/aix/"
 				;;
 
 			ppc64)
-				LIBPATH=$CURRENTDIR/../libswt/aix64/
+				LIBPATH="$CURRENTDIR/../libswt/aix64/"
 				;;
 
 			*)
@@ -90,11 +90,11 @@ case `uname -s` in
 		case $ARCH in
 
 			i[3-6]86)
-				LIBPATH=$CURRENTDIR/../libswt/solaris-x86/
+				LIBPATH="$CURRENTDIR/../libswt/solaris-x86/"
 				;;
 
 			*)
-				LIBPATH=$CURRENTDIR/../libswt/solaris/
+				LIBPATH="$CURRENTDIR/../libswt/solaris/"
 				;;
 		esac
 		;;
@@ -108,9 +108,9 @@ case `uname -s` in
 		x86_64)
 			if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
                             then
-			  LIBPATH=$CURRENTDIR/../libswt/osx64/
+			  LIBPATH="$CURRENTDIR/../libswt/osx64/"
                             else
-			  LIBPATH=$CURRENTDIR/../libswt/osx/
+			  LIBPATH="$CURRENTDIR/../libswt/osx/"
                             fi
 			;;
     arm64)
@@ -119,11 +119,11 @@ case `uname -s` in
           echo "I'm sorry, this Mac platform [$ARCH] is not supported in Java 8"
           exit
                               else
-          LIBPATH=$CURRENTDIR/../libswt/osx64_aarch/
+          LIBPATH="$CURRENTDIR/../libswt/osx64_aarch/"
                               fi
       ;;
 		i[3-6]86)
-			LIBPATH=$CURRENTDIR/../libswt/osx/
+			LIBPATH="$CURRENTDIR/../libswt/osx/"
 			;;
 
 		*)
@@ -139,9 +139,9 @@ case `uname -s` in
 	Linux)
 
             if [ -f /sbin/ldconfig ]; then
-              LDCONFIG=/sbin/ldconfig
+              LDCONFIG="/sbin/ldconfig"
             else
-              LDCONFIG=ldconfig
+              LDCONFIG="ldconfig"
             fi
             HASWEBKITGTK=`$LDCONFIG -p | grep webkitgtk-1.0`
             export LIBWEBKITGTK="$HASWEBKITGTK"
@@ -159,22 +159,22 @@ case `uname -s` in
 			x86_64)
 				if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
                                 then
-				  LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/
+				  LIBPATH="$CURRENTDIR/../libswt/linux/x86_64/"
                                 else
-				  LIBPATH=$CURRENTDIR/../libswt/linux/x86/
+				  LIBPATH="$CURRENTDIR/../libswt/linux/x86/"
                                 fi
 				;;
 
 			i[3-6]86)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86/
+				LIBPATH="$CURRENTDIR/../libswt/linux/x86/"
 				;;
 
 			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/
+				LIBPATH="$CURRENTDIR/../libswt/linux/ppc/"
 				;;
 
 			ppc64)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc64/
+				LIBPATH="$CURRENTDIR/../libswt/linux/ppc64/"
 				;;
 
 			*)
@@ -190,17 +190,17 @@ case `uname -s` in
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/
+				LIBPATH="$CURRENTDIR/../libswt/linux/x86_64/"
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
 			i[3-6]86)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86/
+				LIBPATH="$CURRENTDIR/../libswt/linux/x86/"
 				;;
 
 			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/
+				LIBPATH="$CURRENTDIR/../libswt/linux/ppc/"
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
@@ -213,7 +213,7 @@ case `uname -s` in
 		;;
 
 	HP-UX)
-		LIBPATH=$CURRENTDIR/../libswt/hpux/
+		LIBPATH="$CURRENTDIR/../libswt/hpux/"
 		;;
 	CYGWIN*)
 		./Spoon.bat

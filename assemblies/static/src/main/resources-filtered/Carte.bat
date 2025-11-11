@@ -12,11 +12,11 @@ REM Change Date: 2029-07-20
 REM ******************************************************************************
 
 setlocal
-pushd %~dp0
+pushd "%~dp0"
 
-SET OPT=%OPT% "-Dorg.mortbay.util.URI.charset=UTF-8"
-SET STARTTITLE="Carte"
-SET SPOON_CONSOLE=1
+SET "OPT=%OPT% -Dorg.mortbay.util.URI.charset=UTF-8"
+SET "STARTTITLE=Carte"
+SET "SPOON_CONSOLE=1"
 REM ***********************************************************************
 REM ** Optionally set up the options for JAAS (uncomment to make active) **
 REM ***********************************************************************
