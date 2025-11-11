@@ -43,6 +43,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
 
 import org.pentaho.di.trans.step.utils.RowMetaUtils;
+import org.pentaho.di.trans.steps.formula.FormulaHelper;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -946,6 +947,11 @@ public class UpdateMeta extends BaseDatabaseStepMeta implements StepMetaInterfac
     nrFields = updateLookup.length;
     rtn = Utils.normalizeArrays( nrFields, updateStream );
     updateStream = rtn[ 0 ];
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new UpdateHelper( this );
   }
 
 }

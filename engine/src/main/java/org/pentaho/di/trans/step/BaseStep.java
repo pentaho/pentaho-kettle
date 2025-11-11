@@ -4413,31 +4413,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                               Trans trans, Map<String, String> queryParams ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = this.getClass().getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParams );
-      if ( isFailedResponse( response ) ) {
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-      } else if ( response != null ) {
-        response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-      }
-
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
-      if ( ex.getCause() instanceof KettleException ) {
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-      } else {
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-      }
-      getLogChannel().logError( ex.getMessage() );
-    }
-    return response;
-  }
-
   private boolean isFailedResponse( JSONObject response ) {
     if ( response != null && response.get( StepInterface.ACTION_STATUS ) != null ) {
       return StepInterface.FAILURE_RESPONSE.equalsIgnoreCase( (String) response.get( StepInterface.ACTION_STATUS ) );
