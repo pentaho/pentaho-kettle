@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-25</version>
   </parent>
 
   <artifactId>kafka</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-25</version>
   <packaging>pom</packaging>
 
   <name>PDI Kafka Plugin</name>
@@ -21,7 +21,7 @@
     <module>assemblies</module>
   </modules>
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>11.1.0.0-25</pdi.version>
     <dependency.hamcrest.revision>1.3</dependency.hamcrest.revision>
     <mockito-core.version>5.17.0</mockito-core.version>
   </properties>
