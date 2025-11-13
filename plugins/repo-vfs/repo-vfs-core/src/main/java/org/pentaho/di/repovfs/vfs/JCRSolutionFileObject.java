@@ -54,13 +54,13 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
 
   @Override
   protected void doAttach() throws Exception {
-    log.debug( "attach {}", getName() );
+    log.debug( "doAttach {}", getName() );
     file.attach();
   }
 
   @Override
   protected void doDetach() throws Exception {
-    log.debug( "dettach {}", getName() );
+    log.debug( "doDettach {}", getName() );
     file.detach();
   }
 
@@ -115,23 +115,25 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
 
   @Override
   public FileObject[] getChildren() throws FileSystemException {
-    FileObject[] children = super.getChildren();
+    synchronized ( getFileSystem() ) {
+      FileObject[] children = super.getChildren();
 
-    if ( file.getChildrenCache().isPresent() ) {
-      // we already fetched the children, let's reuse the dtos
-      var cachedChildren = file.getChildrenCache().get();
-      if ( cachedChildren.length != children.length ) {
-        // supposed to be in sync, this should never happen
-        log.error( "Children cache mismatch" );
-        return children;
-      }
-      for ( int i = 0; i < children.length; i++ ) {
-        if ( children[i] instanceof JCRSolutionFileObject child ) {
-          child.preAttach( cachedChildren[i] );
+      if ( file.getChildrenCache().isPresent() ) {
+        // we already fetched the children, let's reuse the dtos
+        var cachedChildren = file.getChildrenCache().get();
+        if ( cachedChildren.length != children.length ) {
+          // supposed to be in sync, this should never happen
+          log.error( "Children cache mismatch" );
+          return children;
+        }
+        for ( int i = 0; i < children.length; i++ ) {
+          if ( children[i] instanceof JCRSolutionFileObject child ) {
+            child.preAttach( cachedChildren[i] );
+          }
         }
       }
+      return children;
     }
-    return children;
   }
 
   /**
@@ -219,6 +221,7 @@ public class JCRSolutionFileObject extends AbstractFileObject<JCRSolutionFileSys
 
   /** returns `RepositoryFileDto` for this file or throws */
   private RepositoryFileDto getFileDto() throws FileSystemException {
+    ensureAttached();
     return file.getFile().orElseThrow( () -> new FileSystemException( FILE_NOT_FOUND, getName() ) );
   }
 
