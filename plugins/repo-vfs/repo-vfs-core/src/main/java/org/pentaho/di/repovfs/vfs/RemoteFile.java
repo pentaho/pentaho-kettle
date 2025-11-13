@@ -72,7 +72,6 @@ public class RemoteFile {
   }
 
   public Optional<RepositoryFileDto> getFile() {
-    attach();
     return file;
   }
 
