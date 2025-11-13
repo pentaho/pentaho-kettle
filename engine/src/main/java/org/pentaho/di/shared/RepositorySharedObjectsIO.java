@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.locks.ReentrantLock;
 import org.w3c.dom.Node;
 
 /**
@@ -45,7 +44,6 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
 
   private final Repository repository;
   private final SlaveServersSupplier slaveServerSupplier;
-  private final ReentrantLock lock = new ReentrantLock();
 
   public RepositorySharedObjectsIO( Repository repository, SlaveServersSupplier slaveServerSupplier ) {
     this.repository = Objects.requireNonNull( repository );
@@ -238,12 +236,12 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
 
   @Override
   public void lock() {
-    lock.lock();
+    // because this class creates new Nodes for every operation, we don't actually need to lock. 
   }
 
   @Override
   public void unlock() {
-    lock.unlock();
+    // no locking needed
   }
 }
 
