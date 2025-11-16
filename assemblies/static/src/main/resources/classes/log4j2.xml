@@ -69,19 +69,9 @@
 
         <!--<Logger name="org.pentaho" level="ERROR"/>-->
 
-        <Logger name="org.apache.hadoop.io.retry" level="INFO"/>
-        <Logger name="org.apache.sqoop" level="INFO"/>
-        <Logger name="org.apache.hadoop" level="INFO"/>
-
-        <Logger name="org.pentaho.platform.osgi" level="INFO"/>
+         <Logger name="org.pentaho.platform.osgi" level="INFO"/>
 
         <Logger name="org.pentaho.platform.engine.core.system.status" level="INFO"/>
-
-        <Logger name="com.pentaho.yarn" level="INFO"/>
-
-        <Logger name="com.pentaho.big.data.bundles" level="INFO"/>
-
-        <Logger name="com.pentaho.big.data.ee" level="INFO"/>
 
         <Logger name="org.pentaho.di.trans.Trans" level="INFO" additivity="false">
             <appender-ref ref="pdi-execution-appender"/>
