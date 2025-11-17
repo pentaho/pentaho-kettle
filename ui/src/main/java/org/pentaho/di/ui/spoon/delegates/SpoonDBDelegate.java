@@ -129,6 +129,9 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
       String newName = TreeUtil.findUniqueSuffix( originalName, dbNames );
       databaseMetaCopy.setName( newName );
       databaseMetaCopy.setDisplayName( newName );
+      // clear the objectId from the cloned databaseMeta
+      databaseMetaCopy.setObjectId( null );
+
 
       databaseMetaCopy.initializeVariablesFrom( spoon.getADefaultVariableSpace() );
       getDatabaseDialog().setDatabaseMeta( databaseMetaCopy );
