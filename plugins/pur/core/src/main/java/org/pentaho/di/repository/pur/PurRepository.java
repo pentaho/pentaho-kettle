@@ -1943,25 +1943,25 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   protected Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> loadAndCacheSharedObjects(
     final boolean deepCopy ) throws KettleException {
-    if ( sharedObjectsByType == null ) {
-      readWriteLock.readLock().lock();
-      sharedObjectsLock.writeLock().lock();
-      try {
+    readWriteLock.readLock().lock();
+    sharedObjectsLock.writeLock().lock();
+    try {
+      if ( sharedObjectsByType == null ) {
         sharedObjectsByType =
           new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>( RepositoryObjectType.class );
         // Slave Servers are referenced by Cluster Schemas so they must be loaded first
         readSharedObjects( sharedObjectsByType, RepositoryObjectType.DATABASE, RepositoryObjectType.PARTITION_SCHEMA,
           RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.CLUSTER_SCHEMA );
-      } catch ( Exception e ) {
-        sharedObjectsByType = null;
-        // TODO i18n
-        throw new KettleException( "Unable to read shared objects from repository", e ); //$NON-NLS-1$
-      } finally {
-        sharedObjectsLock.writeLock().unlock();
-        readWriteLock.readLock().unlock();
       }
+      return deepCopy ? deepCopy( sharedObjectsByType ) : sharedObjectsByType;
+    } catch ( Exception e ) {
+      sharedObjectsByType = null;
+      // TODO i18n
+      throw new KettleException( "Unable to read shared objects from repository", e ); //$NON-NLS-1$
+    } finally {
+      sharedObjectsLock.writeLock().unlock();
+      readWriteLock.readLock().unlock();
     }
-    return deepCopy ? deepCopy( sharedObjectsByType ) : sharedObjectsByType;
   }
 
   protected Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>  loadAndCacheSharedObjects()
@@ -2839,6 +2839,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       throw new IllegalArgumentException( element.getName() + " has a null id" );
     }
 
+    readWriteLock.readLock().lock();
+    sharedObjectsLock.writeLock().lock();
+
     loadAndCacheSharedObjects( false );
 
     boolean remove = element == null;
@@ -2846,7 +2849,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     RepositoryObjectType typeToUpdate = element != null ? element.getRepositoryElementType() : type;
     RepositoryElementInterface elementToUpdate = null;
     List<? extends SharedObjectInterface<?>> origSharedObjects = null;
-    sharedObjectsLock.writeLock().lock();
     try {
       switch ( typeToUpdate ) {
         case DATABASE:
@@ -2904,6 +2906,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       sharedObjectsByType.put( typeToUpdate, newSharedObjects );
     } finally {
       sharedObjectsLock.writeLock().unlock();
+      readWriteLock.readLock().unlock();
     }
   }
 

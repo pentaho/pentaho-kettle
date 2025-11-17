@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho
  *
@@ -51,21 +52,27 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
 
   /**
    * Call the SharedObject type specific method to populate the internal map
+   * 
    * @throws KettleException
    */
   private void populateSharedObjectMap() throws KettleException {
     if ( !initialized ) {
       synchronized ( this ) {
         if ( !initialized ) {
-          Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( sharedObjectType );
-          Map<String, T> localSharedObjectMap = new HashMap<>();
-          for ( String name : nodeMap.keySet() ) {
-            T sharedObject = createSharedObjectUsingNode( nodeMap.get( name ) );
-            if ( !localSharedObjectMap.containsKey( name ) ) {
-              localSharedObjectMap.put( name, sharedObject );
+          try {
+            sharedObjectsIO.lock();
+            Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( sharedObjectType );
+            Map<String, T> localSharedObjectMap = new HashMap<>();
+            for ( String name : nodeMap.keySet() ) {
+              T sharedObject = createSharedObjectUsingNode( nodeMap.get( name ) );
+              if ( !localSharedObjectMap.containsKey( name ) ) {
+                localSharedObjectMap.put( name, sharedObject );
+              }
             }
+            sharedObjectsMap = localSharedObjectMap;
+          } finally {
+            sharedObjectsIO.unlock();
           }
-          sharedObjectsMap = localSharedObjectMap;
         }
       }
       initialized = true;
@@ -76,6 +83,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
    * This method is called while populating the sharedObjectMap to create concrete SharedObjectInterface implementation
    * class.
    * This will be implemented by subclasses.
+   * 
    * @param node
    * @return
    * @throws KettleException
@@ -85,7 +93,8 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
 
   /**
    * Save the SharedObjectInterface for a type using the persistence mechanism defined by SharedObjectIO and
-   *  also add to the local map
+   * also add to the local map
+   * 
    * @param sharedObjectInterface
    * @throws KettleException
    */
@@ -96,38 +105,49 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
     String name = sharedObjectInterface.getName();
     Node node = sharedObjectInterface.toNode();
 
-    String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, sharedObjectsMap.keySet() );
-    if ( existingName != null && !existingName.equals( name ) ) {
-      // NOTE: we do *not* need to remove from the sharedObjectsIO because the contract for saveSharedObject()
-      // requires it to handle renames, even including just case changes, and some SharedObjectsIO, particularly
-      // for the Repository, don't allow deletions of in-use databases in particular.
-      // We do need to remove it from this class's cache, though.
-      sharedObjectsMap.remove( existingName );
+    try {
+      sharedObjectsIO.lock();
+
+      String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, sharedObjectsMap.keySet() );
+      if ( existingName != null && !existingName.equals( name ) ) {
+        // NOTE: we do *not* need to remove from the sharedObjectsIO because the contract for saveSharedObject()
+        // requires it to handle renames, even including just case changes, and some SharedObjectsIO, particularly
+        // for the Repository, don't allow deletions of in-use databases in particular.
+        // We do need to remove it from this class's cache, though.
+        sharedObjectsMap.remove( existingName );
+      }
+
+      sharedObjectsIO.saveSharedObject( sharedObjectType, name, node );
+      Node readBackNode = sharedObjectsIO.getSharedObject( sharedObjectType, name );
+      T readBack = createSharedObjectUsingNode( readBackNode );
+
+      sharedObjectsMap.put( name, readBack.makeClone() );
+    } finally {
+      sharedObjectsIO.unlock();
     }
-
-    sharedObjectsIO.saveSharedObject( sharedObjectType, name, node );
-    Node readBackNode = sharedObjectsIO.getSharedObject( sharedObjectType, name );
-    T readBack = createSharedObjectUsingNode( readBackNode );
-
-    sharedObjectsMap.put( name, readBack.makeClone() );
     notifySubscribers();
   }
 
   /**
    * Get the list of SharedObjectInterface for the type
+   * 
    * @return
    * @throws KettleException
    */
   @Override
   public List<T> getAll() throws KettleException {
     populateSharedObjectMap();
-
-    return sharedObjectsMap.values().stream().map( SharedObjectInterface::makeClone ).collect( Collectors.toList() );
-
+    try {
+      sharedObjectsIO.lock();
+      return sharedObjectsMap.values().stream().map( SharedObjectInterface::makeClone ).collect( Collectors.toList() );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   /**
    * Get the SharedObjectInterface object for the type using the name
+   * 
    * @param name name of the SharedObject
    * @return
    * @throws KettleException
@@ -136,13 +156,19 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
   public T get( String name ) throws KettleException {
     populateSharedObjectMap();
 
-    T sharedObjectInterface =
-      sharedObjectsMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, sharedObjectsMap.keySet() ) );
-    return sharedObjectInterface == null ? sharedObjectInterface : sharedObjectInterface.makeClone();
+    try {
+      sharedObjectsIO.lock();
+      T sharedObjectInterface =
+        sharedObjectsMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, sharedObjectsMap.keySet() ) );
+      return sharedObjectInterface == null ? sharedObjectInterface : sharedObjectInterface.makeClone();
+    } finally {
+      sharedObjectsIO.unlock();
+    }
   }
 
   /**
    * Remove the SharedObjectInterface object for a type
+   * 
    * @param sharedObjectInterface SharedObject to remove
    * @throws KettleException
    */
@@ -154,7 +180,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
 
   @Override
   public synchronized void remove( String sharedObjectName ) throws KettleException {
-    populateSharedObjectMap( );
+    populateSharedObjectMap();
 
     String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( sharedObjectName, sharedObjectsMap.keySet() );
     if ( existingName != null ) {
@@ -165,7 +191,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
   }
 
   @Override
-  public synchronized void clear( ) throws KettleException {
+  public synchronized void clear() throws KettleException {
     this.sharedObjectsIO.clear( sharedObjectType );
     reset();
     notifySubscribers();
@@ -173,7 +199,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
 
   /**
    * resets the caches in this manager.
-  */
+   */
   public synchronized void reset() {
     sharedObjectsMap.clear();
     initialized = false;
@@ -195,7 +221,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
   private void notifySubscribers() {
     // operate on a copy
     Set<UpdateSubscriber> subs;
-    synchronized( this ) {
+    synchronized ( this ) {
       subs = new HashSet<>( changeSubscribers.keySet() );
     }
     for ( UpdateSubscriber subscriber : subs ) {

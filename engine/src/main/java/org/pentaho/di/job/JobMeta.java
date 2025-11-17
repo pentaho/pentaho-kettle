@@ -413,8 +413,9 @@ public class JobMeta extends AbstractMeta
    * @return a real clone of the calling object
    */
   public Object realClone( boolean doClear ) {
+    JobMeta jobMeta = null;
     try {
-      JobMeta jobMeta = (JobMeta) super.clone();
+      jobMeta = (JobMeta) super.clone();
       if ( doClear ) {
         jobMeta.clear();
       } else {
@@ -424,6 +425,8 @@ public class JobMeta extends AbstractMeta
         jobMeta.initializeSharedObjects();
         jobMeta.namedParams = new NamedParamsDefault();
       }
+      localSharedObjects.lock();
+      jobMeta.localSharedObjects.lock();
 
       for ( JobEntryCopy entry : jobcopies ) {
         jobMeta.jobcopies.add( (JobEntryCopy) entry.clone_deep() );
@@ -452,6 +455,11 @@ public class JobMeta extends AbstractMeta
       return jobMeta;
     } catch ( Exception e ) {
       return null;
+    } finally {
+      if ( jobMeta != null ) {
+        jobMeta.localSharedObjects.unlock();
+      }
+      localSharedObjects.unlock();
     }
   }
 
