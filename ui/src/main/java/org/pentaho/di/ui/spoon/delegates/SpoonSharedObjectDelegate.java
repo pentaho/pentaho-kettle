@@ -102,6 +102,8 @@ public abstract class SpoonSharedObjectDelegate<T extends SharedObjectInterface<
       T copy = object.makeClone();
       String newName = TreeUtil.findUniqueSuffix( originalName, names );
       copy.setName( newName );
+      // clear the objectId from the cloned object
+      copy.setObjectId( null );
 
       showDialog.accept( copy, objects );
 
