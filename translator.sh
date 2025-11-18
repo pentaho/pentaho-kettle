@@ -32,18 +32,18 @@ BASEDIR="${KETTLE_HOME}"
 if [ -z "$KETTLE_HOME" ]; then
   BASEDIR="$(dirname $0)/dist/"
 fi
-LIBPATH="$BASEDIR"
-LIBPATH="$CLASSPATH:$BASEDIR/lib/kettle-core-TRUNK-SNAPSHOT.jar"
-LIBPATH="$CLASSPATH:$BASEDIR/lib/kettle-engine-TRUNK-SNAPSHOT.jar"
-LIBPATH="$CLASSPATH:$BASEDIR/lib/kettle-ui-swt-TRUNK-SNAPSHOT.jar"
-LIBPATH="$CLASSPATH:lib/saxon-dom-9.1.0.8.jar"
+CLASSPATH="$BASEDIR"
+CLASSPATH="$CLASSPATH:$BASEDIR/lib/kettle-core-TRUNK-SNAPSHOT.jar"
+CLASSPATH="$CLASSPATH:$BASEDIR/lib/kettle-engine-TRUNK-SNAPSHOT.jar"
+CLASSPATH="$CLASSPATH:$BASEDIR/lib/kettle-ui-swt-TRUNK-SNAPSHOT.jar"
+CLASSPATH="$CLASSPATH:lib/saxon-dom-9.1.0.8.jar"
 
 # echo $CLASSPATH
 
-LIBPATH="$CLASSPATH:$BASEDIR/libswt/jface.jar"
-LIBPATH="$CLASSPATH:$BASEDIR/libswt/runtime.jar"
-LIBPATH="$CLASSPATH:$BASEDIR/libswt/common.jar"
-LIBPATH="$CLASSPATH:$BASEDIR/libswt/commands.jar"
+CLASSPATH="$CLASSPATH:$BASEDIR/libswt/jface.jar"
+CLASSPATH="$CLASSPATH:$BASEDIR/libswt/runtime.jar"
+CLASSPATH="$CLASSPATH:$BASEDIR/libswt/common.jar"
+CLASSPATH="$CLASSPATH:$BASEDIR/libswt/commands.jar"
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **
@@ -51,7 +51,7 @@ LIBPATH="$CLASSPATH:$BASEDIR/libswt/commands.jar"
 
 for f in `find "$BASEDIR/lib" -type f -name "*.jar"` `find "$BASEDIR/lib" -type f -name "*.zip"`
 do
-  LIBPATH="$CLASSPATH:$f"
+  CLASSPATH="$CLASSPATH:$f"
 done
 
 
@@ -145,7 +145,7 @@ if [ "$LIBPATH" != "NONE" ]
 then
   for f in `find "$LIBPATH" -name '*.jar'`
   do
-    LIBPATH="$CLASSPATH:$f"
+    CLASSPATH="$CLASSPATH:$f"
   done
 fi
 
