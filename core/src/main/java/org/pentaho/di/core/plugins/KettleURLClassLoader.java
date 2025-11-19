@@ -20,13 +20,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
-import java.util.jar.JarFile;
 
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -169,114 +163,41 @@ public class KettleURLClassLoader extends URLClassLoader {
   }
 
   /**
-   * This method is designed to shutdown out classloader file locks in windows.
+   * Close and clean up this class loader using supported APIs.
    */
+  @SuppressWarnings("all")
   public void closeClassLoader() {
-    HashSet<String> closedFiles = new HashSet<>();
+    // Try the supported URLClassLoader close() method first.
     try {
-      Object obj = getFieldObject( URLClassLoader.class, "ucp", this );
-      ArrayList<?> loaders = (ArrayList<?>) getFieldObject( obj.getClass(), "loaders", obj );
-      for ( Object ldr : loaders ) {
-        try {
-          JarFile file = (JarFile) getFieldObject( ldr.getClass(), "jar", ldr );
-          closedFiles.add( file.getName() );
-          file.close();
-        } catch ( Exception e ) {
-          // skip
-        }
-      }
-    } catch ( Exception e ) {
-      // skip
-    }
-
-    try {
-      Vector<?> nativeLibArr = (Vector<?>) getFieldObject( ClassLoader.class, "nativeLibraries", this );
-      for ( Object lib : nativeLibArr ) {
-        try {
-          Method fMethod = lib.getClass().getDeclaredMethod( "finalize" );
-          fMethod.setAccessible( true );
-          fMethod.invoke( lib );
-        } catch ( Exception e ) {
-          // skip
-        }
-      }
-    } catch ( Exception e ) {
-      // skip
-    }
-
-    HashMap<?, ?> uCache = null;
-    HashMap<?, ?> fCache = null;
-
-    try {
-      Class<?> jarUrlConnClass = null;
-      try {
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        jarUrlConnClass = contextClassLoader.loadClass( "sun.net.www.protocol.jar.JarURLConnection" );
-      } catch ( Throwable skip ) {
-        // skip
-      }
-      if ( jarUrlConnClass == null ) {
-        jarUrlConnClass = Class.forName( "sun.net.www.protocol.jar.JarURLConnection" );
-      }
-      Class<?> factory = getFieldObject( jarUrlConnClass, "factory", null ).getClass();
-      try {
-        fCache = (HashMap<?, ?>) getFieldObject( factory, "fileCache", null );
-      } catch ( Exception e ) {
-        // skip
-      }
-      try {
-        uCache = (HashMap<?, ?>) getFieldObject( factory, "urlCache", null );
-      } catch ( Exception e ) {
-        // skip
-      }
-      if ( uCache != null ) {
-        Set<?> set = null;
-        while ( set == null ) {
-          try {
-            set = ( (HashMap<?, ?>) uCache.clone() ).keySet();
-          } catch ( ConcurrentModificationException e ) {
-            //Fix for BACKLOG-2149 - Do nothing - while loop will try again.
-          }
-        }
-
-        for ( Object file : set ) {
-          if ( file instanceof JarFile ) {
-            JarFile jar = (JarFile) file;
-            if ( !closedFiles.contains( jar.getName() ) ) {
-              continue;
-            }
-            try {
-              jar.close();
-            } catch ( IOException e ) {
-              // skip
-            }
-            if ( fCache != null ) {
-              fCache.remove( uCache.get( jar ) );
-            }
-            uCache.remove( jar );
-          }
-        }
-      } else if ( fCache != null ) {
-        for ( Object key : ( (HashMap<?, ?>) fCache.clone() ).keySet() ) {
-          Object file = fCache.get( key );
-          if ( file instanceof JarFile ) {
-            JarFile jar = (JarFile) file;
-            if ( !closedFiles.contains( jar.getName() ) ) {
-              continue;
-            }
-            try {
-              jar.close();
-            } catch ( IOException e ) {
-              // ignore
-            }
-            fCache.remove( key );
-          }
-        }
-      }
-    } catch ( Exception e ) {
-      // skip
+      this.close();
+    } catch (IOException e) {
+      // Optionally log; possibly some jars could not be closed
       e.printStackTrace();
     }
+
+    // Attempt to run cleanup of native library references if still present.
+    // Note: accessing ClassLoader.nativeLibraries is still reflection-based and
+    // may fail on some JVMs. Keep it non-fatal.
+    try {
+      Field nativeLibsField = ClassLoader.class.getDeclaredField("nativeLibraries");
+      nativeLibsField.setAccessible(true);
+      @SuppressWarnings("unchecked")
+      Vector<?> nativeLibArr = (Vector<?>) nativeLibsField.get(this);
+      for (Object lib : nativeLibArr) {
+        try {
+          Method finalize = lib.getClass().getDeclaredMethod("finalize");
+          finalize.setAccessible(true);
+          finalize.invoke(lib);
+        } catch (Exception ex) {
+          // ignore per previous behavior
+        }
+      }
+    } catch (Throwable t) {
+      // ignore — we cannot rely on JVM internals here
+    }
+
+    // Important: do NOT attempt to access sun.net.www.protocol.jar internals here.
+    // That reflection is blocked by the Java module system (and is unsafe).
   }
 
   @Override
