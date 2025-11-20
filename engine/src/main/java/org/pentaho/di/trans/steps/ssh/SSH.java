@@ -133,7 +133,7 @@ public class SSH extends BaseStep {
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "SSH.Log.RunningCommand", data.commands ) );
       }
-      ExecResult execResult = data.getSshConnection().exec( data.commands, 30000L ); // 30 second timeout
+      ExecResult execResult = data.getSshConnection().exec( data.commands );
 
       if ( log.isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "SSH.Log.CommandRunnedCommand", data.commands, execResult

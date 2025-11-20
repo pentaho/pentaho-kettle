@@ -120,6 +120,11 @@ public class SshConnectionFactoryTest {
     }
 
     @Override
+    public ExecResult exec( String command ) throws SshConnectionException {
+      return exec( command, 30000L ); // Default 30 second timeout
+    }
+
+    @Override
     public SftpSession openSftp() throws SshConnectionException {
       return null; // Mock implementation
     }
