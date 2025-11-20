@@ -127,6 +127,7 @@ public class SSHData extends BaseStepData {
           .host( params.getServer() )
           .port( params.getPort() )
           .username( params.getUsername() )
+          .commandTimeoutMillis( params.getTimeOut() > 0 ? params.getTimeOut() * 1000 : 30000 )// Default 30 seconds
           .connectTimeoutMillis( params.getTimeOut() > 0 ? params.getTimeOut() * 1000 : 30000 ); // Default 30 seconds
 
       // Set the log channel for debugging SSH connection issues
