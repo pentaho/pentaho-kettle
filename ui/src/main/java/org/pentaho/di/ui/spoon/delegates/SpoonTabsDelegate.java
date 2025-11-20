@@ -51,6 +51,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonBrowser;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
+import org.pentaho.di.ui.spoon.Spoon.RefreshTarget;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
@@ -515,7 +516,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     }
 
     // Also refresh the tree
-    spoon.forceRefreshTree();
+    spoon.forceRefreshTree( RefreshTarget.CURRENT_FILE );
     spoon.setShellText(); // calls also enableMenus() and markTabsChanged()
   }
 

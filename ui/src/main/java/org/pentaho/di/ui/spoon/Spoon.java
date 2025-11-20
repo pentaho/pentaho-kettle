@@ -4344,7 +4344,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void clearSharedObjectCache() throws KettleException {
     // forceRefreshTree is now a superset of just clearing the shared object cache
-    forceRefreshTree();
+    forceRefreshTree( RefreshTarget.ALL );
   }
 
   public void exploreRepository() {
@@ -5962,7 +5962,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
         // refresh the dbs in the meta
         ameta.allDatabasesUpdated();
-        forceRefreshTree();
+        forceRefreshTree( RefreshTarget.ALL);
       }
 
       try {
@@ -6456,7 +6456,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           shell, SWT.NONE, rep, dialog.getFilterPath(), filenames, baseDirectory, versionComment, importRules );
       ripd.open();
 
-      forceRefreshTree();
+      forceRefreshTree( RefreshTarget.ALL );
     }
   }
 
@@ -6963,11 +6963,29 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     addDragSourceToTree( selectionTree );
   }
 
+  public enum RefreshTarget {
+    CURRENT_FILE,
+    GLOBAL_MANAGEMENT_BOWL,
+    MANAGEMENT_BOWL,
+    EXECUTION_BOWL,
+    ALL
+  }
+
   public void forceRefreshTree() {
+    forceRefreshTree( RefreshTarget.ALL ); 
+  } 
+
+  public void forceRefreshTree( RefreshTarget target ) {
     // refresh underlying data
-    globalManagementBowl.clearCache();
-    managementBowl.clearCache();
-    executionBowl.clearCache();
+    if ( target == RefreshTarget.ALL || target == RefreshTarget.GLOBAL_MANAGEMENT_BOWL ) {
+      globalManagementBowl.clearCache();
+    }
+    if ( target == RefreshTarget.ALL || target == RefreshTarget.MANAGEMENT_BOWL ) {
+      managementBowl.clearCache();
+    }
+    if ( target == RefreshTarget.ALL || target == RefreshTarget.EXECUTION_BOWL ) {
+      executionBowl.clearCache();
+    }
 
     if ( selectionTreeManager != null ) {
       selectionTreeManager.updateAll();
@@ -7040,7 +7058,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
     setShellText();
     enableMenus();
-    forceRefreshTree();
   }
 
   private void warnRepositoryLost( KettleRepositoryLostException e ) {
@@ -9330,7 +9347,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       globalManagementBowl = DefaultBowl.getInstance();
       managementBowl = globalManagementBowl;
       executionBowl = globalManagementBowl;
-
+      
       this.repositoryName = null;
       lastFileOpened = props.getLastUsedLocalFile();
       // we don't know what the provider is.
@@ -9990,8 +10007,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   public void setManagementBowl( Bowl bowl ) {
+    boolean changed = this.managementBowl != bowl;
     this.managementBowl = Objects.requireNonNull( bowl );
-    forceRefreshTree();
+    if ( changed ) {
+      forceRefreshTree( RefreshTarget.MANAGEMENT_BOWL );
+    } 
   }
 
   /**
@@ -10012,8 +10032,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   public void setExecutionBowl( Bowl bowl ) {
+    boolean changed = this.executionBowl != bowl;
     this.executionBowl = Objects.requireNonNull( bowl );
-    forceRefreshTree();
+    if ( changed ) {
+      forceRefreshTree( RefreshTarget.EXECUTION_BOWL );
+    }
   }
 
   private void onLoginError( Throwable t ) {
