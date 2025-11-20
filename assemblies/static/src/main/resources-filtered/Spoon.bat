@@ -26,7 +26,7 @@ REM COLOR F0
 :: **************************************************
 
 if "%KETTLE_DIR%"=="" SET "KETTLE_DIR=%~dp0"
-if %KETTLE_DIR:~-1%==\ SET "KETTLE_DIR=%KETTLE_DIR:~0,-1%"
+if "%KETTLE_DIR:~-1%"=="\" SET "KETTLE_DIR=%KETTLE_DIR:~0,-1%"
 
 cd "%KETTLE_DIR%"
 
