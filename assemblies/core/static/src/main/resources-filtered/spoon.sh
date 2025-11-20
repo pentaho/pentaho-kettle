@@ -68,9 +68,8 @@ fi
 
 case `uname -s` in 
 	AIX)
-	ARCH=`uname -m`
+		ARCH=`uname -m`
 		case $ARCH in
-
 			ppc)
 				LIBPATH="$CURRENTDIR/../libswt/aix/"
 				;;
@@ -85,10 +84,10 @@ case `uname -s` in
 				;;
 		esac
 		;;
-	SunOS)
-	ARCH=`uname -m`
-		case $ARCH in
 
+	SunOS)
+		ARCH=`uname -m`
+		case $ARCH in
 			i[3-6]86)
 				LIBPATH="$CURRENTDIR/../libswt/solaris-x86/"
 				;;
@@ -100,40 +99,40 @@ case `uname -s` in
 		;;
 
 	Darwin)
-    ARCH=`uname -m`
-	if [ -z "$IS_KITCHEN" ]; then
-		OPT="-XstartOnFirstThread $OPT"
-	fi
-	case $ARCH in
-		x86_64)
-			if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
-                            then
-			  LIBPATH="$CURRENTDIR/../libswt/osx64/"
-                            else
-			  LIBPATH="$CURRENTDIR/../libswt/osx/"
-                            fi
-			;;
-    arm64)
-        if $($_PENTAHO_JAVA -version 2>&1 | grep "version \"1\.8\..*" > /dev/null )
-                              then
-          echo "I'm sorry, this Mac platform [$ARCH] is not supported in Java 8"
-          exit
-                              else
-          LIBPATH="$CURRENTDIR/../libswt/osx64_aarch/"
-                              fi
-      ;;
-		i[3-6]86)
-			LIBPATH="$CURRENTDIR/../libswt/osx/"
-			;;
+		ARCH=`uname -m`
+		if [ -z "$IS_KITCHEN" ]; then
+			OPT="-XstartOnFirstThread $OPT"
+		fi
+		case $ARCH in
+			x86_64)
+				if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null ); then
+					LIBPATH="$CURRENTDIR/../libswt/osx64/"
+				else
+					LIBPATH="$CURRENTDIR/../libswt/osx/"
+				fi
+				;;
 
-		*)
-			echo "I'm sorry, this Mac platform [$ARCH] is not yet supported!"
-			echo "Please try starting using 'Data Integration 32-bit' or"
-			echo "'Data Integration 64-bit' as appropriate."
-			exit
-			;;
-	esac
-	;;
+			arm64)
+				if $($_PENTAHO_JAVA -version 2>&1 | grep "version \"1\.8\..*" > /dev/null ); then
+					echo "I'm sorry, this Mac platform [$ARCH] is not supported in Java 8"
+					exit
+				else
+					LIBPATH="$CURRENTDIR/../libswt/osx64_aarch/"
+				fi
+				;;
+
+			i[3-6]86)
+				LIBPATH="$CURRENTDIR/../libswt/osx/"
+				;;
+
+			*)
+				echo "I'm sorry, this Mac platform [$ARCH] is not yet supported!"
+				echo "Please try starting using 'Data Integration 32-bit' or"
+				echo "'Data Integration 64-bit' as appropriate."
+				exit
+				;;
+		esac
+		;;
 
 
 	Linux)
@@ -277,7 +276,7 @@ if [ -z "$PENTAHO_DI_JAVA_OPTIONS" ]; then
     PENTAHO_DI_JAVA_OPTIONS="-Xms1024m -Xmx2048m"
 fi
 
-OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=$LIBPATH $JAVA_ENDORSED_DIRS $JAVA_LOCALE_COMPAT -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT -DKETTLE_JNDI_ROOT=$KETTLE_JNDI_ROOT"
+OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=\"$LIBPATH\" $JAVA_ENDORSED_DIRS $JAVA_LOCALE_COMPAT -DKETTLE_HOME=\"$KETTLE_HOME\" -DKETTLE_REPOSITORY=\"$KETTLE_REPOSITORY\" -DKETTLE_USER=\"$KETTLE_USER\" -DKETTLE_PASSWORD=\"$KETTLE_PASSWORD\" -DKETTLE_PLUGIN_PACKAGES=\"$KETTLE_PLUGIN_PACKAGES\" -DKETTLE_LOG_SIZE_LIMIT=\"$KETTLE_LOG_SIZE_LIMIT\" -DKETTLE_JNDI_ROOT=\"$KETTLE_JNDI_ROOT\""
 
 #line for allowing orc's compatibility with protobuf-java 3.25.6 libraries
 OPT="$OPT -Dcom.google.protobuf.use_unsafe_pre22_gencode=true"
