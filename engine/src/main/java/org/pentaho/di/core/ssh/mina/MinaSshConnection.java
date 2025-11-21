@@ -454,6 +454,11 @@ public class MinaSshConnection implements SshConnection {
   }
 
   @Override
+  public ExecResult exec( String command ) throws SshConnectionException {
+    return exec( command, config.getCommandTimeoutMillis() );
+  }
+
+  @Override
   public SftpSession openSftp() throws SshConnectionException {
     try {
       var factory = SftpClientFactory.instance();
