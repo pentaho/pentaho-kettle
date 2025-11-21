@@ -2104,7 +2104,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     viewTreeToolbar.addRefreshListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
-        forceRefreshTree();
+        forceRefreshTree( true );
       }
     } );
 
@@ -4344,7 +4344,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void clearSharedObjectCache() throws KettleException {
     // forceRefreshTree is now a superset of just clearing the shared object cache
-    forceRefreshTree( RefreshTarget.ALL );
+    forceRefreshTree();
   }
 
   public void exploreRepository() {
@@ -5962,7 +5962,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
         // refresh the dbs in the meta
         ameta.allDatabasesUpdated();
-        forceRefreshTree( RefreshTarget.ALL);
+        forceRefreshTree( true);
       }
 
       try {
@@ -6456,7 +6456,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           shell, SWT.NONE, rep, dialog.getFilterPath(), filenames, baseDirectory, versionComment, importRules );
       ripd.open();
 
-      forceRefreshTree( RefreshTarget.ALL );
+      forceRefreshTree( true );
     }
   }
 
@@ -6963,27 +6963,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     addDragSourceToTree( selectionTree );
   }
 
-  public enum RefreshTarget {
-    CURRENT_FILE,
-    GLOBAL_MANAGEMENT_BOWL,
-    MANAGEMENT_BOWL,
-    EXECUTION_BOWL,
-    ALL
-  }
-
   public void forceRefreshTree() {
-    forceRefreshTree( RefreshTarget.ALL ); 
+    forceRefreshTree( true ); 
   } 
 
-  public void forceRefreshTree( RefreshTarget target ) {
+  public void forceRefreshTree( boolean clearCaches ) {
     // refresh underlying data
-    if ( target == RefreshTarget.ALL || target == RefreshTarget.GLOBAL_MANAGEMENT_BOWL ) {
+    if ( clearCaches ) {
       globalManagementBowl.clearCache();
-    }
-    if ( target == RefreshTarget.ALL || target == RefreshTarget.MANAGEMENT_BOWL ) {
       managementBowl.clearCache();
-    }
-    if ( target == RefreshTarget.ALL || target == RefreshTarget.EXECUTION_BOWL ) {
       executionBowl.clearCache();
     }
 
@@ -10010,7 +9998,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean changed = this.managementBowl != bowl;
     this.managementBowl = Objects.requireNonNull( bowl );
     if ( changed ) {
-      forceRefreshTree( RefreshTarget.MANAGEMENT_BOWL );
+      managementBowl.clearCache();
+      forceRefreshTree( false );
     } 
   }
 
@@ -10035,7 +10024,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean changed = this.executionBowl != bowl;
     this.executionBowl = Objects.requireNonNull( bowl );
     if ( changed ) {
-      forceRefreshTree( RefreshTarget.EXECUTION_BOWL );
+      executionBowl.clearCache();
+      forceRefreshTree( false );
     }
   }
 
