@@ -1078,7 +1078,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       // create a mail connection object
 
      if( usingAuthentication.equals( JobEntryGetPOP.AUTENTICATION_OAUTH ) ) {
-        realpassword = "Bearer " + getOauthToken( getTokenUrl() ).getAccessToken();
+        String resolvedTokenUrl = environmentSubstitute( getTokenUrl() );
+        realpassword = "Bearer " + getOauthToken( resolvedTokenUrl ).getAccessToken();
       }
       mailConn =
         new MailConnection(
@@ -1472,18 +1473,19 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   public IEmailAuthenticationResponse getOauthToken( String tokenUrl ) {
     try ( CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient() ) {
       this.tokenUrl=tokenUrl;
-      HttpPost httpPost = new HttpPost( tokenUrl );
+      HttpPost httpPost = new HttpPost( environmentSubstitute(  tokenUrl ) );
       List<NameValuePair> form = new ArrayList<>();
-      form.add( new BasicNameValuePair( "scope", scope ) );
-      form.add( new BasicNameValuePair( "client_id", clientId ) );
-      form.add( new BasicNameValuePair( "client_secret", secretKey ) );
-      form.add(new BasicNameValuePair( "grant_type", grant_type ) );
-      if ( grant_type.equals( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN ) ) {
-        form.add( new BasicNameValuePair( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN, refresh_token ) );
+      form.add( new BasicNameValuePair( "scope", environmentSubstitute(  scope ) ) );
+      form.add( new BasicNameValuePair( "client_id", environmentSubstitute(  clientId ) ));
+      form.add( new BasicNameValuePair( "client_secret", environmentSubstitute(  secretKey ) ));
+      String realGrantType = environmentSubstitute( grant_type );
+      form.add( new BasicNameValuePair( "grant_type", realGrantType ) );
+      if ( realGrantType.equals( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN ) ) {
+        form.add( new BasicNameValuePair( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN, environmentSubstitute( refresh_token ) ) );
       }
-      if ( grant_type.equals( JobEntryGetPOP.GRANTTYPE_AUTHORIZATION_CODE ) ) {
-        form.add( new BasicNameValuePair( "code", authorization_code ) );
-        form.add( new BasicNameValuePair( "redirect_uri", redirectUri ) );
+      if ( realGrantType.equals( JobEntryGetPOP.GRANTTYPE_AUTHORIZATION_CODE ) ) {
+        form.add( new BasicNameValuePair( "code", environmentSubstitute( authorization_code ) ) );
+        form.add( new BasicNameValuePair( "redirect_uri", environmentSubstitute( redirectUri ) ) );
       }
       UrlEncodedFormEntity entity = new UrlEncodedFormEntity( form, Consts.UTF_8 );
       httpPost.setEntity( entity );
