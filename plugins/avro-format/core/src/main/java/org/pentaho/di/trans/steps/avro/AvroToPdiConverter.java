@@ -12,8 +12,8 @@
 
 package org.pentaho.di.trans.steps.avro;
 
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import org.apache.avro.JsonProperties;
 import org.pentaho.di.trans.steps.avro.input.IAvroInputField;
 import org.pentaho.di.trans.steps.avro.input.AvroInputField;
 import org.pentaho.di.trans.steps.avro.input.PentahoAvroInputFormat;
@@ -402,6 +402,6 @@ public class AvroToPdiConverter {
   }
 
   private boolean isNotNull( Object avroData ) {
-    return avroData != null && !( avroData instanceof NullNode );
+    return avroData != null && ( avroData != JsonProperties.NULL_VALUE );
   }
 }
