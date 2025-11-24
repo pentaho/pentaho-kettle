@@ -43,7 +43,7 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
+import org.pentaho.di.trans.step.StepHelperInterface;
 import java.util.List;
 
 /**
@@ -331,5 +331,10 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
   public void allocateInputSteps( int count ) {
     inputSteps = new String[count];
 
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+      return new MultiMergeJoinHelper();
   }
 }
