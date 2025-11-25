@@ -44,8 +44,8 @@ echo "-"
 SPOONDIR=$(dirname "$(readlink -f "$0")")
 echo Launching Spoon: "$SPOONDIR/spoon.sh $SPOON_OPTIONS"
 if [ "$SPOON_REDIRECT" != "1" ] ; then
-    exec ./spoon.sh $SPOON_OPTIONS
+    exec ./spoon.sh "$SPOON_OPTIONS"
 else
     echo "Console output gets redirected to $SPOONDIR/SpoonDebug.txt"
-    exec ./spoon.sh $SPOON_OPTIONS >> "$SPOONDIR/SpoonDebug.txt" 2>&1
+    exec ./spoon.sh "$SPOON_OPTIONS" >> "$SPOONDIR/SpoonDebug.txt" 2>&1
 fi

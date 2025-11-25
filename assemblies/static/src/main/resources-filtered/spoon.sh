@@ -18,12 +18,12 @@
 # ** Gtk2 and Fte enabled.
 # **************************************************
 
-# set MOZILLA_FIVE_HOME=/usr/local/mozilla
-# set LD_LIBRARY_PATH=/usr/local/mozilla
+# set MOZILLA_FIVE_HOME="/usr/local/mozilla"
+# set LD_LIBRARY_PATH="/usr/local/mozilla"
 
 # Try to guess xulrunner location - change this if you need to
-MOZILLA_FIVE_HOME=$(find /usr/lib -maxdepth 1 -name xulrunner-[0-9]* | head -1)
-LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
+MOZILLA_FIVE_HOME="$(find /usr/lib -maxdepth 1 -name xulrunner-[0-9]* | head -1)"
+LD_LIBRARY_PATH="${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}"
 export MOZILLA_FIVE_HOME LD_LIBRARY_PATH
 
 # Fix for GTK Windows issues with SWT
@@ -61,22 +61,21 @@ STARTUP="$BASEDIR/launcher/launcher.jar"
 
 if [ -z "$IS_YARN" ]; then
 	# Go to directory where spoon.sh located
-	cd $BASEDIR
+	cd "$BASEDIR"
 else
 	cd "$BASEDIR"
 fi
 
 case `uname -s` in 
 	AIX)
-	ARCH=`uname -m`
+		ARCH=`uname -m`
 		case $ARCH in
-
 			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/aix/
+				LIBPATH="$CURRENTDIR/../libswt/aix/"
 				;;
 
 			ppc64)
-				LIBPATH=$CURRENTDIR/../libswt/aix64/
+				LIBPATH="$CURRENTDIR/../libswt/aix64/"
 				;;
 
 			*)
@@ -85,96 +84,92 @@ case `uname -s` in
 				;;
 		esac
 		;;
-	SunOS)
-	ARCH=`uname -m`
-		case $ARCH in
 
+	SunOS)
+		ARCH=`uname -m`
+		case $ARCH in
 			i[3-6]86)
-				LIBPATH=$CURRENTDIR/../libswt/solaris-x86/
+				LIBPATH="$CURRENTDIR/../libswt/solaris-x86/"
 				;;
 
 			*)
-				LIBPATH=$CURRENTDIR/../libswt/solaris/
+				LIBPATH="$CURRENTDIR/../libswt/solaris/"
 				;;
 		esac
 		;;
 
 	Darwin)
-    ARCH=`uname -m`
-	if [ -z "$IS_KITCHEN" ]; then
-		OPT="-XstartOnFirstThread $OPT"
-	fi
-	case $ARCH in
-		x86_64)
-			if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
-                            then
-			  LIBPATH=$CURRENTDIR/../libswt/osx64/
-                            else
-			  LIBPATH=$CURRENTDIR/../libswt/osx/
-                            fi
-			;;
-    arm64)
-        if $($_PENTAHO_JAVA -version 2>&1 | grep "version \"1\.8\..*" > /dev/null )
-                              then
-          echo "I'm sorry, this Mac platform [$ARCH] is not supported in Java 8"
-          exit
-                              else
-          LIBPATH=$CURRENTDIR/../libswt/osx64_aarch/
-                              fi
-      ;;
-		i[3-6]86)
-			LIBPATH=$CURRENTDIR/../libswt/osx/
-			;;
-
-		*)
-			echo "I'm sorry, this Mac platform [$ARCH] is not yet supported!"
-			echo "Please try starting using 'Data Integration 32-bit' or"
-			echo "'Data Integration 64-bit' as appropriate."
-			exit
-			;;
-	esac
-	;;
-
-
-	Linux)
-
-            if [ -f /sbin/ldconfig ]; then
-              LDCONFIG=/sbin/ldconfig
-            else
-              LDCONFIG=ldconfig
-            fi
-            HASWEBKITGTK=`$LDCONFIG -p | grep webkitgtk-1.0`
-            export LIBWEBKITGTK="$HASWEBKITGTK"
-            export JavaScriptCoreUseJIT=0
-            if [ -z "$HASWEBKITGTK" ] && [ "1" != "$SKIP_WEBKITGTK_CHECK" ]; then
-              echo "#######################################################################"
-              echo "WARNING:  no libwebkitgtk-1.0 detected, some features will be unavailable"
-              echo "    Consider installing the package with apt-get or yum."
-              echo "    e.g. 'sudo apt-get install libwebkitgtk-1.0-0'"
-              echo "#######################################################################"
-            fi
-
-	    ARCH=`uname -m`
+		ARCH=`uname -m`
+		if [ -z "$IS_KITCHEN" ]; then
+			OPT="-XstartOnFirstThread $OPT"
+		fi
 		case $ARCH in
 			x86_64)
-				if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
-                                then
-				  LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/
-                                else
-				  LIBPATH=$CURRENTDIR/../libswt/linux/x86/
-                                fi
+				if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null ); then
+					LIBPATH="$CURRENTDIR/../libswt/osx64/"
+				else
+					LIBPATH="$CURRENTDIR/../libswt/osx/"
+				fi
+				;;
+
+			arm64)
+				if $($_PENTAHO_JAVA -version 2>&1 | grep "version \"1\.8\..*" > /dev/null ); then
+					echo "I'm sorry, this Mac platform [$ARCH] is not supported in Java 8"
+					exit
+				else
+					LIBPATH="$CURRENTDIR/../libswt/osx64_aarch/"
+				fi
 				;;
 
 			i[3-6]86)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86/
+				LIBPATH="$CURRENTDIR/../libswt/osx/"
+				;;
+
+			*)
+				echo "I'm sorry, this Mac platform [$ARCH] is not yet supported!"
+				echo "Please try starting using 'Data Integration 32-bit' or"
+				echo "'Data Integration 64-bit' as appropriate."
+				exit
+				;;
+		esac
+		;;
+	Linux)
+		if [ -f /sbin/ldconfig ]; then
+			LDCONFIG="/sbin/ldconfig"
+		else
+			LDCONFIG="ldconfig"
+		fi
+		HASWEBKITGTK=`$LDCONFIG -p | grep webkitgtk-1.0`
+		export LIBWEBKITGTK="$HASWEBKITGTK"
+		export JavaScriptCoreUseJIT=0
+		if [ -z "$HASWEBKITGTK" ] && [ "1" != "$SKIP_WEBKITGTK_CHECK" ]; then
+			echo "#######################################################################"
+			echo "WARNING:  no libwebkitgtk-1.0 detected, some features will be unavailable"
+			echo "    Consider installing the package with apt-get or yum."
+			echo "    e.g. 'sudo apt-get install libwebkitgtk-1.0-0'"
+			echo "#######################################################################"
+		fi
+
+		ARCH=`uname -m`
+		case $ARCH in
+			x86_64)
+				if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null ); then
+					LIBPATH="$CURRENTDIR/../libswt/linux/x86_64/"
+				else
+					LIBPATH="$CURRENTDIR/../libswt/linux/x86/"
+				fi
+				;;
+
+			i[3-6]86)
+				LIBPATH="$CURRENTDIR/../libswt/linux/x86/"
 				;;
 
 			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/
+				LIBPATH="$CURRENTDIR/../libswt/linux/ppc/"
 				;;
 
 			ppc64)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc64/
+				LIBPATH="$CURRENTDIR/../libswt/linux/ppc64/"
 				;;
 
 			*)
@@ -187,20 +182,20 @@ case `uname -s` in
 	FreeBSD)
 		# note, the SWT library for linux is used, so FreeBSD should have the
 		# linux compatibility packages installed
-	    ARCH=`uname -m`
+		ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/
+				LIBPATH="$CURRENTDIR/../libswt/linux/x86_64/"
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
 			i[3-6]86)
-				LIBPATH=$CURRENTDIR/../libswt/linux/x86/
+				LIBPATH="$CURRENTDIR/../libswt/linux/x86/"
 				;;
 
 			ppc)
-				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/
+				LIBPATH="$CURRENTDIR/../libswt/linux/ppc/"
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
@@ -213,7 +208,7 @@ case `uname -s` in
 		;;
 
 	HP-UX)
-		LIBPATH=$CURRENTDIR/../libswt/hpux/
+		LIBPATH="$CURRENTDIR/../libswt/hpux/"
 		;;
 	CYGWIN*)
 		./Spoon.bat
@@ -265,7 +260,7 @@ if [ -z "$PENTAHO_DI_JAVA_OPTIONS" ]; then
     PENTAHO_DI_JAVA_OPTIONS="-Xms1024m -Xmx2048m"
 fi
 
-OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=$LIBPATH $JAVA_LOCALE_COMPAT -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT -DKETTLE_JNDI_ROOT=$KETTLE_JNDI_ROOT"
+OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=\"$LIBPATH\" $JAVA_LOCALE_COMPAT -DKETTLE_HOME=\"$KETTLE_HOME\" -DKETTLE_REPOSITORY=\"$KETTLE_REPOSITORY\" -DKETTLE_USER=\"$KETTLE_USER\" -DKETTLE_PASSWORD=\"$KETTLE_PASSWORD\" -DKETTLE_PLUGIN_PACKAGES=\"$KETTLE_PLUGIN_PACKAGES\" -DKETTLE_LOG_SIZE_LIMIT=\"$KETTLE_LOG_SIZE_LIMIT\" -DKETTLE_JNDI_ROOT=\"$KETTLE_JNDI_ROOT\""
 
 #line for allowing orc's compatibility with protobuf-java 3.25.6 libraries
 OPT="$OPT -Dcom.google.protobuf.use_unsafe_pre22_gencode=true"

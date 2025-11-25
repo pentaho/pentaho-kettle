@@ -102,7 +102,7 @@ setPentahoEnv() {
   else
     # echo "WARNING: Using java from path"
     _PENTAHO_JAVA_HOME=
-    _PENTAHO_JAVA=$__LAUNCHER
+    _PENTAHO_JAVA="$__LAUNCHER"
   fi
   # echo "DEBUG: _PENTAHO_JAVA_HOME=$_PENTAHO_JAVA_HOME"
   # echo "DEBUG: _PENTAHO_JAVA=$_PENTAHO_JAVA"

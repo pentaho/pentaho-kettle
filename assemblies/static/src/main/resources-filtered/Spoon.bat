@@ -13,7 +13,7 @@ REM ****************************************************************************
 
 setlocal
 
-cd /D %~dp0
+cd /D "%~dp0"
 
 REM **************************************************
 REM ** Set console window properties                **
@@ -25,15 +25,15 @@ REM COLOR F0
 :: ** Kettle home                                  **
 :: **************************************************
 
-if "%KETTLE_DIR%"=="" set KETTLE_DIR=%~dp0
-if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
+if "%KETTLE_DIR%"=="" SET "KETTLE_DIR=%~dp0"
+if "%KETTLE_DIR:~-1%"=="\" SET "KETTLE_DIR=%KETTLE_DIR:~0,-1%"
 
-cd %KETTLE_DIR%
+cd "%KETTLE_DIR%"
 
 REM Special console/debug options when called from SpoonConsole.bat or SpoonDebug.bat
-if "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=java.exe
-if not "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=javaw.exe
-set IS64BITJAVA=0
+if "%SPOON_CONSOLE%"=="1" SET "PENTAHO_JAVA=java.exe"
+if not "%SPOON_CONSOLE%"=="1" SET "PENTAHO_JAVA=javaw.exe"
+SET "IS64BITJAVA=0"
 
 call "%~dp0set-pentaho-env.bat"
 
@@ -76,56 +76,56 @@ IF %IS64BITJAVA% == 1 GOTO :USE64
 REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
-set LIBSPATH=libswt\win32
+SET "LIBSPATH=libswt\win32"
 GOTO :CONTINUE
 :USE64
 REM ===========================================
 REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
 
-set LIBSPATH=libswt\win64;native-lib\win64;..\native-lib\win64
-set SWTJAR=..\libswt\win64
+SET "LIBSPATH=libswt\win64;native-lib\win64;..\native-lib\win64"
+SET "SWTJAR=..\libswt\win64"
 :CONTINUE
 popd
 
 REM **************************************************
 REM ** Setup Karaf endorsed libraries directory     **
 REM **************************************************
-set JAVA_LOCALE_COMPAT=
-set JAVA_ADD_OPENS=
+SET "JAVA_LOCALE_COMPAT="
+SET "JAVA_ADD_OPENS="
 
 REM required for Java 11 date/time formatting backwards compatibility
-set JAVA_LOCALE_COMPAT=-Djava.locale.providers=COMPAT,SPI
-rem Sets options that only get read by Java 11 to remove illegal reflective access warnings
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.io=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.net=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.security=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.util=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.file=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.ftp=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.http=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.reflect.misc=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.management/javax.management=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.management/javax.management.openmbean=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.math=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.nio=ALL-UNNAMED"
-set "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED"
+SET "JAVA_LOCALE_COMPAT=-Djava.locale.providers=COMPAT,SPI"
+REM Sets options that only get read by Java 11 to remove illegal reflective access warnings
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.io=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.net=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.security=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.util=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.file=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.ftp=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.http=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.reflect.misc=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.management/javax.management=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.management/javax.management.openmbean=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.math=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.base/java.nio=ALL-UNNAMED"
+SET "JAVA_ADD_OPENS=%JAVA_ADD_OPENS% --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED"
 
 :COLLECTARGUMENTS
 REM **********************
 REM   Collect arguments
 REM **********************
 
-set _cmdline=
+SET "_cmdline="
 :TopArg
 if %1!==! goto EndArg
-set _cmdline=%_cmdline% %1
+SET "_cmdline=%_cmdline% %1"
 shift
 goto TopArg
 :EndArg
@@ -136,25 +136,25 @@ REM ** Change 2048m to higher values in case you run out of memory  **
 REM ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
 REM ******************************************************************
 
-if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS="-Xms1024m" "-Xmx2048m"
+if "%PENTAHO_DI_JAVA_OPTIONS%"=="" SET "PENTAHO_DI_JAVA_OPTIONS=-Xms1024m -Xmx2048m"
 
-set OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% "-Djava.library.path=%LIBSPATH%;%HADOOP_HOME%/bin" %JAVA_LOCALE_COMPAT% "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%" "-DKETTLE_JNDI_ROOT=%KETTLE_JNDI_ROOT%"
+SET "OPT=%OPT% %PENTAHO_DI_JAVA_OPTIONS% -Djava.library.path="%LIBSPATH%;%HADOOP_HOME%/bin" %JAVA_LOCALE_COMPAT% -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%" -DKETTLE_PLUGIN_PACKAGES="%KETTLE_PLUGIN_PACKAGES%" -DKETTLE_LOG_SIZE_LIMIT="%KETTLE_LOG_SIZE_LIMIT%" -DKETTLE_JNDI_ROOT="%KETTLE_JNDI_ROOT%""
 
 REM Add this option to allow orc's compatibility with protobuf-java 3.25.6 libraries
-set OPT=%OPT% "-Dcom.google.protobuf.use_unsafe_pre22_gencode=true"
+SET "OPT=%OPT% -Dcom.google.protobuf.use_unsafe_pre22_gencode=true"
 
 REM Force SWT to use Edge instead of Internet Explorer (not supported by Pentaho anymore)
-set OPT=%OPT% "-Dorg.eclipse.swt.browser.DefaultType=edge"
+SET "OPT=%OPT% -Dorg.eclipse.swt.browser.DefaultType=edge"
 
 REM ***************
 REM ** Run...    **
 REM ***************
 
-if %STARTTITLE%!==! SET STARTTITLE="Spoon"
+if %STARTTITLE%!==! SET "STARTTITLE=Spoon"
 REM Eventually call java instead of javaw and do not run in a separate window
-if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start %STARTTITLE%
+if not "%SPOON_CONSOLE%"=="1" SET "SPOON_START_OPTION=start %STARTTITLE%"
 
 @echo on
-%SPOON_START_OPTION% "%_PENTAHO_JAVA%" %JAVA_ADD_OPENS% %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
+%SPOON_START_OPTION% "%_PENTAHO_JAVA%" %JAVA_ADD_OPENS% %OPT% -jar launcher\launcher.jar -lib "..\%LIBSPATH%" %_cmdline%
 @echo off
 if "%SPOON_PAUSE%"=="1" pause
