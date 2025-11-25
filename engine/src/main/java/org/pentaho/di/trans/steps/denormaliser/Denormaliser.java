@@ -13,19 +13,7 @@
 
 package org.pentaho.di.trans.steps.denormaliser;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -36,6 +24,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -44,6 +33,15 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Denormalises data based on key-value pairs
@@ -278,62 +276,6 @@ public class Denormaliser extends BaseStep implements StepInterface {
     }
 
     return outputRowData;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getAggregationTypesAction( Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    JSONArray aggregationTypes = new JSONArray();
-
-    for ( int i = 0; i < DenormaliserTargetField.typeAggrDesc.length; i++ ) {
-      JSONObject aggregationType = new JSONObject();
-      aggregationType.put( "id", DenormaliserTargetField.typeAggrDesc[i] );
-      aggregationType.put( "name", DenormaliserTargetField.typeAggrLongDesc[i] );
-      aggregationTypes.add( aggregationType );
-    }
-
-    response.put( "aggregationTypes", aggregationTypes );
-    return response;
-  }
-
-  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  public JSONObject getLookupFieldsAction( Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    JSONArray denormaliserFields = new JSONArray();
-
-    try {
-      RowMetaInterface previousFields = getTransMeta().getPrevStepFields( getStepname() );
-      if ( previousFields != null && !previousFields.isEmpty() ) {
-        String[] groupFields = meta.getGroupField();
-        String keyField = meta.getKeyField();
-
-        for ( int i = 0; i < previousFields.size(); i++ ) {
-          ValueMetaInterface v = previousFields.getValueMeta( i );
-          String fieldName = v.getName();
-
-          // Exclude group fields and the key field
-          if ( Const.indexOfString( fieldName, groupFields ) < 0 &&
-                  !fieldName.equalsIgnoreCase( keyField ) ) {
-
-            JSONObject fieldJson = new JSONObject();
-            fieldJson.put( "fieldName", fieldName );
-            fieldJson.put( "keyValue", "" );
-            fieldJson.put( "targetName", fieldName );
-            fieldJson.put( "targetType", v.getTypeDesc() );
-            fieldJson.put( "targetLength", v.getLength() );
-            fieldJson.put( "aggregationType", DenormaliserTargetField.getAggregationTypeDesc( DenormaliserTargetField.TYPE_AGGR_NONE ) );
-
-            denormaliserFields.add( fieldJson );
-          }
-        }
-      }
-
-      response.put( "denormaliserFields", denormaliserFields );
-    } catch ( Exception e ) {
-      response.put( "message", "Failed to retrieve lookup fields: " + e.getMessage() );
-    }
-
-    return response;
   }
 
   private Object getZero( int field ) throws KettleValueException {
