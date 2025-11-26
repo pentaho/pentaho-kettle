@@ -264,6 +264,7 @@ OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=\"$LIBPATH\" $JAVA_LOCALE
 
 #line for allowing orc's compatibility with protobuf-java 3.25.6 libraries
 OPT="$OPT -Dcom.google.protobuf.use_unsafe_pre22_gencode=true"
+
 # optional line for attaching a debugger
 # OPT="$OPT -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 
@@ -276,9 +277,9 @@ inputtoexitstatus() {
 }
 
 if [ -n "${FILTER_GTK_WARNINGS}" ] ; then
-    (((("$_PENTAHO_JAVA"  $JAVA_ADD_OPENS $OPT -jar "$STARTUP" -lib $LIBPATH "${1+$@}"  2>&1; echo $? >&3 ) | grep -viE "Gtk-WARNING|GLib-GObject|GLib-CRITICAL|^$" >&4 ) 3>&1)| inputtoexitstatus ) 4>&1
+    ((((eval "\"$_PENTAHO_JAVA\"" $JAVA_ADD_OPENS "$OPT" -jar "\"$STARTUP\"" -lib "\"$LIBPATH\"" \"\${1+\$@}\" 2>&1; echo $? >&3 ) | grep -viE "Gtk-WARNING|GLib-GObject|GLib-CRITICAL|^$" >&4 ) 3>&1)| inputtoexitstatus ) 4>&1
 else
-    "$_PENTAHO_JAVA"  $JAVA_ADD_OPENS $OPT -jar "$STARTUP" -lib $LIBPATH "${1+$@}"
+	eval "\"$_PENTAHO_JAVA\"" $JAVA_ADD_OPENS "$OPT" -jar "\"$STARTUP\"" -lib "\"$LIBPATH\"" \"\${1+\$@}\"
 fi
 EXIT_CODE=$?
 
