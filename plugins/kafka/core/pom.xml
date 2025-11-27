@@ -132,15 +132,15 @@
           <name>runITs</name>
         </property>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>pentaho</groupId>
-          <artifactId>pentaho-metaverse-core</artifactId>
-          <version>${pdi.version}</version>
-          <classifier>tests</classifier>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
+<!--      <dependencies>-->
+<!--        <dependency>-->
+<!--          <groupId>pentaho</groupId>-->
+<!--          <artifactId>pentaho-metaverse-core</artifactId>-->
+<!--          <version>${pdi.version}</version>-->
+<!--          <classifier>tests</classifier>-->
+<!--          <scope>test</scope>-->
+<!--        </dependency>-->
+<!--      </dependencies>-->
     </profile>
   </profiles>
 </project>
