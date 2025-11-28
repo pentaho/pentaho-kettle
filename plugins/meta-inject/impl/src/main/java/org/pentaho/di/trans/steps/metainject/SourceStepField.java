@@ -13,6 +13,8 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
+import java.util.Objects;
+
 public class SourceStepField {
 
   private String stepname;
@@ -42,7 +44,7 @@ public class SourceStepField {
 
   @Override
   public int hashCode() {
-    return stepname.hashCode() ^ field.hashCode();
+    return Objects.hash(stepname, field);
   }
 
   /**
