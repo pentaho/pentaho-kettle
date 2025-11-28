@@ -195,30 +195,49 @@ public class GetJobStatusServletTest {
   }
 
   @Test
-  public void doGetConflictingJobNamesUseXMLTest() throws Exception {
+  public void doGetMultipleJobsWithSameNameReturnsFirstUseXMLTest() throws Exception {
     KettleLogStore.init();
     CarteStatusCache cacheMock = mock( CarteStatusCache.class );
     getJobStatusServlet.cache = cacheMock;
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
-    StringWriter out = new StringWriter();
-    PrintWriter printWriter = new PrintWriter( out );
+    ServletOutputStream outMock = mock( ServletOutputStream.class );
+
+    Job mockJob = mock( Job.class );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    LogChannelInterface mockLogChannelInterface = mock( LogChannelInterface.class );
+    CarteObjectEntry mockEntry = new CarteObjectEntry( "dummy_job", "job-id-1" );
 
     when( mockHttpServletRequest.getContextPath() ).thenReturn( GetJobStatusServlet.CONTEXT_PATH );
     when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( null );
     when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( "dummy_job" );
     when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( "Y" );
-    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
-    when( mockJobMap.getUniqueCarteObjectEntry( any() ) ).thenThrow( new DuplicateKeyException() );
+    when( mockHttpServletResponse.getOutputStream() ).thenReturn( outMock );
+
+    // Simulate multiple jobs with the same name - getFirstCarteObjectEntry returns the first one
+    when( mockJobMap.getFirstCarteObjectEntry( "dummy_job" ) ).thenReturn( mockEntry );
+    when( mockJobMap.getJob( mockEntry ) ).thenReturn( mockJob );
+    when( mockJob.getJobname() ).thenReturn( "dummy_job" );
+    when( mockJob.getLogChannel() ).thenReturn( mockLogChannelInterface );
+    when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
+    when( mockJob.isFinished() ).thenReturn( true );
+    when( mockJob.getLogChannelId() ).thenReturn( "logId" );
+    when( mockJob.getStatus() ).thenReturn( "Finished" );
+    when( mockJobMeta.getMaximum() ).thenReturn( new org.pentaho.di.core.gui.Point( 10, 10 ) );
 
     getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
+    // Verify the servlet returns SC_OK and processes the job (not SC_CONFLICT)
     verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
-    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_CONFLICT );
+    verify( mockHttpServletResponse, times( 0 ) ).setStatus( HttpServletResponse.SC_CONFLICT );
+
+    // Verify that getFirstCarteObjectEntry was called to get the job
+    verify( mockJobMap ).getFirstCarteObjectEntry( "dummy_job" );
+    verify( mockJobMap ).getJob( mockEntry );
   }
 
   @Test
-  public void doGetConflictingJobNamesUseHTMLTest() throws Exception {
+  public void doGetMultipleJobsWithSameNameReturnsFirstUseHTMLTest() throws Exception {
     KettleLogStore.init();
     CarteStatusCache cacheMock = mock( CarteStatusCache.class );
     getJobStatusServlet.cache = cacheMock;
@@ -227,16 +246,33 @@ public class GetJobStatusServletTest {
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
 
+    Job mockJob = mock( Job.class );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    LogChannelInterface mockLogChannelInterface = mock( LogChannelInterface.class );
+    CarteObjectEntry mockEntry = new CarteObjectEntry( "dummy_job", "job-id-1" );
+
     when( mockHttpServletRequest.getContextPath() ).thenReturn( GetJobStatusServlet.CONTEXT_PATH );
     when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( null );
     when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( "dummy_job" );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
-    when( mockJobMap.getUniqueCarteObjectEntry( any() ) ).thenThrow( new DuplicateKeyException() );
+
+    // Simulate multiple jobs with the same name - getFirstCarteObjectEntry returns the first one
+    when( mockJobMap.getFirstCarteObjectEntry( "dummy_job" ) ).thenReturn( mockEntry );
+    when( mockJobMap.getJob( mockEntry ) ).thenReturn( mockJob );
+    when( mockJob.getJobname() ).thenReturn( "dummy_job" );
+    when( mockJob.getLogChannel() ).thenReturn( mockLogChannelInterface );
+    when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
+    when( mockJobMeta.getMaximum() ).thenReturn( new org.pentaho.di.core.gui.Point( 10, 10 ) );
 
     getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
 
+    // Verify the servlet returns SC_OK and processes the job (not SC_CONFLICT)
     verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_OK );
-    verify( mockHttpServletResponse ).setStatus( HttpServletResponse.SC_CONFLICT );
+    verify( mockHttpServletResponse, times( 0 ) ).setStatus( HttpServletResponse.SC_CONFLICT );
+
+    // Verify that getFirstCarteObjectEntry was called to get the job
+    verify( mockJobMap ).getFirstCarteObjectEntry( "dummy_job" );
+    verify( mockJobMap ).getJob( mockEntry );
   }
 
   @Test
