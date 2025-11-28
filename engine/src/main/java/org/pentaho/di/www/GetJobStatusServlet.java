@@ -178,10 +178,6 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
    <td>Not found: Job not found</td>
    </tr>
    <tr>
-   <td>409</td>
-   <td>Conflicting: multiple jobs with the same name. must provide id</td>
-   </tr>
-   <tr>
    <td>500</td>
    <td>Internal server error occurs during request processing.</td>
    </tr>
@@ -232,13 +228,6 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     Job job;
     CarteObjectEntry entry;
     if ( Utils.isEmpty( id ) ) {
-      if ( isConflictingName( jobName ) ) {
-        PrintWriter out = response.getWriter();
-        response.setStatus( HttpServletResponse.SC_CONFLICT );
-        String message = BaseMessages.getString( PKG, "GetJobStatusServlet.Error.ConflictingJobName" );
-        printResponse( response, useXML, out, message );
-        return;
-      }
       // get the first job that matches...
       entry = getJobMap().getFirstCarteObjectEntry( jobName );
       if ( entry == null ) {
@@ -508,14 +497,5 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     } catch ( OutOfMemoryError error ) {
       throw new KettleException( BaseMessages.getString( PKG, "GetJobStatusServlet.Error.LogStringIsTooLong" ) );
     }
-  }
-
-  private boolean isConflictingName( String jobName ) {
-    try {
-      getJobMap().getUniqueCarteObjectEntry( jobName );
-    } catch ( DuplicateKeyException ex ) {
-      return true;
-    }
-    return false;
   }
 }
