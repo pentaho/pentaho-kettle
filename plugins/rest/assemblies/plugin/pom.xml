@@ -5,17 +5,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>rest-assemblies</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-49</version>
   </parent>
 
   <artifactId>kettle-rest-plugin</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-49</version>
   <packaging>pom</packaging>
 
   <name>PDI Rest Plugin Distribution</name>
 
   <properties>
-    <project.revision>11.1.0.0-SNAPSHOT</project.revision>
+    <project.revision>11.1.0.0-49</project.revision>
   </properties>
 
   <dependencies>
