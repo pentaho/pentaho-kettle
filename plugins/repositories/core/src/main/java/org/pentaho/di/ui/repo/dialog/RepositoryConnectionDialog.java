@@ -65,7 +65,7 @@ public class RepositoryConnectionDialog extends Dialog {
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String LOGIN_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Login.Title" );
   private static final String HELP_URL =
-    Const.getDocUrl( BaseMessages.getString( PKG, "repositories.repohelpurl.label" ) );
+    Const.getDocUrl( "use-a-pentaho-repository-in-pdi" );
   String flagMessageBlank = "                                                    ";
 
 

@@ -96,7 +96,7 @@ import java.util.Set;
     id = "MetaInject",
     image = "org/pentaho/di/trans/steps/metainject/img/GenericTransform.svg",
     pluginType = PluginDialog.PluginType.STEP,
-    documentationUrl = "mk-95pdia003/pdi-transformation-steps/etl-metadata-injection"
+    documentationUrl = "pdi-transformation-steps-reference-overview/etl-metadata-injection"
 )
 public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterface {
 

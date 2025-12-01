@@ -58,7 +58,7 @@ import org.w3c.dom.Node;
         description = "BaseStep.TypeTooltipDesc.TypeExitExcelWriterStep",
         categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
         image = "XWS.svg",
-        documentationUrl = "mk-95pdia003/pdi-transformation-steps/microsoft-excel-writer",
+        documentationUrl = "pdi-transformation-steps-reference-overview/microsoft-excel-writer",
         i18nPackageName = "org.pentaho.di.trans.steps.excelwriter" )
 @InjectionSupported( localizationPrefix = "ExcelWriter.Injection.", groups = "FIELDS" )
 public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterface {

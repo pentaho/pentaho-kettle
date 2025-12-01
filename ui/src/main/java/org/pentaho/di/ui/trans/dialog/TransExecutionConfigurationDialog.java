@@ -110,7 +110,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     parametersSectionLayout( PKG, "TransExecutionConfigurationDialog" );
 
     String docUrl =
-        Const.getDocUrl( BaseMessages.getString( Spoon.class, "Spoon.TransExecutionConfigurationDialog.Help" ) );
+        Const.getDocUrl( "data-integration-perspective-in-the-pdi-client/work-with-transformations-cp" );
     String docTitle = BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.docTitle" );
     String docHeader = BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.docHeader" );
     buttonsSectionLayout( PKG, "TransExecutionConfigurationDialog", docTitle, docUrl, docHeader );

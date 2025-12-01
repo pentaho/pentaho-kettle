@@ -73,7 +73,7 @@ import org.w3c.dom.Node;
 
 @Step( id = "S3CSVINPUT", image = "S3I.svg", i18nPackageName = "org.pentaho.di.trans.steps.s3csvinput",
     name = "S3CsvInput.Step.Name", description = "S3CsvInput.Step.Description", categoryDescription = "Input",
-    documentationUrl = "mk-95pdia003/pdi-transformation-steps/s3-csv-input" )
+    documentationUrl = "pdi-transformation-steps-reference-overview/s3-csv-input-cp" )
 @InjectionSupported( localizationPrefix = "S3CsvInput.Injection.", groups = { "INPUT_FIELDS" } )
 public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface {
 
