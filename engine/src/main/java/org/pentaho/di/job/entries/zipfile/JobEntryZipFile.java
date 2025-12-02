@@ -13,6 +13,7 @@
 
 package org.pentaho.di.job.entries.zipfile;
 
+import org.pentaho.di.job.entry.JobEntryHelperInterface;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.FileDoesNotExistValidator;
@@ -1193,5 +1194,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       }
     }
     return resultat;
+  }
+
+   @Override
+  public JobEntryHelperInterface getJobEntryHelperInterface() {
+    return new JobEntryZipFileHelper( this );
   }
 }
