@@ -85,8 +85,8 @@ public class S3MoveTest {
   @Test
   public void testConfigBuilderGetsPropsRight() throws Exception {
     final String name = "nom";
-    final String accessKey = "cHFw";
-    final String secretKey = "e3264f3f1fe95dbf44b45bd8a33cd17a";
+    final String accessKey = "TEST_ACCESS_KEY";
+    final String secretKey = "TEST_SECRET_KEY";
     final String endpoint = "http://localhost:9000";
     final String pathStyleAccess = "false";
     final String sigVersion = "AWSS3V4SignerType";
