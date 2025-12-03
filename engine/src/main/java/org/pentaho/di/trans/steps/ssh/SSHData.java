@@ -13,33 +13,36 @@
 
 package org.pentaho.di.trans.steps.ssh;
 
-import java.io.CharArrayWriter;
 import java.io.InputStream;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.ssh.SshConfig;
+import org.pentaho.di.core.ssh.SshConnection;
+import org.pentaho.di.core.ssh.SshConnectionFactory;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
-
-import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.HTTPProxyData;
 
 /**
  * @author Samatar
  * @since 03-Juin-2008
  *
  */
-public class SSHData extends BaseStepData implements StepDataInterface {
+public class SSHData extends BaseStepData {
+
+  private static final Class<?> PKG = SSHData.class; // for i18n purposes
+
+  private SshConnection sshConnection;
+  private boolean connected;
+
   public int indexOfCommand;
-  public Connection conn;
   public boolean wroteOneRow;
   public String commands;
   public int nrInputFields;
@@ -54,84 +57,170 @@ public class SSHData extends BaseStepData implements StepDataInterface {
   public SSHData() {
     super();
     this.indexOfCommand = -1;
-    this.conn = null;
+    this.sshConnection = null;
+    this.connected = false;
     this.wroteOneRow = false;
     this.commands = null;
     this.stdOutField = null;
     this.stdTypeField = null;
   }
 
-  public static Connection OpenConnection( String serveur, int port, String username, String password,
-      boolean useKey, String keyFilename, String passPhrase, int timeOut, VariableSpace space, String proxyhost,
-      int proxyport, String proxyusername, String proxypassword ) throws KettleException {
-    Connection conn = null;
-    char[] content = null;
-    boolean isAuthenticated = false;
-    try {
-      // perform some checks
-      if ( useKey ) {
-        if ( Utils.isEmpty( keyFilename ) ) {
-          throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyFileMissing" ) );
-        }
-        FileObject keyFileObject = KettleVFS.getFileObject( keyFilename );
-
-        if ( !keyFileObject.exists() ) {
-          throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
-        }
-
-        FileContent keyFileContent = keyFileObject.getContent();
-
-        CharArrayWriter charArrayWriter = new CharArrayWriter( (int) keyFileContent.getSize() );
-
-        try ( InputStream in = keyFileContent.getInputStream() ) {
-          IOUtils.copy( in, charArrayWriter );
-        }
-
-        content = charArrayWriter.toCharArray();
-      }
-      // Create a new connection
-      conn = createConnection( serveur, port );
-
-      /* We want to connect through a HTTP proxy */
-      if ( !Utils.isEmpty( proxyhost ) ) {
-        /* Now connect */
-        // if the proxy requires basic authentication:
-        if ( !Utils.isEmpty( proxyusername ) ) {
-          conn.setProxyData( new HTTPProxyData( proxyhost, proxyport, proxyusername, proxypassword ) );
-        } else {
-          conn.setProxyData( new HTTPProxyData( proxyhost, proxyport ) );
-        }
-      }
-
-      // and connect
-      if ( timeOut == 0 ) {
-        conn.connect();
-      } else {
-        conn.connect( null, 0, timeOut * 1000 );
-      }
-      // authenticate
-      if ( useKey ) {
-        isAuthenticated =
-          conn.authenticateWithPublicKey( username, content, space.environmentSubstitute( passPhrase ) );
-      } else {
-        isAuthenticated = conn.authenticateWithPassword( username, password );
-      }
-      if ( isAuthenticated == false ) {
-        throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.AuthenticationFailed", username ) );
-      }
-    } catch ( Exception e ) {
-      // Something wrong happened
-      // do not forget to disconnect if connected
-      if ( conn != null ) {
-        conn.close();
-      }
-      throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.ErrorConnecting", serveur, username ), e );
-    }
-    return conn;
+  /**
+   * Gets the SSH connection.
+   * 
+   * @return the SSH connection, or null if not set
+   */
+  public SshConnection getSshConnection() {
+    return sshConnection;
   }
 
-  @VisibleForTesting
-   static Connection createConnection( String serveur, int port ) {
-    return new Connection( serveur, port );
+  /**
+   * Sets the SSH connection.
+   * 
+   * @param sshConnection the SSH connection to set
+   */
+  public void setSshConnection( SshConnection sshConnection ) {
+    this.sshConnection = sshConnection;
+  }
+
+  /**
+   * Checks if the SSH connection is established.
+   * 
+   * @return true if connected, false otherwise
+   */
+  public boolean isConnected() {
+    return connected;
+  }
+
+  /**
+   * Sets the connection state.
+   * 
+   * @param connected true if connected, false otherwise
+   */
+  public void setConnected( boolean connected ) {
+    this.connected = connected;
+  }
+
+  /**
+   * Connection method using our SSH abstraction layer.
+   * Provides modern SSH implementation with Ed25519 support and algorithm flexibility.
+   * Supports all the parameters from the original implementation including proxy settings.
+   * Uses secure in-memory key handling to avoid filesystem security risks.
+   */
+  public static SshConnection openSshConnection( SshConnectionParameters params ) throws KettleException {
+    return openSshConnection( params, null );
+  }
+
+  /**
+   * Connection method using our SSH abstraction layer with logging support.
+   * Provides modern SSH implementation with Ed25519 support and algorithm flexibility.
+   * Supports all the parameters from the original implementation including proxy settings.
+   * Uses secure in-memory key handling to avoid filesystem security risks.
+   */
+  public static SshConnection openSshConnection( SshConnectionParameters params, LogChannelInterface logChannel ) throws KettleException {
+
+    SshConnection connection = null;
+
+    try {
+      // Build basic SSH configuration
+      SshConfig config = SshConfig.create()
+          .host( params.getServer() )
+          .port( params.getPort() )
+          .username( params.getUsername() )
+          .commandTimeoutMillis( params.getTimeOut() > 0 ? params.getTimeOut() * 1000 : 30000 )// Default 30 seconds
+          .connectTimeoutMillis( params.getTimeOut() > 0 ? params.getTimeOut() * 1000 : 30000 ); // Default 30 seconds
+
+      // Set the log channel for debugging SSH connection issues
+      if ( logChannel != null ) {
+        config.logChannel( logChannel );
+      }
+
+      // Configure authentication - now uses secure in-memory approach
+      configureAuthentication( config, params.getBowl(), params.isUseKey(),
+          params.getKeyFilename(), params.getPassPhrase(), params.getPassword(), params.getSpace() );
+
+      // Configure proxy if specified
+      configureProxy( config, params.getProxyhost(), params.getProxyport(),
+          params.getProxyusername(), params.getProxypassword() );
+
+      // Create and connect
+      connection = SshConnectionFactory.defaultFactory().open( config );
+      connection.connect();
+
+      return connection;
+
+    } catch ( Exception e ) {
+      // Something wrong happened - clean up and re-throw
+      if ( connection != null ) {
+        connection.close();
+      }
+      throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ErrorConnecting", params.getServer(), params.getUsername() ), e );
+    }
+  }
+
+  /**
+   * Configures authentication for the SSH connection using secure in-memory approach.
+   */
+  private static void configureAuthentication( SshConfig config, Bowl bowl, boolean useKey,
+      String keyFilename, String passPhrase, String password, VariableSpace space ) throws KettleException {
+
+    if ( useKey ) {
+      configureKeyAuthentication( config, bowl, keyFilename, passPhrase, space );
+    } else {
+      config.authType( SshConfig.AuthType.PASSWORD ).password( password );
+    }
+  }
+
+  /**
+   * Configures key-based authentication using secure in-memory key handling.
+   * This avoids writing sensitive key data to temporary files on the filesystem.
+   */
+  private static void configureKeyAuthentication( SshConfig config, Bowl bowl,
+      String keyFilename, String passPhrase, VariableSpace space ) throws KettleException {
+
+    if ( Utils.isEmpty( keyFilename ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyFileMissing" ) );
+    }
+
+    try {
+      FileObject keyFileObject = KettleVFS.getInstance( bowl ).getFileObject( keyFilename );
+      if ( !keyFileObject.exists() ) {
+        throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
+      }
+
+      // Read key file content into memory - no temporary file needed
+      FileContent keyFileContent = keyFileObject.getContent();
+      byte[] keyBytes;
+      try ( InputStream in = keyFileContent.getInputStream() ) {
+        keyBytes = in.readAllBytes();
+        if ( keyBytes.length == 0 ) {
+          throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ProcessingKeyFile", keyFilename ) );
+        }
+      }
+
+      // Configure SSH with in-memory key content - secure approach
+      config.authType( SshConfig.AuthType.PUBLIC_KEY ).keyContent( keyBytes );
+
+      if ( !Utils.isEmpty( passPhrase ) ) {
+        config.passphrase( space.environmentSubstitute( passPhrase ) );
+      }
+
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ProcessingKeyFile", keyFilename ), e );
+    }
+  }
+
+  /**
+   * Configures proxy settings for the SSH connection.
+   */
+  private static void configureProxy( SshConfig config, String proxyhost, int proxyport,
+      String proxyusername, String proxypassword ) {
+
+    if ( !Utils.isEmpty( proxyhost ) ) {
+      config.proxy( proxyhost, proxyport );
+      if ( !Utils.isEmpty( proxyusername ) ) {
+        config.proxyAuth( proxyusername, proxypassword );
+      }
+    }
   }
 }

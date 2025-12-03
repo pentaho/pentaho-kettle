@@ -54,7 +54,6 @@
     <SassyReader.version>0.5</SassyReader.version>
     <snmp4j.version>1.9.3d</snmp4j.version>
     <syslog4j.version>0.9.46</syslog4j.version>
-    <trilead-ssh2.version>build213</trilead-ssh2.version>
     <jaxrpc-api.version>1.1</jaxrpc-api.version>
     <olap4j.version>1.2.0</olap4j.version>
     <olap4j-xmla.version>1.2.0</olap4j-xmla.version>
@@ -511,16 +510,25 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Apache SSHD -->
     <dependency>
-      <groupId>trilead-ssh2</groupId>
-      <artifactId>trilead-ssh2</artifactId>
-      <version>${trilead-ssh2.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.apache.sshd</groupId>
+      <artifactId>sshd-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sshd</groupId>
+      <artifactId>sshd-sftp</artifactId>
+    </dependency>
+    <!-- BouncyCastle for extended key / algorithm support -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15to18</artifactId>
+      <version>${bcprov-jdk15to18.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk15to18</artifactId>
+      <version>${bcprov-jdk15to18.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.xml</groupId>

@@ -50,6 +50,8 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.ssh.SSHData;
 import org.pentaho.di.trans.steps.ssh.SSHMeta;
+import org.pentaho.di.trans.steps.ssh.SshConnectionParameters;
+import org.pentaho.di.core.ssh.SshConnection;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -64,8 +66,6 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
-import com.trilead.ssh2.Connection;
 
 public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
@@ -853,24 +853,32 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     String proxyusername = transMeta.environmentSubstitute( wProxyUsername.getText() );
     String proxypassword = Utils.resolvePassword( transMeta,  wProxyPassword.getText() );
 
-    Connection conn = null;
-    try {
-      conn =
-        SSHData.OpenConnection(
-          servername, nrPort, username, password, wUseKey.getSelection(), keyFilename, passphrase, timeOut,
-          transMeta, proxyhost, proxyport, proxyusername, proxypassword );
+    try ( SshConnection conn = SSHData.openSshConnection(
+          SshConnectionParameters.builder()
+              .bowl( transMeta.getBowl() )
+              .server( servername )
+              .port( nrPort )
+              .username( username )
+              .password( password )
+              .useKey( wUseKey.getSelection() )
+              .keyFilename( keyFilename )
+              .passPhrase( passphrase )
+              .timeOut( timeOut )
+              .space( transMeta )
+              .proxyhost( proxyhost )
+              .proxyport( proxyport )
+              .proxyusername( proxyusername )
+              .proxypassword( proxypassword )
+              .build() ) ) {
+
+      // Actually test the connection by connecting
+      conn.connect();
       testOK = true;
 
     } catch ( Exception e ) {
       errMsg = e.getMessage();
-    } finally {
-      if ( conn != null ) {
-        try {
-          conn.close();
-        } catch ( Exception e ) { /* Ignore */
-        }
-      }
     }
+
     if ( testOK ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
       mb.setMessage( BaseMessages.getString( PKG, "SSHDialog.Connected.OK", servername, username ) + Const.CR );
