@@ -1523,6 +1523,10 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
       wAuthorizationCode.setEnabled( false );
       wRedirectUri.setEnabled( false );
       wAuthRefreshToken.setEnabled( false );
+      wlUseSecAuth.setEnabled( false );
+      wUseSecAuth.setEnabled( false );
+      wlSecureConnectionType.setEnabled( false );
+      wSecureConnectionType.setEnabled( false );
     } else if ( selectedAuth.equals( JobEntryMail.AUTENTICATION_BASIC ) ) {
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
@@ -1534,13 +1538,19 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
       wAuthorizationCode.setEnabled( false );
       wRedirectUri.setEnabled( false );
       wAuthRefreshToken.setEnabled( false );
+      wlUseSecAuth.setEnabled( true );
+      wUseSecAuth.setEnabled( true );
+      setSecureConnectiontype();
     } else if ( selectedAuth.equals( JobEntryMail.AUTENTICATION_OAUTH ) ) {
-      wAuthUser.setEnabled( true );
+      wAuthUser.setEnabled( false );
       wAuthPass.setEnabled( false );
       wAuthClientId.setEnabled( true );
       wAuthSecretKey.setEnabled( true );
       wAuthScope.setEnabled( true );
       grantType.setEnabled( true );
+      wlUseSecAuth.setEnabled( true );
+      wUseSecAuth.setEnabled( true );
+      setSecureConnectiontype();
     }
     else {
       setSecureConnectiontype();
