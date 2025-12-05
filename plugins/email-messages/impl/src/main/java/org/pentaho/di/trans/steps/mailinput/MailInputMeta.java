@@ -85,7 +85,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String servername;
   private String username;
   private String password;
-  protected static VariableSpace variables = new Variables();
+  protected VariableSpace variables = new Variables();
   public static String AUTENTICATION_OAUTH = "OAuth";
 
   public static  String AUTENTICATION_BASIC = "Basic";
@@ -822,6 +822,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     int i;
+    variables = space;
     for ( i = 0; i < inputFields.length; i++ ) {
       MailInputField field = inputFields[i];
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( field.getName() ) );
