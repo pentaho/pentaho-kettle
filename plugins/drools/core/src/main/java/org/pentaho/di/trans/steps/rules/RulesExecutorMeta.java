@@ -56,7 +56,8 @@ import org.w3c.dom.Node;
         i18nPackageName = "org.pentaho.di.trans.steps.rules",
         name = "RulesExecutor.StepConfigurationDialog.Title",
         description = "RulesExecutor.StepConfigurationDialog.TooltipDesc",
-        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting",
+        documentationUrl = "https://pentaho-public.atlassian.net/wiki/spaces/EAI/pages/386794190/Rule+Executor" )
 public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = Rules.class; // for i18n purposes
 
