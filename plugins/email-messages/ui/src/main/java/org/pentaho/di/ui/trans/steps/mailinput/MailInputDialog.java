@@ -1951,7 +1951,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   private void test() {
     if ( connect() ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "MailInput.Connected.OK", wServerName.getText() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "MailInput.Connected.OK", transMeta.environmentSubstitute( wServerName.getText() ) )+ Const.CR );
       mb.setText( BaseMessages.getString( PKG, "MailInput.Connected.Title.Ok" ) );
       mb.open();
     }
