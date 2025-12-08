@@ -949,7 +949,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     }
 
     else if( usingAuthentication.equals(JobEntryMail.AUTENTICATION_OAUTH ) ) {
-      token = getOauthToken( tokenUrl );
+      token = getOauthToken( environmentSubstitute( tokenUrl ) );
       props.put( "mail."+protocol+".auth.xoauth2.disable", "false" );
       props.put( "mail."+protocol+".auth.mechanisms", "XOAUTH2" );
       props.put( "mail.transport.protocol", "smtp");
@@ -1498,7 +1498,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   IEmailAuthenticationResponse getOauthToken( String tokenUrl ) {
     try ( CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient() ) {
       this.tokenUrl = environmentSubstitute( tokenUrl );
-      HttpPost httpPost = new HttpPost( tokenUrl );
+      HttpPost httpPost = new HttpPost( this.tokenUrl );
       List<NameValuePair> form = new ArrayList<>();
       form.add( new BasicNameValuePair( "scope", environmentSubstitute( scope ) ) );
       form.add( new BasicNameValuePair( "client_id", environmentSubstitute( clientId ) ) );
