@@ -1352,6 +1352,10 @@ public class SpoonJobDelegate extends SpoonDelegate {
     for ( JobMeta meta : spoon.getLoadedJobs() ) {
       ExecutionConfiguration.getUsedVariables( meta, variableMap );
     }
+
+    // apply the used transformation from active Job
+    ExecutionConfiguration.getUsedVariables( jobMeta, variableMap );
+
     executionConfiguration.setVariables( variableMap );
     executionConfiguration.setReplayDate( replayDate );
     executionConfiguration.setRepository( spoon.rep );

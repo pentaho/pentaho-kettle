@@ -43,6 +43,7 @@ import org.pentaho.di.ui.spoon.job.JobLogDelegate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -50,6 +51,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -83,6 +85,7 @@ public class SpoonJobDelegateTest {
   private JobLogTable jobLogTable;
   private JobMeta jobMeta;
   private ArrayList<JobMeta> jobMap;
+  private List<String> vars;
 
   @Before
   public void before() {
@@ -100,6 +103,7 @@ public class SpoonJobDelegateTest {
     doReturn( spoon ).when( delegate ).getSpoon();
     doCallRealMethod().when( delegate ).isDefaultJobName( any() );
     jobLogTable = mock( JobLogTable.class );
+    vars = new ArrayList<>();
   }
 
   @Test
@@ -142,6 +146,9 @@ public class SpoonJobDelegateTest {
     doReturn( TEST_BOOLEAN_PARAM ).when( jobExecutionConfiguration ).isClearingLog();
     doReturn( TEST_BOOLEAN_PARAM ).when( jobExecutionConfiguration ).isSafeModeEnabled();
     doReturn( TEST_BOOLEAN_PARAM ).when( jobExecutionConfiguration ).isExpandingRemoteJob();
+    doReturn( EMPTY_STRING_ARRAY ).when( jobMeta ).listVariables();
+    doReturn( vars ).when( jobMeta ).getUsedVariables();
+    doReturn( "" ).when( jobMeta ).getVariable( anyString() );
 
     delegate.executeJob( jobMeta, true, false, null, false,
         null, 0 );
