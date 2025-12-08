@@ -57,7 +57,7 @@ import static org.pentaho.big.data.kettle.plugins.kafka.KafkaConsumerInputMeta.C
 
 @SuppressWarnings ( { "FieldCanBeLocal", "unused" } )
 @PluginDialog ( id = "KafkaConsumerInput", pluginType = PluginDialog.PluginType.STEP, image = "KafkaConsumerInput.svg",
-        documentationUrl = "mk-95pdia003/pdi-transformation-steps/kafka-consumer" )
+        documentationUrl = "pdi-transformation-steps-reference-overview/kafka-consumer" )
 public class KafkaConsumerInputDialog extends BaseStreamingDialog implements StepDialogInterface {
 
   private static final int INPUT_WIDTH = 350;

@@ -81,7 +81,7 @@ import com.healthmarketscience.jackcess.Table;
 import org.pentaho.di.ui.util.DialogHelper;
 
 @PluginDialog( id = "AccessInput", image = "ACI.svg", pluginType = PluginDialog.PluginType.STEP,
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Access+Input" )
+  documentationUrl = "pdi-transformation-steps-reference-overview/microsoft-access-input" )
 public class AccessInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = AccessInputDialog.class; // for i18n purposes, needed by Translator2!!
 
