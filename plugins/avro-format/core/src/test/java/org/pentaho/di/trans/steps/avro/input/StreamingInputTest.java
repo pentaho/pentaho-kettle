@@ -113,6 +113,43 @@ public class StreamingInputTest {
     }
   }
 
+  @Test
+  public void testForEmptyField() throws Exception {
+    String filePath = "/org/pentaho/di/trans/steps/avro/sample2.avro";
+    List<AvroInputField> avroInputFields = Arrays.asList( new AvroInputField[] {
+            buildAvroInputField( "registration_dttm", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING ),
+            buildAvroInputField( "id", AvroSpec.DataType.LONG, ValueMetaInterface.TYPE_INTEGER ),
+            buildAvroInputField( "first_name", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING ),
+            buildAvroInputField( "last_name", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING ),
+            buildAvroInputField( "email", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING ),
+            buildAvroInputField( "gender", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING ),
+            buildAvroInputField( "ip_address", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING ),
+            buildAvroInputField( "cc", AvroSpec.DataType.LONG, ValueMetaInterface.TYPE_INTEGER ),
+            buildAvroInputField( "country", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING ),
+            buildAvroInputField( "birthdate", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING ),
+            buildAvroInputField( "salary", AvroSpec.DataType.DOUBLE, ValueMetaInterface.TYPE_NUMBER ),
+            buildAvroInputField( "title", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING ),
+            buildAvroInputField( "comments", AvroSpec.DataType.STRING, ValueMetaInterface.TYPE_STRING )
+    } );
+
+    dateFormat.setTimeZone( TimeZone.getTimeZone( "EST" ) ); //The test file was written with EST time zone
+
+    Object[] expectedResults = new Object[] {
+            "2016-02-03T17:04:03Z", Long.valueOf( 2 ), "Albert", "Freeman", "afreeman1@is.gd",
+            "Male", "218.111.175.34", null,"Canada","1/16/1968",150280.17,
+            "Accountant IV",""
+
+    };
+
+    Object[] incomingRowData = new Object[] { "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10","f11","f12","f13" };
+    Object[] compareIncomingRowData = new Object[] { "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10","f11","f12","f13" };
+
+    testStreamingRecordReader( avroInputFields, incomingRowData, filePath, expectedResults );
+    for ( int i = 0; i < compareIncomingRowData.length; i++ ) {
+      assertEquals( compareIncomingRowData[ i ], incomingRowData[ i ] );
+    }
+  }
+
   private AvroInputField buildAvroInputField( String name, AvroSpec.DataType avroType, int pentahoType ) {
     return buildAvroInputField( name, avroType, pentahoType, 0, 0 );
   }
