@@ -12,6 +12,7 @@
 
 package org.pentaho.di.repository.pur;
 
+import java.io.Closeable;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -209,6 +210,17 @@ public class WebServiceManager implements ServiceManager {
 
   @Override
   public synchronized void close() {
+    for ( Future<Object> future : serviceCache.values() ) {
+      try {
+        Object service = future.get();
+        if ( service instanceof Closeable closeable ) {
+          closeable.close();
+        }
+      } catch ( Exception e ) {
+        // Log exception but continue cleanup
+        e.printStackTrace();
+      }
+    }
     serviceCache.clear();
   }
 
