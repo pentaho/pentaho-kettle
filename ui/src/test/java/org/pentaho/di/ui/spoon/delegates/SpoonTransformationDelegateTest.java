@@ -16,6 +16,7 @@ package org.pentaho.di.ui.spoon.delegates;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -60,6 +61,7 @@ public class SpoonTransformationDelegateTest {
   private TransLogTable transLogTable;
   private TransMeta transMeta;
   private List<TransMeta> transformationMap;
+  private List<String> vars;
 
   @Before
   public void before() {
@@ -78,6 +80,7 @@ public class SpoonTransformationDelegateTest {
     doCallRealMethod().when( delegate ).isDefaultTransformationName( any() );
     doCallRealMethod().when( delegate ).isLogTableDefined( any() );
     transLogTable = mock( TransLogTable.class );
+    vars = new ArrayList<>();
   }
 
   @Test
@@ -129,6 +132,9 @@ public class SpoonTransformationDelegateTest {
     doReturn( TEST_BOOLEAN_PARAM ).when( transExecutionConfiguration ).isClearingLog();
     doReturn( TEST_BOOLEAN_PARAM ).when( transExecutionConfiguration ).isSafeModeEnabled();
     doReturn( TEST_BOOLEAN_PARAM ).when( transExecutionConfiguration ).isGatheringMetrics();
+    doReturn( EMPTY_STRING_ARRAY ).when( transMeta ).listVariables();
+    doReturn( vars ).when( transMeta ).getUsedVariables();
+    doReturn( "" ).when( transMeta ).getVariable( anyString() );
 
     delegate.executeTransformation( transMeta, true, false, false, false, false,
             null, false, LogLevel.BASIC );
