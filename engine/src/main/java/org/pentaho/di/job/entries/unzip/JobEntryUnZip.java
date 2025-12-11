@@ -13,6 +13,7 @@
 
 package org.pentaho.di.job.entries.unzip;
 
+import org.pentaho.di.job.entry.JobEntryHelperInterface;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
@@ -1310,6 +1311,17 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "sourceDirectory", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
+  }
+
+  public String getFullFilename( String filename, boolean addDate, boolean addTime, boolean specifyFormat,
+                                   String datetimeFormat ) {
+    return addDatetimeToFilename( filename, addDate, "yyyyMMdd", addTime, "HHmmssSSS", specifyFormat,
+                datetimeFormat );
+  }
+
+  @Override
+  public JobEntryHelperInterface getJobEntryHelperInterface() {
+    return new JobEntryUnZipFileHelper( this );
   }
 
 }
