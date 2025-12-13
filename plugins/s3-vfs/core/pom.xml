@@ -7,13 +7,13 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>s3-vfs</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-64</version>
   </parent>
 
 
   <groupId>pentaho</groupId>
   <artifactId>pentaho-s3-vfs</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-64</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -28,8 +28,8 @@
   <properties>
 
     <!-- pentaho dependencies -->
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <encryption-support.version>11.1.0.0-SNAPSHOT</encryption-support.version>
+    <pdi.version>11.1.0.0-64</pdi.version>
+    <encryption-support.version>11.1.0.0-64</encryption-support.version>
 
     <!-- License Configuration -->
     <license.licenseName>apache_v2</license.licenseName>
