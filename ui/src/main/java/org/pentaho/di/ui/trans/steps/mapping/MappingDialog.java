@@ -56,6 +56,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.mapping.MappingHelper;
 import org.pentaho.di.trans.steps.mapping.MappingIODefinition;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.mapping.MappingParameters;
@@ -635,29 +636,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       dialogTitle = BaseMessages.getString( PKG, "MappingDialog.SelectMappingStep.Title" );
       dialogMessage = BaseMessages.getString( PKG, "MappingDialog.SelectMappingStep.Message" );
 
-      String[] stepnames = getMappingSteps( mappingTransMeta, mappingInput );
-      EnterSelectionDialog dialog = new EnterSelectionDialog( shell, stepnames, dialogTitle, dialogMessage );
+      String[] stepNames = MappingHelper.getMappingSteps( mappingTransMeta, mappingInput );
+      EnterSelectionDialog dialog = new EnterSelectionDialog( shell, stepNames, dialogTitle, dialogMessage );
       return dialog.open();
     }
-  }
-
-  public static String[] getMappingSteps( TransMeta mappingTransMeta, boolean mappingInput ) {
-    List<StepMeta> steps = new ArrayList<StepMeta>();
-    for ( StepMeta stepMeta : mappingTransMeta.getSteps() ) {
-      if ( mappingInput && stepMeta.getStepID().equals( "MappingInput" ) ) {
-        steps.add( stepMeta );
-      }
-      if ( !mappingInput && stepMeta.getStepID().equals( "MappingOutput" ) ) {
-        steps.add( stepMeta );
-      }
-    }
-    String[] stepnames = new String[ steps.size() ];
-    for ( int i = 0; i < stepnames.length; i++ ) {
-      stepnames[ i ] = steps.get( i ).getName();
-    }
-
-    return stepnames;
-
   }
 
   public RowMetaInterface getFieldsFromStep( String stepname, boolean getTransformationStep, boolean mappingInput ) throws KettleException {
@@ -687,7 +669,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         // If we don't have a specified stepname we select the one and
         // only "mapping input" step.
         //
-        String[] stepnames = getMappingSteps( mappingTransMeta, mappingInput );
+        String[] stepnames = MappingHelper.getMappingSteps( mappingTransMeta, mappingInput );
         if ( stepnames.length > 1 ) {
           throw new KettleException( BaseMessages.getString(
             PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + stepnames.length ) );
