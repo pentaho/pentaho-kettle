@@ -155,7 +155,7 @@ public class GetFileNamesHelperTest {
     try ( MockedStatic<BaseMessages> mockedBaseMessages = mockStatic( BaseMessages.class ) ) {
       if ( expectedMessage != null ) {
         mockedBaseMessages.when( () -> BaseMessages.getString( GetFileNamesMeta.class,
-            "GetFilesRowsCountDialog.NoFileFound.DialogMessage" ) )
+            "GetFileNamesDialog.NoFilesFound.DialogMessage" ) )
           .thenReturn( expectedMessage );
       }
 
@@ -237,7 +237,7 @@ public class GetFileNamesHelperTest {
 
     try ( MockedStatic<BaseMessages> mockedBaseMessages = mockStatic( BaseMessages.class ) ) {
       mockedBaseMessages.when( () -> BaseMessages.getString( GetFileNamesMeta.class,
-          "GetFilesRowsCountDialog.NoFileFound.DialogMessage" ) )
+          "GetFileNamesDialog.NoFilesFound.DialogMessage" ) )
         .thenReturn( "No files found directly" );
 
       JSONObject result = helper.getFilesAction( transMeta );
