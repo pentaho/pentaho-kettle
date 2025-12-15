@@ -12,11 +12,11 @@
 
 package org.pentaho.di.trans.steps.avro.input;
 
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.apache.avro.Schema;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.bowl.DefaultBowl;
 
 import java.io.File;
 import java.util.Arrays;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
@@ -92,6 +93,37 @@ public class PentahoAvroInputFormatTest {
       defaultFields.stream().map( IAvroInputField::getAvroFieldName ).collect( Collectors.toList() );
     assertEquals( 19, defaultFields.size() );
     assertTrue( expectedFields.equals( actualFields ) );
+  }
+
+  @Test
+  public void createNestedDataFileStream_usesFirstAvroFileInFolder() throws Exception {
+    configureFolder( "src/test/resources/org/pentaho/di/trans/steps/avro/inputFolder" );
+
+    IPentahoInputFormat.IPentahoRecordReader reader = format.createRecordReader( null );
+    assertNotNull( reader );
+  }
+
+  @Test( expected = Exception.class )
+  public void createNestedDataFileStream_folderWithoutAvroFiles_throws() throws Exception {
+    configureFolder( "src/test/resources/org/pentaho/di/trans/steps/avro/input" );
+
+    format.createRecordReader( null );
+  }
+
+  @Test
+  public void createNestedDataFileStream_prefersSchemaWhenProvided() throws Exception {
+    format.setInputFile("src/test/resources/org/pentaho/di/trans/steps/avro/inputFolder");
+    format.setUseFieldAsInputStream(false);
+    format.setDatum(false);
+
+    Schema schema = format.readAvroSchema();
+    assertEquals(13, schema.getFields().size());
+  }
+
+  private void configureFolder( String path ) throws Exception {
+    format.setInputFile( path );
+    format.setInputSchemaFile( null );
+    format.setInputFields( null );
   }
 
   private String getFilePath( String file ) {

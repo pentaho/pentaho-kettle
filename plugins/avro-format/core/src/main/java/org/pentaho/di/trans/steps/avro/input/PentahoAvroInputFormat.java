@@ -177,7 +177,7 @@ public class PentahoAvroInputFormat implements IPentahoAvroInputFormat {
       this.inputStream = fileObject.getContent().getInputStream();
       return new DataFileStream<>( inputStream, datumReader );
     } else {
-      FileObject[] avroFiles = fileObject.findFiles( new FileExtensionSelector("com/pentaho/di/trans/steps/avro") );
+      FileObject[] avroFiles = fileObject.findFiles( new FileExtensionSelector("avro") );
       if ( !Utils.isEmpty( avroFiles ) ) {
         this.inputStream = avroFiles[ 0 ].getContent().getInputStream();
         return new DataFileStream<>( inputStream, datumReader );
@@ -205,7 +205,7 @@ public class PentahoAvroInputFormat implements IPentahoAvroInputFormat {
       this.inputStream = fileObject.getContent().getInputStream();
       return new DataFileStream<>( inputStream, datumReader );
     } else {
-      FileObject[] avroFiles = fileObject.findFiles( new FileExtensionSelector("com/pentaho/di/trans/steps/avro") );
+      FileObject[] avroFiles = fileObject.findFiles( new FileExtensionSelector("avro") );
       if ( !Utils.isEmpty( avroFiles ) ) {
         this.inputStream = avroFiles[ 0 ].getContent().getInputStream();
         return new DataFileStream<>( inputStream, datumReader );
