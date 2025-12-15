@@ -554,7 +554,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public String getClientId() {
-    return clientId;
+    return environmentSubstitute( clientId );
   }
 
   public void setSecretKey( String secretKey ) {
@@ -562,7 +562,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public String getSecretKey() {
-    return secretKey;
+    return environmentSubstitute( secretKey );
   }
 
   public void setScope(String scope)
@@ -572,7 +572,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public String getScope()
   {
-    return scope;
+    return environmentSubstitute( scope );
   }
 
   public void setTokenUrl(String tokenUrl)
@@ -582,8 +582,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public String getTokenUrl()
   {
-
-    return tokenUrl;
+    return environmentSubstitute( tokenUrl );
   }
 
   public void setAuthorization_code(String authorization_code)
@@ -593,7 +592,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public String getAuthorization_code()
   {
-    return authorization_code;
+    return environmentSubstitute( authorization_code );
   }
 
   public void setRedirectUri(String redirectUri)
@@ -603,7 +602,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public String getRedirectUri()
   {
-    return redirectUri;
+    return environmentSubstitute( redirectUri );
   }
 
   public void setRefresh_token(String refresh_token)
@@ -613,7 +612,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public String getRefresh_token()
   {
-    return refresh_token;
+    return environmentSubstitute( refresh_token );
   }
 
   public void setGrant_type( String grant_type ) {
@@ -621,7 +620,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public String getGrant_type() {
-    return grant_type;
+    return environmentSubstitute( grant_type );
   }
 
 
@@ -1474,17 +1473,17 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       this.tokenUrl= parentJobMeta.environmentSubstitute(  tokenUrl );
       HttpPost httpPost = new HttpPost( parentJobMeta.environmentSubstitute( tokenUrl ) );
       List<NameValuePair> form = new ArrayList<>();
-      form.add( new BasicNameValuePair( "scope", parentJobMeta.environmentSubstitute( scope ) ) );
-      form.add( new BasicNameValuePair( "client_id", parentJobMeta.environmentSubstitute( clientId ) ));
-      form.add( new BasicNameValuePair( "client_secret", parentJobMeta.environmentSubstitute( secretKey ) ));
-      String realGrantType = parentJobMeta.environmentSubstitute( grant_type );
+      form.add( new BasicNameValuePair( "scope", parentJobMeta.environmentSubstitute( getScope() ) ) );
+      form.add( new BasicNameValuePair( "client_id", parentJobMeta.environmentSubstitute( getClientId() ) ));
+      form.add( new BasicNameValuePair( "client_secret", parentJobMeta.environmentSubstitute( getSecretKey() ) ));
+      String realGrantType = parentJobMeta.environmentSubstitute( getGrant_type() );
       form.add( new BasicNameValuePair( "grant_type", realGrantType ) );
       if ( realGrantType.equals( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN ) ) {
-        form.add( new BasicNameValuePair( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN, parentJobMeta.environmentSubstitute( refresh_token ) ) );
+        form.add( new BasicNameValuePair( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN, parentJobMeta.environmentSubstitute( getRefresh_token() ) ) );
       }
       if ( realGrantType.equals( JobEntryGetPOP.GRANTTYPE_AUTHORIZATION_CODE ) ) {
-        form.add( new BasicNameValuePair( "code", parentJobMeta.environmentSubstitute( authorization_code ) ) );
-        form.add( new BasicNameValuePair( "redirect_uri", parentJobMeta.environmentSubstitute( redirectUri ) ) );
+        form.add( new BasicNameValuePair( "code", parentJobMeta.environmentSubstitute( getAuthorization_code() ) ) );
+        form.add( new BasicNameValuePair( "redirect_uri", parentJobMeta.environmentSubstitute( getRedirectUri() ) ) );
       }
       UrlEncodedFormEntity entity = new UrlEncodedFormEntity( form, Consts.UTF_8 );
       httpPost.setEntity( entity );
