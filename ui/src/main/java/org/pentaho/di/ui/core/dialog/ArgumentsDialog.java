@@ -136,7 +136,8 @@ public class ArgumentsDialog extends Dialog {
     btnHelp.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent evt ) {
-        String docUrl = Const.getDocUrl( BaseMessages.getString( Spoon.class, "Spoon.ArgumentsDialog.Help" ) );
+        String docUrl = Const.getDocUrl( "data-integration-perspective-in-the-pdi-client/"
+                + "advanced-topics-pdi-perspective/pdi-run-modifiers" );
         String docTitle = BaseMessages.getString( PKG, "ArgumentsDialog.docTitle" );
         String docHeader = BaseMessages.getString( PKG, "ArgumentsDialog.docHeader" );
         HelpUtils.openHelpDialog( parent.getShell(), docTitle, docUrl, docHeader );

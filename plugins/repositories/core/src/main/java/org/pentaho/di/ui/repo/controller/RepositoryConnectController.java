@@ -80,7 +80,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryConnectController.class );
 
   public static final String HELP_URL =
-    Const.getDocUrl( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Help" ) );
+    Const.getDocUrl( "use-a-pentaho-repository-in-pdi" );
 
   private RepositoryMeta currentRepository;
   private RepositoryMeta connectedRepository;

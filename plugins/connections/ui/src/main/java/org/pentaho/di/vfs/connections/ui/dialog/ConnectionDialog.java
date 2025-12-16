@@ -162,7 +162,7 @@ public class ConnectionDialog extends Dialog {
     BaseStepDialog.positionBottomRightButtons( shell, buttons, MARGIN, null );
 
     String docUrl =
-      Const.getDocUrl( BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Help" ) );
+      Const.getDocUrl( "data-integration-perspective-in-the-pdi-client/virtual-file-system-browser" );
     String docTitle = BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Title" );
     String docHeader = BaseMessages.getString( PKG, "ConnectionDialog.help.dialog.Header" );
     Button btnHelp = new Button( shell, SWT.NONE );

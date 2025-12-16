@@ -85,7 +85,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String servername;
   private String username;
   private String password;
-  protected static VariableSpace variables = new Variables();
+  protected VariableSpace variables = new Variables();
   public static String AUTENTICATION_OAUTH = "OAuth";
 
   public static  String AUTENTICATION_BASIC = "Basic";
@@ -822,6 +822,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     int i;
+    variables = space;
     for ( i = 0; i < inputFields.length; i++ ) {
       MailInputField field = inputFields[i];
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( field.getName() ) );
@@ -992,18 +993,18 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   public IEmailAuthenticationResponse getOauthToken(String tokenUrl, String scope, String clientId, String secretKey,
                                                     String grantType, String refreshToken, String authorizationCode, String redirectUri) {
     try (CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient()) {
-      HttpPost httpPost = new HttpPost(tokenUrl);
+      HttpPost httpPost = new HttpPost( variables.environmentSubstitute( tokenUrl ) );
       List<NameValuePair> form = new ArrayList<>();
-      form.add(new BasicNameValuePair("scope", scope));
-      form.add(new BasicNameValuePair("client_id", clientId));
-      form.add(new BasicNameValuePair("client_secret", secretKey));
+      form.add(new BasicNameValuePair("scope", variables.environmentSubstitute( scope ) ) );
+      form.add(new BasicNameValuePair("client_id", variables.environmentSubstitute( clientId ) ));
+      form.add(new BasicNameValuePair("client_secret", variables.environmentSubstitute( secretKey ) ) );
       form.add(new BasicNameValuePair("grant_type", grantType));
       if (grantType.equals(GRANTTYPE_REFRESH_TOKEN)) {
-        form.add(new BasicNameValuePair(GRANTTYPE_REFRESH_TOKEN, refreshToken));
+        form.add(new BasicNameValuePair(GRANTTYPE_REFRESH_TOKEN, variables.environmentSubstitute( refreshToken ) ) );
       }
       if (grantType.equals(GRANTTYPE_AUTHORIZATION_CODE)) {
-        form.add(new BasicNameValuePair("code", authorizationCode));
-        form.add(new BasicNameValuePair("redirect_uri", redirectUri));
+        form.add(new BasicNameValuePair("code", variables.environmentSubstitute( authorizationCode ) ) );
+        form.add(new BasicNameValuePair("redirect_uri", variables.environmentSubstitute( redirectUri ) ) );
       }
       UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);
       httpPost.setEntity(entity);

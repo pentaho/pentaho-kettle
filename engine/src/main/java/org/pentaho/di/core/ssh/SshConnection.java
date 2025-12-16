@@ -41,6 +41,16 @@ public interface SshConnection extends AutoCloseable {
   ExecResult exec( String command, long timeoutMs ) throws SshConnectionException;
 
   /**
+   * Executes a command on the remote SSH server using the configured timeout.
+   *
+   * @param command the command to execute
+   * @return the execution result
+   * @throws SshTimeoutException if the command times out
+   * @throws SshConnectionException for other execution errors
+   */
+  ExecResult exec( String command ) throws SshConnectionException;
+
+  /**
    * Opens an SFTP session for file operations.
    *
    * @return the SFTP session

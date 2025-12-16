@@ -117,7 +117,7 @@ public class RepositoryManagerDialog extends Dialog {
     KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryManagerDialog.class );
 
   private static final String HELP_URL =
-    Const.getDocUrl( BaseMessages.getString( PKG, "repositories.repohelpurl.label" ) );
+    Const.getDocUrl( "use-a-pentaho-repository-in-pdi" );
 
   public RepositoryManagerDialog( Shell parent ) {
     super( parent );

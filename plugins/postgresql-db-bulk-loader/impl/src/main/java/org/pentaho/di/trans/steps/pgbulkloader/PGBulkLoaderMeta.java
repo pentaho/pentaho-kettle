@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
@@ -763,6 +764,11 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
 
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     return null;
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new PGBulkLoaderHelper();
   }
 
 }

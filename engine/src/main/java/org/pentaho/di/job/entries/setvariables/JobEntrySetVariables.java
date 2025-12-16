@@ -352,8 +352,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
         }
 
         // ok we can process this line
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntrySetVariables.Log.SetVariableToValue", varname, value ) );
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "JobEntrySetVariables.Log.SetVariableToValue", varname, value ) );
         }
       }
     } catch ( Exception e ) {

@@ -12,9 +12,9 @@ REM Change Date: 2029-07-20
 REM ******************************************************************************
 
 setlocal
-pushd %~dp0
+pushd "%~dp0"
 
-SET STARTTITLE="Import"
-SET SPOON_CONSOLE=1
+SET "STARTTITLE=Import"
+SET "SPOON_CONSOLE=1"
 call Spoon.bat -main org.pentaho.di.imp.Import %*
 popd

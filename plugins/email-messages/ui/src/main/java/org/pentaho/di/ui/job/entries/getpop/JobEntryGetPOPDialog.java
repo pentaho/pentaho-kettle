@@ -1962,7 +1962,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       int realport = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), -1 );
       String realproxyuser = jobMeta.environmentSubstitute( wProxyUsername.getText() );
       if( wUseAuth.getText().equals( JobEntryGetPOP.AUTENTICATION_OAUTH ) ){
-        realpass = "Bearer "+jobEntry.getOauthToken( wAuthTokenUrl.getText() ).getAccessToken();
+        realpass = "Bearer "+jobEntry.getOauthToken( jobMeta.environmentSubstitute( wAuthTokenUrl.getText() ) ).getAccessToken();
       }
       try {
         mailConn =
@@ -1993,7 +1993,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
   private void test() {
     if ( connect() ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "JobGetPOP.Connected.OK", wServerName.getText() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobGetPOP.Connected.OK", jobMeta.environmentSubstitute(wServerName.getText()) ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobGetPOP.Connected.Title.Ok" ) );
       mb.open();
     }

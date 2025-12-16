@@ -12,16 +12,13 @@
 
 package org.pentaho.di.trans.steps.mergejoin;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepHelper;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
-
-import java.util.Arrays;
+import org.pentaho.di.trans.steps.util.StepKeyUtils;
 import java.util.List;
 import java.util.Map;
 
@@ -62,32 +59,24 @@ public class MergeJoinHelper extends BaseStepHelper {
   public JSONObject previousKeysAction( TransMeta transMeta, Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     JSONObject stepKeys = new JSONObject();
+
     String stepName = queryParams.get( "stepName" );
-    if ( stepName == null || stepName.isEmpty() ) {
-      response.put( "stepKeys", stepKeys );
-      response.put( ACTION_STATUS, SUCCESS_RESPONSE );
-      return response;
+
+    if ( !StepKeyUtils.isValidStepName( stepName ) ) {
+      return StepKeyUtils.buildSuccessResponse( response, stepKeys );
     }
-    StepMeta stepMeta = transMeta.findStep( stepName );
-    if ( stepMeta == null || !( stepMeta.getStepMetaInterface() instanceof MergeJoinMeta mergeJoinMeta ) ) {
-      response.put( "stepKeys", stepKeys );
-      response.put( ACTION_STATUS, SUCCESS_RESPONSE );
-      return response;
+
+    // Find and validate step
+    StepMeta stepMeta = StepKeyUtils.findAndValidateStep( transMeta, stepName, MergeJoinMeta.class );
+    if ( stepMeta == null ) {
+      return StepKeyUtils.buildSuccessResponse( response, new JSONObject() );
     }
+
+    // Get info streams and build step keys
+    MergeJoinMeta mergeJoinMeta = (MergeJoinMeta) stepMeta.getStepMetaInterface();
     List<StreamInterface> infoStreams = mergeJoinMeta.getStepIOMeta().getInfoStreams();
-    for ( StreamInterface stream : infoStreams ) {
-      StepMeta inputStepMeta = stream.getStepMeta();
-      if ( inputStepMeta == null ) {
-        continue;
-      }
-      RowMetaInterface rowMeta = transMeta.getStepFields( inputStepMeta );
-      stepKeys.put(
-        inputStepMeta.getName(),
-        rowMeta != null ? Arrays.asList( rowMeta.getFieldNames() ) : new JSONArray()
-      );
-    }
-    response.put( "stepKeys", stepKeys );
-    response.put( ACTION_STATUS, SUCCESS_RESPONSE );
-    return response;
+    stepKeys = StepKeyUtils.buildStepKeysFromStreams( transMeta, infoStreams );
+
+    return StepKeyUtils.buildSuccessResponse( response, stepKeys );
   }
 }
