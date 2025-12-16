@@ -26,14 +26,14 @@ public interface SharedObjectInterface<T extends SharedObjectInterface<T>> {
    * @deprecated
    *
    */
-  @Deprecated(since = "10.3")
+  @Deprecated(since = "11.0")
   public void setShared( boolean shared );
 
   /**
    * @deprecated
    *
    */
-  @Deprecated(since = "10.3")
+  @Deprecated(since = "11.0")
 
   public boolean isShared();
 

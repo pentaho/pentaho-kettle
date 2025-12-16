@@ -64,7 +64,7 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
   protected String directoryPath;
   protected ObjectId transObjectId;
 
-  @Deprecated (since="10.3")  
+  @Deprecated (since="11.0")
   public static TransMeta loadMappingMeta( StepWithMappingMeta mappingMeta, Repository rep,
                                            IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return loadMappingMeta( DefaultBowl.getInstance(), mappingMeta, rep, metaStore, space );
@@ -75,7 +75,7 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
     return loadMappingMeta( bowl, mappingMeta, rep, metaStore, space, true );
   }
 
-  @Deprecated (since="10.3")  
+  @Deprecated (since="11.0")
   public static TransMeta loadMappingMeta( StepWithMappingMeta executorMeta, Repository rep,
     IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
     return loadMappingMeta( DefaultBowl.getInstance(), executorMeta, rep, metaStore, space, share );
