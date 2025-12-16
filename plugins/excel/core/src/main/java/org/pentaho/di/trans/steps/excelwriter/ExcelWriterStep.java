@@ -29,6 +29,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ooxml.POIXMLException;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -772,7 +773,12 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       }
       // this is the number of the new output file
       data.splitnr++;
-    } catch ( Exception e ) {
+    }  catch ( IOException | POIXMLException e ) {
+        throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Log.UnsafeFileException" ) +
+                e
+        );
+    }
+    catch ( Exception e ) {
       logError( "Error opening new file", e );
       setErrors( 1 );
       throw new KettleException( e );
