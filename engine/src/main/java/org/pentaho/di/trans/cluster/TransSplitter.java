@@ -117,12 +117,11 @@ public class TransSplitter {
     String transXML = transMeta.getXML();
     this.originalTransformation =
         transMetaFactory
-            .create( XMLHandler.getSubNode( XMLHandler.loadXMLString( transXML ), TransMeta.XML_TAG ), null );
+            .create( XMLHandler.getSubNode( XMLHandler.loadXMLString( transXML ), TransMeta.XML_TAG ), transMeta.getRepository() );
     this.originalTransformation.shareVariablesWith( transMeta );
     this.originalTransformation.copyParametersFrom( transMeta );
 
     // Retain repository information
-    this.originalTransformation.setRepository( transMeta.getRepository() );
     this.originalTransformation.setRepositoryDirectory( transMeta.getRepositoryDirectory() );
 
     Repository rep = transMeta.getRepository();
