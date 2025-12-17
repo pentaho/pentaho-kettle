@@ -2553,7 +2553,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         }
         TransMeta
           transMeta =
-          buildTransMeta( null, file, findDirectory( dirPath ), fileData, createObjectRevision( version ), null );
+          buildTransMeta( getBowl(), file, findDirectory( dirPath ), fileData, createObjectRevision( version ), null );
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
         transformations.add( transMeta );
       } catch ( Exception ex ) {
