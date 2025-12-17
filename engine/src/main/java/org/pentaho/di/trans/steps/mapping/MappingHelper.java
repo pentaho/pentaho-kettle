@@ -52,7 +52,8 @@ public class MappingHelper extends BaseStepHelper {
    */
   private JSONObject getReferencePath( TransMeta transMeta ) {
     JSONObject response = new JSONObject();
-    response.put( MAPPING_REFERENCE_PATH, getReferencePath( transMeta, mappingMeta.getDirectoryPath(), mappingMeta.getTransName() ) );
+    response.put( MAPPING_REFERENCE_PATH, getReferencePath( transMeta, mappingMeta.getDirectoryPath(), mappingMeta.getTransName(),
+        mappingMeta.getSpecificationMethod(), mappingMeta.getFileName() ) );
     return validateAndPutReferenceStatus( transMeta, response, mappingMeta );
   }
 }

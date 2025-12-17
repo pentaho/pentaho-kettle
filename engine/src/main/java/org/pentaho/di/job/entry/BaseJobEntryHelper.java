@@ -13,11 +13,13 @@ package org.pentaho.di.job.entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Base implementation of {@link JobEntryHelperInterface} providing shared infrastructure for executing
@@ -107,9 +109,20 @@ public abstract class BaseJobEntryHelper implements JobEntryHelperInterface {
    * @param jobMeta The job metadata containing the job entry.
    * @param directoryPath The directory path where the job or transformation is located.
    * @param objectName The name of the job or transformation.
+   * @param specificationMethod The specification method used (e.g. REPOSITORY_BY_NAME, FILENAME).
+   * @param fileName The filename of the job or transformation (used if the specification method is FILENAME).
    * @return The constructed reference path, or an empty string if neither directoryPath nor objectName is provided.
    */
-  protected String getReferencePath( JobMeta jobMeta, String directoryPath, String objectName ) {
+  protected String getReferencePath( JobMeta jobMeta, String directoryPath, String objectName,
+                                     ObjectLocationSpecificationMethod specificationMethod, String fileName ) {
+    if ( specificationMethod == null ) {
+      return StringUtils.EMPTY;
+    }
+
+    if ( ObjectLocationSpecificationMethod.FILENAME.getCode().equalsIgnoreCase( specificationMethod.getCode() ) ) {
+      return jobMeta.environmentSubstitute( fileName );
+    }
+
     if ( StringUtils.isNotBlank( directoryPath ) && StringUtils.isNotBlank( objectName ) ) {
       return jobMeta.environmentSubstitute( directoryPath ) + SEPARATOR +  jobMeta.environmentSubstitute( objectName );
     } else if ( StringUtils.isNotBlank( objectName ) ) {
