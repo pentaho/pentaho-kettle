@@ -1073,7 +1073,7 @@ public class JobMeta extends AbstractMeta
       // If we are not using a repository, we are getting the job from a file
       // Set the filename here so it can be used in variables for ALL aspects of the job FIX: PDI-8890
       if ( null == rep ) {
-        setFilename( fname );
+        setFilename( KettleVFS.normalizeFilePath( fname ) );
       }  else {
         // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
         setRepository( rep );

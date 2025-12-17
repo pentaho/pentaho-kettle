@@ -54,6 +54,7 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.InfoStepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.w3c.dom.Node;
@@ -861,5 +862,94 @@ public class TransMetaTest {
     transMetaTest.setInternalEntryCurrentDirectory();
 
     assertEquals( "Original value defined at run execution", transMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  /**
+   * Tests that the filename is preserved during XML serialization and deserialization.
+   * This is critical for Carte remote execution where TransMeta is serialized to XML,
+   * sent to a slave server, and deserialized. The filename must be preserved so that
+   * lineage tracking and other features can identify the source transformation file.
+   * 
+   * @see <a href="https://jira.pentaho.com/browse/PDI-XXXXX">PDI-XXXXX</a>
+   */
+  @Test
+  public void testFilenamePreservedInXmlSerialization() throws Exception {
+    // Create a TransMeta with a filename set
+    TransMeta originalTransMeta = new TransMeta();
+    originalTransMeta.setName( "TestTransformation" );
+    String testFilename = "/path/to/test/transformation.ktr";
+    originalTransMeta.setFilename( testFilename );
+
+    // Serialize to XML
+    String xml = originalTransMeta.getXML();
+
+    // Verify the filename is in the XML
+    assertTrue( "Filename should be included in XML", xml.contains( "<filename>" + testFilename + "</filename>" ) );
+
+    // Deserialize from XML (simulating Carte receiving the transformation)
+    // When loading from Node (not from file), filename should be read from XML
+    org.w3c.dom.Document doc = XMLHandler.loadXMLString( xml );
+    Node transNode = XMLHandler.getSubNode( doc, TransMeta.XML_TAG );
+ 
+    TransMeta deserializedTransMeta = new TransMeta( transNode, null );
+
+    // Verify the filename is preserved after deserialization
+    assertEquals( "Filename should be preserved after XML deserialization", testFilename, deserializedTransMeta.getFilename() );
+  }
+
+  /**
+   * Tests that when loadXML is called, the filename is loaded from the XML.
+   * This is the expected behavior when TransMeta is deserialized on a Carte server.
+   * Note: loadXML calls clear() first, so any pre-existing filename will be cleared
+   * before the XML content is loaded.
+   */
+  @Test
+  public void testFilenameLoadedFromXmlOnLoadXML() throws Exception {
+    // Create a TransMeta with a filename set via XML
+    TransMeta sourceTransMeta = new TransMeta();
+    sourceTransMeta.setName( "TestTransformation" );
+    String originalFilename = "/original/path/transformation.ktr";
+    sourceTransMeta.setFilename( originalFilename );
+
+    // Serialize to XML
+    String xml = sourceTransMeta.getXML();
+    org.w3c.dom.Document doc = XMLHandler.loadXMLString( xml );
+    Node transNode = XMLHandler.getSubNode( doc, TransMeta.XML_TAG );
+
+    // Create a new TransMeta and load the XML (simulating Carte receiving the transformation)
+    TransMeta targetTransMeta = new TransMeta();
+
+    // Load XML into the TransMeta - this should load the filename from XML
+    targetTransMeta.loadXML( transNode, null, false );
+
+    // The filename from XML should be loaded
+    assertEquals( "Filename should be loaded from XML", originalFilename, targetTransMeta.getFilename() );
+  }
+
+  /**
+   * Tests that null filename doesn't cause issues in XML serialization.
+   */
+  @Test
+  public void testNullFilenameInXmlSerialization() throws Exception {
+    TransMeta transMetaWithNullFilename = new TransMeta();
+    transMetaWithNullFilename.setName( "TestTransformation" );
+    // Filename is null by default
+    assertNull( transMetaWithNullFilename.getFilename() );
+
+    // Serialize to XML - should not throw exception
+    String xml = transMetaWithNullFilename.getXML();
+
+    // Should have empty filename tag
+    assertTrue( "XML should contain filename tag even when null", xml.contains( "<filename/>" ) || xml.contains( "<filename></filename>" ) );
+
+    // Deserialize and verify
+    org.w3c.dom.Document doc = XMLHandler.loadXMLString( xml );
+    Node transNode = XMLHandler.getSubNode( doc, TransMeta.XML_TAG );
+
+    TransMeta deserializedTransMeta = new TransMeta( transNode, null );
+
+    // Filename should still be null/empty after deserialization
+    assertTrue( "Null filename should result in null or empty after deserialization",
+        deserializedTransMeta.getFilename() == null || deserializedTransMeta.getFilename().isEmpty() );
   }
 }

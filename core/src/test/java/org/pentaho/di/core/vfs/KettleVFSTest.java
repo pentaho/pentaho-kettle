@@ -142,4 +142,45 @@ public class KettleVFSTest {
 
   }
 
+  @Test
+  public void testNormalizeFilePath_NullOrEmpty() {
+    assertNull( KettleVFS.normalizeFilePath( null ) );
+    assertEquals( "", KettleVFS.normalizeFilePath( "" ) );
+    assertEquals( "   ", KettleVFS.normalizeFilePath( "   " ) );
+  }
+
+  @Test
+  public void testNormalizeFilePath_WithScheme() {
+    // Paths with schemes should be returned as-is
+    String hdfsPath = "hdfs://namenode:8020/user/data/file.txt";
+    assertEquals( hdfsPath, KettleVFS.normalizeFilePath( hdfsPath ) );
+
+    String s3Path = "s3://bucket/folder/file.txt";
+    assertEquals( s3Path, KettleVFS.normalizeFilePath( s3Path ) );
+
+    // file:// paths should be preserved
+    String filePath = "file:///tmp/test.ktr";
+    assertEquals( filePath, KettleVFS.normalizeFilePath( filePath ) );
+
+    // file:// paths with URL-encoded characters should be preserved
+    String encodedFilePath = "file:///tmp/my%20folder/test.ktr";
+    assertEquals( encodedFilePath, KettleVFS.normalizeFilePath( encodedFilePath ) );
+  }
+
+  @Test
+  public void testNormalizeFilePath_WithVariables() {
+    // Paths with unresolved variables should be returned as-is
+    String pathWithVar = "${Internal.Entry.Current.Directory}/Output.ktr";
+    assertEquals( pathWithVar, KettleVFS.normalizeFilePath( pathWithVar ) );
+  }
+
+  @Test
+  public void testNormalizeFilePath_LocalPathGetsFileScheme() {
+    // Test that local paths get file:// prefix
+    String localPath = "/tmp/test/file.ktr";
+    String result = KettleVFS.normalizeFilePath( localPath );
+    assertTrue( result.startsWith( "file://" ) );
+    assertTrue( result.endsWith( "file.ktr" ) );
+  }
+
 }
