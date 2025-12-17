@@ -125,7 +125,8 @@ public class JobExecutorHelper extends BaseStepHelper {
   private JSONObject getReferencePath( TransMeta transMeta, JobExecutorMeta jobExecutorMeta ) {
     JSONObject response = new JSONObject();
     try {
-      response.put( REFERENCE_PATH, getReferencePath( transMeta, jobExecutorMeta.getDirectoryPath(), jobExecutorMeta.getJobName() ) );
+      response.put( REFERENCE_PATH, getReferencePath( transMeta, jobExecutorMeta.getDirectoryPath(), jobExecutorMeta.getJobName(),
+          jobExecutorMeta.getSpecificationMethod(), jobExecutorMeta.getFileName() ) );
       JobExecutorMeta.loadJobMeta( transMeta.getBowl(), jobExecutorMeta, jobExecutorMeta.getRepository(), transMeta );
       response.put( IS_VALID_REFERENCE, true );
       response.put( IS_TRANS_REFERENCE, false );

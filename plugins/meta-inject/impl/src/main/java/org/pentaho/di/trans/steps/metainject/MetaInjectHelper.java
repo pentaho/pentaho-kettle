@@ -54,7 +54,8 @@ public class MetaInjectHelper extends BaseStepHelper {
    */
   private JSONObject getReferencePath( TransMeta transMeta ) {
     JSONObject response = new JSONObject();
-    response.put( REFERENCE_PATH, getReferencePath( transMeta, metaInjectMeta.getDirectoryPath(), metaInjectMeta.getTransName() ) );
+    response.put( REFERENCE_PATH, getReferencePath( transMeta, metaInjectMeta.getDirectoryPath(), metaInjectMeta.getTransName(),
+        metaInjectMeta.getSpecificationMethod(), metaInjectMeta.getFileName() ) );
     try {
       MetaInjectMeta.loadTransformationMeta( transMeta.getBowl(), metaInjectMeta, transMeta.getRepository(),
           null, transMeta );
