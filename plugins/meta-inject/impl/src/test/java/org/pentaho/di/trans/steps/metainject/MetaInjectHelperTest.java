@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.TransMeta;
 
@@ -47,6 +48,7 @@ public class MetaInjectHelperTest {
     when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     when( metaInjectMeta.getDirectoryPath() ).thenReturn( "/path" );
     when( metaInjectMeta.getTransName() ).thenReturn( "transFile.ktr" );
+    when( metaInjectMeta.getFileName() ).thenReturn( "/path/transFile.ktr" );
   }
 
   @Test
@@ -54,6 +56,23 @@ public class MetaInjectHelperTest {
     try ( MockedStatic<MetaInjectMeta> mappingMetaMockedStatic = mockStatic( MetaInjectMeta.class ) ) {
       mappingMetaMockedStatic.when( () -> MetaInjectMeta.loadTransformationMeta( any(), any(), any(), any(), any() ) )
           .thenReturn( mock( TransMeta.class ) );
+      when( metaInjectMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+      JSONObject response = metaInjectHelper.stepAction( META_INJECT_REFERENCE_PATH, transMeta, null );
+
+      assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+      assertNotNull( response );
+      assertNotNull( response.get( META_INJECT_REFERENCE_PATH ) );
+      assertEquals( "/path/transFile.ktr", response.get( META_INJECT_REFERENCE_PATH ) );
+      assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+    }
+  }
+
+  @Test
+  public void testReferencePath_withFileNameSpecification() {
+    try ( MockedStatic<MetaInjectMeta> mappingMetaMockedStatic = mockStatic( MetaInjectMeta.class ) ) {
+      mappingMetaMockedStatic.when( () -> MetaInjectMeta.loadTransformationMeta( any(), any(), any(), any(), any() ) )
+          .thenReturn( mock( TransMeta.class ) );
+      when( metaInjectMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
       JSONObject response = metaInjectHelper.stepAction( META_INJECT_REFERENCE_PATH, transMeta, null );
 
       assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
@@ -69,6 +88,7 @@ public class MetaInjectHelperTest {
     try ( MockedStatic<MetaInjectMeta> mappingMetaMockedStatic = mockStatic( MetaInjectMeta.class ) ) {
       mappingMetaMockedStatic.when( () -> MetaInjectMeta.loadTransformationMeta( any(), any(), any(), any(), any() )  )
           .thenThrow( new KettleException( "invalid Trans" ) );
+      when( metaInjectMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
       JSONObject response = metaInjectHelper.stepAction( META_INJECT_REFERENCE_PATH, transMeta, null );
 
       assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
