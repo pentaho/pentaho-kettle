@@ -241,7 +241,7 @@ public interface Repository {
     return loadTransformation( id_transformation, versionLabel );
   }
 
-  @Deprecated( since = "10.3" )
+  @Deprecated( since = "11.0" )
   public void readTransSharedObjects( TransMeta transMeta ) throws KettleException;
 
   /**
@@ -350,7 +350,7 @@ public interface Repository {
     return loadJob( id_job, versionLabel );
   }
 
-  @Deprecated( since = "10.3" )
+  @Deprecated( since = "11.0" )
   public void readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException;
 
   /**
