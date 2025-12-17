@@ -40,6 +40,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -51,6 +52,7 @@ import java.util.HashMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.same;
@@ -523,6 +525,92 @@ public class JobMetaTest {
     assertTrue( jobMetaTest.isGatheringMetrics() );
     jobMetaTest.setGatheringMetrics( false );
     assertFalse( jobMetaTest.isGatheringMetrics() );
+  }
+
+  /**
+   * Tests that the filename is preserved during XML serialization and deserialization.
+   * This is critical for Carte remote execution where JobMeta is serialized to XML,
+   * sent to a slave server, and deserialized. The filename must be preserved so that
+   * lineage tracking and other features can identify the source job file.
+   */
+  @Test
+  public void testFilenamePreservedInXmlSerialization() throws Exception {
+    // Create a JobMeta with a filename set
+    JobMeta originalJobMeta = new JobMeta();
+    originalJobMeta.setName( "TestJob" );
+    String testFilename = "/path/to/test/job.kjb";
+    originalJobMeta.setFilename( testFilename );
+
+    // Serialize to XML
+    String xml = originalJobMeta.getXML();
+
+    // Verify the filename is in the XML
+    assertTrue( "Filename should be included in XML", xml.contains( "<filename>" + testFilename + "</filename>" ) );
+
+    // Deserialize from XML (simulating Carte receiving the job)
+    org.w3c.dom.Document doc = XMLHandler.loadXMLString( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + xml );
+    Node jobNode = XMLHandler.getSubNode( doc, JobMeta.XML_TAG );
+
+    JobMeta deserializedJobMeta = new JobMeta();
+    deserializedJobMeta.loadXML( jobNode, null, null );
+
+    // Verify the filename is preserved after deserialization
+    assertEquals( "Filename should be preserved after XML deserialization", testFilename, deserializedJobMeta.getFilename() );
+  }
+
+  /**
+   * Tests that when loadXML is called, the filename is loaded from the XML.
+   * This is the expected behavior when JobMeta is deserialized on a Carte server.
+   */
+  @Test
+  public void testFilenameLoadedFromXmlOnLoadXML() throws Exception {
+    // Create a JobMeta with a filename set via XML
+    JobMeta sourceJobMeta = new JobMeta();
+    sourceJobMeta.setName( "TestJob" );
+    String originalFilename = "/original/path/job.kjb";
+    sourceJobMeta.setFilename( originalFilename );
+
+    // Serialize to XML
+    String xml = sourceJobMeta.getXML();
+    org.w3c.dom.Document doc = XMLHandler.loadXMLString( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + xml );
+    Node jobNode = XMLHandler.getSubNode( doc, JobMeta.XML_TAG );
+
+    // Create a new JobMeta and load the XML (simulating Carte receiving the job)
+    JobMeta targetJobMeta = new JobMeta();
+
+    // Load XML into the JobMeta - this should load the filename from XML
+    targetJobMeta.loadXML( jobNode, null, null );
+
+    // The filename from XML should be loaded
+    assertEquals( "Filename should be loaded from XML", originalFilename, targetJobMeta.getFilename() );
+  }
+
+  /**
+   * Tests that null filename doesn't cause issues in XML serialization.
+   */
+  @Test
+  public void testNullFilenameInXmlSerialization() throws Exception {
+    JobMeta jobMetaWithNullFilename = new JobMeta();
+    jobMetaWithNullFilename.setName( "TestJob" );
+    // Filename is null by default
+    assertNull( jobMetaWithNullFilename.getFilename() );
+
+    // Serialize to XML - should not throw exception
+    String xml = jobMetaWithNullFilename.getXML();
+
+    // Should have empty filename tag
+    assertTrue( "XML should contain filename tag even when null", xml.contains( "<filename/>" ) || xml.contains( "<filename></filename>" ) );
+
+    // Deserialize and verify
+    org.w3c.dom.Document doc = XMLHandler.loadXMLString( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + xml );
+    Node jobNode = XMLHandler.getSubNode( doc, JobMeta.XML_TAG );
+
+    JobMeta deserializedJobMeta = new JobMeta();
+    deserializedJobMeta.loadXML( jobNode, null, null );
+
+    // Filename should still be null/empty after deserialization
+    assertTrue( "Null filename should result in null or empty after deserialization",
+        deserializedJobMeta.getFilename() == null || deserializedJobMeta.getFilename().isEmpty() );
   }
 
 }

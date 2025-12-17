@@ -665,6 +665,10 @@ public class JobMeta extends AbstractMeta
 
     retval.append( "  " ).append( XMLHandler.addTagValue( "directory",
         ( directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR ) ) );
+
+    // Include the filename for Carte remote execution to preserve the source file path
+    retval.append( "  " ).append( XMLHandler.addTagValue( "filename", filename ) );
+
     retval.append( "  " ).append( XMLHandler.addTagValue( "created_user", createdUser ) );
     retval.append( "  " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( createdDate ) ) );
     retval.append( "  " ).append( XMLHandler.addTagValue( "modified_user", modifiedUser ) );
@@ -1107,6 +1111,15 @@ public class JobMeta extends AbstractMeta
 
       // job status
       jobStatus = Const.toInt( XMLHandler.getTagValue( jobnode, "job_status" ), -1 );
+
+      // If filename was not set during construction (e.g. when loading from XML Node for Carte execution),
+      // try to read it from the XML. This ensures the filename is preserved during remote execution.
+      if ( Utils.isEmpty( filename ) ) {
+        String xmlFilename = XMLHandler.getTagValue( jobnode, "filename" );
+        if ( !Utils.isEmpty( xmlFilename ) ) {
+          setFilename( xmlFilename );
+        }
+      }
 
       // Created user/date
       createdUser = XMLHandler.getTagValue( jobnode, "created_user" );

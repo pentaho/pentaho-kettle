@@ -869,8 +869,6 @@ public class TransMetaTest {
    * This is critical for Carte remote execution where TransMeta is serialized to XML,
    * sent to a slave server, and deserialized. The filename must be preserved so that
    * lineage tracking and other features can identify the source transformation file.
-   * 
-   * @see <a href="https://jira.pentaho.com/browse/PDI-XXXXX">PDI-XXXXX</a>
    */
   @Test
   public void testFilenamePreservedInXmlSerialization() throws Exception {
