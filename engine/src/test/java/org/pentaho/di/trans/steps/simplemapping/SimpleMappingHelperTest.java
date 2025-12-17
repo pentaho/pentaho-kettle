@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -49,6 +50,7 @@ public class SimpleMappingHelperTest {
     when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     when( simpleMappingMeta.getDirectoryPath() ).thenReturn( "/path" );
     when( simpleMappingMeta.getTransName() ).thenReturn( "transFile.ktr" );
+    when( simpleMappingMeta.getFileName() ).thenReturn( "/path/transFile.ktr" );
   }
 
   @Test
@@ -56,6 +58,23 @@ public class SimpleMappingHelperTest {
     try ( MockedStatic<StepWithMappingMeta> mappingMetaMockedStatic = mockStatic( StepWithMappingMeta.class ) ) {
       mappingMetaMockedStatic.when( () -> StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any(), any(), anyBoolean() ) )
           .thenReturn( mock( TransMeta.class ) );
+      when( simpleMappingMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+      JSONObject response = simpleMappingHelper.stepAction( SIMPLE_MAPPING_REFERENCE_PATH, transMeta, null );
+
+      assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+      assertNotNull( response );
+      assertNotNull( response.get( SIMPLE_MAPPING_REFERENCE_PATH ) );
+      assertEquals( "/path/transFile.ktr", response.get( SIMPLE_MAPPING_REFERENCE_PATH ) );
+      assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+    }
+  }
+
+  @Test
+  public void testReferencePath_withFileNameSpecification() {
+    try ( MockedStatic<StepWithMappingMeta> mappingMetaMockedStatic = mockStatic( StepWithMappingMeta.class ) ) {
+      mappingMetaMockedStatic.when( () -> StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any(), any(), anyBoolean() ) )
+          .thenReturn( mock( TransMeta.class ) );
+      when( simpleMappingMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
       JSONObject response = simpleMappingHelper.stepAction( SIMPLE_MAPPING_REFERENCE_PATH, transMeta, null );
 
       assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
@@ -71,6 +90,7 @@ public class SimpleMappingHelperTest {
     try ( MockedStatic<StepWithMappingMeta> mappingMetaMockedStatic = mockStatic( StepWithMappingMeta.class ) ) {
       mappingMetaMockedStatic.when( () -> StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any(), any(), anyBoolean() )  )
           .thenThrow( new KettleException( "invalid Trans" ) );
+      when( simpleMappingMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
       JSONObject response = simpleMappingHelper.stepAction( SIMPLE_MAPPING_REFERENCE_PATH, transMeta, null );
 
       assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );

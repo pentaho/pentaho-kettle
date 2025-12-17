@@ -131,7 +131,8 @@ public class TransExecutorHelper extends BaseStepHelper {
   private JSONObject getReferencePath( TransMeta transMeta, TransExecutorMeta transExecutorMeta ) {
     JSONObject response = new JSONObject();
     try {
-      response.put( REFERENCE_PATH, getReferencePath( transMeta, transExecutorMeta.getDirectoryPath(), transExecutorMeta.getTransName() ) );
+      response.put( REFERENCE_PATH, getReferencePath( transMeta, transExecutorMeta.getDirectoryPath(), transExecutorMeta.getTransName(),
+          transExecutorMeta.getSpecificationMethod(), transExecutorMeta.getFileName() ) );
       loadExecutorTransMeta( transMeta, transExecutorMeta );
       response.put( IS_VALID_REFERENCE, true );
       response.put( IS_TRANS_REFERENCE, true );

@@ -17,6 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -139,6 +140,21 @@ public class TransExecutorHelperTest {
   public void testReferencePath() {
     when( transExecutorMeta.getDirectoryPath() ).thenReturn( "/path" );
     when( transExecutorMeta.getTransName() ).thenReturn( "transName" );
+    when( transExecutorMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+    when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    JSONObject response = underTest.stepAction( REFERENCE_PATH, transMeta, null );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( REFERENCE_PATH ) );
+    assertEquals( "/path/transName", response.get( REFERENCE_PATH ) );
+    assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+  }
+
+  @Test
+  public void testReferencePath_withFileNameSpecification() {
+    when( transExecutorMeta.getFileName() ).thenReturn( "/path/transName" );
+    when( transExecutorMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
     when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     JSONObject response = underTest.stepAction( REFERENCE_PATH, transMeta, null );
 
@@ -155,6 +171,7 @@ public class TransExecutorHelperTest {
         .loadExecutorTransMeta( transMeta, transExecutorMeta );
     when( transExecutorMeta.getDirectoryPath() ).thenReturn( "/path" );
     when( transExecutorMeta.getTransName() ).thenReturn( "transName" );
+    when( transExecutorMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
     when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     JSONObject response = underTest.stepAction( REFERENCE_PATH, transMeta, null );
 

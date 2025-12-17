@@ -53,7 +53,8 @@ public class SimpleMappingHelper extends BaseStepHelper {
    */
   private JSONObject getReferencePath( TransMeta transMeta ) {
     JSONObject response = new JSONObject();
-    response.put( SIMPLE_MAPPING_REFERENCE_PATH, getReferencePath( transMeta, simpleMappingMeta.getDirectoryPath(), simpleMappingMeta.getTransName() ) );
+    response.put( SIMPLE_MAPPING_REFERENCE_PATH, getReferencePath( transMeta, simpleMappingMeta.getDirectoryPath(), simpleMappingMeta.getTransName(),
+        simpleMappingMeta.getSpecificationMethod(), simpleMappingMeta.getFileName() ) );
     return validateAndPutReferenceStatus( transMeta, response, simpleMappingMeta );
   }
 }

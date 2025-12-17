@@ -16,6 +16,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -81,6 +82,22 @@ public class JobEntryTransHelperTest {
     doReturn( transMeta ).when( jobEntryTrans ).getTransMeta( null, null, jobMeta );
     when( jobEntryTrans.getDirectory() ).thenReturn( "/path" );
     when( jobEntryTrans.getTransname() ).thenReturn( "transName" );
+    when( jobEntryTrans.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+    when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    JSONObject response = jobEntryTransHelper.jobEntryAction( JOB_ENTRY_TRANS_REFERENCE_PATH, jobMeta, null );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( JOB_ENTRY_TRANS_REFERENCE_PATH ) );
+    assertEquals( "/path/transName", response.get( JOB_ENTRY_TRANS_REFERENCE_PATH ) );
+    assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+  }
+
+  @Test
+  public void testReferencePath_withFileNameSpecification() throws KettleException {
+    doReturn( transMeta ).when( jobEntryTrans ).getTransMeta( null, null, jobMeta );
+    when( jobEntryTrans.getFilename() ).thenReturn( "/path/transName" );
+    when( jobEntryTrans.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
     when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     JSONObject response = jobEntryTransHelper.jobEntryAction( JOB_ENTRY_TRANS_REFERENCE_PATH, jobMeta, null );
 
@@ -96,6 +113,7 @@ public class JobEntryTransHelperTest {
     doThrow( new KettleException( "Invalid transformation" ) ).when( jobEntryTrans ).getTransMeta( null, null, jobMeta );
     when( jobEntryTrans.getDirectory() ).thenReturn( "/path" );
     when( jobEntryTrans.getTransname() ).thenReturn( "transName" );
+    when( jobEntryTrans.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
     when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     JSONObject response = jobEntryTransHelper.jobEntryAction( JOB_ENTRY_TRANS_REFERENCE_PATH, jobMeta, null );
 

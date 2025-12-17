@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -156,6 +157,25 @@ public class JobExecutorHelperTest {
           .thenReturn( jobMeta );
       when( jobExecutorMeta.getDirectoryPath() ).thenReturn( "/path" );
       when( jobExecutorMeta.getJobName() ).thenReturn( "jobName" );
+      when( jobExecutorMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+      when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+      JSONObject response = jobExecutorHelper.stepAction( REFERENCE_PATH, transMeta, null );
+
+      assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+      assertNotNull( response );
+      assertNotNull( response.get( REFERENCE_PATH ) );
+      assertEquals( "/path/jobName", response.get( REFERENCE_PATH ) );
+      assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+    }
+  }
+
+  @Test
+  public void testReferencePath_withFileNameSpecification() {
+    try ( MockedStatic<JobExecutorMeta> jobExecutorMetaMockedStatic = mockStatic( JobExecutorMeta.class ) ) {
+      jobExecutorMetaMockedStatic.when( () ->  JobExecutorMeta.loadJobMeta( transMeta.getBowl(), jobExecutorMeta, jobExecutorMeta.getRepository(), transMeta ) )
+          .thenReturn( jobMeta );
+      when( jobExecutorMeta.getFileName() ).thenReturn( "/path/jobName" );
+      when( jobExecutorMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
       when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
       JSONObject response = jobExecutorHelper.stepAction( REFERENCE_PATH, transMeta, null );
 
@@ -174,6 +194,7 @@ public class JobExecutorHelperTest {
           .thenThrow( new KettleException( "invalid_job" ) );
       when( jobExecutorMeta.getDirectoryPath() ).thenReturn( "/path" );
       when( jobExecutorMeta.getJobName() ).thenReturn( "jobName" );
+      when( jobExecutorMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
       when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
       JSONObject response = jobExecutorHelper.stepAction( REFERENCE_PATH, transMeta, null );
 
