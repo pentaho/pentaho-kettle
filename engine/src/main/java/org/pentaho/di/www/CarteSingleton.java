@@ -9,8 +9,6 @@
  *
  * Change Date: 2029-07-20
  ******************************************************************************/
-
-
 package org.pentaho.di.www;
 
 import java.util.ArrayList;
@@ -86,9 +84,9 @@ public class CarteSingleton {
       //
       if ( config.isReportingToMasters() ) {
         String hostname = slaveServer.getHostname();
-        final SlaveServer client =
-          new SlaveServer( "Dynamic slave [" + hostname + ":" + port + "]", hostname, "" + port, slaveServer
-            .getUsername(), slaveServer.getPassword() );
+        final SlaveServer client
+          = new SlaveServer( "Dynamic slave [" + hostname + ":" + port + "]", hostname, "" + port, slaveServer
+          .getUsername(), slaveServer.getPassword() );
         for ( final SlaveServer master : config.getMasters() ) {
           // Here we use the username/password specified in the slave
           // server section of the configuration.
@@ -110,7 +108,7 @@ public class CarteSingleton {
   }
 
   public static void installPurgeTimer( final SlaveServerConfig config, final LogChannelInterface log,
-    final TransformationMap transformationMap, final JobMap jobMap ) {
+                                        final TransformationMap transformationMap, final JobMap jobMap ) {
 
     final int objectTimeout;
     String systemTimeout = EnvUtil.getSystemProperty( Const.KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES, null );
@@ -150,9 +148,22 @@ public class CarteSingleton {
                 if ( trans != null && ( trans.isFinished() || trans.isStopped() ) && trans.getLogDate() != null ) {
                   // check the last log time
                   //
-                  int diffInMinutes =
-                    (int) Math.floor( ( System.currentTimeMillis() - trans.getLogDate().getTime() ) / 60000 );
+                  int diffInMinutes
+                    = ( int ) Math.floor( ( System.currentTimeMillis() - trans.getLogDate().getTime() ) / 60000 );
                   if ( diffInMinutes >= objectTimeout ) {
+
+                    // Clean up repository resources to prevent memory leaks
+                    // This is critical for releasing JackRabbit CachingHierarchyManager instances
+                    try {
+                      if ( trans.getRep() != null ) {
+                        // Clear any cached repository metadata
+                        trans.getTransMeta().setRepository( null );
+                      }
+                      // Explicitly clear the repository reference to allow garbage collection
+                      trans.setRep( null );
+                    } catch ( Exception e ) {
+                      log.logError( "Error cleaning up repository resources for transformation " + entry.getName(), e );
+                    }
 
                     // Let's remove this from the transformation map...
                     transformationMap.removeTransformation( entry );
@@ -177,19 +188,31 @@ public class CarteSingleton {
                 if ( job != null && ( job.isFinished() || job.isStopped() ) && job.getLogDate() != null ) {
                   // check the last log time
                   //
-                  int diffInMinutes =
-                    (int) Math.floor( ( System.currentTimeMillis() - job.getLogDate().getTime() ) / 60000 );
+                  int diffInMinutes
+                    = ( int ) Math.floor( ( System.currentTimeMillis() - job.getLogDate().getTime() ) / 60000 );
                   if ( diffInMinutes >= objectTimeout ) {
                     // Let's remove this from the job map...
                     //
                     String id = jobMap.getJob( entry ).getLogChannelId();
                     LoggingRegistry.getInstance().removeLogChannelFileWriterBuffer( id );
 
+                    // Clean up repository resources to prevent memory leaks
+                    // This is critical for releasing JackRabbit CachingHierarchyManager instances
+                    try {
+                      if ( job.getRep() != null ) {
+                        // Clear any cached repository metadata
+                        job.getJobMeta().setRepository( null );
+                      }
+                      // Explicitly clear the repository reference to allow garbage collection
+                      job.setRep( null );
+                    } catch ( Exception e ) {
+                      log.logError( "Error cleaning up repository resources for job " + entry.getName(), e );
+                    }
+
                     jobMap.removeJob( entry );
 
                     // Remove the logging information from the log registry & central log store
                     KettleLogStore.discardLines( job.getLogChannelId(), false );
-
 
                     log.logMinimal( "Cleaned up job "
                       + entry.getName() + " with id " + entry.getId() + " from " + job.getLogDate() );
@@ -222,8 +245,8 @@ public class CarteSingleton {
         carteSingleton = new CarteSingleton( slaveServerConfig );
 
         String carteObjectId = UUID.randomUUID().toString();
-        SimpleLoggingObject servletLoggingObject =
-          new SimpleLoggingObject( "CarteSingleton", LoggingObjectType.CARTE, null );
+        SimpleLoggingObject servletLoggingObject
+          = new SimpleLoggingObject( "CarteSingleton", LoggingObjectType.CARTE, null );
         servletLoggingObject.setContainerObjectId( carteObjectId );
         servletLoggingObject.setLogLevel( LogLevel.BASIC );
 
