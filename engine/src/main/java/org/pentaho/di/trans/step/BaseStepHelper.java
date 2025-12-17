@@ -15,6 +15,7 @@ package org.pentaho.di.trans.step;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.trans.StepWithMappingMeta;
@@ -118,10 +119,20 @@ public abstract class BaseStepHelper implements StepHelperInterface {
    * Constructs the reference path for a transformation based on the provided directory path and name.
    * @param transMeta The transformation metadata containing the step.
    * @param directoryPath The directory path where the transformation or job is located.
+   * @param specificationMethod The specification method used (e.g. REPOSITORY_BY_NAME, FILENAME).
+   * @param fileName The filename of the transformation or job (used if the specification method is FILENAME).
    * @param objectName The name of the transformation or job.
    * @return The constructed reference path, or an empty string if neither directoryPath nor objectName is provided.
    */
-  protected String getReferencePath( TransMeta transMeta, String directoryPath, String objectName ) {
+  protected String getReferencePath( TransMeta transMeta, String directoryPath, String objectName, ObjectLocationSpecificationMethod specificationMethod, String fileName ) {
+    if ( specificationMethod == null ) {
+      return StringUtils.EMPTY;
+    }
+
+    if ( specificationMethod.getCode().equalsIgnoreCase( ObjectLocationSpecificationMethod.FILENAME.getCode() ) ) {
+      return transMeta.environmentSubstitute( fileName );
+    }
+
     if ( StringUtils.isNotBlank( directoryPath ) && StringUtils.isNotBlank( objectName ) ) {
       return transMeta.environmentSubstitute( directoryPath ) + SEPARATOR +  transMeta.environmentSubstitute( objectName );
     } else if ( StringUtils.isNotBlank( objectName ) ) {

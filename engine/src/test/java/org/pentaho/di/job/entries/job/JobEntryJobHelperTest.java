@@ -16,6 +16,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.step.StepInterface;
@@ -78,6 +79,7 @@ public class JobEntryJobHelperTest {
     doReturn( jobMeta ).when( jobEntryJob ).getJobMeta( null, null, jobMeta );
     when( jobEntryJob.getDirectory() ).thenReturn( "/path" );
     when( jobEntryJob.getJobName() ).thenReturn( "jobName" );
+    when( jobEntryJob.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
     when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     JSONObject response = jobEntryJobHelper.jobEntryAction( JOB_ENTRY_JOB_REFERENCE_PATH, jobMeta, null );
 
@@ -89,10 +91,25 @@ public class JobEntryJobHelperTest {
   }
 
   @Test
+  public void testReferencePath_withFileNameSpecification() throws KettleException {
+    doReturn( jobMeta ).when( jobEntryJob ).getJobMeta( null, null, jobMeta );
+    when( jobEntryJob.getFilename() ).thenReturn( "/path/jobName" );
+    when( jobEntryJob.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    JSONObject response = jobEntryJobHelper.jobEntryAction( JOB_ENTRY_JOB_REFERENCE_PATH, jobMeta, null );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( JOB_ENTRY_JOB_REFERENCE_PATH ) );
+    assertEquals( "/path/jobName", response.get( JOB_ENTRY_JOB_REFERENCE_PATH ) );
+    assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+  }
+  @Test
   public void testReferencePath_throwsException() throws KettleException {
     doThrow( new KettleException( "Invalid job" ) ).when( jobEntryJob ).getJobMeta( null, null, jobMeta );
     when( jobEntryJob.getDirectory() ).thenReturn( "/path" );
     when( jobEntryJob.getJobName() ).thenReturn( "jobName" );
+    when( jobEntryJob.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
     when( jobMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     JSONObject response = jobEntryJobHelper.jobEntryAction( JOB_ENTRY_JOB_REFERENCE_PATH, jobMeta, null );
 

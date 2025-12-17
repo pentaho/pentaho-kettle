@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -49,6 +50,7 @@ public class SingleThreaderHelperTest {
     when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     when( singleThreaderMeta.getDirectoryPath() ).thenReturn( "/path" );
     when( singleThreaderMeta.getTransName() ).thenReturn( "transFile.ktr" );
+    when( singleThreaderMeta.getFileName() ).thenReturn( "/path/transFile.ktr" );
   }
 
   @Test
@@ -56,6 +58,23 @@ public class SingleThreaderHelperTest {
     try ( MockedStatic<StepWithMappingMeta> mappingMetaMockedStatic = mockStatic( StepWithMappingMeta.class ) ) {
       mappingMetaMockedStatic.when( () -> StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any(), any(), anyBoolean() ) )
           .thenReturn( mock( TransMeta.class ) );
+      when( singleThreaderMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+      JSONObject response = singleThreaderHelper.stepAction( SINGLE_THREADER_REFERENCE_PATH, transMeta, null );
+
+      assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+      assertNotNull( response );
+      assertNotNull( response.get( SINGLE_THREADER_REFERENCE_PATH ) );
+      assertEquals( "/path/transFile.ktr", response.get( SINGLE_THREADER_REFERENCE_PATH ) );
+      assertEquals( true, response.get( IS_VALID_REFERENCE ) );
+    }
+  }
+
+  @Test
+  public void testReferencePath_withFilenameSpecification() {
+    try ( MockedStatic<StepWithMappingMeta> mappingMetaMockedStatic = mockStatic( StepWithMappingMeta.class ) ) {
+      mappingMetaMockedStatic.when( () -> StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any(), any(), anyBoolean() ) )
+          .thenReturn( mock( TransMeta.class ) );
+      when( singleThreaderMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
       JSONObject response = singleThreaderHelper.stepAction( SINGLE_THREADER_REFERENCE_PATH, transMeta, null );
 
       assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
@@ -71,6 +90,7 @@ public class SingleThreaderHelperTest {
     try ( MockedStatic<StepWithMappingMeta> mappingMetaMockedStatic = mockStatic( StepWithMappingMeta.class ) ) {
       mappingMetaMockedStatic.when( () -> StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any(), any(), anyBoolean() )  )
           .thenThrow( new KettleException( "invalid Trans" ) );
+      when( singleThreaderMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
       JSONObject response = singleThreaderHelper.stepAction( SINGLE_THREADER_REFERENCE_PATH, transMeta, null );
 
       assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );

@@ -83,7 +83,8 @@ public class JobEntryJobHelper extends BaseJobEntryHelper {
   public JSONObject getReferencePath( JobMeta jobMeta ) {
     JSONObject response = new JSONObject();
     try {
-      response.put( JOB_ENTRY_JOB_REFERENCE_PATH, getReferencePath( jobMeta, jobEntryJob.getDirectory(), jobEntryJob.getJobName() ) );
+      response.put( JOB_ENTRY_JOB_REFERENCE_PATH, getReferencePath( jobMeta, jobEntryJob.getDirectory(), jobEntryJob.getJobName(),
+          jobEntryJob.getSpecificationMethod(), jobEntryJob.getFilename() ) );
       jobEntryJob.getJobMeta( jobMeta.getRepository(), null, jobMeta );
       response.put( IS_VALID_REFERENCE, true );
       response.put( IS_TRANS_REFERENCE, false );

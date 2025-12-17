@@ -52,7 +52,8 @@ public class SingleThreaderHelper extends BaseStepHelper {
    */
   private JSONObject getReferencePath( TransMeta transMeta ) {
     JSONObject response = new JSONObject();
-    response.put( SINGLE_THREADER_REFERENCE_PATH, getReferencePath( transMeta, singleThreaderMeta.getDirectoryPath(), singleThreaderMeta.getTransName() ) );
+    response.put( SINGLE_THREADER_REFERENCE_PATH, getReferencePath( transMeta, singleThreaderMeta.getDirectoryPath(), singleThreaderMeta.getTransName(),
+        singleThreaderMeta.getSpecificationMethod(), singleThreaderMeta.getFileName() ) );
     return validateAndPutReferenceStatus( transMeta, response, singleThreaderMeta );
   }
 }
