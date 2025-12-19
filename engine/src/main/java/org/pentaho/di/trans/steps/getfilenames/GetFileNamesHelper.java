@@ -120,7 +120,7 @@ public class GetFileNamesHelper extends BaseStepHelper {
     JSONArray fileList = new JSONArray();
 
     if ( files == null || files.length == 0 ) {
-      response.put( "message", BaseMessages.getString( PKG, "GetFilesRowsCountDialog.NoFileFound.DialogMessage" ) );
+      response.put( "message", BaseMessages.getString( PKG, "GetFileNamesDialog.NoFilesFound.DialogMessage" ) );
     } else {
       fileList.addAll( Arrays.asList( files ) );
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
