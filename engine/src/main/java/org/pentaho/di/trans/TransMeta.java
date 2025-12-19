@@ -2515,6 +2515,8 @@ public class TransMeta extends AbstractMeta
     retval.append( "    " ).append( XMLHandler.addTagValue( "directory",
             directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR ) );
 
+    // Include the filename for Carte remote execution to preserve the source file path
+    retval.append( "    " ).append( XMLHandler.addTagValue( "filename", filename ) );
 
     if ( includeNamedParameters ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
@@ -3325,7 +3327,7 @@ public class TransMeta extends AbstractMeta
         // Set the filename here so it can be used in variables for ALL aspects of the transformation FIX: PDI-8890
         // Though connected to repository, if filename starts with pvfs, we are using a VFS file, so set the filename
         if ( null == rep || isVfsReference( fname ) ) {
-          setFilename( fname );
+          setFilename( KettleVFS.normalizeFilePath( fname ) );
         }
         // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
         if ( rep != null ) {
@@ -3488,6 +3490,15 @@ public class TransMeta extends AbstractMeta
 
         String transTypeCode = XMLHandler.getTagValue( infonode, "trans_type" );
         transformationType = TransformationType.getTransformationTypeByCode( transTypeCode );
+
+        // If filename was not set during construction (e.g. when loading from XML Node for Carte execution),
+        // try to read it from the XML. This ensures the filename is preserved during remote execution.
+        if ( Utils.isEmpty( filename ) ) {
+          String xmlFilename = XMLHandler.getTagValue( infonode, "filename" );
+          if ( !Utils.isEmpty( xmlFilename ) ) {
+            setFilename( xmlFilename );
+          }
+        }
 
         // Optionally load the repository directory...
         // Though connected to repository, if we are using a VFS file, not setting repository directory

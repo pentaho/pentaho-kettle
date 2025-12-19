@@ -20,6 +20,7 @@ import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -81,7 +82,7 @@ public class JobFileListener implements FileListener, ConnectionListener {
         jobMeta.clearChanged();
       }
 
-      jobMeta.setFilename( fname );
+      jobMeta.setFilename( KettleVFS.normalizeFilePath( fname ) );
       spoon.delegates.jobs.addJobGraph( jobMeta );
 
       // Call extension point(s) now that the file has been opened
