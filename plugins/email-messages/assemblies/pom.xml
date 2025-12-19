@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>email-messages</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.7-390</version>
   </parent>
 
   <artifactId>email-messages-assemblies</artifactId>
-  <version>10.2.0.0-SNAPSHOT</version>
+  <version>10.2.0.7-390</version>
   <packaging>pom</packaging>
 
   <name>PDI Email Messages And Get mails Plugins Assemblies</name>
