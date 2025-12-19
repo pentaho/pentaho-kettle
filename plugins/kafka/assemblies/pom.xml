@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>kafka</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-72</version>
   </parent>
 
   <artifactId>kafka-assemblies</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-72</version>
   <packaging>pom</packaging>
 
   <name>PDI Kafka Plugin Assemblies</name>
