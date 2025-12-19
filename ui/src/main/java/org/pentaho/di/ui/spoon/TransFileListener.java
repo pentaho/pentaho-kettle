@@ -24,6 +24,7 @@ import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.shared.SharedObjectUtil;
 import org.pentaho.di.trans.TransMeta;
@@ -108,7 +109,7 @@ public class TransFileListener implements FileListener, ConnectionListener {
         transMeta.clearChanged();
       }
 
-      transMeta.setFilename( fname );
+      transMeta.setFilename( KettleVFS.normalizeFilePath( fname ) );
       spoon.addTransGraph( transMeta );
 
       // Call extension point(s) now that the file has been opened
