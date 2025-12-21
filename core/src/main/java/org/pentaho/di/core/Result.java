@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -67,6 +68,16 @@ public class Result implements Cloneable {
 
   /** A constant specifying the tag value for the XML node for the result rows entry */
   public static final String XML_ROWS_TAG = "result-rows";
+
+  /** Constant for converting MB to bytes */
+  private static final int BYTES_PER_MB = 1024 * 1024;
+
+  /** UTF-8 max bytes per character is 4.0 (for code points above U+FFFF) */
+  private static final float UTF8_MAX_BYTES_PER_CHAR = 4.0f;
+
+  /** Cached maximum character count for log buffer, calculated once during initialization.
+   * -1 = unlimited, 0 = no logging, positive value = character limit */
+  private int maxLogBufferChars = -1;
 
   /** The number of errors during the transformation or job */
   private long nrErrors;
@@ -152,6 +163,9 @@ public class Result implements Cloneable {
 
     stopped = false;
     entryNr = 0;
+    
+    // Initialize log buffer size from system properties once during object creation
+    initializeLogBufferSize();
   }
 
   /**
@@ -554,8 +568,10 @@ public class Result implements Cloneable {
     nrErrors += res.getNrErrors();
     nrFilesRetrieved += res.getNrFilesRetrieved();
     resultFiles.putAll( res.getResultFiles() );
-    logChannelId = res.getLogChannelId();
-    logText.append( res.getLogText() );
+    logChannelId = res.getLogChannelId();  
+    String newLogText = res.getLogText();
+    safeAppendToLog(newLogText);
+    
     rows.addAll( res.getRows() );
   }
 
@@ -876,8 +892,101 @@ public class Result implements Cloneable {
     }
   }
 
+  /**
+   * Initialize the log buffer size from system property once per instance
+   */
+  private void initializeLogBufferSize() {
+    String bufferSizeMBStr = EnvUtil.getSystemProperty("KETTLE_MAX_LOG_BUFFER_SIZE_MB", "-1");
+    
+    try {
+      int bufferSizeMB = Integer.parseInt(bufferSizeMBStr);
+      if (bufferSizeMB == 0) {
+        maxLogBufferChars = 0; // No logging
+      } else if (bufferSizeMB > 0) {
+        // Convert MB to character count using UTF-8 max bytes per character
+        int maxBytes = bufferSizeMB * BYTES_PER_MB;
+        maxLogBufferChars = (int) (maxBytes / UTF8_MAX_BYTES_PER_CHAR);
+      }
+      // For negative values or any other case, keep default -1 (unlimited)
+    } catch (NumberFormatException e) {
+      // If parsing fails, keep default -1 (unlimited)
+    }
+  }
+
+  /**
+   * Safely appends text to the log buffer with configurable size protection
+   * 
+   * @param textToAppend the text to append to the log buffer
+   */
+  private void safeAppendToLog(String textToAppend) {
+    if (textToAppend == null || textToAppend.isEmpty()) {
+      return;
+    }
+    
+    // Use cached character limit
+    if (maxLogBufferChars == 0) {
+      // Zero: no logging
+      return;
+    }
+    
+    if (maxLogBufferChars > 0) {
+      // Positive value: apply character limit
+      appendWithLimit(textToAppend);
+    } else {
+      // Negative: unlimited logging
+      logText.append(textToAppend);
+    }
+  }
+
+  /**
+   * Appends text with size limit enforcement
+   * 
+   * @param textToAppend the text to append
+   */
+  private void appendWithLimit(String textToAppend) {
+    int currentChars = logText.length();
+    int incomingChars = textToAppend.length();
+    
+    if (incomingChars >= maxLogBufferChars) {
+      // Incoming text exceeds limit - keep only the tail of incoming text
+      int startIndex = incomingChars - maxLogBufferChars;
+      String trimmedText = textToAppend.substring(startIndex);
+      logText.setLength(0);
+      logText.append(trimmedText);
+    } else if (currentChars + incomingChars <= maxLogBufferChars) {
+      // Both existing and incoming text fit within limit
+      logText.append(textToAppend);
+    } else {
+      // Need to trim existing content to make room for incoming text
+      int targetCurrentChars = maxLogBufferChars - incomingChars;
+      
+      if (targetCurrentChars <= 0) {
+        // No room for existing content, use only incoming text
+        logText.setLength(0);
+        logText.append(textToAppend);
+      } else {
+        // Keep only the tail of existing content that fits
+        String currentText = logText.toString();
+        int startIndex = currentChars - targetCurrentChars;
+        String keptText = currentText.substring(startIndex);
+        logText.setLength(0);
+        logText.append(keptText);
+        logText.append(textToAppend);
+      }
+    }
+  }
+
+  /**
+   * Returns the maximum character count for the log buffer based on cached configuration.
+   * 
+   * @return the maximum character count, -1 if unlimited, 0 if no logging
+   */
+  public int getMaxCharCount() {
+    return maxLogBufferChars;
+  }
+
   public void appendLogText( String logTextStr ) {
-    logText.append( logTextStr );
+    safeAppendToLog(logTextStr);
   }
 
   /**

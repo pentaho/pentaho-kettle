@@ -189,6 +189,12 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>Specifies the maximum size (in MB) of the Result log buffer to prevent OutOfMemoryError (default: -1). Any value less than 0 or non-numeric will not add any log restriction. Setting the value to 0 means no log generation.</description>
+    <variable>KETTLE_MAX_LOG_BUFFER_SIZE_MB</variable>
+    <default-value>-1</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>The maximum number of job trackers kept in memory</description>
     <variable>KETTLE_MAX_JOB_TRACKER_SIZE</variable>
     <default-value>5000</default-value>
