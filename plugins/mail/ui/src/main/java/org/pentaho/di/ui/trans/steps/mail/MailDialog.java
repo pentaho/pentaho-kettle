@@ -2481,7 +2481,9 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     if (selectedAuth.equals( MailMeta.AUTENTICATION_NONE ) ) {
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
+      wlAuthUser.setEnabled( false );
       wAuthUser.setEnabled( false );
+      wlAuthPass.setEnabled( false );
       wAuthPass.setEnabled( false );
       wAuthScope.setEnabled( false );
       grantType.setEnabled( false );
@@ -2489,10 +2491,16 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wAuthorizationCode.setEnabled( false );
       wRedirectUri.setEnabled( false );
       wAuthRefreshToken.setEnabled( false );
+      wlUseSecAuth.setEnabled( false );
+      wUseSecAuth.setEnabled( false );
+      wlSecureConnectionType.setEnabled( false );
+      wSecureConnectionType.setEnabled( false );
     } else if ( selectedAuth.equals( MailMeta.AUTENTICATION_BASIC ) ) {
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
+      wlAuthUser.setEnabled( true );
       wAuthUser.setEnabled( true );
+      wlAuthPass.setEnabled( true );
       wAuthPass.setEnabled( true );
       wAuthScope.setEnabled( false );
       grantType.setEnabled( false );
@@ -2500,13 +2508,21 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wAuthorizationCode.setEnabled( false );
       wRedirectUri.setEnabled( false );
       wAuthRefreshToken.setEnabled( false );
+      wlUseSecAuth.setEnabled( true );
+      wUseSecAuth.setEnabled( true );
+      setSecureConnectiontype();
     } else if ( selectedAuth.equals( MailMeta.AUTENTICATION_OAUTH ) ) {
+      wlAuthUser.setEnabled( true );
       wAuthUser.setEnabled( true );
+      wlAuthPass.setEnabled( false );
       wAuthPass.setEnabled( false );
       wAuthClientId.setEnabled( true );
       wAuthSecretKey.setEnabled( true );
       wAuthScope.setEnabled( true );
       grantType.setEnabled( true );
+      wlUseSecAuth.setEnabled( true );
+      wUseSecAuth.setEnabled( true );
+      setUseGrantType();
     }
     else {
       setSecureConnectiontype();
