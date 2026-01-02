@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi-core</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-86</version>
   </parent>
   <build>
     <plugins>
