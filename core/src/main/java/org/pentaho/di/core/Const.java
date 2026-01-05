@@ -852,6 +852,14 @@ public class Const {
   public static final String KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES = "KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES";
 
   /**
+   * Flag to set the maximum size (in MB) of the Result log buffer to prevent OutOfMemoryError (default: -1).
+   * Any value less than 0 or non-numeric will not add any log restriction.
+   * Setting the value to 0 means no log generation.
+   * Positive values apply size limit in megabytes.
+   */
+  public static final String KETTLE_MAX_LOG_BUFFER_SIZE_MB = "KETTLE_MAX_LOG_BUFFER_SIZE_MB";
+
+  /**
    * System wide flag to determine whether standard error will be redirected to Kettle logging facilities. Will redirect
    * if the value is equal ignoring case to the string "Y"
    */
