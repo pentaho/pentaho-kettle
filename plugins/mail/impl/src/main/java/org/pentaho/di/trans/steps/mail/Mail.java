@@ -384,12 +384,14 @@ public class Mail extends BaseStep implements StepInterface {
       }
     }
     // cache the position of the Authentication user field
-    if ( data.indexOfAuthenticationUser < 0 ) {
-      String realAuthenticationUser = meta.getAuthenticationUser();
-      data.indexOfAuthenticationUser = data.previousRowMeta.indexOfValue( realAuthenticationUser );
+    if ( meta.isUsingAuthentication().equals( MailMeta.AUTENTICATION_BASIC ) || meta.isUsingAuthentication().equals( MailMeta.AUTENTICATION_OAUTH ) ) {
       if ( data.indexOfAuthenticationUser < 0 ) {
-        throw new KettleException( BaseMessages.getString(
-                PKG, "Mail.Exception.CouldnotFindAuthenticationUserField", realAuthenticationUser ) );
+        String realAuthenticationUser = meta.getAuthenticationUser();
+        data.indexOfAuthenticationUser = data.previousRowMeta.indexOfValue( realAuthenticationUser );
+        if ( data.indexOfAuthenticationUser < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "Mail.Exception.CouldnotFindAuthenticationUserField", realAuthenticationUser ) );
+        }
       }
     }
     // Mail Subject
