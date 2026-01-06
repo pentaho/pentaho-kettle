@@ -1475,7 +1475,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         .getRepositoryDirectory().getPath() : "" );
 
     // setup fallbacks
-    if ( hasRepoDir ) {
+    if ( hasRepoDir && !isVfs() ) {
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, variables.getVariable(
           Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
     } else {
@@ -1507,6 +1507,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       hasRepoDir ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
         : hasFilename ? Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY
         : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  public boolean isVfs(){
+    return this.jobMeta != null && !Utils.isEmpty( jobMeta.getFilename() ) && jobMeta.getFilename().startsWith( "pvfs" );
   }
 
   /*

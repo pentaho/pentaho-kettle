@@ -168,7 +168,15 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
                       : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), realFilename, rep, metaStore,
                                          null );
             } else {
-              theMeta = getMetaFromRepository( bowl, rep, r, realFilename, tmpSpace );
+              if ( theMeta == null && StringUtils.isNotBlank( realFilename ) && realFilename.startsWith( "pvfs" ) ) {
+                theMeta = isTransMeta()
+                  ? (T) new TransMeta( bowl, realFilename, metaStore, rep, true,
+                  jobEntryBase.getParentVariableSpace(), null )
+                  : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), realFilename, rep, metaStore,
+                  null );
+              } else {
+                theMeta = getMetaFromRepository( bowl, rep, r, realFilename, tmpSpace );
+              }
             }
             if ( theMeta != null ) {
               idContainer[ 0 ] = realFilename;
@@ -202,6 +210,13 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             }
           } else {
             theMeta = attemptCacheRead( metaPath ); //try to get from the cache first
+            if ( theMeta == null && StringUtils.isNotBlank( metaPath ) && metaPath.startsWith( "pvfs" ) ) {
+              theMeta = isTransMeta()
+                ? (T) new TransMeta( bowl, metaPath, metaStore, rep, true,
+                jobEntryBase.getParentVariableSpace(), null )
+                : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), metaPath, rep, metaStore,
+                null );
+            }
             if ( theMeta == null ) {
               if ( isTransMeta() ) {
                 theMeta = rep == null
@@ -447,6 +462,11 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
                   throw new KettleException( "Unable to load " + friendlyMetaType + " [" + realMetaName + "]", e );
                 }
               }
+            }
+            if ( theMeta == null ) {
+              theMeta = attemptLoadMeta( bowl, cacheKey, rep, metaStore, null, tmpSpace, idContainer );
+              LogChannel.GENERAL.logDetailed( "Loading " + friendlyMetaType + " from repository",
+                friendlyMetaType + " was loaded from XML file [" + cacheKey + "]" );
             }
           } else {
             // rep is null, let's try loading by filename

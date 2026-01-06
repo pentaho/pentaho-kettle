@@ -905,6 +905,21 @@ public class JobMeta extends AbstractMeta
    * Instantiates a new job meta.
    *
    * @param inputStream the input stream
+   * @param fname    The filename
+   * @param rep         the rep
+   * @param prompter    the prompter
+   * @throws KettleXMLException the kettle xml exception
+   */
+  public JobMeta( InputStream inputStream, String fname, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
+    this();
+    Document doc = XMLHandler.loadXMLFile( inputStream, null, false, false );
+    loadXML( XMLHandler.getSubNode( doc, JobMeta.XML_TAG ), fname, rep, prompter );
+  }
+
+  /**
+   * Instantiates a new job meta.
+   *
+   * @param inputStream the input stream
    * @param rep         the rep
    * @param prompter    the prompter
    * @param parentVariableSpace           the parent variable space to use during JobMeta construction
@@ -1076,7 +1091,7 @@ public class JobMeta extends AbstractMeta
 
       // If we are not using a repository, we are getting the job from a file
       // Set the filename here so it can be used in variables for ALL aspects of the job FIX: PDI-8890
-      if ( null == rep ) {
+      if ( null == rep  || ( fname != null && fname.startsWith( "pvfs" ) ) ) {
         setFilename( KettleVFS.normalizeFilePath( fname ) );
       }  else {
         // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
@@ -1090,7 +1105,7 @@ public class JobMeta extends AbstractMeta
 
       // Optionally load the repository directory...
       //
-      if ( rep != null ) {
+      if ( rep != null && ( fname == null || !fname.startsWith( "pvfs" ) ) ) {
         String directoryPath = XMLHandler.getTagValue( jobnode, "directory" );
         if ( directoryPath != null ) {
           directory = rep.findDirectory( directoryPath );

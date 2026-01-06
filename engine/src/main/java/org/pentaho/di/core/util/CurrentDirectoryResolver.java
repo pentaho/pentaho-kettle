@@ -16,10 +16,10 @@ package org.pentaho.di.core.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -127,12 +127,20 @@ public class CurrentDirectoryResolver {
         && stepMeta != null && stepMeta.getParentTransMeta() != null
         && stepMeta.getParentTransMeta().getRepositoryDirectory() != null ) {
       directory = stepMeta.getParentTransMeta().getRepositoryDirectory();
+      if ( directory == null || ( "/".equals( directory.toString() ) ) ) {
+        directory = null;
+        filename = stepMeta.getParentTransMeta().getFilename();
+      }
     } else if ( repository == null && stepMeta != null && stepMeta.getParentTransMeta() != null ) {
       filename = stepMeta.getParentTransMeta().getFilename();
     } else if ( stepMeta != null && stepMeta.getParentTransMeta() != null && repository != null
         && specificationMethod.equals( ObjectLocationSpecificationMethod.FILENAME ) ) {
       // we're using FILENAME but we are connected to a repository
       directory = stepMeta.getParentTransMeta().getRepositoryDirectory();
+      if ( directory == null || ( "/".equals( directory.toString() ) ) ) {
+        directory = null;
+        filename = stepMeta.getParentTransMeta().getFilename();
+      }
     } else if ( stepMeta != null && stepMeta.getParentTransMeta() != null && filename == null ) {
       filename = stepMeta.getParentTransMeta().getFilename();
     }
@@ -152,6 +160,10 @@ public class CurrentDirectoryResolver {
     if ( repository != null && specificationMethod.equals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME )
         && job != null && job.getJobMeta() != null && job.getJobMeta().getRepositoryDirectory() != null ) {
       directory = job.getJobMeta().getRepositoryDirectory();
+      if ( directory == null || ( "/".equals( directory.toString() ) ) ) {
+        directory = null;
+        filename = job.getJobMeta().getFilename();
+      }
     } else if ( job != null && repository == null
         && specificationMethod.equals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME ) ) {
       filename = job.getFilename();
@@ -159,6 +171,10 @@ public class CurrentDirectoryResolver {
         && specificationMethod.equals( ObjectLocationSpecificationMethod.FILENAME ) ) {
       // we're using FILENAME but we are connected to a repository
       directory = job.getJobMeta().getRepositoryDirectory();
+      if ( directory == null || ( "/".equals( directory.toString() ) ) ) {
+        directory = null;
+        filename = job.getJobMeta().getFilename();
+      }
     } else if ( job != null && filename == null ) {
       filename = job.getFilename();
     } else if ( repository != null && JobMeta.class.isAssignableFrom( parentVariables.getClass() ) ) {

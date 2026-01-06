@@ -3088,6 +3088,35 @@ public class TransMeta extends AbstractMeta
    *
    * @param xmlStream
    *          the XML input stream from which to read the transformation definition
+   * @param fname
+   *          The filename
+   * @param rep
+   *          the repository
+   * @param setInternalVariables
+   *          whether to set internal variables as a result of the creation
+   * @param parentVariableSpace
+   *          the parent variable space
+   * @param prompter
+   *          a GUI component that will prompt the user if the new transformation will overwrite an existing one
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified stream
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( InputStream xmlStream, String fname, Repository rep, boolean setInternalVariables,
+                    VariableSpace parentVariableSpace, OverwritePrompter prompter )
+    throws KettleXMLException, KettleMissingPluginsException {
+    Document doc = XMLHandler.loadXMLFile( xmlStream, null, false, false );
+    Node transnode = XMLHandler.getSubNode( doc, XML_TAG );
+    loadXML( transnode, fname, rep, setInternalVariables, parentVariableSpace, prompter );
+  }
+
+
+  /**
+   * Instantiates a new transformation meta-data object.
+   *
+   * @param xmlStream
+   *          the XML input stream from which to read the transformation definition
    * @param rep
    *          the repository
    * @param setInternalVariables
@@ -3276,7 +3305,7 @@ public class TransMeta extends AbstractMeta
 
         // If we are not using a repository, we are getting the transformation from a file
         // Set the filename here so it can be used in variables for ALL aspects of the transformation FIX: PDI-8890
-        if ( null == rep ) {
+        if ( null == rep || ( fname != null && fname.startsWith( "pvfs" ) ) ) {
           setFilename( KettleVFS.normalizeFilePath( fname ) );
         } else {
           // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
