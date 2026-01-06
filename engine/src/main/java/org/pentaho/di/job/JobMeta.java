@@ -1091,6 +1091,7 @@ public class JobMeta extends AbstractMeta
 
       // If we are not using a repository, we are getting the job from a file
       // Set the filename here so it can be used in variables for ALL aspects of the job FIX: PDI-8890
+      // Though connected to repository, if filename starts with pvfs, we are using a VFS file, so set the filename
       if ( null == rep  || ( fname != null && fname.startsWith( "pvfs" ) ) ) {
         setFilename( KettleVFS.normalizeFilePath( fname ) );
       }  else {
@@ -1104,6 +1105,7 @@ public class JobMeta extends AbstractMeta
       setName( XMLHandler.getTagValue( jobnode, "name" ) );
 
       // Optionally load the repository directory...
+      // Though connected to repository, if we are using a VFS file, not setting repository directory
       //
       if ( rep != null && ( fname == null || !fname.startsWith( "pvfs" ) ) ) {
         String directoryPath = XMLHandler.getTagValue( jobnode, "directory" );

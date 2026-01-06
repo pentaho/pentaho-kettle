@@ -161,22 +161,15 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
           } catch ( KettleException e ) {
             // try to load from repository, this trans may have been developed locally and later uploaded to the
             // repository
-            if ( rep == null ) {
+            // Though repository is connected, if we have a pvfs path, try loading from vfs
+            if ( rep == null || ( StringUtils.isNotBlank( realFilename ) && realFilename.startsWith( "pvfs" ) ) ) {
               theMeta = isTransMeta()
                       ? (T) new TransMeta( bowl, realFilename, metaStore, rep, true,
                                            jobEntryBase.getParentVariableSpace(), null )
                       : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), realFilename, rep, metaStore,
                                          null );
             } else {
-              if ( theMeta == null && StringUtils.isNotBlank( realFilename ) && realFilename.startsWith( "pvfs" ) ) {
-                theMeta = isTransMeta()
-                  ? (T) new TransMeta( bowl, realFilename, metaStore, rep, true,
-                  jobEntryBase.getParentVariableSpace(), null )
-                  : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), realFilename, rep, metaStore,
-                  null );
-              } else {
-                theMeta = getMetaFromRepository( bowl, rep, r, realFilename, tmpSpace );
-              }
+              theMeta = getMetaFromRepository( bowl, rep, r, realFilename, tmpSpace );
             }
             if ( theMeta != null ) {
               idContainer[ 0 ] = realFilename;
@@ -210,13 +203,16 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             }
           } else {
             theMeta = attemptCacheRead( metaPath ); //try to get from the cache first
-            if ( theMeta == null && StringUtils.isNotBlank( metaPath ) && metaPath.startsWith( "pvfs" ) ) {
+            // Though connected to repo, if we have a pvfs path, try loading from vfs
+            // this covers vfs files when connected to a repo
+            if ( theMeta == null && ( StringUtils.isNotBlank( metaPath ) && metaPath.startsWith( "pvfs" ) ) ) {
               theMeta = isTransMeta()
                 ? (T) new TransMeta( bowl, metaPath, metaStore, rep, true,
                 jobEntryBase.getParentVariableSpace(), null )
                 : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), metaPath, rep, metaStore,
                 null );
             }
+            // If vfs file is not found, try loading from repository
             if ( theMeta == null ) {
               if ( isTransMeta() ) {
                 theMeta = rep == null
@@ -463,6 +459,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
                 }
               }
             }
+            // If we couldn't load from repo, try loading from vfs as fallback
             if ( theMeta == null ) {
               theMeta = attemptLoadMeta( bowl, cacheKey, rep, metaStore, null, tmpSpace, idContainer );
               LogChannel.GENERAL.logDetailed( "Loading " + friendlyMetaType + " from repository",

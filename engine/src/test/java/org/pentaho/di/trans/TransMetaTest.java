@@ -17,12 +17,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -37,6 +37,7 @@ import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -54,12 +55,14 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.InfoStepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -500,6 +503,71 @@ public class TransMetaTest {
 
     assertEquals( repDirectory.getPath(),
       meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+  }
+
+  @Test
+  public void testLoadXml_whenVfsFileIsPassedAndConnectedToRepository() throws KettleException {
+    String filePath = "pvfs://LocalVFS/samples/test-transformation.ktr";
+    TransMeta inputTransMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    String xml = inputTransMeta.getXML();
+    InputStream inputStream = new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
+
+    Repository rep = Mockito.mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
+    VariableSpace variableSpace = Mockito.mock( VariableSpace.class );
+    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[ 0 ] );
+
+    TransMeta meta = new TransMeta( inputStream, filePath, rep, true, variableSpace, null );
+
+    assertEquals( "pvfs://LocalVFS/samples",
+      meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+    assertEquals( "pvfs://LocalVFS/samples",
+      meta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void testLoadXml_whenVfsFileIsPassedAndNotConnectedToRepository() throws KettleException {
+    String filePath = "pvfs://LocalVFS/samples/test-transformation.ktr";
+    TransMeta inputTransMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    String xml = inputTransMeta.getXML();
+    InputStream inputStream = new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
+
+    VariableSpace variableSpace = Mockito.mock( VariableSpace.class );
+    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[ 0 ] );
+
+    TransMeta meta = new TransMeta( inputStream, filePath, null, true, variableSpace, null );
+
+    assertEquals( "pvfs://LocalVFS/samples",
+      meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+    assertEquals( "pvfs://LocalVFS/samples",
+      meta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void testLoadXml_whenRepoFileIsPassedAndConnectedToRepository() throws KettleException {
+    String directory = "/home/admin";
+    TransMeta inputTransMeta = new TransMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    String xml = inputTransMeta.getXML();
+    xml = xml.replaceAll( "<directory>/</directory>", "<directory>/home/admin</directory>" );
+    InputStream inputStream = new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
+
+    Repository rep = Mockito.mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
+    RepositoryDirectory repDirectory =
+      new RepositoryDirectory( new RepositoryDirectory( new RepositoryDirectory(), "home" ), "admin" );
+    Mockito.when( rep.findDirectory( directory ) ).thenReturn( repDirectory );
+    VariableSpace variableSpace = Mockito.mock( VariableSpace.class );
+    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[ 0 ] );
+
+    TransMeta meta = new TransMeta( inputStream, null, rep, true, variableSpace, null );
+
+    assertEquals( repDirectory.getPath(),
+      meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+    assertEquals( repDirectory.getPath(),
+      meta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
 
   @Test
