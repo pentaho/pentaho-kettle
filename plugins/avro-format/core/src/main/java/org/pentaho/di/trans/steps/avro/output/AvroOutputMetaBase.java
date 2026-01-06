@@ -13,6 +13,7 @@
 
 package org.pentaho.di.trans.steps.avro.output;
 
+import org.apache.avro.file.DataFileConstants;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.trans.steps.avro.AvroTypeConverter;
 import org.apache.commons.vfs2.FileObject;
@@ -353,9 +354,18 @@ public abstract class AvroOutputMetaBase extends BaseStepMeta implements StepMet
   }
 
   public enum CompressionType {
-    NONE( getMsg( "AvroOutput.CompressionType.NONE" ) ),
-    DEFLATE( getMsg( "AvroOutput.CompressionType.DEFLATE" ) ),
-    SNAPPY( getMsg( "AvroOutput.CompressionType.SNAPPY" ) );
+    /**
+     * Dropdown List for Compression Types. Duplicate from {@link org.apache.avro.file.CodecFactory}
+     * Avro does not provide a way to get all available codecs, so we need to duplicate them here.
+     * HashMap available in CodecFactory is private and not accessible.
+     * This needs to be updated when new codecs are added in Avro.
+     */
+    NONE( DataFileConstants.NULL_CODEC ),
+    DEFLATE( DataFileConstants.DEFLATE_CODEC ),
+    SNAPPY( DataFileConstants.SNAPPY_CODEC ),
+    BZIP2( DataFileConstants.BZIP2_CODEC ),
+    XZ( DataFileConstants.XZ_CODEC ),
+    ZSTANDARD( DataFileConstants.ZSTANDARD_CODEC );
 
     private final String name;
 

@@ -119,18 +119,8 @@ public class PentahoAvroOutputFormat implements IPentahoAvroOutputFormat {
   }
 
   @Override
-  public void setCompression( COMPRESSION compression ) {
-    switch ( compression ) {
-      case SNAPPY:
-        codecFactory = CodecFactory.snappyCodec();
-        break;
-      case DEFLATE:
-        codecFactory = CodecFactory.deflateCodec( Deflater.DEFAULT_COMPRESSION );
-        break;
-      default:
-        codecFactory = CodecFactory.nullCodec();
-        break;
-    }
+  public void setCompression( CodecFactory compression ) {
+    this.codecFactory = compression;
   }
 
   @Override
