@@ -5,7 +5,7 @@
   <parent>
     <artifactId>pdi-core</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-91</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -13,7 +13,7 @@
   <name>PDI Core Plugins Impl</name>
 
   <properties>
-    <pentaho-reporting.version>11.1.0.0-SNAPSHOT</pentaho-reporting.version>
+    <pentaho-reporting.version>11.1.0.0-91</pentaho-reporting.version>
   </properties>
 
   <dependencies>
