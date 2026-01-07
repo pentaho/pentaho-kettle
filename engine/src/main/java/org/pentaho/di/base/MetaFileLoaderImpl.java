@@ -70,6 +70,10 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
 
   private BaseStepMeta baseStepMeta;
 
+  public static final String PVFS = "pvfs";
+  public static final String LOADING = "Loading ";
+  public static final String FROM_REPOSITORY = " from repository";
+
   public static final String KJB = ".kjb";
   public static final String KTR = ".ktr";
 
@@ -162,7 +166,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             // try to load from repository, this trans may have been developed locally and later uploaded to the
             // repository
             // Though repository is connected, if we have a pvfs path, try loading from vfs
-            if ( rep == null || ( StringUtils.isNotBlank( realFilename ) && realFilename.startsWith( "pvfs" ) ) ) {
+            if ( rep == null || ( StringUtils.isNotBlank( realFilename ) && realFilename.startsWith( PVFS ) ) ) {
               theMeta = isTransMeta()
                       ? (T) new TransMeta( bowl, realFilename, metaStore, rep, true,
                                            jobEntryBase.getParentVariableSpace(), null )
@@ -400,7 +404,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             }
             if ( theMeta == null ) {
               theMeta = attemptLoadMeta( bowl, realFilename, rep, metaStore, null, tmpSpace, idContainer );
-              LogChannel.GENERAL.logDetailed( "Loading " + friendlyMetaType + " from repository",
+              LogChannel.GENERAL.logDetailed( LOADING + friendlyMetaType + FROM_REPOSITORY,
                 friendlyMetaType + " was loaded from XML file [" + realFilename + "]" );
             }
           } catch ( Exception e ) {
@@ -452,7 +456,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
                   if ( theMeta != null ) {
                     idContainer[ 0 ] = cacheKey;
                   }
-                  LogChannel.GENERAL.logDetailed( "Loading " + friendlyMetaType + " from repository",
+                  LogChannel.GENERAL.logDetailed( LOADING + friendlyMetaType + FROM_REPOSITORY,
                     "Executor " + friendlyMetaType + " [" + realMetaName + "] was loaded from the repository" );
                 } catch ( Exception e ) {
                   throw new KettleException( "Unable to load " + friendlyMetaType + " [" + realMetaName + "]", e );
@@ -462,7 +466,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             // If we couldn't load from repo, try loading from vfs as fallback
             if ( theMeta == null ) {
               theMeta = attemptLoadMeta( bowl, cacheKey, rep, metaStore, null, tmpSpace, idContainer );
-              LogChannel.GENERAL.logDetailed( "Loading " + friendlyMetaType + " from repository",
+              LogChannel.GENERAL.logDetailed( LOADING + friendlyMetaType + FROM_REPOSITORY,
                 friendlyMetaType + " was loaded from XML file [" + cacheKey + "]" );
             }
           } else {
