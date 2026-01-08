@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.avro.output;
 
 import java.io.IOException;
 
+import org.apache.avro.file.CodecFactory;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
@@ -114,12 +115,11 @@ public class AvroOutput extends BaseStep implements StepInterface {
         meta.isOverrideOutput() );
     data.output.setFields( meta.getOutputFields() );
     data.output.setVariableSpace( parentTransMeta );
-    IPentahoAvroOutputFormat.COMPRESSION compression;
+    CodecFactory compression;
     try {
-      compression = IPentahoAvroOutputFormat.COMPRESSION
-        .valueOf( parentTransMeta.environmentSubstitute( meta.getCompressionType() ).toUpperCase() );
+      compression = CodecFactory.fromString( parentTransMeta.environmentSubstitute( meta.getCompressionType() ) );
     } catch ( Exception ex ) {
-      compression = IPentahoAvroOutputFormat.COMPRESSION.UNCOMPRESSED;
+      compression = CodecFactory.nullCodec();
     }
     data.output.setCompression( compression );
     data.output.setNameSpace( parentTransMeta.environmentSubstitute( meta.getNamespace() ) );

@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans.steps.avro.output;
 
+import org.apache.avro.file.CodecFactory;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.VariableSpace;
 
@@ -19,15 +20,11 @@ import java.util.List;
 
 public interface IPentahoAvroOutputFormat extends IPentahoOutputFormat {
 
-  enum COMPRESSION {
-    UNCOMPRESSED, SNAPPY, DEFLATE
-  }
-
   void setFields( List<? extends IAvroOutputField> fields ) throws Exception;
 
   void setOutputFile( String file, boolean override ) throws Exception;
 
-  void setCompression( COMPRESSION compression );
+  void setCompression( CodecFactory compression );
 
   void setNameSpace( String namespace );
 
