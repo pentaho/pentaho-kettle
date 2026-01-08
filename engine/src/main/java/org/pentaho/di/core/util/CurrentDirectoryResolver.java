@@ -44,12 +44,12 @@ public class CurrentDirectoryResolver {
 
   /**
    * The logic of this method:
-   * 
+   *
    * if we have directory we return the child var space with directory used as system property
    * if we have not directory we return the child var space with directory extracted from filanme
    * if we don not have directory and filename we will return the child var space without updates
-   * 
-   * 
+   *
+   *
    * @param parentVariables - parent variable space which can be inherited
    * @param directory - current path which will be used as path for start trans/job
    * @param filename - is file which we use at this moment
@@ -127,22 +127,26 @@ public class CurrentDirectoryResolver {
         && stepMeta != null && stepMeta.getParentTransMeta() != null
         && stepMeta.getParentTransMeta().getRepositoryDirectory() != null ) {
       directory = stepMeta.getParentTransMeta().getRepositoryDirectory();
+      // If directory is null or root directory, fall back to using filename
+      // For vfs, though connected to repository, we have no directory info - fall back to filename
+      if ( directory == null || ( "/".equals( directory.toString() ) ) ) {
+        directory = null;
+        filename = stepMeta.getParentTransMeta().getFilename();
+      }
     } else if ( repository == null && stepMeta != null && stepMeta.getParentTransMeta() != null ) {
       filename = stepMeta.getParentTransMeta().getFilename();
     } else if ( stepMeta != null && stepMeta.getParentTransMeta() != null && repository != null
         && specificationMethod.equals( ObjectLocationSpecificationMethod.FILENAME ) ) {
       // we're using FILENAME but we are connected to a repository
       directory = stepMeta.getParentTransMeta().getRepositoryDirectory();
-    } else if ( stepMeta != null && stepMeta.getParentTransMeta() != null && filename == null ) {
-      filename = stepMeta.getParentTransMeta().getFilename();
-    }
-    // If directory is null or root directory, fall back to using filename
-    // For vfs, though connected to repository, we have no directory info - fall back to filename
-    if ( directory == null || "/".equals( directory.toString() ) ) {
-      directory = null;
-      if ( stepMeta != null && stepMeta.getParentTransMeta() != null ) {
+      // If directory is null or root directory, fall back to using filename
+      // For vfs, though connected to repository, we have no directory info - fall back to filename
+      if ( directory == null || ( "/".equals( directory.toString() ) ) ) {
+        directory = null;
         filename = stepMeta.getParentTransMeta().getFilename();
       }
+    } else if ( stepMeta != null && stepMeta.getParentTransMeta() != null && filename == null ) {
+      filename = stepMeta.getParentTransMeta().getFilename();
     }
     return resolveCurrentDirectory( bowl, parentVariables, directory, filename );
   }
@@ -160,6 +164,12 @@ public class CurrentDirectoryResolver {
     if ( repository != null && specificationMethod.equals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME )
         && job != null && job.getJobMeta() != null && job.getJobMeta().getRepositoryDirectory() != null ) {
       directory = job.getJobMeta().getRepositoryDirectory();
+      // If directory is null or root directory, fall back to using filename
+      // For vfs, though connected to repository, we have no directory info - fall back to filename
+      if ( directory == null || ( "/".equals( directory.toString() ) ) ) {
+        directory = null;
+        filename = job.getJobMeta().getFilename();
+      }
     } else if ( job != null && repository == null
         && specificationMethod.equals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME ) ) {
       filename = job.getFilename();
@@ -167,6 +177,12 @@ public class CurrentDirectoryResolver {
         && specificationMethod.equals( ObjectLocationSpecificationMethod.FILENAME ) ) {
       // we're using FILENAME but we are connected to a repository
       directory = job.getJobMeta().getRepositoryDirectory();
+      // If directory is null or root directory, fall back to using filename
+      // For vfs, though connected to repository, we have no directory info - fall back to filename
+      if ( directory == null || ( "/".equals( directory.toString() ) ) ) {
+        directory = null;
+        filename = job.getJobMeta().getFilename();
+      }
     } else if ( job != null && filename == null ) {
       filename = job.getFilename();
     } else if ( repository != null && JobMeta.class.isAssignableFrom( parentVariables.getClass() ) ) {
@@ -182,14 +198,6 @@ public class CurrentDirectoryResolver {
       JobMeta realParent = null;
       realParent = (JobMeta) parentVariables;
       filename = realParent.getFilename();
-    }
-    // If directory is null or root directory, fall back to using filename
-    // For vfs, though connected to repository, we have no directory info - fall back to filename
-    if ( directory == null || "/".equals( directory.toString() ) ) {
-      directory = null;
-      if ( job != null && job.getJobMeta() != null ) {
-        filename = job.getJobMeta().getFilename();
-      }
     }
     return resolveCurrentDirectory( bowl, parentVariables, directory, filename );
   }
