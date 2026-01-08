@@ -16,10 +16,10 @@ package org.pentaho.di.core.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -136,6 +136,14 @@ public class CurrentDirectoryResolver {
     } else if ( stepMeta != null && stepMeta.getParentTransMeta() != null && filename == null ) {
       filename = stepMeta.getParentTransMeta().getFilename();
     }
+    // If directory is null or root directory, fall back to using filename
+    // For vfs, though connected to repository, we have no directory info - fall back to filename
+    if ( directory == null || "/".equals( directory.toString() ) ) {
+      directory = null;
+      if ( stepMeta != null && stepMeta.getParentTransMeta() != null ) {
+        filename = stepMeta.getParentTransMeta().getFilename();
+      }
+    }
     return resolveCurrentDirectory( bowl, parentVariables, directory, filename );
   }
 
@@ -174,6 +182,14 @@ public class CurrentDirectoryResolver {
       JobMeta realParent = null;
       realParent = (JobMeta) parentVariables;
       filename = realParent.getFilename();
+    }
+    // If directory is null or root directory, fall back to using filename
+    // For vfs, though connected to repository, we have no directory info - fall back to filename
+    if ( directory == null || "/".equals( directory.toString() ) ) {
+      directory = null;
+      if ( job != null && job.getJobMeta() != null ) {
+        filename = job.getJobMeta().getFilename();
+      }
     }
     return resolveCurrentDirectory( bowl, parentVariables, directory, filename );
   }
