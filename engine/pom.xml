@@ -67,6 +67,7 @@
     <rxjava.version>2.2.3</rxjava.version>
     <xmlunit.version>1.5</xmlunit.version>
     <wiremock.version>2.25.0</wiremock.version>
+    <xmlbeans.version>5.3.0</xmlbeans.version>
   </properties>
 
   <dependencyManagement>
