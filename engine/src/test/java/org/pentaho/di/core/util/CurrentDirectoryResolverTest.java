@@ -26,7 +26,6 @@ import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
@@ -36,6 +35,7 @@ import org.pentaho.di.trans.step.StepMeta;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -433,7 +433,7 @@ public class CurrentDirectoryResolverTest {
   public void normalizeSlashes_WhenNullProvided_ThenReturnsNull() {
     String result = resolver.normalizeSlashes( null );
 
-    assertEquals( null, result );
+    assertNull( result );
   }
 
   @Test
@@ -481,58 +481,6 @@ public class CurrentDirectoryResolverTest {
 
     assertNotNull( result );
     assertEquals( "test_value", result.getVariable( "TEST_VAR" ) );
-  }
-
-  @Test
-  public void resolveCurrentDirectory_WhenUsingDeprecatedMethod_ThenSetsDirectoryVariables() {
-    when( directory.toString() ).thenReturn( "/home/user/project" );
-
-    VariableSpace result = resolver.resolveCurrentDirectory( parentVariables, directory, null );
-
-    assertNotNull( result );
-    assertEquals( "/home/user/project", result.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
-  }
-
-  @Test
-  public void resolveCurrentDirectory_WhenStepMetaWithDeprecatedMethod_ThenUsesRepositoryDirectory() {
-    StepMeta stepMeta = mock( StepMeta.class );
-    TransMeta transMeta = mock( TransMeta.class );
-    RepositoryDirectoryInterface repoDir = mock( RepositoryDirectoryInterface.class );
-
-    when( stepMeta.getParentTransMeta() ).thenReturn( transMeta );
-    when( transMeta.getRepositoryDirectory() ).thenReturn( repoDir );
-    when( repoDir.toString() ).thenReturn( "/repo/trans" );
-
-    VariableSpace result = resolver.resolveCurrentDirectory(
-      ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME,
-      parentVariables,
-      repository,
-      stepMeta,
-      null
-    );
-
-    assertNotNull( result );
-  }
-
-  @Test
-  public void resolveCurrentDirectory_WhenJobWithDeprecatedMethod_ThenUsesRepositoryDirectory() {
-    Job job = mock( Job.class );
-    JobMeta jobMeta = mock( JobMeta.class );
-    RepositoryDirectoryInterface repoDir = mock( RepositoryDirectoryInterface.class );
-
-    when( job.getJobMeta() ).thenReturn( jobMeta );
-    when( jobMeta.getRepositoryDirectory() ).thenReturn( repoDir );
-    when( repoDir.toString() ).thenReturn( "/repo/job" );
-
-    VariableSpace result = resolver.resolveCurrentDirectory(
-      ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME,
-      parentVariables,
-      repository,
-      job,
-      null
-    );
-
-    assertNotNull( result );
   }
 }
 
