@@ -29,10 +29,10 @@ import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LoggingObjectLifecycleInterface;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectLifecycleInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -49,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -351,4 +352,25 @@ public class JobTest {
     verify( parentLoggingObject, times( 1 ) ).callAfterLog();
   }
 
+  @Test
+  public void testIsVfs_WhenFileNameHasVfsPath() {
+    Repository repository = mock( Repository.class );
+    Job job = new Job( repository, mockedJobMeta );
+    LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
+    setInternalState( job, "parentLoggingObject", parentLoggingObject );
+    when( mockedJobMeta.getFilename() ).thenReturn( "pvfs://LocalVFS/samples/test-transformation.ktr" );
+
+    assertTrue( job.isVfs() );
+  }
+
+  @Test
+  public void testIsVfs_WhenFileNameHasFileSystemPath() {
+    Repository repository = mock( Repository.class );
+    Job job = new Job( repository, mockedJobMeta );
+    LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
+    setInternalState( job, "parentLoggingObject", parentLoggingObject );
+    when( mockedJobMeta.getFilename() ).thenReturn( "C://test-transformation.ktr" );
+
+    assertFalse( job.isVfs() );
+  }
 }

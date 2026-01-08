@@ -53,6 +53,7 @@ public class MetaFileLoaderImplTest {
   private final String TRANS_FILE = "one-step-trans.ktr";
 
   private final Repository repository = mock( Repository.class );
+  private final RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
   private final IMetaStore store = mock( IMetaStore.class );
   private VariableSpace space;
 
@@ -180,6 +181,19 @@ public class MetaFileLoaderImplTest {
     validateSecondTransMetaAccess( transMeta );
   }
 
+  @Test
+  //A Transformation getting the TransMeta from the vfs file system but connected to repo
+  public void getMetaForStepAsTransFromVfsButConnectedToRepo() throws Exception {
+    setupTransExecutorMeta();
+    when( repository.loadTransformation( any( Bowl.class ), eq( TRANS_FILE ), eq( rdi ), eq( null ), eq( true ), eq( null ), any( VariableSpace.class ) ) ).thenReturn( null );
+    specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+    MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<TransMeta>( baseStepMeta, specificationMethod );
+    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
+    validateFirstTransMetaAccess( transMeta );
+    transMeta = (TransMeta) metaFileLoader.getMetaForStep( DefaultBowl.getInstance(), repository, store, space );
+    validateSecondTransMetaAccess( transMeta );
+  }
+
   private void validateMetaName( String fileNameWithExtension, AbstractMeta meta ) {
     assertEquals( stripExtension( fileNameWithExtension ), meta.getName() );
   }
@@ -209,7 +223,6 @@ public class MetaFileLoaderImplTest {
     keyPath = convertToRepoKeyPath( keyPath );
     jobEntryJob.setDirectory( keyPath.substring( 0, keyPath.lastIndexOf( "/" ) ) );
     jobEntryJob.setJobObjectId( null );
-    RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
     when( rdi.findDirectory( jobEntryJob.getDirectory() ) ).thenReturn( rdi );
     when( repository.loadRepositoryDirectoryTree() ).thenReturn( rdi );
     JobMeta jobMeta = new JobMeta();
@@ -275,7 +288,6 @@ public class MetaFileLoaderImplTest {
     keyPath = convertToRepoKeyPath( keyPath );
     jobExecutorMeta.setDirectoryPath( keyPath.substring( 0, keyPath.lastIndexOf( "/" ) ) );
     jobExecutorMeta.setJobObjectId( null );
-    RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
     when( repository.findDirectory( jobExecutorMeta.getDirectoryPath() ) ).thenReturn( rdi );
     JobMeta jobMeta = new JobMeta();
     jobMeta.setName( stripExtension( JOB_FILE ) );
@@ -304,7 +316,6 @@ public class MetaFileLoaderImplTest {
     keyPath = convertToRepoKeyPath( keyPath );
     transExecutorMeta.setDirectoryPath( keyPath.substring( 0, keyPath.lastIndexOf( "/" ) ) );
     transExecutorMeta.setTransObjectId( null );
-    RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
     when( repository.findDirectory( transExecutorMeta.getDirectoryPath() ) ).thenReturn( rdi );
     TransMeta transMeta = new TransMeta();
     transMeta.setName( stripExtension( TRANS_FILE ) );

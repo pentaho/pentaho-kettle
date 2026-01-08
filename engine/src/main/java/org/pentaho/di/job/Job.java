@@ -33,6 +33,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -1475,7 +1476,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         .getRepositoryDirectory().getPath() : "" );
 
     // setup fallbacks
-    if ( hasRepoDir ) {
+    if ( hasRepoDir && !isVfs() ) {
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, variables.getVariable(
           Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
     } else {
@@ -1507,6 +1508,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       hasRepoDir ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
         : hasFilename ? Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY
         : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  public boolean isVfs(){
+    return this.jobMeta != null && StringUtils.startsWith( jobMeta.getFilename(), "pvfs" );
   }
 
   /*
