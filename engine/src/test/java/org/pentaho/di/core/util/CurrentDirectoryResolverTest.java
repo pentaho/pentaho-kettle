@@ -94,7 +94,6 @@ public class CurrentDirectoryResolverTest {
   @Test
   public void resolveCurrentDirectory_WhenOnlyFilenameProvided_ThenExtractsDirectoryFromFile() throws Exception {
     String filename = "/home/user/project/test.ktr";
-    KettleVFS mockVFS = mock( KettleVFS.class );
 
     when( fileObject.exists() ).thenReturn( true );
     when( fileObject.getName() ).thenReturn( fileName );
@@ -110,7 +109,6 @@ public class CurrentDirectoryResolverTest {
   @Test
   public void resolveCurrentDirectory_WhenFileDoesNotExist_ThenReturnsVariableSpaceWithoutSettings() throws Exception {
     String filename = "/home/user/project/nonexistent.ktr";
-    KettleVFS mockVFS = mock( KettleVFS.class );
 
     when( fileObject.exists() ).thenReturn( false );
 
