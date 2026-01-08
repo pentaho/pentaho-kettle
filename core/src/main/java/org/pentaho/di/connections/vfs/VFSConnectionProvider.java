@@ -33,6 +33,7 @@ import java.util.List;
 public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends ConnectionProvider<T> {
   FileSystemOptions getOpts( T vfsConnectionDetails );
 
+  /** For VFS connections that use buckets, this provides their locations */
   List<VFSRoot> getLocations( T vfsConnectionDetails ) throws FileSystemException;
 
   String getProtocol( T vfsConnectionDetails );

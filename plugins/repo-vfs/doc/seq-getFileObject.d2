@@ -1,0 +1,41 @@
+PVFS FileObject resolution (simplified): {
+    shape: sequence_diagram
+    pdi: PDI
+    kettleVfs: KettleVFS
+    conn: ConnectionFileSystem
+    dfsm: DefaultFileSystemManager
+    pdiProvider: RepoVfsPdiProvider
+    purProvider: PurProvider
+    purfs: PurFileSystem
+
+    pdi -> kettleVfs.gfo : getFileObject(pvfs:...)
+    kettleVfs.gfo -> dfsm.gfo : resolveFile(pvfs:...)
+    dfsm.gfo -> conn.gfo : resolveFile(...)
+
+    'Resolve "pvfs:.." to "pur..."' : {
+        conn.gfo -> conn.gfo : createFile(..)
+
+        conn.gfo -> pdiProvider.fname: toProviderFileName(FileName, RepoVfsDetails)
+        conn.gfo <- pdiProvider.fname: FileName
+    }
+
+    'Create PurFileSystem' : {
+        conn.gfo -> kettleVfs.gfo.gfo2: getFileObject(pur..)
+        kettleVfs.gfo.gfo2 -> dfsm.gfo.gfo2 : resolveFile(..)
+        dfsm.gfo.gfo2 -> purProvider.gfo2: doCreateFileSystem(..)
+        dfsm.gfo.gfo2 <- purProvider.gfo2: PurFileSystem
+    }
+    'Create PurFileObject': {
+        dfsm.gfo.gfo2 -> purfs.gfo2: createFile(..)
+        dfsm.gfo.gfo2 <- purfs.gfo2: PurFileObject
+        conn.gfo <- dfsm.gfo.gfo2 : PurFileObject
+    }
+    dfsm.gfo <- conn.gfo : 'ResolvedConnectionFileObject [PurFileObject]'
+    kettleVfs.gfo <- dfsm.gfo : 'ResolvedConnectionFileObject [PurFileObject]'
+    pdi <- kettleVfs.gfo : 'ResolvedConnectionFileObject [PurFileObject]'
+
+    pdiProvider.style.fill: "khaki"
+    purProvider.style.fill: "khaki"
+    purfs.style.fill: "khaki"
+    dfsm.style.fill: "bisque"
+}
