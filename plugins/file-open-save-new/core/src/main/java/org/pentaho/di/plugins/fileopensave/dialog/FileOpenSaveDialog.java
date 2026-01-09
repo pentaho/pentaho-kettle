@@ -113,7 +113,6 @@ import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.FileDialogOperation.CustomImage;
 import org.pentaho.di.ui.core.FileDialogOperation.CustomImageProvider;
-import org.pentaho.di.ui.core.FileDialogOperation.FileLoadListener;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -1059,31 +1058,27 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
             treeViewer.getSelection().isEmpty() ? new TreeSelection() : (TreeSelection) treeViewer.getSelection();
           boolean isFilePresent = false;
 
-          List<Object> children = new ArrayList<>();
-          if ( !previousSelection.isEmpty() ) {
-            Object fileOrTree = previousSelection.isEmpty() ? null : previousSelection.getFirstElement();
-            if ( fileOrTree == null ) {
-              return;
-            }
+          String pathToSearchFor = txtNav.getText();
+
+          Object input = treeViewer.getInput();
+          Object[] roots = ( Object[]) input;
+          // try each root until we find one that matches
+          for ( Object fileOrTree : roots ) {
+            List<Object> children = new ArrayList<>();
 
             if ( fileOrTree instanceof Tree ) {
               children = ( (Tree) fileOrTree ).getChildren();
-            } else if ( fileOrTree instanceof File ) {
-              TreePath[] treePaths = previousSelection.getPaths();
-              Object object = treePaths[ 0 ].getFirstSegment();
-              children = ( (Tree) object ).getChildren();
+            }
+          
+            try {
+              isFilePresent = searchForFileInTreeViewer( fileOrTree, pathToSearchFor, children );
+              if ( isFilePresent ) {
+                break;
+              }
+            } catch ( FileException e ) {
+              // Ignore
             }
           }
-
-          try {
-            String pathToSearchFor;
-            pathToSearchFor = txtNav.getText();
-
-            isFilePresent = searchForFileInTreeViewer( pathToSearchFor, children );
-          } catch ( FileException e ) {
-            // Ignore
-          }
-
           if ( !isFilePresent ) {
             treeViewer.setSelection( previousSelection );
           }
@@ -1098,10 +1093,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     currentHistoryIndex = selectionHistory.size() - 1;
   }
 
-  public boolean searchForFileInTreeViewer( String path, List<Object> children ) throws FileException {
+  public boolean searchForFileInTreeViewer( Object parentSelection, String path, List<Object> children ) throws FileException {
     Optional<File> file = Optional.empty();
     Optional<File> parent = Optional.empty();
 
+    boolean selectionSet = false;
     if ( !children.isEmpty() ) {
       List<File> childrenAsFiles = new ArrayList<>( children.size() );
       for ( Object object : children ) {
@@ -1122,6 +1118,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         }
         childrenAsFiles = fileController.getFiles( file.get(), null, true );
         if ( file.isPresent() ) {
+          selectionSet = setSelectionOnce( parentSelection, selectionSet );
           treeViewer.setSelection( new StructuredSelection( file.get() ), true );
           parent = file;
           file = getFileMatch( path, childrenAsFiles );
@@ -1129,15 +1126,26 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       }
     }
     if ( file.isPresent() && !( file.get() instanceof Directory ) ) {
+      selectionSet = setSelectionOnce( parentSelection, selectionSet );
       treeViewer.setSelection( new StructuredSelection( parent.get() ), true );
       treeViewer.setExpandedState( parent.get(), true );
       fileTableViewer.setSelection( new StructuredSelection( file.get() ), true );
     } else if ( file.isPresent() ) {
+      selectionSet = setSelectionOnce( parentSelection, selectionSet );
       treeViewer.setSelection( new StructuredSelection( file.get() ), true );
       treeViewer.setExpandedState( file.get(), true );
       fileTableViewer.setSelection( new StructuredSelection( file.get() ), true );
     }
-    return file.isPresent();
+    // if we matched anything, return true so further searches are stopped. 
+    return selectionSet;
+  }
+
+  private boolean setSelectionOnce( Object parentObject, boolean alreadySet ) {
+    // the parent selection needs to be set only once, and only if we've matched some element in this Tree
+    if ( !alreadySet ) {
+      treeViewer.setSelection( new StructuredSelection( parentObject ), true );
+    }
+    return true;
   }
 
   private Optional<File> getFileMatch( String path, List<File> childrenAsFiles ) {
