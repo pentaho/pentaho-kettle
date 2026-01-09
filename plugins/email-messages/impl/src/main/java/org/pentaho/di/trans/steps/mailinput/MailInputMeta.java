@@ -904,7 +904,14 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setUsingAuthentication( String usingAuthentication ) {
-    this.usingAuthentication = usingAuthentication;
+
+    if ( "Y".equalsIgnoreCase( usingAuthentication ) ) {
+      this.usingAuthentication = AUTENTICATION_BASIC;
+    } else if ( "N".equalsIgnoreCase( usingAuthentication ) ) {
+      this.usingAuthentication = AUTENTICATION_NONE;
+    } else {
+      this.usingAuthentication = usingAuthentication;
+    }
   }
 
   public void setGrant_type( String grant_type ) {
