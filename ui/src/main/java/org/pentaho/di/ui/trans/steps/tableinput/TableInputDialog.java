@@ -163,9 +163,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Connection line
     wConnection = addConnectionLine( shell, wStepname, middle, margin );
-    if ( input.getDatabaseMeta() == null && transMeta.nrDatabases() == 1 ) {
-      wConnection.select( 0 );
-    }
+
     wConnection.addModifyListener( lsMod );
 
     // Some buttons
