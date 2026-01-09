@@ -17,9 +17,9 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -28,6 +28,8 @@ import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -40,13 +42,15 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
@@ -359,6 +363,71 @@ public class JobMetaTest {
     job.setInternalKettleVariables( null );
 
     Assert.assertEquals( repDirectory.getPath(), job.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+  }
+
+  @Test
+  public void testLoadXml_whenVfsFileIsPassedAndConnectedToRepository() throws KettleException {
+    String filePath = "pvfs://LocalVFS/samples/test-job.kjb";
+    JobMeta inputJobMeta = new JobMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "one-step-job.kjb" ).getPath(), null );
+    String xml = inputJobMeta.getXML();
+    InputStream inputStream = new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
+
+    Repository rep = Mockito.mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
+    VariableSpace variableSpace = Mockito.mock( VariableSpace.class );
+    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[ 0 ] );
+
+    JobMeta meta = new JobMeta( inputStream, filePath, rep, null );
+
+    assertEquals( "pvfs://LocalVFS/samples",
+      meta.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+    assertEquals( "pvfs://LocalVFS/samples",
+      meta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void testLoadXml_whenVfsFileIsPassedAndNotConnectedToRepository() throws KettleException {
+    String filePath = "pvfs://LocalVFS/samples/test-job.kjb";
+    JobMeta inputJobMeta = new JobMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "one-step-job.kjb" ).getPath(), null );
+    String xml = inputJobMeta.getXML();
+    InputStream inputStream = new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
+
+    VariableSpace variableSpace = Mockito.mock( VariableSpace.class );
+    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[ 0 ] );
+
+    JobMeta meta = new JobMeta( inputStream, filePath, null, null );
+
+    assertEquals( "pvfs://LocalVFS/samples",
+      meta.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+    assertEquals( "pvfs://LocalVFS/samples",
+      meta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void testLoadXml_whenRepoFileIsPassedAndConnectedToRepository() throws KettleException {
+    String directory = "/home/admin";
+    JobMeta inputJobMeta = new JobMeta( DefaultBowl.getInstance(),
+      getClass().getResource( "one-step-job.kjb" ).getPath(), null );
+    String xml = inputJobMeta.getXML();
+    xml = xml.replaceAll( "<directory>/</directory>", "<directory>/home/admin</directory>" );
+    InputStream inputStream = new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
+
+    Repository rep = Mockito.mock( Repository.class );
+    Mockito.when( rep.getBowl() ).thenReturn( new RepositoryBowl( rep ) );
+    RepositoryDirectory repDirectory =
+      new RepositoryDirectory( new RepositoryDirectory( new RepositoryDirectory(), "home" ), "admin" );
+    Mockito.when( rep.findDirectory( directory ) ).thenReturn( repDirectory );
+    VariableSpace variableSpace = Mockito.mock( VariableSpace.class );
+    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[ 0 ] );
+
+    JobMeta meta = new JobMeta( inputStream, null, rep, null );
+
+    assertEquals( repDirectory.getPath(),
+      meta.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+    assertEquals( repDirectory.getPath(),
+      meta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
 
   @Test

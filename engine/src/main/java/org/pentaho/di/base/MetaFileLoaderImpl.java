@@ -70,6 +70,9 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
 
   private BaseStepMeta baseStepMeta;
 
+  public static final String LOADING = "Loading ";
+  public static final String FROM_REPOSITORY = " from repository";
+
   public static final String KJB = ".kjb";
   public static final String KTR = ".ktr";
 
@@ -161,7 +164,8 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
           } catch ( KettleException e ) {
             // try to load from repository, this trans may have been developed locally and later uploaded to the
             // repository
-            if ( rep == null ) {
+            // Though connected to repository, if we have a pvfs path, try loading from vfs
+            if ( rep == null || ( StringUtils.startsWith( realFilename, "pvfs" ) ) ) {
               theMeta = isTransMeta()
                       ? (T) new TransMeta( bowl, realFilename, metaStore, rep, true,
                                            jobEntryBase.getParentVariableSpace(), null )
@@ -202,6 +206,16 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             }
           } else {
             theMeta = attemptCacheRead( metaPath ); //try to get from the cache first
+            // Though connected to repo, if we have a pvfs path, try loading from vfs
+            // this covers vfs files when connected to a repo
+            if ( theMeta == null && ( StringUtils.startsWith( metaPath, "pvfs" ) ) ) {
+              theMeta = isTransMeta()
+                ? (T) new TransMeta( bowl, metaPath, metaStore, rep, true,
+                jobEntryBase.getParentVariableSpace(), null )
+                : (T) new JobMeta( bowl, jobEntryBase.getParentVariableSpace(), metaPath, rep, metaStore,
+                null );
+            }
+            // If vfs file is not found, try loading from repository
             if ( theMeta == null ) {
               if ( isTransMeta() ) {
                 theMeta = rep == null
@@ -389,7 +403,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             }
             if ( theMeta == null ) {
               theMeta = attemptLoadMeta( bowl, realFilename, rep, metaStore, null, tmpSpace, idContainer );
-              LogChannel.GENERAL.logDetailed( "Loading " + friendlyMetaType + " from repository",
+              LogChannel.GENERAL.logDetailed( LOADING + friendlyMetaType + FROM_REPOSITORY,
                 friendlyMetaType + " was loaded from XML file [" + realFilename + "]" );
             }
           } catch ( Exception e ) {
@@ -441,12 +455,18 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
                   if ( theMeta != null ) {
                     idContainer[ 0 ] = cacheKey;
                   }
-                  LogChannel.GENERAL.logDetailed( "Loading " + friendlyMetaType + " from repository",
+                  LogChannel.GENERAL.logDetailed( LOADING + friendlyMetaType + FROM_REPOSITORY,
                     "Executor " + friendlyMetaType + " [" + realMetaName + "] was loaded from the repository" );
                 } catch ( Exception e ) {
                   throw new KettleException( "Unable to load " + friendlyMetaType + " [" + realMetaName + "]", e );
                 }
               }
+            }
+            // If we couldn't load from repo, try loading from vfs as fallback
+            if ( theMeta == null ) {
+              theMeta = attemptLoadMeta( bowl, cacheKey, rep, metaStore, null, tmpSpace, idContainer );
+              LogChannel.GENERAL.logDetailed( LOADING + friendlyMetaType + FROM_REPOSITORY,
+                friendlyMetaType + " was loaded from XML file [" + cacheKey + "]" );
             }
           } else {
             // rep is null, let's try loading by filename

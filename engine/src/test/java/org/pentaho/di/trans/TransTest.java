@@ -22,10 +22,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -1169,5 +1169,25 @@ public class TransTest {
 
     trans.callAfterLog();
     verify( parent, times( 1 ) ).callAfterLog();
+  }
+
+  @Test
+  public void testIsVfs_WhenFileNameHasVfsPath() {
+    trans = new Trans( meta );
+    LoggingObjectInterface parent = mock( LoggingObjectInterface.class );
+    setInternalState( trans, "parent", parent );
+    when( meta.getFilename() ).thenReturn( "pvfs://LocalVFS/samples/test-transformation.ktr" );
+
+    assertTrue( trans.isVfs() );
+  }
+
+  @Test
+  public void testIsVfs_WhenFileNameHasFileSystemPath() {
+    trans = new Trans( meta );
+    LoggingObjectInterface parent = mock( LoggingObjectInterface.class );
+    setInternalState( trans, "parent", parent );
+    when( meta.getFilename() ).thenReturn( "C://test-transformation.ktr" );
+
+    assertFalse( trans.isVfs() );
   }
 }
