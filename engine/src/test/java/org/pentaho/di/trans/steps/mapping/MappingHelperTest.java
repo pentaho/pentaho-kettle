@@ -14,12 +14,22 @@ package org.pentaho.di.trans.steps.mapping;
 
 import org.json.simple.JSONObject;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,14 +42,23 @@ import static org.mockito.Mockito.when;
 import static org.pentaho.di.trans.step.BaseStepHelper.IS_VALID_REFERENCE;
 import static org.pentaho.di.trans.step.StepHelperInterface.ACTION_STATUS;
 import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_METHOD_NOT_FOUND_RESPONSE;
+import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_RESPONSE;
 import static org.pentaho.di.trans.step.StepHelperInterface.SUCCESS_RESPONSE;
+import static org.pentaho.di.trans.steps.mapping.MappingHelper.ERROR_MESSAGE;
+import static org.pentaho.di.trans.steps.mapping.MappingHelper.GET_MAPPING_STEPS;
 import static org.pentaho.di.trans.steps.mapping.MappingHelper.MAPPING_REFERENCE_PATH;
+import static org.pentaho.di.trans.steps.mapping.MappingHelper.MAPPING_STEPS;
 
 public class MappingHelperTest {
 
   MappingMeta mappingMeta;
   MappingHelper mappingHelper;
   TransMeta transMeta;
+
+  @BeforeClass
+  public static void setupBeforeClass() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Before
   public void setUp() {
@@ -98,6 +117,99 @@ public class MappingHelperTest {
       assertNotNull( response.get( IS_VALID_REFERENCE ) );
       assertEquals( false, response.get( IS_VALID_REFERENCE ) );
     }
+  }
+
+  @Test
+  public void testMappingSteps_forInput() throws KettleException {
+    Repository repository = mock( Repository.class );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+    when( repository.findDirectory( anyString() ) ).thenReturn( repositoryDirectoryInterface );
+    when( transMeta.getRepository() ).thenReturn( repository );
+
+    TransMeta mappedTransMeta = mock( TransMeta.class );
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.setName( "MappingInput" );
+    stepMeta.setStepID( "MappingInput" );
+    when( mappedTransMeta.getSteps() ).thenReturn( Collections.singletonList( stepMeta ) );
+    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), any() ) ).thenReturn( mappedTransMeta );
+
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "isMappingInput", "true" );
+
+    JSONObject response = mappingHelper.stepAction( GET_MAPPING_STEPS, transMeta, queryParams );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    List<String> mappingSteps = (List<String>) response.get( MAPPING_STEPS );
+    assertEquals( 1, mappingSteps.size() );
+  }
+
+  @Test
+  public void testMappingSteps_forOutput() throws KettleException {
+    Repository repository = mock( Repository.class );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+    when( repository.findDirectory( anyString() ) ).thenReturn( repositoryDirectoryInterface );
+    when( transMeta.getRepository() ).thenReturn( repository );
+
+    TransMeta mappedTransMeta = mock( TransMeta.class );
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.setName( "MappingOutput" );
+    stepMeta.setStepID( "MappingOutput" );
+    when( mappedTransMeta.getSteps() ).thenReturn( Collections.singletonList( stepMeta ) );
+    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), any() ) ).thenReturn( mappedTransMeta );
+
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "isMappingInput", "false" );
+
+    JSONObject response = mappingHelper.stepAction( GET_MAPPING_STEPS, transMeta, queryParams );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    List<String> mappingSteps = (List<String>) response.get( MAPPING_STEPS );
+    assertEquals( 1, mappingSteps.size() );
+  }
+
+  @Test
+  public void testMappingSteps_forEmptyFileName() {
+    when( mappingMeta.getFileName() ).thenReturn( "" );
+
+    JSONObject response = mappingHelper.stepAction( GET_MAPPING_STEPS, transMeta, null );
+
+    assertEquals( FAILURE_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( ERROR_MESSAGE ) );
+  }
+
+  @Test
+  public void testMappingSteps_forEmptyRepositoryDirectory() throws KettleException {
+    Repository repository = mock( Repository.class );
+    when( repository.findDirectory( anyString() ) ).thenReturn( null );
+    when( transMeta.getRepository() ).thenReturn( repository );
+
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "isMappingInput", "true" );
+
+    JSONObject response = mappingHelper.stepAction( GET_MAPPING_STEPS, transMeta, queryParams );
+
+    assertEquals( FAILURE_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( ERROR_MESSAGE ) );
+  }
+
+  @Test
+  public void testMappingSteps_whenLoadTransformationThrowsException() throws KettleException {
+    Repository repository = mock( Repository.class );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+    when( repository.findDirectory( anyString() ) ).thenReturn( repositoryDirectoryInterface );
+    when( transMeta.getRepository() ).thenReturn( repository );
+
+    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), any() ) ).thenThrow( new KettleException( "exception occurred" ) );
+
+    JSONObject response = mappingHelper.stepAction( GET_MAPPING_STEPS, transMeta, null );
+
+    assertEquals( FAILURE_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( ERROR_MESSAGE ) );
   }
 
   @Test
