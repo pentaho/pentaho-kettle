@@ -27,7 +27,7 @@ public class AvroTypeConverter {
       case ValueMetaInterface.TYPE_STRING:
         return AvroSpec.DataType.STRING.getName();
       case ValueMetaInterface.TYPE_TIMESTAMP:
-        return AvroSpec.DataType.TIMESTAMP_MILLIS.getName();
+        return AvroSpec.DataType.TIMESTAMP_NANOS.getName();
       case ValueMetaInterface.TYPE_BINARY:
         return AvroSpec.DataType.BYTES.getName();
       case ValueMetaInterface.TYPE_BIGNUMBER:

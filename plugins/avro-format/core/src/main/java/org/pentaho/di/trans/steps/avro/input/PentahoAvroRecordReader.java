@@ -25,6 +25,7 @@ import org.apache.avro.util.Utf8;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.trans.steps.avro.AvroTimestampHandler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -174,7 +175,7 @@ public class PentahoAvroRecordReader implements IPentahoAvroInputFormat.IPentaho
             case BOOLEAN:
               pentahoData = convertToPentahoType( pentahoType, (Boolean) avroData );
               break;
-            case DATE:
+            case DATE, INTEGER, TIME_MILLIS:
               pentahoData = convertToPentahoType( pentahoType, (Integer) avroData );
               break;
             case FLOAT:
@@ -183,23 +184,14 @@ public class PentahoAvroRecordReader implements IPentahoAvroInputFormat.IPentaho
             case DOUBLE:
               pentahoData = convertToPentahoType( pentahoType, (Double) avroData );
               break;
-            case LONG:
-              pentahoData = convertToPentahoType( pentahoType, (Long) avroData );
+            case LONG, TIMESTAMP_MILLIS, TIMESTAMP_MICROS, TIMESTAMP_NANOS, TIME_MICROS:
+              pentahoData = convertToPentahoType( pentahoType, (Long) avroData, avroDataType );
               break;
-            case DECIMAL:
+            case DECIMAL, BYTES:
               pentahoData = convertToPentahoType( pentahoType, (ByteBuffer) avroData, avroField );
-              break;
-            case INTEGER:
-              pentahoData = convertToPentahoType( pentahoType, (Integer) avroData );
               break;
             case STRING:
               pentahoData = convertToPentahoType( pentahoType, (String) avroData, metaField );
-              break;
-            case BYTES:
-              pentahoData = convertToPentahoType( pentahoType, (ByteBuffer) avroData, avroField );
-              break;
-            case TIMESTAMP_MILLIS:
-              pentahoData = convertToPentahoType( pentahoType, (Long) avroData );
               break;
           }
         }
@@ -283,7 +275,7 @@ public class PentahoAvroRecordReader implements IPentahoAvroInputFormat.IPentaho
   }
 
 
-  private Object convertToPentahoType( int pentahoType, Long avroData ) {
+  private Object convertToPentahoType( int pentahoType, Long avroData, AvroSpec.DataType avroDataType ) {
     Object pentahoData = null;
     if ( avroData != null ) {
       try {
@@ -301,7 +293,7 @@ public class PentahoAvroRecordReader implements IPentahoAvroInputFormat.IPentaho
             pentahoData = BigDecimal.valueOf( avroData );
             break;
           case ValueMetaInterface.TYPE_TIMESTAMP:
-            pentahoData = new Timestamp( avroData );
+            pentahoData = AvroTimestampHandler.toTimestamp( avroData, avroDataType );
             break;
           case ValueMetaInterface.TYPE_DATE:
             pentahoData = new Date( avroData );

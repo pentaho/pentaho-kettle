@@ -36,7 +36,7 @@ public class AvroNestedFieldGetter {
    * @return a List of field objects
    * @throws KettleException if a problem occurs
    */
-  public static List<? extends IAvroInputField> getLeafFields(Schema s ) throws KettleException {
+  public static List<? extends IAvroInputField> getLeafFields( Schema s ) throws KettleException {
     if ( s == null ) {
       return null;
     }
@@ -228,7 +228,7 @@ public class AvroNestedFieldGetter {
    * @param s    the schema for the primitive
    * @return an avro field object.
    */
-  protected static AvroInputField createAvroField(String path, Schema s ) {
+  protected static AvroInputField createAvroField( String path, Schema s ) {
     AvroInputField newField = new AvroInputField();
 
     String fieldName = "data";
@@ -257,7 +257,7 @@ public class AvroNestedFieldGetter {
 
   @SuppressWarnings ( "squid:S3776" )
   // suppress complexity warning.  Extracting/consolidating mapping logic would make this _less_ readable.
-  private static AvroInputField setFieldType(Schema s, AvroInputField newField ) {
+  private static AvroInputField setFieldType( Schema s, AvroInputField newField ) {
     switch ( s.getType() ) {
       case BOOLEAN:
         newField.setAvroType( AvroSpec.DataType.BOOLEAN );
@@ -278,9 +278,12 @@ public class AvroNestedFieldGetter {
         break;
       case INT:
         if ( s.getLogicalType() != null ) {
-          if ( s.getLogicalType().getName().equalsIgnoreCase( "Date" ) ) {
+          if ( s.getLogicalType().getName().equalsIgnoreCase( AvroSpec.DataType.DATE.getLogicalType() ) ) {
             newField.setAvroType( AvroSpec.DataType.DATE );
             newField.setPentahoType( ValueMetaInterface.TYPE_DATE );
+          } else if ( s.getLogicalType().getName().equalsIgnoreCase( AvroSpec.DataType.TIME_MILLIS.getLogicalType() ) ) {
+            newField.setAvroType( AvroSpec.DataType.TIME_MILLIS );
+            newField.setPentahoType( ValueMetaInterface.TYPE_INTEGER );
           } else {
             newField.setAvroType( AvroSpec.DataType.INTEGER );
             newField.setPentahoType( ValueMetaInterface.TYPE_INTEGER );
@@ -292,9 +295,18 @@ public class AvroNestedFieldGetter {
         break;
       case LONG:
         if ( s.getLogicalType() != null ) {
-          if ( s.getLogicalType().getName().equalsIgnoreCase( "timestamp-millis" ) ) {
+          if ( s.getLogicalType().getName().equalsIgnoreCase( AvroSpec.DataType.TIMESTAMP_MILLIS.getLogicalType() ) ) {
             newField.setAvroType( AvroSpec.DataType.TIMESTAMP_MILLIS );
             newField.setPentahoType( ValueMetaInterface.TYPE_TIMESTAMP );
+          } else if ( s.getLogicalType().getName().equalsIgnoreCase( AvroSpec.DataType.TIMESTAMP_MICROS.getLogicalType() ) ) {
+            newField.setAvroType( AvroSpec.DataType.TIMESTAMP_MICROS );
+            newField.setPentahoType( ValueMetaInterface.TYPE_TIMESTAMP );
+          } else if ( s.getLogicalType().getName().equalsIgnoreCase( AvroSpec.DataType.TIMESTAMP_NANOS.getLogicalType() ) ) {
+            newField.setAvroType( AvroSpec.DataType.TIMESTAMP_NANOS );
+            newField.setPentahoType( ValueMetaInterface.TYPE_TIMESTAMP );
+          } else if ( s.getLogicalType().getName().equalsIgnoreCase( AvroSpec.DataType.TIME_MICROS.getLogicalType() ) ) {
+            newField.setAvroType( AvroSpec.DataType.TIME_MICROS );
+            newField.setPentahoType( ValueMetaInterface.TYPE_INTEGER );
           } else {
             newField.setAvroType( AvroSpec.DataType.LONG );
             newField.setPentahoType( ValueMetaInterface.TYPE_INTEGER );
@@ -306,7 +318,7 @@ public class AvroNestedFieldGetter {
         break;
       case BYTES:
         if ( s.getLogicalType() != null ) {
-          if ( s.getLogicalType().getName().equalsIgnoreCase( "Decimal" ) ) {
+          if ( s.getLogicalType().getName().equalsIgnoreCase( AvroSpec.DataType.DECIMAL.getLogicalType() ) ) {
             newField.setAvroType( AvroSpec.DataType.DECIMAL );
             newField.setPentahoType( ValueMetaInterface.TYPE_BIGNUMBER );
           } else {

@@ -1,0 +1,102 @@
+{
+  "type": "record",
+  "name": "AllDataTypes",
+  "namespace": "org.pentaho.di.avro",
+  "fields": [
+    {
+      "name": "booleanField",
+      "type": "boolean"
+    },
+    {
+      "name": "stringField",
+      "type": "string"
+    },
+    {
+      "name": "enumField",
+      "type": {
+        "type": "enum",
+        "name": "Status",
+        "symbols": ["ACTIVE", "INACTIVE", "PENDING"]
+      }
+    },
+    {
+      "name": "floatField",
+      "type": "float"
+    },
+    {
+      "name": "doubleField",
+      "type": "double"
+    },
+    {
+      "name": "intField",
+      "type": "int"
+    },
+    {
+      "name": "dateField",
+      "type": {
+        "type": "int",
+        "logicalType": "date"
+      }
+    },
+    {
+      "name": "timeMillisField",
+      "type": {
+        "type": "int",
+        "logicalType": "time-millis"
+      }
+    },
+    {
+      "name": "longField",
+      "type": "long"
+    },
+    {
+      "name": "timestampMillisField",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "timestampMicrosField",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-micros"
+      }
+    },
+    {
+      "name": "timestampNanosField",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-nanos"
+      }
+    },
+    {
+      "name": "timeMicrosField",
+      "type": {
+        "type": "long",
+        "logicalType": "time-micros"
+      }
+    },
+    {
+      "name": "bytesField",
+      "type": "bytes"
+    },
+    {
+      "name": "decimalField",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 10,
+        "scale": 2
+      }
+    },
+    {
+      "name": "fixedField",
+      "type": {
+        "type": "fixed",
+        "name": "FixedBytes",
+        "size": 16
+      }
+    }
+  ]
+}

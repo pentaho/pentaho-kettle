@@ -24,16 +24,20 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.trans.steps.avro.AvroTimestampHandler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
@@ -199,21 +203,18 @@ public class PentahoAvroRecordWriter implements IPentahoOutputFormat.IPentahoRec
                 outputRecord.put( avroFieldName, bytes != null ? ByteBuffer.wrap( bytes ) : null );
               }
               break;
-            case TIMESTAMP_MILLIS:
-              Date defaultTimeStamp = null;
-              if ( defaultValue != null && defaultValue.length() > 0 ) {
+            case TIMESTAMP_MILLIS, TIMESTAMP_MICROS, TIMESTAMP_NANOS:
+              Timestamp defaultTimestamp = null;
+              if ( defaultValue != null && !defaultValue.isEmpty() ) {
                 String conversionMask =
                   ( vmi.getConversionMask() == null ) ? ValueMetaBase.DEFAULT_TIMESTAMP_PARSE_MASK
                     : vmi.getConversionMask();
-                DateFormat dateFormat = new SimpleDateFormat( conversionMask );
-                try {
-                  defaultTimeStamp = dateFormat.parse( defaultValue );
-                } catch ( ParseException pe ) {
-                  defaultTimeStamp = null;
-                }
+                DateTimeFormatter fmt = DateTimeFormatter.ofPattern( conversionMask );
+                LocalDateTime ldt = LocalDateTime.parse( defaultValue, fmt );
+                defaultTimestamp = Timestamp.valueOf( ldt );
               }
-              Date timeStamp = row.getDate( fieldMetaIndex, defaultTimeStamp );
-              outputRecord.put( avroFieldName, timeStamp != null ? timeStamp.getTime() : null );
+              Timestamp timeStamp = (Timestamp) row.getDate( fieldMetaIndex, defaultTimestamp );
+              outputRecord.put( avroFieldName, AvroTimestampHandler.fromTimestamp( timeStamp, avroType ) );
               break;
           }
 

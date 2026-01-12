@@ -14,6 +14,7 @@
 package org.pentaho.di.trans.steps.avro.input;
 
 import org.apache.avro.file.CodecFactory;
+import org.apache.avro.file.DataFileWriter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -35,6 +36,8 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +49,15 @@ import static org.junit.Assert.assertTrue;
 public class PentahoAvroReadWriteTest {
   private static InetAddress DEFAULT_INET_ADDR;
   private static String[][] DEFAULT_SCHEME_DESCRIPTION = null;
+  
+  public static final String[][] TIMESTAMP_SCHEME_DESCRIPTION = new String[][] {
+    { "avroTimestamp1", "pentahoTimestamp1", String.valueOf( AvroSpec.DataType.TIMESTAMP_MILLIS.ordinal() ),
+      String.valueOf( ValueMetaInterface.TYPE_TIMESTAMP ), "0", "0" },
+    { "avroTimestamp2", "pentahoTimestamp2", String.valueOf( AvroSpec.DataType.TIMESTAMP_MICROS.ordinal() ),
+      String.valueOf( ValueMetaInterface.TYPE_TIMESTAMP ), "0", "0" },
+    { "avroTimestamp3", "pentahoTimestamp3", String.valueOf( AvroSpec.DataType.TIMESTAMP_NANOS.ordinal() ),
+      String.valueOf( ValueMetaInterface.TYPE_TIMESTAMP ), "0", "0" },
+  };
 
   {
     try {
@@ -182,6 +194,20 @@ public class PentahoAvroReadWriteTest {
   }
 
   @Test
+  public void testAvroFileWriteAndReadTimestampTypes() throws Exception {
+    DateTimeFormatter dateFormatMilli = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm:ss.SSS" );
+    DateTimeFormatter dateFormatMicro = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm:ss.SSSSSS" );
+    DateTimeFormatter dateFormatNano = DateTimeFormatter.ofPattern( "yyyy/MM/dd HH:mm:ss.SSSSSSSSS" );
+    Timestamp timeStampMilli = Timestamp.valueOf( LocalDateTime.parse( "2001/02/03 11:12:13.123", dateFormatMilli ) );
+    Timestamp timeStampMicro = Timestamp.valueOf( LocalDateTime.parse( "2001/02/03 11:12:13.123456", dateFormatMicro ) );
+    Timestamp timeStampNano = Timestamp.valueOf( LocalDateTime.parse( "2001/02/03 11:12:13.123456789", dateFormatNano ) );
+    Object[] rowData =
+      new Object[] { timeStampMilli, timeStampMicro, timeStampNano };
+    doReadWrite( TIMESTAMP_SCHEME_DESCRIPTION, rowData, CodecFactory.nullCodec(),
+      "avroOutputNone.avro", true );
+  }
+
+  @Test
   public void testAvroFileWriteAndReadNullValues() throws Exception {
     Object[] rowData = new Object[] { "Row3Field1", null, null, null, null, null, null, null, null, null };
 
@@ -190,7 +216,7 @@ public class PentahoAvroReadWriteTest {
   }
 
 
-  @Test( expected = org.apache.avro.file.DataFileWriter.AppendWriteException.class )
+  @Test( expected = DataFileWriter.AppendWriteException.class )
   public void testAvroFileNullsNotAllowed() throws Exception {
     Object[] rowData = new Object[] { "Row3Field1", null, null, null, null, null, null, null, null, null };
     String[] defaultValues = { null, null, null, null, null, null, null, null, null, null };
@@ -790,7 +816,7 @@ public class PentahoAvroReadWriteTest {
     Object[] rowData = new Object[] { "Row3Field1", null, null, null, null, null, null, null, null, null };
 
     String[] defaultValues = {"default", "default2", "1234.0", "5.5", DEFAULT_INET_ADDR.getHostAddress(), "true", "-33456",
-                    "1980/01/01 00:00:00.000", "2018/04/25 14:05:15.953Z", "000000: 7f45 4c46 0101 0100 0000 0000 0000 0000 .ELF............" };
+                    "1980/01/01 00:00:00.000", "2018/04/25 14:05:15.953", "000000: 7f45 4c46 0101 0100 0000 0000 0000 0000 .ELF............" };
 
     doReadWrite( DEFAULT_SCHEME_DESCRIPTION, rowData, CodecFactory.nullCodec(),
             "avroOutputNone.avro", defaultValues, null, true );
