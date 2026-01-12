@@ -676,6 +676,16 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>This controls where the temporary file is created when KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE is set to Y.
+      If set to Y, files will be created on the Java Temporary Folder (may be set using -Djava.io.tmpdir).
+      If set to N, files will be created on the same location as the original script (useful when script refer to other scripts).
+      See Jira issue PDI-20642 for details.
+    </description>
+    <variable>KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE_IN_TEMP_DIR</variable>
+    <default-value>Y</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>Sets the maximum size for in-memory byte arrays in Apache POI.</description>
     <variable>POI_BYTE_ARRAY_MAX_SIZE</variable>
     <default-value>157286400</default-value>
