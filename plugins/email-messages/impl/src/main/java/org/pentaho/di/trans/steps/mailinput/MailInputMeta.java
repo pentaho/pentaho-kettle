@@ -181,7 +181,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private void readData( Node stepnode ) {
     servername = XMLHandler.getTagValue( stepnode, "servername" );
     username = XMLHandler.getTagValue( stepnode, "username" );
-    usingAuthentication = XMLHandler.getTagValue( stepnode, "use_auth" ) ;
+    usingAuthentication = Const.NVL( XMLHandler.getTagValue( stepnode, "use_auth" ), AUTENTICATION_BASIC );
     clientId = XMLHandler.getTagValue( stepnode, "auth_clientId" );
     secretKey = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "auth_secretKey" ) );
     scope = XMLHandler.getTagValue( stepnode, "auth_scope" );
@@ -297,7 +297,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
       servername = rep.getStepAttributeString( id_step, "servername" );
       username = rep.getStepAttributeString( id_step, "username" );
       password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "password" ) );
-      usingAuthentication = rep.getStepAttributeString( id_step, "use_auth" );
+      usingAuthentication = Const.NVL( rep.getStepAttributeString( id_step, "use_auth" ), AUTENTICATION_BASIC );
       grant_type = rep.getStepAttributeString( id_step, "use_grantType" );
       clientId = rep.getStepAttributeString( id_step, "auth_clientId" );
       secretKey =
@@ -905,9 +905,11 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setUsingAuthentication( String usingAuthentication ) {
 
-    if ( "Y".equalsIgnoreCase( usingAuthentication ) ) {
+    if ( usingAuthentication == null || usingAuthentication.isEmpty() || usingAuthentication.equalsIgnoreCase( AUTENTICATION_BASIC ) ) {
       this.usingAuthentication = AUTENTICATION_BASIC;
-    } else if ( "N".equalsIgnoreCase( usingAuthentication ) ) {
+    } else if ( usingAuthentication.equalsIgnoreCase( AUTENTICATION_OAUTH ) ) {
+      this.usingAuthentication = AUTENTICATION_OAUTH;
+    } else if ( usingAuthentication.equalsIgnoreCase( AUTENTICATION_NONE ) ) {
       this.usingAuthentication = AUTENTICATION_NONE;
     } else {
       this.usingAuthentication = usingAuthentication;
