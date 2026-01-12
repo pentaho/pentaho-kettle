@@ -905,6 +905,21 @@ public class JobMeta extends AbstractMeta
    * Instantiates a new job meta.
    *
    * @param inputStream the input stream
+   * @param fname    The filename
+   * @param rep         the rep
+   * @param prompter    the prompter
+   * @throws KettleXMLException the kettle xml exception
+   */
+  public JobMeta( InputStream inputStream, String fname, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
+    this();
+    Document doc = XMLHandler.loadXMLFile( inputStream, null, false, false );
+    loadXML( XMLHandler.getSubNode( doc, JobMeta.XML_TAG ), fname, rep, prompter );
+  }
+
+  /**
+   * Instantiates a new job meta.
+   *
+   * @param inputStream the input stream
    * @param rep         the rep
    * @param prompter    the prompter
    * @param parentVariableSpace           the parent variable space to use during JobMeta construction
@@ -1076,7 +1091,8 @@ public class JobMeta extends AbstractMeta
 
       // If we are not using a repository, we are getting the job from a file
       // Set the filename here so it can be used in variables for ALL aspects of the job FIX: PDI-8890
-      if ( null == rep ) {
+      // Though connected to repository, if filename starts with pvfs, we are using a VFS file, so set the filename
+      if ( null == rep || StringUtils.startsWith( fname, "pvfs" ) ) {
         setFilename( KettleVFS.normalizeFilePath( fname ) );
       }  else {
         // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
@@ -1089,8 +1105,9 @@ public class JobMeta extends AbstractMeta
       setName( XMLHandler.getTagValue( jobnode, "name" ) );
 
       // Optionally load the repository directory...
+      // Though connected to repository, if we are using a VFS file, not setting repository directory
       //
-      if ( rep != null ) {
+      if ( rep != null && !StringUtils.startsWith( fname, "pvfs" ) ) {
         String directoryPath = XMLHandler.getTagValue( jobnode, "directory" );
         if ( directoryPath != null ) {
           directory = rep.findDirectory( directoryPath );
