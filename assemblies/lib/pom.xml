@@ -773,11 +773,6 @@
                   <version>${jakarta.transaction.version}</version>
                   <type>jar</type>
                 </artifactItem>
-                <artifactItem>
-                  <groupId>com.sun.istack</groupId>
-                  <artifactId>istack-commons-runtime</artifactId>
-                  <version>${istack-osgi.version}</version>
-                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
