@@ -41,7 +41,6 @@
     <jcommon.version>1.0.16</jcommon.version>
     <json-simple.version>1.1</json-simple.version>
     <jsonpath.version>1.0</jsonpath.version>
-    <jakarta-angus-mail.version>2.0.3</jakarta-angus-mail.version>
     <jxl.version>2.6.12</jxl.version>
     <ldapjdk.version>20000524</ldapjdk.version>
     <odfdom-java.version>0.8.6</odfdom-java.version>
@@ -660,12 +659,10 @@
     <dependency>
       <groupId>jakarta.mail</groupId>
       <artifactId>jakarta.mail-api</artifactId>
-      <version>${jakarta.mail.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.angus</groupId>
       <artifactId>jakarta.mail</artifactId>
-      <version>${jakarta-angus-mail.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
