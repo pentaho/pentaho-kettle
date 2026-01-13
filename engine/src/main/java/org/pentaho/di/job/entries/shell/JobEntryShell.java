@@ -20,6 +20,7 @@ import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -90,6 +91,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
   private String workDirectory;
   private static final String KETTLE = "kettle";
   private static final String SHELL = "shell";
+  private static final String SHELL_BAT = "shell.bat";
 
   public JobEntryShell( String name ) {
     super( name, "" );
@@ -447,8 +449,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
     try {
       // What's the exact command?
+      List<String> cmds = new ArrayList<>();
       String[] base = null;
-      List<String> cmds = new ArrayList<String>();
 
       if ( log.isBasic() ) {
         logBasic( BaseMessages.getString( PKG, "JobShell.RunningOn", Const.getOS() ) );
@@ -463,42 +465,48 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         fileObject = vfs.getFileObject( realFilename, this );
       }
 
-      if ( Const.getOS().equals( "Windows 95" ) ) {
-        base = new String[] { "command.com", "/C" };
-        if ( insertScript ) {
-          tempFile =
-            vfs.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
-          fileObject = createTemporaryShellFile( tempFile, realScript );
+      // We'll need to know if we are on Windows or not...
+      boolean isWindows = Const.isWindows();
+
+      if ( isWindows ) {
+        // On a Windows machine, one needs a command interpreter.
+        // Let's select the appropriate one.
+        if ( Const.getOS().equals( "Windows 95" ) ) {
+          base = new String[] { "command.com", "/C" };
+        } else {
+          base = new String[] { "cmd.exe", "/C" };
         }
-      } else if ( Const.getOS().startsWith( "Windows" ) ) {
-        base = new String[] { "cmd.exe", "/C" };
+
         if ( insertScript ) {
-          tempFile =
-            vfs.createTempFile( KETTLE, "shell.bat", KettleVFS.TEMP_DIR, this );
+          tempFile = vfs.createTempFile( KETTLE, SHELL_BAT, KettleVFS.TEMP_DIR, this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else {
-        if ("Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE, "Y" ) )) {
-          if ( insertScript ) {
-            tempFile = vfs.createTempFile( KETTLE, SHELL, KettleVFS.TEMP_DIR, this );
-          } else {
-            String realFilename = environmentSubstitute( getFilename() );
-            URI uri = new URI( realFilename );
-            realFilename = uri.getPath();
-            try ( FileInputStream fis = new FileInputStream( realFilename ) ) {
-              realScript = IOUtils.toString( fis, "UTF-8" );
-            }
-            // PDI-19676 - creating a temp file in same file location to avoid script failure.
-            String parentDir = Paths.get( realFilename ).getParent().toString();
-            tempFile = vfs.createTempFile( KETTLE, SHELL, parentDir, this );
-          }
+        if ( insertScript ) {
+          tempFile = vfs.createTempFile( KETTLE, SHELL, KettleVFS.TEMP_DIR, this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         } else {
-          if ( insertScript ) {
-            tempFile = vfs.createTempFile( "kettle", SHELL, KettleVFS.TEMP_DIR, this );
+          // Check if we want to execute a temporary generated file
+          if ( "Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE, "Y" ) ) ) {
+            // Obtain the script content
+            String realFilename = new URI( environmentSubstitute( getFilename() ) ).getPath();
+            try ( FileInputStream fis = new FileInputStream( realFilename ) ) {
+              realScript = IOUtils.toString( fis, StandardCharsets.UTF_8 );
+            }
+
+            // Where to create the temporary generated file?
+            String parentDir = KettleVFS.TEMP_DIR;
+            if ( "N".equalsIgnoreCase(
+              System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE_IN_TEMP_DIR, "Y" ) ) ) {
+              // PDI-19676 - creating a temp file in same file location to avoid script failure.
+              parentDir = Paths.get( realFilename ).getParent().toString();
+            }
+
+            tempFile = vfs.createTempFile( KETTLE, SHELL, parentDir, this );
             fileObject = createTemporaryShellFile( tempFile, realScript );
           }
         }
+
         base = new String[] { KettleVFS.getFilename( fileObject ) };
       }
 
@@ -506,13 +514,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       if ( argFromPrevious && cmdRows != null ) {
         // Add the base command...
         for ( int i = 0; i < base.length; i++ ) {
-          cmds.add( base[i] );
+          cmds.add( base[ i ] );
         }
 
-        if ( Const.getOS().equals( "Windows 95" ) || Const.getOS().startsWith( "Windows" ) ) {
+        if ( isWindows ) {
           // for windows all arguments including the command itself
-          // need to be
-          // included in 1 argument to cmd/command.
+          // need to be included in 1 argument to cmd/command.
 
           StringBuilder cmdline = new StringBuilder( 300 );
 
@@ -544,13 +551,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       } else if ( args != null ) {
         // Add the base command...
         for ( int i = 0; i < base.length; i++ ) {
-          cmds.add( base[i] );
+          cmds.add( base[ i ] );
         }
 
-        if ( Const.getOS().equals( "Windows 95" ) || Const.getOS().startsWith( "Windows" ) ) {
+        if ( isWindows ) {
           // for windows all arguments including the command itself
-          // need to be
-          // included in 1 argument to cmd/command.
+          // need to be included in 1 argument to cmd/command.
 
           StringBuilder cmdline = new StringBuilder( 300 );
 
@@ -559,31 +565,21 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
           for ( int i = 0; i < args.length; i++ ) {
             cmdline.append( ' ' );
-            cmdline.append( Const.optionallyQuoteStringByOS( args[i] ) );
+            cmdline.append( Const.optionallyQuoteStringByOS( args[ i ] ) );
           }
           cmdline.append( '"' );
           cmds.add( cmdline.toString() );
         } else {
           for ( int i = 0; i < args.length; i++ ) {
-            cmds.add( args[i] );
+            cmds.add( args[ i ] );
           }
         }
       }
 
-      StringBuilder command = new StringBuilder();
+      String command = getCommandAsString( cmds );
 
-      Iterator<String> it = cmds.iterator();
-      boolean first = true;
-      while ( it.hasNext() ) {
-        if ( !first ) {
-          command.append( ' ' );
-        } else {
-          first = false;
-        }
-        command.append( it.next() );
-      }
       if ( log.isBasic() ) {
-        logBasic( BaseMessages.getString( PKG, "JobShell.ExecCommand", command.toString() ) );
+        logBasic( BaseMessages.getString( PKG, "JobShell.ExecCommand", command ) );
       }
 
       // Build the environment variable list...
@@ -611,7 +607,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
       proc.waitFor();
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobShell.CommandFinished", command.toString() ) );
+        logDetailed( BaseMessages.getString( PKG, "JobShell.CommandFinished", command ) );
       }
 
       // What's the exit status?
@@ -658,11 +654,24 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       }
     }
 
-    if ( result.getNrErrors() > 0 ) {
-      result.setResult( false );
-    } else {
-      result.setResult( true );
+    result.setResult( result.getNrErrors() <= 0 );
+  }
+
+  private static String getCommandAsString( List<String> cmds ) {
+    StringBuilder command = new StringBuilder();
+
+    Iterator<String> it = cmds.iterator();
+    boolean first = true;
+    while ( it.hasNext() ) {
+      if ( !first ) {
+        command.append( ' ' );
+      } else {
+        first = false;
+      }
+      command.append( it.next() );
     }
+
+    return command.toString();
   }
 
   private FileObject createTemporaryShellFile( FileObject tempFile, String fileContent ) throws Exception {
@@ -694,7 +703,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           new Thread( outputLogger ).start();
           proc.waitFor();
         }
-
       } catch ( Exception e ) {
         throw new Exception( "Unable to create temporary file to execute script", e );
       }

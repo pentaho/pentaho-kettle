@@ -1707,9 +1707,19 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW = "KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW";
 
   /**
-   Value to execute a temporary generated file or the original script in Shell step
+   * Value to execute a temporary generated file or the original script in Shell step
+   *
+   * @see #KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE_IN_TEMP_DIR
    */
   public static final String KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE = "KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE";
+
+  /**
+   * Value to control where the temporary generated file should be created.
+   * Options: in the system temp folder or in the same folder as the original script
+   *
+   * @see #KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE
+   */
+  public static final String KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE_IN_TEMP_DIR = "KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE_IN_TEMP_DIR";
 
   /**
    * Value to configure whether to ignore out of range exceptions, letting values be rounded to the nearest possible value.
