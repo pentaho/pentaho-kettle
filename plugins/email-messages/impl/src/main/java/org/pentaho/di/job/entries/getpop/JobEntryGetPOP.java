@@ -546,7 +546,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
    *          The usingAuthentication to set.
    */
   public void setUsingAuthentication( String usingAuthentication ) {
-    this.usingAuthentication = usingAuthentication;
+    if ( usingAuthentication == null || usingAuthentication.isEmpty() || usingAuthentication.equalsIgnoreCase(
+      AUTENTICATION_BASIC ) ) {
+      this.usingAuthentication = AUTENTICATION_BASIC;
+    } else {
+      this.usingAuthentication = AUTENTICATION_OAUTH;
+    }
   }
 
   public void setClientId( String clientId ) {
