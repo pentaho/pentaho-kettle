@@ -27,6 +27,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.amazon.s3.S3Details;
 import org.pentaho.amazon.s3.S3Util;
@@ -100,7 +101,13 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
     return (List<S3Details>) connectionManagerSupplier.get().getConnectionDetailsByScheme( getKey() );
   }
 
-  @Override public List<VFSRoot> getLocations( S3Details s3Details ) {
+  /**
+   * Get the list of buckets for a Vfs Connection
+   * @param s3Details
+   * @return
+   * @throws FileSystemException - throws exception whenever there is any exception thrown while doing the listBuckets() call
+   */
+  @Override public List<VFSRoot> getLocations( S3Details s3Details ) throws FileSystemException {
     VariableSpace space = getSpace( s3Details );
     List<VFSRoot> buckets = new ArrayList<>();
     try {
@@ -111,7 +118,8 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
         }
       }
     } catch ( Exception e ) {
-      log.logError( e.getMessage(), e );
+      log.logError( "Exception getting the list of buckets for connection '" + s3Details.getName() + "'", e );
+      throw new FileSystemException( "Exception getting the list of buckets ", e );
     }
     return buckets;
   }

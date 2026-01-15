@@ -15,6 +15,7 @@ package org.pentaho.di.plugins.fileopensave.providers.vfs;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.FileSystemException;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.connections.ConnectionManager;
@@ -270,7 +271,7 @@ public class VFSFileProviderTest {
 
     public final VFSFile connectionRootFile;
 
-    public GetFilesOfConnectionUsingBucketsScenario() throws KettleException {
+    public GetFilesOfConnectionUsingBucketsScenario() throws Exception {
       provider = mockProvider( "scheme1" );
       details1 = mockDetails( "connection1", "scheme1" );
 
@@ -505,8 +506,9 @@ public class VFSFileProviderTest {
 
   void mockDetailsProviderLocations( VFSConnectionDetails details,
                                      VFSConnectionProvider<VFSConnectionDetails> provider,
-                                     VFSRoot... bucketRoots ) {
+                                     VFSRoot... bucketRoots ) throws FileSystemException {
     when( provider.getLocations( details ) ).thenReturn( List.of( bucketRoots ) );
+
   }
 
   ConnectionFileObject mockConnectionFileObject( String path, FileType fileType ) throws Exception {

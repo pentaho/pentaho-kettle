@@ -96,6 +96,7 @@ import org.pentaho.di.plugins.fileopensave.api.providers.Result;
 import org.pentaho.di.plugins.fileopensave.api.providers.Tree;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
+import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileNotFoundException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.InvalidFileProviderException;
 import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.dragdrop.ElementDragListener;
@@ -105,6 +106,7 @@ import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryTree;
+import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
@@ -117,6 +119,7 @@ import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.WarningDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
@@ -132,6 +135,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -2281,6 +2285,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         txtSearch.setText( "" );
       }
       String searchString = txtSearch.getText();
+      boolean hasChildren = selectedElement instanceof VFSDirectory ? ((VFSDirectory) selectedElement ).hasChildren() : false;
+
       BusyIndicator.showWhile( this.getShell().getDisplay(), () -> {
         try {
           String currentFilters = typedComboBox.getSelection().getId().equals( ALL_FILE_TYPES ) ? null
@@ -2288,9 +2294,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           if ( StringUtils.isNotEmpty( currentFilters ) ) {
             currentFilters = currentFilters.replace( "\\", "" );
           }
+
           List<File> files = search ?
             fileController.searchFiles( (File) selectedElement, currentFilters, searchString ) :
-            fileController.getFiles( (File) selectedElement, currentFilters, useCache );
+            hasChildren ? fileController.getFiles( (File) selectedElement, currentFilters, useCache ) : Collections.emptyList();
           if ( fileDialogOperation.isShowOnlyFolders() ) {
             files.removeIf( f -> !( f instanceof Directory ) );
           }
@@ -2486,9 +2493,22 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
               .filter( Directory.class::isInstance )
               .sorted( Comparator.comparing( Entity::getName, String.CASE_INSENSITIVE_ORDER ) )
               .collect( Collectors.toList() ) );
+          } catch ( FileNotFoundException enf ) {
+            if ( parentElement instanceof VFSDirectory ){
+              ( (VFSDirectory) parentElement ).setHasChildren( false );
+            }
+            parentDialog.log.logBasic( "There is no content at " +  ( ( FileNotFoundException ) enf).getPath() );
           } catch ( FileException e ) {
-            new ErrorDialog( parentDialog.getShell(), "Error",
-              "Error populating file tree", e, false );
+            if ( parentElement instanceof VFSDirectory ){
+              ( (VFSDirectory) parentElement ).setHasChildren( false );
+            }
+
+            ShowMessageDialog dialog =
+              new ShowMessageDialog( parentDialog.getShell(), SWT.OK | SWT.ICON_ERROR, BaseMessages.getString(
+                PKG, "file-open-save-plugin.vfs.unable-to-get-content.title" ), BaseMessages.getString(
+                PKG, "file-open-save-plugin.vfs.unable-to-get-content.message" ) );
+            dialog.open();
+
           }
         } );
         return childrenList.toArray();
