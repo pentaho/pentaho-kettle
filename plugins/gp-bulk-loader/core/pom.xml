@@ -6,16 +6,16 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>gp-bulk-loader</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-104</version>
   </parent>
 
   <artifactId>gp-bulk-loader-core</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-104</version>
 
   <name>PDI GP Bulk Loader Plugin Core</name>
 
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>11.1.0.0-104</pdi.version>
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
