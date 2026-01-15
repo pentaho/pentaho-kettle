@@ -15,6 +15,7 @@ package org.pentaho.di.connections.vfs;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.ConnectionProvider;
@@ -32,7 +33,7 @@ import java.util.List;
 public interface VFSConnectionProvider<T extends VFSConnectionDetails> extends ConnectionProvider<T> {
   FileSystemOptions getOpts( T vfsConnectionDetails );
 
-  List<VFSRoot> getLocations( T vfsConnectionDetails );
+  List<VFSRoot> getLocations( T vfsConnectionDetails ) throws FileSystemException;
 
   String getProtocol( T vfsConnectionDetails );
 
