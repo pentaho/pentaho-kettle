@@ -1127,8 +1127,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     }
     if ( file.isPresent() && !( file.get() instanceof Directory ) ) {
       selectionSet = setSelectionOnce( parentSelection, selectionSet );
-      treeViewer.setSelection( new StructuredSelection( parent.get() ), true );
-      treeViewer.setExpandedState( parent.get(), true );
+      if ( parent.isPresent() ) {
+        treeViewer.setSelection( new StructuredSelection( parent.get() ), true );
+        treeViewer.setExpandedState( parent.get(), true );
+      }
       fileTableViewer.setSelection( new StructuredSelection( file.get() ), true );
     } else if ( file.isPresent() ) {
       selectionSet = setSelectionOnce( parentSelection, selectionSet );
