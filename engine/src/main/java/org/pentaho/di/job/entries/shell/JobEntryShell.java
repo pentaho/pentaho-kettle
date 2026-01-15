@@ -494,7 +494,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             // Where to create the temporary generated file?
             String parentDir = KettleVFS.TEMP_DIR;
             if ( "N".equalsIgnoreCase(
-              System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE_IN_TEMP_DIR, "Y" ) ) ) {
+              System.getProperty( Const.KETTLE_EXECUTE_TEMPORARY_GENERATED_FILE_IN_TEMP_DIR, "N" ) ) ) {
               // PDI-19676 - creating a temp file in same file location to avoid script failure.
               parentDir = Paths.get( realFilename ).getParent().toString();
             }
