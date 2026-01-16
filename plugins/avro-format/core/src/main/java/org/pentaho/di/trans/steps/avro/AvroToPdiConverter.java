@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.avro;
 
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.apache.avro.JsonProperties;
+import org.apache.avro.LogicalType;
 import org.pentaho.di.trans.steps.avro.input.IAvroInputField;
 import org.pentaho.di.trans.steps.avro.input.AvroInputField;
 import org.pentaho.di.trans.steps.avro.input.PentahoAvroInputFormat;
@@ -43,39 +44,66 @@ public class AvroToPdiConverter {
     this.avroSchema = avroSchema;
   }
 
-  public Object converAvroToPdi(Object avroData, AvroInputField avroInputField, Schema avroField ) {
+  /**
+   * Converts Avro data to Pentaho Data Integration (PDI) data types based on the specified field configuration.
+   * <p>
+   * This method handles the conversion of various Avro primitive and logical types to their corresponding PDI types.
+   * It supports type conversions for standard types (int, long, float, double, string, boolean) as well as logical
+   * types (date, timestamp-millis, timestamp-micros, timestamp-nanos, time-millis, time-micros, decimal).
+   * <p>
+   * The conversion process:
+   * <ol>
+   *   <li>Determines the Avro data type (primitive or logical)</li>
+   *   <li>Handles special cases like Utf8 strings, enum symbols, and text nodes</li>
+   *   <li>Delegates to type-specific conversion methods based on the target Pentaho type</li>
+   * </ol>
+   *
+   * @param avroData      the Avro data object to convert; may be null
+   * @param avroInputField the field configuration containing the target Pentaho type and format information
+   * @param avroField     the Avro schema for the field being converted
+   * @return the converted value in the target Pentaho type, or null if the input is null or conversion fails
+   */
+  public Object convertAvroToPdi( Object avroData, AvroInputField avroInputField, Schema avroField ) {
 
     //Might need to make getting the avroFieldName smarter here
     String avroFieldName = avroInputField.getPathParts().get( avroInputField.getPathParts().size() - 1 );
     Schema.Type primitiveAvroType = avroField.getType();
+    LogicalType logicalType = avroField.getLogicalType();
 
-    primitiveAvroType = avroField.getType();
-
-    switch ( primitiveAvroType ) {
-      case INT:
-        avroDataType = AvroSpec.DataType.INTEGER;
-        break;
-      case LONG:
-        avroDataType = AvroSpec.DataType.LONG;
-        break;
-      case BYTES:
-        avroDataType = AvroSpec.DataType.BYTES;
-        break;
-      case FIXED:
-        avroDataType = AvroSpec.DataType.FIXED;
-        break;
-      case FLOAT:
-        avroDataType = AvroSpec.DataType.FLOAT;
-        break;
-      case DOUBLE:
-        avroDataType = AvroSpec.DataType.DOUBLE;
-        break;
-      case STRING:
-        avroDataType = AvroSpec.DataType.STRING;
-        break;
-      case BOOLEAN:
-        avroDataType = AvroSpec.DataType.BOOLEAN;
-        break;
+    if ( logicalType != null ) {
+      for ( AvroSpec.DataType tmpType : AvroSpec.DataType.values() ) {
+        if ( !tmpType.isPrimitiveType() && tmpType.getType().equals( logicalType.getName() ) ) {
+          avroDataType = tmpType;
+          break;
+        }
+      }
+    } else {
+      switch ( primitiveAvroType ) {
+        case INT:
+          avroDataType = AvroSpec.DataType.INTEGER;
+          break;
+        case LONG:
+          avroDataType = AvroSpec.DataType.LONG;
+          break;
+        case BYTES:
+          avroDataType = AvroSpec.DataType.BYTES;
+          break;
+        case FIXED:
+          avroDataType = AvroSpec.DataType.FIXED;
+          break;
+        case FLOAT:
+          avroDataType = AvroSpec.DataType.FLOAT;
+          break;
+        case DOUBLE:
+          avroDataType = AvroSpec.DataType.DOUBLE;
+          break;
+        case STRING:
+          avroDataType = AvroSpec.DataType.STRING;
+          break;
+        case BOOLEAN:
+          avroDataType = AvroSpec.DataType.BOOLEAN;
+          break;
+      }
     }
 
     Object pentahoData = null;
@@ -90,7 +118,7 @@ public class AvroToPdiConverter {
         case BOOLEAN:
           pentahoData = convertToPentahoType( pentahoType, (Boolean) avroData );
           break;
-        case DATE:
+        case DATE, INTEGER, TIME_MILLIS:
           pentahoData = convertToPentahoType( pentahoType, (Integer) avroData );
           break;
         case FLOAT:
@@ -99,32 +127,23 @@ public class AvroToPdiConverter {
         case DOUBLE:
           pentahoData = convertToPentahoType( pentahoType, (Double) avroData );
           break;
-        case LONG:
-          pentahoData = convertToPentahoType( pentahoType, (Long) avroData );
+        case LONG, TIMESTAMP_MILLIS, TIMESTAMP_MICROS, TIMESTAMP_NANOS, TIME_MICROS:
+          pentahoData = convertToPentahoType( pentahoType, (Long) avroData, avroDataType );
           break;
-        case DECIMAL:
+        case DECIMAL, BYTES:
           pentahoData = convertToPentahoType( pentahoType, (ByteBuffer) avroData, avroField );
-          break;
-        case INTEGER:
-          pentahoData = convertToPentahoType( pentahoType, (Integer) avroData );
           break;
         case STRING:
           if ( avroData instanceof GenericData.EnumSymbol ) {
             pentahoData = ( (GenericData.EnumSymbol) avroData ).toString();
-          } else if ( avroData instanceof TextNode) {
+          } else if ( avroData instanceof TextNode ) {
             pentahoData = convertToPentahoType( pentahoType, ( (TextNode) avroData ).asText(), avroInputField );
           } else {
             pentahoData = convertToPentahoType( pentahoType, (String) avroData, avroInputField );
           }
           break;
-        case BYTES:
-          pentahoData = convertToPentahoType( pentahoType, (ByteBuffer) avroData, avroField );
-          break;
         case FIXED:
           pentahoData = convertToPentahoType( pentahoType, ( (GenericData.Fixed) avroData ).bytes(), avroField );
-          break;
-        case TIMESTAMP_MILLIS:
-          pentahoData = convertToPentahoType( pentahoType, (Long) avroData );
           break;
       }
     }
@@ -201,7 +220,7 @@ public class AvroToPdiConverter {
     return pentahoData;
   }
 
-  private Object convertToPentahoType( int pentahoType, Long avroData ) {
+  private Object convertToPentahoType( int pentahoType, Long avroData, AvroSpec.DataType avroDataType ) {
     Object pentahoData = null;
     if ( isNotNull( avroData ) ) {
       try {
@@ -219,7 +238,7 @@ public class AvroToPdiConverter {
             pentahoData = BigDecimal.valueOf( avroData );
             break;
           case ValueMetaInterface.TYPE_TIMESTAMP:
-            pentahoData = new Timestamp( avroData );
+            pentahoData = AvroTimestampHandler.toTimestamp( avroData, avroDataType );
             break;
           case ValueMetaInterface.TYPE_DATE:
             pentahoData = new Date( avroData );

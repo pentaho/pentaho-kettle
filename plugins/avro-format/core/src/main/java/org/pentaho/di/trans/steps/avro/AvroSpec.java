@@ -35,10 +35,11 @@ public class AvroSpec {
     DATE( 14, false, "int", "date", "Date" ),
     TIME_MILLIS( 15, false, "int", "time-millis", "Time" ),
     TIME_MICROS( 16, false, "long", "time-micros", "Time In Microseconds" ),
-    TIMESTAMP_MILLIS( 17, false, "long", "timestamp-millis", "Timestamp" ),
+    TIMESTAMP_MILLIS( 17, false, "long", "timestamp-millis", "Timestamp in Milliseconds" ),
     TIMESTAMP_MICROS( 18, false, "long", "timestamp-micros", "Timestamp In Microseconds" ),
-    DURATION( 19, false, "fixed", "duration", "Duration" ),
-    DECIMAL_FIXED( 20, false, "fixed", "decimal", "Decimal Fixed" );
+    TIMESTAMP_NANOS( 19, false, "long", "timestamp-nanos", "Timestamp In Nanoseconds" ),
+    DURATION( 20, false, "fixed", "duration", "Duration" ),
+    DECIMAL_FIXED( 21, false, "fixed", "decimal", "Decimal Fixed" );
 
     private final int id;
     private final boolean isPrimitive;

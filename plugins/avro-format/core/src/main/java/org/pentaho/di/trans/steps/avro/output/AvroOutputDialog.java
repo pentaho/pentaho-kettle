@@ -72,7 +72,7 @@ public class AvroOutputDialog extends BaseAvroStepDialog implements StepDialogIn
   private static final int SHELL_WIDTH = 698;
   private static final int SHELL_HEIGHT = 554;
   private static final int H_OFFSET_DATETIME_COMBO_BOX = 15;
-  private static final String[] SUPPORTED_AVRO_TYPE_NAMES = {
+  private static final String[] SUPPORTED_AVRO_TYPE_NAMES ={
     AvroSpec.DataType.STRING.getName(),
     AvroSpec.DataType.INTEGER.getName(),
     AvroSpec.DataType.LONG.getName(),
@@ -81,7 +81,11 @@ public class AvroOutputDialog extends BaseAvroStepDialog implements StepDialogIn
     AvroSpec.DataType.BOOLEAN.getName(),
     AvroSpec.DataType.DECIMAL.getName(),
     AvroSpec.DataType.DATE.getName(),
+    AvroSpec.DataType.TIME_MILLIS.getName(),
+    AvroSpec.DataType.TIME_MICROS.getName(),
     AvroSpec.DataType.TIMESTAMP_MILLIS.getName(),
+    AvroSpec.DataType.TIMESTAMP_MICROS.getName(),
+    AvroSpec.DataType.TIMESTAMP_NANOS.getName(),
     AvroSpec.DataType.BYTES.getName()
   };
 

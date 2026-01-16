@@ -782,7 +782,7 @@ public class AvroNestedReader {
    */
   protected Object getPrimitive(AvroInputField avroInputField, Object fieldValue, Schema s ) throws KettleException {
 
-    return m_avroToPdiConverter.converAvroToPdi( fieldValue, avroInputField, s );
+    return m_avroToPdiConverter.convertAvroToPdi( fieldValue, avroInputField, s );
   }
 
   /**
