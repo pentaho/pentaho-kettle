@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-core</artifactId>
-  <version>10.2.0.4-354</version>
+  <version>10.2.0.4-CUST-299</version>
   <packaging>jar</packaging>
 
   <name>PDI Core</name>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-metastore-locator-api</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.4-354</version>
     </dependency>
 
     <!-- Third-party dependencies -->
