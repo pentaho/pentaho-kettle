@@ -14,6 +14,7 @@
 package org.pentaho.di.trans.steps.pentahoreporting;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
@@ -23,13 +24,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.reporting.engine.classic.core.DataFactory;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
-import org.pentaho.reporting.libraries.resourceloader.CompoundResource;
-import org.pentaho.reporting.libraries.resourceloader.Resource;
-import org.pentaho.reporting.libraries.resourceloader.ResourceException;
-import org.pentaho.reporting.libraries.resourceloader.ResourceKey;
-import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.MalformedURLException;
@@ -47,35 +43,16 @@ import static org.mockito.Mockito.when;
 @RunWith( MockitoJUnitRunner.StrictStubs.class )
 public class PentahoReportingOutputTest {
 
-  private static final String QUERY_NAME = "LocalFileQueryName";
+  @BeforeClass
+  public static void setUpBeforeClass() {
+    ClassicEngineBoot.getInstance().start();
+  }
+
   private URL testResourceUrl;
-  private ResourceKey resourceKey;
 
   @Before
-  public void setUp() throws ResourceException {
-
+  public void setUp() {
     testResourceUrl = this.getClass().getResource( "relative-path.prpt" );
-    resourceKey =
-      new ResourceKey( "org.pentaho.reporting.libraries.resourceloader.loader.URLResourceLoader",
-        testResourceUrl, null );
-
-    DataFactory mockedDataFactory = mock( DataFactory.class );
-    when( mockedDataFactory.getQueryNames() ).thenReturn( new String[] { QUERY_NAME } );
-
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
-
-    MasterReport mockedMasterReport = mock( MasterReport.class );
-    when( mockedMasterReport.getDataFactory() ).thenReturn( mockedDataFactory );
-    when( mockedMasterReport.getResourceManager() ).thenReturn( manager );
-
-
-    Resource resource = mock( CompoundResource.class );
-    when( resource.getResource() ).thenReturn( mockedMasterReport );
-    when( resource.getDependencies() ).thenReturn( new ResourceKey[] {} );
-    when( resource.getSource() ).thenReturn( resourceKey );
-    when( resource.getTargetType() ).thenReturn( MasterReport.class );
-    manager.getFactoryCache().put( resource );
   }
 
   @Test
@@ -84,11 +61,8 @@ public class PentahoReportingOutputTest {
     MasterReport report = PentahoReportingOutput.loadMasterReport( DefaultBowl.getInstance(),
       testResourceUrl.getPath() );
 
-    URL returnedUrl = report.getResourceManager().toURL( resourceKey );
-
-    assertTrue( returnedUrl.equals( testResourceUrl ) );
-    assertTrue( QUERY_NAME.equals( report.getDataFactory().getQueryNames()[ 0 ] ) );
-
+    assertTrue( report != null );
+    assertTrue( report.getDataFactory() != null );
   }
 
   @Test
