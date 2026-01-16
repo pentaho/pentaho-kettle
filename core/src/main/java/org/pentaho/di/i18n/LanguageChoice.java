@@ -35,10 +35,6 @@ public class LanguageChoice {
     } catch ( IOException e ) {
       // Can't load settings: set the default
       defaultLocale = Const.DEFAULT_LOCALE;
-
-      if ( defaultLocale.getLanguage().equals( Locale.GERMAN.getLanguage() ) ) {
-        defaultLocale = Locale.US;
-      }
     }
   }
 
