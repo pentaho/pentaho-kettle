@@ -31,6 +31,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -61,8 +62,8 @@ public class PentahoReportingOutputTest {
     MasterReport report = PentahoReportingOutput.loadMasterReport( DefaultBowl.getInstance(),
       testResourceUrl.getPath() );
 
-    assertTrue( report != null );
-    assertTrue( report.getDataFactory() != null );
+    assertNotNull( report );
+    assertNotNull( report.getDataFactory() );
   }
 
   @Test
