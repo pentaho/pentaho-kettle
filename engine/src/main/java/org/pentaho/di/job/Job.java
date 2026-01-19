@@ -39,6 +39,7 @@ import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.base.IMetaFileCache;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
@@ -1510,8 +1511,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
 
-  public boolean isVfs(){
-    return this.jobMeta != null && StringUtils.startsWith( jobMeta.getFilename(), "pvfs" );
+  /**
+   * Checks if the job's filename has a VFS reference.
+   *
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public boolean isVfs() {
+    return this.jobMeta != null && StringUtils.startsWith( jobMeta.getFilename(), ConnectionFileProvider.ROOT_URI );
   }
 
   /*

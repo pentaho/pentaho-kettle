@@ -21,6 +21,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -994,6 +995,25 @@ public class JobMeta extends AbstractMeta
   }
 
   /**
+   * Checks if the job's filename has a VFS reference.
+   *
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public boolean isVfsReference() {
+    return isVfsReference( getFilename() );
+  }
+
+  /**
+   * Checks if the specified filename has a VFS reference.
+   *
+   * @param filename the filename to check
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public static boolean isVfsReference( String filename ) {
+    return StringUtils.startsWith( filename, ConnectionFileProvider.ROOT_URI );
+  }
+
+  /**
    * Checks if is rep reference.
    *
    * @param fileName  the file name
@@ -1092,7 +1112,7 @@ public class JobMeta extends AbstractMeta
       // If we are not using a repository, we are getting the job from a file
       // Set the filename here so it can be used in variables for ALL aspects of the job FIX: PDI-8890
       // Though connected to repository, if filename starts with pvfs, we are using a VFS file, so set the filename
-      if ( null == rep || StringUtils.startsWith( fname, "pvfs" ) ) {
+      if ( null == rep || isVfsReference( fname ) ) {
         setFilename( KettleVFS.normalizeFilePath( fname ) );
       }  else {
         // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
@@ -1107,7 +1127,7 @@ public class JobMeta extends AbstractMeta
       // Optionally load the repository directory...
       // Though connected to repository, if we are using a VFS file, not setting repository directory
       //
-      if ( rep != null && !StringUtils.startsWith( fname, "pvfs" ) ) {
+      if ( rep != null && !isVfsReference( fname ) ) {
         String directoryPath = XMLHandler.getTagValue( jobnode, "directory" );
         if ( directoryPath != null ) {
           directory = rep.findDirectory( directoryPath );
@@ -2527,7 +2547,7 @@ public class JobMeta extends AbstractMeta
     boolean hasRepoDir = getRepositoryDirectory() != null && getRepository() != null;
 
     // setup fallbacks
-    if ( hasRepoDir ) {
+    if ( hasRepoDir && !isVfsReference() ) {
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY,
           variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
     } else {
@@ -2594,7 +2614,8 @@ public class JobMeta extends AbstractMeta
 
   protected void setInternalEntryCurrentDirectory() {
     variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
-      repository != null ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
+      ( repository != null && !isVfsReference() ) ?
+        Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
         : filename != null ? Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY
         : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
