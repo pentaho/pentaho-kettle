@@ -210,7 +210,9 @@ public class SetVariable extends BaseStep implements StepInterface {
         break;
     }
 
-    logBasic( BaseMessages.getString( PKG, "SetVariable.Log.SetVariableToValue", meta.getVariableName()[i], value ) );
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "SetVariable.Log.SetVariableToValue", meta.getVariableName()[i], value ) );
+    }
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
