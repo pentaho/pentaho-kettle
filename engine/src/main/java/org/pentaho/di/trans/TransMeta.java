@@ -19,6 +19,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -2303,6 +2304,25 @@ public class TransMeta extends AbstractMeta
   }
 
   /**
+   * Checks if the transformation's filename has a VFS reference.
+   *
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public boolean isVfsReference() {
+    return isVfsReference( getFilename() );
+  }
+
+  /**
+   * Checks if the specified filename has a VFS reference.
+   *
+   * @param filename the filename to check
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public static boolean isVfsReference( String filename ) {
+    return StringUtils.startsWith( filename, ConnectionFileProvider.ROOT_URI );
+  }
+
+  /**
    * Checks (using the exact filename and transformation name) if the transformation is referenced by a repository. If
    * referenced by a repository, the exact filename should be empty and the exact transformation name should be
    * non-empty.
@@ -3306,7 +3326,7 @@ public class TransMeta extends AbstractMeta
         // If we are not using a repository, we are getting the transformation from a file
         // Set the filename here so it can be used in variables for ALL aspects of the transformation FIX: PDI-8890
         // Though connected to repository, if filename starts with pvfs, we are using a VFS file, so set the filename
-        if ( null == rep || StringUtils.startsWith( fname, "pvfs" ) ) {
+        if ( null == rep || isVfsReference( fname ) ) {
           setFilename( KettleVFS.normalizeFilePath( fname ) );
         } else {
           // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
@@ -5982,7 +6002,7 @@ public class TransMeta extends AbstractMeta
 
     boolean hasRepoDir = getRepositoryDirectory() != null && getRepository() != null;
 
-    if ( hasRepoDir ) {
+    if ( hasRepoDir && !isVfsReference() ) {
       variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
           variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
     } else {
@@ -6060,7 +6080,8 @@ public class TransMeta extends AbstractMeta
 
   protected void setInternalEntryCurrentDirectory() {
     variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
-      repository != null ?  Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
+      ( repository != null && !isVfsReference() ) ?
+        Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
         : filename != null ? Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY
         : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
