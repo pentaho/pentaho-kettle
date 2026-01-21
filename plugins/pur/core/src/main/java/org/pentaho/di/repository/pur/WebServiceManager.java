@@ -12,6 +12,7 @@
 
 package org.pentaho.di.repository.pur;
 
+import java.io.Closeable;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -25,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
+
 import com.sun.xml.ws.developer.JAXWSProperties;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.Service;
@@ -208,8 +210,44 @@ public class WebServiceManager implements ServiceManager {
   }
 
   @Override
-  public synchronized void close() {
-    serviceCache.clear();
+  @SuppressWarnings( "squid:S3776" )
+  public void close() {
+    synchronized ( serviceCache ) {
+      for ( Map.Entry<String, Future<Object>> entry : serviceCache.entrySet() ) {
+        String key = entry.getKey();
+        Future<Object> future = entry.getValue();
+        if ( future.isDone() ) {
+          try {
+            Object service = future.get();
+            String className = key.substring( key.lastIndexOf( "_" ) + 1, key.length() );
+            Class<?> clazz = Class.forName( className );
+            // if the service has a logout method, call it
+            try {
+              Method[] methods = clazz.getMethods();
+              if ( null != methods && methods.length > 0 ) {
+                for ( Method method : methods ) {
+                  if ( "logout".equals( method.getName() ) ) {
+                    method.invoke( service );
+                    break;
+                  }
+                }
+              }
+            } catch ( Exception e ) {
+              e.printStackTrace();
+            }
+            if ( service instanceof Closeable closeable ) {
+              closeable.close();
+            }
+          } catch ( Exception e ) {
+            if ( e instanceof InterruptedException ) {
+              Thread.currentThread().interrupt();
+            }
+            e.printStackTrace();
+          }
+        }
+      }
+      serviceCache.clear();
+    }
   }
 
   private void registerWsSpecification( Class<?> serviceClass, String serviceName ) {
