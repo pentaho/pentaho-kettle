@@ -785,7 +785,8 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           && !fileName.endsWith( ".kjb" ) ) {
           name = fileName + ".kjb";
         }
-      } else if ( fileDialogOperation.getCommand().equalsIgnoreCase( FileDialogOperation.EXPORT_ALL ) ) {
+      } else if ( fileDialogOperation.getCommand().equalsIgnoreCase( FileDialogOperation.EXPORT_ALL ) 
+        && !fileName.endsWith( ".zip" ) ) {
         name = fileName + ".zip";
       } else {
         name = fileName;
