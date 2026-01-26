@@ -1226,7 +1226,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       try {
         fileProvider = ProviderServiceService.get().get( fileDialogOperation.getProvider() );
         fileProvider.clearProviderCache();
-        treeViewer.setInput( fileController.load( ProviderFilterType.ALL_PROVIDERS.toString() ).toArray() );
+        treeViewer.setInput( fileController.load( ProviderFilterType.ALL_PROVIDERS.toString(), fileDialogOperation ).toArray() );
         treeViewer.refresh( true );
         fileTableViewer.refresh( true );
       } catch ( Exception ex ) {
@@ -1287,7 +1287,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     treeViewer.setContentProvider( new FileTreeContentProvider( fileController, this ) );
 
     // Load the various tree types on the left
-    treeViewer.setInput( fileController.load( providerFilter ).toArray() );
+    treeViewer.setInput( fileController.load( providerFilter, fileDialogOperation ).toArray() );
 
     treeViewer.addPostSelectionChangedListener( e -> {
       IStructuredSelection selection = (IStructuredSelection) e.getSelection();

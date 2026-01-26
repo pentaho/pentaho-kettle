@@ -56,7 +56,7 @@ public class FileControllerTest {
 
   @Test
   public void testLoad() {
-    List<Tree> trees = fileController.load( ProviderFilterType.ALL_PROVIDERS.toString() );
+    List<Tree> trees = fileController.load( ProviderFilterType.ALL_PROVIDERS.toString(), null );
     Assert.assertEquals( 1, trees.size() );
     Assert.assertEquals( TestFileProvider.TYPE, trees.get( 0 ).getProvider() );
   }

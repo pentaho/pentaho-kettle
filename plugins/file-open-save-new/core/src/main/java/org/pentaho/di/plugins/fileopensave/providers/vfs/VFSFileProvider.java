@@ -42,6 +42,7 @@ import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.service.KettleVFSService;
+import org.pentaho.di.ui.core.FileDialogOperation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -152,7 +153,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
    */
   @Override
   public VFSTree getTree( Bowl bowl ) {
-    return getTree( bowl, new ArrayList<>() );
+    return getTree( bowl, new ArrayList<>(), null );
   }
 
   /**
@@ -161,7 +162,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
    * @return Filter Tree
    */
   @Override
-  public VFSTree getTree( Bowl bowl, List<String> connectionTypes ) {
+  public VFSTree getTree( Bowl bowl, List<String> connectionTypes, FileDialogOperation fileDialogOperation ) {
     VFSTree vfsTree = new VFSTree( NAME );
 
     try {
@@ -172,9 +173,17 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
 
       Collections.sort( sorted, COMPARATOR );
 
+      // don't show the repository for export or import. 
+      boolean skipRepo = fileDialogOperation != null && 
+        ( fileDialogOperation.getCommand().equals( FileDialogOperation.EXPORT_ALL )
+          || fileDialogOperation.getCommand().equals( FileDialogOperation.EXPORT )
+          || fileDialogOperation.getCommand().equals( FileDialogOperation.IMPORT ) );
+      
       for ( VFSConnectionDetails details : sorted ) {
         if ( connectionTypes.isEmpty() || connectionTypes.contains( details.getType() ) ) {
-
+          if ( skipRepo && ConnectionManager.STRING_REPO_CONNECTION.equals( details.getName() ) ) {
+            continue;
+          }
           VFSLocation vfsLocation = new VFSLocation();
           vfsLocation.setName( details.getName() );
           vfsLocation.setRoot( NAME );
