@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
@@ -1371,6 +1372,16 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    */
   public boolean hasRepositoryReferences() {
     return false;
+  }
+
+  /**
+   * Checks if the specified filename has a VFS reference.
+   *
+   * @param filename the filename to check
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public boolean isVfsReference( String filename ) {
+    return StringUtils.startsWith( filename, ConnectionFileProvider.ROOT_URI );
   }
 
   /**
