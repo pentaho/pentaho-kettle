@@ -292,4 +292,9 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
     return String.valueOf( getBooleanValueOfVariable( space, variableName, defaultValue ) );
   }
 
+  public AmazonS3 getS3Client( S3Details s3Details ) throws KettleException {
+    VariableSpace space = getSpace( s3Details );
+    return getAmazonS3( s3Details, space );
+  }
+
 }
