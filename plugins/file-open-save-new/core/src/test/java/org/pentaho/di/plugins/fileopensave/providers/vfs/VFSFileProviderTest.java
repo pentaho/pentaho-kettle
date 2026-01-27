@@ -14,10 +14,12 @@
 package org.pentaho.di.plugins.fileopensave.providers.vfs;
 
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.FileSystemException;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
@@ -36,7 +38,9 @@ import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.service.KettleVFSService;
+import org.pentaho.di.ui.core.FileDialogOperation;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -181,6 +185,42 @@ public class VFSFileProviderTest {
     assertFalse( vfsFileProvider.isSame( bowl, vfsFile_SpecialCharacters_Path1, vfsFile_ABC_SomeDir ) );
   }
 
+  @Test
+  public void testRepositoryConnections() throws Exception {
+    VFSConnectionDetails details1 = mockDetails( ConnectionManager.STRING_REPO_CONNECTION );
+    VFSConnectionDetails details2 = mockDetails( "connection2" );
+    VFSConnectionDetails details3 = mockDetails( "connection3" );
+
+    when( vfsConnectionManagerHelper.getAllDetails( connectionManager ) )
+      .thenReturn( List.of( details1, details2, details3 ) );
+
+    VFSTree resultTree = (VFSTree) vfsFileProvider.getTree( bowl );
+    assertEquals( VFSFileProvider.NAME, resultTree.getName() );
+
+    List<VFSLocation> vfsConnectionFiles = resultTree.getChildren();
+
+    assertNotNull( vfsConnectionFiles );
+    assertEquals( 3, vfsConnectionFiles.size() );
+
+    assertLocation( vfsConnectionFiles.get( 0 ), ConnectionManager.STRING_REPO_CONNECTION, "pvfs://" + ConnectionManager.STRING_REPO_CONNECTION + "/" );
+    assertLocation( vfsConnectionFiles.get( 1 ), "connection2", "pvfs://connection2/" );
+    assertLocation( vfsConnectionFiles.get( 2 ), "connection3", "pvfs://connection3/" );
+
+    FileDialogOperation fdop = mock( FileDialogOperation.class );
+    when( fdop.getCommand() ).thenReturn( FileDialogOperation.EXPORT );
+
+    resultTree = (VFSTree) vfsFileProvider.getTree( bowl, new ArrayList<>(), fdop );
+
+    vfsConnectionFiles = resultTree.getChildren();
+
+    assertNotNull( vfsConnectionFiles );
+    assertEquals( 2, vfsConnectionFiles.size() );
+
+    assertLocation( vfsConnectionFiles.get( 0 ), "connection2", "pvfs://connection2/" );
+    assertLocation( vfsConnectionFiles.get( 1 ), "connection3", "pvfs://connection3/" );
+
+  }
+
   // region getTree(..)
   @Test
   public void testGetTreeReturnsTreeWithOneVFSLocationPerConnection() throws Exception {
@@ -238,7 +278,7 @@ public class VFSFileProviderTest {
     when( vfsConnectionManagerHelper.getAllDetails( connectionManager ) )
       .thenReturn( List.of( details1, details2, details3 ) );
 
-    VFSTree resultTree = vfsFileProvider.getTree( bowl, List.of( "typeA", "typeC" ) );
+    VFSTree resultTree = vfsFileProvider.getTree( bowl, List.of( "typeA", "typeC" ), null );
 
     assertEquals( VFSFileProvider.NAME, resultTree.getName() );
 

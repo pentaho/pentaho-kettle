@@ -55,6 +55,17 @@ public interface FileProvider<T extends File> {
   }
 
   /**
+   * Optional method to get a tree with additional info about the other types of filtering
+   * @param bowl
+   * @param connectionTypes
+   * @param fileDialogOperation for any other request-specific filtering
+   * @return
+   */
+  default Tree<? extends T> getTree( Bowl bowl, List<String> connectionTypes, FileDialogOperation fileDialogOperation ) {
+    return getTree( bowl, connectionTypes );
+  }
+
+  /**
    * Works kind of like a resolve.  It will return a mewly created file object if the file received exists physically,
    * or null if the file specified does not exist.
    *

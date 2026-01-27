@@ -37,6 +37,7 @@ import org.pentaho.di.plugins.fileopensave.providers.repository.model.Repository
 import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
 import org.pentaho.di.plugins.fileopensave.util.Util;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
+import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.FileDialogOperation.FileLoadListener;
 import org.pentaho.di.ui.core.FileDialogOperation.FileLookupInfo;
 
@@ -91,15 +92,11 @@ public class FileController {
     return isCleared;
   }
 
-  List<Tree> load() {
-    return load( null, null );
+  public List<Tree> load( String filter, FileDialogOperation fileDialogOperation ) {
+   return load( filter, new ArrayList<>(), fileDialogOperation );
   }
 
-  public List<Tree> load( String filter ) {
-    return load( filter, new ArrayList<>() );
-  }
-
-  public List<Tree> load( String filter, List<String> connectionTypes ) {
+  public List<Tree> load( String filter, List<String> connectionTypes, FileDialogOperation fileDialogOperation ) {
     List<Tree> trees = new ArrayList<>();
     List<String> filters = Utils.isEmpty( filter ) || filter.equalsIgnoreCase( ProviderFilterType.DEFAULT.toString() )
       ? Arrays.asList( ProviderFilterType.getDefaults() ) : Arrays.asList( filter.split( "[,]" ) );
@@ -108,13 +105,13 @@ public class FileController {
     if ( filters.contains( ProviderFilterType.ALL_PROVIDERS.toString() ) ) {
       for ( FileProvider fileProvider : providerService.get() ) {
         if ( fileProvider.isAvailable() ) {
-          trees.add( fileProvider.getTree( bowl, connectionTypes ) );
+          trees.add( fileProvider.getTree( bowl, connectionTypes, fileDialogOperation ) );
         }
       }
     } else {
       for ( FileProvider fileProvider : providerService.get() ) {
         if ( fileProvider.isAvailable() && filters.contains( fileProvider.getType() ) ) {
-          trees.add( fileProvider.getTree( bowl, connectionTypes ) );
+          trees.add( fileProvider.getTree( bowl, connectionTypes, fileDialogOperation ) );
         }
       }
     }
