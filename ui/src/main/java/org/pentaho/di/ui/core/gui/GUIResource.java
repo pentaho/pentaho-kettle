@@ -429,6 +429,8 @@ public class GUIResource {
 
   private SwtUniversalImage imagePrintDisabled;
 
+  private Image flatHelpIcon;
+
   /**
    * GUIResource also contains the clipboard as it has to be allocated only once! I don't want to put it in a separate
    * singleton just for this one member.
@@ -487,7 +489,7 @@ public class GUIResource {
   public static GUIResource getInstance() {
     if ( Const.isRunningOnWebspoonMode() ) {
       try {
-        Class singletonUtil = Class.forName( "org.eclipse.rap.rwt.SingletonUtil" );
+        Class<?> singletonUtil = Class.forName( "org.eclipse.rap.rwt.SingletonUtil" );
         Method getSessionInstance = singletonUtil.getDeclaredMethod( "getSessionInstance", Class.class );
         return (GUIResource) getSessionInstance.invoke( null, GUIResource.class );
       } catch ( ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
@@ -559,6 +561,9 @@ public class GUIResource {
   }
 
   private void dispose( boolean reload ) {
+
+    flatHelpIcon.dispose();
+
     // Colors
     colorBackground.dispose();
     colorGraph.dispose();
@@ -1370,6 +1375,8 @@ public class GUIResource {
       SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
         .getProperty( "candidateArrow_image" ) );
 
+    flatHelpIcon = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), "ui/images/help.svg" )
+      .getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
   /**
@@ -2793,6 +2800,13 @@ public class GUIResource {
     return candidateArrow;
   }
 
+  /**
+   * The help icon used in flat buttons in newer dialogs such as File Open/Save.
+   * This image is shared and should not be disposed.
+   */
+  public Image getHelpIconFlat() {
+    return flatHelpIcon;
+  }
 
   /**
    * @return an Image containing the given text
