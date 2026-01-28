@@ -1114,8 +1114,9 @@ public class JobMeta extends AbstractMeta
       // Though connected to repository, if filename starts with pvfs, we are using a VFS file, so set the filename
       if ( null == rep || isVfsReference( fname ) ) {
         setFilename( KettleVFS.normalizeFilePath( fname ) );
-      }  else {
-        // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
+      }
+      // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
+      if ( rep != null ) {
         setRepository( rep );
       }
 
