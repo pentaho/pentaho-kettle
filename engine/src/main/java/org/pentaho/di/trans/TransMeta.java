@@ -3325,7 +3325,7 @@ public class TransMeta extends AbstractMeta
         // Set the filename here so it can be used in variables for ALL aspects of the transformation FIX: PDI-8890
         // Though connected to repository, if filename starts with pvfs, we are using a VFS file, so set the filename
         if ( null == rep || isVfsReference( fname ) ) {
-          setFilename( KettleVFS.normalizeFilePath( fname ) );
+          setFilename( fname );
         }
         // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
         if ( rep != null ) {
@@ -3490,8 +3490,9 @@ public class TransMeta extends AbstractMeta
         transformationType = TransformationType.getTransformationTypeByCode( transTypeCode );
 
         // Optionally load the repository directory...
+        // Though connected to repository, if we are using a VFS file, not setting repository directory
         //
-        if ( rep != null ) {
+        if ( rep != null && !isVfsReference( fname ) ) {
           String directoryPath = XMLHandler.getTagValue( infonode, "directory" );
           if ( directoryPath != null ) {
             directory = rep.findDirectory( directoryPath );

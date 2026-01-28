@@ -357,4 +357,27 @@ public class MetaFileLoaderImplTest {
   private String getKey() {
     return specificationMethod + ":" + keyPath;
   }
+
+  @Test
+  public void ensureFilePathHasExtension_AddsCorrectExtensionBasedOnMetaType() {
+    MetaFileLoaderImpl<TransMeta> transLoader =
+      new MetaFileLoaderImpl<>( mock( JobEntryTrans.class ), ObjectLocationSpecificationMethod.FILENAME );
+    MetaFileLoaderImpl<JobMeta> jobLoader =
+      new MetaFileLoaderImpl<>( mock( JobEntryJob.class ), ObjectLocationSpecificationMethod.FILENAME );
+
+    assertFileExtension( transLoader, "path/to/transformation", "path/to/transformation.ktr" );
+    assertFileExtension( transLoader, "path/to/transformation.ktr", "path/to/transformation.ktr" );
+    assertFileExtension( transLoader, "file:///home/user/transformation", "file:///home/user/transformation.ktr" );
+    assertFileExtension( transLoader, "pvfs://connection/transformation", "pvfs://connection/transformation.ktr" );
+
+    assertFileExtension( jobLoader, "path/to/job", "path/to/job.kjb" );
+    assertFileExtension( jobLoader, "path/to/job.kjb", "path/to/job.kjb" );
+    assertFileExtension( jobLoader, "hdfs://server/path/job", "hdfs://server/path/job.kjb" );
+    assertFileExtension( jobLoader, "zip:file:///archive.zip!/job", "zip:file:///archive.zip!/job.kjb" );
+  }
+
+  private void assertFileExtension( MetaFileLoaderImpl<?> loader, String input, String expected ) {
+    String result = loader.ensureFilePathHasExtension( input );
+    assertEquals( "Failed for input: " + input, expected, result );
+  }
 }

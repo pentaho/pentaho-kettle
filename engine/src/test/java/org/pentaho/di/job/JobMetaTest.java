@@ -29,7 +29,6 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;

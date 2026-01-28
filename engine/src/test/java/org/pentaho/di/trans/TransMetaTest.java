@@ -37,7 +37,6 @@ import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
