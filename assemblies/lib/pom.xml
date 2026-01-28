@@ -31,7 +31,7 @@
     <pentaho-hadoop-shims.version>11.1.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
 
     <!-- third party -->
-    <hsqldb.version>2.3.2</hsqldb.version>
+    <hsqldb.version>2.7.4</hsqldb.version>
     <jaybird.version>2.1.6</jaybird.version>
     <jt400.version>6.1</jt400.version>
     <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
