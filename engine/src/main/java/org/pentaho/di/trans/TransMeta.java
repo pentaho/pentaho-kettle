@@ -2124,8 +2124,8 @@ public class TransMeta extends AbstractMeta
   @SuppressWarnings( "deprecation" )
   private void compatibleGetStepFields( StepMetaInterface stepint, RowMetaInterface row, String name,
       RowMetaInterface[] inform, StepMeta nextStep, VariableSpace space ) throws KettleStepException {
-
-    stepint.getFields( bowl, row, name, inform, nextStep, space );
+    // This needs to remain a stable API to work with older plugins. Do not update this method signature!
+    stepint.getFields( row, name, inform, nextStep, space );
 
   }
 
