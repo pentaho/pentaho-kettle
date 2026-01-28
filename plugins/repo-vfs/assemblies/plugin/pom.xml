@@ -24,7 +24,7 @@
 
   <dependencies>
     <dependency>
-      <artifactId>repo-vfs-core</artifactId>
+      <artifactId>repo-vfs-ws</artifactId>
       <groupId>org.pentaho.di.plugins</groupId>
       <version>${project.version}</version>
       <exclusions>
@@ -79,12 +79,12 @@
       </exclusions>
     </dependency>
     <dependency>
-      <artifactId>repo-vfs-server-local</artifactId>
+      <artifactId>repo-vfs-pur</artifactId>
       <groupId>org.pentaho.di.plugins</groupId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <artifactId>repo-vfs-spoon</artifactId>
+      <artifactId>repo-vfs-pdi</artifactId>
       <groupId>org.pentaho.di.plugins</groupId>
       <version>${project.version}</version>
     </dependency>
@@ -104,7 +104,7 @@
               <configuration>
                 <outputDirectory>${assembly.dir}/lib</outputDirectory>
                 <includeScope>runtime</includeScope>
-                <excludeArtifactIds>repo-vfs-spoon</excludeArtifactIds>
+                <excludeArtifactIds>repo-vfs-pdi</excludeArtifactIds>
               </configuration>
             </execution>
           </executions>

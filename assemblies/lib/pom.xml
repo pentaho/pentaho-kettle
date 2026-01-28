@@ -48,6 +48,7 @@
     <pentaho-metadata.version>11.1.0.0-SNAPSHOT</pentaho-metadata.version>
     <google-http-client.version>1.42.3</google-http-client.version>
     <pax-swissbox-core.version>1.8.2</pax-swissbox-core.version>
+    <javax.activation.version>1.1.1</javax.activation.version>
   </properties>
 
   <dependencies>
@@ -771,6 +772,13 @@
                   <groupId>jakarta.transaction</groupId>
                   <artifactId>jakarta.transaction-api</artifactId>
                   <version>${jakarta.transaction.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+
+                <artifactItem>
+                  <groupId>javax.activation</groupId>
+                  <artifactId>activation</artifactId>
+                  <version>${javax.activation.version}</version>
                   <type>jar</type>
                 </artifactItem>
               </artifactItems>
