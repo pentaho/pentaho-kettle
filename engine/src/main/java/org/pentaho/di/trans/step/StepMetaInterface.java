@@ -261,9 +261,11 @@ public interface StepMetaInterface {
    * @throws KettleStepException
    *           the kettle step exception
    */
+  @SuppressWarnings( "deprecation" )
   default void getFields( Bowl bowl, RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info,
     StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    getFields( bowl, inputRowMeta, name, info, nextStep, space, repository, metaStore );
+    // Call the backwards compatible version
+    getFields( inputRowMeta, name, info, nextStep, space, repository, metaStore );
   }
 
   /**
