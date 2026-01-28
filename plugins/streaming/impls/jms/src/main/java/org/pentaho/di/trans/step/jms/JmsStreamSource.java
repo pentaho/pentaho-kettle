@@ -18,6 +18,7 @@ import org.pentaho.di.trans.streaming.common.BaseStreamStep;
 import org.pentaho.di.trans.streaming.common.BlockingQueueStreamSource;
 
 import javax.jms.JMSConsumer;
+import javax.jms.JMSContext;
 import javax.jms.JMSException;
 import javax.jms.JMSRuntimeException;
 import javax.jms.Message;
@@ -40,6 +41,7 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
   private final int receiverTimeout;
   private JMSConsumer consumer;
   private AtomicBoolean closed = new AtomicBoolean( false );
+private JMSContext jmsContext;
 
   JmsStreamSource( BaseStreamStep streamStep, JmsDelegate jmsDelegate, int receiverTimeout ) {
     super( streamStep );
@@ -48,7 +50,8 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
   }
 
   @Override public void open() {
-    consumer = jmsDelegate.getJmsContext()
+    jmsContext = jmsDelegate.getJmsContext();
+	consumer = jmsContext
       .createConsumer( jmsDelegate.getDestination() );
     Executors.newSingleThreadExecutor().submit( this::receiveLoop  );
   }
@@ -83,7 +86,7 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
     //don't call super.close().  need to wait for the receiveLoop to be done
     if ( consumer != null && !closed.getAndSet( true ) ) {
       consumer.close();
-      jmsDelegate.getJmsContext().close();
+      jmsContext.close();
     }
   }
 }
