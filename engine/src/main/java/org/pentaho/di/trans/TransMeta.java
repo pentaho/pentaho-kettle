@@ -3501,8 +3501,9 @@ public class TransMeta extends AbstractMeta
         }
 
         // Optionally load the repository directory...
+        // Though connected to repository, if we are using a VFS file, not setting repository directory
         //
-        if ( rep != null ) {
+        if ( rep != null  && !isVfsReference( fname ) ) {
           String directoryPath = XMLHandler.getTagValue( infonode, "directory" );
           if ( directoryPath != null ) {
             directory = rep.findDirectory( directoryPath );

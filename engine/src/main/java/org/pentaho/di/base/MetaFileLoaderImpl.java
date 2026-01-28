@@ -12,6 +12,8 @@
 
 package org.pentaho.di.base;
 
+import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.bowl.Bowl;
@@ -37,8 +39,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
-
-import org.apache.commons.lang.StringUtils;
 
 import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY;
 import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;
@@ -188,11 +188,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
 
           if ( metaPath.startsWith( "file://" ) || metaPath.startsWith( "zip:file://" ) || metaPath.startsWith(
             "hdfs://" ) ) {
-            String extension = isTransMeta() ? RepositoryObjectType.TRANSFORMATION.getExtension()
-              : RepositoryObjectType.JOB.getExtension();
-            if ( !metaPath.endsWith( extension ) ) {
-              metaPath = metaPath + extension;
-            }
+            metaPath = ensureFilePathHasExtension( metaPath );
             theMeta = attemptCacheRead( metaPath ); //try to get from the cache first
             if ( theMeta == null ) {
               if ( isTransMeta() ) {
@@ -205,10 +201,14 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
               idContainer[ 0 ] = metaPath;
             }
           } else {
+            if ( StringUtils.contains( metaPath, ConnectionFileProvider.ROOT_URI ) ) {
+              metaPath = StringUtil.trimStart( metaPath, '/' );
+            }
             theMeta = attemptCacheRead( metaPath ); //try to get from the cache first
             // Though connected to repo, if we have a pvfs path, try loading from vfs
             // this covers vfs files when connected to a repo
-            if ( theMeta == null && ( StringUtils.startsWith( metaPath, "pvfs" ) ) ) {
+            if ( theMeta == null && ( StringUtils.startsWith( metaPath, ConnectionFileProvider.ROOT_URI ) ) ) {
+              metaPath = ensureFilePathHasExtension( metaPath );
               theMeta = isTransMeta()
                 ? (T) new TransMeta( bowl, metaPath, metaStore, rep, true,
                 jobEntryBase.getParentVariableSpace(), null )
@@ -464,6 +464,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             }
             // If we couldn't load from repo, try loading from vfs as fallback
             if ( theMeta == null ) {
+              cacheKey = ensureFilePathHasExtension( cacheKey );
               theMeta = attemptLoadMeta( bowl, cacheKey, rep, metaStore, null, tmpSpace, idContainer );
               LogChannel.GENERAL.logDetailed( LOADING + friendlyMetaType + FROM_REPOSITORY,
                 friendlyMetaType + " was loaded from XML file [" + cacheKey + "]" );
@@ -575,5 +576,14 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       idContainer[ 0 ] = realFilename;  //remember the key to cache
     }
     return theMeta;
+  }
+
+  private String ensureFilePathHasExtension( String metaPath ) {
+    String extension = isTransMeta() ? RepositoryObjectType.TRANSFORMATION.getExtension()
+      : RepositoryObjectType.JOB.getExtension();
+    if ( !metaPath.endsWith( extension ) ) {
+      metaPath = metaPath + extension;
+    }
+    return metaPath;
   }
 }
