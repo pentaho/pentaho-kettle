@@ -29,6 +29,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
@@ -174,6 +175,11 @@ public class S3FileOutputMeta extends TextFileOutputMeta {
       return key;
     }
     return key.replaceAll( "%2B", "\\+" ).replaceAll( "%2F", "/" );
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new S3FileOutputHelper();
   }
 
 }
