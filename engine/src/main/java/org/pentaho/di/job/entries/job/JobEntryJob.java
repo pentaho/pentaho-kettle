@@ -1343,6 +1343,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       throw new KettleException( BaseMessages.getString( PKG, "JobJobError.Recursive", jobMeta.getFilename() ) );
     }
 
+    //If file has VFS reference, just verify the filename
+    if ( isVfsReference( jobMeta.getFilename() ) && !jobMeta.getFilename().equals( parentJobMeta.getFilename() ) ) {
+      return;
+    }
+
     // Different directories: OK
     if ( parentJobMeta.getRepositoryDirectory() == null && jobMeta.getRepositoryDirectory() != null ) {
       return;
