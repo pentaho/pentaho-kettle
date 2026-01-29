@@ -3,15 +3,19 @@ package org.pentaho.di.repovfs.plugin;
 import org.pentaho.di.repovfs.plugin.client.ClientRepositoryLoader;
 import org.pentaho.di.repovfs.plugin.config.Config;
 import org.pentaho.di.repovfs.plugin.pvfs.RepoVfsPdiProvider;
+import org.pentaho.platform.api.repository2.unified.IRepositoryContentConverterHandler;
+import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.connections.LookupFilter;
 import org.pentaho.di.core.annotations.KettleLifecyclePlugin;
 import org.pentaho.di.core.lifecycle.KettleLifecycleListener;
 import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.plugins.KettleLifecyclePluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.plugins.repofvs.pur.converter.ContentConverterHandler;
 import org.pentaho.di.plugins.repofvs.pur.vfs.PurProvider;
+import org.pentaho.di.plugins.repofvs.pur.vfs.PurProvider.RepositoryAccess;
 import org.pentaho.di.plugins.repovfs.ws.vfs.JCRSolutionFileProvider;
 
 import java.net.URISyntaxException;
@@ -59,12 +63,11 @@ public class RepoVfsLifecyclePlugin implements KettleLifecycleListener {
       log.info( "Registering VFS providers in File System Manager" );
       VfsProviderRegistration registration = new VfsProviderRegistration( dfsm );
       if ( config.useRemotePur() ) {
-        registration.registerVfsProvider( PurProvider.SCHEME_REMOTE,
-          () -> PurProvider.createClientRemoteProvider( new ClientRepositoryLoader() ) );
+        registration.registerVfsProvider( PurProvider.SCHEME_REMOTE, RepoVfsLifecyclePlugin::createClientRemoteProvider );
       } else {
         registration.registerVfsProvider( JCRSolutionFileProvider.SCHEME, JCRSolutionFileProvider::new );
       }
-      registration.registerVfsProvider( PurProvider.SCHEME_LOCAL, PurProvider::createServerLocalProvider );
+      registration.registerVfsProvider( PurProvider.SCHEME_LOCAL, RepoVfsLifecyclePlugin::createServerLocalProvider );
     } else {
       log.error( "Unexpected FileSystemManager {}, providers not registered in VFS", fsm.getClass() );
     }
@@ -86,6 +89,60 @@ public class RepoVfsLifecyclePlugin implements KettleLifecycleListener {
     } else {
       log.error( "No Connection Manager" );
     }
+  }
+
+  /**
+   * Creates a provider for use within a Pentaho Server, using the single repository and
+   * content converter handler provided by the platform
+   *
+   * @return VFS provider
+   */
+  private static PurProvider createServerLocalProvider() {
+    return new PurProvider( opts -> new RepositoryAccess() {
+
+      @Override
+      public IUnifiedRepository getPur() {
+        return PentahoSystem.get( IUnifiedRepository.class );
+      }
+
+      @Override
+      public IRepositoryContentConverterHandler getContentHandler() {
+        return PentahoSystem.get( IRepositoryContentConverterHandler.class );
+      }
+
+    } );
+  }
+
+  /**
+   * Creates a provider able to be used by client applications (ie anything outside Pentaho Server).
+   * It relies on the `pur` plugin to get the appropriate content converters for kettle files.
+   *
+   * @return VFS provider
+   * @see ContentConverterHandler
+   */
+  public static PurProvider createClientRemoteProvider() {
+    var repoLoader = new ClientRepositoryLoader();
+    return new PurProvider( opts -> {
+
+      var repo = repoLoader.getRepository( opts );
+      var pur = repoLoader.getPur( repo );
+
+      return new RepositoryAccess() {
+
+        @Override
+        public IUnifiedRepository getPur() {
+          return pur;
+        }
+
+        @Override
+        public IRepositoryContentConverterHandler getContentHandler() {
+          return new ContentConverterHandler( repo );
+        }
+
+      };
+
+    } );
+
   }
 
   private Path getPluginFolder() throws URISyntaxException {
@@ -144,7 +201,7 @@ public class RepoVfsLifecyclePlugin implements KettleLifecycleListener {
           log.error( "Unable to register VFS provider [{}] for Repository", scheme, e );
         }
       } else {
-        log.debug( "Provider [{}] already present.", scheme );
+        log.warn( "Provider [{}] already present.", scheme );
       }
       return false;
     }

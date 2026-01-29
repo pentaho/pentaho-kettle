@@ -1,10 +1,8 @@
 package org.pentaho.di.repovfs.plugin.client;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
-import org.pentaho.di.plugins.repofvs.pur.RepositoryLoader;
 import org.pentaho.di.plugins.repofvs.pur.converter.LazyLoader;
 import org.pentaho.di.plugins.repofvs.pur.vfs.PurFileSystemConfig;
 import org.pentaho.di.repository.RepositoriesMeta;
@@ -21,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * Loads the repository when not on Pentaho Server.
  * Handles Spoon, Pan, Kitchen, and standalone Carte.
  * */
-public class ClientRepositoryLoader implements RepositoryLoader {
+public class ClientRepositoryLoader {
 
   private static Logger log = LoggerFactory.getLogger( ClientRepositoryLoader.class );
 
@@ -35,20 +33,15 @@ public class ClientRepositoryLoader implements RepositoryLoader {
     return repositories;
   } );
 
-  @Override
-  public IUnifiedRepository loadRepository( FileSystemOptions opts ) throws RepositoryLoadException {
-    Repository repository = getRepository( opts );
-    if ( repository == null ) {
-      throw new RepositoryLoadException( "No repository" );
-    }
+  public IUnifiedRepository getPur( Repository repository ) throws KettleException {
     var pur = repository.getUnderlyingRepository();
     if ( pur == null ) {
-      throw new RepositoryLoadException( "Invalid repository type" );
+      throw new KettleException( "Invalid repository type" );
     }
     return pur;
   }
 
-  private Repository getRepository( FileSystemOptions opts ) throws RepositoryLoadException {
+  public Repository getRepository( FileSystemOptions opts ) throws KettleException {
     var cfg = new PurFileSystemConfig( opts );
 
     var bowl = cfg.getBowl();
@@ -64,30 +57,27 @@ public class ClientRepositoryLoader implements RepositoryLoader {
     }
     // there is no spoon
     log.debug( "Connecting to repository" );
-    return connectToRepository(
-      cfg.getRepoName().orElseThrow( () -> new RepositoryLoadException( "No repository name" ) ),
-      cfg.getUser().orElseThrow( () -> new RepositoryLoadException( "No user name" ) ),
-      cfg.getPass().orElseThrow( () -> new RepositoryLoadException( "No password" ) ) );
+    var repository = connectToRepository(
+      cfg.getRepoName().orElseThrow( () -> new KettleException( "No repository name" ) ),
+      cfg.getUser().orElseThrow( () -> new KettleException( "No user name" ) ),
+      cfg.getPass().orElseThrow( () -> new KettleException( "No password" ) ) );
+    if ( repository == null ) {
+      throw new KettleException( "No repository" );
+    }
+    return repository;
   }
 
   private Repository connectToRepository( String repositoryName, String user, String password )
-    throws RepositoryLoadException {
+    throws KettleException {
     var repositories = repositoriesLoader.get();
     var repoMeta = repositories.findRepository( repositoryName );
     if ( repoMeta == null ) {
-      throw new RepositoryLoadException( "Repository not found: " + repositoryName );
+      throw new KettleException( "Repository not found: " + repositoryName );
     }
-    try {
-      Repository repo = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repoMeta,
-        Repository.class );
-      repo.init( repoMeta );
-      repo.connect( user, password );
-      return repo;
-    } catch ( KettlePluginException e ) {
-      throw new RepositoryLoadException( "Unable to load repository type", e );
-    } catch ( KettleException e ) {
-      throw new RepositoryLoadException( "Unable to connect to repository", e );
-    }
+    var repo = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repoMeta, Repository.class );
+    repo.init( repoMeta );
+    repo.connect( user, password );
+    return repo;
   }
 
 

@@ -1,11 +1,8 @@
 package org.pentaho.di.plugins.repofvs.pur.vfs;
 
-import org.pentaho.di.plugins.repofvs.pur.RepositoryLoader;
-import org.pentaho.di.plugins.repofvs.pur.RepositoryLoader.RepositoryLoadException;
-import org.pentaho.di.plugins.repofvs.pur.converter.RepoContentConverterHandler;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.platform.api.repository2.unified.IRepositoryContentConverterHandler;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,9 +21,13 @@ import org.slf4j.LoggerFactory;
  */
 public class PurProvider extends AbstractOriginatingFileProvider {
 
-  public interface ContentConverterHandlerFactory {
-    IRepositoryContentConverterHandler getContentHandler( FileSystemOptions fileSystemOptions,
-                                                          IUnifiedRepository repo );
+  public interface RepositoryAccess {
+    IUnifiedRepository getPur();
+    IRepositoryContentConverterHandler getContentHandler();
+  }
+
+  public interface RepositoryAccessFactory {
+    RepositoryAccess createRepositoryAccess( FileSystemOptions ops ) throws KettleException;
   }
 
   // schemes currently need to contain dashes so they bypass the regex
@@ -46,42 +47,10 @@ public class PurProvider extends AbstractOriginatingFileProvider {
     Capability.FS_ATTRIBUTES,
     Capability.URI ) );
 
-  private final RepositoryLoader purLoader;
-  private final ContentConverterHandlerFactory handlerLoader;
+  private final RepositoryAccessFactory raf;
 
-  /**
-   * Creates a provider for use within a Pentaho Server, using the single repository and
-   * content converter handler provided by the platform
-   * @return VFS provider
-   */
-  public static PurProvider createServerLocalProvider() {
-    return new PurProvider(
-      opts -> PentahoSystem.get( IUnifiedRepository.class ),
-      (opts, pur) -> PentahoSystem.get( IRepositoryContentConverterHandler.class ) );
-  }
-
-  /**
-   * Creates a provider able to be used by client applications (ie anything outside Pentaho Server).
-   * It relies on the `pur` plugin to get the appropriate content converters for kettle files.
-   * @param repoLoader Supplies a repository instance
-   * @return VFS provider
-   * @see RepoContentConverterHandler
-   */
-  public static PurProvider createClientRemoteProvider( RepositoryLoader repoLoader ) {
-    return new PurProvider( repoLoader,
-      (opts, pur) -> new RepoContentConverterHandler( pur ) );
-
-  }
-
-  /**
-   * Create a new provider instance. Production use cases are covered by {@link #createClientRemoteProvider(RepositoryLoader)} and
-   * {@link #createServerLocalProvider()}.
-   * @param repoLoader Supplies a repository instance
-   * @param handlerLoader Supplies a content converter handler that specifies how to access file contents in the repository
-   */
-  public PurProvider( RepositoryLoader repoLoader, ContentConverterHandlerFactory handlerLoader ) {
-    this.purLoader = repoLoader;
-    this.handlerLoader = handlerLoader;
+  public PurProvider( RepositoryAccessFactory raf ) {
+    this.raf = raf;
   }
 
   @Override
@@ -91,13 +60,13 @@ public class PurProvider extends AbstractOriginatingFileProvider {
 
   public boolean test( FileSystemOptions opts ) {
     try {
-      IUnifiedRepository repo = purLoader.loadRepository( opts );
+      var repo = raf.createRepositoryAccess( opts ).getPur();
       if ( repo == null ) {
         return false;
       }
       repo.logout();
       return true;
-    } catch ( RepositoryLoadException e ) {
+    } catch ( KettleException e ) {
       return false;
     }
   }
@@ -107,9 +76,11 @@ public class PurProvider extends AbstractOriginatingFileProvider {
     throws FileSystemException {
     log.debug( "Creating file system" );
     IUnifiedRepository repo;
+    RepositoryAccess repoAccess;
     try {
-      repo = purLoader.loadRepository( fileSystemOptions );
-    } catch ( RepositoryLoadException e ) {
+      repoAccess = raf.createRepositoryAccess( fileSystemOptions );
+      repo = repoAccess.getPur();
+    } catch ( KettleException e ) {
       throw new FileSystemException( e );
     }
     if ( repo == null ) {
@@ -117,7 +88,7 @@ public class PurProvider extends AbstractOriginatingFileProvider {
     } else {
       log.info( "PUR file system created ({})", rootFileName );
     }
-    var contentHandler = handlerLoader.getContentHandler( fileSystemOptions, repo );
+    var contentHandler = repoAccess.getContentHandler();
     return new PurFileSystem( rootFileName, fileSystemOptions, repo, contentHandler );
   }
 

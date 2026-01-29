@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.pentaho.di.plugins.repofvs.pur.vfs.PurProvider;
+import org.pentaho.di.plugins.repofvs.pur.vfs.PurProvider.RepositoryAccess;
 import org.pentaho.platform.api.repository2.unified.Converter;
 import org.pentaho.platform.api.repository2.unified.IRepositoryContentConverterHandler;
 import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
@@ -51,7 +52,19 @@ public class LocalPurTest {
     // assumes http resolver is registered
     fsm = (DefaultFileSystemManager) VFS.getManager();
     fsm.removeProvider( PurProvider.SCHEME_LOCAL );
-    fsm.addProvider( PurProvider.SCHEME_LOCAL, new PurProvider( opts -> repository, LocalPurTest::getContentHandler ) );
+    fsm.addProvider( PurProvider.SCHEME_LOCAL, new PurProvider( opts -> new RepositoryAccess() {
+
+      @Override
+      public IUnifiedRepository getPur() {
+        return repository;
+      }
+
+      @Override
+      public IRepositoryContentConverterHandler getContentHandler() {
+        return LocalPurTest.getContentHandler( opts, repository );
+      }
+
+    } ) );
   }
 
   private static MockUnifiedRepository createMockRepository( ICurrentUserProvider userProvider ) {
