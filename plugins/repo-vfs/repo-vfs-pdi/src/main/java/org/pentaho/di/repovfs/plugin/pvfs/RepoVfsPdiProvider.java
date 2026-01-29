@@ -4,7 +4,7 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repovfs.plugin.client.ClientRepositoryLoader;
+import org.pentaho.di.repovfs.plugin.RepoVfsLifecyclePlugin;
 import org.pentaho.di.repovfs.plugin.config.Config;
 import org.pentaho.di.repovfs.plugin.pvfs.RepoVfsDetails.RepoType;
 import org.pentaho.di.repovfs.plugin.server.RepositoryTypeGuesser;
@@ -107,7 +107,7 @@ public class RepoVfsPdiProvider  extends BaseVFSConnectionProvider<RepoVfsDetail
   }
 
   private boolean testPurrConnection( RepoVfsDetails details ) {
-    var purProvider = PurProvider.createClientRemoteProvider( new ClientRepositoryLoader() );
+    var purProvider = RepoVfsLifecyclePlugin.createClientRemoteProvider();
     var fsOpts = getOpts( details );
     return purProvider.test( fsOpts );
   }
