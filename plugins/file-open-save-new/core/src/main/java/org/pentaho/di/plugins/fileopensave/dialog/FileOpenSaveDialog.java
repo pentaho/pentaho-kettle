@@ -2286,7 +2286,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         txtSearch.setText( "" );
       }
       String searchString = txtSearch.getText();
-      boolean hasChildren = selectedElement instanceof VFSDirectory ? ((VFSDirectory) selectedElement ).hasChildren() : false;
+      boolean hasChildren = selectedElement instanceof Directory ? ((Directory) selectedElement ).isHasChildren() : false;
 
       BusyIndicator.showWhile( this.getShell().getDisplay(), () -> {
         try {
@@ -2299,6 +2299,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           List<File> files = search ?
             fileController.searchFiles( (File) selectedElement, currentFilters, searchString ) :
             hasChildren ? fileController.getFiles( (File) selectedElement, currentFilters, useCache ) : Collections.emptyList();
+
           if ( fileDialogOperation.isShowOnlyFolders() ) {
             files.removeIf( f -> !( f instanceof Directory ) );
           }
