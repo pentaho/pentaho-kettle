@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -76,6 +77,10 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
   private Label wlAccField;
   private Text wAccField;
   private FormData fdlAccField, fdAccField;
+
+  private Label wlCompression;
+  private CCombo wCompression;
+  private FormData fdlCompression, fdCompression;
 
   private Label wlAccStep;
   private CCombo wAccStep;
@@ -271,6 +276,29 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
     // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
     gAccepting.setLayoutData( fdAccepting );
 
+
+    // Compression type (None, Zip or GZip
+    wlCompression = new Label( shell, SWT.RIGHT );
+    wlCompression.setText( BaseMessages.getString( PKG, "XBaseInputDialog.Compression.Label" ) );
+    props.setLook( wlCompression );
+    fdlCompression = new FormData();
+    fdlCompression.left = new FormAttachment( 0, 0 );
+    fdlCompression.top = new FormAttachment( gAccepting, margin );
+    fdlCompression.right = new FormAttachment( middle, -margin );
+    wlCompression.setLayoutData( fdlCompression );
+    wCompression = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
+    wCompression.setText( BaseMessages.getString( PKG, "XBaseInputDialog.Compression.Label" ) );
+    wCompression.setToolTipText( BaseMessages.getString( PKG, "XBaseInputDialog.Compression.Tooltip" ) );
+    props.setLook( wCompression );
+    wCompression.setItems( CompressionProviderFactory.getInstance().getCompressionProviderNames() );
+
+    wCompression.addModifyListener( lsMod );
+    fdCompression = new FormData();
+    fdCompression.left = new FormAttachment( middle, 0 );
+    fdCompression.top = new FormAttachment( gAccepting, margin );
+    fdCompression.right = new FormAttachment( 100, 0 );
+    wCompression.setLayoutData( fdCompression );
+
     // Limit input ...
     wlLimit = new Label( shell, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "XBaseInputDialog.LimitSize.Label" ) );
@@ -278,14 +306,14 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
     fdlLimit = new FormData();
     fdlLimit.left = new FormAttachment( 0, 0 );
     fdlLimit.right = new FormAttachment( middle, -margin );
-    fdlLimit.top = new FormAttachment( gAccepting, margin * 2 );
+    fdlLimit.top = new FormAttachment( wlCompression, margin * 2 );
     wlLimit.setLayoutData( fdlLimit );
     wLimit = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wLimit );
     wLimit.addModifyListener( lsMod );
     fdLimit = new FormData();
     fdLimit.left = new FormAttachment( middle, 0 );
-    fdLimit.top = new FormAttachment( gAccepting, margin * 2 );
+    fdLimit.top = new FormAttachment( wCompression, margin * 2 );
     fdLimit.right = new FormAttachment( 100, 0 );
     wLimit.setLayoutData( fdLimit );
 
@@ -486,10 +514,11 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 
     wInclFilename.setSelection( input.includeFilename() );
     wInclFilenameField.setText( Const.NVL( input.getFilenameField(), "" ) );
+    wCompression.setText( Const.NVL( input.getFileCompression(), "" ) );
 
     wAccFilenames.setSelection( input.isAcceptingFilenames() );
     wAccField.setText( Const.NVL( input.getAcceptingField(), "" ) );
-    wAccStep.setText( Const.NVL( input.getAcceptingStep() == null ? "" : input.getAcceptingStep().getName(), "" ) );
+    wAccStep.setText( Const.NVL( input.getAcceptingStepName(), "" ) );
     wCharactersetName.setText( Const.NVL( input.getCharactersetName(), "" ) );
 
     setFlags();
@@ -514,6 +543,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 
     meta.setIncludeFilename( wInclFilename.getSelection() );
     meta.setFilenameField( wInclFilenameField.getText() );
+    meta.setFileCompression( wCompression.getText() );
 
     meta.setAcceptingFilenames( wAccFilenames.getSelection() );
     meta.setAcceptingField( wAccField.getText() );
