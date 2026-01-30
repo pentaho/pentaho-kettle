@@ -12,6 +12,7 @@
 
 package org.pentaho.di.base;
 
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.bowl.Bowl;
@@ -188,11 +189,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
 
           if ( metaPath.startsWith( "file://" ) || metaPath.startsWith( "zip:file://" ) || metaPath.startsWith(
             "hdfs://" ) ) {
-            String extension = isTransMeta() ? RepositoryObjectType.TRANSFORMATION.getExtension()
-              : RepositoryObjectType.JOB.getExtension();
-            if ( !metaPath.endsWith( extension ) ) {
-              metaPath = metaPath + extension;
-            }
+            metaPath = ensureFilePathHasExtension( metaPath );
             theMeta = attemptCacheRead( metaPath ); //try to get from the cache first
             if ( theMeta == null ) {
               if ( isTransMeta() ) {
@@ -205,10 +202,16 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
               idContainer[ 0 ] = metaPath;
             }
           } else {
+            // If there is an extra leading slash directly before the VFS root URI,
+            // normalize it by removing that single slash (e.g. "/pvfs:///..." -> "pvfs:///...").
+            if ( StringUtils.startsWith( metaPath, "/" + ConnectionFileProvider.ROOT_URI ) ) {
+              metaPath = metaPath.substring( 1 );
+            }
             theMeta = attemptCacheRead( metaPath ); //try to get from the cache first
             // Though connected to repo, if we have a pvfs path, try loading from vfs
             // this covers vfs files when connected to a repo
-            if ( theMeta == null && ( StringUtils.startsWith( metaPath, "pvfs" ) ) ) {
+            if ( theMeta == null && ( StringUtils.startsWith( metaPath, ConnectionFileProvider.ROOT_URI ) ) ) {
+              metaPath = ensureFilePathHasExtension( metaPath );
               theMeta = isTransMeta()
                 ? (T) new TransMeta( bowl, metaPath, metaStore, rep, true,
                 jobEntryBase.getParentVariableSpace(), null )
@@ -464,6 +467,7 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
             }
             // If we couldn't load from repo, try loading from vfs as fallback
             if ( theMeta == null ) {
+              cacheKey = ensureFilePathHasExtension( cacheKey );
               theMeta = attemptLoadMeta( bowl, cacheKey, rep, metaStore, null, tmpSpace, idContainer );
               LogChannel.GENERAL.logDetailed( LOADING + friendlyMetaType + FROM_REPOSITORY,
                 friendlyMetaType + " was loaded from XML file [" + cacheKey + "]" );
@@ -575,5 +579,34 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       idContainer[ 0 ] = realFilename;  //remember the key to cache
     }
     return theMeta;
+  }
+
+  /**
+   * Ensures that the provided file path has the correct file extension based on the metadata type.
+   *
+   * <p>This method checks if the given metaPath ends with the appropriate extension (.ktr for transformations
+   * or .kjb for jobs). If the extension is missing, it appends the correct extension to the path.</p>
+   *
+   * <p>Examples:
+   * <ul>
+   *   <li>For TransMeta: "path/to/transformation" → "path/to/transformation.ktr"</li>
+   *   <li>For TransMeta: "path/to/transformation.ktr" → "path/to/transformation.ktr" (unchanged)</li>
+   *   <li>For JobMeta: "path/to/job" → "path/to/job.kjb"</li>
+   *   <li>For JobMeta: "path/to/job.kjb" → "path/to/job.kjb" (unchanged)</li>
+   * </ul>
+   * </p>
+   *
+   * @param metaPath The file path to check and potentially modify. Can be a simple path, file protocol path
+   *                 (file://), or any VFS protocol path (pvfs://, hdfs://, zip:, etc.).
+   * @return The metaPath with the correct file extension appended if it was missing, or the original path
+   * if the extension was already present.
+   */
+  protected String ensureFilePathHasExtension( String metaPath ) {
+    String extension = isTransMeta() ? RepositoryObjectType.TRANSFORMATION.getExtension()
+      : RepositoryObjectType.JOB.getExtension();
+    if ( !metaPath.endsWith( extension ) ) {
+      metaPath = metaPath + extension;
+    }
+    return metaPath;
   }
 }
