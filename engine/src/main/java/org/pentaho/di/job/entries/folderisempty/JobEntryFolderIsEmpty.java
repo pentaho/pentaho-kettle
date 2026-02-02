@@ -274,7 +274,27 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
         if ( !info.getFile().toString().equals( root_folder ) ) {
           // Pass over the Base folder itself
           if ( ( info.getFile().getType() == FileType.FILE ) ) {
-            if ( info.getFile().getParent().equals( info.getBaseFolder() ) ) {
+            boolean isInBaseFolder;
+            try {
+              String parentPath = info.getFile().getParent().getName().getURI();
+              String basePath = info.getBaseFolder().getName().getURI();
+              isInBaseFolder = parentPath.equals( basePath );
+              if ( log.isDetailed() ) {
+                log.logDetailed( "File: " + info.getFile().getName().getBaseName()
+                  + ", Parent: " + parentPath
+                  + ", Base: " + basePath
+                  + ", InBase: " + isInBaseFolder );
+              }
+            } catch ( Exception ex ) {
+              if ( log.isDebug() ) {
+                log.logDebug(
+                  "Unable to retrieve URI for file or base folder, falling back to direct parent/base comparison.",
+                  ex );
+              }
+              FileObject parent = info.getFile().getParent();
+              isInBaseFolder = parent != null && parent.equals( info.getBaseFolder() );
+            }
+            if ( isInBaseFolder ) {
               // We are in the Base folder
               if ( ( isSpecifyWildcard() && GetFileWildcard( info.getFile().getName().getBaseName() ) )
                 || !isSpecifyWildcard() ) {
@@ -306,6 +326,10 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
         }
         return true;
 
+      } catch ( IOException e ) {
+        log.logError( BaseMessages.getString( PKG, "JobFolderIsEmpty.Error" ), BaseMessages.getString(
+          PKG, "JobFolderIsEmpty.Error.Exception", info.getFile().toString(), e.getMessage() ) );
+        returncode = false;
       } catch ( Exception e ) {
         if ( !rethrow ) {
           log.logError( BaseMessages.getString( PKG, "JobFolderIsEmpty.Error" ), BaseMessages.getString(
