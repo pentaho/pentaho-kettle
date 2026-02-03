@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -274,7 +275,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
         if ( !info.getFile().toString().equals( root_folder ) ) {
           // Pass over the Base folder itself
           if ( ( info.getFile().getType() == FileType.FILE ) ) {
-            if ( info.getFile().getParent().equals( info.getBaseFolder() ) ) {
+            if ( isIsInBaseFolder( info ) ) {
               // We are in the Base folder
               if ( ( isSpecifyWildcard() && GetFileWildcard( info.getFile().getName().getBaseName() ) )
                 || !isSpecifyWildcard() ) {
@@ -285,7 +286,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
               }
             } else {
               // We are not in the base Folder...ONLY if Use sub folders
-              // We are in the Base folder
               if ( isIncludeSubFolders() ) {
                 if ( ( isSpecifyWildcard() && GetFileWildcard( info.getFile().getName().getBaseName() ) )
                   || !isSpecifyWildcard() ) {
@@ -329,6 +329,24 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
     public boolean traverseDescendents( FileSelectInfo info ) {
       return true;
     }
+  }
+
+  private boolean isIsInBaseFolder( FileSelectInfo info ) throws FileSystemException {
+    boolean isInBaseFolder;
+    try {
+      String parentPath = info.getFile().getParent().getName().getURI();
+      String basePath = info.getBaseFolder().getName().getURI();
+      isInBaseFolder = parentPath.equals( basePath );
+      if ( log.isDetailed() ) {
+        log.logDetailed( "File: " + info.getFile().getName().getBaseName()
+          + ", Parent: " + parentPath
+          + ", Base: " + basePath
+          + ", InBase: " + isInBaseFolder );
+      }
+    } catch ( Exception ex ) {
+      isInBaseFolder = info.getFile().getParent().equals( info.getBaseFolder() );
+    }
+    return isInBaseFolder;
   }
 
   /**********************************************************
