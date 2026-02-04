@@ -67,9 +67,111 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
   private PGBulkLoaderData data;
   private PGCopyOutputStream pgCopyOut;
 
+  // Runtime-only effective field configuration.
+  // IMPORTANT: Do not write these back into meta, otherwise Spoon dialog will show them after execution.
+  private transient String[] runtimeStreamFields;
+  private transient String[] runtimeTableFields;
+  private transient String[] runtimeDateMask;
+
   public PGBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  private static final class EffectiveFields {
+    final String[] streamFields;
+    final String[] tableFields;
+    final String[] dateMask;
+
+    EffectiveFields( String[] streamFields, String[] tableFields, String[] dateMask ) {
+      this.streamFields = streamFields;
+      this.tableFields = tableFields;
+      this.dateMask = dateMask;
+    }
+  }
+
+  private EffectiveFields getEffectiveFields( RowMetaInterface inputRowMeta ) throws KettleException {
+    // If we already computed runtime fields for this execution, reuse them.
+    if ( runtimeStreamFields != null && runtimeStreamFields.length > 0 ) {
+      return new EffectiveFields( runtimeStreamFields, runtimeTableFields, runtimeDateMask );
+    }
+
+    String[] stream = meta.getFieldStream();
+    String[] table = meta.getFieldTable();
+    String[] dateMask = meta.getDateMask();
+
+    // If Fields tab is empty, use incoming row metadata (runtime only).
+    if ( stream == null || stream.length == 0 ) {
+      // Backward compatible behavior: if we don't have input metadata (unit tests / edge cases),
+      // do not fail early. Return empty arrays.
+      if ( inputRowMeta == null || inputRowMeta.size() <= 0 ) {
+        runtimeStreamFields = new String[0];
+        runtimeTableFields = new String[0];
+        runtimeDateMask = new String[0];
+        return new EffectiveFields( runtimeStreamFields, runtimeTableFields, runtimeDateMask );
+      }
+
+      int nrFields = inputRowMeta.size();
+      stream = new String[nrFields];
+      table = new String[nrFields];
+      dateMask = new String[nrFields]; // default: PASS_THROUGH
+
+      for ( int i = 0; i < nrFields; i++ ) {
+        String fieldName = inputRowMeta.getValueMeta( i ).getName();
+        stream[i] = fieldName;
+        table[i] = fieldName;
+      }
+    } else {
+      // Normalize arrays locally without mutating meta.
+      if ( table == null || table.length != stream.length ) {
+        String[] newTable = new String[stream.length];
+        if ( table != null ) {
+          System.arraycopy( table, 0, newTable, 0, Math.min( table.length, newTable.length ) );
+        }
+        for ( int i = 0; i < newTable.length; i++ ) {
+          if ( Utils.isEmpty( newTable[i] ) ) {
+            newTable[i] = stream[i];
+          }
+        }
+        table = newTable;
+      }
+
+      if ( dateMask == null || dateMask.length != stream.length ) {
+        String[] newDateMask = new String[stream.length];
+        if ( dateMask != null ) {
+          System.arraycopy( dateMask, 0, newDateMask, 0, Math.min( dateMask.length, newDateMask.length ) );
+        }
+        dateMask = newDateMask;
+      }
+    }
+
+    runtimeStreamFields = stream;
+    runtimeTableFields = table;
+    runtimeDateMask = dateMask;
+
+    return new EffectiveFields( runtimeStreamFields, runtimeTableFields, runtimeDateMask );
+  }
+
+  private void ensureDateFormatChoicesInitialized( EffectiveFields fields ) {
+    int nrFields = fields.streamFields == null ? 0 : fields.streamFields.length;
+    if ( data.dateFormatChoices != null && data.dateFormatChoices.length == nrFields ) {
+      return;
+    }
+
+    data.dateFormatChoices = new int[nrFields];
+    for ( int i = 0; i < nrFields; i++ ) {
+      String mask = fields.dateMask != null && fields.dateMask.length > i ? fields.dateMask[i] : null;
+
+      if ( Utils.isEmpty( mask ) ) {
+        data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
+      } else if ( mask.equalsIgnoreCase( PGBulkLoaderMeta.DATE_MASK_DATE ) ) {
+        data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATE;
+      } else if ( mask.equalsIgnoreCase( PGBulkLoaderMeta.DATE_MASK_DATETIME ) ) {
+        data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATETIME;
+      } else {
+        data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
+      }
+    }
   }
 
   /**
@@ -78,6 +180,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
    * @return a string containing the control file contents
    */
   public String getCopyCommand( ) throws KettleException {
+    EffectiveFields fields = getEffectiveFields( getInputRowMeta() );
+
     DatabaseMeta dm = meta.getDatabaseMeta();
 
     StringBuilder contents = new StringBuilder( 500 );
@@ -86,44 +190,30 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
       dm.getQuotedSchemaTableCombination(
         environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
-    // Set the date style...
-    //
-    // contents.append("SET DATESTYLE ISO;"); // This is the default but we set it anyway...
-    // contents.append(Const.CR);
-
-    // Create a Postgres / Greenplum COPY string for use with a psql client
     contents.append( "COPY " );
-    // Table name
-
     contents.append( tableName );
 
-    // Names of columns
+    // Names of columns (optional). If none are defined, omit the column list (valid PostgreSQL syntax).
+    String[] streamFields = fields.streamFields;
+    String[] tableFields = fields.tableFields;
 
-    contents.append( " ( " );
-
-    String[] streamFields = meta.getFieldStream();
-    String[] tableFields = meta.getFieldTable();
-
-    if ( streamFields == null || streamFields.length == 0 ) {
-      throw new KettleException( "No fields defined to load to database" );
-    }
-
-    for ( int i = 0; i < streamFields.length; i++ ) {
-      if ( i != 0 ) {
-        contents.append( ", " );
+    if ( streamFields != null && streamFields.length > 0 ) {
+      contents.append( " ( " );
+      for ( int i = 0; i < streamFields.length; i++ ) {
+        if ( i != 0 ) {
+          contents.append( ", " );
+        }
+        contents.append( dm.quoteField( tableFields[i] ) );
       }
-      contents.append( dm.quoteField( tableFields[i] ) );
+      contents.append( " ) " );
+    } else {
+      contents.append( " " );
     }
 
-    contents.append( " ) " );
+    contents.append( " FROM STDIN" );
 
-    // The "FROM" filename
-    contents.append( " FROM STDIN" ); // FIFO file
-
-    // The "FORMAT" clause
     contents.append( " WITH CSV DELIMITER AS '" ).append( environmentSubstitute( meta.getDelimiter() ) )
-        .append( "' QUOTE AS '" ).append(
-      environmentSubstitute( meta.getEnclosure() ) ).append( "'" );
+      .append( "' QUOTE AS '" ).append( environmentSubstitute( meta.getEnclosure() ) ).append( "'" );
     contents.append( ";" ).append( Const.CR );
 
     return contents.toString();
@@ -242,17 +332,29 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
       if ( first ) {
         first = false;
 
+        // At this point, init() has already had a chance to auto-populate
+        // meta.getFieldStream()/meta.getFieldTable() from input metadata (if available).
+        // We just cache indexes and start COPY.
+
+        EffectiveFields fields = getEffectiveFields( getInputRowMeta() );
+
         // Cache field indexes.
         //
-        data.keynrs = new int[meta.getFieldStream().length];
+        data.keynrs = new int[fields.streamFields.length];
         for ( int i = 0; i < data.keynrs.length; i++ ) {
-          data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getFieldStream()[i] );
+          data.keynrs[i] = getInputRowMeta().indexOfValue( fields.streamFields[i] );
+          if ( data.keynrs[i] < 0 ) {
+            throw new KettleException( "Field '" + fields.streamFields[i]
+                    + "' specified for bulk load not found in input stream" );
+          }
         }
+
+        // Initialize date format choices to match the runtime-selected fields.
+        ensureDateFormatChoicesInitialized( fields );
 
         // execute the copy statement... pgCopyOut is setup there
         //
         do_copy( meta, true );
-
 
         // Write rows of data hereafter...
         //
@@ -277,19 +379,46 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
   void writeRowToPostgres( RowMetaInterface rowMeta, Object[] r ) throws KettleException {
 
     try {
-      // So, we have this output stream to which we can write CSV data to.
-      // Basically, what we need to do is write the binary data (from strings to it as part of this proof of concept)
-      //
-      // Let's assume the data is in the correct format here too.
-      //
+      // Backward compatible behavior:
+      // - null keynrs is an error (not initialized)
+      // - empty keynrs means "no fields": just write a newline (old implementation behavior)
+      if ( data.keynrs == null ) {
+        throw new KettleException( "No fields defined to load to database" );
+      }
+      if ( data.keynrs.length == 0 ) {
+        pgCopyOut.write( data.newline );
+        return;
+      }
+
+      // Safety net: if metadata-derived fields are used, ensure choices exist and align.
+      if ( data.dateFormatChoices == null || data.dateFormatChoices.length != data.keynrs.length ) {
+        ensureDateFormatChoicesInitialized( getEffectiveFields( rowMeta ) );
+      }
+
       for ( int i = 0; i < data.keynrs.length; i++ ) {
         if ( i > 0 ) {
-          // Write a separator
-          //
           pgCopyOut.write( data.separator );
         }
 
         int index = data.keynrs[i];
+
+        // Defensive checks to avoid ArrayIndexOutOfBoundsException when row metadata / row data mismatch.
+        if ( rowMeta == null ) {
+          throw new KettleException( "Input row metadata is null while writing to PostgreSQL COPY stream" );
+        }
+        if ( index < 0 || index >= rowMeta.size() ) {
+          throw new KettleException(
+            "Field index " + index + " is out of bounds for input row metadata (size=" + rowMeta.size() + ")" );
+        }
+        if ( r == null ) {
+          throw new KettleException( "Input row data is null while writing to PostgreSQL COPY stream" );
+        }
+        if ( index >= r.length ) {
+          throw new KettleException(
+            "Field index " + index + " is out of bounds for input row data (length=" + r.length + "). "
+              + "This indicates a mismatch between input row metadata and the actual row object array." );
+        }
+
         ValueMetaInterface valueMeta = rowMeta.getValueMeta( index );
         Object valueData = r[index];
 
@@ -298,8 +427,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
             case ValueMetaInterface.TYPE_STRING:
               pgCopyOut.write( data.quote );
 
-              // No longer dump the bytes for a Lazy Conversion;
-              // We need to escape the quote characters in every string
               String quoteStr = new String( data.quote );
               String escapedString = valueMeta.getString( valueData ).replace( quoteStr, quoteStr + quoteStr );
               pgCopyOut.write( escapedString.getBytes( clientEncoding ) );
@@ -315,11 +442,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               }
               break;
             case ValueMetaInterface.TYPE_DATE:
-              // Format the date in the right format.
-              //
               switch ( data.dateFormatChoices[i] ) {
-              // Pass the data along in the format chosen by the user OR in binary format...
-              //
                 case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH:
                   if ( valueMeta.isStorageBinaryString() ) {
                     pgCopyOut.write( (byte[]) valueData );
@@ -330,66 +453,52 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
                     }
                   }
                   break;
-
-                // Convert to a "YYYY-MM-DD" format
-                //
                 case PGBulkLoaderMeta.NR_DATE_MASK_DATE:
                   String dateString = data.dateMeta.getString( valueMeta.getDate( valueData ) );
                   if ( dateString != null ) {
                     pgCopyOut.write( dateString.getBytes( clientEncoding ) );
                   }
                   break;
-
-                // Convert to a "YYYY-MM-DD HH:MM:SS.mmm" format
-                //
                 case PGBulkLoaderMeta.NR_DATE_MASK_DATETIME:
                   String dateTimeString = data.dateTimeMeta.getString( valueMeta.getDate( valueData ) );
                   if ( dateTimeString != null ) {
                     pgCopyOut.write( dateTimeString.getBytes( clientEncoding ) );
                   }
                   break;
-
                 default:
-                  throw new KettleException( "PGBulkLoader doesn't know how to handle date (neither passthrough, nor date or datetime for field " + valueMeta.getName() );
+                  throw new KettleException(
+                    "PGBulkLoader doesn't know how to handle date (neither passthrough, nor date or datetime for field "
+                      + valueMeta.getName() );
               }
               break;
             case ValueMetaInterface.TYPE_TIMESTAMP:
-              // Format the date in the right format.
-              //
               switch ( data.dateFormatChoices[i] ) {
-              // Pass the data along in the format chosen by the user OR in binary format...
-              //
                 case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH:
                   if ( valueMeta.isStorageBinaryString() ) {
                     pgCopyOut.write( (byte[]) valueData );
                   } else {
-                    String dateString = valueMeta.getString( valueData );
-                    if ( dateString != null ) {
-                      pgCopyOut.write( dateString.getBytes( clientEncoding ) );
+                    String tsString = valueMeta.getString( valueData );
+                    if ( tsString != null ) {
+                      pgCopyOut.write( tsString.getBytes( clientEncoding ) );
                     }
                   }
                   break;
-
-                // Convert to a "YYYY-MM-DD" format
-                //
                 case PGBulkLoaderMeta.NR_DATE_MASK_DATE:
-                  String dateString = data.dateMeta.getString( valueMeta.getDate( valueData ) );
-                  if ( dateString != null ) {
-                    pgCopyOut.write( dateString.getBytes( clientEncoding ) );
+                  String tsDateString = data.dateMeta.getString( valueMeta.getDate( valueData ) );
+                  if ( tsDateString != null ) {
+                    pgCopyOut.write( tsDateString.getBytes( clientEncoding ) );
                   }
                   break;
-
-                // Convert to a "YYYY-MM-DD HH:MM:SS.mmm" format
-                //
                 case PGBulkLoaderMeta.NR_DATE_MASK_DATETIME:
-                  String dateTimeString = data.dateTimeMeta.getString( valueMeta.getDate( valueData ) );
-                  if ( dateTimeString != null ) {
-                    pgCopyOut.write( dateTimeString.getBytes( clientEncoding ) );
+                  String tsDateTimeString = data.dateTimeMeta.getString( valueMeta.getDate( valueData ) );
+                  if ( tsDateTimeString != null ) {
+                    pgCopyOut.write( tsDateTimeString.getBytes( clientEncoding ) );
                   }
                   break;
-
                 default:
-                  throw new KettleException( "PGBulkLoader doesn't know how to handle timestamp (neither passthrough, nor date or datetime for field " + valueMeta.getName() );
+                  throw new KettleException(
+                    "PGBulkLoader doesn't know how to handle timestamp (neither passthrough, nor date or datetime for field "
+                      + valueMeta.getName() );
               }
               break;
             case ValueMetaInterface.TYPE_NUMBER:
@@ -415,8 +524,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
         }
       }
 
-      // Now write a newline
-      //
       pgCopyOut.write( data.newline );
     } catch ( Exception e ) {
       throw new KettleException( "Error serializing rows of data to the COPY command", e );
@@ -460,19 +567,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
       }
       data.newline = Const.CR.getBytes();
 
-      data.dateFormatChoices = new int[meta.getFieldStream().length];
-      for ( int i = 0; i < data.dateFormatChoices.length; i++ ) {
-        if ( Utils.isEmpty( meta.getDateMask()[i] ) ) {
-          data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
-        } else if ( meta.getDateMask()[i].equalsIgnoreCase( PGBulkLoaderMeta.DATE_MASK_DATE ) ) {
-          data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATE;
-        } else if ( meta.getDateMask()[i].equalsIgnoreCase( PGBulkLoaderMeta.DATE_MASK_DATETIME ) ) {
-          data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATETIME;
-        } else { // The default : just pass it along...
-          data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
-        }
-
-      }
+      // Do not initialize dateFormatChoices here when Fields tab is empty.
+      // We build runtime-only fields from incoming metadata on the first row.
+      data.dateFormatChoices = null;
       return true;
     }
     return false;
@@ -487,7 +584,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
       if ( pgCopyOut != null ) {
         pgCopyOut.close();
       }
-    } catch (  IOException e ) {
+    } catch ( IOException e ) {
       logError( "Error while closing the Postgres Output Stream", e.getMessage() );
     }
 
