@@ -287,7 +287,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
               }
             } catch ( Exception ex ) {
               isInBaseFolder = info.getFile().getParent().equals( info.getBaseFolder() );
-              log.logDetailed( "Error comparing parent and base folder" + ex.getMessage() );
+              log.logDetailed( "Error comparing parent and base folder " + ex.getMessage() );
             }
             if ( isInBaseFolder ) {
               // We are in the Base folder
