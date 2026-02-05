@@ -243,15 +243,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   }
 
   private boolean createParentFolder( String filename ) {
-    // Check for parent folder
-    FileObject parentfolder = null;
-
+    // Only create the parent directory of the zip file, not the file itself
     boolean result = false;
+    FileObject parentfolder = null;
     try {
-      // Get parent folder
-      parentfolder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( filename, this ).getParent();
-
-      if ( !parentfolder.exists() ) {
+      FileObject zipFileObject = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( filename, this );
+      parentfolder = zipFileObject.getParent();
+      if (parentfolder != null && !parentfolder.exists() ) {
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "JobEntryZipFile.CanNotFindFolder", ""
             + parentfolder.getName() ) );
@@ -260,15 +258,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "JobEntryZipFile.FolderCreated", "" + parentfolder.getName() ) );
         }
-      } else {
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryZipFile.FolderExists", "" + parentfolder.getName() ) );
-        }
+      } else if ( parentfolder != null && parentfolder.exists() && log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryZipFile.FolderExists", "" + parentfolder.getName() ) );
       }
       result = true;
     } catch ( Exception e ) {
       logError(
-        BaseMessages.getString( PKG, "JobEntryZipFile.CanNotCreateFolder", "" + parentfolder.getName() ), e );
+        BaseMessages.getString( PKG, "JobEntryZipFile.CanNotCreateFolder", "" + ( parentfolder != null ? parentfolder.getName() : filename) ), e );
     } finally {
       if ( parentfolder != null ) {
         try {
@@ -332,8 +328,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               + localrealZipfilename + BaseMessages.getString( PKG, "JobZipFiles.Zip_FileExists2.Label" ) );
           }
         }
-        // Let's see if we need to create parent folder of destination zip filename
-        if ( createparentfolder ) {
+        // Always create parent folder if it does not exist (for dynamic date/time format or if user requested)
+        boolean isDynamicFilename = isSpecifyFormat() || isDateInFilename() || isTimeInFilename();
+        if ( createparentfolder || isDynamicFilename ) {
           createParentFolder( localrealZipfilename );
         }
 
@@ -419,27 +416,12 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                   + localrealZipfilename + BaseMessages.getString( PKG, "JobZipFiles.Zip_FileNameChange1.Label" ) );
               }
             } else if ( ifZipFileExists == 1 && Fileexists ) {
-              // the zip file exists and user want to append
-              // get a temp file
-              fileZip = getFile( localrealZipfilename );
-              tempFile = File.createTempFile( fileZip.getName(), null );
-
-              // delete it, otherwise we cannot rename existing zip to it.
-              tempFile.delete();
-
-              renameOk = fileZip.renameTo( tempFile );
-
-              if ( !renameOk ) {
-                logError( BaseMessages.getString( PKG, "JobZipFiles.Cant_Rename_Temp1.Label" )
-                  + fileZip.getAbsolutePath()
-                  + BaseMessages.getString( PKG, "JobZipFiles.Cant_Rename_Temp2.Label" )
-                  + tempFile.getAbsolutePath()
-                  + BaseMessages.getString( PKG, "JobZipFiles.Cant_Rename_Temp3.Label" ) );
-              }
+              // Append mode: delete existing and recreate with current source files
               if ( log.isDebug() ) {
                 logDebug( BaseMessages.getString( PKG, "JobZipFiles.Zip_FileAppend1.Label" )
                   + localrealZipfilename + BaseMessages.getString( PKG, "JobZipFiles.Zip_FileAppend2.Label" ) );
               }
+              fileObject.delete();
             }
 
             if ( log.isDetailed() ) {
@@ -455,36 +437,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             out = new ZipOutputStream( buff );
 
             HashSet<String> fileSet = new HashSet<String>();
-
-            if ( renameOk ) {
-              // User want to append files to existing Zip file
-              // The idea is to rename the existing zip file to a temporary file
-              // and then adds all entries in the existing zip along with the new files,
-              // excluding the zip entries that have the same name as one of the new files.
-
-              zin = new ZipInputStream( new FileInputStream( tempFile ) );
-              entry = zin.getNextEntry();
-
-              while ( entry != null ) {
-                String name = entry.getName();
-
-                if ( !fileSet.contains( name ) ) {
-
-                  // Add ZIP entry to output stream.
-                  out.putNextEntry( new ZipEntry( name ) );
-                  // Transfer bytes from the ZIP file to the output file
-                  int len;
-                  while ( ( len = zin.read( buffer ) ) > 0 ) {
-                    out.write( buffer, 0, len );
-                  }
-
-                  fileSet.add( name );
-                }
-                entry = zin.getNextEntry();
-              }
-              // Close the streams
-              zin.close();
-            }
 
             // Set the method
             out.setMethod( ZipOutputStream.DEFLATED );
@@ -542,7 +494,24 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               FileObject file = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( targetFilename, this );
               boolean isTargetDirectory = file.exists() && file.getType().equals( FileType.FOLDER );
 
-              if ( getIt && !getItexclude && !isTargetDirectory && !fileSet.contains( targetFilename ) ) {
+              // Compute the relative name for the zip entry
+              String relativeName;
+              String fullName = fileList[i].getName().getPath();
+              String basePath = sourceFileOrFolder.getName().getPath();
+              if ( isSourceDirectory ) {
+                if ( fullName.startsWith( basePath ) ) {
+                  relativeName = fullName.substring( basePath.length() + 1 );
+                } else {
+                  relativeName = fullName;
+                }
+              } else if ( isFromPrevious ) {
+                int depth = determineDepth( environmentSubstitute( storedSourcePathDepth ) );
+                relativeName = determineZipfilenameForDepth( fullName, depth );
+              } else {
+                relativeName = fileList[i].getName().getBaseName();
+              }
+
+              if ( getIt && !getItexclude && !isTargetDirectory && !fileSet.contains( relativeName ) ) {
                 // We can add the file to the Zip Archive
                 if ( log.isDebug() ) {
                   logDebug( BaseMessages.getString( PKG, "JobZipFiles.Add_FilesToZip1.Label" )
@@ -554,22 +523,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                 InputStream in = KettleVFS.getInputStream( file );
 
                 // Add ZIP entry to output stream.
-                //
-                String relativeName;
-                String fullName = fileList[i].getName().getPath();
-                String basePath = sourceFileOrFolder.getName().getPath();
-                if ( isSourceDirectory ) {
-                  if ( fullName.startsWith( basePath ) ) {
-                    relativeName = fullName.substring( basePath.length() + 1 );
-                  } else {
-                    relativeName = fullName;
-                  }
-                } else if ( isFromPrevious ) {
-                  int depth = determineDepth( environmentSubstitute( storedSourcePathDepth ) );
-                  relativeName = determineZipfilenameForDepth( fullName, depth );
-                } else {
-                  relativeName = fileList[i].getName().getBaseName();
-                }
                 out.putNextEntry( new ZipEntry( relativeName ) );
 
                 int len;
@@ -585,6 +538,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                 // Get Zipped File
                 zippedFiles[fileNum] = fileList[i];
                 fileNum = fileNum + 1;
+                fileSet.add( relativeName );
               }
             }
             // Close the ZipOutPutStream
@@ -594,10 +548,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 
             if ( log.isBasic() ) {
               logBasic( BaseMessages.getString( PKG, "JobZipFiles.Log.TotalZippedFiles", "" + zippedFiles.length ) );
-            }
-            // Delete Temp File
-            if ( tempFile != null ) {
-              tempFile.delete();
             }
 
             // -----Get the list of Zipped Files and Move or Delete Them
@@ -1047,14 +997,24 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    ValidatorContext ctx1 = new ValidatorContext();
-    AbstractFileValidator.putVariableSpace( ctx1, getVariables() );
-    AndValidator.putValidators( ctx1, JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileDoesNotExistValidator() );
-    if ( 3 == ifZipFileExists ) {
-      // execute method fails if the file already exists; we should too
-      FileDoesNotExistValidator.putFailIfExists( ctx1, true );
+    // Only validate zipFilename existence if not using dynamic filename (date/time/specifyFormat)
+    boolean isDynamicFilename = isSpecifyFormat() || isDateInFilename() || isTimeInFilename();
+    if ( !isDynamicFilename ) {
+      ValidatorContext ctx1 = new ValidatorContext();
+      AbstractFileValidator.putVariableSpace( ctx1, getVariables() );
+      AndValidator.putValidators( ctx1, JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileDoesNotExistValidator() );
+      if ( 3 == ifZipFileExists ) {
+        // execute method fails if the file already exists
+        FileDoesNotExistValidator.putFailIfExists( ctx1, true );
+      }
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "zipFilename", remarks, ctx1 );
+    } else {
+      // Only check not blank for dynamic filename
+      ValidatorContext ctx1 = new ValidatorContext();
+      AbstractFileValidator.putVariableSpace( ctx1, getVariables() );
+      AndValidator.putValidators( ctx1, JobEntryValidatorUtils.notBlankValidator() );
+      JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "zipFilename", remarks, ctx1 );
     }
-    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "zipFilename", remarks, ctx1 );
 
     if ( 2 == afterZip ) {
       // setting says to move
