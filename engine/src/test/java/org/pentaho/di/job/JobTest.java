@@ -34,7 +34,6 @@ import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectLifecycleInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -388,25 +387,25 @@ public class JobTest {
     // Setup: Create a job with a variable set before run()
     String testVarName = "TEST_PRESERVED_VAR_" + UUID.randomUUID().toString();
     String presetValue = "preset_value_should_be_preserved";
-    
+
     // Ensure the variable is NOT in system properties (or has a different value)
     String systemValue = System.getProperty( testVarName );
-    assertFalse( "Test variable should not exist in system properties for this test to be valid",
-        presetValue.equals( systemValue ) );
-    
+    assertNotEquals( "Test variable should not exist in system properties for this test to be valid",
+        presetValue, systemValue );
+
     Repository repository = mock( Repository.class );
     JobMeta jobMeta = new JobMeta();
     Job job = new Job( repository, jobMeta );
-    
+
     // Set the variable before run() - this simulates what PdiAction does
     job.setVariable( testVarName, presetValue );
-    
+
     // Verify it's set
     assertEquals( "Variable should be set before run", presetValue, job.getVariable( testVarName ) );
-    
+
     // Simulate what run() does when there's no parent job
     job.initializeVariablesFromDefaultSpace();
-    
+
     // The variable should still have the preset value, not be overwritten
     assertEquals( "Variable set before run() should be preserved after initialization",
         presetValue, job.getVariable( testVarName ) );
@@ -422,18 +421,18 @@ public class JobTest {
     // Use user.dir as a system property that should be available
     String systemVarName = "user.dir"; // This should always exist
     String systemValue = System.getProperty( systemVarName );
-    
+
     // Verify the system property exists for this test to be valid
     Assert.assertNotNull( "System property should exist for this test", systemValue );
-    
+
     Repository repository = mock( Repository.class );
     JobMeta jobMeta = new JobMeta();
     Job job = new Job( repository, jobMeta );
-    
+
     // Don't set the variable explicitly - it should come from system properties
     // Simulate what run() does when there's no parent job
     job.initializeVariablesFromDefaultSpace();
-    
+
     // The system property should be available
     assertEquals( "System property should be available after initialization",
         systemValue, job.getVariable( systemVarName ) );
@@ -449,21 +448,21 @@ public class JobTest {
     String varName = "user.dir";
     String systemValue = System.getProperty( varName );
     String presetValue = "my_custom_override_value";
-    
+
     // Verify system property exists and our preset is different
     Assert.assertNotNull( "System property should exist", systemValue );
-    assertNotEquals( "Preset value should differ from system value", systemValue, presetValue );
-    
+    assertNotEquals( "Preset value should differ from system value", presetValue, systemValue );
+
     Repository repository = mock( Repository.class );
     JobMeta jobMeta = new JobMeta();
     Job job = new Job( repository, jobMeta );
-    
+
     // Set the variable to override the system property
     job.setVariable( varName, presetValue );
-    
+
     // Simulate what run() does when there's no parent job
     job.initializeVariablesFromDefaultSpace();
-    
+
     // The preset value should win over the system property
     assertEquals( "Preset variable should override system property",
         presetValue, job.getVariable( varName ) );
