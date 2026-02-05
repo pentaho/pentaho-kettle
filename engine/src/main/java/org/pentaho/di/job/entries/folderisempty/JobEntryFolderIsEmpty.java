@@ -274,7 +274,22 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
         if ( !info.getFile().toString().equals( root_folder ) ) {
           // Pass over the Base folder itself
           if ( ( info.getFile().getType() == FileType.FILE ) ) {
-            if ( info.getFile().getParent().equals( info.getBaseFolder() ) ) {
+            boolean isInBaseFolder;
+            try {
+              String parentPath = info.getFile().getParent().getName().getURI();
+              String basePath = info.getBaseFolder().getName().getURI();
+              isInBaseFolder = parentPath.equals( basePath );
+              if ( log.isDetailed() ) {
+                log.logDetailed( "File: " + info.getFile().getName().getBaseName()
+                  + ", Parent: " + parentPath
+                  + ", Base: " + basePath
+                  + ", InBase: " + isInBaseFolder );
+              }
+            } catch ( Exception ex ) {
+              isInBaseFolder = info.getFile().getParent().equals( info.getBaseFolder() );
+              log.logDetailed( "Error comparing parent and base folder " + ex.getMessage() );
+            }
+            if ( isInBaseFolder ) {
               // We are in the Base folder
               if ( ( isSpecifyWildcard() && GetFileWildcard( info.getFile().getName().getBaseName() ) )
                 || !isSpecifyWildcard() ) {
@@ -354,8 +369,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+     Repository repository, IMetaStore metaStore ) {
     JobEntryValidatorUtils.andValidator().validate( parentJobMeta.getBowl(), this, "filename", remarks,
-        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 }
