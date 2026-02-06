@@ -413,7 +413,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @param nrHeaders    number of headers
    * @param nrParameters number of parameters
-   * @deprecated use #allocate(int nrHeaders, int nrParameters, int nrMatrixParameters) instead
+   * @deprecated use {@link RestMeta#allocate(int, int, int)} instead
    */
   @Deprecated
   public void allocate( int nrHeaders, int nrParameters ) {

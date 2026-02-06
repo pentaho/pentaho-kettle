@@ -260,8 +260,8 @@ public class Rest extends BaseStep implements StepInterface {
    * Invoke the request based on the method
    *
    * @param invocationBuilder
-   * @param contentType
-   * @param entityString
+   * @param contentType  the content type
+   * @param entityString the entity string
    * @return the response from the server
    * @throws KettleException in case the request could not be processed
    */
@@ -291,7 +291,7 @@ public class Rest extends BaseStep implements StepInterface {
    *
    * @param contentType  the content type
    * @param entityString the entity string
-   * @return
+   * @return the request entity built using the given content type or the default media type
    */
   private Entity<?> getEntity( String contentType, String entityString ) {
     Entity<?> entity;
