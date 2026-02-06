@@ -1,7 +1,6 @@
 package org.pentaho.di.plugins.repofvs.pur.converter;
 
 import org.pentaho.di.base.AbstractMeta;
-import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -33,11 +32,9 @@ public class MetaConverter<T extends AbstractMeta & XMLInterface> implements Con
   private static final Logger log = LoggerFactory.getLogger( MetaConverter.class );
 
   private final RepoMetaLoader<T> loader;
-  private final Bowl sharedObjsBowl;
 
-  public MetaConverter( RepoMetaLoader<T> loader, Bowl repositoryBowl ) {
+  public MetaConverter( RepoMetaLoader<T> loader ) {
     this.loader = loader;
-    this.sharedObjsBowl = repositoryBowl;
   }
 
   @Override
@@ -55,7 +52,6 @@ public class MetaConverter<T extends AbstractMeta & XMLInterface> implements Con
   public InputStream convert( Serializable fileId ) {
     try {
       var meta = loader.loadMeta( toObjectId( fileId ) );
-      SharedObjectUtil.copySharedObjects( sharedObjsBowl, meta, true );
       SharedObjectUtil.stripObjectIds( meta );
       return convertMetaToInputStream( meta );
     } catch ( KettleException e ) {
