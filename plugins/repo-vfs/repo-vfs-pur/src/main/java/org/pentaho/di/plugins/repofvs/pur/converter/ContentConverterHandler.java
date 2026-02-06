@@ -19,9 +19,8 @@ public class ContentConverterHandler implements IRepositoryContentConverterHandl
 
   public ContentConverterHandler( Repository repository ) {
     this.simpleConverter = new StreamConverter( repository.getUnderlyingRepository() );
-    var bowl = repository.getBowl();
-    this.transConverter = new MetaConverter<>( objId -> repository.loadTransformation( objId, null ), bowl );
-    this.jobConverter = new MetaConverter<>( objId -> repository.loadJob( objId, null ), bowl );
+    this.transConverter = new MetaConverter<>( objId -> repository.loadTransformation( objId, null ) );
+    this.jobConverter = new MetaConverter<>( objId -> repository.loadJob( objId, null ) );
   }
 
   @Override
