@@ -277,10 +277,12 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdUrlField.right = new FormAttachment( 100, -margin );
     wUrlField.setLayoutData( fdUrlField );
     wUrlField.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
         // Nothing to do
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -361,10 +363,12 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdMethodField.right = new FormAttachment( 100, -margin );
     wMethodField.setLayoutData( fdMethodField );
     wMethodField.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
         // Nothing to do
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -394,10 +398,12 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdBody.right = new FormAttachment( 100, -margin );
     wBody.setLayoutData( fdBody );
     wBody.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
         // Nothing to do
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -1030,6 +1036,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     //
 
     final Runnable runnable = new Runnable() {
+      @Override
       public void run() {
         StepMeta stepMeta = transMeta.findStep( stepname );
         if ( stepMeta != null ) {
