@@ -265,7 +265,7 @@ public class HttpClientManager {
   }
 
   /**
-   * @deprecated This method is deprecated because is replaced by getSSLContext.
+   * @deprecated This method is deprecated because is replaced by getSslContext.
    * Use {@link #getSslContext(boolean, InputStream, String)} instead.
    */
   @Deprecated
@@ -279,7 +279,7 @@ public class HttpClientManager {
   }
 
   /**
-   * @deprecated This method is deprecated because is replaced by getSSLContext.
+   * @deprecated This method is deprecated because is replaced by getSslContext.
    * Use {@link #getSslContext(boolean, InputStream, String)} instead.
    */
   @Deprecated
