@@ -17,7 +17,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -31,10 +30,8 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -70,49 +67,31 @@ import java.util.Set;
 public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private Label wlApplicationType;
   private ComboVar wApplicationType;
-  private FormData fdlApplicationType, fdApplicationType;
 
   private Label wlMethod;
   private ComboVar wMethod;
-  private FormData fdlMethod, fdMethod;
 
   private Label wlUrl;
   private TextVar wUrl;
-  private FormData fdlUrl, fdUrl;
 
-  private Label wlResult;
   private TextVar wResult;
-  private FormData fdlResult, fdResult;
 
-  private Label wlResultCode;
   private TextVar wResultCode;
-  private FormData fdlResultCode, fdResultCode;
 
-  private Label wlFields;
   private TableView wFields;
-  private FormData fdlFields, fdFields;
 
-  private Label wlUrlInField;
   private Button wUrlInField;
-  private FormData fdlUrlInField, fdUrlInField;
 
   private Label wlUrlField;
   private ComboVar wUrlField;
-  private FormData fdlUrlField, fdUrlField;
 
-  private Label wlMethodInField;
   private Button wMethodInField;
-  private FormData fdlMethodInField, fdMethodInField;
 
-  private Label wlPreemptive;
   private Button wPreemptive;
-  private FormData fdlPreemptive, fdPreemptive;
 
   private Label wlMethodField;
   private ComboVar wMethodField;
-  private FormData fdlMethodField, fdMethodField;
 
   private RestMeta input;
 
@@ -120,78 +99,51 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
   private Label wlBody;
   private ComboVar wBody;
-  private FormData fdlBody, fdBody;
 
-  private Button wGetHeaders;
-
-  private ColumnInfo[] colinf, colinfoparams;
+  private ColumnInfo[] colInf;
+  private ColumnInfo[] colInfoParams;
 
   private String[] fieldNames;
 
-  private Label wlHttpLogin;
   private TextVar wHttpLogin;
 
-  private Label wlHttpPassword;
   private TextVar wHttpPassword;
 
-  private Label wlProxyHost;
   private TextVar wProxyHost;
 
-  private Label wlProxyPort;
   private TextVar wProxyPort;
 
   protected CTabFolder wTabFolder;
 
-  private CTabItem wGeneralTab, wAdditionalTab, wParametersTab, wMatrixParametersTab, wAuthTab;
   protected CTabItem wSSLTab;
-  private FormData fdTabFolder;
-
-  private Composite wGeneralComp, wAdditionalComp;
-  private FormData fdGeneralComp, fdAdditionalComp;
-
-  private Composite wParametersComp, wMatrixParametersComp;
-  private FormData fdParametersComp, fdMatrixParametersComp;
-
-  private Composite wAuthComp;
-  private FormData fdAuthComp;
 
   protected Composite wSSLComp;
-  private FormData fdSSLComp;
 
-  private Label wlParameters, wlMatrixParameters;
-  private TableView wParameters, wMatrixParameters;
-  private FormData fdlParameters, fdlMatrixParameters, fdParameters, fdMatrixParameters;
+  private Label wlParameters;
+  private Label wlMatrixParameters;
+  private TableView wParameters;
+  private TableView wMatrixParameters;
 
-  private Label wlResponseTime;
   private TextVar wResponseTime;
-  private FormData fdlResponseTime, fdResponseTime;
-  private Label wlResponseHeader;
   private TextVar wResponseHeader;
-  private FormData fdlResponseHeader, fdResponseHeader;
 
-  private Label wlTrustStorePassword;
   private TextVar wTrustStorePassword;
-  private FormData fdlTrustStorePassword, fdTrustStorePassword;
 
-  private Label wlTrustStoreFile;
   private TextVar wTrustStoreFile;
   private Button wbTrustStoreFile;
-  private FormData fdbTrustStoreFile;
-  private FormData fdlTrustStoreFile, fdTrustStoreFile;
   private Button wIgnoreSSL;
 
   private boolean gotPreviousFields = false;
 
   private Button wMatrixGet;
-  private Listener lsMatrixGet;
 
   protected Group gSSLTrustStore;
 
 
-  public RestDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
-    super( parent, (BaseStepMeta) in, transMeta, sname );
+  public RestDialog( Shell parent, Object in, TransMeta transMeta, String sName ) {
+    super( parent, (BaseStepMeta) in, transMeta, sName );
     input = (RestMeta) in;
-    inputFields = new HashMap<String, Integer>();
+    inputFields = new HashMap<>();
   }
 
   public String open() {
@@ -202,11 +154,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( shell );
     setShellImage( shell, input );
 
-    ModifyListener lsMod = new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        input.setChanged();
-      }
-    };
+    ModifyListener lsMod = e -> input.setChanged();
 
     changed = input.hasChanged();
 
@@ -224,20 +172,20 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wlStepname = new Label( shell, SWT.RIGHT );
     wlStepname.setText( BaseMessages.getString( PKG, "RestDialog.Stepname.Label" ) );
     props.setLook( wlStepname );
-    fdlStepname = new FormData();
-    fdlStepname.left = new FormAttachment( 0, 0 );
-    fdlStepname.right = new FormAttachment( middle, -margin );
-    fdlStepname.top = new FormAttachment( 0, margin );
-    wlStepname.setLayoutData( fdlStepname );
+    FormData fdlStepName = new FormData();
+    fdlStepName.left = new FormAttachment( 0, 0 );
+    fdlStepName.right = new FormAttachment( middle, -margin );
+    fdlStepName.top = new FormAttachment( 0, margin );
+    wlStepname.setLayoutData( fdlStepName );
     wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wStepname.setText( stepname );
     props.setLook( wStepname );
     wStepname.addModifyListener( lsMod );
-    fdStepname = new FormData();
-    fdStepname.left = new FormAttachment( middle, 0 );
-    fdStepname.top = new FormAttachment( 0, margin );
-    fdStepname.right = new FormAttachment( 100, 0 );
-    wStepname.setLayoutData( fdStepname );
+    FormData fdStepName = new FormData();
+    fdStepName.left = new FormAttachment( middle, 0 );
+    fdStepName.top = new FormAttachment( 0, margin );
+    fdStepName.right = new FormAttachment( 100, 0 );
+    wStepname.setLayoutData( fdStepName );
 
     wTabFolder = new CTabFolder( shell, SWT.BORDER );
     props.setLook( wTabFolder, PropsUI.WIDGET_STYLE_TAB );
@@ -245,10 +193,10 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     // ////////////////////////
     // START OF GENERAL TAB ///
     // ////////////////////////
-    wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
     wGeneralTab.setText( BaseMessages.getString( PKG, "RestDialog.GeneralTab.Title" ) );
 
-    wGeneralComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wGeneralComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wGeneralComp );
 
     FormLayout fileLayout = new FormLayout();
@@ -261,16 +209,16 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     Group gSettings = new Group( wGeneralComp, SWT.SHADOW_ETCHED_IN );
     gSettings.setText( BaseMessages.getString( PKG, "RestDialog.SettingsGroup.Label" ) );
-    FormLayout SettingsLayout = new FormLayout();
-    SettingsLayout.marginWidth = 3;
-    SettingsLayout.marginHeight = 3;
-    gSettings.setLayout( SettingsLayout );
+    FormLayout settingsLayout = new FormLayout();
+    settingsLayout.marginWidth = 3;
+    settingsLayout.marginHeight = 3;
+    gSettings.setLayout( settingsLayout );
     props.setLook( gSettings );
 
     wlUrl = new Label( gSettings, SWT.RIGHT );
     wlUrl.setText( BaseMessages.getString( PKG, "RestDialog.URL.Label" ) );
     props.setLook( wlUrl );
-    fdlUrl = new FormData();
+    FormData fdlUrl = new FormData();
     fdlUrl.left = new FormAttachment( 0, 0 );
     fdlUrl.right = new FormAttachment( middle, -margin );
     fdlUrl.top = new FormAttachment( wGeneralComp, margin * 2 );
@@ -279,29 +227,30 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wUrl = new TextVar( transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wUrl );
     wUrl.addModifyListener( lsMod );
-    fdUrl = new FormData();
+    FormData fdUrl = new FormData();
     fdUrl.left = new FormAttachment( middle, 0 );
     fdUrl.top = new FormAttachment( wGeneralComp, margin * 2 );
     fdUrl.right = new FormAttachment( 100, 0 );
     wUrl.setLayoutData( fdUrl );
 
     // UrlInField line
-    wlUrlInField = new Label( gSettings, SWT.RIGHT );
+    Label wlUrlInField = new Label( gSettings, SWT.RIGHT );
     wlUrlInField.setText( BaseMessages.getString( PKG, "RestDialog.UrlInField.Label" ) );
     props.setLook( wlUrlInField );
-    fdlUrlInField = new FormData();
+    FormData fdlUrlInField = new FormData();
     fdlUrlInField.left = new FormAttachment( 0, 0 );
     fdlUrlInField.top = new FormAttachment( wUrl, margin );
     fdlUrlInField.right = new FormAttachment( middle, -margin );
     wlUrlInField.setLayoutData( fdlUrlInField );
     wUrlInField = new Button( gSettings, SWT.CHECK );
     props.setLook( wUrlInField );
-    fdUrlInField = new FormData();
+    FormData fdUrlInField = new FormData();
     fdUrlInField.left = new FormAttachment( middle, 0 );
     fdUrlInField.top = new FormAttachment( wUrl, margin );
     fdUrlInField.right = new FormAttachment( 100, 0 );
     wUrlInField.setLayoutData( fdUrlInField );
     wUrlInField.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         activeUrlInfield();
@@ -312,7 +261,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wlUrlField = new Label( gSettings, SWT.RIGHT );
     wlUrlField.setText( BaseMessages.getString( PKG, "RestDialog.UrlField.Label" ) );
     props.setLook( wlUrlField );
-    fdlUrlField = new FormData();
+    FormData fdlUrlField = new FormData();
     fdlUrlField.left = new FormAttachment( 0, 0 );
     fdlUrlField.right = new FormAttachment( middle, -margin );
     fdlUrlField.top = new FormAttachment( wUrlInField, margin );
@@ -322,15 +271,18 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wUrlField.setEditable( true );
     props.setLook( wUrlField );
     wUrlField.addModifyListener( lsMod );
-    fdUrlField = new FormData();
+    FormData fdUrlField = new FormData();
     fdUrlField.left = new FormAttachment( middle, 0 );
     fdUrlField.top = new FormAttachment( wUrlInField, margin );
     fdUrlField.right = new FormAttachment( 100, -margin );
     wUrlField.setLayoutData( fdUrlField );
     wUrlField.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
+        // Nothing to do
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -344,7 +296,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wlMethod = new Label( gSettings, SWT.RIGHT );
     wlMethod.setText( BaseMessages.getString( PKG, "RestDialog.Method.Label" ) );
     props.setLook( wlMethod );
-    fdlMethod = new FormData();
+    FormData fdlMethod = new FormData();
     fdlMethod.left = new FormAttachment( 0, 0 );
     fdlMethod.right = new FormAttachment( middle, -margin );
     fdlMethod.top = new FormAttachment( wUrlField, 2 * margin );
@@ -354,36 +306,37 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wMethod.setEditable( true );
     props.setLook( wMethod );
     wMethod.addModifyListener( lsMod );
-    fdMethod = new FormData();
+    FormData fdMethod = new FormData();
     fdMethod.left = new FormAttachment( middle, 0 );
     fdMethod.top = new FormAttachment( wUrlField, 2 * margin );
     fdMethod.right = new FormAttachment( 100, -margin );
     wMethod.setLayoutData( fdMethod );
     wMethod.setItems( RestMeta.HTTP_METHODS );
     wMethod.addSelectionListener( new SelectionAdapter() {
-
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setMethod();
       }
     } );
 
     // MethodInField line
-    wlMethodInField = new Label( gSettings, SWT.RIGHT );
+    Label wlMethodInField = new Label( gSettings, SWT.RIGHT );
     wlMethodInField.setText( BaseMessages.getString( PKG, "RestDialog.MethodInField.Label" ) );
     props.setLook( wlMethodInField );
-    fdlMethodInField = new FormData();
+    FormData fdlMethodInField = new FormData();
     fdlMethodInField.left = new FormAttachment( 0, 0 );
     fdlMethodInField.top = new FormAttachment( wMethod, margin );
     fdlMethodInField.right = new FormAttachment( middle, -margin );
     wlMethodInField.setLayoutData( fdlMethodInField );
     wMethodInField = new Button( gSettings, SWT.CHECK );
     props.setLook( wMethodInField );
-    fdMethodInField = new FormData();
+    FormData fdMethodInField = new FormData();
     fdMethodInField.left = new FormAttachment( middle, 0 );
     fdMethodInField.top = new FormAttachment( wMethod, margin );
     fdMethodInField.right = new FormAttachment( 100, 0 );
     wMethodInField.setLayoutData( fdMethodInField );
     wMethodInField.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         activeMethodInfield();
@@ -394,7 +347,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wlMethodField = new Label( gSettings, SWT.RIGHT );
     wlMethodField.setText( BaseMessages.getString( PKG, "RestDialog.MethodField.Label" ) );
     props.setLook( wlMethodField );
-    fdlMethodField = new FormData();
+    FormData fdlMethodField = new FormData();
     fdlMethodField.left = new FormAttachment( 0, 0 );
     fdlMethodField.right = new FormAttachment( middle, -margin );
     fdlMethodField.top = new FormAttachment( wMethodInField, margin );
@@ -404,15 +357,18 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wMethodField.setEditable( true );
     props.setLook( wMethodField );
     wMethodField.addModifyListener( lsMod );
-    fdMethodField = new FormData();
+    FormData fdMethodField = new FormData();
     fdMethodField.left = new FormAttachment( middle, 0 );
     fdMethodField.top = new FormAttachment( wMethodInField, margin );
     fdMethodField.right = new FormAttachment( 100, -margin );
     wMethodField.setLayoutData( fdMethodField );
     wMethodField.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
+        // Nothing to do
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -426,7 +382,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wlBody = new Label( gSettings, SWT.RIGHT );
     wlBody.setText( BaseMessages.getString( PKG, "RestDialog.Body.Label" ) );
     props.setLook( wlBody );
-    fdlBody = new FormData();
+    FormData fdlBody = new FormData();
     fdlBody.left = new FormAttachment( 0, 0 );
     fdlBody.right = new FormAttachment( middle, -margin );
     fdlBody.top = new FormAttachment( wMethodField, 2 * margin );
@@ -436,15 +392,18 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wBody.setEditable( true );
     props.setLook( wBody );
     wBody.addModifyListener( lsMod );
-    fdBody = new FormData();
+    FormData fdBody = new FormData();
     fdBody.left = new FormAttachment( middle, 0 );
     fdBody.top = new FormAttachment( wMethodField, 2 * margin );
     fdBody.right = new FormAttachment( 100, -margin );
     wBody.setLayoutData( fdBody );
     wBody.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
+        // Nothing to do
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -455,10 +414,10 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // ApplicationType Line
-    wlApplicationType = new Label( gSettings, SWT.RIGHT );
+    Label wlApplicationType = new Label( gSettings, SWT.RIGHT );
     wlApplicationType.setText( BaseMessages.getString( PKG, "RestDialog.ApplicationType.Label" ) );
     props.setLook( wlApplicationType );
-    fdlApplicationType = new FormData();
+    FormData fdlApplicationType = new FormData();
     fdlApplicationType.left = new FormAttachment( 0, 0 );
     fdlApplicationType.right = new FormAttachment( middle, -margin );
     fdlApplicationType.top = new FormAttachment( wBody, 2 * margin );
@@ -468,14 +427,14 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wApplicationType.setEditable( true );
     props.setLook( wApplicationType );
     wApplicationType.addModifyListener( lsMod );
-    fdApplicationType = new FormData();
+    FormData fdApplicationType = new FormData();
     fdApplicationType.left = new FormAttachment( middle, 0 );
     fdApplicationType.top = new FormAttachment( wBody, 2 * margin );
     fdApplicationType.right = new FormAttachment( 100, -margin );
     wApplicationType.setLayoutData( fdApplicationType );
     wApplicationType.setItems( RestMeta.APPLICATION_TYPES );
     wApplicationType.addSelectionListener( new SelectionAdapter() {
-
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -495,17 +454,17 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     Group gOutputFields = new Group( wGeneralComp, SWT.SHADOW_ETCHED_IN );
     gOutputFields.setText( BaseMessages.getString( PKG, "RestDialog.OutputFieldsGroup.Label" ) );
-    FormLayout OutputFieldsLayout = new FormLayout();
-    OutputFieldsLayout.marginWidth = 3;
-    OutputFieldsLayout.marginHeight = 3;
-    gOutputFields.setLayout( OutputFieldsLayout );
+    FormLayout outputFieldsLayout = new FormLayout();
+    outputFieldsLayout.marginWidth = 3;
+    outputFieldsLayout.marginHeight = 3;
+    gOutputFields.setLayout( outputFieldsLayout );
     props.setLook( gOutputFields );
 
     // Result line...
-    wlResult = new Label( gOutputFields, SWT.RIGHT );
+    Label wlResult = new Label( gOutputFields, SWT.RIGHT );
     wlResult.setText( BaseMessages.getString( PKG, "RestDialog.Result.Label" ) );
     props.setLook( wlResult );
-    fdlResult = new FormData();
+    FormData fdlResult = new FormData();
     fdlResult.left = new FormAttachment( 0, 0 );
     fdlResult.right = new FormAttachment( middle, -margin );
     fdlResult.top = new FormAttachment( gSettings, margin );
@@ -513,17 +472,17 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wResult = new TextVar( transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wResult );
     wResult.addModifyListener( lsMod );
-    fdResult = new FormData();
+    FormData fdResult = new FormData();
     fdResult.left = new FormAttachment( middle, 0 );
     fdResult.top = new FormAttachment( gSettings, margin * 2 );
     fdResult.right = new FormAttachment( 100, -margin );
     wResult.setLayoutData( fdResult );
 
     // Resultcode line...
-    wlResultCode = new Label( gOutputFields, SWT.RIGHT );
+    Label wlResultCode = new Label( gOutputFields, SWT.RIGHT );
     wlResultCode.setText( BaseMessages.getString( PKG, "RestDialog.ResultCode.Label" ) );
     props.setLook( wlResultCode );
-    fdlResultCode = new FormData();
+    FormData fdlResultCode = new FormData();
     fdlResultCode.left = new FormAttachment( 0, 0 );
     fdlResultCode.right = new FormAttachment( middle, -margin );
     fdlResultCode.top = new FormAttachment( wResult, margin );
@@ -531,17 +490,17 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wResultCode = new TextVar( transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wResultCode );
     wResultCode.addModifyListener( lsMod );
-    fdResultCode = new FormData();
+    FormData fdResultCode = new FormData();
     fdResultCode.left = new FormAttachment( middle, 0 );
     fdResultCode.top = new FormAttachment( wResult, margin );
     fdResultCode.right = new FormAttachment( 100, -margin );
     wResultCode.setLayoutData( fdResultCode );
 
     // Response time line...
-    wlResponseTime = new Label( gOutputFields, SWT.RIGHT );
+    Label wlResponseTime = new Label( gOutputFields, SWT.RIGHT );
     wlResponseTime.setText( BaseMessages.getString( PKG, "RestDialog.ResponseTime.Label" ) );
     props.setLook( wlResponseTime );
-    fdlResponseTime = new FormData();
+    FormData fdlResponseTime = new FormData();
     fdlResponseTime.left = new FormAttachment( 0, 0 );
     fdlResponseTime.right = new FormAttachment( middle, -margin );
     fdlResponseTime.top = new FormAttachment( wResultCode, margin );
@@ -549,16 +508,16 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wResponseTime = new TextVar( transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wResponseTime );
     wResponseTime.addModifyListener( lsMod );
-    fdResponseTime = new FormData();
+    FormData fdResponseTime = new FormData();
     fdResponseTime.left = new FormAttachment( middle, 0 );
     fdResponseTime.top = new FormAttachment( wResultCode, margin );
     fdResponseTime.right = new FormAttachment( 100, 0 );
     wResponseTime.setLayoutData( fdResponseTime );
     // Response header line...
-    wlResponseHeader = new Label( gOutputFields, SWT.RIGHT );
+    Label wlResponseHeader = new Label( gOutputFields, SWT.RIGHT );
     wlResponseHeader.setText( BaseMessages.getString( PKG, "RestDialog.ResponseHeader.Label" ) );
     props.setLook( wlResponseHeader );
-    fdlResponseHeader = new FormData();
+    FormData fdlResponseHeader = new FormData();
     fdlResponseHeader.left = new FormAttachment( 0, 0 );
     fdlResponseHeader.right = new FormAttachment( middle, -margin );
     fdlResponseHeader.top = new FormAttachment( wResponseTime, margin );
@@ -566,7 +525,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wResponseHeader = new TextVar( transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wResponseHeader );
     wResponseHeader.addModifyListener( lsMod );
-    fdResponseHeader = new FormData();
+    FormData fdResponseHeader = new FormData();
     fdResponseHeader.left = new FormAttachment( middle, 0 );
     fdResponseHeader.top = new FormAttachment( wResponseTime, margin );
     fdResponseHeader.right = new FormAttachment( 100, 0 );
@@ -581,7 +540,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     // END Output Fields GROUP
     // ////////////////////////
 
-    fdGeneralComp = new FormData();
+    FormData fdGeneralComp = new FormData();
     fdGeneralComp.left = new FormAttachment( 0, 0 );
     fdGeneralComp.top = new FormAttachment( wStepname, margin );
     fdGeneralComp.right = new FormAttachment( 100, 0 );
@@ -597,14 +556,14 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Auth tab...
     //
-    wAuthTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wAuthTab = new CTabItem( wTabFolder, SWT.NONE );
     wAuthTab.setText( BaseMessages.getString( PKG, "RestDialog.Auth.Title" ) );
 
     FormLayout alayout = new FormLayout();
     alayout.marginWidth = Const.FORM_MARGIN;
     alayout.marginHeight = Const.FORM_MARGIN;
 
-    wAuthComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wAuthComp = new Composite( wTabFolder, SWT.NONE );
     wAuthComp.setLayout( alayout );
     props.setLook( wAuthComp );
 
@@ -620,7 +579,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( gHttpAuth );
 
     // HTTP Login
-    wlHttpLogin = new Label( gHttpAuth, SWT.RIGHT );
+    Label wlHttpLogin = new Label( gHttpAuth, SWT.RIGHT );
     wlHttpLogin.setText( BaseMessages.getString( PKG, "RestDialog.HttpLogin.Label" ) );
     props.setLook( wlHttpLogin );
     FormData fdlHttpLogin = new FormData();
@@ -639,7 +598,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wHttpLogin.setLayoutData( fdHttpLogin );
 
     // HTTP Password
-    wlHttpPassword = new Label( gHttpAuth, SWT.RIGHT );
+    Label wlHttpPassword = new Label( gHttpAuth, SWT.RIGHT );
     wlHttpPassword.setText( BaseMessages.getString( PKG, "RestDialog.HttpPassword.Label" ) );
     props.setLook( wlHttpPassword );
     FormData fdlHttpPassword = new FormData();
@@ -658,22 +617,23 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wHttpPassword.setLayoutData( fdHttpPassword );
 
     // Preemptive line
-    wlPreemptive = new Label( gHttpAuth, SWT.RIGHT );
+    Label wlPreemptive = new Label( gHttpAuth, SWT.RIGHT );
     wlPreemptive.setText( BaseMessages.getString( PKG, "RestDialog.Preemptive.Label" ) );
     props.setLook( wlPreemptive );
-    fdlPreemptive = new FormData();
+    FormData fdlPreemptive = new FormData();
     fdlPreemptive.left = new FormAttachment( 0, 0 );
     fdlPreemptive.top = new FormAttachment( wHttpPassword, margin );
     fdlPreemptive.right = new FormAttachment( middle, -margin );
     wlPreemptive.setLayoutData( fdlPreemptive );
     wPreemptive = new Button( gHttpAuth, SWT.CHECK );
     props.setLook( wPreemptive );
-    fdPreemptive = new FormData();
+    FormData fdPreemptive = new FormData();
     fdPreemptive.left = new FormAttachment( middle, 0 );
     fdPreemptive.top = new FormAttachment( wHttpPassword, margin );
     fdPreemptive.right = new FormAttachment( 100, 0 );
     wPreemptive.setLayoutData( fdPreemptive );
     wPreemptive.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -700,7 +660,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( gProxy );
 
     // HTTP Login
-    wlProxyHost = new Label( gProxy, SWT.RIGHT );
+    Label wlProxyHost = new Label( gProxy, SWT.RIGHT );
     wlProxyHost.setText( BaseMessages.getString( PKG, "RestDialog.ProxyHost.Label" ) );
     props.setLook( wlProxyHost );
     FormData fdlProxyHost = new FormData();
@@ -719,7 +679,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wProxyHost.setLayoutData( fdProxyHost );
 
     // HTTP Password
-    wlProxyPort = new Label( gProxy, SWT.RIGHT );
+    Label wlProxyPort = new Label( gProxy, SWT.RIGHT );
     wlProxyPort.setText( BaseMessages.getString( PKG, "RestDialog.ProxyPort.Label" ) );
     props.setLook( wlProxyPort );
     FormData fdlProxyPort = new FormData();
@@ -746,7 +706,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     // END HTTP AUTH GROUP
     // ////////////////////////
 
-    fdAuthComp = new FormData();
+    FormData fdAuthComp = new FormData();
     fdAuthComp.left = new FormAttachment( 0, 0 );
     fdAuthComp.top = new FormAttachment( wStepname, margin );
     fdAuthComp.right = new FormAttachment( 100, 0 );
@@ -775,17 +735,17 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     gSSLTrustStore = new Group( wSSLComp, SWT.SHADOW_ETCHED_IN );
     gSSLTrustStore.setText( BaseMessages.getString( PKG, "RestDialog.SSLTrustStoreGroup.Label" ) );
-    FormLayout SSLTrustStoreLayout = new FormLayout();
-    SSLTrustStoreLayout.marginWidth = 3;
-    SSLTrustStoreLayout.marginHeight = 3;
-    gSSLTrustStore.setLayout( SSLTrustStoreLayout );
+    FormLayout sslTrustStoreLayout = new FormLayout();
+    sslTrustStoreLayout.marginWidth = 3;
+    sslTrustStoreLayout.marginHeight = 3;
+    gSSLTrustStore.setLayout( sslTrustStoreLayout );
     props.setLook( gSSLTrustStore );
 
     // TrustStoreFile line
-    wlTrustStoreFile = new Label( gSSLTrustStore, SWT.RIGHT );
+    Label wlTrustStoreFile = new Label( gSSLTrustStore, SWT.RIGHT );
     wlTrustStoreFile.setText( BaseMessages.getString( PKG, "RestDialog.TrustStoreFile.Label" ) );
     props.setLook( wlTrustStoreFile );
-    fdlTrustStoreFile = new FormData();
+    FormData fdlTrustStoreFile = new FormData();
     fdlTrustStoreFile.left = new FormAttachment( 0, 0 );
     fdlTrustStoreFile.top = new FormAttachment( 0, margin );
     fdlTrustStoreFile.right = new FormAttachment( middle, -margin );
@@ -794,7 +754,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wbTrustStoreFile = new Button( gSSLTrustStore, SWT.PUSH | SWT.CENTER );
     props.setLook( wbTrustStoreFile );
     wbTrustStoreFile.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
-    fdbTrustStoreFile = new FormData();
+    FormData fdbTrustStoreFile = new FormData();
     fdbTrustStoreFile.right = new FormAttachment( 100, 0 );
     fdbTrustStoreFile.top = new FormAttachment( 0, 0 );
     wbTrustStoreFile.setLayoutData( fdbTrustStoreFile );
@@ -803,7 +763,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wTrustStoreFile = new TextVar( transMeta, gSSLTrustStore, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wTrustStoreFile );
     wTrustStoreFile.addModifyListener( lsMod );
-    fdTrustStoreFile = new FormData();
+    FormData fdTrustStoreFile = new FormData();
     fdTrustStoreFile.left = new FormAttachment( middle, 0 );
     fdTrustStoreFile.top = new FormAttachment( 0, margin );
     fdTrustStoreFile.right = new FormAttachment( wbTrustStoreFile, -margin );
@@ -814,10 +774,10 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
         new FilterType[] { FilterType.ALL }, FilterType.ALL ) ) );
 
     // TrustStorePassword line
-    wlTrustStorePassword = new Label( gSSLTrustStore, SWT.RIGHT );
+    Label wlTrustStorePassword = new Label( gSSLTrustStore, SWT.RIGHT );
     wlTrustStorePassword.setText( BaseMessages.getString( PKG, "RestDialog.TrustStorePassword.Label" ) );
     props.setLook( wlTrustStorePassword );
-    fdlTrustStorePassword = new FormData();
+    FormData fdlTrustStorePassword = new FormData();
     fdlTrustStorePassword.left = new FormAttachment( 0, 0 );
     fdlTrustStorePassword.top = new FormAttachment( wbTrustStoreFile, margin );
     fdlTrustStorePassword.right = new FormAttachment( middle, -margin );
@@ -826,7 +786,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
       new PasswordTextVar( transMeta, gSSLTrustStore, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wTrustStorePassword );
     wTrustStorePassword.addModifyListener( lsMod );
-    fdTrustStorePassword = new FormData();
+    FormData fdTrustStorePassword = new FormData();
     fdTrustStorePassword.left = new FormAttachment( middle, 0 );
     fdTrustStorePassword.top = new FormAttachment( wbTrustStoreFile, margin );
     fdTrustStorePassword.right = new FormAttachment( 100, 0 );
@@ -865,10 +825,10 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     // END HTTP AUTH GROUP
     // ////////////////////////
 
-    // TODO
+    // Allow additional SSL UI changes
     additionalSSLUiChanges();
 
-    fdSSLComp = new FormData();
+    FormData fdSSLComp = new FormData();
     fdSSLComp.left = new FormAttachment( 0, 0 );
     fdSSLComp.top = new FormAttachment( wStepname, margin );
     fdSSLComp.right = new FormAttachment( 100, 0 );
@@ -881,26 +841,26 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Additional tab...
     //
-    wAdditionalTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wAdditionalTab = new CTabItem( wTabFolder, SWT.NONE );
     wAdditionalTab.setText( BaseMessages.getString( PKG, "RestDialog.Headers.Title" ) );
 
     FormLayout addLayout = new FormLayout();
     addLayout.marginWidth = Const.FORM_MARGIN;
     addLayout.marginHeight = Const.FORM_MARGIN;
 
-    wAdditionalComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wAdditionalComp = new Composite( wTabFolder, SWT.NONE );
     wAdditionalComp.setLayout( addLayout );
     props.setLook( wAdditionalComp );
 
-    wlFields = new Label( wAdditionalComp, SWT.NONE );
+    Label wlFields = new Label( wAdditionalComp, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "RestDialog.Headers.Label" ) );
     props.setLook( wlFields );
-    fdlFields = new FormData();
+    FormData fdlFields = new FormData();
     fdlFields.left = new FormAttachment( 0, 0 );
     fdlFields.top = new FormAttachment( wStepname, margin );
     wlFields.setLayoutData( fdlFields );
 
-    wGetHeaders = new Button( wAdditionalComp, SWT.PUSH );
+    Button wGetHeaders = new Button( wAdditionalComp, SWT.PUSH );
     wGetHeaders.setText( BaseMessages.getString( PKG, "RestDialog.GetHeaders.Button" ) );
     FormData fdGetHeaders = new FormData();
     fdGetHeaders.top = new FormAttachment( wlFields, margin );
@@ -909,7 +869,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     final int FieldsRows = input.getHeaderName().length;
 
-    colinf =
+    colInf =
       new ColumnInfo[] {
         new ColumnInfo(
           BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
@@ -917,20 +877,20 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
         new ColumnInfo(
           BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ) };
 
-    colinf[ 1 ].setUsingVariables( true );
+    colInf[ 1 ].setUsingVariables( true );
     wFields =
       new TableView(
-        transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
+        transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colInf, FieldsRows, lsMod,
         props );
 
-    fdFields = new FormData();
+    FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( wlFields, margin );
     fdFields.right = new FormAttachment( wGetHeaders, -margin );
     fdFields.bottom = new FormAttachment( 100, -margin );
     wFields.setLayoutData( fdFields );
 
-    fdAdditionalComp = new FormData();
+    FormData fdAdditionalComp = new FormData();
     fdAdditionalComp.left = new FormAttachment( 0, 0 );
     fdAdditionalComp.top = new FormAttachment( wStepname, margin );
     fdAdditionalComp.right = new FormAttachment( 100, -margin );
@@ -943,21 +903,21 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Query Parameters tab...
     //
-    wParametersTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wParametersTab = new CTabItem( wTabFolder, SWT.NONE );
     wParametersTab.setText( BaseMessages.getString( PKG, "RestDialog.Parameters.Title" ) );
 
     FormLayout playout = new FormLayout();
     playout.marginWidth = Const.FORM_MARGIN;
     playout.marginHeight = Const.FORM_MARGIN;
 
-    wParametersComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wParametersComp = new Composite( wTabFolder, SWT.NONE );
     wParametersComp.setLayout( playout );
     props.setLook( wParametersComp );
 
     wlParameters = new Label( wParametersComp, SWT.NONE );
     wlParameters.setText( BaseMessages.getString( PKG, "RestDialog.Parameters.Label" ) );
     props.setLook( wlParameters );
-    fdlParameters = new FormData();
+    FormData fdlParameters = new FormData();
     fdlParameters.left = new FormAttachment( 0, 0 );
     fdlParameters.top = new FormAttachment( wStepname, margin );
     wlParameters.setLayoutData( fdlParameters );
@@ -971,7 +931,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     final int ParametersRows = input.getParameterField().length;
 
-    colinfoparams =
+    colInfoParams =
       new ColumnInfo[] {
         new ColumnInfo(
           BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterField" ),
@@ -982,17 +942,17 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     wParameters =
       new TableView(
-        transMeta, wParametersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfoparams,
+        transMeta, wParametersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colInfoParams,
         ParametersRows, lsMod, props );
 
-    fdParameters = new FormData();
+    FormData fdParameters = new FormData();
     fdParameters.left = new FormAttachment( 0, 0 );
     fdParameters.top = new FormAttachment( wlParameters, margin );
     fdParameters.right = new FormAttachment( wGet, -margin );
     fdParameters.bottom = new FormAttachment( 100, -margin );
     wParameters.setLayoutData( fdParameters );
 
-    fdParametersComp = new FormData();
+    FormData fdParametersComp = new FormData();
     fdParametersComp.left = new FormAttachment( 0, 0 );
     fdParametersComp.top = new FormAttachment( wStepname, margin );
     fdParametersComp.right = new FormAttachment( 100, 0 );
@@ -1004,21 +964,21 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     // ////// END of Query Parameters Tab
 
     // Matrix Parameters tab
-    wMatrixParametersTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wMatrixParametersTab = new CTabItem( wTabFolder, SWT.NONE );
     wMatrixParametersTab.setText( BaseMessages.getString( PKG, "RestDialog.MatrixParameters.Title" ) );
 
     FormLayout pl = new FormLayout();
     pl.marginWidth = Const.FORM_MARGIN;
     pl.marginHeight = Const.FORM_MARGIN;
 
-    wMatrixParametersComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wMatrixParametersComp = new Composite( wTabFolder, SWT.NONE );
     wMatrixParametersComp.setLayout( pl );
     props.setLook( wMatrixParametersComp );
 
     wlMatrixParameters = new Label( wMatrixParametersComp, SWT.NONE );
     wlMatrixParameters.setText( BaseMessages.getString( PKG, "RestDialog.Parameters.Label" ) );
     props.setLook( wlMatrixParameters );
-    fdlMatrixParameters = new FormData();
+    FormData fdlMatrixParameters = new FormData();
     fdlMatrixParameters.left = new FormAttachment( 0, 0 );
     fdlMatrixParameters.top = new FormAttachment( wStepname, margin );
     wlMatrixParameters.setLayoutData( fdlMatrixParameters );
@@ -1032,7 +992,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     int matrixParametersRows = input.getMatrixParameterField().length;
 
-    colinfoparams =
+    colInfoParams =
       new ColumnInfo[] {
         new ColumnInfo(
           BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterField" ),
@@ -1043,17 +1003,17 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     wMatrixParameters =
       new TableView(
-        transMeta, wMatrixParametersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfoparams,
+        transMeta, wMatrixParametersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colInfoParams,
         matrixParametersRows, lsMod, props );
 
-    fdMatrixParameters = new FormData();
+    FormData fdMatrixParameters = new FormData();
     fdMatrixParameters.left = new FormAttachment( 0, 0 );
     fdMatrixParameters.top = new FormAttachment( wlMatrixParameters, margin );
     fdMatrixParameters.right = new FormAttachment( wMatrixGet, -margin );
     fdMatrixParameters.bottom = new FormAttachment( 100, -margin );
     wMatrixParameters.setLayoutData( fdMatrixParameters );
 
-    fdMatrixParametersComp = new FormData();
+    FormData fdMatrixParametersComp = new FormData();
     fdMatrixParametersComp.left = new FormAttachment( 0, 0 );
     fdMatrixParametersComp.top = new FormAttachment( wStepname, margin );
     fdMatrixParametersComp.right = new FormAttachment( 100, 0 );
@@ -1064,7 +1024,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wMatrixParametersTab.setControl( wMatrixParametersComp );
     //END of Matrix Parameters Tab
 
-    fdTabFolder = new FormData();
+    FormData fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
     fdTabFolder.top = new FormAttachment( wStepname, margin );
     fdTabFolder.right = new FormAttachment( 100, 0 );
@@ -1076,6 +1036,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     //
 
     final Runnable runnable = new Runnable() {
+      @Override
       public void run() {
         StepMeta stepMeta = transMeta.findStep( stepname );
         if ( stepMeta != null ) {
@@ -1105,39 +1066,18 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     setButtonPositions( new Button[] { wOK, wCancel }, margin, wTabFolder );
 
     // Add listeners
-    lsOK = new Listener() {
-      public void handleEvent( Event e ) {
-        ok();
-      }
-    };
-    lsCancel = new Listener() {
-      public void handleEvent( Event e ) {
-        cancel();
-      }
-    };
-    lsGet = new Listener() {
-      public void handleEvent( Event e ) {
-        getParametersFields( wParameters );
-      }
-    };
-    lsMatrixGet = new Listener() {
-      public void handleEvent( Event e ) {
-        getParametersFields( wMatrixParameters );
-      }
-    };
-    Listener lsGetHeaders = new Listener() {
-      public void handleEvent( Event e ) {
-        getHeaders();
-      }
-    };
+    lsOK = e -> ok();
+    lsCancel = e -> cancel();
+    lsGet = e -> getParametersFields( wParameters );
 
     wOK.addListener( SWT.Selection, lsOK );
     wGet.addListener( SWT.Selection, lsGet );
-    wMatrixGet.addListener( SWT.Selection, lsMatrixGet );
-    wGetHeaders.addListener( SWT.Selection, lsGetHeaders );
+    wMatrixGet.addListener( SWT.Selection, e1 -> getParametersFields( wMatrixParameters ) );
+    wGetHeaders.addListener( SWT.Selection, e -> getHeaders() );
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -1151,21 +1091,19 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
     } );
 
-    lsResize = new Listener() {
-      public void handleEvent( Event event ) {
-        Point size = shell.getSize();
-        wFields.setSize( size.x - 10, size.y - 50 );
-        wFields.table.setSize( size.x - 10, size.y - 50 );
-        wFields.redraw();
-      }
+    lsResize = event -> {
+      Point size = shell.getSize();
+      wFields.setSize( size.x - 10, size.y - 50 );
+      wFields.table.setSize( size.x - 10, size.y - 50 );
+      wFields.redraw();
     };
     shell.addListener( SWT.Resize, lsResize );
-
 
     // Set the shell size, based upon previous time...
     setSize();
@@ -1212,24 +1150,24 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   protected void setComboBoxes() {
     // Something was changed in the row.
     //
-    final Map<String, Integer> fields = new HashMap<String, Integer>();
+    final Map<String, Integer> fields = new HashMap<>();
 
     // Add the currentMeta fields...
     fields.putAll( inputFields );
 
     Set<String> keySet = fields.keySet();
-    List<String> entries = new ArrayList<String>( keySet );
+    List<String> entries = new ArrayList<>( keySet );
 
-    fieldNames = entries.toArray( new String[ entries.size() ] );
+    fieldNames = entries.toArray( new String[ 0 ] );
 
     Const.sortStrings( fieldNames );
-    colinfoparams[ 0 ].setComboValues( fieldNames );
-    colinf[ 0 ].setComboValues( fieldNames );
+    colInfoParams[ 0 ].setComboValues( fieldNames );
+    colInf[ 0 ].setComboValues( fieldNames );
   }
 
   private void setStreamFields() {
     if ( !gotPreviousFields ) {
-      String urlfield = wUrlField.getText();
+      String urlField = wUrlField.getText();
       String body = wBody.getText();
       String method = wMethodField.getText();
 
@@ -1244,8 +1182,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
           wMethodField.setItems( fieldNames );
         }
       } finally {
-        if ( urlfield != null ) {
-          wUrlField.setText( urlfield );
+        if ( urlField != null ) {
+          wUrlField.setText( urlField );
         }
         if ( body != null ) {
           wBody.setText( body );
@@ -1379,26 +1317,28 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
       return;
     }
 
-    int nrheaders = wFields.nrNonEmpty();
-    int nrparams = wParameters.nrNonEmpty();
-    int nrmatrixparams = wMatrixParameters.nrNonEmpty();
-    input.allocate( nrheaders, nrparams, nrmatrixparams );
+    int nrHeaders = wFields.nrNonEmpty();
+    int nrParams = wParameters.nrNonEmpty();
+    int nrMatrixParams = wMatrixParameters.nrNonEmpty();
+    input.allocate( nrHeaders, nrParams, nrMatrixParams );
 
     if ( isDebug() ) {
-      logDebug( BaseMessages.getString( PKG, "RestDialog.Log.FoundArguments", String.valueOf( nrheaders ) ) );
+      logDebug( BaseMessages.getString( PKG, "RestDialog.Log.FoundArguments", String.valueOf( nrHeaders ) ) );
     }
-    for ( int i = 0; i < nrheaders; i++ ) {
+
+    for ( int i = 0; i < nrHeaders; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getHeaderField()[ i ] = item.getText( 1 );
       input.getHeaderName()[ i ] = item.getText( 2 );
     }
-    for ( int i = 0; i < nrparams; i++ ) {
+
+    for ( int i = 0; i < nrParams; i++ ) {
       TableItem item = wParameters.getNonEmpty( i );
       input.getParameterField()[ i ] = item.getText( 1 );
       input.getParameterName()[ i ] = item.getText( 2 );
     }
 
-    for ( int i = 0; i < nrmatrixparams; i++ ) {
+    for ( int i = 0; i < nrMatrixParams; i++ ) {
       TableItem item = wMatrixParameters.getNonEmpty( i );
       input.getMatrixParameterField()[ i ] = item.getText( 1 );
       input.getMatrixParameterName()[ i ] = item.getText( 2 );
@@ -1444,7 +1384,6 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
         shell, BaseMessages.getString( PKG, "RestDialog.FailedToGetFields.DialogTitle" ), BaseMessages
         .getString( PKG, "RestDialog.FailedToGetFields.DialogMessage" ), ke );
     }
-
   }
 
   private void getHeaders() {
@@ -1458,7 +1397,6 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
         shell, BaseMessages.getString( PKG, "RestDialog.FailedToGetHeaders.DialogTitle" ), BaseMessages
         .getString( PKG, "RestDialog.FailedToGetHeaders.DialogMessage" ), ke );
     }
-
   }
 
   private void activeMethodInfield() {
