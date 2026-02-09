@@ -378,9 +378,9 @@ public class JobTest {
    * Tests that variables explicitly set on a Job before run() is called are preserved
    * during execution. This is critical for scheduled jobs where variables are set
    * via shareVariablesWith() or setVariable() before the job starts.
-   * 
-   * This test verifies the fix for the regression introduced in BACKLOG-44138 where
-   * Job.run() would overwrite all pre-set variables with system properties.
+   *
+   * This test verifies the fix (BISERVER-15478) for the regression introduced in BACKLOG-44138,
+   * where Job.run() would overwrite all pre-set variables with system properties.
    */
   @Test
   public void testVariablesSetBeforeRunArePreserved() {
