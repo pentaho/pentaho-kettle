@@ -373,4 +373,98 @@ public class JobTest {
 
     assertFalse( job.isVfs() );
   }
+
+  /**
+   * Tests that variables explicitly set on a Job before run() is called are preserved
+   * during execution. This is critical for scheduled jobs where variables are set
+   * via shareVariablesWith() or setVariable() before the job starts.
+   *
+   * This test verifies the fix (BISERVER-15478) for the regression introduced in BACKLOG-44138,
+   * where Job.run() would overwrite all pre-set variables with system properties.
+   */
+  @Test
+  public void testVariablesSetBeforeRunArePreserved() {
+    // Setup: Create a job with a variable set before run()
+    String testVarName = "TEST_PRESERVED_VAR_" + UUID.randomUUID().toString();
+    String presetValue = "preset_value_should_be_preserved";
+
+    // Ensure the variable is NOT in system properties (or has a different value)
+    String systemValue = System.getProperty( testVarName );
+    assertNotEquals( "Test variable should not exist in system properties for this test to be valid",
+        presetValue, systemValue );
+
+    Repository repository = mock( Repository.class );
+    JobMeta jobMeta = new JobMeta();
+    Job job = new Job( repository, jobMeta );
+
+    // Set the variable before run() - this simulates what PdiAction does
+    job.setVariable( testVarName, presetValue );
+
+    // Verify it's set
+    assertEquals( "Variable should be set before run", presetValue, job.getVariable( testVarName ) );
+
+    // Simulate what run() does when there's no parent job
+    job.initializeVariablesFromDefaultSpace();
+
+    // The variable should still have the preset value, not be overwritten
+    assertEquals( "Variable set before run() should be preserved after initialization",
+        presetValue, job.getVariable( testVarName ) );
+  }
+
+  /**
+   * Tests that variables from the default variable space (system properties) are still
+   * available for variables that were NOT explicitly set before run().
+   * This ensures the fix doesn't break the BACKLOG-44138 feature.
+   */
+  @Test
+  public void testDefaultVariablesAreAvailableWhenNotExplicitlySet() {
+    // Use user.dir as a system property that should be available
+    String systemVarName = "user.dir"; // This should always exist
+    String systemValue = System.getProperty( systemVarName );
+
+    // Verify the system property exists for this test to be valid
+    Assert.assertNotNull( "System property should exist for this test", systemValue );
+
+    Repository repository = mock( Repository.class );
+    JobMeta jobMeta = new JobMeta();
+    Job job = new Job( repository, jobMeta );
+
+    // Don't set the variable explicitly - it should come from system properties
+    // Simulate what run() does when there's no parent job
+    job.initializeVariablesFromDefaultSpace();
+
+    // The system property should be available
+    assertEquals( "System property should be available after initialization",
+        systemValue, job.getVariable( systemVarName ) );
+  }
+
+  /**
+   * Tests that when a preset variable value differs from the system property value,
+   * the preset value wins (is preserved).
+   */
+  @Test
+  public void testPresetVariableOverridesSystemProperty() {
+    // Use a system property that we know exists
+    String varName = "user.dir";
+    String systemValue = System.getProperty( varName );
+    String presetValue = "my_custom_override_value";
+
+    // Verify system property exists and our preset is different
+    Assert.assertNotNull( "System property should exist", systemValue );
+    assertNotEquals( "Preset value should differ from system value", presetValue, systemValue );
+
+    Repository repository = mock( Repository.class );
+    JobMeta jobMeta = new JobMeta();
+    Job job = new Job( repository, jobMeta );
+
+    // Set the variable to override the system property
+    job.setVariable( varName, presetValue );
+
+    // Simulate what run() does when there's no parent job
+    job.initializeVariablesFromDefaultSpace();
+
+    // The preset value should win over the system property
+    assertEquals( "Preset variable should override system property",
+        presetValue, job.getVariable( varName ) );
+  }
 }
