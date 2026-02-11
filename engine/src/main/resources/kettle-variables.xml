@@ -707,17 +707,4 @@
     <default-value>N</default-value>
   </kettle-variable>
 
-  <kettle-variable>
-    <description>Controls the source of variable values when executing scheduled transformations and jobs via the Pentaho Server.
-      When set to N (default), variables are resolved from kettle.properties at execution time. This means that if you
-      update a variable value in kettle.properties and restart the server, scheduled jobs will use the new value.
-      When set to Y, the variable values that were stored when the schedule was created are used, ignoring any changes
-      made to kettle.properties after the schedule was created.
-      This setting only affects variables that exist in both sources; variables not found in kettle.properties will
-      always fall back to their stored values.
-    </description>
-    <variable>KETTLE_USE_STORED_VARIABLES</variable>
-    <default-value>N</default-value>
-  </kettle-variable>
-
 </kettle-variables>
