@@ -768,7 +768,13 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
    *          The usingAuthentication to set.
    */
   public void setUsingAuthentication( String usingAuthentication ) {
-    this.usingAuthentication = usingAuthentication;
+    if ( "Y".equalsIgnoreCase( usingAuthentication ) ) {
+      this.usingAuthentication = AUTENTICATION_BASIC;
+    } else if ( "N".equalsIgnoreCase( usingAuthentication ) ) {
+      this.usingAuthentication = AUTENTICATION_NONE;
+    } else {
+      this.usingAuthentication = usingAuthentication;
+    }
   }
 
   /**
