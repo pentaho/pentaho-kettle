@@ -41,6 +41,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -1043,6 +1044,11 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
         logDebug( BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.Exception.ErrorOnGettingDbVersion", e.getMessage() ) );
       }
     }
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new MonetDBBulkLoaderHelper();
   }
 
 }
