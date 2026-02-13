@@ -70,7 +70,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
             continue;
           }
           bowlNames.add( name );
-          createTreeNode( treeNode, name, GUIResource.getInstance().getImageSlaveTree(),
+          createTreeNode( treeNode, name, GUIResource.getInstance().getImageVfsMedium(),
                           LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false, false );
         }
       }
@@ -84,7 +84,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
 
         LeveledTreeNode.LEVEL level = LeveledTreeNode.LEVEL.GLOBAL;
         levelName = globalBowl.getLevelDisplayName();
-        image  = GUIResource.getInstance().getImageSlaveTree();
+        image  = GUIResource.getInstance().getImageVfsMedium();
         ConnectionDetails connectionDetails = globalCM.getConnectionDetails( name );
         // For repo connection, set the name, level and image
         if ( connectionDetails.getName().equals( ConnectionManager.STRING_REPO_CONNECTION ) ) {
