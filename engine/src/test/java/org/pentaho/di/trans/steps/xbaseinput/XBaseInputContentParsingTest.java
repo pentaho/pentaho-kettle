@@ -27,4 +27,22 @@ public class XBaseInputContentParsingTest extends BaseXBaseParsingTest {
 
     check( new Object[][] { { "value11", "value12", 1.0 }, { "value21", "value22", 2.0 } } );
   }
+
+  @Test
+  public void testCompressedGzip() throws Exception {
+    init( "test.dbf.gz", "GZip" );
+
+    process();
+
+    check( new Object[][] { { "value11", "value12", 1.0 }, { "value21", "value22", 2.0 } } );
+  }
+
+  @Test
+  public void testCompressedZip() throws Exception {
+    init( "test.zip", "Zip" );
+
+    process();
+
+    check( new Object[][] { { "value11", "value12", 1.0 }, { "value21", "value22", 2.0 } } );
+  }
 }
