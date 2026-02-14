@@ -139,16 +139,29 @@ public class GoogleDriveFileObject extends AbstractFileObject {
 
   protected OutputStream doGetOutputStream( boolean append ) throws Exception {
     final File parent = getName().getParent() != null ? searchFile( getName().getParent().getBaseName(), null ) : null;
+    final File existingFile = searchFile( getName().getBaseName(), parent != null ? parent.getId() : null );
     ByteArrayOutputStream out = new ByteArrayOutputStream() {
       public void close() throws IOException {
-        File file = new File();
-        file.setName( getName().getBaseName() );
-        if ( parent != null ) {
-          file.setParents( Collections.singletonList( parent.getId() ) );
-        }
+        File fileMetadata = new File();
+        fileMetadata.setName( getName().getBaseName() );
+
         ByteArrayContent fileContent = new ByteArrayContent( "application/octet-stream", toByteArray() );
         if ( count > 0 ) {
-          driveService.files().create( file, fileContent ).execute();
+          if ( existingFile == null ) {
+            if ( parent != null ) {
+              fileMetadata.setParents( Collections.singletonList( parent.getId() ) );
+            }
+            driveService.files().create( fileMetadata, fileContent ).execute();
+          } else {
+            Drive.Files.Update update = driveService.files().update( existingFile.getId(), fileMetadata, fileContent );
+
+            if (parent != null) {
+              update.setRemoveParents( parent.getId() );
+              update.setAddParents( parent.getId() );
+            }
+
+            update.execute();
+          }
           ( (GoogleDriveFileSystem) getFileSystem() ).clearFileFromCache( getName() );
         }
       }
@@ -188,8 +201,9 @@ public class GoogleDriveFileObject extends AbstractFileObject {
     File file = null;
     StringBuffer fileQuery = new StringBuffer();
     fileQuery.append( "name = '" + fileName + "'" );
+    fileQuery.append( " and trashed=false" );
     if ( parentId != null ) {
-      fileQuery.append( " and '" + parentId + "' in parents and trashed=false" );
+      fileQuery.append( " and '" + parentId + "' in parents" );
     }
     FileList fileList = driveService.files().list().setQ( fileQuery.toString() ).execute();
     if ( !fileList.getFiles().isEmpty() ) {
