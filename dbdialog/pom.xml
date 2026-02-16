@@ -25,7 +25,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>11.1.0.0-FUSION-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>

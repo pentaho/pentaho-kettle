@@ -48,7 +48,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pdi.version}</version>
+      <version>11.1.0.0-FUSION-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -279,7 +279,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pdi.version}</version>
+      <version>11.1.0.0-FUSION-SNAPSHOT</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

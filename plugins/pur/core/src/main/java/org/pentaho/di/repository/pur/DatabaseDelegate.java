@@ -90,7 +90,8 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     rootNode.setProperty( PROP_DATABASE_NAME, databaseMeta.getDatabaseName() );
     rootNode.setProperty( PROP_PORT, Const.toInt( databaseMeta.getDatabasePortNumberString(), -1 ) );
     rootNode.setProperty( PROP_USERNAME, databaseMeta.getUsername() );
-    rootNode.setProperty( PROP_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( databaseMeta.getPassword() ) );
+    // rootNode.setProperty( PROP_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( databaseMeta.getPassword() ) );
+    rootNode.setProperty( PROP_PASSWORD, databaseMeta.getPassword() );
     rootNode.setProperty( PROP_SERVERNAME, databaseMeta.getServername() );
     rootNode.setProperty( PROP_DATA_TBS, databaseMeta.getDataTablespace() );
     rootNode.setProperty( PROP_INDEX_TBS, databaseMeta.getIndexTablespace() );

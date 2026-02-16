@@ -982,7 +982,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       //
       setDBPort( XMLHandler.getTagValue( con, "port" ) );
       setUsername( XMLHandler.getTagValue( con, "username" ) );
-      setPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( con, "password" ) ) );
+      // setPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( con, "password" ) ) );
+      setPassword( XMLHandler.getTagValue( con, "password" ) );
       setServername( XMLHandler.getTagValue( con, "servername" ) );
       setDataTablespace( XMLHandler.getTagValue( con, "data_tablespace" ) );
       setIndexTablespace( XMLHandler.getTagValue( con, "index_tablespace" ) );

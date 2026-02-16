@@ -85,7 +85,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>11.1.0.0-FUSION-SNAPSHOT</version>
     </dependency>
 
     <!-- Pentaho dependencies -->
@@ -112,7 +112,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>${pentaho-registry.version}</version>
     </dependency>
 
     <!-- Reporting dependencies -->
@@ -823,7 +823,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>11.1.0.0-FUSION-SNAPSHOT</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
