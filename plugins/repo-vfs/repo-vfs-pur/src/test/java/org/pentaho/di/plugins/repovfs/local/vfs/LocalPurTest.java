@@ -14,6 +14,8 @@ import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
+import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
+import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
 import org.pentaho.platform.plugin.services.importexport.StreamConverter;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
@@ -27,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -229,6 +232,22 @@ public class LocalPurTest {
     return repository.createFile( parent.getId(), fileFile, fileContent, acl, null );
   }
 
+  private static RepositoryFile createTransformationFilePur( RepositoryFile parent, String filePath, RepositoryFileAcl acl ) {
+    String fileName = RepositoryFilenameUtils.getName( filePath );
+    RepositoryFile fileFile = new RepositoryFile.Builder( fileName ).path( filePath ).folder( false ).build();
+    DataNode node = new DataNode( "transformation" );
+    NodeRepositoryFileData fileContent = new NodeRepositoryFileData( node );
+    return repository.createFile( parent.getId(), fileFile, fileContent, acl, null );
+  }
+
+  private static RepositoryFile createJobFilePur( RepositoryFile parent, String filePath, RepositoryFileAcl acl ) {
+    String fileName = RepositoryFilenameUtils.getName( filePath );
+    RepositoryFile fileFile = new RepositoryFile.Builder( fileName ).path( filePath ).folder( false ).build();
+    DataNode node = new DataNode( "job" );
+    NodeRepositoryFileData fileContent = new NodeRepositoryFileData( node );
+    return repository.createFile( parent.getId(), fileFile, fileContent, acl, null );
+  }
+
   private static RepositoryFileAcl createBasicAcl( String user ) {
     return new RepositoryFileAcl.Builder( user ).entriesInheriting( true ).build();
   }
@@ -270,4 +289,125 @@ public class LocalPurTest {
       };
   }
 
+  @Test
+  void testRenameTransformationFile_UpdatesTitleAndLocaleProperties() throws Exception {
+    FileObject testFolder = fsm.resolveFile( url( "/testRenameTrans/" ) );
+    testFolder.createFolder();
+    
+    // Create a transformation file (.ktr) directly in repository with NodeRepositoryFileData
+    RepositoryFile testFolderRepo = repository.getFile( "/testRenameTrans" );
+    RepositoryFileAcl acl = createBasicAcl( MockUnifiedRepository.root().getName() );
+    RepositoryFile originalRepoFile = createTransformationFilePur( testFolderRepo, "/testRenameTrans/original_transform.ktr", acl );
+    assertNotNull( originalRepoFile, "Original file should exist in repository before rename" );
+    assertEquals( "original_transform.ktr", originalRepoFile.getName() );
+
+    // Rename the file via VFS - doRename updates the locale properties as part of the rename
+    FileObject transFile = testFolder.resolveFile( "original_transform.ktr" );
+    FileObject renamedFile = testFolder.resolveFile( "renamed_transform.ktr" );
+    transFile.moveTo( renamedFile );
+
+    // Verify the file was successfully moved  
+    assertTrue( renamedFile.exists() );
+    assertFalse( transFile.exists() );
+    assertEquals( "renamed_transform.ktr", renamedFile.getName().getBaseName() );
+    
+    // Verify that the title was updated in the repository
+    RepositoryFile renamedRepoFile = repository.getFile( "/testRenameTrans/renamed_transform.ktr" );
+    assertNotNull( renamedRepoFile, "Renamed file should exist in repository" );
+    assertEquals( "renamed_transform.ktr", renamedRepoFile.getName() );
+    assertEquals( "renamed_transform", renamedRepoFile.getTitle() );
+    
+    // Verify title property was persisted (extracted from localePropertiesMap)
+    String title = repository.findTitle( renamedRepoFile );
+    assertEquals( "renamed_transform", title, "Title should be updated to new filename without extension" );
+    
+    // Verify localePropertiesMap is properly set
+    Map<String, Properties> localePropertiesMap = renamedRepoFile.getLocalePropertiesMap();
+    assertNotNull( localePropertiesMap, "LocalePropertiesMap should not be null" );
+    
+    // Check that properties exist for default locale
+    Properties properties = localePropertiesMap.get( RepositoryFile.DEFAULT_LOCALE );
+    assertNotNull( properties, "Properties should exist for default locale" );
+    assertEquals( "renamed_transform", properties.getProperty( RepositoryFile.FILE_TITLE ), 
+        "FILE_TITLE should be set to new filename without extension" );
+  }
+
+  @Test
+  void testRenameJobFile_UpdatesTitleAndLocaleProperties() throws Exception {
+    FileObject testFolder = fsm.resolveFile( url( "/testRenameJob/" ) );
+    testFolder.createFolder();
+    
+    // Create a job file (.kjb) directly in repository with NodeRepositoryFileData
+    RepositoryFile testFolderRepo = repository.getFile( "/testRenameJob" );
+    RepositoryFileAcl acl = createBasicAcl( MockUnifiedRepository.root().getName() );
+    RepositoryFile originalRepoFile = createJobFilePur( testFolderRepo, "/testRenameJob/original_job.kjb", acl );
+    assertNotNull( originalRepoFile, "Original file should exist in repository before rename" );
+    assertEquals( "original_job.kjb", originalRepoFile.getName() );
+
+    // Rename the file via VFS - doRename should update title/locale properties
+    FileObject jobFile = testFolder.resolveFile( "original_job.kjb" );
+    FileObject renamedFile = testFolder.resolveFile( "renamed_job.kjb" );
+    jobFile.moveTo( renamedFile );
+
+    // Verify the file was successfully moved
+    assertTrue( renamedFile.exists() );
+    assertFalse( jobFile.exists() );
+    assertEquals( "renamed_job.kjb", renamedFile.getName().getBaseName() );
+    
+    // Verify that the title was updated in the repository
+    RepositoryFile renamedRepoFile = repository.getFile( "/testRenameJob/renamed_job.kjb" );
+    assertNotNull( renamedRepoFile, "Renamed file should exist in repository" );
+    assertEquals( "renamed_job.kjb", renamedRepoFile.getName() );
+    assertEquals( "renamed_job", renamedRepoFile.getTitle() );
+    
+    // Verify title property was persisted (extracted from localePropertiesMap)
+    String title = repository.findTitle( renamedRepoFile );
+    assertEquals( "renamed_job", title, "Title should be updated to new filename without extension" );
+    
+    // Verify localePropertiesMap is properly set
+    Map<String, Properties> localePropertiesMap = renamedRepoFile.getLocalePropertiesMap();
+    assertNotNull( localePropertiesMap, "LocalePropertiesMap should not be null" );
+    
+    // Check that properties exist for default locale
+    Properties properties = localePropertiesMap.get( RepositoryFile.DEFAULT_LOCALE );
+    assertNotNull( properties, "Properties should exist for default locale" );
+    assertEquals( "renamed_job", properties.getProperty( RepositoryFile.FILE_TITLE ), 
+        "FILE_TITLE should be set to new filename without extension" );
+  }
+
+  @Test
+  void testRenameRegularFile_TitleAndLocalePropertiesNotUpdated() throws Exception {
+    FileObject testFolder = fsm.resolveFile( url( "/testRenameRegularFile/" ) );
+    testFolder.createFolder();
+    
+    // Create a regular text file (not .ktr or .kjb)
+    FileObject textFile = testFolder.resolveFile( "myfile.txt" );
+    textFile.createFile();
+    writeToFile( textFile, "This is a regular file" );
+    assertTrue( textFile.exists() );
+
+    // Get the original file state
+    RepositoryFile originalFile = repository.getFile( "/testRenameRegularFile/myfile.txt" );
+    assertNotNull( originalFile );
+    Map<String, Properties> originalLocaleMap = originalFile.getLocalePropertiesMap();
+
+    // Rename the file
+    FileObject renamedFile = testFolder.resolveFile( "renamed_file.txt" );
+    textFile.moveTo( renamedFile );
+
+    // Verify the file exists at new location
+    assertTrue( renamedFile.exists() );
+    assertFalse( textFile.exists() );
+
+    // Verify the file was renamed
+    RepositoryFile renamedRepositoryFile = repository.getFile( "/testRenameRegularFile/renamed_file.txt" );
+    assertNotNull( renamedRepositoryFile );
+    assertEquals( "renamed_file.txt", renamedRepositoryFile.getName() );
+    
+    // Verify no title logic was applied (locale properties remain unchanged)
+    Map<String, Properties> renamedLocaleMap = renamedRepositoryFile.getLocalePropertiesMap();
+    assertEquals( originalLocaleMap, renamedLocaleMap );
+  }
+
 }
+
