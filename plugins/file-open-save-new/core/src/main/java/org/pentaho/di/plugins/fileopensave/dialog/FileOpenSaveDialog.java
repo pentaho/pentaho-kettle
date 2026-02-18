@@ -102,10 +102,13 @@ import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.dragdrop.ElementDragListener;
 import org.pentaho.di.plugins.fileopensave.dragdrop.ElementTransfer;
 import org.pentaho.di.plugins.fileopensave.dragdrop.ElementTreeDropAdapter;
+import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
+import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalTree;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryTree;
+import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
@@ -530,7 +533,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     return parent;
   }
 
-  private void setPreviousSelection() {
+  private void setPreviousSelection( Object selectedNode ) {
     String targetPath = this.fileDialogOperation.getPath();
     if ( StringUtils.isNotEmpty( targetPath ) ) {
       if ( targetPath.startsWith( "file:///" ) ) {
@@ -542,7 +545,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     // Sets navigation to previous selection
     if ( StringUtils.isNotEmpty( targetPath ) ) {
       FileProvider fileProvider = determineProviderFromFilePath( this.fileDialogOperation );
-      if ( fileProvider != null ) {
+      // Check whether the previous selection belongs to the selected tree.
+      // I.e., don't expand a tree that's not the one the user clicked on.
+      if ( ( fileProvider instanceof VFSFileProvider && selectedNode instanceof VFSTree )
+        || ( fileProvider instanceof LocalFileProvider && selectedNode instanceof LocalTree ) ) {
         char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
         // URL and Linux File Paths
         targetPathArray = getStringsAtEachDirectory( targetPath, pathSplitter );
@@ -1329,7 +1335,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( !System.getProperty( "user.home" ).equals( fileDialogOperation.getPath() ) && !isFileTreeProcessing ) {
           // To prevent recursive looping at startup
           isFileTreeProcessing = true;
-          setPreviousSelection();
+          setPreviousSelection( selectedNode );
         }
       }
 
