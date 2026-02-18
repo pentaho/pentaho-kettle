@@ -105,7 +105,9 @@ import org.pentaho.di.plugins.fileopensave.dragdrop.ElementTreeDropAdapter;
 import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalTree;
+import org.pentaho.di.plugins.fileopensave.providers.recents.RecentFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
+import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryTree;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
@@ -547,14 +549,28 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       FileProvider fileProvider = determineProviderFromFilePath( this.fileDialogOperation );
       // Check whether the previous selection belongs to the selected tree.
       // I.e., don't expand a tree that's not the one the user clicked on.
-      if ( ( fileProvider instanceof VFSFileProvider && selectedNode instanceof VFSTree )
-        || ( fileProvider instanceof LocalFileProvider && selectedNode instanceof LocalTree ) ) {
+      
+      //TODO how did the "recent" case work before? this method never checked selectedNode until I added it
+      //and fileProvider had to be non nulll
+      
+      boolean providerMatchesSelectedTree = false;
+      if ( selectedNode instanceof Tree selectedTreeNode ) {
+        String selectedTreeProvider = selectedTreeNode.getProvider();
+        if ( selectedTreeProvider == null || fileProvider == null ) {
+          //TODO setting the boolean to true doesn't seem right here. also, won't this NPE  if fileProvider is null?  
+          // previously, this whole block was skipped on fileProvider == null
+        } else {
+          providerMatchesSelectedTree = fileProvider.getType().equals( selectedTreeProvider );
+        }
+      }
+      if ( providerMatchesSelectedTree ) {
         char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
         // URL and Linux File Paths
         targetPathArray = getStringsAtEachDirectory( targetPath, pathSplitter );
         if ( targetPathArray == null ) {
           return;
         }
+        //TODO at this point, fileprovider can't be null
         Tree tree = fileProvider.getTree( bowl );
         TreeItem[] treeItems = treeViewer.getTree().getItems();
         Tree selectedTree = null;
