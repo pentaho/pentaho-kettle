@@ -14,9 +14,9 @@ package org.pentaho.di.trans.steps.mapping;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepHelper;
 import org.pentaho.di.trans.step.StepMeta;
@@ -93,18 +93,16 @@ public class MappingHelper extends BaseStepHelper {
    */
   private JSONObject getMappingSteps( TransMeta transMeta, Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
-    Repository repository = transMeta.getRepository();
-    RepositoryDirectoryInterface repositoryDirectory;
     try {
       String fileName = mappingMeta.getFileName();
-      if ( fileName.endsWith( ".ktr" ) ) {
+      if ( StringUtils.isNotBlank( fileName ) && fileName.endsWith( ".ktr" ) ) {
         fileName = fileName.replace( ".ktr", "" );
       }
 
       String transPath = transMeta.environmentSubstitute( fileName );
       String realTransname = transPath;
       String realDirectory = "";
-      int index = transPath.lastIndexOf( "/" );
+      int index = StringUtils.isBlank( transPath ) ? -1 : transPath.lastIndexOf( "/" );
       if ( index != -1 ) {
         realTransname = transPath.substring( index + 1 );
         realDirectory = transPath.substring( 0, index );
@@ -118,17 +116,7 @@ public class MappingHelper extends BaseStepHelper {
         return response;
       }
 
-      repositoryDirectory = repository.findDirectory( realDirectory );
-      if ( repositoryDirectory == null ) {
-        response.put( ACTION_STATUS, FAILURE_RESPONSE );
-        response.put( ERROR_MESSAGE,
-            BaseMessages.getString(
-                PKG, "MappingHelper.Exception.UnableToFindRepositoryDirectory" ) );
-        return response;
-      }
-
-      TransMeta mappingTransMeta =
-            repository.loadTransformation( transMeta.environmentSubstitute( realTransname ), repositoryDirectory, null, true, null );
+      TransMeta mappingTransMeta = loadMappingMeta( transMeta, mappingMeta );
       mappingTransMeta.clearChanged();
       String[] mappingSteps = getMappingSteps( mappingTransMeta, queryParams.getOrDefault( "isMappingInput", "false" ).equals( "true" ) );
       response.put( ACTION_STATUS, SUCCESS_RESPONSE );
@@ -160,5 +148,12 @@ public class MappingHelper extends BaseStepHelper {
     }
 
     return stepNames;
+  }
+
+  TransMeta loadMappingMeta( TransMeta transMeta, MappingMeta mappingMeta ) throws KettleException {
+    return StepWithMappingMeta.loadMappingMeta( transMeta.getBowl(), mappingMeta,
+        transMeta.getRepository(),
+        transMeta.getMetaStore(), transMeta,
+        true );
   }
 }

@@ -36,8 +36,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.trans.step.BaseStepHelper.IS_VALID_REFERENCE;
 import static org.pentaho.di.trans.step.StepHelperInterface.ACTION_STATUS;
@@ -64,7 +66,7 @@ public class MappingHelperTest {
   public void setUp() {
     transMeta = mock( TransMeta.class );
     mappingMeta = mock( MappingMeta.class );
-    mappingHelper = new MappingHelper( mappingMeta );
+    mappingHelper = spy( new MappingHelper( mappingMeta ) );
 
     when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     when( mappingMeta.getDirectoryPath() ).thenReturn( "/path" );
@@ -131,7 +133,7 @@ public class MappingHelperTest {
     stepMeta.setName( "MappingInput" );
     stepMeta.setStepID( "MappingInput" );
     when( mappedTransMeta.getSteps() ).thenReturn( Collections.singletonList( stepMeta ) );
-    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), any() ) ).thenReturn( mappedTransMeta );
+    doReturn( mappedTransMeta ).when( mappingHelper ).loadMappingMeta( transMeta, mappingMeta );
 
     Map<String, String> queryParams = new HashMap<>();
     queryParams.put( "isMappingInput", "true" );
@@ -156,7 +158,7 @@ public class MappingHelperTest {
     stepMeta.setName( "MappingOutput" );
     stepMeta.setStepID( "MappingOutput" );
     when( mappedTransMeta.getSteps() ).thenReturn( Collections.singletonList( stepMeta ) );
-    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), any() ) ).thenReturn( mappedTransMeta );
+    doReturn( mappedTransMeta ).when( mappingHelper ).loadMappingMeta( transMeta, mappingMeta );
 
     Map<String, String> queryParams = new HashMap<>();
     queryParams.put( "isMappingInput", "false" );
