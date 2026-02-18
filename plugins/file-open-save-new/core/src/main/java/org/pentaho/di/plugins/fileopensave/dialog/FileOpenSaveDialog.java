@@ -102,15 +102,10 @@ import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.dragdrop.ElementDragListener;
 import org.pentaho.di.plugins.fileopensave.dragdrop.ElementTransfer;
 import org.pentaho.di.plugins.fileopensave.dragdrop.ElementTreeDropAdapter;
-import org.pentaho.di.plugins.fileopensave.providers.local.LocalFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalFile;
-import org.pentaho.di.plugins.fileopensave.providers.local.model.LocalTree;
-import org.pentaho.di.plugins.fileopensave.providers.recents.RecentFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.recents.model.RecentTree;
-import org.pentaho.di.plugins.fileopensave.providers.repository.RepositoryFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryFile;
 import org.pentaho.di.plugins.fileopensave.providers.repository.model.RepositoryTree;
-import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
@@ -547,84 +542,79 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     // Sets navigation to previous selection
     if ( StringUtils.isNotEmpty( targetPath ) ) {
       FileProvider fileProvider = determineProviderFromFilePath( this.fileDialogOperation );
-      // Check whether the previous selection belongs to the selected tree.
-      // I.e., don't expand a tree that's not the one the user clicked on.
-      
-      //TODO how did the "recent" case work before? this method never checked selectedNode until I added it
-      //and fileProvider had to be non nulll
-      
-      boolean providerMatchesSelectedTree = false;
-      if ( selectedNode instanceof Tree selectedTreeNode ) {
-        String selectedTreeProvider = selectedTreeNode.getProvider();
-        if ( selectedTreeProvider == null || fileProvider == null ) {
-          //TODO setting the boolean to true doesn't seem right here. also, won't this NPE  if fileProvider is null?  
-          // previously, this whole block was skipped on fileProvider == null
-        } else {
-          providerMatchesSelectedTree = fileProvider.getType().equals( selectedTreeProvider );
-        }
-      }
-      if ( providerMatchesSelectedTree ) {
-        char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
-        // URL and Linux File Paths
-        targetPathArray = getStringsAtEachDirectory( targetPath, pathSplitter );
-        if ( targetPathArray == null ) {
-          return;
-        }
-        //TODO at this point, fileprovider can't be null
-        Tree tree = fileProvider.getTree( bowl );
-        TreeItem[] treeItems = treeViewer.getTree().getItems();
-        Tree selectedTree = null;
-        for ( TreeItem currentTreeItem : treeItems ) {
-          Object currentObject = currentTreeItem.getData();
-          if ( currentObject instanceof Tree && ( (Tree) currentObject ).getName().equals( fileProvider.getName() ) ) {
-            selectedTree = (Tree) currentObject;
-            break;
+      if ( fileProvider != null ) {
+        // Check whether the previous selection belongs to the selected tree.
+        // I.e., don't expand a tree that's not the one the user clicked on.
+        boolean providerMatchesSelectedTree = false;
+        if ( selectedNode instanceof Tree selectedTreeNode ) {
+          String selectedTreeProvider = selectedTreeNode.getProvider();
+          if ( selectedTreeProvider != null ) {
+            providerMatchesSelectedTree = fileProvider.getType().equals( selectedTreeProvider );
           }
         }
-        if ( selectedTree != null ) {
-          ISelection structuredSelection = new StructuredSelection( selectedTree );
-          treeViewer.setSelection( structuredSelection, true );
-          List<File> children = tree.getChildren();
-          // Sort by increasing length
-          sortFileList( children );
-          File currentFile;
-
-          int targetPathArrayIndex;
-
-          // Skip the single "/" when accessing repository
-          if ( !children.isEmpty() && children.get( 0 ) instanceof RepositoryFile ) {
-            targetPathArrayIndex = 1;
-          } else {
-            targetPathArrayIndex = 0;
+        if ( providerMatchesSelectedTree ) {
+          char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
+          // URL and Linux File Paths
+          targetPathArray = getStringsAtEachDirectory( targetPath, pathSplitter );
+          if ( targetPathArray == null ) {
+            return;
           }
-
-          do {
-            currentFile = null;
-
-            if ( targetPathArrayIndex == targetPathArray.length ) {
+          Tree tree = fileProvider.getTree( bowl );
+          TreeItem[] treeItems = treeViewer.getTree().getItems();
+          Tree selectedTree = null;
+          for ( TreeItem currentTreeItem : treeItems ) {
+            Object currentObject = currentTreeItem.getData();
+            if ( currentObject instanceof Tree && ( (Tree) currentObject ).getName()
+              .equals( fileProvider.getName() ) ) {
+              selectedTree = (Tree) currentObject;
               break;
             }
-            for ( File file : children ) {
-              if ( isFileEqual( file, targetPathArray[ targetPathArrayIndex ] ) ) {
-                currentFile = file;
+          }
+          if ( selectedTree != null ) {
+            ISelection structuredSelection = new StructuredSelection( selectedTree );
+            treeViewer.setSelection( structuredSelection, true );
+            List<File> children = tree.getChildren();
+            // Sort by increasing length
+            sortFileList( children );
+            File currentFile;
+
+            int targetPathArrayIndex;
+
+            // Skip the single "/" when accessing repository
+            if ( !children.isEmpty() && children.get( 0 ) instanceof RepositoryFile ) {
+              targetPathArrayIndex = 1;
+            } else {
+              targetPathArrayIndex = 0;
+            }
+
+            do {
+              currentFile = null;
+
+              if ( targetPathArrayIndex == targetPathArray.length ) {
                 break;
               }
-            }
-            if ( currentFile instanceof Directory ) {
-              treeViewer.setSelection( new StructuredSelection( currentFile ), true );
-              treeViewer.setExpandedState( currentFile, true );
-              try {
-                children = fileController.getFiles( currentFile, null, true );
-                // Sort in increasing order
-                if ( children.size() > 0 ) {
-                  sortFileList( children );
+              for ( File file : children ) {
+                if ( isFileEqual( file, targetPathArray[ targetPathArrayIndex ] ) ) {
+                  currentFile = file;
+                  break;
                 }
-              } catch ( FileException e ) {
-                // Ignore
               }
-            }
-            targetPathArrayIndex++;
-          } while ( currentFile != null );
+              if ( currentFile instanceof Directory ) {
+                treeViewer.setSelection( new StructuredSelection( currentFile ), true );
+                treeViewer.setExpandedState( currentFile, true );
+                try {
+                  children = fileController.getFiles( currentFile, null, true );
+                  // Sort in increasing order
+                  if ( children.size() > 0 ) {
+                    sortFileList( children );
+                  }
+                } catch ( FileException e ) {
+                  // Ignore
+                }
+              }
+              targetPathArrayIndex++;
+            } while ( currentFile != null );
+          }
         }
       }
     }
