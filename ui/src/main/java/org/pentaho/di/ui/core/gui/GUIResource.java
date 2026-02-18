@@ -200,6 +200,8 @@ public class GUIResource {
 
   private SwtUniversalImage imageSlaveTree;
 
+  private SwtUniversalImage imageVfs;
+
   private SwtUniversalImage imageArrow;
 
   private SwtUniversalImage imageFolder;
@@ -940,6 +942,9 @@ public class GUIResource {
     imageSlaveTree =
       SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Slave_tree_image" ) );
 
+    // "ui/images/VFS.svg"
+    imageVfs = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Vfs_image" ) );
+
     // "ui/images/logo_kettle_lrg.png"
     imageKettleLogo = loadAsResource( display, BasePropertyHandler.getProperty( "Logo_lrg_image" ), 0 );
     // "ui/images/bg_banner.png"
@@ -1623,6 +1628,13 @@ public class GUIResource {
    */
   public Image getImageSlaveTreeMedium() {
     return imageSlaveTree.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  /**
+   * @return Returns the imageVfs.
+   */
+  public Image getImageVfsMedium() {
+    return imageVfs.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
   /**

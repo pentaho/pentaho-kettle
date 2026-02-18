@@ -367,9 +367,11 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( element instanceof RecentTree ) {
           return imgTime;
         } else if ( element instanceof VFSTree ) {
-          return imgVFS;
+          return imgFolder;
         }
         return imgDisk;
+      } else if ( element instanceof VFSLocation ) {
+        return imgVFS;
       } else if ( element instanceof Directory ) {
         File file = (File) element;
         String path = file.getPath();
