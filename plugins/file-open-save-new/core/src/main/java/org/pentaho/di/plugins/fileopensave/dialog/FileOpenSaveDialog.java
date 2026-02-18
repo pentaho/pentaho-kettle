@@ -543,16 +543,20 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     if ( StringUtils.isNotEmpty( targetPath ) ) {
       FileProvider fileProvider = determineProviderFromFilePath( this.fileDialogOperation );
       if ( fileProvider != null ) {
-        // Check whether the previous selection belongs to the selected tree.
-        // I.e., don't expand a tree that's not the one the user clicked on.
-        boolean providerMatchesSelectedTree = false;
-        if ( selectedNode instanceof Tree selectedTreeNode ) {
+        //TODO feel like this could be cleaner.  Think the right behavior is to proceed with setting the previous selection if 1) the selected node is 'recents' 
+        // or 2) if it's not, make sure that the previous selection "corresponds" to what the user selected
+        boolean setNavigationToPreviousSelection = false;
+        if ( selectedNode instanceof RecentTree ) {
+          setNavigationToPreviousSelection = true;
+        } else if ( selectedNode instanceof Tree selectedTreeNode ) {
           String selectedTreeProvider = selectedTreeNode.getProvider();
-          if ( selectedTreeProvider != null ) {
-            providerMatchesSelectedTree = fileProvider.getType().equals( selectedTreeProvider );
+          if ( selectedTreeProvider != null && !selectedTreeProvider.isEmpty() ) {
+            // Check whether the previous selection belongs to the selected tree.
+            // I.e., don't expand a tree that's not the one the user clicked on.
+            setNavigationToPreviousSelection = fileProvider.getType().equals( selectedTreeProvider );
           }
         }
-        if ( providerMatchesSelectedTree ) {
+        if ( setNavigationToPreviousSelection ) {
           char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
           // URL and Linux File Paths
           targetPathArray = getStringsAtEachDirectory( targetPath, pathSplitter );
