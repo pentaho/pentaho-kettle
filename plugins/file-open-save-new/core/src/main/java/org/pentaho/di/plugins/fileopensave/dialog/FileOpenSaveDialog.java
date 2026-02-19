@@ -530,7 +530,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     return parent;
   }
 
-  private void setPreviousSelection() {
+  private void setPreviousSelection( Object selectedNode ) {
     String targetPath = this.fileDialogOperation.getPath();
     if ( StringUtils.isNotEmpty( targetPath ) ) {
       if ( targetPath.startsWith( "file:///" ) ) {
@@ -539,70 +539,84 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     }
 
     String[] targetPathArray;
-    // Sets navigation to previous selection
     if ( StringUtils.isNotEmpty( targetPath ) ) {
       FileProvider fileProvider = determineProviderFromFilePath( this.fileDialogOperation );
       if ( fileProvider != null ) {
-        char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
-        // URL and Linux File Paths
-        targetPathArray = getStringsAtEachDirectory( targetPath, pathSplitter );
-        if ( targetPathArray == null ) {
-          return;
-        }
-        Tree tree = fileProvider.getTree( bowl );
-        TreeItem[] treeItems = treeViewer.getTree().getItems();
-        Tree selectedTree = null;
-        for ( TreeItem currentTreeItem : treeItems ) {
-          Object currentObject = currentTreeItem.getData();
-          if ( currentObject instanceof Tree && ( (Tree) currentObject ).getName().equals( fileProvider.getName() ) ) {
-            selectedTree = (Tree) currentObject;
-            break;
+        boolean allowBasedOnCurrentSelection = false;
+        if ( selectedNode instanceof RecentTree ) {
+          // Treat user selection of RecentTree as an initial default and allow previous selection to be set
+          allowBasedOnCurrentSelection = true;
+        } else if ( selectedNode instanceof Tree selectedTreeNode ) {
+          String selectedTreeProvider = selectedTreeNode.getProvider();
+          if ( StringUtils.isNotEmpty( selectedTreeProvider ) ) {
+            // Check whether the previous selection belongs to the selected tree.
+            // I.e., don't expand a tree that's not the one the user clicked on.
+            allowBasedOnCurrentSelection = fileProvider.getType().equals( selectedTreeProvider );
           }
         }
-        if ( selectedTree != null ) {
-          ISelection structuredSelection = new StructuredSelection( selectedTree );
-          treeViewer.setSelection( structuredSelection, true );
-          List<File> children = tree.getChildren();
-          // Sort by increasing length
-          sortFileList( children );
-          File currentFile;
-
-          int targetPathArrayIndex;
-
-          // Skip the single "/" when accessing repository
-          if ( !children.isEmpty() && children.get( 0 ) instanceof RepositoryFile ) {
-            targetPathArrayIndex = 1;
-          } else {
-            targetPathArrayIndex = 0;
+        if ( allowBasedOnCurrentSelection ) {
+          char pathSplitter = targetPath.contains( "/" ) ? '/' : '\\';
+          // URL and Linux File Paths
+          targetPathArray = getStringsAtEachDirectory( targetPath, pathSplitter );
+          if ( targetPathArray == null ) {
+            return;
           }
-
-          do {
-            currentFile = null;
-
-            if ( targetPathArrayIndex == targetPathArray.length ) {
+          Tree tree = fileProvider.getTree( bowl );
+          TreeItem[] treeItems = treeViewer.getTree().getItems();
+          Tree selectedTree = null;
+          for ( TreeItem currentTreeItem : treeItems ) {
+            Object currentObject = currentTreeItem.getData();
+            if ( currentObject instanceof Tree && ( (Tree) currentObject ).getName()
+              .equals( fileProvider.getName() ) ) {
+              selectedTree = (Tree) currentObject;
               break;
             }
-            for ( File file : children ) {
-              if ( isFileEqual( file, targetPathArray[ targetPathArrayIndex ] ) ) {
-                currentFile = file;
+          }
+          if ( selectedTree != null ) {
+            ISelection structuredSelection = new StructuredSelection( selectedTree );
+            treeViewer.setSelection( structuredSelection, true );
+            List<File> children = tree.getChildren();
+            // Sort by increasing length
+            sortFileList( children );
+            File currentFile;
+
+            int targetPathArrayIndex;
+
+            // Skip the single "/" when accessing repository
+            if ( !children.isEmpty() && children.get( 0 ) instanceof RepositoryFile ) {
+              targetPathArrayIndex = 1;
+            } else {
+              targetPathArrayIndex = 0;
+            }
+
+            do {
+              currentFile = null;
+
+              if ( targetPathArrayIndex == targetPathArray.length ) {
                 break;
               }
-            }
-            if ( currentFile instanceof Directory ) {
-              treeViewer.setSelection( new StructuredSelection( currentFile ), true );
-              treeViewer.setExpandedState( currentFile, true );
-              try {
-                children = fileController.getFiles( currentFile, null, true );
-                // Sort in increasing order
-                if ( children.size() > 0 ) {
-                  sortFileList( children );
+              for ( File file : children ) {
+                if ( isFileEqual( file, targetPathArray[ targetPathArrayIndex ] ) ) {
+                  currentFile = file;
+                  break;
                 }
-              } catch ( FileException e ) {
-                // Ignore
               }
-            }
-            targetPathArrayIndex++;
-          } while ( currentFile != null );
+              if ( currentFile instanceof Directory ) {
+                treeViewer.setSelection( new StructuredSelection( currentFile ), true );
+                treeViewer.setExpandedState( currentFile, true );
+                try {
+                  children = fileController.getFiles( currentFile, null, true );
+                  // Sort in increasing order
+                  if ( children.size() > 0 ) {
+                    sortFileList( children );
+                  }
+                } catch ( FileException e ) {
+                  // Ignore
+                }
+              }
+              targetPathArrayIndex++;
+            } while ( currentFile != null );
+          }
         }
       }
     }
@@ -1329,7 +1343,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         if ( !System.getProperty( "user.home" ).equals( fileDialogOperation.getPath() ) && !isFileTreeProcessing ) {
           // To prevent recursive looping at startup
           isFileTreeProcessing = true;
-          setPreviousSelection();
+          setPreviousSelection( selectedNode );
         }
       }
 
