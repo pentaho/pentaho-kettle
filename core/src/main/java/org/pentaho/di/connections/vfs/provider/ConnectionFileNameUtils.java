@@ -90,4 +90,19 @@ public class ConnectionFileNameUtils {
       pathBuilder.append( SEPARATOR_CHAR );
     }
   }
+
+  @NonNull
+  public String getFirstSegmentOfPath( @NonNull String path ) {
+    String normalized = trimLeadingSeparator( path );
+    int idx = normalized.indexOf( SEPARATOR_CHAR );
+    return idx < 0 ? normalized : normalized.substring( 0, idx );
+  }
+
+  @NonNull
+  public String getPathAfterFirstSegment( @NonNull String path ) {
+    String normalized = trimLeadingSeparator( path );
+    int idx = normalized.indexOf( SEPARATOR_CHAR );
+    return idx < 0 ? "" : normalized.substring( idx );
+  }
+
 }
