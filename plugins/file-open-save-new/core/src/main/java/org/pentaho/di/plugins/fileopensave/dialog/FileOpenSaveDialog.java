@@ -539,7 +539,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     }
 
     String[] targetPathArray;
-    // Sets navigation to previous selection
     if ( StringUtils.isNotEmpty( targetPath ) ) {
       FileProvider fileProvider = determineProviderFromFilePath( this.fileDialogOperation );
       if ( fileProvider != null ) {
