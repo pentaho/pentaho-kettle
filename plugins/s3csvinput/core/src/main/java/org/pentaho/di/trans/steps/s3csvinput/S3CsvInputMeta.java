@@ -64,6 +64,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+import org.pentaho.di.trans.step.StepHelperInterface;
 
 /**
  * @since 2008-04-28
@@ -416,6 +417,11 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   @Override
   public StepDataInterface getStepData() {
     return new S3CsvInputData();
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new S3CsvInputHelper();
   }
 
   /**
