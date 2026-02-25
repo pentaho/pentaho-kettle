@@ -51,6 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -372,5 +373,138 @@ public class JobTest {
     when( mockedJobMeta.getFilename() ).thenReturn( "C://test-transformation.ktr" );
 
     assertFalse( job.isVfs() );
+  }
+
+  // ==================== BISERVER-15478 Tests ====================
+  // These tests exercise Job.initializeVariables(), the extracted method called by Job.run()
+  // that determines which source is used to initialize the job's variable space.
+  // Priority order: parentJob > jobMeta > default space.
+
+  /**
+   * Tests the PdiAction/scheduler flow: shareVariablesWith(jobMeta) is called,
+   * then initializeVariables() preserves the shared variables.
+   * This is the core scenario for BISERVER-15478.
+   */
+  @Test
+  public void testInitVariableSpace_ScheduledJob_PreservesJobMetaVariables() {
+    String testVarName = "TEST_SCHEDULER_VAR_" + UUID.randomUUID().toString();
+    String schedulerValue = "value_from_scheduler";
+
+    Repository repository = mock( Repository.class );
+    JobMeta jobMeta = new JobMeta();
+    jobMeta.setVariable( testVarName, schedulerValue );
+
+    Job job = new Job( repository, jobMeta );
+    job.shareVariablesWith( jobMeta );
+
+    job.initializeVariables();
+
+    assertEquals( "Scheduled job variable should be preserved after initializeVariables",
+        schedulerValue, job.getVariable( testVarName ) );
+  }
+
+  /**
+   * Tests the Kitchen/CLI flow where shareVariablesWith is NOT called.
+   * Variables from jobMeta should be used to initialize the variable space.
+   */
+  @Test
+  public void testInitVariableSpace_NoShareVariables_InitializesFromJobMeta() {
+    String testVarName = "TEST_CLI_VAR_" + UUID.randomUUID().toString();
+    String jobMetaValue = "value_from_jobmeta";
+
+    Repository repository = mock( Repository.class );
+    JobMeta jobMeta = new JobMeta();
+    jobMeta.setVariable( testVarName, jobMetaValue );
+
+    Job job = new Job( repository, jobMeta );
+    // No shareVariablesWith called - simulates Kitchen/CLI flow
+
+    job.initializeVariables();
+
+    assertEquals( "Variable from jobMeta should be initialized when shareVariablesWith not called",
+        jobMetaValue, job.getVariable( testVarName ) );
+  }
+
+  /**
+   * Tests that jobMeta variable value overrides the default variable space (system properties).
+   * This is the core fix for BISERVER-15478 - previously the default space would overwrite
+   * variables that were set on jobMeta.
+   */
+  @Test
+  public void testInitVariableSpace_JobMetaOverridesDefaultSpace() {
+    String varName = "user.dir";
+    String systemValue = System.getProperty( varName );
+    String jobMetaValue = "custom_jobmeta_value_" + UUID.randomUUID().toString();
+
+    Assert.assertNotNull( "System property should exist", systemValue );
+    assertNotEquals( "JobMeta value should differ from system value", systemValue, jobMetaValue );
+
+    Repository repository = mock( Repository.class );
+    JobMeta jobMeta = new JobMeta();
+    jobMeta.setVariable( varName, jobMetaValue );
+
+    Job job = new Job( repository, jobMeta );
+    // No shareVariablesWith - the default variables field is a separate Variables instance
+
+    job.initializeVariables();
+
+    assertEquals( "JobMeta variable should override default space value",
+        jobMetaValue, job.getVariable( varName ) );
+  }
+
+  /**
+   * Tests that when parentJob is set (sub-job scenario), variables are inherited
+   * from parentJob instead of jobMeta. This ensures sub-jobs still work correctly.
+   */
+  @Test
+  public void testInitVariableSpace_WithParentJob_UsesParentVariables() {
+    String testVarName = "TEST_PARENT_VAR_" + UUID.randomUUID().toString();
+    String parentJobValue = "value_from_parent_job";
+    String jobMetaValue = "value_from_job_meta";
+
+    Repository repository = mock( Repository.class );
+
+    JobMeta parentJobMeta = new JobMeta();
+    Job parentJob = new Job( repository, parentJobMeta );
+    parentJob.setVariable( testVarName, parentJobValue );
+
+    JobMeta childJobMeta = new JobMeta();
+    childJobMeta.setVariable( testVarName, jobMetaValue );
+    Job childJob = new Job( repository, childJobMeta );
+
+    setInternalState( childJob, "parentJob", parentJob );
+
+    childJob.initializeVariables();
+
+    assertEquals( "Parent job variable should take precedence over jobMeta",
+        parentJobValue, childJob.getVariable( testVarName ) );
+  }
+
+  /**
+   * Tests that when shareVariablesWith(jobMeta) is called, initializeVariables()
+   * does not create a self-referential parent chain on jobMeta.
+   * This prevents infinite loops in code that walks getParentVariableSpace().
+   */
+  @Test
+  public void testInitVariableSpace_ShareVariables_NoSelfReferentialParent() {
+    Repository repository = mock( Repository.class );
+    JobMeta jobMeta = new JobMeta();
+    Job job = new Job( repository, jobMeta );
+
+    String testVarName = "TEST_VAR_" + UUID.randomUUID().toString();
+    jobMeta.setVariable( testVarName, "test_value" );
+
+    job.shareVariablesWith( jobMeta );
+
+    // Call the actual production method
+    job.initializeVariables();
+
+    // Verify no self-referential parent chain was created
+    assertNotSame( "JobMeta's parent should not be itself after initializeVariables",
+        jobMeta, jobMeta.getParentVariableSpace() );
+
+    // Variable should still be accessible
+    assertEquals( "Variable should be preserved",
+        "test_value", job.getVariable( testVarName ) );
   }
 }
