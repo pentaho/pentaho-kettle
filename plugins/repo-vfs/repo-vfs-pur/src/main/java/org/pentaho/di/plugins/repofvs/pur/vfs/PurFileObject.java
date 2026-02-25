@@ -1,14 +1,12 @@
 package org.pentaho.di.plugins.repofvs.pur.vfs;
 
 import org.pentaho.di.connections.vfs.provider.ConnectionFileObject;
-import org.pentaho.di.core.Const;
 import org.pentaho.platform.api.repository2.unified.Converter;
 import org.pentaho.platform.api.repository2.unified.IRepositoryContentConverterHandler;
 import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
-import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 import org.pentaho.platform.repository2.unified.fileio.RepositoryFileOutputStream;
@@ -19,11 +17,9 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -52,7 +48,7 @@ public class PurFileObject extends AbstractFileObject<PurFileSystem> {
     this.pur = fileSystem.getRepository();
     this.converterHandler = fileSystem.getContentHandler();
 
-    log.debug( "{}({})", getClass().getSimpleName(), fileName );
+   log.debug( "{}({})", getClass().getSimpleName(), fileName );
   }
 
   @Override
@@ -232,53 +228,7 @@ public class PurFileObject extends AbstractFileObject<PurFileSystem> {
   protected void doRename( FileObject newFile ) throws FileSystemException {
     final String newPath = newFile.getName().getPath();
     pur.moveFile( file.getId(), newPath, null );
-    // Update the internal file reference to reflect the renamed file
-    this.file = pur.getFileById( file.getId() );
-
-    // Only update title and locale properties for transformation and job files
-    if ( !this.file.isFolder() && shouldUpdateTitleOnRename( newPath ) ) {
-      Map<String, Properties> localePropertiesMap = this.file.getLocalePropertiesMap();
-      String fileName = FilenameUtils.getName( newPath );
-      String newName = fileName.substring( 0, fileName.lastIndexOf( '.' ) );
-      
-      if ( localePropertiesMap == null ) {
-        localePropertiesMap = new HashMap<String, Properties>();
-        Properties properties = new Properties();
-        properties.setProperty( RepositoryFile.FILE_TITLE, newName );
-        properties.setProperty( RepositoryFile.TITLE, newName );
-        localePropertiesMap.put( RepositoryFile.DEFAULT_LOCALE, properties );
-      } else {
-        for ( Map.Entry<String, Properties> entry : localePropertiesMap.entrySet() ) {
-          Properties properties = entry.getValue();
-          if ( properties.containsKey( RepositoryFile.FILE_TITLE ) ) {
-            properties.setProperty( RepositoryFile.FILE_TITLE, newName );
-          }
-          if ( properties.containsKey( RepositoryFile.TITLE ) ) {
-            properties.setProperty( RepositoryFile.TITLE, newName );
-          }
-        }
-      }
-      
-      // Build updated file with new locale properties and title
-      // Note: name and path are already correct from the moveFile operation
-      RepositoryFile updatedFile =
-        new RepositoryFile.Builder( this.file )
-          .localePropertiesMap( localePropertiesMap )
-          .title( newName )
-          .build();
-      // THIS MUST BE NodeRepositoryFileData for ktr/kjb files. It will not work with any other type of data. 
-      NodeRepositoryFileData data = pur.getDataForRead( this.file.getId(), NodeRepositoryFileData.class );
-      pur.updateFile( updatedFile, data, "Updating the file" );
-      // Refresh after update to get the latest file state
-      this.file = pur.getFileById( this.file.getId() );
-    }
-    // Refresh the new file reference
     newFile.refresh();
-  }
-
-  private boolean shouldUpdateTitleOnRename( String path ) {
-    String lowerPath = path.toLowerCase();
-    return lowerPath.endsWith( "." + Const.STRING_TRANS_DEFAULT_EXT ) || lowerPath.endsWith( "." + Const.STRING_JOB_DEFAULT_EXT );
   }
 
   @Override
