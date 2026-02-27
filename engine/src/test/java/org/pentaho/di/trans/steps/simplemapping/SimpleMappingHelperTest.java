@@ -36,8 +36,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.trans.step.BaseStepHelper.IS_VALID_REFERENCE;
 import static org.pentaho.di.trans.step.StepHelperInterface.ACTION_STATUS;
@@ -64,7 +66,7 @@ public class SimpleMappingHelperTest {
   public void setUp() {
     transMeta = mock( TransMeta.class );
     simpleMappingMeta = mock( SimpleMappingMeta.class );
-    simpleMappingHelper = new SimpleMappingHelper( simpleMappingMeta );
+    simpleMappingHelper = spy( new SimpleMappingHelper( simpleMappingMeta ) );
 
     when( transMeta.environmentSubstitute( anyString() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
     when( simpleMappingMeta.getDirectoryPath() ).thenReturn( "/path" );
@@ -132,7 +134,7 @@ public class SimpleMappingHelperTest {
     when( mappedTransMeta.findMappingOutputStep( null ) ).thenReturn( stepMeta );
     when( rowMetaInterface.getFieldNames() ).thenReturn( new String[] {"step"} );
     when( mappedTransMeta.getStepFields( stepMeta ) ).thenReturn( rowMetaInterface );
-    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), any() ) ).thenReturn( mappedTransMeta );
+    doReturn( mappedTransMeta ).when( simpleMappingHelper ).loadSimpleMappingMeta( transMeta, simpleMappingMeta );
 
     JSONObject response = simpleMappingHelper.stepAction( GET_MAPPING_STEPS, transMeta, null );
 
