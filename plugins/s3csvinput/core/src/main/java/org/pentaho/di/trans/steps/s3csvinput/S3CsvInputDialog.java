@@ -16,7 +16,6 @@ import java.io.IOException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.DecimalFormat;
 
 import com.amazonaws.services.s3.model.Bucket;
 import org.eclipse.swt.SWT;
@@ -53,9 +52,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -761,37 +758,8 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
 
       InputStreamReader reader = new InputStreamReader( inputStream );
 
-      // Read a line of data to determine the number of rows...
-      //
-      String line = TextFileInput.getLine( log, reader, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder( 1000 ) );
-
-      // Split the string, header or data into parts...
-      //
-      String[] fieldNames = Const.splitString( line, meta.getDelimiter() );
-
-      if ( !meta.isHeaderPresent() ) {
-        // Don't use field names from the header...
-        // Generate field names F1 ... F10
-        //
-        DecimalFormat df = new DecimalFormat( "000" ); // $NON-NLS-1$
-        for ( int i = 0; i < fieldNames.length; i++ ) {
-          fieldNames[i] = "Field_" + df.format( i ); // $NON-NLS-1$
-        }
-      } else {
-        if ( !Utils.isEmpty( meta.getEnclosure() ) ) {
-          for ( int i = 0; i < fieldNames.length; i++ ) {
-            if ( fieldNames[i].startsWith( meta.getEnclosure() ) && fieldNames[i].endsWith( meta.getEnclosure() ) && fieldNames[i].length() > 1 ) {
-              fieldNames[i] = fieldNames[i].substring( 1, fieldNames[i].length() - 1 );
-            }
-          }
-        }
-      }
-
-      // Trim the names to make sure...
-      //
-      for ( int i = 0; i < fieldNames.length; i++ ) {
-        fieldNames[i] = Const.trim( fieldNames[i] );
-      }
+      // Extract field names from CSV
+      String[] fieldNames = S3CsvInputHelper.extractFieldNamesFromCsv( reader, meta );
 
       // Update the GUI
       //
