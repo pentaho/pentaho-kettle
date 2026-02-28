@@ -36,7 +36,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.dnd.DND;
@@ -44,13 +43,10 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
-import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
@@ -78,7 +74,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.swt.widgets.TypedListener;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
@@ -124,6 +119,7 @@ import org.pentaho.di.ui.core.dialog.WarningDialog;
 import org.pentaho.di.ui.core.events.dialog.FilterType;
 import org.pentaho.di.ui.core.events.dialog.ProviderFilterType;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.FlatButton;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
@@ -146,7 +142,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 // This dialog's use of generics is inconsistent and will likely never be fixed,
@@ -444,9 +439,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     Composite buttons = createButtonsBar( parent );
     buttons.setLayoutData( new FormDataBuilder().top( header, 25 ).left( 0, 0 ).right( 100, 0 ).result() );
 
+    var helpIcon = GUIResource.getInstance().getHelpIconFlat();
     FlatButton flatBtnHelp =
-      new FlatButton( parent, SWT.NONE ).setEnabledImage( rasterImage( "img/help.svg", 24, 24 ) )
-        .setDisabledImage( rasterImage( "img/help.svg", 24, 24 ) ).setEnabled( true )
+      new FlatButton( parent, SWT.NONE ).setEnabledImage( helpIcon )
+        .setDisabledImage( helpIcon ).setEnabled( true )
         .setLayoutData( new FormDataBuilder().bottom( 100, 0 ).left( 0, 20 ).result() ).addListener(
           new SelectionAdapter() {
             @Override public void widgetSelected( SelectionEvent selectionEvent ) {
@@ -2355,130 +2351,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   protected LogChannelInterface getLog() {
     return log;
-  }
-
-  protected static class FlatButton {
-
-    private CLabel label;
-
-    private AtomicBoolean enabled = new AtomicBoolean( true );
-
-    private Color hoverColor;
-    private Image enabledImage;
-    private Image disabledImage;
-
-    public FlatButton( Composite parent, int style ) {
-
-      label = new CLabel( parent, style );
-      PropsUI.getInstance().setLook( label );
-      setEnabled( true );
-      setHoverColor( parent.getDisplay().getSystemColor( SWT.COLOR_GRAY ) );
-
-      label.addMouseTrackListener( new MouseTrackAdapter() {
-
-        private Color origColor;
-
-        @Override public void mouseEnter( MouseEvent arg0 ) {
-          origColor = label.getBackground();
-          if ( enabled.get() ) {
-            label.setBackground( hoverColor );
-          }
-        }
-
-        @Override public void mouseExit( MouseEvent e ) {
-          if ( origColor != null ) {
-            label.setBackground( origColor );
-          }
-        }
-
-      } );
-
-      label.addMouseListener( new MouseAdapter() {
-        private boolean down = false;
-
-        @Override
-        public void mouseDown( MouseEvent me ) {
-          down = true;
-        }
-
-        @Override
-        public void mouseUp( MouseEvent me ) {
-          if ( down && isEnabled() ) {
-            label.notifyListeners( SWT.Selection, new Event() );
-          }
-          down = false;
-        }
-      } );
-    }
-
-    public CLabel getLabel() {
-      return label;
-    }
-
-    public boolean isEnabled() {
-      return enabled.get();
-    }
-
-    public FlatButton setEnabled( boolean enabled ) {
-
-      if ( disabledImage != null && enabledImage != null ) {
-        label.setImage( enabled ? enabledImage : disabledImage );
-      } else if ( enabledImage != null && disabledImage == null ) {
-        label.setImage( enabledImage );
-      } else if ( enabledImage == null && disabledImage != null ) {
-        label.setImage( disabledImage );
-      }
-      label.redraw();
-
-      this.enabled.set( enabled );
-      return this;
-
-    }
-
-    public Image getEnabledImage() {
-      return enabledImage;
-    }
-
-    public FlatButton setEnabledImage( Image enabledImage ) {
-      this.enabledImage = enabledImage;
-      return this;
-    }
-
-    public Image getDisabledImage() {
-      return disabledImage;
-    }
-
-    public FlatButton setDisabledImage( Image disabledImage ) {
-      this.disabledImage = disabledImage;
-      return this;
-    }
-
-    public FlatButton setToolTipText( String toolTipText ) {
-      label.setToolTipText( toolTipText );
-      return this;
-    }
-
-    public Color getHoverColor() {
-      return hoverColor;
-    }
-
-    public FlatButton setHoverColor( Color hoverColor ) {
-      this.hoverColor = hoverColor;
-      return this;
-    }
-
-    public FlatButton setLayoutData( Object o ) {
-      label.setLayoutData( o );
-      return this;
-    }
-
-    public FlatButton addListener( SelectionListener listener ) {
-      TypedListener typedListener = new TypedListener( listener );
-      label.addListener( SWT.Selection, typedListener );
-      return this;
-    }
-
-
   }
 
   protected static class FileTreeContentProvider implements ITreeContentProvider {

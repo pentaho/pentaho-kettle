@@ -3,10 +3,13 @@ package org.pentaho.di.plugins.repofvs.pur.vfs;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.platform.api.repository2.unified.IRepositoryContentConverterHandler;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;
@@ -21,9 +24,17 @@ import org.slf4j.LoggerFactory;
  */
 public class PurProvider extends AbstractOriginatingFileProvider {
 
+
+  public interface OutputConverter {
+    OutputStream getOutputStream( RepositoryFile file );
+  }
+
   public interface RepositoryAccess {
     IUnifiedRepository getPur();
     IRepositoryContentConverterHandler getContentHandler();
+    default Optional<OutputConverter> getOutputConverter() {
+      return Optional.empty();
+    }
   }
 
   public interface RepositoryAccessFactory {
@@ -74,22 +85,13 @@ public class PurProvider extends AbstractOriginatingFileProvider {
   @Override
   protected PurFileSystem doCreateFileSystem( FileName rootFileName, FileSystemOptions fileSystemOptions )
     throws FileSystemException {
-    log.debug( "Creating file system" );
-    IUnifiedRepository repo;
-    RepositoryAccess repoAccess;
     try {
-      repoAccess = raf.createRepositoryAccess( fileSystemOptions );
-      repo = repoAccess.getPur();
+      log.debug( "Creating file system" );
+      var repoAccess = raf.createRepositoryAccess( fileSystemOptions );
+      return new PurFileSystem( rootFileName, fileSystemOptions, repoAccess );
     } catch ( KettleException e ) {
       throw new FileSystemException( e );
     }
-    if ( repo == null ) {
-      throw new FileSystemException( "Unable to obtain a IUnifiedRepository instance" );
-    } else {
-      log.info( "PUR file system created ({})", rootFileName );
-    }
-    var contentHandler = repoAccess.getContentHandler();
-    return new PurFileSystem( rootFileName, fileSystemOptions, repo, contentHandler );
   }
 
 }
