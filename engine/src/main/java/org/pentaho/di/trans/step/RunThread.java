@@ -65,7 +65,6 @@ public class RunThread implements Runnable {
           // nor call the setErrors() and stopAll() below.
           log.logError( "UnexpectedError: ", t );
         } else {
-          t.printStackTrace();
           log.logError( BaseMessages.getString( "System.Log.UnexpectedError" ), t );
         }
 
