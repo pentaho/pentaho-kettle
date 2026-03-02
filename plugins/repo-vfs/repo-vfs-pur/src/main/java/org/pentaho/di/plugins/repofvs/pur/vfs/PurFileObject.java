@@ -1,6 +1,7 @@
 package org.pentaho.di.plugins.repofvs.pur.vfs;
 
 import org.pentaho.di.connections.vfs.provider.ConnectionFileObject;
+import org.pentaho.di.plugins.repofvs.pur.vfs.PurProvider.OutputConverter;
 import org.pentaho.platform.api.repository2.unified.Converter;
 import org.pentaho.platform.api.repository2.unified.IRepositoryContentConverterHandler;
 import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
@@ -39,6 +40,7 @@ public class PurFileObject extends AbstractFileObject<PurFileSystem> {
 
   private final IUnifiedRepository pur;
   private final IRepositoryContentConverterHandler converterHandler;
+  private final Optional<OutputConverter> outputConverter;
   // the underlying file, should never be null
   private RepositoryFile file;
 
@@ -47,6 +49,7 @@ public class PurFileObject extends AbstractFileObject<PurFileSystem> {
     this.file = Objects.requireNonNull( file );
     this.pur = fileSystem.getRepository();
     this.converterHandler = fileSystem.getContentHandler();
+    this.outputConverter = fileSystem.getOutputConverter();
 
    log.debug( "{}({})", getClass().getSimpleName(), fileName );
   }
@@ -119,7 +122,10 @@ public class PurFileObject extends AbstractFileObject<PurFileSystem> {
 
   @Override
   protected OutputStream doGetOutputStream( boolean bAppend ) throws Exception {
-    return new RepositoryFileOutputStream( file, false, false, pur );
+    // RepositoryFileOutputStream works for all files when in server,
+    // and only non-pdi files when in client
+    return outputConverter.map( outConv -> outConv.getOutputStream( file ) )
+      .orElseGet( () -> new RepositoryFileOutputStream( file, false, false, pur ) );
   }
 
   @Override

@@ -14,13 +14,16 @@ import org.pentaho.di.core.plugins.KettleLifecyclePluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.plugins.repofvs.pur.converter.ContentConverterHandler;
+import org.pentaho.di.plugins.repofvs.pur.converter.RepoClientOutputConverter;
 import org.pentaho.di.plugins.repofvs.pur.vfs.PurProvider;
+import org.pentaho.di.plugins.repofvs.pur.vfs.PurProvider.OutputConverter;
 import org.pentaho.di.plugins.repofvs.pur.vfs.PurProvider.RepositoryAccess;
 import org.pentaho.di.plugins.repovfs.ws.vfs.JCRSolutionFileProvider;
 
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -126,6 +129,7 @@ public class RepoVfsLifecyclePlugin implements KettleLifecycleListener {
 
       var repo = repoLoader.getRepository( opts );
       var pur = repoLoader.getPur( repo );
+      var outConverter = new RepoClientOutputConverter( repo, pur );
 
       return new RepositoryAccess() {
 
@@ -137,6 +141,11 @@ public class RepoVfsLifecyclePlugin implements KettleLifecycleListener {
         @Override
         public IRepositoryContentConverterHandler getContentHandler() {
           return new ContentConverterHandler( repo );
+        }
+
+        @Override
+        public Optional<OutputConverter> getOutputConverter() {
+          return Optional.of( outConverter );
         }
 
       };
