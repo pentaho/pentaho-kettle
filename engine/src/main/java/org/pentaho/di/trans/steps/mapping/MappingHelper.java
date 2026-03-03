@@ -15,6 +15,9 @@ package org.pentaho.di.trans.steps.mapping;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.MappingUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -30,6 +33,9 @@ public class MappingHelper extends BaseStepHelper {
   private static final Class<?> PKG = MappingHelper.class;
   protected static final String MAPPING_REFERENCE_PATH = "referencePath";
   protected static final String MAPPING_STEPS = "mappingSteps";
+  protected static final String SOURCE_FIELDS = "sourceFields";
+  protected static final String TARGET_FIELDS = "targetFields";
+  protected static final String GET_MAPPING_FIELDS = "getMappingFields";
   protected static final String GET_MAPPING_STEPS = "getMappingSteps";
   protected static final String ERROR_MESSAGE = "errorMessage";
   private final MappingMeta mappingMeta;
@@ -57,6 +63,9 @@ public class MappingHelper extends BaseStepHelper {
           break;
         case GET_MAPPING_STEPS:
           response = getMappingSteps( transMeta, queryParams );
+          break;
+        case GET_MAPPING_FIELDS:
+          response = getMappingFields( transMeta, queryParams );
           break;
         default :
           response.put( ACTION_STATUS, FAILURE_METHOD_NOT_FOUND_RESPONSE );
@@ -94,21 +103,8 @@ public class MappingHelper extends BaseStepHelper {
   private JSONObject getMappingSteps( TransMeta transMeta, Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     try {
-      String fileName = mappingMeta.getFileName();
-      if ( StringUtils.isNotBlank( fileName ) && fileName.endsWith( ".ktr" ) ) {
-        fileName = fileName.replace( ".ktr", "" );
-      }
-
-      String transPath = transMeta.environmentSubstitute( fileName );
-      String realTransname = transPath;
-      String realDirectory = "";
-      int index = StringUtils.isBlank( transPath ) ? -1 : transPath.lastIndexOf( "/" );
-      if ( index != -1 ) {
-        realTransname = transPath.substring( index + 1 );
-        realDirectory = transPath.substring( 0, index );
-      }
-
-      if ( StringUtils.isBlank( realDirectory ) || StringUtils.isBlank( realTransname ) ) {
+      boolean isValidRepositoryPath = MappingUtil.validRepositoryPath( transMeta, mappingMeta.getFileName() );
+      if ( !isValidRepositoryPath ) {
         response.put( ACTION_STATUS, FAILURE_RESPONSE );
         response.put( ERROR_MESSAGE,
             BaseMessages.getString(
@@ -125,6 +121,50 @@ public class MappingHelper extends BaseStepHelper {
       log.logError( ex.getMessage() );
       response.put( ACTION_STATUS, FAILURE_RESPONSE );
       response.put( ERROR_MESSAGE, BaseMessages.getString( PKG, ex.getMessage() ) );
+      return response;
+    }
+
+    return response;
+  }
+
+    /**
+    * Fetches the fields from the mapping input or output step in the referenced transformation and the corresponding source or target steps in the parent transformation.
+    * @param transMeta The parent transformation metadata.
+    * @param queryParams The query parameters containing "isMappingInput", "inputStepName", and "outputStepName".
+    * @return A JSON object containing:
+    * - "sourceFields": An array of field names from the source step (previous step of the Mapping step or specified input step).
+    * - "targetFields": An array of field names from the target step (mapping input/output step in the referenced transformation).
+    * - "actionStatus": Indicates success or failure of the operation.
+    * - "errorMessage": Contains error details if the operation fails.
+    */
+  private JSONObject getMappingFields( TransMeta transMeta, Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    try {
+      boolean isValidRepositoryPath = MappingUtil.validRepositoryPath( transMeta, mappingMeta.getFileName() );
+      if ( !isValidRepositoryPath ) {
+        response.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "MappingHelper.Exception.NoValidMappingDetailsFound" ) );
+        response.put( ACTION_STATUS, FAILURE_RESPONSE );
+        return response;
+      }
+
+      TransMeta mappingTransMeta = loadMappingMeta( transMeta, mappingMeta );
+      mappingTransMeta.clearChanged();
+      boolean isSourceMapping = queryParams.getOrDefault( "isMappingInput", "false" ).equals( "true" );
+      String inputStepName = queryParams.getOrDefault( "inputStepName", "" );
+      String outputStepName = queryParams.getOrDefault( "outputStepName", "" );
+      RowMetaInterface sourceRowMeta = getFieldsFromStep( transMeta, mappingTransMeta, mappingMeta.getParentStepMeta().getName(), inputStepName, true, isSourceMapping );
+      String[] sourceFields = sourceRowMeta.getFieldNames();
+      response.put( SOURCE_FIELDS, Arrays.stream( sourceFields ).toList() );
+
+      RowMetaInterface targetRowMeta = getFieldsFromStep( transMeta, mappingTransMeta, mappingMeta.getParentStepMeta().getName(), outputStepName, false, isSourceMapping );
+      String[] targetFields = targetRowMeta.getFieldNames();
+      response.put( TARGET_FIELDS, Arrays.stream( targetFields ).toList() );
+
+      response.put( ACTION_STATUS, SUCCESS_RESPONSE );
+    } catch ( Exception ex ) {
+      log.logError( ex.getMessage() );
+      response.put( ERROR_MESSAGE, BaseMessages.getString( PKG, ex.getMessage() ) );
+      response.put( ACTION_STATUS, FAILURE_RESPONSE );
       return response;
     }
 
@@ -155,5 +195,54 @@ public class MappingHelper extends BaseStepHelper {
         transMeta.getRepository(),
         transMeta.getMetaStore(), transMeta,
         true );
+  }
+
+  public RowMetaInterface getFieldsFromStep( TransMeta transMeta, TransMeta mappingTransMeta, String stepName,
+                                             String inputStepName, boolean getTransformationStep,
+                                             boolean mappingInput ) throws KettleException {
+    if ( mappingInput == getTransformationStep ) {
+      return getFieldsFromParentTrans( inputStepName, transMeta, stepName );
+    } else {
+      return getFieldsFromMappingTrans( inputStepName, mappingTransMeta, mappingInput );
+    }
+  }
+
+  private RowMetaInterface getFieldsFromParentTrans( String inputStepName, TransMeta transMeta, String stepName ) throws KettleException {
+    if ( Utils.isEmpty( inputStepName ) ) {
+      return transMeta.getPrevStepFields( stepName );
+    } else {
+      StepMeta stepMeta = transMeta.findStep( inputStepName );
+      if ( stepMeta == null ) {
+        throw new KettleException( BaseMessages.getString(
+            PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", inputStepName ) );
+      }
+      return transMeta.getStepFields( stepMeta );
+    }
+  }
+
+  private RowMetaInterface getFieldsFromMappingTrans( String inputStepName, TransMeta mappingTransMeta, boolean mappingInput ) throws KettleException {
+    if ( mappingTransMeta == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "MappingDialog.Exception.NoMappingSpecified" ) );
+    }
+
+    if ( Utils.isEmpty( inputStepName ) ) {
+      String[] stepNames = MappingHelper.getMappingSteps( mappingTransMeta, mappingInput );
+      if ( stepNames.length > 1 ) {
+        throw new KettleException( BaseMessages.getString(
+            PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + stepNames.length ) );
+      }
+      if ( stepNames.length == 0 ) {
+        throw new KettleException( BaseMessages.getString(
+            PKG, "MappingDialog.Exception.OneMappingInputStepRequired", "" + stepNames.length ) );
+      }
+      return mappingTransMeta.getStepFields( stepNames[ 0 ] );
+    } else {
+      StepMeta stepMeta = mappingTransMeta.findStep( inputStepName );
+      if ( stepMeta == null ) {
+        throw new KettleException( BaseMessages.getString(
+            PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", inputStepName ) );
+      }
+      return mappingTransMeta.getStepFields( stepMeta );
+    }
   }
 }

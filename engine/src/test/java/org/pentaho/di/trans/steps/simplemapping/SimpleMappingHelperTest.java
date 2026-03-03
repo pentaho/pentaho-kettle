@@ -20,7 +20,9 @@ import org.mockito.MockedStatic;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.StepWithMappingMeta;
@@ -48,8 +50,11 @@ import static org.pentaho.di.trans.step.StepHelperInterface.FAILURE_RESPONSE;
 import static org.pentaho.di.trans.step.StepHelperInterface.SUCCESS_RESPONSE;
 import static org.pentaho.di.trans.steps.simplemapping.SimpleMappingHelper.ERROR_MESSAGE;
 import static org.pentaho.di.trans.steps.simplemapping.SimpleMappingHelper.GET_MAPPING_STEPS;
+import static org.pentaho.di.trans.steps.simplemapping.SimpleMappingHelper.GET_SIMPLE_MAPPING_FIELDS;
 import static org.pentaho.di.trans.steps.simplemapping.SimpleMappingHelper.MAPPING_STEPS;
 import static org.pentaho.di.trans.steps.simplemapping.SimpleMappingHelper.SIMPLE_MAPPING_REFERENCE_PATH;
+import static org.pentaho.di.trans.steps.simplemapping.SimpleMappingHelper.SOURCE_FIELDS;
+import static org.pentaho.di.trans.steps.simplemapping.SimpleMappingHelper.TARGET_FIELDS;
 
 public class SimpleMappingHelperTest {
 
@@ -193,5 +198,106 @@ public class SimpleMappingHelperTest {
 
     assertNotNull( response );
     assertEquals( FAILURE_METHOD_NOT_FOUND_RESPONSE, response.get( ACTION_STATUS ) );
+  }
+
+  @Test
+  public void testMappingFields() throws KettleException {
+    Repository repository = mock( Repository.class );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+    when( repository.findDirectory( anyString() ) ).thenReturn( repositoryDirectoryInterface );
+    when( transMeta.getRepository() ).thenReturn( repository );
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.setName( "Mapping Input" );
+    stepMeta.setStepID( "MappingInput" );
+
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "Name" ) );
+    when( transMeta.getPrevStepFields( any( StepMeta.class ) ) ).thenReturn( rowMeta );
+    when( transMeta.findStep( anyString() ) ).thenReturn( stepMeta );
+
+    TransMeta mappedTransMeta = mock( TransMeta.class );
+
+    RowMeta targetRowMeta = new RowMeta();
+    targetRowMeta.addValueMeta( new ValueMetaString( "Name2" ) );
+    when( mappedTransMeta.findMappingInputStep( null ) ).thenReturn( stepMeta );
+    when( mappedTransMeta.getStepFields( stepMeta ) ).thenReturn( targetRowMeta );
+    when( simpleMappingMeta.getParentStepMeta() ).thenReturn( stepMeta );
+    doReturn( mappedTransMeta ).when( simpleMappingHelper ).loadSimpleMappingMeta( transMeta, simpleMappingMeta );
+
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "isMappingInput", "true" );
+
+    JSONObject response = simpleMappingHelper.stepAction( GET_SIMPLE_MAPPING_FIELDS, transMeta, queryParams );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    List<String> sourceFields = (List<String>) response.get( SOURCE_FIELDS );
+    assertEquals( 1, sourceFields.size() );
+    List<String> targetFields = (List<String>) response.get( TARGET_FIELDS );
+    assertEquals( 1, targetFields.size() );
+  }
+
+  @Test
+  public void testMappingFields_forOutput() throws KettleException {
+    Repository repository = mock( Repository.class );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+    when( repository.findDirectory( anyString() ) ).thenReturn( repositoryDirectoryInterface );
+    when( transMeta.getRepository() ).thenReturn( repository );
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.setName( "Mapping Input" );
+    stepMeta.setStepID( "MappingInput" );
+
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "Name" ) );
+    when( transMeta.getPrevStepFields( any( StepMeta.class ) ) ).thenReturn( rowMeta );
+    when( transMeta.findStep( anyString() ) ).thenReturn( stepMeta );
+
+    TransMeta mappedTransMeta = mock( TransMeta.class );
+
+    RowMeta targetRowMeta = new RowMeta();
+    targetRowMeta.addValueMeta( new ValueMetaString( "Name2" ) );
+    when( mappedTransMeta.findMappingOutputStep( null ) ).thenReturn( stepMeta );
+    when( mappedTransMeta.getStepFields( stepMeta ) ).thenReturn( targetRowMeta );
+    when( simpleMappingMeta.getParentStepMeta() ).thenReturn( stepMeta );
+    doReturn( mappedTransMeta ).when( simpleMappingHelper ).loadSimpleMappingMeta( transMeta, simpleMappingMeta );
+
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put( "isMappingInput", "false" );
+
+    JSONObject response = simpleMappingHelper.stepAction( GET_SIMPLE_MAPPING_FIELDS, transMeta, queryParams );
+
+    assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    List<String> sourceFields = (List<String>) response.get( SOURCE_FIELDS );
+    assertEquals( 1, sourceFields.size() );
+    List<String> targetFields = (List<String>) response.get( TARGET_FIELDS );
+    assertEquals( 1, targetFields.size() );
+  }
+
+  @Test
+  public void testMappingFields_forEmptyFileName() {
+    when( simpleMappingMeta.getFileName() ).thenReturn( "" );
+
+    JSONObject response = simpleMappingHelper.stepAction( GET_SIMPLE_MAPPING_FIELDS, transMeta, null );
+
+    assertEquals( FAILURE_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( SimpleMappingHelper.ERROR_MESSAGE ) );
+  }
+
+  @Test
+  public void testMappingFields_whenLoadTransformationThrowsException() throws KettleException {
+    Repository repository = mock( Repository.class );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+    when( repository.findDirectory( anyString() ) ).thenReturn( repositoryDirectoryInterface );
+    when( transMeta.getRepository() ).thenReturn( repository );
+
+    when( repository.loadTransformation( anyString(), any(), any(), anyBoolean(), any() ) ).thenThrow( new KettleException( "exception occurred" ) );
+
+    JSONObject response = simpleMappingHelper.stepAction( GET_SIMPLE_MAPPING_FIELDS, transMeta, null );
+
+    assertEquals( FAILURE_RESPONSE, response.get( ACTION_STATUS ) );
+    assertNotNull( response );
+    assertNotNull( response.get( SimpleMappingHelper.ERROR_MESSAGE ) );
   }
 }

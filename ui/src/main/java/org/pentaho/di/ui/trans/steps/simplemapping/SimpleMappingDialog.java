@@ -54,6 +54,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mapping.MappingIODefinition;
 import org.pentaho.di.trans.steps.mapping.MappingParameters;
 import org.pentaho.di.trans.steps.mapping.MappingValueRename;
+import org.pentaho.di.trans.steps.simplemapping.SimpleMappingHelper;
 import org.pentaho.di.trans.steps.simplemapping.SimpleMappingMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
@@ -586,28 +587,6 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
 
   }
 
-  public RowMetaInterface getFieldsFromStep( boolean parent, boolean input ) throws KettleException {
-    if ( input ) {
-      // INPUT
-      //
-      if ( parent ) {
-        return transMeta.getPrevStepFields( stepMeta );
-      } else {
-        if ( mappingTransMeta == null ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "SimpleMappingDialog.Exception.NoMappingSpecified" ) );
-        }
-        StepMeta mappingInputStepMeta = mappingTransMeta.findMappingInputStep( null );
-        return mappingTransMeta.getStepFields( mappingInputStepMeta );
-      }
-    } else {
-      // OUTPUT
-      //
-      StepMeta mappingOutputStepMeta = mappingTransMeta.findMappingOutputStep( null );
-      return mappingTransMeta.getStepFields( mappingOutputStepMeta );
-    }
-  }
-
   private void addMappingDefinitionTab( final MappingIODefinition definition, int index, final String tabTitle,
                                         final String tabTooltip, String sourceColumnLabel, String targetColumnLabel,
                                         final boolean input ) {
@@ -668,6 +647,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     wFieldMappings.removeEmptyRows();
     wFieldMappings.setRowNums();
     wFieldMappings.optWidth( true );
+    SimpleMappingHelper simpleMappingHelper = (SimpleMappingHelper) mappingMeta.getStepHelperInterface();
 
     wbEnterMapping.addSelectionListener( new SelectionAdapter() {
 
@@ -677,8 +657,8 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
           if ( input ) {
             // INPUT
             //
-            RowMetaInterface sourceRowMeta = getFieldsFromStep( true, input );
-            RowMetaInterface targetRowMeta = getFieldsFromStep( false, input );
+            RowMetaInterface sourceRowMeta = simpleMappingHelper.getFieldsFromStep( transMeta, mappingTransMeta, stepMeta, true, input );
+            RowMetaInterface targetRowMeta = simpleMappingHelper.getFieldsFromStep( transMeta, mappingTransMeta, stepMeta, false, input );
             String[] sourceFields = sourceRowMeta.getFieldNames();
             String[] targetFields = targetRowMeta.getFieldNames();
 
@@ -719,7 +699,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
           } else {
             // OUTPUT
             //
-            RowMetaInterface sourceRowMeta = getFieldsFromStep( true, input );
+            RowMetaInterface sourceRowMeta = simpleMappingHelper.getFieldsFromStep( transMeta, mappingTransMeta, stepMeta, true, input );
             BaseStepDialog.getFieldsFromPrevious(
               sourceRowMeta, wFieldMappings, 1, new int[] { 1, }, new int[] { }, -1, -1, null );
           }
