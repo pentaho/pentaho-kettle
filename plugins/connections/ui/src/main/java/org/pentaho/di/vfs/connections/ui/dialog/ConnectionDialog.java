@@ -75,7 +75,7 @@ public class ConnectionDialog extends Dialog {
   private static final int MARGIN = Const.MARGIN;
   private static final int TEXT_VAR_FLAGS = SWT.SINGLE | SWT.LEFT | SWT.BORDER;
 
-  private final VariableSpace variableSpace = Variables.getADefaultVariableSpace();
+  private VariableSpace variableSpace;
 
   Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private String connectionTypeKey;
@@ -118,6 +118,7 @@ public class ConnectionDialog extends Dialog {
         .map( ConnectionManager.Type::getLabel ).sorted().toArray( String[]::new );
 
     helper = new VFSDetailsCompositeHelper( PKG, props );
+    variableSpace = spoonSupplier.get().getADefaultVariableSpace();
   }
 
   //This open called for a new connection
@@ -523,6 +524,8 @@ public class ConnectionDialog extends Dialog {
     if ( validateEntries() ) {
       MessageBox mb;
       try {
+        // Setting the variable space in connectionDetail
+        connectionDetails.setSpace( variableSpace );
         boolean result = connectionManager.test( connectionDetails );
         if ( !result ) {
           mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );

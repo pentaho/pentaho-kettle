@@ -235,7 +235,7 @@ public class Element {
         case NAMED_CLUSTER_DIRECTORY:
         case NAMED_CLUSTER_LOCATION:
         case NAMED_CLUSTER_FILE:
-          return new FileController( bowl, FileCacheService.INSTANCE.get(), ProviderServiceService.get() )
+          return new FileController( bowl, FileCacheService.INSTANCE.get(), ProviderServiceService.get(), spoonInstance.getADefaultVariableSpace() )
             .getFile( this );
         default: //nothing to do
       }
