@@ -91,6 +91,7 @@ public class RepoClientOutputConverter implements OutputConverter {
         String fileName = FilenameUtils.getName( filePath );
         String parentPath = FilenameUtils.getFullPath( filePath );
         meta.setFilename( fileName );
+        meta.setName( FilenameUtils.getBaseName( fileName ) );
         meta.setRepositoryDirectory( repo.findDirectory( parentPath ) );
         repo.save( meta, null, null );
       } catch ( KettleException e ) {

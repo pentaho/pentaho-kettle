@@ -173,10 +173,11 @@ public class LocalPurTest {
 
     assertFalse( srcFile.exists() );
 
-    // assertTrue( fsm.resolveFile( url( "/moveTestDest/moved.txt" ) ).exists() );
-    assertTrue( destFile.exists() );
+    // Re-resolve the file after the move to get the updated file object
+    FileObject movedFile = fsm.resolveFile( url( "/testMoveFile_dest/moved.txt" ) );
+    assertTrue( movedFile.exists() );
 
-    try ( InputStream is = destFile.getContent().getInputStream() ) {
+    try ( InputStream is = movedFile.getContent().getInputStream() ) {
       String content = IOUtils.toString( is, StandardCharsets.UTF_8 );
       assertEquals( "move-content", content );
     }
