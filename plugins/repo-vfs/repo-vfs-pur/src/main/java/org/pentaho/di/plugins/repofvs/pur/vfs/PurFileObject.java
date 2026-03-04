@@ -212,6 +212,11 @@ public class PurFileObject extends AbstractFileObject<PurFileSystem> {
 
   @Override
   public boolean canRenameTo( FileObject newfile ) {
+    // if the filename changes, we can't rename.
+    if ( !Objects.equals( getName().getBaseName(), newfile.getName().getBaseName() ) ) {
+      return false;
+    }
+
     // we need to override while pvfs shadows this
     if ( newfile instanceof ConnectionFileObject conObj ) {
       return super.canRenameTo( conObj.getResolvedFileObject() );
