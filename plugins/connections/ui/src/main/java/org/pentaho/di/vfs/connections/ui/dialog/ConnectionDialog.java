@@ -54,6 +54,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
+import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 
@@ -476,6 +478,8 @@ public class ConnectionDialog extends Dialog {
         connectionManager.delete( originalName );
       }
       connectionManager.save( connectionDetails );
+      SpoonPluginManager.getInstance()
+        .notifyLifecycleListeners( SpoonLifeCycleEvent.CONNECTIONS_CHANGED );
       refreshMenu();
       dispose();
     }

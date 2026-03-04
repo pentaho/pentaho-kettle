@@ -13,8 +13,11 @@
 
 package org.pentaho.di.plugins.fileopensave.lifecycle;
 
+import org.pentaho.di.plugins.fileopensave.api.providers.FileProvider;
 import org.pentaho.di.plugins.fileopensave.cache.FileCache;
+import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
 import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
+import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener;
 import org.pentaho.di.ui.spoon.SpoonPerspective;
@@ -38,7 +41,7 @@ public class FileBrowserLifecyclePlugin implements SpoonPluginInterface, SpoonLi
   public FileBrowserLifecyclePlugin() {
     this( FileCacheService.INSTANCE.get() );
   }
-  
+
   public FileBrowserLifecyclePlugin( FileCache fileCache ) {
     this.fileCache = fileCache;
   }
@@ -56,6 +59,11 @@ public class FileBrowserLifecyclePlugin implements SpoonPluginInterface, SpoonLi
     if ( evt == SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED ) {
       spoonSupplier.get().refreshTree( VFS_CONNECTIONS );
     }
+    if ( evt == SpoonLifeCycleEvent.CONNECTIONS_CHANGED ) {
+      fileCache.clearAll();
+      clearVfsProviderCache();
+      spoonSupplier.get().refreshTree( VFS_CONNECTIONS );
+    }
   }
 
   @Override public void applyToContainer( String category, XulDomContainer container ) throws XulException {
@@ -68,5 +76,14 @@ public class FileBrowserLifecyclePlugin implements SpoonPluginInterface, SpoonLi
 
   @Override public SpoonPerspective getPerspective() {
     return null;
+  }
+
+  private void clearVfsProviderCache() {
+    try {
+      FileProvider<?> vfsProvider = ProviderServiceService.get().get( VFSFileProvider.TYPE );
+      vfsProvider.clearProviderCache();
+    } catch ( Exception ignored ) {
+      // If provider cache clear fails, user can still refresh manually.
+    }
   }
 }
