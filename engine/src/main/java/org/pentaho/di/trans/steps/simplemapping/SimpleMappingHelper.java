@@ -16,9 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.MappingUtil;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepHelper;
@@ -31,6 +30,9 @@ public class SimpleMappingHelper extends BaseStepHelper {
   protected static final String SIMPLE_MAPPING_REFERENCE_PATH = "referencePath";
   protected static final String GET_MAPPING_STEPS = "getMappingSteps";
   protected static final String ERROR_MESSAGE = "errorMessage";
+  protected static final String SOURCE_FIELDS= "sourceFields";
+  protected static final String TARGET_FIELDS = "targetFields";
+  protected static final String GET_SIMPLE_MAPPING_FIELDS = "getSimpleMappingFields";
   private static final Class<?> PKG = SimpleMappingHelper.class;
   protected static final String MAPPING_STEPS = "mappingSteps";
   private final SimpleMappingMeta simpleMappingMeta;
@@ -58,6 +60,9 @@ public class SimpleMappingHelper extends BaseStepHelper {
           break;
         case GET_MAPPING_STEPS:
           response = getMappingSteps( transMeta );
+          break;
+        case GET_SIMPLE_MAPPING_FIELDS:
+          response = getSimpleMappingFields( transMeta, queryParams );
           break;
         default :
           response.put( ACTION_STATUS, FAILURE_METHOD_NOT_FOUND_RESPONSE );
@@ -94,24 +99,9 @@ public class SimpleMappingHelper extends BaseStepHelper {
    */
   private JSONObject getMappingSteps( TransMeta transMeta ) {
     JSONObject response = new JSONObject();
-    Repository repository = transMeta.getRepository();
-    RepositoryDirectoryInterface repositoryDirectory;
     try {
-      String fileName = simpleMappingMeta.getFileName();
-      if ( StringUtils.isNotBlank( fileName ) && fileName.endsWith( ".ktr" ) ) {
-        fileName = fileName.replace( ".ktr", "" );
-      }
-
-      String transPath = transMeta.environmentSubstitute( fileName );
-      String realDirectory = "";
-      String realTransname = transPath;
-      int index = StringUtils.isBlank( transPath ) ? -1 : transPath.lastIndexOf( "/" );
-      if ( index != -1 ) {
-        realDirectory = transPath.substring( 0, index );
-        realTransname = transPath.substring( index + 1 );
-      }
-
-      if ( StringUtils.isBlank( realDirectory ) || StringUtils.isBlank( realTransname ) ) {
+      boolean isValidRepositoryPath = MappingUtil.validRepositoryPath( transMeta, simpleMappingMeta.getFileName() );
+      if ( !isValidRepositoryPath ) {
         response.put( ACTION_STATUS, FAILURE_RESPONSE );
         response.put( ERROR_MESSAGE,
             BaseMessages.getString(
@@ -136,10 +126,62 @@ public class SimpleMappingHelper extends BaseStepHelper {
     return response;
   }
 
+  private JSONObject getSimpleMappingFields( TransMeta transMeta, Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    try {
+      boolean isValidRepositoryPath = MappingUtil.validRepositoryPath( transMeta, simpleMappingMeta.getFileName() );
+      if ( !isValidRepositoryPath ) {
+        response.put( ERROR_MESSAGE,
+            BaseMessages.getString(
+                PKG, "SimpleMappingHelper.Exception.NoValidMappingDetailsFound" ) );
+        response.put( ACTION_STATUS, FAILURE_RESPONSE );
+        return response;
+      }
+
+      TransMeta mappingTransMeta = loadSimpleMappingMeta( transMeta, simpleMappingMeta );
+      mappingTransMeta.clearChanged();
+      boolean isInputMapping = queryParams.getOrDefault( "isMappingInput", "false" ).equals( "true" );
+      StepMeta stepMeta = transMeta.findStep( simpleMappingMeta.getParentStepMeta().getName() );
+      RowMetaInterface sourceRowMeta = getFieldsFromStep( transMeta, mappingTransMeta,  stepMeta, true, isInputMapping );
+      String[] sourceFields = sourceRowMeta.getFieldNames();
+
+      RowMetaInterface targetRowMeta = getFieldsFromStep( transMeta, mappingTransMeta,  stepMeta, false, isInputMapping );
+      String[] targetFields = targetRowMeta.getFieldNames();
+      response.put( ACTION_STATUS, SUCCESS_RESPONSE );
+      response.put( SOURCE_FIELDS, Arrays.stream( sourceFields ).toList() );
+      response.put( TARGET_FIELDS, Arrays.stream( targetFields ).toList() );
+    } catch ( Exception ex ) {
+      log.logError( ex.getMessage() );
+      response.put( ACTION_STATUS, FAILURE_RESPONSE );
+      response.put( ERROR_MESSAGE, BaseMessages.getString( PKG, ex.getMessage() ) );
+      return response;
+    }
+
+    return response;
+  }
+
   TransMeta loadSimpleMappingMeta( TransMeta transMeta, SimpleMappingMeta simpleMappingMeta ) throws KettleException {
     return StepWithMappingMeta.loadMappingMeta( transMeta.getBowl(), simpleMappingMeta,
         transMeta.getRepository(),
         transMeta.getMetaStore(), transMeta,
         true );
+  }
+
+  public RowMetaInterface getFieldsFromStep( TransMeta transMeta, TransMeta mappingTransMeta, StepMeta stepMeta, boolean parent, boolean input ) throws KettleException {
+    if ( input ) {
+      if ( parent ) {
+        return transMeta.getPrevStepFields( stepMeta );
+      } else {
+        if ( mappingTransMeta == null ) {
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SimpleMappingDialog.Exception.NoMappingSpecified" ) );
+        }
+        StepMeta mappingInputStepMeta = mappingTransMeta.findMappingInputStep( null );
+        return mappingTransMeta.getStepFields( mappingInputStepMeta );
+      }
+    } else {
+      StepMeta mappingOutputStepMeta = mappingTransMeta.findMappingOutputStep( null );
+      return mappingTransMeta.getStepFields( mappingOutputStepMeta );
+    }
   }
 }

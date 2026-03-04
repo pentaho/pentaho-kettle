@@ -642,56 +642,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     }
   }
 
-  public RowMetaInterface getFieldsFromStep( String stepname, boolean getTransformationStep, boolean mappingInput ) throws KettleException {
-    if ( !( mappingInput ^ getTransformationStep ) ) {
-      if ( Utils.isEmpty( stepname ) ) {
-        // If we don't have a specified stepname we return the input row
-        // metadata
-        //
-        return transMeta.getPrevStepFields( this.stepname );
-      } else {
-        // OK, a fieldname is specified...
-        // See if we can find it...
-        StepMeta stepMeta = transMeta.findStep( stepname );
-        if ( stepMeta == null ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", stepname ) );
-        }
-        return transMeta.getStepFields( stepMeta );
-      }
-
-    } else {
-      if ( mappingTransMeta == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "MappingDialog.Exception.NoMappingSpecified" ) );
-      }
-
-      if ( Utils.isEmpty( stepname ) ) {
-        // If we don't have a specified stepname we select the one and
-        // only "mapping input" step.
-        //
-        String[] stepnames = MappingHelper.getMappingSteps( mappingTransMeta, mappingInput );
-        if ( stepnames.length > 1 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + stepnames.length ) );
-        }
-        if ( stepnames.length == 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "MappingDialog.Exception.OneMappingInputStepRequired", "" + stepnames.length ) );
-        }
-        return mappingTransMeta.getStepFields( stepnames[ 0 ] );
-      } else {
-        // OK, a fieldname is specified...
-        // See if we can find it...
-        StepMeta stepMeta = mappingTransMeta.findStep( stepname );
-        if ( stepMeta == null ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", stepname ) );
-        }
-        return mappingTransMeta.getStepFields( stepMeta );
-      }
-    }
-  }
-
   private void addMappingDefinitionTab( List<MappingIODefinition> definitions, final String tabTitle, String listLabel,
                                         String addToolTip, String removeToolTip, String inputStepLabel,
                                         String outputStepLabel, String descriptionLabel, String sourceColumnLabel,
@@ -909,14 +859,16 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     fdMappings.right = new FormAttachment( 100 );
     wFieldMappings.setLayoutData( fdMappings );
     wFieldMappings.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 50, 50 ) );
+    String stepName = this.stepname;
 
     wbEnterMapping.addSelectionListener( new SelectionAdapter() {
 
       @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         try {
-          RowMetaInterface sourceRowMeta = getFieldsFromStep( wInputStep.getText(), true, input );
-          RowMetaInterface targetRowMeta = getFieldsFromStep( wOutputStep.getText(), false, input );
+          MappingHelper mappingHelper = (MappingHelper) mappingMeta.getStepHelperInterface();
+          RowMetaInterface sourceRowMeta = mappingHelper.getFieldsFromStep( transMeta, mappingTransMeta, stepName, wInputStep.getText(), true, input );
+          RowMetaInterface targetRowMeta = mappingHelper.getFieldsFromStep( transMeta, mappingTransMeta, stepName, wOutputStep.getText(), false, input );
           String[] sourceFields = sourceRowMeta.getFieldNames();
           String[] targetFields = targetRowMeta.getFieldNames();
 
