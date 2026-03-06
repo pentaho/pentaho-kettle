@@ -229,7 +229,8 @@ public class S3DetailComposite implements VFSDetailsComposite {
       case 10: // Mineo
       case 11:
         moveWidgetToBottomHalf( wAccessKey, "ConnectionDialog.s3.AccessKey.Label", null );
-        moveWidgetToBottomHalf( wSecretKey, "ConnectionDialog.s3.SecretKey.Label", wAccessKey );
+        moveWidgetToBottomHalf( wRegion, "ConnectionDialog.s3.Region.Label", wAccessKey );
+        moveWidgetToBottomHalf( wSecretKey, "ConnectionDialog.s3.SecretKey.Label", wRegion );
         moveWidgetToBottomHalf( wEndpoint, "ConnectionDialog.s3.Endpoint.Label", wSecretKey );
         moveWidgetToBottomHalf( wSignatureVersion, "ConnectionDialog.s3.SignatureVersion.Label", wEndpoint );
         moveWidgetToBottomHalf( wPathStyleAccess, "ConnectionDialog.s3.PathStyleAccess.Label", wSignatureVersion );
