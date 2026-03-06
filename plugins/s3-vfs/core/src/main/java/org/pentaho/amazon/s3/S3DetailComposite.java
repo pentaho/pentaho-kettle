@@ -27,7 +27,6 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.connections.ui.dialog.VFSDetailsCompositeHelper;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -37,6 +36,7 @@ import org.pentaho.di.ui.core.widget.FileChooserVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.PasswordVisibleTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -72,7 +72,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
   private TextVar wSignatureVersion;
   private CheckBoxVar wPathStyleAccess;
 
-  private VariableSpace variableSpace = Variables.getADefaultVariableSpace();
+  private VariableSpace variableSpace;
   private HashSet<Control> skipControls = new HashSet<>();
 
   public S3DetailComposite( Bowl bowl, Composite composite, S3Details details, PropsUI props ) {
@@ -82,6 +82,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
     this.wComposite = composite;
     this.details = details;
     regionChoices = details.getRegions().toArray( new String[ 0 ] );
+    variableSpace = Spoon.getInstance().getADefaultVariableSpace();
   }
 
   public Object open() {
