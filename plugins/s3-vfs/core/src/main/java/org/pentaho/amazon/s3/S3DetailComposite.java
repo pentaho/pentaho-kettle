@@ -62,6 +62,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
   private Composite wWidgetHolder;
 
   private ComboVar wRegion;
+  private TextVar wRegionCustom;
   private PasswordVisibleTextVar wAccessKey;
   private PasswordVisibleTextVar wSecretKey;
   private PasswordVisibleTextVar wSessionToken;
@@ -127,6 +128,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wSessionToken = createStandbyPasswordVisibleTextVar();
     wDefaultS3Config = createStandByCheckBoxVar();
     wProfileName = createStandByTextVar();
+    wRegionCustom = createStandByTextVar();
     wCredentialsFilePath = new FileChooserVar( bowl, variableSpace, wWidgetHolder, TEXT_VAR_FLAGS, "Browse File" );
     wEndpoint = createStandByTextVar();
     wSignatureVersion = createStandByTextVar();
@@ -154,6 +156,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
       }
     } );
     wRegion.addModifyListener( modifyEvent -> details.setRegion( wRegion.getText() ) );
+    wRegionCustom.addModifyListener( modifyEvent -> details.setRegion( wRegionCustom.getText() ) );
     wAccessKey.addModifyListener( modifyEvent -> details.setAccessKey( wAccessKey.getText() ) );
     wSecretKey.addModifyListener( modifyEvent -> details.setSecretKey( wSecretKey.getText() ) );
     wSessionToken.addModifyListener(
@@ -228,7 +231,8 @@ public class S3DetailComposite implements VFSDetailsComposite {
         break;
       case 10: // Mineo
       case 11:
-        moveWidgetToBottomHalf( wAccessKey, "ConnectionDialog.s3.AccessKey.Label", null );
+        moveWidgetToBottomHalf( wRegionCustom, "ConnectionDialog.s3.Region.Label", null );
+        moveWidgetToBottomHalf( wAccessKey, "ConnectionDialog.s3.AccessKey.Label", wRegionCustom );
         moveWidgetToBottomHalf( wSecretKey, "ConnectionDialog.s3.SecretKey.Label", wAccessKey );
         moveWidgetToBottomHalf( wEndpoint, "ConnectionDialog.s3.Endpoint.Label", wSecretKey );
         moveWidgetToBottomHalf( wSignatureVersion, "ConnectionDialog.s3.SignatureVersion.Label", wEndpoint );
@@ -258,6 +262,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
     } else {
       wRegion.setText( details.getRegion() );
     }
+    wRegionCustom.setText( Const.NVL( details.getRegion(), "" ) );
     wProfileName.setText( Const.NVL( details.getProfileName(), "" ) );
     wCredentialsFilePath.setText( Const.NVL( details.getCredentialsFilePath(), "" ) );
     wEndpoint.setText( Const.NVL( details.getEndpoint(), "" ) );
