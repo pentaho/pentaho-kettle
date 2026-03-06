@@ -12,6 +12,7 @@
 
 package org.pentaho.amazon.s3;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -22,6 +23,8 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+
+import org.pentaho.amazon.s3.provider.S3Provider;
 import org.pentaho.di.connections.vfs.VFSDetailsComposite;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
@@ -34,13 +37,14 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.CheckBoxVar;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.FileChooserVar;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.PasswordVisibleTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class S3DetailComposite implements VFSDetailsComposite {
   private static final Class<?> PKG = S3DetailComposite.class;
@@ -50,8 +54,35 @@ public class S3DetailComposite implements VFSDetailsComposite {
   private final PropsUI props;
   private final Bowl bowl;
 
-  private static final String[] S3_CONNECTION_TYPE_CHOICES = new String[] { "Amazon", "Minio/HCP" };
-  private static final String[] AUTH_TYPE_CHOICES = new String[] { "Access Key/Secret Key", "Credentials File" };
+  // what has been saved is the ordinal, keep that in mind if changing this
+  enum S3ConnectionType {
+    AMAZON,
+    MINIO
+  }
+
+  enum AuthType {
+    KEYS,
+    CREDENTIALS_FILE;
+
+    public String toDetailsValue() {
+      return switch ( this ) {
+        case KEYS -> S3Provider.ACCESS_KEY_SECRET_KEY;
+        case CREDENTIALS_FILE -> S3Provider.CREDENTIALS_FILE;
+      };
+    }
+
+    public static Optional<AuthType> fromDetailsValue( String val ) {
+      if ( val == null ) {
+        return Optional.empty();
+      }
+      return switch ( val ) {
+        case S3Provider.ACCESS_KEY_SECRET_KEY -> Optional.of( KEYS );
+        case S3Provider.CREDENTIALS_FILE -> Optional.of( CREDENTIALS_FILE );
+        default -> Optional.empty();
+      };
+    }
+  }
+
   private static final int TEXT_VAR_FLAGS = SWT.SINGLE | SWT.LEFT | SWT.BORDER;
   private final String[] regionChoices;
   private boolean initializingUiForFirstTime = true;
@@ -62,6 +93,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
   private Composite wWidgetHolder;
 
   private ComboVar wRegion;
+  private TextVar wMinioRegion;
   private PasswordVisibleTextVar wAccessKey;
   private PasswordVisibleTextVar wSecretKey;
   private PasswordVisibleTextVar wSessionToken;
@@ -96,7 +128,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
     // S3 Connection Type
     Label wlConnectionType = createLabel( "ConnectionDialog.s3.ConnectionType.Label", wlTitle, wComposite );
     wS3ConnectionType = createCCombo( wlConnectionType, 200, wComposite );
-    wS3ConnectionType.setItems( S3_CONNECTION_TYPE_CHOICES );
+    wS3ConnectionType.setItems( getConnectionTypeChoices() );
     wS3ConnectionType.select( Integer.parseInt( Const.NVL( details.getConnectionType(), "0" ) ) );
 
 
@@ -117,8 +149,8 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wWidgetHolder.setVisible( false );
 
     wAuthType = createStandbyCombo();
-    wAuthType.setItems( AUTH_TYPE_CHOICES );
-    wAuthType.select( Integer.parseInt( Const.NVL( details.getAuthType(), "0" ) ) );
+    wAuthType.setItems( getAuthTypeChoices() );
+    wAuthType.select( AuthType.fromDetailsValue( details.getAuthType() ).orElse( AuthType.KEYS ).ordinal() );
     wRegion = createStandbyComboVar();
     wRegion.setItems( regionChoices );
     wRegion.select( 0 );
@@ -131,6 +163,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wEndpoint = createStandByTextVar();
     wSignatureVersion = createStandByTextVar();
     wPathStyleAccess = createStandByCheckBoxVar();
+    wMinioRegion = createStandByTextVar();
 
     skipControls.add( wBottomHalf );
     skipControls.add( wWidgetHolder );
@@ -154,6 +187,10 @@ public class S3DetailComposite implements VFSDetailsComposite {
       }
     } );
     wRegion.addModifyListener( modifyEvent -> details.setRegion( wRegion.getText() ) );
+    wMinioRegion.addModifyListener( e -> {
+      String minioRegion = wMinioRegion.getText();
+      details.setMinioRegion( StringUtils.isBlank( minioRegion ) ? null : minioRegion );
+    } );
     wAccessKey.addModifyListener( modifyEvent -> details.setAccessKey( wAccessKey.getText() ) );
     wSecretKey.addModifyListener( modifyEvent -> details.setSecretKey( wSecretKey.getText() ) );
     wSessionToken.addModifyListener(
@@ -180,29 +217,61 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wPathStyleAccess.getTextVar().addModifyListener(
       modifyEvent -> details.setPathStyleAccessVariable( wPathStyleAccess.getVariableName() ) );
 
-    helper.setupCompositeResizeListener( wComposite );
+    VFSDetailsCompositeHelper.setupCompositeResizeListener( wComposite );
     initializingUiForFirstTime = false;
     return wComposite;
   }
 
-  private void setupBottomHalf() {
-    setupBottomHalf( computeComboIndex( wS3ConnectionType.getText(), S3_CONNECTION_TYPE_CHOICES, 0 ),
-        computeComboIndex( wAuthType.getText(), AUTH_TYPE_CHOICES, 0 ), wRegion.getText() );
+  private String getAuthTypeLabel( AuthType authType ) {
+    //TODO: i18n
+    return switch( authType ) {
+      case KEYS -> "Access Key/Secret Key";
+      case CREDENTIALS_FILE -> "Credentials File";
+    };
   }
 
-  private void setupBottomHalf( int s3ConnectionType, int authType, String region ) {
-    if ( initializingUiForFirstTime || s3ConnectionType != stringToInteger( details.getConnectionType() ) ) {
-      details.setConnectionType( String.valueOf( s3ConnectionType ) );
+  private String getS3ConnectionTypeLabel( S3ConnectionType authType ) {
+    return switch( authType ) {
+      case AMAZON -> "Amazon";
+      case MINIO -> "Minio/HC";
+    };
+  }
+
+  private void setupBottomHalf() {
+    var s3ConnectionType = computeComboValue( wS3ConnectionType, S3ConnectionType.class ).orElse( S3ConnectionType.AMAZON );
+    var authType = computeComboValue( wAuthType, AuthType.class ).orElse( AuthType.KEYS );
+
+    if ( initializingUiForFirstTime || s3ConnectionType.ordinal() != stringToInteger( details.getConnectionType() ) ) {
+      details.setConnectionType( String.valueOf( s3ConnectionType.ordinal() ) );
     }
 
-    if ( initializingUiForFirstTime || authType != stringToInteger( details.getAuthType() ) ) {
-      details.setAuthType( String.valueOf( authType ) );
+    if ( initializingUiForFirstTime || !authType.toDetailsValue().equals( details.getAuthType() ) ) {
+      details.setAuthType( authType.toDetailsValue() );
     }
 
     if ( details.getRegion() == null ) {
-      details.setRegion( region );
+      details.setRegion( wRegion.getText() );
     }
 
+    if ( !initializingUiForFirstTime ) {
+      if ( s3ConnectionType == S3ConnectionType.AMAZON ) {
+        // ensure leftover minio region cannot take precedence
+        details.setMinioRegion( null );
+      } else {
+        // set back from stored in widget in case we switched back
+        String minioRegion = wMinioRegion.getText();
+        details.setMinioRegion( StringUtils.isBlank( minioRegion ) ? null : minioRegion );
+      }
+    }
+
+    moveWidgetsToBottom( s3ConnectionType, authType );
+
+    wBottomHalf.layout();
+    wComposite.pack();
+    VFSDetailsCompositeHelper.updateScrollableRegion( wComposite );
+  }
+
+  private void moveWidgetsToBottom( S3ConnectionType s3ConnectionType, AuthType authType ) {
     for ( Control c : wBottomHalf.getChildren() ) {
       if ( c instanceof Label ) {
         c.dispose(); //Dispose any labels
@@ -211,37 +280,35 @@ public class S3DetailComposite implements VFSDetailsComposite {
       }
     }
 
-    switch( s3ConnectionType * 10 + authType ) {
-      case 0: // Amazon with Access Key
-        moveWidgetToBottomHalf( wAuthType, "ConnectionDialog.s3.AuthType.Label", null, 200 );
-        moveWidgetToBottomHalf( wRegion, "ConnectionDialog.s3.Region.Label", wAuthType, 200 );
-        moveWidgetToBottomHalf( wAccessKey, "ConnectionDialog.s3.AccessKey.Label", wRegion );
-        moveWidgetToBottomHalf( wSecretKey, "ConnectionDialog.s3.SecretKey.Label", wAccessKey );
-        moveWidgetToBottomHalf( wSessionToken, "ConnectionDialog.s3.sessionToken.Label", wSecretKey );
-        moveWidgetToBottomHalf( wDefaultS3Config, "ConnectionDialog.s3.DefaultS3Config.Label", wSessionToken );
-        break;
-      case 1: // Amazon with Credentials File
-        moveWidgetToBottomHalf( wAuthType, "ConnectionDialog.s3.AuthType.Label", null, 200 );
-        moveWidgetToBottomHalf( wRegion, "ConnectionDialog.s3.Region.Label", wAuthType, 200 );
-        moveWidgetToBottomHalf( wProfileName, "ConnectionDialog.s3.ProfileName.Label", wRegion );
-        moveWidgetToBottomHalf( wCredentialsFilePath, "ConnectionDialog.s3.CredentialsFilePath.Label", wProfileName );
-        break;
-      case 10: // Mineo
-      case 11:
-        moveWidgetToBottomHalf( wAccessKey, "ConnectionDialog.s3.AccessKey.Label", null );
-        moveWidgetToBottomHalf( wSecretKey, "ConnectionDialog.s3.SecretKey.Label", wAccessKey );
-        moveWidgetToBottomHalf( wEndpoint, "ConnectionDialog.s3.Endpoint.Label", wSecretKey );
-        moveWidgetToBottomHalf( wSignatureVersion, "ConnectionDialog.s3.SignatureVersion.Label", wEndpoint );
-        moveWidgetToBottomHalf( wPathStyleAccess, "ConnectionDialog.s3.PathStyleAccess.Label", wSignatureVersion );
-        moveWidgetToBottomHalf( wDefaultS3Config, "ConnectionDialog.s3.DefaultS3Config.Label", wPathStyleAccess );
-        break;
-      default:
-
+    if ( s3ConnectionType == S3ConnectionType.AMAZON ) {
+      switch ( authType ) {
+        case KEYS -> {
+          // Amazon with Access Key
+          moveWidgetToBottomHalf( wAuthType, "ConnectionDialog.s3.AuthType.Label", null, 200 );
+          moveWidgetToBottomHalf( wRegion, "ConnectionDialog.s3.Region.Label", wAuthType, 200 );
+          moveWidgetToBottomHalf( wAccessKey, "ConnectionDialog.s3.AccessKey.Label", wRegion );
+          moveWidgetToBottomHalf( wSecretKey, "ConnectionDialog.s3.SecretKey.Label", wAccessKey );
+          moveWidgetToBottomHalf( wSessionToken, "ConnectionDialog.s3.sessionToken.Label", wSecretKey );
+          moveWidgetToBottomHalf( wDefaultS3Config, "ConnectionDialog.s3.DefaultS3Config.Label", wSessionToken );
+        }
+        case CREDENTIALS_FILE -> {
+          // Amazon with Credentials File
+          moveWidgetToBottomHalf( wAuthType, "ConnectionDialog.s3.AuthType.Label", null, 200 );
+          moveWidgetToBottomHalf( wRegion, "ConnectionDialog.s3.Region.Label", wAuthType, 200 );
+          moveWidgetToBottomHalf( wProfileName, "ConnectionDialog.s3.ProfileName.Label", wRegion );
+          moveWidgetToBottomHalf( wCredentialsFilePath, "ConnectionDialog.s3.CredentialsFilePath.Label", wProfileName );
+        }
+      }
+    } else {
+      // Minio
+      moveWidgetToBottomHalf( wMinioRegion, "ConnectionDialog.s3.Region.Label", null );
+      moveWidgetToBottomHalf( wAccessKey, "ConnectionDialog.s3.AccessKey.Label", wMinioRegion );
+      moveWidgetToBottomHalf( wSecretKey, "ConnectionDialog.s3.SecretKey.Label", wAccessKey );
+      moveWidgetToBottomHalf( wEndpoint, "ConnectionDialog.s3.Endpoint.Label", wSecretKey );
+      moveWidgetToBottomHalf( wSignatureVersion, "ConnectionDialog.s3.SignatureVersion.Label", wEndpoint );
+      moveWidgetToBottomHalf( wPathStyleAccess, "ConnectionDialog.s3.PathStyleAccess.Label", wSignatureVersion );
+      moveWidgetToBottomHalf( wDefaultS3Config, "ConnectionDialog.s3.DefaultS3Config.Label", wPathStyleAccess );
     }
-
-    wBottomHalf.layout();
-    wComposite.pack();
-    helper.updateScrollableRegion( wComposite );
   }
 
   private void populateWidgets() {
@@ -258,6 +325,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
     } else {
       wRegion.setText( details.getRegion() );
     }
+    wMinioRegion.setText( Const.NVL( details.getMinioRegion(), "" ) );
     wProfileName.setText( Const.NVL( details.getProfileName(), "" ) );
     wCredentialsFilePath.setText( Const.NVL( details.getCredentialsFilePath(), "" ) );
     wEndpoint.setText( Const.NVL( details.getEndpoint(), "" ) );
@@ -268,10 +336,6 @@ public class S3DetailComposite implements VFSDetailsComposite {
 
   private Label createLabel( String key, Control topWidget, Composite composite ) {
     return helper.createLabel( composite, SWT.LEFT | SWT.WRAP, key, topWidget );
-  }
-
-  private PasswordTextVar createStandbyPasswordTextVar() {
-    return new PasswordTextVar( variableSpace, wWidgetHolder, TEXT_VAR_FLAGS );
   }
 
   private PasswordVisibleTextVar createStandbyPasswordVisibleTextVar() {
@@ -318,8 +382,25 @@ public class S3DetailComposite implements VFSDetailsComposite {
 
   }
 
+  private String[] getAuthTypeChoices() {
+    return Stream.of( AuthType.values() ).map( this::getAuthTypeLabel ).toArray( String[]::new );
+  }
+
+  private String[] getConnectionTypeChoices() {
+    return Stream.of( S3ConnectionType.values() ).map( this::getS3ConnectionTypeLabel ).toArray( String[]::new );
+  }
+
   private int stringToInteger( String value ) {
     return Integer.parseInt( Const.NVL( value, "0" ) );
+  }
+
+  private <E extends Enum<E>> Optional<E> computeComboValue( CCombo combo, Class<E> choicesClass ) {
+    int idx = combo.getSelectionIndex();
+    var choices = choicesClass.getEnumConstants();
+    if ( idx < 0 || idx >= choices.length ) {
+      return Optional.empty();
+    }
+    return Optional.of( choices[idx] );
   }
 
   private int computeComboIndex( String targetValue, String[] choices, int notFoundReturnValue ) {

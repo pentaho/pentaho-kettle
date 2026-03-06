@@ -22,6 +22,7 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfilesConfigFile;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -64,8 +65,8 @@ import org.apache.commons.vfs2.FileObject;
 @SuppressWarnings( "WeakerAccess" )
 public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
 
-  private static final String ACCESS_KEY_SECRET_KEY = "0";
-  private static final String CREDENTIALS_FILE = "1";
+  public static final String ACCESS_KEY_SECRET_KEY = "0";
+  public static final String CREDENTIALS_FILE = "1";
   public static final String NAME = "Amazon S3/Minio/HCP";
   private final Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
 
@@ -86,6 +87,7 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
     s3CommonFileSystemConfigBuilder.setSecretKey( getVar( s3Details.getSecretKey(), space ) );
     s3CommonFileSystemConfigBuilder.setSessionToken( getVar( s3Details.getSessionToken(), space ) );
     s3CommonFileSystemConfigBuilder.setRegion( getVar( s3Details.getRegion(), space ) );
+    s3CommonFileSystemConfigBuilder.setMinioRegion( getVar( s3Details.getMinioRegion(), space ) );
     s3CommonFileSystemConfigBuilder.setCredentialsFile( getVar( s3Details.getCredentialsFilePath(), space ) );
     s3CommonFileSystemConfigBuilder.setProfileName( getVar( s3Details.getProfileName(), space ) );
     s3CommonFileSystemConfigBuilder.setEndpoint( getVar( s3Details.getEndpoint(), space ) );
@@ -258,13 +260,19 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
         ProfilesConfigFile profilesConfigFile = new ProfilesConfigFile( credentialsFilePath );
         awsCredentialsProvider = new ProfileCredentialsProvider( profilesConfigFile, profileName );
       }
+      // TODO: semi-repeated code with S3CommonFileSystem
 
-      String region = getVar( s3Details.getRegion(), space );
+      String region = getVar( s3Details.getMinioRegion(), space );
+      if ( region == null ) {
+        region = getVar( s3Details.getRegion(), space );
+        region = !S3Util.isEmpty( region ) ? Regions.fromName( region ).getName() : Regions.DEFAULT_REGION.getName();
+      }
+
       String endPoint = getVar( s3Details.getEndpoint(), space );
-      Regions regions = !S3Util.isEmpty( region ) ? Regions.fromName( region ) : Regions.DEFAULT_REGION;
+
       if ( awsCredentialsProvider != null && S3Util.isEmpty( endPoint ) ) {
         return AmazonS3ClientBuilder.standard().withCredentials( awsCredentialsProvider )
-          .enableForceGlobalBucketAccess().withRegion( regions ).build();
+          .enableForceGlobalBucketAccess().withRegion( region ).build();
       }
 
       if ( awsCredentialsProvider != null && !S3Util.isEmpty( endPoint ) ) {
@@ -272,7 +280,7 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
         clientConfiguration.setSignerOverride(
           S3Util.isEmpty( signatureVersion ) ? S3Util.SIGNATURE_VERSION_SYSTEM_PROPERTY : signatureVersion );
         return AmazonS3ClientBuilder.standard()
-          .withEndpointConfiguration( new AwsClientBuilder.EndpointConfiguration( endpoint, regions.getName() ) )
+          .withEndpointConfiguration( new AwsClientBuilder.EndpointConfiguration( endpoint, region ) )
           .withPathStyleAccessEnabled( access )
           .withClientConfiguration( clientConfiguration )
           .withCredentials( awsCredentialsProvider )
