@@ -22,6 +22,7 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfilesConfigFile;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -261,10 +262,11 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
 
       String region = getVar( s3Details.getRegion(), space );
       String endPoint = getVar( s3Details.getEndpoint(), space );
-      Regions regions = !S3Util.isEmpty( region ) ? Regions.fromName( region ) : Regions.DEFAULT_REGION;
+      //TODO this throws with an arbitrary region string that's not in the enum
+//      Regions regions = !S3Util.isEmpty( region ) ? Regions.fromName( region ) : Regions.DEFAULT_REGION;
       if ( awsCredentialsProvider != null && S3Util.isEmpty( endPoint ) ) {
         return AmazonS3ClientBuilder.standard().withCredentials( awsCredentialsProvider )
-          .enableForceGlobalBucketAccess().withRegion( regions ).build();
+          .enableForceGlobalBucketAccess().withRegion( region ).build();
       }
 
       if ( awsCredentialsProvider != null && !S3Util.isEmpty( endPoint ) ) {
@@ -272,7 +274,7 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
         clientConfiguration.setSignerOverride(
           S3Util.isEmpty( signatureVersion ) ? S3Util.SIGNATURE_VERSION_SYSTEM_PROPERTY : signatureVersion );
         return AmazonS3ClientBuilder.standard()
-          .withEndpointConfiguration( new AwsClientBuilder.EndpointConfiguration( endpoint, regions.getName() ) )
+          .withEndpointConfiguration( new AwsClientBuilder.EndpointConfiguration( endpoint, region ) )
           .withPathStyleAccessEnabled( access )
           .withClientConfiguration( clientConfiguration )
           .withCredentials( awsCredentialsProvider )

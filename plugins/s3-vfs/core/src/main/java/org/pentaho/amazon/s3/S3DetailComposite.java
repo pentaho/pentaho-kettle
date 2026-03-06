@@ -334,11 +334,17 @@ public class S3DetailComposite implements VFSDetailsComposite {
   }
 
   public String validate() {
-    int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), regionChoices[ 0 ] ), regionChoices, -1 );
-    if ( regionIndex == -1 && !StringUtil.isVariable( details.getRegion() ) ) {
-      return BaseMessages.getString( PKG, "ConnectionDialog.s3.Validate.badRegionText" );
-    }
+    //TODO something better than comparing against some random integer
+//    if ( computeComboIndex( wS3ConnectionType.getText(), S3_CONNECTION_TYPE_CHOICES, 0 ) != 11 ) {
+//      int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), regionChoices[ 0 ] ), regionChoices, -1 );
+//      if ( regionIndex == -1 && !StringUtil.isVariable( details.getRegion() ) ) {
+//        return BaseMessages.getString( PKG, "ConnectionDialog.s3.Validate.badRegionText" );
+//      }
+//      return null;
+//    } else {
+//      return null;
+//    }
+//  }
     return null;
-  }
-
+    }
 }
