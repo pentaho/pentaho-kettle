@@ -154,6 +154,13 @@ private int rowsLeftForGenerateMode = -1;
 private int outputRowSize = 0;
 
 public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
+    // First, get a row from the default input hop
+    Object[] r = getRow();
+    // If the row object is null, we are done processing.
+    if (r == null && !first) {
+        setOutputDone();
+        return false;
+    }
     // If the global "first" flag is true, perform some initialization that can only happen
     // once we have read the first row of input data
     if (first) {
@@ -181,15 +188,6 @@ public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws K
       }
       fieldsForType.add(valueMeta.getName());
     }
-  }
-
-    // First, get a row from the default input hop
-  Object[] r = getRow();
-
-    // If the row object is null, we are done processing.
-  if (r == null && !first) {
-    setOutputDone();
-    return false;
   }
 
     // It is always safest to call createOutputRow() to ensure that your output row's Object[] is large
