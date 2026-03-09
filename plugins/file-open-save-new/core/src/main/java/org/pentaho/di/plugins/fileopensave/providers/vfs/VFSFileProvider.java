@@ -29,6 +29,7 @@ import org.pentaho.di.connections.vfs.provider.ConnectionFileName;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileNameParser;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.UpdateSubscriber;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -37,11 +38,13 @@ import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
 import org.pentaho.di.plugins.fileopensave.api.providers.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileNotFoundException;
+import org.pentaho.di.plugins.fileopensave.cache.FileCache;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSDirectory;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSFile;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSLocation;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.model.VFSTree;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.service.KettleVFSService;
+import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
 import org.pentaho.di.ui.core.FileDialogOperation;
 
 import java.io.IOException;
@@ -51,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +63,7 @@ import java.util.Objects;
 /**
  * Created by bmorrise on 2/14/19.
  */
-public class VFSFileProvider extends BaseFileProvider<VFSFile> {
+public class VFSFileProvider extends BaseFileProvider<VFSFile> implements UpdateSubscriber {
 
   public static final String NAME = "VFS Connections";
   public static final String TYPE = "vfs";
@@ -67,6 +71,10 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
   private Map<String, List<VFSFile>> roots = new HashMap<>();
 
   private Function<Bowl, KettleVFSService> kettleVFSServiceSupplier = KettleVFSService::new;
+
+  private Supplier<ConnectionManager> connectionManagerSupplier = ConnectionManager::getInstance;
+
+  private Supplier<FileCache> fileCacheSupplier = FileCacheService.INSTANCE::get;
 
   private final VFSConnectionManagerHelper vfsConnectionManagerHelper;
 
@@ -89,12 +97,31 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> {
     this(
       VFSConnectionManagerHelper.getInstance(),
       ConnectionFileNameParser.getInstance() );
+    registerConnectionSubscriber();
   }
 
   public VFSFileProvider( VFSConnectionManagerHelper vfsConnectionManagerHelper,
                           ConnectionFileNameParser connectionFileNameParser ) {
     this.vfsConnectionManagerHelper = Objects.requireNonNull( vfsConnectionManagerHelper );
     this.connectionFileNameParser = Objects.requireNonNull( connectionFileNameParser );
+  }
+
+  private void registerConnectionSubscriber() {
+    try {
+      connectionManagerSupplier.get().addSubscriber( this );
+    } catch ( Exception ignored ) {
+      // If subscription fails, cache clearing simply won't be event-driven in headless usage.
+    }
+  }
+
+  @Override
+  public void notifyChanged() {
+    clearProviderCache();
+    try {
+      fileCacheSupplier.get().clearByProvider( TYPE );
+    } catch ( Exception ignored ) {
+      // If the cache service is unavailable, we at least clear the provider cache.
+    }
   }
 
   @Override
