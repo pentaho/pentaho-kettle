@@ -469,6 +469,7 @@ public class SpoonDBDelegate extends SpoonSharedObjectDelegate<DatabaseMeta> {
     try {
       DatabaseManagementInterface databaseManagementInterface = spoon.getManagementBowl().getManager( DatabaseManagementInterface.class );
       getDatabaseDialog().setDatabases( databaseManagementInterface.getAll() );
+
       String con_name = getDatabaseDialog().open();
       if ( !Utils.isEmpty( con_name ) ) {
         con_name = con_name.trim();

@@ -26,6 +26,8 @@ import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.pur.model.IEEUser;
 import org.pentaho.di.repository.pur.model.IRole;
 import org.pentaho.di.ui.repository.pur.services.IRoleSupportSecurityManager;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.api.engine.security.userroledao.UserRoleInfo;
 import org.pentaho.platform.security.userrole.ws.IUserRoleListWebService;
 import org.pentaho.platform.security.userroledao.ws.IUserRoleWebService;
@@ -96,9 +98,33 @@ public class UserRoleDelegate implements java.io.Serializable {
   private void initManaged( PurRepositoryMeta repositoryMeta, IUser userInfo ) throws JSONException {
     String baseUrl = repositoryMeta.getRepositoryLocation().getUrl();
     String webService = baseUrl + ( baseUrl.endsWith( "/" ) ? "" : "/" ) + "api/system/authentication-provider";
-    HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic( userInfo.getLogin(), userInfo.getPassword() );
     Client client = ClientBuilder.newClient();
-    client.register( authFeature );
+
+    // Check if session-based authentication is available and valid
+    boolean useSessionAuth = false;
+    String sessionId = null;
+    try {
+      AuthenticationContext authContext =
+        SpoonSessionManager.getInstance().getAuthenticationContext( baseUrl );
+
+      if ( authContext != null && authContext.isAuthenticated() && authContext.validateAndClearIfExpired() ) {
+        sessionId = authContext.getJSessionId();
+        useSessionAuth = ( sessionId != null && !sessionId.trim().isEmpty() );
+      }
+    } catch ( Exception e ) {
+      // Session auth not available (e.g., running in headless mode), continue with basic auth
+      logger.debug( "Session auth not available, using basic authentication: " + e.getMessage() );
+    }
+
+    if ( useSessionAuth ) {
+      final String finalSessionId = sessionId;
+      client.register( (jakarta.ws.rs.client.ClientRequestFilter) requestContext ->
+        requestContext.getHeaders().add( "Cookie", "JSESSIONID=" + finalSessionId )
+      );
+    } else {
+      HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic( userInfo.getLogin(), userInfo.getPassword() );
+      client.register( authFeature );
+    }
 
     Invocation.Builder target = client.target( webService ).request( MediaType.APPLICATION_JSON_TYPE );
     /**
