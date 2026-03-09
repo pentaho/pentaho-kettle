@@ -361,11 +361,11 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     }
     Spoon spoon = spoonSupplier.get();
     if ( spoon.getRepository() != null ) {
-        spoon.closeRepository();
-        callRepositoryChangingEP( repository );
+      spoon.closeRepository();
+      callRepositoryChangingEP( repository );
     } else {
-        callRepositoryChangingEP( repository );
-        spoon.closeAllJobsAndTransformations( true );
+      callRepositoryChangingEP( repository );
+      spoon.closeAllJobsAndTransformations( true );
     }
     spoon.setRepository( repository );
     setConnectedRepository( repositoryMeta );

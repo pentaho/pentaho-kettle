@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.exception.KettleException;
@@ -32,7 +33,16 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 import org.pentaho.di.ui.repo.dialog.RepositoryConnectionDialog;
 import org.pentaho.di.ui.repo.dialog.RepositoryManagerDialog;
+import org.pentaho.di.ui.repo.service.BrowserAuthenticationService;
+import org.pentaho.di.ui.repo.service.BrowserAuthenticationService.SessionInfo;
+import org.pentaho.di.ui.repo.util.PurRepositoryUtils;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeoutException;
 
 public class RepositoryConnectMenu {
 
@@ -164,16 +174,17 @@ public class RepositoryConnectMenu {
                       return;
                     }
                   } catch ( KettleException ke ) {
-                    log.logError( "Error prompting for save", ke );
+                    log.logError( BaseMessages.getString( PKG, "RepositoryConnectMenu.ErrorPromptingForSave" ), ke );
                   }
                   if ( repositoryMeta.getId().equals( "KettleFileRepository" ) ) {
                     try {
                       repoConnectController.connectToRepository( repositoryMeta );
                     } catch ( KettleException ke ) {
-                      log.logError( "Error connecting to repository", ke );
+                      log.logError( BaseMessages.getString( PKG, "RepositoryConnectMenu.ErrorConnectingToRepository" ), ke );
                     }
                   } else {
-                    new RepositoryConnectionDialog( spoon.getShell() ).createDialog( repoName );
+                    // For enterprise repository, connect based on saved authMethod
+                    connectBasedOnAuthMethod( repoName, repositoryMeta );
                   }
                   renderAndUpdate();
                 }
@@ -209,7 +220,7 @@ public class RepositoryConnectMenu {
             try {
               cancelled = !spoon.promptForSave();
             } catch ( KettleException e ) {
-              log.logError( "Error saving Job or Transformation", e );
+              log.logError( BaseMessages.getString( PKG, "RepositoryConnectMenu.ErrorSavingJobOrTransformation" ), e );
             }
             if ( !cancelled ) {
               spoon.closeRepository();
@@ -242,5 +253,113 @@ public class RepositoryConnectMenu {
     gc.dispose();
     name = name + "...";
     return name;
+  }
+
+  /**
+   * Connect to repository based on saved authentication method
+   */
+  private void connectBasedOnAuthMethod( String repoName, RepositoryMeta repositoryMeta ) {
+    // Get authMethod from repository metadata
+    String authMethod = PurRepositoryUtils.getAuthMethod( repositoryMeta );
+
+    if ( "SSO".equals( authMethod ) ) {
+      // Connect using SSO
+      String serverUrl = PurRepositoryUtils.getServerUrl( repositoryMeta );
+      String authorizationUri = PurRepositoryUtils.getSsoAuthorizationUri( repositoryMeta );
+      if ( authorizationUri == null || authorizationUri.trim().isEmpty() ) {
+        log.logDebug( "No provider-specific authorization URI found in repository metadata; using generic browser auth" );
+      }
+      if ( serverUrl != null && !serverUrl.trim().isEmpty() ) {
+        try {
+          openBrowserLogin( repoName, serverUrl, authorizationUri );
+        } catch ( Exception ex ) {
+          log.logError( BaseMessages.getString( PKG, "RepositoryConnectMenu.ErrorOpeningBrowserLogin" ), ex );
+        }
+      } else {
+        log.logError( BaseMessages.getString( PKG, "RepositoryConnectMenu.ErrorSsoUrlNotConfigured" ) );
+      }
+    } else {
+      // Connect with Username/Password (default)
+      new RepositoryConnectionDialog( spoon.getShell() ).createDialog( repoName );
+    }
+  }
+
+
+  /**
+   * Open browser login for HTTP callback authentication
+   */
+  private void openBrowserLogin( String repoName, String serverUrl, String authorizationUri ) {
+    try {
+      BrowserAuthenticationService authService = new BrowserAuthenticationService();
+      CompletableFuture<SessionInfo> future = authService.authenticate( serverUrl, authorizationUri );
+
+      future.thenAccept( sessionInfo ->
+        spoon.getDisplay().asyncExec( () -> {
+          try {
+            AuthenticationContext authContext =
+              SpoonSessionManager.getInstance().getAuthenticationContext( serverUrl );
+            authContext.storeJSessionId( sessionInfo.getJsessionId() );
+
+            repoConnectController.connectToRepository(
+              repoName,
+              sessionInfo.getUsername(),
+              AuthenticationContext.SESSION_AUTH_TOKEN
+            );
+            renderAndUpdate();
+          } catch ( Exception e ) {
+            log.logError( BaseMessages.getString( PKG, "RepositoryConnectMenu.ErrorConnectingAfterBrowserAuth" ), e );
+            showErrorDialog(
+              BaseMessages.getString( PKG, "RepositoryConnectMenu.Dialog.ConnectionErrorTitle" ),
+              BaseMessages.getString( PKG, "RepositoryConnectMenu.Dialog.ConnectionFailedMessage", e.getMessage() )
+            );
+          }
+        } )
+      ).exceptionally( ex -> {
+        log.logError( "Browser authentication failed", ex );
+        spoon.getDisplay().asyncExec( () ->
+          showErrorDialog( "Authentication Failed", formatBrowserAuthErrorMessage( ex ) ) );
+        return null;
+      } );
+    } catch ( Exception e ) {
+      log.logError( "Error initiating browser login", e );
+      showErrorDialog( "Error", "Failed to initiate browser login: " + e.getMessage() );
+    }
+  }
+
+  private void showErrorDialog( String title, String message ) {
+    MessageBox mb = new MessageBox( spoon.getShell(), SWT.OK | SWT.ICON_ERROR );
+    mb.setText( title );
+    mb.setMessage( message );
+    mb.open();
+  }
+
+  private String formatBrowserAuthErrorMessage( Throwable error ) {
+    Throwable rootCause = unwrapRootCause( error );
+    if ( rootCause instanceof TimeoutException ) {
+      return """
+        Sign-in did not complete in time.
+      
+        Please try again and finish authentication in your browser.
+        If the browser did not open, open it manually and check your network connection.
+        """;
+    }
+
+    String details = rootCause != null && rootCause.getMessage() != null
+      ? rootCause.getMessage().trim()
+      : null;
+
+    if ( details == null || details.isEmpty() ) {
+      return "Unable to complete browser sign-in. Please try again.";
+    }
+
+    return "Unable to complete browser sign-in.\n\nDetails: " + details;
+  }
+
+  private Throwable unwrapRootCause( Throwable throwable ) {
+    Throwable current = throwable;
+    while ( current instanceof CompletionException && current.getCause() != null ) {
+      current = current.getCause();
+    }
+    return current;
   }
 }

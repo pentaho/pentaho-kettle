@@ -30,6 +30,11 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
   private static final long serialVersionUID = -2456840196232185649L; /* EESOURCE: UPDATE SERIALVERUID */
 
   public static final String URL = "url";
+  public static final String AUTH_METHOD = "authMethod";
+  public static final String SSO_PROVIDER_NAME = "ssoProviderName";
+  public static final String SSO_AUTHORIZATION_URI = "ssoAuthorizationUri";
+  public static final String SSO_REGISTRATION_ID = "ssoRegistrationId";
+  public static final String AUTH_METHOD_USERNAME_PASSWORD = "USERNAME_PASSWORD";
 
   /** The id as specified in the repository plugin meta, used for backward compatibility only */
   public static String REPOSITORY_TYPE_ID = "PentahoEnterpriseRepository";
@@ -37,6 +42,11 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
   private PurRepositoryLocation repositoryLocation;
 
   private boolean versionCommentMandatory;
+  
+  private String authMethod;
+  private String ssoProviderName;
+  private String ssoAuthorizationUri;
+  private String ssoRegistrationId;
 
   public PurRepositoryMeta() {
     super( REPOSITORY_TYPE_ID );
@@ -56,6 +66,10 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
     retval.append( super.getXML() );
     retval.append( "    " ).append( XMLHandler.addTagValue( "repository_location_url", repositoryLocation.getUrl() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "version_comment_mandatory", versionCommentMandatory ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "auth_method", getAuthMethod() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "sso_provider_name", getSsoProviderName() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "sso_authorization_uri", getSsoAuthorizationUri() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "sso_registration_id", getSsoRegistrationId() ) );
     retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG ) );
 
     return retval.toString();
@@ -70,6 +84,14 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
       this.repositoryLocation = new PurRepositoryLocation( urlTrim );
       this.versionCommentMandatory =
           "Y".equalsIgnoreCase( XMLHandler.getTagValue( repnode, "version_comment_mandatory" ) );
+      this.authMethod = XMLHandler.getTagValue( repnode, "auth_method" );
+      // Normalize null or blank/whitespace auth method to default for backward compatibility
+      if ( this.authMethod == null || this.authMethod.trim().isEmpty() ) {
+        this.authMethod = AUTH_METHOD_USERNAME_PASSWORD;
+      }
+      setSsoProviderName( XMLHandler.getTagValue( repnode, "sso_provider_name" ) );
+      setSsoAuthorizationUri( XMLHandler.getTagValue( repnode, "sso_authorization_uri" ) );
+      setSsoRegistrationId( XMLHandler.getTagValue( repnode, "sso_registration_id" ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load Kettle database repository meta object", e );
     }
@@ -137,10 +159,52 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
   public void setVersionCommentMandatory( boolean versionCommentMandatory ) {
     this.versionCommentMandatory = versionCommentMandatory;
   }
+  
+  public String getAuthMethod() {
+    return authMethod != null ? authMethod : AUTH_METHOD_USERNAME_PASSWORD;
+  }
+  
+  public void setAuthMethod( String authMethod ) {
+    // Normalize null or blank/whitespace auth method to default
+    if ( authMethod == null || authMethod.trim().isEmpty() ) {
+      this.authMethod = AUTH_METHOD_USERNAME_PASSWORD;
+    } else {
+      this.authMethod = authMethod;
+    }
+  }
+
+  public String getSsoProviderName() {
+    return ssoProviderName;
+  }
+
+  public void setSsoProviderName( String ssoProviderName ) {
+    this.ssoProviderName = normalizeOptionalValue( ssoProviderName );
+  }
+
+  public String getSsoAuthorizationUri() {
+    return ssoAuthorizationUri;
+  }
+
+  public void setSsoAuthorizationUri( String ssoAuthorizationUri ) {
+    this.ssoAuthorizationUri = normalizeOptionalValue( ssoAuthorizationUri );
+  }
+
+  public String getSsoRegistrationId() {
+    return ssoRegistrationId;
+  }
+
+  public void setSsoRegistrationId( String ssoRegistrationId ) {
+    this.ssoRegistrationId = normalizeOptionalValue( ssoRegistrationId );
+  }
 
   public RepositoryMeta clone() {
-    return new PurRepositoryMeta( REPOSITORY_TYPE_ID, getName(), getDescription(), getRepositoryLocation(),
-        isVersionCommentMandatory() );
+    PurRepositoryMeta clone = new PurRepositoryMeta( REPOSITORY_TYPE_ID, getName(), getDescription(),
+      getRepositoryLocation(), isVersionCommentMandatory() );
+    clone.setAuthMethod( getAuthMethod() );
+    clone.setSsoProviderName( getSsoProviderName() );
+    clone.setSsoAuthorizationUri( getSsoAuthorizationUri() );
+    clone.setSsoRegistrationId( getSsoRegistrationId() );
+    return clone;
   }
 
   @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
@@ -148,12 +212,25 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
     String url = (String) properties.get( URL );
     PurRepositoryLocation purRepositoryLocation = new PurRepositoryLocation( url );
     setRepositoryLocation( purRepositoryLocation );
+    String authMethodValue = (String) properties.get( AUTH_METHOD );
+    setAuthMethod( authMethodValue );
+    setSsoProviderName( (String) properties.get( SSO_PROVIDER_NAME ) );
+    setSsoAuthorizationUri( (String) properties.get( SSO_AUTHORIZATION_URI ) );
+    setSsoRegistrationId( (String) properties.get( SSO_REGISTRATION_ID ) );
   }
 
   @SuppressWarnings( "unchecked" )
   @Override public JSONObject toJSONObject() {
     JSONObject object = super.toJSONObject();
     object.put( URL, getRepositoryLocation().getUrl() );
+    object.put( AUTH_METHOD, getAuthMethod() );
+    object.put( SSO_PROVIDER_NAME, getSsoProviderName() );
+    object.put( SSO_AUTHORIZATION_URI, getSsoAuthorizationUri() );
+    object.put( SSO_REGISTRATION_ID, getSsoRegistrationId() );
     return object;
+  }
+
+  private String normalizeOptionalValue( String value ) {
+    return value == null || value.trim().isEmpty() ? null : value;
   }
 }

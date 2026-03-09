@@ -19,10 +19,13 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -73,8 +76,22 @@ public class SchedulerRequest {
       String username = repository.getUserInfo().getName();
       String password = repository.getUserInfo().getPassword();
 
-      if ( username != null && password != null ) {
+      boolean isSessionAuth = AuthenticationContext.SESSION_AUTH_TOKEN.equals( password )
+                              || ( password == null || password.isEmpty() );
 
+      if ( isSessionAuth ) {
+        try {
+          AuthenticationContext authContext =
+            SpoonSessionManager.getInstance().getAuthenticationContext( baseUrl );
+
+          String jsessionId = authContext.getJSessionId();
+          if ( jsessionId != null && !jsessionId.trim().isEmpty() ) {
+            httpPost.setHeader( "Cookie", "JSESSIONID=" + jsessionId );
+          }
+        } catch ( Exception e ) {
+          LogChannel.GENERAL.logError( "Error setting session auth header", e );
+        }
+      } else if ( username != null ) {
         byte[] encoding;
         try {
           String userPass = username + ":" + password;

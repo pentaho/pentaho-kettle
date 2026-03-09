@@ -13,6 +13,7 @@
 package org.pentaho.di.repository.pur;
 
 import java.io.Closeable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -20,13 +21,13 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
 
+import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.Service;
@@ -36,6 +37,8 @@ import jakarta.xml.ws.soap.SOAPBinding;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.repository.pur.WebServiceSpecification.ServiceType;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
 import org.pentaho.platform.security.policy.rolebased.ws.IAuthorizationPolicyWebService;
 import org.pentaho.platform.security.policy.rolebased.ws.IRoleAuthorizationPolicyRoleBindingDaoWebService;
@@ -100,12 +103,8 @@ public class WebServiceManager implements ServiceManager {
   @SuppressWarnings( "unchecked" )
   public <T> T createService( final String username, final String password, final Class<T> clazz )
     throws MalformedURLException {
-    final Future<Object> resultFuture;
     synchronized ( serviceCache ) {
-      // if this is true, a coder did not make sure that clearServices was called on disconnect
-      if ( lastUsername != null && !lastUsername.equals( username ) ) {
-        throw new IllegalStateException();
-      }
+      validateRequest( username );
 
       final WebServiceSpecification webServiceSpecification = serviceNameMap.get( clazz );
       final String serviceName = webServiceSpecification.getServiceName();
@@ -113,99 +112,136 @@ public class WebServiceManager implements ServiceManager {
         throw new IllegalStateException();
       }
 
-      if ( webServiceSpecification.getServiceType().equals( ServiceType.JAX_WS ) ) {
-        // build the url handling whether or not baseUrl ends with a slash
-        // String baseUrl = repositoryMeta.getRepositoryLocation().getUrl();
-        final URL url =
-            new URL( baseUrl + ( baseUrl.endsWith( "/" ) ? "" : "/" ) + "webservices/" + serviceName + "?wsdl" ); //$NON-NLS-1$ //$NON-NLS-2$
+      final Future<Object> resultFuture = resolveServiceFuture( username, password, clazz,
+          webServiceSpecification, serviceName );
 
-        String key = url.toString() + '_' + serviceName + '_' + clazz.getName();
-        if ( !serviceCache.containsKey( key ) ) {
-          resultFuture = executor.submit( new Callable<Object>() {
+      return unwrapFuture( resultFuture, clazz );
+    }
+  }
 
-            @Override
-            public Object call() throws Exception {
-              Service service = Service.create( url, new QName( NAMESPACE_URI, serviceName ) );
-              T port = service.getPort( clazz );
-              // add TRUST_USER if necessary
-              if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
-                ( (BindingProvider) port ).getRequestContext().put( MessageContext.HTTP_REQUEST_HEADERS,
-                    Collections.singletonMap( TRUST_USER, Collections.singletonList( username ) ) );
-              } else {
-                // http basic authentication
-                ( (BindingProvider) port ).getRequestContext().put( BindingProvider.USERNAME_PROPERTY, username );
-                ( (BindingProvider) port ).getRequestContext().put( BindingProvider.PASSWORD_PROPERTY, password );
-              }
-              // accept cookies to maintain session on server
-              ( (BindingProvider) port ).getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
-              // support streaming binary data
-              // TODO mlowery this is not portable between JAX-WS implementations (uses com.sun)
-              ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192 );
-              SOAPBinding binding = (SOAPBinding) ( (BindingProvider) port ).getBinding();
-              binding.setMTOMEnabled( true );
-              return port;
-            }
-          } );
-          serviceCache.put( key, resultFuture );
-        } else {
-          resultFuture = serviceCache.get( key );
-        }
-      } else {
-        if ( webServiceSpecification.getServiceType().equals( ServiceType.JAX_RS ) ) {
+  private void validateRequest( final String username ) {
+    // if this is true, a coder did not make sure that clearServices was called on disconnect
+    if ( lastUsername != null && !lastUsername.equals( username ) ) {
+      throw new IllegalStateException();
+    }
+  }
 
-          String key = baseUrl.toString() + '_' + serviceName + '_' + clazz.getName();
-          if ( !serviceCache.containsKey( key ) ) {
+  @SuppressWarnings( "unchecked" )
+  private <T> Future<Object> resolveServiceFuture( final String username, final String password,
+      final Class<T> clazz, final WebServiceSpecification webServiceSpecification,
+      final String serviceName ) throws MalformedURLException {
+    if ( webServiceSpecification.getServiceType().equals( ServiceType.JAX_WS ) ) {
+      return getOrCreateJaxWsFuture( username, password, clazz, serviceName );
+    } else if ( webServiceSpecification.getServiceType().equals( ServiceType.JAX_RS ) ) {
+      return getOrCreateJaxRsFuture( username, password, clazz, webServiceSpecification, serviceName );
+    }
+    throw new IllegalStateException( "Unknown service type: " + webServiceSpecification.getServiceType() );
+  }
 
-            resultFuture = executor.submit( new Callable<Object>() {
+  @SuppressWarnings( "unchecked" )
+  private <T> Future<Object> getOrCreateJaxWsFuture( final String username, final String password,
+      final Class<T> clazz, final String serviceName ) throws MalformedURLException {
+    // build the url handling whether or not baseUrl ends with a slash
+    final URL url =
+        new URL( baseUrl + ( baseUrl.endsWith( "/" ) ? "" : "/" ) + "webservices/" + serviceName + "?wsdl" ); //$NON-NLS-1$ //$NON-NLS-2$
 
-              @Override
-              public Object call() throws Exception {
-                ClientConfig clientConfig = new ClientConfig();
-                clientConfig.property( ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE );
-                Client client = ClientBuilder.newClient( clientConfig );
-                HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( username, password );
-                client.register( feature );
+    String key = url.toString() + '_' + serviceName + '_' + clazz.getName();
+    return serviceCache.computeIfAbsent( key,
+        k -> executor.submit( () -> createJaxWsPort( username, password, clazz, serviceName, url ) ) );
+  }
 
-                Class<?>[] parameterTypes = new Class<?>[] { Client.class, URI.class };
-                String factoryClassName = webServiceSpecification.getServiceClass().getName();
-                factoryClassName = factoryClassName.substring( 0, factoryClassName.lastIndexOf( "$" ) );
-                Class<?> factoryClass = Class.forName( factoryClassName );
-                Method method =
-                    factoryClass.getDeclaredMethod( webServiceSpecification.getServiceName(), parameterTypes );
-                T port = (T) method.invoke( null, new Object[] { client, new URI( baseUrl + "/plugin" ) } );
+  @SuppressWarnings( "unchecked" )
+  private <T> T createJaxWsPort( final String username, final String password, final Class<T> clazz,
+      final String serviceName, final URL url ) {
+    Service service = Service.create( url, new QName( NAMESPACE_URI, serviceName ) );
+    T port = service.getPort( clazz );
+    configureJaxWsAuthentication( (BindingProvider) port, username, password );
+    // accept cookies to maintain session on server
+    ( (BindingProvider) port ).getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
+    // support streaming binary data
+    // TODO mlowery this is not portable between JAX-WS implementations (uses com.sun)
+    ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192 );
+    SOAPBinding binding = (SOAPBinding) ( (BindingProvider) port ).getBinding();
+    binding.setMTOMEnabled( true );
+    return port;
+  }
 
-                return port;
-              }
-            } );
-            serviceCache.put( key, resultFuture );
-          } else {
-            resultFuture = serviceCache.get( key );
-          }
-        } else {
-          resultFuture = null;
-        }
+  private void configureJaxWsAuthentication( final BindingProvider bp, final String username,
+      final String password ) {
+    String sessionId = getJSessionId();
+    if ( isSessionAuthEnabled() && sessionId != null && !sessionId.trim().isEmpty() ) {
+      // Use JSESSIONID cookie for authentication
+      Map<String, java.util.List<String>> headers = new HashMap<>();
+      headers.put( "Cookie", Collections.singletonList( "JSESSIONID=" + sessionId ) );
+      bp.getRequestContext().put( MessageContext.HTTP_REQUEST_HEADERS, headers );
+      bp.getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
+    } else if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
+      // add TRUST_USER if necessary
+      bp.getRequestContext().put( MessageContext.HTTP_REQUEST_HEADERS,
+          Collections.singletonMap( TRUST_USER, Collections.singletonList( username ) ) );
+      bp.getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
+    } else {
+      // http basic authentication
+      bp.getRequestContext().put( BindingProvider.USERNAME_PROPERTY, username );
+      bp.getRequestContext().put( BindingProvider.PASSWORD_PROPERTY, password );
+    }
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private <T> Future<Object> getOrCreateJaxRsFuture( final String username, final String password,
+      final Class<T> clazz, final WebServiceSpecification webServiceSpecification,
+      final String serviceName ) {
+    String key = baseUrl + '_' + serviceName + '_' + clazz.getName();
+    return serviceCache.computeIfAbsent( key,
+        k -> executor.submit( () -> createJaxRsPort( username, password, webServiceSpecification ) ) );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private <T> T createJaxRsPort( final String username, final String password,
+      final WebServiceSpecification webServiceSpecification )
+    throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, java.net.URISyntaxException,
+    IllegalAccessException {
+    ClientConfig clientConfig = new ClientConfig();
+    clientConfig.property( ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE );
+    Client client = ClientBuilder.newClient( clientConfig );
+    configureJaxRsAuthentication( client, username, password );
+
+    Class<?>[] parameterTypes = new Class<?>[] { Client.class, URI.class };
+    String factoryClassName = webServiceSpecification.getServiceClass().getName();
+    factoryClassName = factoryClassName.substring( 0, factoryClassName.lastIndexOf( "$" ) );
+    Class<?> factoryClass = Class.forName( factoryClassName );
+    Method method = factoryClass.getDeclaredMethod( webServiceSpecification.getServiceName(), parameterTypes );
+    return (T) method.invoke( (Object) null, client, new URI( baseUrl + "/plugin" ) );
+  }
+
+  private void configureJaxRsAuthentication( final Client client, final String username, final String password ) {
+    String sessionId = getJSessionId();
+    if ( isSessionAuthEnabled() && sessionId != null && !sessionId.trim().isEmpty() ) {
+      // Use JSESSIONID cookie for REST authentication
+      client.register( (jakarta.ws.rs.client.ClientRequestFilter) requestContext ->
+          requestContext.getHeaders().add( "Cookie", "JSESSIONID=" + sessionId )
+      );
+    } else {
+      // Use basic authentication
+      client.register( HttpAuthenticationFeature.basic( username, password ) );
+    }
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private <T> T unwrapFuture( final Future<Object> resultFuture, final Class<T> clazz ) throws MalformedURLException {
+    try {
+      T service = (T) resultFuture.get();
+      return clazz.isInterface() ? UnifiedRepositoryInvocationHandler.forObject( service, clazz ) : service;
+    } catch ( InterruptedException e ) {
+      throw new RuntimeException( e );
+    } catch ( ExecutionException e ) {
+      Throwable cause = e.getCause();
+      if ( cause instanceof RuntimeException ) {
+        throw (RuntimeException) cause;
+      } else if ( cause instanceof MalformedURLException ) {
+        throw (MalformedURLException) cause;
       }
-
-      try {
-        if ( clazz.isInterface() ) {
-          return UnifiedRepositoryInvocationHandler.forObject( (T) resultFuture.get(), clazz );
-        } else {
-          return (T) resultFuture.get();
-        }
-
-      } catch ( InterruptedException e ) {
-        throw new RuntimeException( e );
-      } catch ( ExecutionException e ) {
-        Throwable cause = e.getCause();
-        if ( cause != null ) {
-          if ( cause instanceof RuntimeException ) {
-            throw (RuntimeException) cause;
-          } else if ( cause instanceof MalformedURLException ) {
-            throw (MalformedURLException) cause;
-          }
-        }
-        throw new RuntimeException( e );
-      }
+      throw new RuntimeException( e );
     }
   }
 
@@ -231,6 +267,11 @@ public class WebServiceManager implements ServiceManager {
                     break;
                   }
                 }
+              }
+            } catch ( InvocationTargetException e ) {
+              // Session expired errors during close are expected and can be ignored
+              if ( !isSessionExpiredException( e.getCause() ) ) {
+                // Unexpected invocation error during close
               }
             } catch ( Exception e ) {
               e.printStackTrace();
@@ -268,6 +309,58 @@ public class WebServiceManager implements ServiceManager {
 
   private void registerSpecification( WebServiceSpecification webServiceSpecification ) {
     tempServiceNameMap.put( webServiceSpecification.getServiceClass(), webServiceSpecification );
+  }
+
+  /**
+   * Check if an exception is related to session expiration (HTTP 401).
+   * This helps identify expected errors during logout when the session has already expired.
+   *
+   * @param throwable The exception to check
+   * @return true if the exception indicates a 401/session expired error, false otherwise
+   */
+  private boolean isSessionExpiredException( Throwable throwable ) {
+    // Check the exception chain for ClientTransportException with 401 status
+    Throwable current = throwable;
+    while ( current != null ) {
+      if ( current instanceof ClientTransportException ) {
+        String message = current.getMessage();
+        // Check if message contains "401" status code
+        if ( message != null && message.contains( "401" ) ) {
+          return true;
+        }
+      }
+      current = current.getCause();
+    }
+    return false;
+  }
+
+  /**
+   * Get a valid AuthenticationContext if session-based authentication is available.
+   *
+   * @return AuthenticationContext if session auth is valid, null otherwise
+   */
+  private AuthenticationContext getValidAuthContext() {
+    try {
+      AuthenticationContext authContext =
+        SpoonSessionManager.getInstance().getAuthenticationContext( baseUrl );
+
+      if ( authContext != null && authContext.isAuthenticated()
+           && authContext.validateAndClearIfExpired() ) {
+        return authContext;
+      }
+    } catch ( Exception e ) {
+      // Session auth not available (e.g., running in headless mode)
+    }
+    return null;
+  }
+
+  private boolean isSessionAuthEnabled() {
+    return getValidAuthContext() != null;
+  }
+
+  private String getJSessionId() {
+    AuthenticationContext authContext = getValidAuthContext();
+    return authContext != null ? authContext.getJSessionId() : null;
   }
 
 }
