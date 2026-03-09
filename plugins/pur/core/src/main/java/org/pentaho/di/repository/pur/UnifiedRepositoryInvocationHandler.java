@@ -25,7 +25,6 @@ import org.pentaho.di.repository.KettleRepositoryLostException;
 class UnifiedRepositoryInvocationHandler<T> implements InvocationHandler {
   private T rep;
 
-  // private Repository owner;
 
   UnifiedRepositoryInvocationHandler( T rep ) {
     this.rep = rep;
@@ -36,12 +35,15 @@ class UnifiedRepositoryInvocationHandler<T> implements InvocationHandler {
     try {
       return method.invoke( rep, args );
     } catch ( InvocationTargetException ex ) {
-      if ( lookupConnectException( ex ) ) {
-        throw new KettleRepositoryLostException( ex.getCause() );
+      // Check authentication errors FIRST - session expiry must be detected immediately
+      if ( lookupAuthenticationException( ex ) ) {
+        // DO NOT close web services here
+        // DO NOT retry
+        throw new KettleAuthenticationException( "Session expired", ex.getCause() );
       }
 
-      if ( lookupAuthenticationException( ex ) ) {
-        throw new KettleAuthenticationException( ex.getCause() );
+      if ( lookupConnectException( ex ) ) {
+        throw new KettleRepositoryLostException( ex.getCause() );
       }
 
       throw ex.getCause();

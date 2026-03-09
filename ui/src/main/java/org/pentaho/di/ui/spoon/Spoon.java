@@ -195,11 +195,16 @@ import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.ui.repo.service.BrowserAuthenticationService;
+import org.pentaho.di.ui.repository.exception.RepositoryExceptionUtils;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
@@ -366,6 +371,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -2788,10 +2794,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void editConnection() {
-    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.MODIFY_DATABASE ) ) {
-      return;
-    }
-    withDatabase( ( dbManager, db) -> delegates.db.editConnection( dbManager, db ) );
+    executeWithSessionRetry( () -> {
+      if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.MODIFY_DATABASE ) ) {
+        return;
+      }
+      withDatabase( ( dbManager, db) -> delegates.db.editConnection( dbManager, db ) );
+    }, this::editConnection );
   }
 
   public void dupeConnection() {
@@ -2803,23 +2811,24 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void delConnection() {
-    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.DELETE_DATABASE ) ) {
-      return;
-    }
-
-    withDatabase( ( dbManager, db ) -> {
-      MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-      mb.setMessage( BaseMessages.getString(
-        PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Message", db.getName() ) );
-      mb.setText( BaseMessages.getString( PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Title" ) );
-      int response = mb.open();
-
-      if ( response != SWT.YES ) {
+    executeWithSessionRetry( () -> {
+      if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.DELETE_DATABASE ) ) {
         return;
       }
+      withDatabase( ( dbManager, db ) -> {
+        MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+        mb.setMessage( BaseMessages.getString(
+          PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Message", db.getName() ) );
+        mb.setText( BaseMessages.getString( PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Title" ) );
+        int response = mb.open();
 
-      delegates.db.delConnection( dbManager, db );
-    } );
+        if ( response != SWT.YES ) {
+          return;
+        }
+
+        delegates.db.delConnection( dbManager, db );
+      } );
+    }, this::delConnection );
   }
 
   public void sqlConnection() {
@@ -4387,9 +4396,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           @Override
           public void run() {
 
-            shell.getDisplay().syncExec( new Runnable() {
-              @Override
-              public void run() {
+            shell.getDisplay().syncExec( () -> {
                 RepositoryExplorer explorer;
                 try {
                   try {
@@ -4420,7 +4427,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                     }
                   } );
                 }
-              }
             } );
           }
 
@@ -5420,6 +5426,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       transMeta.importFromMetaStore();
       transMeta.clearChanged();
     } catch ( Exception e ) {
+      if ( isAuthenticationException( e ) ) {
+        if ( handleSessionExpiryWithRelogin() ) {
+          newTransFile();
+        }
+        return;
+      }
+
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingSharedObjects.Title" ), BaseMessages
           .getString( PKG, "Spoon.Exception.ErrorReadingSharedObjects.Message" ), e );
@@ -5471,6 +5484,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       try {
         jobMeta.importFromMetaStore();
       } catch ( Exception e ) {
+        if ( isAuthenticationException( e ) ) {
+          if ( handleSessionExpiryWithRelogin() ) {
+            newJobFile();
+          }
+          return;
+        }
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages
             .getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", delegates.tabs.makeTabName(
@@ -6968,16 +6987,27 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   } 
 
   public void forceRefreshTree( boolean clearCaches ) {
-    // refresh underlying data
-    if ( clearCaches ) {
-      globalManagementBowl.clearCache();
-      managementBowl.clearCache();
-      executionBowl.clearCache();
-    }
+    try {
+      // refresh underlying data
+      if ( clearCaches ) {
+        globalManagementBowl.clearCache();
+        managementBowl.clearCache();
+        executionBowl.clearCache();
+      }
 
-    if ( selectionTreeManager != null ) {
-      selectionTreeManager.updateAll();
-      refreshTree();
+      if ( selectionTreeManager != null ) {
+        selectionTreeManager.updateAll();
+        refreshTree();
+      }
+    } catch ( Exception e ) {
+      // Check if this is a session expiry exception
+      if ( isAuthenticationException( e ) ) {
+        // Handle session expiry silently - user will be prompted when they next interact
+        log.logDebug( "Session expired during tree refresh, will prompt on next interaction" );
+        return;
+      }
+      // Log other exceptions but don't show error dialog for tree refresh
+      log.logError( "Error refreshing tree", e );
     }
   }
 
@@ -6994,35 +7024,56 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * Refresh the object selection tree (on the left of the screen)
    */
   public void refreshTree() {
+    try {
+      if ( selectionTree == null ) {
+        createSelectionTree();
+      }
 
-    if ( selectionTree == null ) {
-      createSelectionTree();
+      selectionTreeManager.clear();
+      TransMeta activeTransMeta = getActiveTransformation();
+      JobMeta activeJobMeta = getActiveJob();
+
+      selectionTreeManager.showRoot( STRING_CONFIGURATIONS, true );
+
+      if ( activeTransMeta != null ) {
+        showMetaTree( activeTransMeta, STRING_CONFIGURATIONS );
+      } else if ( activeJobMeta != null ) {
+        showMetaTree( activeJobMeta, STRING_CONFIGURATIONS );
+      } else {
+        showMetaTree( null, STRING_CONFIGURATIONS );
+      }
+
+      selectionTreeManager.render();
+      selectionTree.setFocus();
+      selectionTree.layout();
+      viewTreeComposite.layout( true, true );
+      setShellText();
+    } catch ( Exception e ) {
+      // Check if this is a session expiry exception
+      if ( isAuthenticationException( e ) ) {
+        // Handle session expiry silently - user will be prompted when they next interact
+        log.logDebug( "Session expired during tree refresh, will prompt on next interaction" );
+        return;
+      }
+      // Log other exceptions but don't show error dialog for tree refresh
+      log.logError( "Error refreshing tree", e );
     }
-
-    selectionTreeManager.clear();
-    TransMeta activeTransMeta = getActiveTransformation();
-    JobMeta activeJobMeta = getActiveJob();
-
-    selectionTreeManager.showRoot( STRING_CONFIGURATIONS, true );
-
-    if ( activeTransMeta != null ) {
-      showMetaTree( activeTransMeta, STRING_CONFIGURATIONS );
-    } else if ( activeJobMeta != null ) {
-      showMetaTree( activeJobMeta, STRING_CONFIGURATIONS );
-    } else {
-      showMetaTree( null, STRING_CONFIGURATIONS );
-    }
-
-    selectionTreeManager.render();
-    selectionTree.setFocus();
-    selectionTree.layout();
-    viewTreeComposite.layout( true, true );
-    setShellText();
   }
 
   private void showMetaTree( AbstractMeta activeMeta, String type ) {
-    selectionTreeManager.checkUpdate( Optional.ofNullable( activeMeta ), type );
-    selectionTreeManager.reset();
+    try {
+      selectionTreeManager.checkUpdate( Optional.ofNullable( activeMeta ), type );
+      selectionTreeManager.reset();
+    } catch ( Exception e ) {
+      // Check if this is a session expiry exception
+      if ( isAuthenticationException( e ) ) {
+        // Handle session expiry silently - user will be prompted when they next interact
+        log.logDebug( "Session expired during showMetaTree, will prompt on next interaction" );
+        return;
+      }
+      // Log other exceptions but don't show error dialog
+      log.logError( "Error showing meta tree", e );
+    }
   }
 
   @VisibleForTesting TreeItem createTreeItem( TreeItem parent, String text, Image image ) {
@@ -7040,12 +7091,40 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return item;
   }
 
+  private boolean isHandlingSessionExpiry = false;
+
   public void handleRepositoryLost( KettleRepositoryLostException e ) {
-    setRepository( null );
-    warnRepositoryLost( e );
-    SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
-    setShellText();
-    enableMenus();
+    // Prevent re-entrant calls during session recovery
+    if ( isHandlingSessionExpiry ) {
+      log.logDebug( "Already handling session expiry, skipping nested call" );
+      return;
+    }
+
+
+    try {
+      isHandlingSessionExpiry = true;
+
+      // First, try to recover the session with browser-based re-authentication
+      if ( rep != null ) {
+        log.logBasic( "Repository connection lost, attempting to recover session" );
+        boolean reconnected = handleSessionExpiryWithRelogin();
+
+        if ( reconnected ) {
+          log.logBasic( "Session successfully recovered" );
+          return; // Session recovered, no need to disconnect
+        }
+      }
+
+      // If recovery failed or was cancelled, disconnect
+      log.logBasic( "Session recovery failed or cancelled, disconnecting from repository" );
+      setRepository( null );
+      warnRepositoryLost( e );
+      SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
+      setShellText();
+      enableMenus();
+    } finally {
+      isHandlingSessionExpiry = false;
+    }
   }
 
   private void warnRepositoryLost( KettleRepositoryLostException e ) {
@@ -7054,6 +7133,289 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     box.setMessage( e.getPrefaceMessage() );
     box.open();
   }
+
+  /**
+   * Check if an exception is an authentication/session expiry exception.
+   * Delegates to centralized RepositoryExceptionUtils for consistent exception handling.
+   */
+  public boolean isAuthenticationException( Throwable t ) {
+    return RepositoryExceptionUtils.isSessionExpired( t );
+  }
+
+  /**
+   * Executes an operation with automatic session expiry detection and retry.
+   * Catches both {@link KettleRepositoryLostException} and {@link RuntimeException}
+   * that wrap authentication failures, and retries the operation after re-login.
+   *
+   * @param operation The operation to execute
+   * @param retryOperation The operation to run on retry (may differ if it needs a full re-invocation)
+   */
+  private void executeWithSessionRetry( Runnable operation, Runnable retryOperation ) {
+    try {
+      operation.run();
+    } catch ( KettleRepositoryLostException e ) {
+      if ( handleSessionExpiryWithRelogin() ) {
+        retryOperation.run();
+      }
+    } catch ( RuntimeException e ) {
+      if ( isAuthenticationException( e ) ) {
+        if ( handleSessionExpiryWithRelogin() ) {
+          retryOperation.run();
+        }
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  /**
+   * Handle session expiry by prompting for reconnection.
+   * Automatically triggers browser-based SSO authentication if it was used originally,
+   * otherwise shows traditional username/password login dialog.
+   *
+   * @return true if successfully reconnected, false otherwise
+   */
+  public boolean handleSessionExpiryWithRelogin() {
+    if ( rep == null ) {
+      return false;
+    }
+    try {
+      isHandlingSessionExpiry = true;
+      log.logBasic( "Session expired, handling reconnection" );
+      final String currentRepoName = rep.getName();
+      final RepositoryMeta repositoryMeta = rep.getRepositoryMeta();
+
+      if ( isCurrentRepositorySessionValid( repositoryMeta ) ) {
+        log.logDebug( "Session already valid; skipping duplicate session-expiry prompt" );
+        return true;
+      }
+
+      final boolean[] reconnected = { false };
+      getDisplay().syncExec( () -> reconnectOnUiThread( reconnected, repositoryMeta, currentRepoName ) );
+      return reconnected[0];
+    } catch ( Exception e ) {
+      log.logError( "Error during session expiry handling", e );
+      return false;
+    } finally {
+      isHandlingSessionExpiry = false;
+    }
+  }
+
+  private void reconnectOnUiThread( boolean[] reconnected, RepositoryMeta repositoryMeta,
+      String currentRepoName ) {
+    try {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.CANCEL | SWT.ICON_WARNING );
+      mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.SessionExpired.Title" ) );
+      mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.SessionExpired.Message" ) );
+      if ( mb.open() != SWT.OK ) {
+        reconnected[0] = false;
+        return;
+      }
+      String serverUrl = getServerUrl( repositoryMeta );
+      if ( isBrowserAuthSession( serverUrl ) ) {
+        log.logBasic( "Triggering automatic browser re-authentication" );
+        reconnected[0] = performBrowserReauthentication( repositoryMeta, serverUrl );
+      } else {
+        log.logBasic( "Showing traditional login dialog" );
+        reconnected[0] = reconnectWithDialog( currentRepoName );
+      }
+    } catch ( Exception e ) {
+      log.logError( "Error during reconnection", e );
+      reconnected[0] = false;
+    }
+  }
+
+  private boolean isBrowserAuthSession( String serverUrl ) {
+    if ( serverUrl == null ) {
+      return false;
+    }
+    AuthenticationContext authContext =
+      SpoonSessionManager.getInstance().getAuthenticationContext( serverUrl );
+    return authContext != null && authContext.wasPreviouslyAuthenticated();
+  }
+
+  private boolean isCurrentRepositorySessionValid( RepositoryMeta repositoryMeta ) {
+    String serverUrl = getServerUrl( repositoryMeta );
+    if ( serverUrl == null ) {
+      return false;
+    }
+
+    try {
+      AuthenticationContext authContext =
+        SpoonSessionManager.getInstance().getAuthenticationContext( serverUrl );
+      return authContext != null && authContext.isSessionValid();
+    } catch ( Exception e ) {
+      log.logDebug( "Unable to validate current repository session", e );
+      return false;
+    }
+  }
+
+  private boolean reconnectWithDialog( String currentRepoName ) {
+    final boolean[] reconnected = { false };
+    loginDialog = new RepositoriesDialog( shell, currentRepoName, new ILoginCallback() {
+      @Override
+      public void onSuccess( Repository repository ) {
+        if ( rep != null ) {
+          rep.disconnect();
+          SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
+        }
+        setRepository( repository );
+        loadSessionInformation( repository, true );
+        refreshTree();
+        setShellText();
+        SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_CONNECTED );
+        reconnected[0] = true;
+      }
+      @Override
+      public void onError( Throwable t ) {
+        closeRepository();
+        onLoginError( t );
+        reconnected[0] = false;
+      }
+      @Override
+      public void onCancel() {
+        reconnected[0] = false;
+      }
+    } );
+    loginDialog.show();
+    return reconnected[0];
+  }
+
+  /**
+   * Perform browser-based re-authentication after session expiry.
+   * Opens browser for SSO authentication and reconnects to repository.
+   *
+   * @param repositoryMeta The repository metadata
+   * @param serverUrl The server URL
+   * @return true if successfully reconnected, false otherwise
+   */
+  private void logSsoReauthIntent( String authorizationUri ) {
+    if ( authorizationUri != null && !authorizationUri.trim().isEmpty() ) {
+      log.logBasic( "Re-authenticating with saved SSO provider authorization URI" );
+    } else {
+      log.logBasic( "No saved SSO provider authorization URI found; using generic browser auth" );
+    }
+  }
+
+  private boolean performBrowserReauthentication( RepositoryMeta repositoryMeta, String serverUrl ) {
+    try {
+      log.logBasic( "Starting browser re-authentication" );
+      String authorizationUri = getSsoAuthorizationUri( repositoryMeta );
+      logSsoReauthIntent( authorizationUri );
+
+      // Initialize browser authentication service
+      BrowserAuthenticationService authService =
+        new BrowserAuthenticationService();
+
+      // Start authentication flow (opens browser and waits for callback)
+      CompletableFuture<BrowserAuthenticationService.SessionInfo> future =
+        authService.authenticate( serverUrl, authorizationUri );
+
+      // Wait for authentication to complete
+      BrowserAuthenticationService.SessionInfo sessionInfo = future.get();
+
+      if ( sessionInfo != null && sessionInfo.getJsessionId() != null ) {
+        log.logBasic( "Browser authentication successful, reconnecting" );
+
+        // Store the new session
+        AuthenticationContext authContext =
+          SpoonSessionManager.getInstance()
+            .getAuthenticationContext( serverUrl );
+
+        authContext.storeJSessionId( sessionInfo.getJsessionId() );
+
+        // Reconnect to repository with session marker
+        rep.connect( sessionInfo.getUsername(), AuthenticationContext.SESSION_AUTH_TOKEN );
+
+        // Verify connection
+        if ( rep.isConnected() ) {
+          log.logBasic( "Successfully reconnected with browser authentication" );
+
+          // Refresh UI
+          getDisplay().asyncExec( () -> {
+            try {
+              rep.loadRepositoryDirectoryTree();
+              refreshTree();
+            } catch ( Exception e ) {
+              log.logDebug( "Error refreshing UI after reconnection", e );
+            }
+          } );
+
+          return true;
+        } else {
+          log.logError( "Failed to connect with browser authentication" );
+        }
+      } else {
+        log.logBasic( "Browser authentication returned null session info" );
+      }
+
+      return false;
+
+    } catch ( InterruptedException e ) {
+      Thread.currentThread().interrupt();
+      log.logError( "Browser re-authentication interrupted", e );
+      return false;
+    } catch ( Exception e ) {
+      log.logError( "Browser re-authentication failed", e );
+
+      // Show error to user
+      getDisplay().asyncExec( () -> {
+        MessageBox errorBox = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
+        errorBox.setText( "Authentication Failed" );
+        String msg = e instanceof java.util.concurrent.TimeoutException
+          ? "Authentication timed out. Please try again."
+          : "Browser authentication failed: " + e.getMessage();
+        errorBox.setMessage( msg );
+        errorBox.open();
+      } );
+
+      return false;
+    }
+  }
+
+  /**
+   * Extract server URL from repository metadata using reflection.
+   * Uses reflection to avoid compile-time dependency on PurRepositoryMeta.
+   *
+   * @param repositoryMeta The repository metadata
+   * @return The server URL, or null if not available
+   */
+  public static String getServerUrl( RepositoryMeta repositoryMeta ) {
+    if ( repositoryMeta == null ) {
+      return null;
+    }
+
+    try {
+      // Try to get URL from repository metadata (PurRepositoryMeta)
+      Method getRepositoryLocation =
+        repositoryMeta.getClass().getMethod( "getRepositoryLocation" );
+      Object location = getRepositoryLocation.invoke( repositoryMeta );
+
+      if ( location != null ) {
+        Method getUrl = location.getClass().getMethod( "getUrl" );
+        return (String) getUrl.invoke( location );
+      }
+    } catch ( Exception e ) {
+      // Reflection failed - repository metadata doesn't support getRepositoryLocation
+    }
+
+    return null;
+  }
+
+  private static String getSsoAuthorizationUri( RepositoryMeta repositoryMeta ) {
+    if ( repositoryMeta == null ) {
+      return null;
+    }
+
+    try {
+      Method getSsoAuthorizationUri = repositoryMeta.getClass().getMethod( "getSsoAuthorizationUri" );
+      Object value = getSsoAuthorizationUri.invoke( repositoryMeta );
+      return value == null ? null : value.toString();
+    } catch ( Exception e ) {
+      return null;
+    }
+  }
+
 
   @Override public List<String> getPartitionSchemasNames( TransMeta transMeta ) throws KettleException {
     return Arrays.asList( pickupPartitionSchemaNames( transMeta ) );
@@ -9132,6 +9494,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               delegates.trans.executeTransformation(
                 transMeta, local, remote, cluster, preview, debug, replayDate, safe, logLevel );
             } catch ( Exception e ) {
+              if ( isAuthenticationException( e ) ) {
+                if ( handleSessionExpiryWithRelogin() ) {
+                  executeTransformation( transMeta, local, remote, cluster, preview, debug, replayDate, safe, logLevel );
+                }
+                return;
+              }
               new ErrorDialog(
                 shell, "Execute transformation", "There was an error during transformation execution", e );
             }
@@ -9152,6 +9520,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       delegates.jobs.executeJob( jobMeta, local, remote, replayDate, safe, startCopyName, startCopyNr );
     } catch ( Exception e ) {
+      if ( isAuthenticationException( e ) ) {
+        if ( handleSessionExpiryWithRelogin() ) {
+          executeJob( jobMeta, local, remote, replayDate, safe, startCopyName, startCopyNr );
+        }
+        return;
+      }
       new ErrorDialog( shell, "Execute job", "There was an error during job execution", e );
     }
 
@@ -9452,11 +9826,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void newConnection() {
-    delegates.db.newConnection();
+    executeWithSessionRetry( () -> delegates.db.newConnection(), this::newConnection );
   }
 
   public void getSQL() {
-    delegates.db.getSQL();
+    executeWithSessionRetry( () -> delegates.db.getSQL(), this::getSQL );
   }
 
   @Override

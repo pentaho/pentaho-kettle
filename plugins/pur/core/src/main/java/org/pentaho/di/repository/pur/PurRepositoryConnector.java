@@ -12,6 +12,7 @@
 
 package org.pentaho.di.repository.pur;
 
+import com.pentaho.di.services.PentahoDiPlugin;
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
 import com.pentaho.pdi.ws.RepositorySyncException;
 import org.apache.commons.lang.BooleanUtils;
@@ -43,7 +44,9 @@ import org.pentaho.di.ui.repository.pur.services.ILockService;
 import org.pentaho.di.ui.repository.pur.services.IRevisionService;
 import org.pentaho.di.ui.repository.pur.services.IRoleSupportSecurityManager;
 import org.pentaho.di.ui.repository.pur.services.ITrashService;
-import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
+import org.pentaho.platform.security.policy.rolebased.ws.IAuthorizationPolicyWebService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -52,8 +55,8 @@ import org.pentaho.platform.repository2.unified.webservices.jaxws.UnifiedReposit
 
 import jakarta.xml.ws.WebServiceException;
 
+import java.net.MalformedURLException;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -93,232 +96,317 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     if ( serviceManager != null ) {
       disconnect();
     }
+
+    final boolean useSessionAuth = AuthenticationContext.SESSION_AUTH_TOKEN.equals( password );
+    if ( useSessionAuth ) {
+      resolveSessionId();
+    }
+
     serviceManager = new WebServiceManager( repositoryMeta.getRepositoryLocation().getUrl(), username );
     RepositoryServiceRegistry purRepositoryServiceRegistry = new RepositoryServiceRegistry();
-    IUser user1 = new EEUserInfo();
-    final String decryptedPassword = Encr.decryptPasswordOptionallyEncrypted( password );
+    final String decryptedPassword = useSessionAuth ? "" : Encr.decryptPasswordOptionallyEncrypted( password );
     final RepositoryConnectResult result = new RepositoryConnectResult( purRepositoryServiceRegistry );
+
     try {
       /*
        * Three scenarios: 1. Connect in process: username fetched using PentahoSessionHolder; no authentication occurs
        * 2. Connect externally with trust: username specified is assumed authenticated if IP of calling code is trusted
        * 3. Connect externally: authentication occurs normally (i.e. password is checked)
        */
+      IUser user1 = new EEUserInfo();
       user1.setLogin( username );
       user1.setPassword( decryptedPassword );
       user1.setName( username );
       result.setUser( user1 );
 
-      // We need to have the application context and the session available in order for us to skip authentication
-      if ( PentahoSystem.getApplicationContext() != null && PentahoSessionHolder.getSession() != null
-          && PentahoSessionHolder.getSession().isAuthenticated() ) {
-        if ( inProcess() ) {
-          // connect to the IUnifiedRepository through PentahoSystem
-          // this assumes we're running in a BI Platform
-          result.setUnifiedRepository( PentahoSystem.get( IUnifiedRepository.class ) );
-          if ( result.getUnifiedRepository() != null ) {
-            if ( log.isDebug() ) {
-              log.logDebug( BaseMessages.getString( PKG, "PurRepositoryConnector.ConnectInProgress.Begin" ) );
-            }
-            String name = PentahoSessionHolder.getSession().getName();
-            user1 = new EEUserInfo();
-            user1.setLogin( name );
-            user1.setName( name );
-            user1.setPassword( decryptedPassword );
-            result.setUser( user1 );
-            result.setSuccess( true );
-            result.getUser().setAdmin(
-              PentahoSystem.get( IAuthorizationPolicy.class ).isAllowed(
-                IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION )
-            );
-
-            if ( log.isDebug() ) {
-              log.logDebug( BaseMessages.getString(
-                      PKG, "PurRepositoryConnector.ConnectInProgress", name, result.getUnifiedRepository() ) );
-            }
-
-            // for now, there is no need to support the security manager
-            // what about security provider?
-            return result;
-          }
-        }
+      RepositoryConnectResult inProcessResult = tryInProcessConnect( decryptedPassword, result );
+      if ( inProcessResult != null ) {
+        return inProcessResult;
       }
 
       ExecutorService executor = getExecutor();
+      Future<Boolean> authorizationFuture = buildAuthorizationFuture( executor, result );
+      Future<WebServiceException> repoFuture = buildRepoWebServiceFuture( executor, username, decryptedPassword, result );
+      Future<Exception> syncFuture = buildSyncWebServiceFuture( executor, username, decryptedPassword, result );
+      Future<String> sessionFuture = buildSessionServiceFuture( executor, username, decryptedPassword, useSessionAuth );
 
-      Future<Boolean> authorizationWebserviceFuture = executor.submit( new Callable<Boolean>() {
+      applyFutureResults( result, authorizationFuture, repoFuture, syncFuture, sessionFuture );
 
-        @Override
-        public Boolean call() throws Exception {
-          // We need to add the service class in the list in the order of dependencies
-          // IRoleSupportSecurityManager depends RepositorySecurityManager to be present
-          if ( log.isBasic() ) {
-            log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateServiceProvider.Start" ) );
-          }
-          result.setSecurityProvider( new AbsSecurityProvider( purRepository, repositoryMeta, result.getUser(),
-              serviceManager ) );
-          if ( log.isBasic() ) {
-            log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateServiceProvider.End" ) ); //$NON-NLS-1$
-          }
-
-          // If the user does not have access to administer security we do not
-          // need to added them to the service list
-          if ( allowedActionsContains( (AbsSecurityProvider) result.getSecurityProvider(),
-              IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION ) ) {
-            result.setSecurityManager( new AbsSecurityManager( purRepository, repositoryMeta, result.getUser(),
-                serviceManager ) );
-            // Set the reference of the security manager to security provider for user role list change event
-            ( (PurRepositorySecurityProvider) result.getSecurityProvider() )
-                .setUserRoleDelegate( ( (PurRepositorySecurityManager) result.getSecurityManager() )
-                    .getUserRoleDelegate() );
-            return true;
-          }
-          return false;
-        }
-      } );
-
-      Future<WebServiceException> repoWebServiceFuture = executor.submit( new Callable<WebServiceException>() {
-
-        @Override
-        public WebServiceException call() throws Exception {
-          try {
-            IUnifiedRepositoryJaxwsWebService repoWebService = null;
-            if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositoryWebService.Start" ) ); //$NON-NLS-1$
-            }
-            repoWebService =
-                serviceManager.createService( username, decryptedPassword, IUnifiedRepositoryJaxwsWebService.class ); //$NON-NLS-1$
-            if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositoryWebService.End" ) ); //$NON-NLS-1$
-            }
-            if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateUnifiedRepositoryToWebServiceAdapter.Start" ) ); //$NON-NLS-1$
-            }
-            result.setUnifiedRepository( new UnifiedRepositoryToWebServiceAdapter( repoWebService ) );
-          } catch ( WebServiceException wse ) {
-            return wse;
-          }
-          return null;
-        }
-      } );
-
-      Future<Exception> syncWebserviceFuture = executor.submit( new Callable<Exception>() {
-
-        @Override
-        public Exception call() throws Exception {
-          try {
-            if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositorySyncWebService.Start" ) );
-            }
-            IRepositorySyncWebService syncWebService =
-                serviceManager.createService( username, decryptedPassword, IRepositorySyncWebService.class ); //$NON-NLS-1$
-            if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositorySyncWebService.Sync" ) ); //$NON-NLS-1$
-            }
-            syncWebService.sync( repositoryMeta.getName(), repositoryMeta.getRepositoryLocation().getUrl() );
-          } catch ( RepositorySyncException e ) {
-            log.logError( e.getMessage(), e );
-            // this message will be presented to the user in spoon
-            result.setConnectMessage( e.getMessage() );
-            return null;
-          } catch ( WebServiceException e ) {
-            // if we can speak to the repository okay but not the sync service, assume we're talking to a BA Server
-            log.logError( e.getMessage(), e );
-            return new Exception( BaseMessages.getString( PKG, "PurRepository.BAServerLogin.Message" ), e );
-          }
-          return null;
-        }
-      } );
-
-      Future<String> sessionServiceFuture = executor.submit( new Callable<String>() {
-
-        @Override
-        public String call() throws Exception {
-          try {
-            if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Start" ) );
-            }
-            CredentialsProvider provider = new BasicCredentialsProvider();
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( username, decryptedPassword );
-            provider.setCredentials( AuthScope.ANY, credentials );
-            HttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider( provider ).build();
-            HttpGet method = new HttpGet( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" );
-            if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
-              method.addHeader( TRUST_USER, username );
-            }
-            HttpResponse response = client.execute( method );
-            if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Sync" ) );
-            }
-            return EntityUtils.toString( response.getEntity() );
-          } catch ( Exception e ) {
-            if ( log.isError() ) {
-              log.logError( BaseMessages.getString( PKG, "PurRepositoryConnector.Error.EnableToGetUser" ), e );
-            }
-            return null;
-          }
-        }
-      } );
-
-      WebServiceException repoException = repoWebServiceFuture.get();
-      if ( repoException != null ) {
-        log.logError( repoException.getMessage() );
-        throw new Exception( BaseMessages.getString( PKG, "PurRepository.FailedLogin.Message" ), repoException );
-      }
-
-      Exception syncException = syncWebserviceFuture.get();
-      if ( syncException != null ) {
-        throw syncException;
-      }
-
-      Boolean isAdmin = authorizationWebserviceFuture.get();
-      result.getUser().setAdmin( isAdmin );
-
-
-      String userName = sessionServiceFuture.get();
-      if ( userName != null ) {
-        result.getUser().setLogin( userName );
-      }
-      if ( log.isBasic() ) {
-        log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.RegisterSecurityProvider.Start" ) );
-      }
-      purRepositoryServiceRegistry.registerService( RepositorySecurityProvider.class, result.getSecurityProvider() );
-      purRepositoryServiceRegistry.registerService( IAbsSecurityProvider.class, result.getSecurityProvider() );
-      if ( isAdmin ) {
-        purRepositoryServiceRegistry.registerService( RepositorySecurityManager.class, result.getSecurityManager() );
-        purRepositoryServiceRegistry.registerService( IRoleSupportSecurityManager.class, result.getSecurityManager() );
-        purRepositoryServiceRegistry.registerService( IAbsSecurityManager.class, result.getSecurityManager() );
-      }
-
-      purRepositoryServiceRegistry.registerService( PurRepositoryRestService.PurRepositoryPluginApiRevision.class,
-          serviceManager.createService( username, decryptedPassword,
-              PurRepositoryRestService.PurRepositoryPluginApiRevision.class ) );
-
-      purRepositoryServiceRegistry.registerService( IRevisionService.class, new UnifiedRepositoryRevisionService(
-          result.getUnifiedRepository(), rootRef ) );
-      purRepositoryServiceRegistry.registerService( IAclService.class, new UnifiedRepositoryConnectionAclService(
-          result.getUnifiedRepository() ) );
-      purRepositoryServiceRegistry.registerService( IConnectionAclService.class,
-          new UnifiedRepositoryConnectionAclService( result.getUnifiedRepository() ) );
-      purRepositoryServiceRegistry.registerService( ITrashService.class, new UnifiedRepositoryTrashService( result
-          .getUnifiedRepository(), rootRef ) );
-      purRepositoryServiceRegistry.registerService( ILockService.class, new UnifiedRepositoryLockService( result
-          .getUnifiedRepository() ) );
-
-      if ( log.isBasic() ) {
-        log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.RepositoryServicesRegistered.End" ) );
-      }
+      registerRepositoryServices( purRepositoryServiceRegistry, username, decryptedPassword, result );
 
       result.setSuccess( true );
     } catch ( NullPointerException npe ) {
       result.setSuccess( false );
       throw new KettleException( BaseMessages.getString( PKG, "PurRepository.LoginException.Message" ) );
-    } catch ( Throwable e ) {
+    } catch ( InterruptedException ie ) {
+      result.setSuccess( false );
+      serviceManager.close();
+      Thread.currentThread().interrupt();
+      throw new KettleException( ie );
+    } catch ( Exception e ) {
       result.setSuccess( false );
       serviceManager.close();
       throw new KettleException( e );
     }
     return result;
+  }
+
+  /**
+   * Validates that a JSESSIONID is available when session-based authentication is requested.
+   *
+   * @throws KettleException if no valid JSESSIONID can be found
+   */
+  private void resolveSessionId() throws KettleException {
+    String jsessionId = null;
+    try {
+      AuthenticationContext authContext =
+        SpoonSessionManager.getInstance()
+          .getAuthenticationContext( repositoryMeta.getRepositoryLocation().getUrl() );
+      if ( authContext != null && authContext.isAuthenticated() ) {
+        jsessionId = authContext.getJSessionId();
+      }
+    } catch ( Exception e ) {
+      log.logError( "Error retrieving JSESSIONID from SpoonSessionManager", e );
+    }
+
+    if ( jsessionId != null && !jsessionId.trim().isEmpty() ) {
+      log.logBasic( "Using browser-captured JSESSIONID for authentication" );
+    } else {
+      throw new KettleException( "Browser session authentication requested but no JSESSIONID found" );
+    }
+  }
+
+  /**
+   * Attempts an in-process connection via PentahoSystem when the BI Platform context is available.
+   *
+   * @return a completed {@link RepositoryConnectResult} if in-process connection succeeded, {@code null} otherwise
+   */
+  private RepositoryConnectResult tryInProcessConnect( final String decryptedPassword,
+      final RepositoryConnectResult result ) {
+    if ( PentahoSystem.getApplicationContext() == null || PentahoSessionHolder.getSession() == null
+        || !PentahoSessionHolder.getSession().isAuthenticated() || !inProcess() ) {
+      return null;
+    }
+
+    result.setUnifiedRepository( PentahoSystem.get( IUnifiedRepository.class ) );
+    if ( result.getUnifiedRepository() == null ) {
+      return null;
+    }
+
+    if ( log.isDebug() ) {
+      log.logDebug( BaseMessages.getString( PKG, "PurRepositoryConnector.ConnectInProgress.Begin" ) );
+    }
+    String name = PentahoSessionHolder.getSession().getName();
+    IUser inProcessUser = new EEUserInfo();
+    inProcessUser.setLogin( name );
+    inProcessUser.setName( name );
+    inProcessUser.setPassword( decryptedPassword );
+    result.setUser( inProcessUser );
+    result.setSuccess( true );
+    result.getUser().setAdmin(
+      PentahoSystem.get( IAuthorizationPolicyWebService.class ).isAllowed( RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION )
+    );
+    if ( log.isDebug() ) {
+      log.logDebug( BaseMessages.getString(
+        PKG, "PurRepositoryConnector.ConnectInProgress", name, result.getUnifiedRepository() ) );
+    }
+    // for now, there is no need to support the security manager
+    return result;
+  }
+
+  /**
+   * Submits the async task that creates the security provider (and optionally the security manager).
+   */
+  private Future<Boolean> buildAuthorizationFuture( ExecutorService executor,
+      final RepositoryConnectResult result ) {
+    return executor.submit( () -> {
+      // We need to add the service class in the list in the order of dependencies
+      // IRoleSupportSecurityManager depends RepositorySecurityManager to be present
+      if ( log.isBasic() ) {
+        log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateServiceProvider.Start" ) );
+      }
+      result.setSecurityProvider( new AbsSecurityProvider( purRepository, repositoryMeta, result.getUser(),
+          serviceManager ) );
+      if ( log.isBasic() ) {
+        log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateServiceProvider.End" ) ); //$NON-NLS-1$
+      }
+
+      // If the user does not have access to administer security we do not need to add them to the service list
+      if ( !allowedActionsContains( (AbsSecurityProvider) result.getSecurityProvider(),
+          IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION ) ) {
+        return false;
+      }
+
+      result.setSecurityManager( new AbsSecurityManager( purRepository, repositoryMeta, result.getUser(),
+          serviceManager ) );
+      // Set the reference of the security manager to security provider for user role list change event
+      ( (PurRepositorySecurityProvider) result.getSecurityProvider() )
+          .setUserRoleDelegate( ( (PurRepositorySecurityManager) result.getSecurityManager() )
+              .getUserRoleDelegate() );
+      return true;
+    } );
+  }
+
+  /**
+   * Submits the async task that creates the unified repository web-service and its adapter.
+   */
+  private Future<WebServiceException> buildRepoWebServiceFuture( ExecutorService executor, final String username,
+      final String decryptedPassword, final RepositoryConnectResult result ) {
+    return executor.submit( () -> {
+      try {
+        if ( log.isBasic() ) {
+          log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositoryWebService.Start" ) ); //$NON-NLS-1$
+        }
+        IUnifiedRepositoryJaxwsWebService repoWebService =
+            serviceManager.createService( username, decryptedPassword, IUnifiedRepositoryJaxwsWebService.class );
+        if ( log.isBasic() ) {
+          log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositoryWebService.End" ) ); //$NON-NLS-1$
+          log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateUnifiedRepositoryToWebServiceAdapter.Start" ) ); //$NON-NLS-1$
+        }
+        result.setUnifiedRepository( new UnifiedRepositoryToWebServiceAdapter( repoWebService ) );
+      } catch ( WebServiceException wse ) {
+        return wse;
+      }
+      return null;
+    } );
+  }
+
+  /**
+   * Submits the async task that performs the repository sync handshake.
+   */
+  private Future<Exception> buildSyncWebServiceFuture( ExecutorService executor, final String username,
+      final String decryptedPassword, final RepositoryConnectResult result ) {
+    return executor.submit( () -> {
+      try {
+        if ( log.isBasic() ) {
+          log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositorySyncWebService.Start" ) );
+        }
+        IRepositorySyncWebService syncWebService =
+            serviceManager.createService( username, decryptedPassword, IRepositorySyncWebService.class );
+        if ( log.isBasic() ) {
+          log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateRepositorySyncWebService.Sync" ) ); //$NON-NLS-1$
+        }
+        syncWebService.sync( repositoryMeta.getName(), repositoryMeta.getRepositoryLocation().getUrl() );
+      } catch ( RepositorySyncException e ) {
+        log.logError( e.getMessage(), e );
+        result.setConnectMessage( e.getMessage() ); // this message will be presented to the user in spoon
+        return null;
+      } catch ( WebServiceException e ) {
+        // if we can speak to the repository okay but not the sync service, assume we're talking to a BA Server
+        log.logError( e.getMessage(), e );
+        return new Exception( BaseMessages.getString( PKG, "PurRepository.BAServerLogin.Message" ), e );
+      }
+      return null;
+    } );
+  }
+
+  /**
+   * Submits the async task that fetches the authenticated username from the session REST endpoint,
+   * or short-circuits immediately when session-based auth is in use.
+   */
+  private Future<String> buildSessionServiceFuture( ExecutorService executor, final String username,
+      final String decryptedPassword, final boolean useSessionAuth ) {
+    return executor.submit( () -> resolveSessionUsername( username, decryptedPassword, useSessionAuth ) );
+  }
+
+  private String resolveSessionUsername( String username, String decryptedPassword, boolean useSessionAuth ) {
+    if ( useSessionAuth ) {
+      if ( log.isBasic() ) {
+        log.logBasic( "Skipping session service call for browser auth - using provided username: " + username );
+      }
+      return username;
+    }
+    return fetchUsernameFromSessionService( username, decryptedPassword );
+  }
+
+  private String fetchUsernameFromSessionService( String username, String decryptedPassword ) {
+    try {
+      if ( log.isBasic() ) {
+        log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Start" ) );
+      }
+      CredentialsProvider provider = new BasicCredentialsProvider();
+      provider.setCredentials( AuthScope.ANY, new UsernamePasswordCredentials( username, decryptedPassword ) );
+      HttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider( provider ).build();
+      HttpGet method = new HttpGet( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" );
+      if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
+        method.addHeader( TRUST_USER, username );
+      }
+      HttpResponse response = client.execute( method );
+      if ( log.isBasic() ) {
+        log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Sync" ) );
+      }
+      return EntityUtils.toString( response.getEntity() );
+    } catch ( Exception e ) {
+      if ( log.isError() ) {
+        log.logError( BaseMessages.getString( PKG, "PurRepositoryConnector.Error.EnableToGetUser" ), e );
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Awaits all submitted futures and applies their results to {@code result}.
+   */
+  private void applyFutureResults( final RepositoryConnectResult result,
+      Future<Boolean> authorizationFuture, Future<WebServiceException> repoFuture,
+      Future<Exception> syncFuture, Future<String> sessionFuture )
+      throws KettleException, InterruptedException, java.util.concurrent.ExecutionException {
+    WebServiceException repoException = repoFuture.get();
+    if ( repoException != null ) {
+      log.logError( repoException.getMessage() );
+      throw new KettleException( BaseMessages.getString( PKG, "PurRepository.FailedLogin.Message" ), repoException );
+    }
+
+    Exception syncException = syncFuture.get();
+    if ( syncException != null ) {
+      throw new KettleException( syncException );
+    }
+
+    boolean isAdmin = authorizationFuture.get();
+    result.getUser().setAdmin( isAdmin );
+
+    String userName = sessionFuture.get();
+    if ( userName != null ) {
+      result.getUser().setLogin( userName );
+    }
+  }
+
+  /**
+   * Registers all repository services into the service registry after a successful connection.
+   */
+  private void registerRepositoryServices( RepositoryServiceRegistry registry, final String username,
+      final String decryptedPassword, final RepositoryConnectResult result ) throws MalformedURLException {
+    if ( log.isBasic() ) {
+      log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.RegisterSecurityProvider.Start" ) );
+    }
+
+    registry.registerService( RepositorySecurityProvider.class, result.getSecurityProvider() );
+    registry.registerService( IAbsSecurityProvider.class, result.getSecurityProvider() );
+
+    if ( Boolean.TRUE.equals( result.getUser().isAdmin() ) ) {
+      registry.registerService( RepositorySecurityManager.class, result.getSecurityManager() );
+      registry.registerService( IRoleSupportSecurityManager.class, result.getSecurityManager() );
+      registry.registerService( IAbsSecurityManager.class, result.getSecurityManager() );
+    }
+
+    registry.registerService( PentahoDiPlugin.PurRepositoryPluginApiRevision.class,
+        serviceManager.createService( username, decryptedPassword,
+            PentahoDiPlugin.PurRepositoryPluginApiRevision.class ) );
+
+    registry.registerService( IRevisionService.class,
+        new UnifiedRepositoryRevisionService( result.getUnifiedRepository(), rootRef ) );
+    registry.registerService( IAclService.class,
+        new UnifiedRepositoryConnectionAclService( result.getUnifiedRepository() ) );
+    registry.registerService( IConnectionAclService.class,
+        new UnifiedRepositoryConnectionAclService( result.getUnifiedRepository() ) );
+    registry.registerService( ITrashService.class,
+        new UnifiedRepositoryTrashService( result.getUnifiedRepository(), rootRef ) );
+    registry.registerService( ILockService.class,
+        new UnifiedRepositoryLockService( result.getUnifiedRepository() ) );
+
+    if ( log.isBasic() ) {
+      log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.RepositoryServicesRegistered.End" ) );
+    }
   }
   ExecutorService getExecutor() {
     return ExecutorUtil.getExecutor();
@@ -341,14 +429,11 @@ public class PurRepositoryConnector implements IRepositoryConnector {
   }
 
   public static boolean inProcess() {
-    boolean inProcess = false;
+    if ( "true".equals( PentahoSystem.getSystemSetting( SINGLE_DI_SERVER_INSTANCE, "true" ) ) ) { //$NON-NLS-1$ //$NON-NLS-2$
+      return true;
+    }
     boolean remoteDiServer =
         BooleanUtils.toBoolean( PentahoSystem.getSystemSetting( REMOTE_DI_SERVER_INSTANCE, "false" ) ); //$NON-NLS-1$
-    if ( "true".equals( PentahoSystem.getSystemSetting( SINGLE_DI_SERVER_INSTANCE, "true" ) ) ) { //$NON-NLS-1$ //$NON-NLS-2$
-      inProcess = true;
-    } else if ( !remoteDiServer && PentahoSystem.getApplicationContext().getFullyQualifiedServerURL() != null ) {
-      inProcess = true;
-    }
-    return inProcess;
+    return !remoteDiServer && PentahoSystem.getApplicationContext().getFullyQualifiedServerURL() != null;
   }
 }

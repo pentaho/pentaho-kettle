@@ -105,8 +105,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
           Bowl bowl = getEventBowl();
           CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-          RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.edit( runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+          // Use loadAndEdit which handles session expiry during load
+          runConfigurationDelegate.loadAndEdit( runConfigurationTreeItem.getName() );
         }
       } );
     }
@@ -126,7 +126,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
           CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
           RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.moveToGlobal( runConfigurationManager, runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+          runConfigurationDelegate.loadAndMoveToGlobal( runConfigurationManager, runConfigurationTreeItem.getName() );
         }
       } );
 
@@ -139,7 +139,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
           CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
           RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.copyToGlobal( runConfigurationManager, runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+          runConfigurationDelegate.loadAndCopyToGlobal( runConfigurationManager, runConfigurationTreeItem.getName() );
         }
       } );
     }
@@ -154,7 +154,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
           CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
           RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.moveToProject( runConfigurationManager, runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+          runConfigurationDelegate.loadAndMoveToProject( runConfigurationManager, runConfigurationTreeItem.getName() );
         }
       } );
       MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
@@ -165,7 +165,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
           CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
           RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
           RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.copyToProject( runConfigurationManager, runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+          runConfigurationDelegate.loadAndCopyToProject( runConfigurationManager, runConfigurationTreeItem.getName() );
         }
       } );
     }
@@ -182,8 +182,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
         Bowl bowl = getEventBowl();
         CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
         RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-        RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-        runConfigurationDelegate.duplicate( runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+        runConfigurationDelegate.loadAndDuplicate( runConfigurationTreeItem.getName() );
       }
     } );
 
@@ -194,8 +193,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
         Bowl bowl = getEventBowl();
         CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
         RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-        RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-        runConfigurationDelegate.delete( runConfigurationManager.load( runConfigurationTreeItem.getName() ) );
+        runConfigurationDelegate.loadAndDelete( runConfigurationTreeItem.getName() );
       }
     } );
     return itemMenu;

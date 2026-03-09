@@ -13,25 +13,41 @@
 
 package org.pentaho.di.engine.configuration.impl.pentaho.scheduler;
 
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SchedulerRequestTest {
   // input file
@@ -102,6 +118,7 @@ public class SchedulerRequestTest {
 
   @Before
   public void before() {
+    KettleLogStore.init();
     schedulerRequest = mock( SchedulerRequest.class );
   }
 
@@ -151,6 +168,233 @@ public class SchedulerRequestTest {
       }
     } else {
       return false;
+    }
+  }
+
+  @Test
+  public void testBuild_SessionAuthToken_ValidJSessionId_SetsCookieHeader() {
+    Repository repo = mock( Repository.class );
+    IUser userInfo = mock( IUser.class );
+    when( repo.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( "admin" );
+    when( userInfo.getPassword() ).thenReturn( AuthenticationContext.SESSION_AUTH_TOKEN );
+
+    SpoonSessionManager sessionManager = mock( SpoonSessionManager.class );
+    AuthenticationContext authContext = mock( AuthenticationContext.class );
+    when( authContext.getJSessionId() ).thenReturn( "testSessionId" );
+    when( sessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) ).thenReturn( authContext );
+
+    SchedulerRequest.Builder builder = spy( new SchedulerRequest.Builder() );
+    builder.repository( repo );
+    doReturn( "http://localhost:8080/pentaho" ).when( builder ).getRepositoryServiceBaseUrl();
+
+    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
+          MockedConstruction<HttpPost> mockedPost = mockConstruction( HttpPost.class ) ) {
+      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( sessionManager );
+
+      builder.build();
+
+      HttpPost httpPost = mockedPost.constructed().get( 0 );
+      verify( httpPost ).setHeader( "Cookie", "JSESSIONID=testSessionId" );
+    }
+  }
+
+  @Test
+  public void testBuild_NullPassword_FallsBackToBasicAuth() {
+    Repository repo = mock( Repository.class );
+    IUser userInfo = mock( IUser.class );
+    when( repo.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( "admin" );
+    when( userInfo.getPassword() ).thenReturn( null );
+
+    SchedulerRequest.Builder builder = spy( new SchedulerRequest.Builder() );
+    builder.repository( repo );
+    doReturn( "http://localhost:8080/pentaho" ).when( builder ).getRepositoryServiceBaseUrl();
+
+    try ( MockedConstruction<HttpPost> mockedPost = mockConstruction( HttpPost.class ) ) {
+      builder.build();
+
+      HttpPost httpPost = mockedPost.constructed().get( 0 );
+      String expectedEncoded = "Basic " + new String(
+        Base64.getEncoder().encode( "admin:null".getBytes( java.nio.charset.StandardCharsets.UTF_8 ) ) );
+      verify( httpPost ).setHeader( SchedulerRequest.AUTHORIZATION, expectedEncoded );
+      verify( httpPost, never() ).setHeader( eq( "Cookie" ), anyString() );
+    }
+  }
+
+  @Test
+  public void testBuild_EmptyPassword_FallsBackToBasicAuth() throws Exception {
+    Repository repo = mock( Repository.class );
+    IUser userInfo = mock( IUser.class );
+    when( repo.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( "admin" );
+    when( userInfo.getPassword() ).thenReturn( "" );
+
+    SchedulerRequest.Builder builder = spy( new SchedulerRequest.Builder() );
+    builder.repository( repo );
+    doReturn( "http://localhost:8080/pentaho" ).when( builder ).getRepositoryServiceBaseUrl();
+
+    try ( MockedConstruction<HttpPost> mockedPost = mockConstruction( HttpPost.class ) ) {
+      builder.build();
+
+      HttpPost httpPost = mockedPost.constructed().get( 0 );
+      String expectedEncoded = "Basic " + new String(
+        Base64.getEncoder().encode( "admin:".getBytes( SchedulerRequest.UTF_8 ) ) );
+      verify( httpPost ).setHeader( SchedulerRequest.AUTHORIZATION, expectedEncoded );
+      verify( httpPost, never() ).setHeader( eq( "Cookie" ), anyString() );
+    }
+  }
+
+  @Test
+  public void testBuild_SessionAuth_NullJSessionId_NoCookieHeader() {
+    Repository repo = mock( Repository.class );
+    IUser userInfo = mock( IUser.class );
+    when( repo.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( "admin" );
+    when( userInfo.getPassword() ).thenReturn( AuthenticationContext.SESSION_AUTH_TOKEN );
+
+    SpoonSessionManager sessionManager = mock( SpoonSessionManager.class );
+    AuthenticationContext authContext = mock( AuthenticationContext.class );
+    when( authContext.getJSessionId() ).thenReturn( null );
+    when( sessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) ).thenReturn( authContext );
+
+    SchedulerRequest.Builder builder = spy( new SchedulerRequest.Builder() );
+    builder.repository( repo );
+    doReturn( "http://localhost:8080/pentaho" ).when( builder ).getRepositoryServiceBaseUrl();
+
+    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
+          MockedConstruction<HttpPost> mockedPost = mockConstruction( HttpPost.class ) ) {
+      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( sessionManager );
+
+      builder.build();
+
+      HttpPost httpPost = mockedPost.constructed().get( 0 );
+      verify( httpPost, never() ).setHeader( eq( "Cookie" ), anyString() );
+    }
+  }
+
+  @Test
+  public void testBuild_SessionAuth_BlankJSessionId_NoCookieHeader() {
+    Repository repo = mock( Repository.class );
+    IUser userInfo = mock( IUser.class );
+    when( repo.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( "admin" );
+    when( userInfo.getPassword() ).thenReturn( AuthenticationContext.SESSION_AUTH_TOKEN );
+
+    SpoonSessionManager sessionManager = mock( SpoonSessionManager.class );
+    AuthenticationContext authContext = mock( AuthenticationContext.class );
+    when( authContext.getJSessionId() ).thenReturn( "   " );
+    when( sessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) ).thenReturn( authContext );
+
+    SchedulerRequest.Builder builder = spy( new SchedulerRequest.Builder() );
+    builder.repository( repo );
+    doReturn( "http://localhost:8080/pentaho" ).when( builder ).getRepositoryServiceBaseUrl();
+
+    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
+          MockedConstruction<HttpPost> mockedPost = mockConstruction( HttpPost.class ) ) {
+      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( sessionManager );
+
+      builder.build();
+
+      HttpPost httpPost = mockedPost.constructed().get( 0 );
+      verify( httpPost, never() ).setHeader( eq( "Cookie" ), anyString() );
+    }
+  }
+
+  @Test
+  public void testBuild_SessionAuth_SpoonSessionManagerThrows_NoCookieHeaderAndNoException() {
+    Repository repo = mock( Repository.class );
+    IUser userInfo = mock( IUser.class );
+    when( repo.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( "admin" );
+    when( userInfo.getPassword() ).thenReturn( AuthenticationContext.SESSION_AUTH_TOKEN );
+
+    SpoonSessionManager sessionManager = mock( SpoonSessionManager.class );
+    when( sessionManager.getAuthenticationContext( anyString() ) )
+      .thenThrow( new RuntimeException( "Connection failed" ) );
+
+    SchedulerRequest.Builder builder = spy( new SchedulerRequest.Builder() );
+    builder.repository( repo );
+    doReturn( "http://localhost:8080/pentaho" ).when( builder ).getRepositoryServiceBaseUrl();
+
+    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
+          MockedConstruction<HttpPost> mockedPost = mockConstruction( HttpPost.class ) ) {
+      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( sessionManager );
+
+      // Exception must be swallowed; build() must complete normally
+      builder.build();
+
+      HttpPost httpPost = mockedPost.constructed().get( 0 );
+      verify( httpPost, never() ).setHeader( eq( "Cookie" ), anyString() );
+    }
+  }
+
+  @Test
+  public void testBuild_BasicAuth_UsernameAndPassword_SetsAuthorizationHeader() throws Exception {
+    Repository repo = mock( Repository.class );
+    IUser userInfo = mock( IUser.class );
+    when( repo.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( "admin" );
+    when( userInfo.getPassword() ).thenReturn( "secret" );
+
+    SchedulerRequest.Builder builder = spy( new SchedulerRequest.Builder() );
+    builder.repository( repo );
+    doReturn( "http://localhost:8080/pentaho" ).when( builder ).getRepositoryServiceBaseUrl();
+
+    try ( MockedConstruction<HttpPost> mockedPost = mockConstruction( HttpPost.class ) ) {
+      builder.build();
+
+      String expectedEncoded = "Basic " + new String(
+        Base64.getEncoder().encode( "admin:secret".getBytes( SchedulerRequest.UTF_8 ) ) );
+      HttpPost httpPost = mockedPost.constructed().get( 0 );
+      verify( httpPost ).setHeader( SchedulerRequest.AUTHORIZATION, expectedEncoded );
+    }
+  }
+
+  @Test
+  public void testBuild_BasicAuth_NullUsername_NoAuthorizationHeader() {
+    Repository repo = mock( Repository.class );
+    IUser userInfo = mock( IUser.class );
+    when( repo.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( null );
+    when( userInfo.getPassword() ).thenReturn( "secret" );
+
+    SchedulerRequest.Builder builder = spy( new SchedulerRequest.Builder() );
+    builder.repository( repo );
+    doReturn( "http://localhost:8080/pentaho" ).when( builder ).getRepositoryServiceBaseUrl();
+
+    try ( MockedConstruction<HttpPost> mockedPost = mockConstruction( HttpPost.class ) ) {
+      builder.build();
+
+      HttpPost httpPost = mockedPost.constructed().get( 0 );
+      verify( httpPost, never() ).setHeader( eq( SchedulerRequest.AUTHORIZATION ), anyString() );
+    }
+  }
+
+  @Test
+  public void testBuild_SessionAuth_NullAuthContext_NoCookieHeader() {
+    Repository repo = mock( Repository.class );
+    IUser userInfo = mock( IUser.class );
+    when( repo.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( "admin" );
+    when( userInfo.getPassword() ).thenReturn( AuthenticationContext.SESSION_AUTH_TOKEN );
+
+    SpoonSessionManager sessionManager = mock( SpoonSessionManager.class );
+    when( sessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) ).thenReturn( null );
+
+    SchedulerRequest.Builder builder = spy( new SchedulerRequest.Builder() );
+    builder.repository( repo );
+    doReturn( "http://localhost:8080/pentaho" ).when( builder ).getRepositoryServiceBaseUrl();
+
+    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
+          MockedConstruction<HttpPost> mockedPost = mockConstruction( HttpPost.class ) ) {
+      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( sessionManager );
+
+      builder.build();
+
+      HttpPost httpPost = mockedPost.constructed().get( 0 );
+      verify( httpPost, never() ).setHeader( eq( "Cookie" ), anyString() );
+      verify( httpPost, never() ).setHeader( eq( SchedulerRequest.AUTHORIZATION ), anyString() );
     }
   }
 }
