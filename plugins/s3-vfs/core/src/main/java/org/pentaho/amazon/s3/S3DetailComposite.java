@@ -233,7 +233,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
   private String getS3ConnectionTypeLabel( S3ConnectionType authType ) {
     return switch( authType ) {
       case AMAZON -> "Amazon";
-      case MINIO -> "Minio/HC";
+      case MINIO -> "Minio/HCP";
     };
   }
 
