@@ -28,6 +28,7 @@ public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
   private static final String SECRET_KEY = "secretKey";
   private static final String SESSION_TOKEN = "sessionToken";
   private static final String REGION = "region";
+  private static final String MINIO_REGION = "minioRegion";
   private static final String CREDENTIALS_FILE = "credentialsFile";
   private static final String PROFILE_NAME = "profileName";
   private static final String ENDPOINT = "endpoint";
@@ -89,6 +90,15 @@ public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
   public String getRegion() {
     return (String) this.getParam( getFileSystemOptions(), REGION );
+  }
+
+  public S3CommonFileSystemConfigBuilder setMinioRegion( String minioRegion ) {
+    this.setParam( getFileSystemOptions(), MINIO_REGION, minioRegion );
+    return this;
+  }
+
+  public String getMinioRegion() {
+    return (String) this.getParam( getFileSystemOptions(), MINIO_REGION );
   }
 
   public void setCredentialsFile( String credentialsFile ) {

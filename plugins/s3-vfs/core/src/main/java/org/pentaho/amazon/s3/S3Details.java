@@ -55,6 +55,8 @@ public class S3Details extends BaseVFSConnectionDetails {
 
   @MetaStoreAttribute private String region;
 
+  @MetaStoreAttribute private String minioRegion;
+
   @MetaStoreAttribute private String profileName;
 
   @MetaStoreAttribute private String endpoint;
@@ -216,6 +218,14 @@ public class S3Details extends BaseVFSConnectionDetails {
 
   public void setDefaultS3ConfigVariable( String defaultS3ConfigVariable ) {
     this.defaultS3ConfigVariable = defaultS3ConfigVariable;
+  }
+
+  public String getMinioRegion() {
+    return minioRegion;
+  }
+
+  public void setMinioRegion( String minioRegion ) {
+    this.minioRegion = minioRegion;
   }
 
   @Override protected void fillProperties( Map<String, String> props ) {

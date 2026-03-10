@@ -157,6 +157,8 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
       String signatureVersion = null;
       String pathStyleAccess = null;
 
+      boolean forceAmazonRegions = true;
+
       if ( s3CommonFileSystemConfigBuilder.getName() == null && defaultS3Connection.isPresent() ) {
         accessKey = Encr.decryptPassword( currentConnectionProperties.get( "accessKey" ) );
         secretKey = Encr.decryptPassword( currentConnectionProperties.get( "secretKey" ) );
@@ -171,7 +173,12 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
         accessKey = s3CommonFileSystemConfigBuilder.getAccessKey();
         secretKey = s3CommonFileSystemConfigBuilder.getSecretKey();
         sessionToken = s3CommonFileSystemConfigBuilder.getSessionToken();
-        region = s3CommonFileSystemConfigBuilder.getRegion();
+        region = s3CommonFileSystemConfigBuilder.getMinioRegion();
+        if ( region == null ) {
+          region = s3CommonFileSystemConfigBuilder.getRegion();
+        } else {
+          forceAmazonRegions = false;
+        }
         credentialsFilePath = s3CommonFileSystemConfigBuilder.getCredentialsFile();
         profileName = s3CommonFileSystemConfigBuilder.getProfileName();
         endpoint = s3CommonFileSystemConfigBuilder.getEndpoint();
@@ -181,7 +188,6 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
       boolean access = ( pathStyleAccess == null ) || Boolean.parseBoolean( pathStyleAccess );
 
       AWSCredentialsProvider awsCredentialsProvider = null;
-      Regions regions = Regions.DEFAULT_REGION;
 
       S3Util.S3Keys keys = S3Util.getKeysFromURI( getRootURI() );
       if ( keys != null ) {
@@ -197,10 +203,16 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
           awsCredentials = new BasicSessionCredentials( accessKey, secretKey, sessionToken );
         }
         awsCredentialsProvider = new AWSStaticCredentialsProvider( awsCredentials );
-        regions = S3Util.isEmpty( region ) ? Regions.DEFAULT_REGION : Regions.fromName( region );
+        if ( forceAmazonRegions ) {
+          region = S3Util.isEmpty( region ) ? Regions.DEFAULT_REGION.getName() : Regions.fromName( region ).getName();
+        }
       } else if ( !S3Util.isEmpty( credentialsFilePath ) ) {
         ProfilesConfigFile profilesConfigFile = new ProfilesConfigFile( credentialsFilePath );
         awsCredentialsProvider = new ProfileCredentialsProvider( profilesConfigFile, profileName );
+      }
+
+      if ( region == null ) {
+        region = Regions.DEFAULT_REGION.getName();
       }
 
       if ( !S3Util.isEmpty( endpoint ) ) {
@@ -208,7 +220,7 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
         clientConfiguration.setSignerOverride(
           S3Util.isEmpty( signatureVersion ) ? S3Util.SIGNATURE_VERSION_SYSTEM_PROPERTY : signatureVersion );
         client = AmazonS3ClientBuilder.standard()
-          .withEndpointConfiguration( new AwsClientBuilder.EndpointConfiguration( endpoint, regions.getName() ) )
+          .withEndpointConfiguration( new AwsClientBuilder.EndpointConfiguration( endpoint, region ) )
           .withPathStyleAccessEnabled( access )
           .withClientConfiguration( clientConfiguration )
           .withCredentials( awsCredentialsProvider )
@@ -218,7 +230,7 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
           .enableForceGlobalBucketAccess()
           .withCredentials( awsCredentialsProvider );
         if ( !isRegionSet() ) {
-          clientBuilder.withRegion( regions );
+          clientBuilder.withRegion( region );
         }
         client = clientBuilder.build();
       }
