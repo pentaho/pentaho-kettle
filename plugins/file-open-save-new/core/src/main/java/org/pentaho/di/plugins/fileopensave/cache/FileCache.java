@@ -71,4 +71,8 @@ public class FileCache {
   public void clearAll() {
     fileCache.clear();
   }
+
+  public void clearByProvider( String provider ) {
+    fileCache.keySet().removeIf( file -> provider.equals( file.getProvider() ) );
+  }
 }
