@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -27,12 +28,16 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileSystem;
+import org.pentaho.amazon.s3.S3Details;
 import org.pentaho.amazon.s3.S3Util;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.util.StorageUnitConverter;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.s3common.S3Options.AuthKeys;
+import org.pentaho.s3common.S3Options.BaseS3Options;
+import org.pentaho.s3common.S3Options.CredentialsFile;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +60,6 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
 
   private static final Class<?> PKG = S3CommonFileSystem.class;
   private static final Logger logger = LoggerFactory.getLogger( PKG );
-  private static final String DEFAULT_S3_CONFIG_PROPERTY = "defaultS3Config";
 
   // S3 part size constants
   /**
@@ -74,10 +78,16 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
 
   // S3 client and connection state
   private AmazonS3 client;
+
   private String awsAccessKeyCache;
   private String awsSecretKeyCache;
+
+  // config if using details
   private FileSystemOptions currentFileSystemOptions;
+
+  // config if using default s3 connection
   private Map<String, String> currentConnectionProperties;
+
   private final Supplier<ConnectionManager> connectionManager = ConnectionManager::getInstance;
 
   // Helpers and utilities
@@ -108,19 +118,102 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
     S3CommonFileSystemConfigBuilder s3CommonFileSystemConfigBuilder =
       new S3CommonFileSystemConfigBuilder( getFileSystemOptions() );
 
-    Optional<? extends ConnectionDetails> defaultS3Connection = Optional.empty();
-    try {
-      if ( s3CommonFileSystemConfigBuilder.useDefaults() ) {
-        defaultS3Connection =
-        connectionManager.get().getConnectionDetailsByScheme( "s3" ).stream().filter(
-          connectionDetails -> connectionDetails.getProperties().get( DEFAULT_S3_CONFIG_PROPERTY ) != null
-            && connectionDetails.getProperties().get( DEFAULT_S3_CONFIG_PROPERTY ).equalsIgnoreCase( "true" ) )
-        .findFirst();
-      }
-    } catch ( Exception ignored ) {
-      // Ignore the exception, it's OK if we can't find a default S3 connection.
+    var defaultS3Connection = getDefaultS3Connection( connectionManager, s3CommonFileSystemConfigBuilder );
+
+    clearClientAndCacheIfChanged( s3CommonFileSystemConfigBuilder, defaultS3Connection );
+
+    if ( client == null && getFileSystemOptions() != null ) {
+      currentFileSystemOptions = getFileSystemOptions();
+      client = createClientFromConfig( s3CommonFileSystemConfigBuilder, defaultS3Connection );
     }
 
+    if ( client == null || haveEnvCredentialsChanged() ) {
+      client = createClientFromEnv();
+    }
+    return client;
+  }
+
+  private AmazonS3 createClientFromEnv() {
+    try {
+      awsAccessKeyCache = System.getProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY );
+      awsSecretKeyCache = System.getProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY );
+      if ( isEnvRegionSet() ) {
+        return AmazonS3ClientBuilder.standard()
+          .enableForceGlobalBucketAccess()
+          .build();
+      } else {
+        return AmazonS3ClientBuilder.standard()
+          .enableForceGlobalBucketAccess()
+          .withRegion( Regions.DEFAULT_REGION )
+          .build();
+      }
+    } catch ( Exception ex ) {
+      logger.error( "Could not get an S3Client", ex );
+      return null;
+    }
+  }
+
+  private AmazonS3 createClientFromConfig( S3CommonFileSystemConfigBuilder s3CommonFileSystemConfigBuilder,
+                                          Optional<? extends ConnectionDetails> defaultS3Connection ) {
+
+    S3Options options;
+    if ( s3CommonFileSystemConfigBuilder.getName() == null && defaultS3Connection.isPresent() ) {
+      // using a default S3 connection
+      options = S3Options.from( currentConnectionProperties );
+    } else {
+      options = S3Options.from( s3CommonFileSystemConfigBuilder );
+    }
+
+    S3Util.S3Keys keys = S3Util.getKeysFromURI( getRootURI() );
+    if ( keys != null ) {
+      logger.warn( "Passing keys in the endpoint is discouraged, please use the appropriate fields" );
+      options.setAuthKeys( new AuthKeys( keys ) );
+    }
+
+    return createS3Client( options );
+  }
+
+  private AmazonS3 createS3Client( S3Options options ) {
+    if ( StringUtils.isNotEmpty( options.base().endpoint() ) ) {
+      return createClientFromEndpoint( options );
+    } else {
+      AmazonS3ClientBuilder clientBuilder = AmazonS3ClientBuilder.standard()
+        .enableForceGlobalBucketAccess()
+        .withCredentials( createCredentialsProvider( options ) );
+      if ( !isEnvRegionSet() ) {
+        clientBuilder.withRegion( options.base().region() );
+      }
+      return clientBuilder.build();
+    }
+  }
+
+
+  public static AWSCredentialsProvider createCredentialsProvider( S3Options options ) {
+    return options.authKeys().map( S3CommonFileSystem::createCredentialsProvider )
+        .or( () -> options.credFileAuth().map( S3CommonFileSystem::createCredentialsProvider ) )
+        .orElse( null );
+  }
+
+  public static AmazonS3 createClientFromEndpoint( S3Options options ) {
+    return createBuilder( options.base() )
+      .withCredentials( createCredentialsProvider( options ) )
+      .build();
+  }
+
+  private static AmazonS3ClientBuilder createBuilder( BaseS3Options baseOpts ) {
+    ClientConfiguration clientConfiguration = new ClientConfiguration();
+    clientConfiguration.setSignerOverride( S3Util.isEmpty( baseOpts.signatureVersion() ) ?
+      S3Util.SIGNATURE_VERSION_SYSTEM_PROPERTY : baseOpts.signatureVersion() );
+    return AmazonS3ClientBuilder.standard()
+      .withEndpointConfiguration(
+        new AwsClientBuilder.EndpointConfiguration( baseOpts.endpoint(), baseOpts.region() ) )
+      .withPathStyleAccessEnabled( baseOpts.pathStyleAccess() )
+      .withClientConfiguration( clientConfiguration );
+  }
+
+  /** Invalidate client and clear VFS cache if properties changed */
+  private void clearClientAndCacheIfChanged( S3CommonFileSystemConfigBuilder s3CommonFileSystemConfigBuilder,
+                                             Optional<? extends ConnectionDetails> defaultS3Connection ) {
     // If the fileSystemOptions don't contain a name, the originating url is s3:// NOT pvfs://
     // Use a specified default PVFS connection if it's available.
     if ( s3CommonFileSystemConfigBuilder.getName() == null ) {
@@ -128,7 +221,6 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
       Map<String, String> newConnectionProperties = new HashMap<>();
       defaultS3Connection
               .ifPresent( connectionDetails -> newConnectionProperties.putAll( connectionDetails.getProperties() ) );
-
       // Have the default connection properties changed?
       if ( !newConnectionProperties.equals( currentConnectionProperties ) ) {
         // Force a new connection if the default PVFS was changed
@@ -139,132 +231,52 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
         this.getFileSystemManager().getFilesCache().clear( this );
       }
     }
-
     if ( currentFileSystemOptions != null && !currentFileSystemOptions.equals( getFileSystemOptions() ) ) {
       client = null;
       this.getFileSystemManager().getFilesCache().clear( this );
     }
+  }
 
-    if ( client == null && getFileSystemOptions() != null ) {
-      currentFileSystemOptions = getFileSystemOptions();
-      String accessKey = null;
-      String secretKey = null;
-      String sessionToken = null;
-      String region = null;
-      String credentialsFilePath = null;
-      String profileName = null;
-      String endpoint = null;
-      String signatureVersion = null;
-      String pathStyleAccess = null;
-
-      boolean forceAmazonRegions = true;
-
-      if ( s3CommonFileSystemConfigBuilder.getName() == null && defaultS3Connection.isPresent() ) {
-        accessKey = Encr.decryptPassword( currentConnectionProperties.get( "accessKey" ) );
-        secretKey = Encr.decryptPassword( currentConnectionProperties.get( "secretKey" ) );
-        sessionToken = Encr.decryptPassword( currentConnectionProperties.get( "sessionToken" ) );
-        region = currentConnectionProperties.get( "region" );
-        credentialsFilePath = currentConnectionProperties.get( "credentialsFilePath" );
-        profileName = currentConnectionProperties.get( "profileName" );
-        endpoint = currentConnectionProperties.get( "endpoint" );
-        signatureVersion = currentConnectionProperties.get( "signatureVersion" );
-        pathStyleAccess = currentConnectionProperties.get( S3CommonFileSystemConfigBuilder.PATHSTYLE_ACCESS );
-      } else {
-        accessKey = s3CommonFileSystemConfigBuilder.getAccessKey();
-        secretKey = s3CommonFileSystemConfigBuilder.getSecretKey();
-        sessionToken = s3CommonFileSystemConfigBuilder.getSessionToken();
-        region = s3CommonFileSystemConfigBuilder.getMinioRegion();
-        if ( region == null ) {
-          region = s3CommonFileSystemConfigBuilder.getRegion();
-        } else {
-          forceAmazonRegions = false;
-        }
-        credentialsFilePath = s3CommonFileSystemConfigBuilder.getCredentialsFile();
-        profileName = s3CommonFileSystemConfigBuilder.getProfileName();
-        endpoint = s3CommonFileSystemConfigBuilder.getEndpoint();
-        signatureVersion = s3CommonFileSystemConfigBuilder.getSignatureVersion();
-        pathStyleAccess = s3CommonFileSystemConfigBuilder.getPathStyleAccess();
-      }
-      boolean access = ( pathStyleAccess == null ) || Boolean.parseBoolean( pathStyleAccess );
-
-      AWSCredentialsProvider awsCredentialsProvider = null;
-
-      S3Util.S3Keys keys = S3Util.getKeysFromURI( getRootURI() );
-      if ( keys != null ) {
-        accessKey = keys.getAccessKey();
-        secretKey = keys.getSecretKey();
-      }
-
-      if ( !S3Util.isEmpty( accessKey ) && !S3Util.isEmpty( secretKey ) ) {
-        AWSCredentials awsCredentials;
-        if ( S3Util.isEmpty( sessionToken ) ) {
-          awsCredentials = new BasicAWSCredentials( accessKey, secretKey );
-        } else {
-          awsCredentials = new BasicSessionCredentials( accessKey, secretKey, sessionToken );
-        }
-        awsCredentialsProvider = new AWSStaticCredentialsProvider( awsCredentials );
-        if ( forceAmazonRegions ) {
-          region = S3Util.isEmpty( region ) ? Regions.DEFAULT_REGION.getName() : Regions.fromName( region ).getName();
-        }
-      } else if ( !S3Util.isEmpty( credentialsFilePath ) ) {
-        ProfilesConfigFile profilesConfigFile = new ProfilesConfigFile( credentialsFilePath );
-        awsCredentialsProvider = new ProfileCredentialsProvider( profilesConfigFile, profileName );
-      }
-
-      if ( region == null ) {
-        region = Regions.DEFAULT_REGION.getName();
-      }
-
-      if ( !S3Util.isEmpty( endpoint ) ) {
-        ClientConfiguration clientConfiguration = new ClientConfiguration();
-        clientConfiguration.setSignerOverride(
-          S3Util.isEmpty( signatureVersion ) ? S3Util.SIGNATURE_VERSION_SYSTEM_PROPERTY : signatureVersion );
-        client = AmazonS3ClientBuilder.standard()
-          .withEndpointConfiguration( new AwsClientBuilder.EndpointConfiguration( endpoint, region ) )
-          .withPathStyleAccessEnabled( access )
-          .withClientConfiguration( clientConfiguration )
-          .withCredentials( awsCredentialsProvider )
-          .build();
-      } else {
-        AmazonS3ClientBuilder clientBuilder = AmazonS3ClientBuilder.standard()
-          .enableForceGlobalBucketAccess()
-          .withCredentials( awsCredentialsProvider );
-        if ( !isRegionSet() ) {
-          clientBuilder.withRegion( region );
-        }
-        client = clientBuilder.build();
-      }
-    }
-
-    if ( client == null || hasClientChangedCredentials() ) {
+  public static Optional<? extends ConnectionDetails> getDefaultS3Connection( Supplier<ConnectionManager> connectionManagerSupplier,
+                                                                              S3CommonFileSystemConfigBuilder s3CommonFileSystemConfigBuilder ) {
+    if ( s3CommonFileSystemConfigBuilder.useDefaults() ) {
       try {
-        if ( isRegionSet() ) {
-          client = AmazonS3ClientBuilder.standard()
-            .enableForceGlobalBucketAccess()
-            .build();
-        } else {
-          client = AmazonS3ClientBuilder.standard()
-            .enableForceGlobalBucketAccess()
-            .withRegion( Regions.DEFAULT_REGION )
-            .build();
-        }
-        awsAccessKeyCache = System.getProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY );
-        awsSecretKeyCache = System.getProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY );
-      } catch ( Exception ex ) {
-        logger.error( "Could not get an S3Client", ex );
+        return connectionManagerSupplier.get().getConnectionDetailsByScheme( "s3" ).stream()
+          .filter( S3CommonFileSystem::isDefaultS3Connection )
+          .findFirst();
+      } catch ( Exception ignored ) {
+        // Ignore the exception, it's OK if we can't find a default S3 connection.
       }
     }
-    return client;
+    return Optional.empty();
   }
 
-  private boolean hasClientChangedCredentials() {
-    return client != null
-      && ( S3Util.hasChanged( awsAccessKeyCache, System.getProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY ) )
-      || S3Util.hasChanged( awsSecretKeyCache, System.getProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY ) ) );
+  private static boolean isDefaultS3Connection( ConnectionDetails connectionDetails ) {
+    return StringUtils.equalsIgnoreCase( connectionDetails.getProperties().get( S3Details.PROP_DEFAULT_S3_CONFIG ), "true" );
   }
 
-  protected boolean isRegionSet() {
-    //region is set if explicitly set in env variable or configuration file is explicitly set
+  private static AWSCredentialsProvider createCredentialsProvider( AuthKeys authKeys ) {
+    AWSCredentials awsCredentials;
+    if ( authKeys.sessionToken() == null ) {
+      awsCredentials = new BasicAWSCredentials( authKeys.accessKey(), authKeys.secretKey() );
+    } else {
+      awsCredentials = new BasicSessionCredentials( authKeys.accessKey(), authKeys.secretKey(), authKeys.sessionToken() );
+    }
+    return new AWSStaticCredentialsProvider( awsCredentials );
+  }
+
+  private static AWSCredentialsProvider createCredentialsProvider( CredentialsFile credFile ) {
+      ProfilesConfigFile profilesConfigFile = new ProfilesConfigFile( credFile.credentialsFile() );
+      return new ProfileCredentialsProvider( profilesConfigFile, credFile.profileName() );
+  }
+
+  private boolean haveEnvCredentialsChanged() {
+    return S3Util.hasChanged( awsAccessKeyCache, System.getProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY ) )
+      || S3Util.hasChanged( awsSecretKeyCache, System.getProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY ) );
+  }
+
+  /** region is set if explicitly set in env or configuration file is explicitly set */
+  protected boolean isEnvRegionSet() {
     if ( System.getenv( S3Util.AWS_REGION ) != null || System.getenv( S3Util.AWS_CONFIG_FILE ) != null ) {
       return true;
     }

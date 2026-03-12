@@ -46,6 +46,8 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.amazonaws.regions.Regions;
+
 public class S3DetailComposite implements VFSDetailsComposite {
   private static final Class<?> PKG = S3DetailComposite.class;
   private final Composite wComposite; //The content for the parentComposite
@@ -190,7 +192,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wRegion.addModifyListener( modifyEvent -> details.setRegion( wRegion.getText() ) );
     wMinioRegion.addModifyListener( e -> {
       String minioRegion = wMinioRegion.getText();
-      details.setMinioRegion( StringUtils.isBlank( minioRegion ) ? null : minioRegion );
+      details.setRegion( StringUtils.isBlank( minioRegion ) ? null : minioRegion );
     } );
     wAccessKey.addModifyListener( modifyEvent -> details.setAccessKey( wAccessKey.getText() ) );
     wSecretKey.addModifyListener( modifyEvent -> details.setSecretKey( wSecretKey.getText() ) );
@@ -238,8 +240,12 @@ public class S3DetailComposite implements VFSDetailsComposite {
     };
   }
 
+  private S3ConnectionType getConnectionType() {
+    return computeComboValue( wS3ConnectionType, S3ConnectionType.class ).orElse( S3ConnectionType.AMAZON );
+  }
+
   private void setupBottomHalf() {
-    var s3ConnectionType = computeComboValue( wS3ConnectionType, S3ConnectionType.class ).orElse( S3ConnectionType.AMAZON );
+    var s3ConnectionType = getConnectionType();
     var authType = computeComboValue( wAuthType, AuthType.class ).orElse( AuthType.KEYS );
 
     if ( initializingUiForFirstTime || s3ConnectionType.ordinal() != stringToInteger( details.getConnectionType() ) ) {
@@ -250,19 +256,8 @@ public class S3DetailComposite implements VFSDetailsComposite {
       details.setAuthType( authType.toDetailsValue() );
     }
 
-    if ( details.getRegion() == null ) {
-      details.setRegion( wRegion.getText() );
-    }
-
     if ( !initializingUiForFirstTime ) {
-      if ( s3ConnectionType == S3ConnectionType.AMAZON ) {
-        // ensure leftover minio region cannot take precedence
-        details.setMinioRegion( null );
-      } else {
-        // set back from stored in widget in case we switched back
-        String minioRegion = wMinioRegion.getText();
-        details.setMinioRegion( StringUtils.isBlank( minioRegion ) ? null : minioRegion );
-      }
+      syncRegionFromWidget( s3ConnectionType );
     }
 
     moveWidgetsToBottom( s3ConnectionType, authType );
@@ -270,6 +265,16 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wBottomHalf.layout();
     wComposite.pack();
     VFSDetailsCompositeHelper.updateScrollableRegion( wComposite );
+  }
+
+  /** Ensure region in details is what is seen */
+  private void syncRegionFromWidget( S3ConnectionType s3ConnectionType ) {
+    if ( s3ConnectionType == S3ConnectionType.MINIO ) {
+      String minioRegion = wMinioRegion.getText();
+      details.setRegion( StringUtils.isBlank( minioRegion ) ? null : minioRegion );
+    } else {
+      details.setRegion( wRegion.getText() );
+    }
   }
 
   private void moveWidgetsToBottom( S3ConnectionType s3ConnectionType, AuthType authType ) {
@@ -320,19 +325,32 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wSessionToken.setText( Const.NVL( details.getSessionToken(), "" ) );
     wDefaultS3Config.setSelection( Boolean.parseBoolean( Const.NVL( details.getDefaultS3Config(), "false" ) ) );
     wDefaultS3Config.setVariableName( Const.NVL( details.getDefaultS3ConfigVariable(), "" ) );
-    int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), regionChoices[ 0 ] ), regionChoices, -1 );
-    if ( regionIndex != -1 ) {
-      wRegion.select( regionIndex );
-    } else {
-      wRegion.setText( details.getRegion() );
-    }
-    wMinioRegion.setText( Const.NVL( details.getMinioRegion(), "" ) );
+    populateRegion();
     wProfileName.setText( Const.NVL( details.getProfileName(), "" ) );
     wCredentialsFilePath.setText( Const.NVL( details.getCredentialsFilePath(), "" ) );
     wEndpoint.setText( Const.NVL( details.getEndpoint(), "" ) );
     wSignatureVersion.setText( Const.NVL( details.getSignatureVersion(), "" ) );
     wPathStyleAccess.setSelection( Boolean.parseBoolean( Const.NVL( details.getPathStyleAccess(), "false" ) ) );
     wPathStyleAccess.setVariableName( Const.NVL( details.getPathStyleAccessVariable(), "" ) );
+  }
+
+  private void populateRegion() {
+    switch ( getConnectionType() ) {
+      case AMAZON -> {
+        int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), Regions.DEFAULT_REGION.getName() ),
+          regionChoices, -1 );
+        if ( regionIndex != -1 ) {
+          wRegion.select( regionIndex );
+        } else {
+          wRegion.setText( details.getRegion() );
+        }
+      }
+      case MINIO -> {
+        wMinioRegion.setText( Const.NVL( details.getRegion(), "" ) );
+        int regionIndex = computeComboIndex( Regions.DEFAULT_REGION.getName(), regionChoices, 0 );
+        wRegion.select( regionIndex );
+      }
+    }
   }
 
   private Label createLabel( String key, Control topWidget, Composite composite ) {
@@ -411,9 +429,11 @@ public class S3DetailComposite implements VFSDetailsComposite {
   }
 
   public String validate() {
-    int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), regionChoices[ 0 ] ), regionChoices, -1 );
-    if ( regionIndex == -1 && !StringUtil.isVariable( details.getRegion() ) ) {
-      return BaseMessages.getString( PKG, "ConnectionDialog.s3.Validate.badRegionText" );
+    if ( getConnectionType() == S3ConnectionType.AMAZON ) {
+      int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), regionChoices[ 0 ] ), regionChoices, -1 );
+      if ( regionIndex == -1 && !StringUtil.isVariable( details.getRegion() ) ) {
+        return BaseMessages.getString( PKG, "ConnectionDialog.s3.Validate.badRegionText" );
+      }
     }
     return null;
   }
