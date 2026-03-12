@@ -89,7 +89,7 @@ public class StreamToJobNodeConverter implements Converter {
     try {
       return loadJobAsStream( fileId );
     } catch ( Exception e ) {
-      logger.error( e );
+      logger.error( e.getMessage(), e );
       return null;
     }
   }
@@ -103,7 +103,7 @@ public class StreamToJobNodeConverter implements Converter {
     try {
       return getJobStream( repository, fileId );
     } catch ( KettleException e ) {
-      logger.error( e );
+      logger.error( e.getMessage(), e );
       // file is there and may be legacy, attempt simple export
       return getLegacyJobStream( fileId, file );
     }
