@@ -51,7 +51,7 @@ public class FileControllerTest {
     fileProviders.add( new TestFileProvider() );
     ProviderService providerService = new ProviderService( fileProviders );
     bowl = DefaultBowl.getInstance();
-    fileController = new FileController( bowl, new FileCache(), providerService );
+    fileController = new FileController( bowl, new FileCache(), providerService, Variables.getADefaultVariableSpace() );
   }
 
   @Test
@@ -198,7 +198,7 @@ public class FileControllerTest {
 
     };
     fileController = new FileController( DefaultBowl.getInstance(), new FileCache(), providerService,
-                                         Optional.of( listener ) );
+                                         Optional.of( listener ), Variables.getADefaultVariableSpace() );
     TestDirectory root = TestDirectory.create( "", "/", null );
     fileController.getFiles( root, "", true );
 

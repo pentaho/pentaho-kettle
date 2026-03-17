@@ -142,11 +142,12 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
     VFSConnectionDetails details = getExistingConnectionDetails( locConnMgr, connectionName );
 
     try {
+      initializeVariableSpace( details );
       return vfsConnectionManagerHelper
         .getExistingProvider( locConnMgr, details )
         .getFileNameTransformer( locConnMgr )
         .toPvfsFileName( providerFileName, details );
-    } catch ( KettleException e ) {
+    } catch ( IOException | KettleException e ) {
       throw new KettleVFSFileSystemException(
         "ConnectionFileSystem.FailedTransformProviderFilename",
         e,

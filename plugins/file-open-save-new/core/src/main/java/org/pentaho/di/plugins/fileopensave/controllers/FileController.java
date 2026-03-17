@@ -61,22 +61,24 @@ public class FileController {
   protected final FileCache fileCache;
   private final Bowl bowl;
   private final ProviderService providerService;
-  private VariableSpace space = Variables.getADefaultVariableSpace();
+  private VariableSpace space;
 
   private final Optional<FileLoadListener> fileListener;
 
-  public FileController( Bowl bowl, FileCache fileCache, ProviderService providerService ) {
+  public FileController( Bowl bowl, FileCache fileCache, ProviderService providerService, VariableSpace space ) {
     this.bowl = bowl;
     this.fileCache = fileCache;
     this.providerService = providerService;
     this.fileListener = Optional.empty();
+    this.space = space;
   }
 
-  public FileController( Bowl bowl, FileCache fileCache, ProviderService providerService, Optional<FileLoadListener> fileListener ) {
+  public FileController( Bowl bowl, FileCache fileCache, ProviderService providerService, Optional<FileLoadListener> fileListener, VariableSpace space ) {
     this.bowl = bowl;
     this.fileCache = fileCache;
     this.providerService = providerService;
     this.fileListener = fileListener;
+    this.space = space;
   }
 
   public boolean clearCache( File file ) {
@@ -93,7 +95,7 @@ public class FileController {
   }
 
   public List<Tree> load( String filter, FileDialogOperation fileDialogOperation ) {
-   return load( filter, new ArrayList<>(), fileDialogOperation );
+    return load( filter, new ArrayList<>(), fileDialogOperation );
   }
 
   public List<Tree> load( String filter, List<String> connectionTypes, FileDialogOperation fileDialogOperation ) {

@@ -317,7 +317,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     command = fileDialogOperation.getCommand();
     this.fileController =
         new FileController( bowl, FileCacheService.INSTANCE.get(), ProviderServiceService.get(),
-                            Spoon.getInstance().getFileLoadListener() );
+                            Spoon.getInstance().getFileLoadListener(), Spoon.getInstance().getADefaultVariableSpace() );
 
     shellTitle = BaseMessages.getString( PKG, "FileOpenSaveDialog.dialog." + command + ".title" );
 

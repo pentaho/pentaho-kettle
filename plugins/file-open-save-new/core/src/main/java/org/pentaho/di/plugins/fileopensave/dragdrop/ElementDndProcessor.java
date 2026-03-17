@@ -22,6 +22,7 @@ import org.pentaho.di.plugins.fileopensave.controllers.FileController;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.service.FileCacheService;
 import org.pentaho.di.plugins.fileopensave.service.ProviderServiceService;
+import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -65,7 +66,7 @@ public class ElementDndProcessor {
             overwriteStatus.activateProgressDialog( "Copy File Progress" );
             FileController controller = new FileController( destination.getBowl(),
                                                             FileCacheService.INSTANCE.get(),
-                                                            ProviderServiceService.get() );
+                                                            ProviderServiceService.get(), Spoon.getInstance().getADefaultVariableSpace() );
             Result result = controller.copyFile( sourceObject, destinationFolder, toPath, overwriteStatus );
             if ( !result.getStatus().equals( Result.Status.SUCCESS ) ) {
               String onObject = result.getData() instanceof File ? ( (File) result.getData() ).getPath() : "";
