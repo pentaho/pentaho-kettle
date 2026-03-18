@@ -13,26 +13,26 @@
 
 package org.pentaho.di.connections.ui.tree;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Tree;
 import org.pentaho.di.connections.ConnectionManager;
-import org.pentaho.di.vfs.connections.ui.dialog.ConnectionDelegate;
+import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TreeSelection;
-import org.pentaho.di.connections.vfs.VFSConnectionDetails;
-import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
+import org.pentaho.di.vfs.connections.ui.dialog.ConnectionDelegate;
 
 import java.util.function.Supplier;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Tree;
 
 @ExtensionPoint( id = "VFSConnectionPopupMenuExtension", description = "Creates popup menus for VFS Connections",
   extensionPointId = "SpoonPopupMenuExtension" )
@@ -78,8 +78,19 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
   }
 
   private Menu createRootPopupMenu( Tree tree ) {
-    if ( rootMenu == null ) {
+    Spoon spoon = spoonSupplier.get();
+    // always create new items since there are multiple things that can change the menu contents
+    if ( rootMenu != null ) {
+      // dispose old menu items
+      MenuItem[] items = rootMenu.getItems();
+      for ( MenuItem item : items ) {
+        item.dispose();
+      }
+    } else {
       rootMenu = new Menu( tree );
+    }
+    // allow creation if user has global VFS permissions, or if they are in a project
+    if ( spoon.isAllowedManageGlobalVFS() || ( !spoon.getManagementBowl().equals( spoon.getGlobalManagementBowl() ) ) ) {
       MenuItem menuItem = new MenuItem( rootMenu, SWT.NONE );
       menuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.New" ) );
       menuItem.addSelectionListener( new SelectionAdapter() {
@@ -88,7 +99,10 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
           vfsConnectionDelegate.openDialog();
         }
       } );
+    } else {
+      return null;
     }
+    
     return rootMenu;
   }
 
@@ -119,7 +133,7 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
     }
 
     // customize menu for specific item
-    if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.PROJECT ) {
+    if ( vfsConnectionTreeItem.getLevel() == LeveledTreeNode.LEVEL.PROJECT && spoonSupplier.get().isAllowedManageGlobalVFS() ) {
       MenuItem moveMenuItem = new MenuItem( itemMenu, SWT.NONE );
       moveMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.MoveToGlobal",
               spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
