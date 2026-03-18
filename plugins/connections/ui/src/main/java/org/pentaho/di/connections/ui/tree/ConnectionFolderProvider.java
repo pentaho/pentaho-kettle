@@ -22,7 +22,6 @@ import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -54,10 +53,11 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
     String levelName;
     Image image;
     String connectionName;
+    Spoon spoon = Spoon.getInstance();
     try {
       Set<String> bowlNames = new HashSet<>();
-      Bowl currentBowl = Spoon.getInstance().getManagementBowl();
-      Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
+      Bowl currentBowl = spoon.getManagementBowl();
+      Bowl globalBowl = spoon.getGlobalManagementBowl();
 
       if ( !currentBowl.equals( globalBowl ) ) {
         ConnectionManager bowlCM = currentBowl.getManager( ConnectionManager.class );
@@ -94,12 +94,15 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
           image = getRunConfigurationImage( GUIResource.getInstance(), "images/PentahoRepository.svg" );
         }
 
+        if ( !spoon.isAllowedManageGlobalVFS() && level == LeveledTreeNode.LEVEL.GLOBAL ) {
+          continue;
+        }
         createTreeNode( treeNode, connectionName, image, level, levelName, containsIgnoreCase( bowlNames, name ),
                             ( level == LeveledTreeNode.LEVEL.DEFAULT ) ? true : false );
 
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( Spoon.getInstance().getShell(),
+      new ErrorDialog( spoon.getShell(),
               BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
               BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingVFSConnections" ),
               e
@@ -119,13 +122,7 @@ public class ConnectionFolderProvider extends TreeFolderProvider {
 
   @Override
   public void create( Optional<AbstractMeta> meta, TreeNode parent ) {
-    Repository repository = Spoon.getInstance().getRepository();
-    if ( repository != null && repository.getUserInfo() != null && repository.getUserInfo().isAdmin() != null
-      && Boolean.FALSE.equals( repository.getUserInfo().isAdmin() ) ) {
-      return;
-    }
     refresh( meta, createTreeNode( parent, getTitle(), getTreeImage() ), null );
-
   }
 
   public TreeNode createTreeNode( TreeNode parent, String name, Image image, LeveledTreeNode.LEVEL level, String levelDisplayName,
