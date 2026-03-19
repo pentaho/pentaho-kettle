@@ -16,7 +16,7 @@ package org.pentaho.di.shared;
 import org.pentaho.di.core.bowl.BaseBowl;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -40,7 +40,7 @@ public class DatabaseConnectionManagerTest {
     // Register Natives to create a default DatabaseMeta
     DatabasePluginType.getInstance().searchPlugins();
     ValueMetaPluginType.getInstance().searchPlugins();
-    KettleClientEnvironment.init();
+    KettleEnvironment.init();
   }
 
   @Before
