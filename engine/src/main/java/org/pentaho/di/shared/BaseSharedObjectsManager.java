@@ -135,7 +135,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
    * @throws KettleException
    */
   @Override
-  public List<T> getAll() throws KettleException {
+  public synchronized List<T> getAll() throws KettleException {
     populateSharedObjectMap();
     try {
       sharedObjectsIO.lock();
@@ -153,13 +153,17 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
    * @throws KettleException
    */
   @Override
-  public T get( String name ) throws KettleException {
+  public synchronized T get( String name ) throws KettleException {
     populateSharedObjectMap();
 
     try {
       sharedObjectsIO.lock();
+      String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, sharedObjectsMap.keySet() );
+      if ( existingName == null ) {
+        return null;
+      }
       T sharedObjectInterface =
-        sharedObjectsMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, sharedObjectsMap.keySet() ) );
+        sharedObjectsMap.get( existingName );
       return sharedObjectInterface == null ? sharedObjectInterface : sharedObjectInterface.makeClone();
     } finally {
       sharedObjectsIO.unlock();
@@ -201,7 +205,7 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
    * resets the caches in this manager.
    */
   public synchronized void reset() {
-    sharedObjectsMap.clear();
+    sharedObjectsMap = new HashMap<>();
     initialized = false;
   }
 
