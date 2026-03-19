@@ -9372,6 +9372,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     this.repositoryName = repoName;
   }
 
+  /**
+   * Whether the current user is allowed to manage "Global" VFS connections. Currently 
+   * this is only false for "Repository" connections if the user is not an admin. "Manage"
+   * refers only to UI actions to view/add/edit/delete connections, not to the use of 
+   * connections in transformations/jobs.
+  */
+  public boolean isAllowedManageGlobalVFS() {
+    if ( rep != null && rep.getUserInfo() != null && rep.getUserInfo().isAdmin() != null
+      && Boolean.FALSE.equals( rep.getUserInfo().isAdmin() ) ) {
+      return false;
+    }
+    return true;
+  }
+
   public void addMenuListener( String id, Object listener, String methodName ) {
     menuListeners.add( new Object[] { id, listener, methodName } );
   }
