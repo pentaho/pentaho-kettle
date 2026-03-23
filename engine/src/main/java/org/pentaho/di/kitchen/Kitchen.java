@@ -120,6 +120,8 @@ public class Kitchen {
       new CommandLineOption(
         "maxlogtimeout", BaseMessages.getString( PKG, "Kitchen.CmdLine.MaxLogTimeout" ), new StringBuilder() );
 
+    System.out.println("Something");
+
     CommandLineOption[] options =
       new CommandLineOption[] {
         new CommandLineOption( "rep", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepName" ), optionRepname =

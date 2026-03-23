@@ -46,6 +46,7 @@ public class DragAndDropContainer implements XMLInterface {
   public static final int TYPE_BUSINESS_COLUMN = 12;
   public static final int TYPE_RELATIONSHIP = 13;
   public static final int TYPE_BUSINESS_MODEL = 14;
+  public static final int TYPE_UNKNOWN = 15;
 
   private static final String[] typeCodes = {
     "", "Step", "BaseStep", "DatabaseConnection", "TransHop", "Text", "Jobentry", "BaseJobentry",
