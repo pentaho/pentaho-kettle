@@ -146,5 +146,12 @@ public class FileChooserVar extends Composite {
     wPath.setText( text );
   }
 
+  @Override
+  public void setEnabled( boolean enabled ) {
+    super.setEnabled( enabled );
+    wPath.setEnabled( enabled );
+    wBrowseButton.setEnabled( enabled );
+  }
+
 }
 

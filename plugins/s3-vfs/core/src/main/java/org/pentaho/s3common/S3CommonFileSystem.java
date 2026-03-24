@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.net.ssl.SSLContext;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;
@@ -32,10 +34,12 @@ import org.pentaho.amazon.s3.S3Details;
 import org.pentaho.amazon.s3.S3Util;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.core.util.StorageUnitConverter;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.s3common.S3Options.AuthKeys;
-import org.pentaho.s3common.S3Options.BaseS3Options;
 import org.pentaho.s3common.S3Options.CredentialsFile;
 
 import org.slf4j.Logger;
@@ -55,6 +59,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 
 public abstract class S3CommonFileSystem extends AbstractFileSystem {
 
@@ -195,20 +201,18 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
   }
 
   public static AmazonS3 createClientFromEndpoint( S3Options options ) {
-    return createBuilder( options.base() )
-      .withCredentials( createCredentialsProvider( options ) )
-      .build();
-  }
-
-  private static AmazonS3ClientBuilder createBuilder( BaseS3Options baseOpts ) {
+    var baseOpts = options.base();
     ClientConfiguration clientConfiguration = new ClientConfiguration();
     clientConfiguration.setSignerOverride( S3Util.isEmpty( baseOpts.signatureVersion() ) ?
       S3Util.SIGNATURE_VERSION_SYSTEM_PROPERTY : baseOpts.signatureVersion() );
+
+    options.trustStore().ifPresent( trustStore -> setSslContext( clientConfiguration, trustStore ) );
     return AmazonS3ClientBuilder.standard()
       .withEndpointConfiguration(
         new AwsClientBuilder.EndpointConfiguration( baseOpts.endpoint(), baseOpts.region() ) )
       .withPathStyleAccessEnabled( baseOpts.pathStyleAccess() )
-      .withClientConfiguration( clientConfiguration );
+      .withClientConfiguration( clientConfiguration )
+      .withCredentials( createCredentialsProvider( options ) ).build();
   }
 
   /** Invalidate client and clear VFS cache if properties changed */
@@ -354,4 +358,24 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
     getS3TransferManager().copy( src, dest );
   }
 
+  public static void setSslContext( ClientConfiguration clientConfig, S3Options.TrustStore opts ) {
+    try {
+      SSLContext sslContext;
+      if ( StringUtils.isNotBlank( opts.filePath() ) ) {
+        var bowl = DefaultBowl.getInstance();
+        var kettleVfs = KettleVFS.getInstance( bowl );
+        try ( var fileObj = kettleVfs.getFileObject( opts.filePath() );
+              var content = fileObj.getContent();
+              var in = content.getInputStream() ) {
+          sslContext = HttpClientManager.getSslContext( opts.trustAll(), in, opts.pass() );
+        }
+      } else {
+        sslContext = HttpClientManager.getSslContext( opts.trustAll(), null, null );
+      }
+      clientConfig.getApacheHttpClientConfig().setSslSocketFactory(
+        new SSLConnectionSocketFactory( sslContext ) );
+    } catch ( Exception e ) {
+      logger.error( "Failed to create SSL configuration from trust store", e );
+    }
+  }
 }
