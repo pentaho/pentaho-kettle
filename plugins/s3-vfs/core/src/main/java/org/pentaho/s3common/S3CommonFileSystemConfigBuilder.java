@@ -16,7 +16,9 @@ package org.pentaho.s3common;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemConfigBuilder;
 import org.apache.commons.vfs2.FileSystemOptions;
+
 import org.pentaho.s3n.vfs.S3NFileSystem;
+
 
 /**
  * Configuration Builder for S3 File System
@@ -35,6 +37,9 @@ public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
   public static final String PATHSTYLE_ACCESS = "pathStyleAccess";
   public static final String DEFAULT_S3_CONFIG = "defaultS3Config";
   public static final String CONNECTION_TYPE = "connectionType";
+  public static final String TRUST_STORE_FILE_PATH = "trustStoreFilePath";
+  public static final String TRUST_STORE_PASSWORD = "trustStorePassword";
+  public static final String TRUST_ALL = "trustAll";
   private static final String USE_DEFAULTS = "useDefaults";
 
   private FileSystemOptions fileSystemOptions;
@@ -146,6 +151,30 @@ public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
   public String getConnectionType() {
     return (String) this.getParam( getFileSystemOptions(), CONNECTION_TYPE );
+  }
+
+  public void setTrustStoreFilePath( String trustStoreFilePath ) {
+    this.setParam( getFileSystemOptions(), TRUST_STORE_FILE_PATH, trustStoreFilePath );
+  }
+
+  public String getTrustStoreFilePath() {
+    return (String) this.getParam( getFileSystemOptions(), TRUST_STORE_FILE_PATH );
+  }
+
+  public void setTrustStorePassword( String trustStorePassword ) {
+    this.setParam( getFileSystemOptions(), TRUST_STORE_PASSWORD, trustStorePassword );
+  }
+
+  public String getTrustStorePassword() {
+    return (String) this.getParam( getFileSystemOptions(), TRUST_STORE_PASSWORD );
+  }
+
+  public void setTrustAll( String trustAll ) {
+    this.setParam( getFileSystemOptions(), TRUST_ALL, trustAll );
+  }
+
+  public String getTrustAll() {
+    return (String) this.getParam( getFileSystemOptions(), TRUST_ALL );
   }
 
   public boolean useDefaults() {

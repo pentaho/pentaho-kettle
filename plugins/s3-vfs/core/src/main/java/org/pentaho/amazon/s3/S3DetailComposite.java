@@ -20,8 +20,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 
 import org.pentaho.amazon.s3.provider.S3Provider;
@@ -32,6 +35,7 @@ import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.connections.ui.dialog.VFSDetailsCompositeHelper;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.CheckBoxVar;
 import org.pentaho.di.ui.core.widget.ComboVar;
@@ -109,6 +113,11 @@ public class S3DetailComposite implements VFSDetailsComposite {
   private VariableSpace variableSpace;
   private HashSet<Control> skipControls = new HashSet<>();
 
+  private Group gSslTrustStore;
+  private FileChooserVar wTrustStoreFilePath;
+  private PasswordVisibleTextVar wTrustStorePassword;
+  private CheckBoxVar wTrustAll;
+
   public S3DetailComposite( Bowl bowl, Composite composite, S3Details details, PropsUI props ) {
     helper = new VFSDetailsCompositeHelper( PKG, props );
     this.bowl = bowl;
@@ -165,6 +174,9 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wCredentialsFilePath = new FileChooserVar( bowl, variableSpace, wWidgetHolder, TEXT_VAR_FLAGS, "Browse File" );
     wEndpoint = createStandByTextVar();
     wSignatureVersion = createStandByTextVar();
+
+    createTrustStoreGroup( wWidgetHolder );
+
     wPathStyleAccess = createStandByCheckBoxVar();
     wMinioRegion = createStandByTextVar();
 
@@ -219,10 +231,42 @@ public class S3DetailComposite implements VFSDetailsComposite {
     } );
     wPathStyleAccess.getTextVar().addModifyListener(
       modifyEvent -> details.setPathStyleAccessVariable( wPathStyleAccess.getVariableName() ) );
+    wTrustStoreFilePath.addModifyListener(
+      modifyEvent -> details.setTrustStoreFilePath( wTrustStoreFilePath.getText() ) );
+    wTrustStorePassword.addModifyListener(
+      modifyEvent -> details.setTrustStorePassword( wTrustStorePassword.getText() ) );
+    wTrustAll.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        details.setTrustAll( Boolean.toString( wTrustAll.getSelection() ) );
+      }
+    } );
 
     VFSDetailsCompositeHelper.setupCompositeResizeListener( wComposite );
     initializingUiForFirstTime = false;
     return wComposite;
+  }
+
+  private void createTrustStoreGroup( Composite parent ) {
+    gSslTrustStore = new Group( parent, TEXT_VAR_FLAGS );
+    gSslTrustStore.setLayout( new GridLayout( 1, false ) );
+    gSslTrustStore.setText( BaseMessages.getString( PKG, "ConnectionDialog.s3.TrustStoreGroup.Label" ) );
+
+    Label lblFilePath = new Label( gSslTrustStore, SWT.LEFT );
+    lblFilePath.setText( BaseMessages.getString( PKG, "ConnectionDialog.s3.TrustStoreFile.Label" ) );
+
+    wTrustStoreFilePath = new FileChooserVar( bowl, variableSpace, gSslTrustStore, TEXT_VAR_FLAGS, BaseMessages.getString( "System.Button.Browse" ) );
+    wTrustStoreFilePath.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL ) );
+
+    Label lblFilePass = new Label( gSslTrustStore, SWT.LEFT );
+    lblFilePass.setText( BaseMessages.getString( PKG, "ConnectionDialog.s3.TrustStorePassword.Label" ) );
+
+    wTrustStorePassword = createStandbyPasswordVisibleTextVar( gSslTrustStore );
+    wTrustStorePassword.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL ) );
+
+    wTrustAll = new CheckBoxVar( variableSpace, gSslTrustStore, SWT.CHECK );
+    wTrustAll.setText( BaseMessages.getString( PKG, "ConnectionDialog.s3.TrustAll.Label" ) );
+    wTrustAll.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL ) );
   }
 
   private String getAuthTypeLabel( AuthType authType ) {
@@ -286,6 +330,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
       }
     }
 
+    Control above = null; // just to help with rearranging
     if ( s3ConnectionType == S3ConnectionType.AMAZON ) {
       switch ( authType ) {
         case KEYS -> {
@@ -307,13 +352,14 @@ public class S3DetailComposite implements VFSDetailsComposite {
       }
     } else {
       // Minio
-      moveWidgetToBottomHalf( wMinioRegion, "ConnectionDialog.s3.Region.Label", null );
-      moveWidgetToBottomHalf( wAccessKey, "ConnectionDialog.s3.AccessKey.Label", wMinioRegion );
-      moveWidgetToBottomHalf( wSecretKey, "ConnectionDialog.s3.SecretKey.Label", wAccessKey );
-      moveWidgetToBottomHalf( wEndpoint, "ConnectionDialog.s3.Endpoint.Label", wSecretKey );
-      moveWidgetToBottomHalf( wSignatureVersion, "ConnectionDialog.s3.SignatureVersion.Label", wEndpoint );
-      moveWidgetToBottomHalf( wPathStyleAccess, "ConnectionDialog.s3.PathStyleAccess.Label", wSignatureVersion );
-      moveWidgetToBottomHalf( wDefaultS3Config, "ConnectionDialog.s3.DefaultS3Config.Label", wPathStyleAccess );
+      above = moveWidgetToBottomHalf( wMinioRegion, "ConnectionDialog.s3.Region.Label", above );
+      above = moveWidgetToBottomHalf( wAccessKey, "ConnectionDialog.s3.AccessKey.Label", above );
+      above = moveWidgetToBottomHalf( wSecretKey, "ConnectionDialog.s3.SecretKey.Label", above );
+      above = moveWidgetToBottomHalf( wEndpoint, "ConnectionDialog.s3.Endpoint.Label", above );
+      above = moveWidgetToBottomHalf( wSignatureVersion, "ConnectionDialog.s3.SignatureVersion.Label", above );
+      above = moveGroupToBottomHalf( gSslTrustStore, above );
+      above = moveWidgetToBottomHalf( wPathStyleAccess, "ConnectionDialog.s3.PathStyleAccess.Label", above );
+      above = moveWidgetToBottomHalf( wDefaultS3Config, "ConnectionDialog.s3.DefaultS3Config.Label", above );
     }
   }
 
@@ -332,6 +378,9 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wSignatureVersion.setText( Const.NVL( details.getSignatureVersion(), "" ) );
     wPathStyleAccess.setSelection( Boolean.parseBoolean( Const.NVL( details.getPathStyleAccess(), "false" ) ) );
     wPathStyleAccess.setVariableName( Const.NVL( details.getPathStyleAccessVariable(), "" ) );
+    wTrustStoreFilePath.setText( Const.NVL( details.getTrustStoreFilePath(), "" ) );
+    wTrustStorePassword.setText( Const.NVL( details.getTrustStorePassword(), "" ) );
+    wTrustAll.setSelection( Boolean.parseBoolean( Const.NVL( details.getTrustAll(), "false" ) ) );
   }
 
   private void populateRegion() {
@@ -355,6 +404,10 @@ public class S3DetailComposite implements VFSDetailsComposite {
 
   private Label createLabel( String key, Control topWidget, Composite composite ) {
     return helper.createLabel( composite, SWT.LEFT | SWT.WRAP, key, topWidget );
+  }
+
+  private PasswordVisibleTextVar createStandbyPasswordVisibleTextVar( Composite container ) {
+    return new PasswordVisibleTextVar( variableSpace, container, SWT.LEFT | SWT.BORDER );
   }
 
   private PasswordVisibleTextVar createStandbyPasswordVisibleTextVar() {
@@ -381,15 +434,23 @@ public class S3DetailComposite implements VFSDetailsComposite {
     return new CheckBoxVar( variableSpace, wWidgetHolder, SWT.CHECK );
   }
 
-  private void moveWidgetToBottomHalf( Control targetWidget, String labelKey, Control topWidget ) {
-    moveWidgetToBottomHalf( targetWidget, labelKey, topWidget, 0 );
+  private Control moveWidgetToBottomHalf( Control targetWidget, String labelKey, Control topWidget ) {
+    return moveWidgetToBottomHalf( targetWidget, labelKey, topWidget, 0 );
   }
 
-  private void moveWidgetToBottomHalf( Control targetWidget, String labelKey, Control topWidget, int width ) {
+  private Control moveWidgetToBottomHalf( Control targetWidget, String labelKey, Control topWidget, int width ) {
     Label lbl = createLabel( labelKey, topWidget, wBottomHalf );
     targetWidget.setParent( wBottomHalf );
     props.setLook( targetWidget );
     targetWidget.setLayoutData( helper.getFormDataField( lbl, width ) );
+    return targetWidget;
+  }
+
+  private Control moveGroupToBottomHalf( Control target, Control above ) {
+    target.setParent( wBottomHalf );
+    props.setLook( target );
+    target.setLayoutData( new FormDataBuilder().top( above ).left().right().result() );
+    return target;
   }
 
   @Override
@@ -429,10 +490,19 @@ public class S3DetailComposite implements VFSDetailsComposite {
   }
 
   public String validate() {
-    if ( getConnectionType() == S3ConnectionType.AMAZON ) {
-      int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), regionChoices[ 0 ] ), regionChoices, -1 );
-      if ( regionIndex == -1 && !StringUtil.isVariable( details.getRegion() ) ) {
-        return BaseMessages.getString( PKG, "ConnectionDialog.s3.Validate.badRegionText" );
+    switch ( getConnectionType() ) {
+      case AMAZON -> {
+        int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), regionChoices[ 0 ] ), regionChoices, -1 );
+        if ( regionIndex == -1 && !StringUtil.isVariable( details.getRegion() ) ) {
+          return BaseMessages.getString( PKG, "ConnectionDialog.s3.Validate.badRegionText" );
+        }
+      }
+      case MINIO -> {
+        if ( StringUtils.isNotBlank( wTrustStoreFilePath.getText() ) && wTrustAll.getSelection() ) {
+          String trustStoreLabel = BaseMessages.getString( PKG, "ConnectionDialog.s3.TrustStoreFile.Label" );
+          String trustAllLabel = BaseMessages.getString( PKG, "ConnectionDialog.s3.TrustAll.Label" );
+          return BaseMessages.getString( PKG, "ConnectionDialog.s3.Validate.incompatibleTrustStoreOption", trustStoreLabel, trustAllLabel );
+        }
       }
     }
     return null;
