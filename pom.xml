@@ -63,6 +63,7 @@
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <monetdb-jdbc.version>2.8</monetdb-jdbc.version>
     <commons-configuration2.version>2.10.1</commons-configuration2.version>
+    <fasterxml-jackson.non-osgi.version>2.18.6</fasterxml-jackson.non-osgi.version>
 
     <!-- Test dependencies -->
     <mockito.version>5.10.0</mockito.version>
