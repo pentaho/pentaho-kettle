@@ -23,19 +23,18 @@ import org.pentaho.s3n.vfs.S3NFileSystem;
  */
 public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
-  private static final String NAME = "name";
-  private static final String ACCESS_KEY = "accessKey";
-  private static final String SECRET_KEY = "secretKey";
-  private static final String SESSION_TOKEN = "sessionToken";
-  private static final String REGION = "region";
-  private static final String MINIO_REGION = "minioRegion";
-  private static final String CREDENTIALS_FILE = "credentialsFile";
-  private static final String PROFILE_NAME = "profileName";
-  private static final String ENDPOINT = "endpoint";
-  private static final String SIGNATURE_VERSION = "signature_version";
+  public static final String NAME = "name";
+  public static final String ACCESS_KEY = "accessKey";
+  public static final String SECRET_KEY = "secretKey";
+  public static final String SESSION_TOKEN = "sessionToken";
+  public static final String REGION = "region";
+  public static final String CREDENTIALS_FILE = "credentialsFile";
+  public static final String PROFILE_NAME = "profileName";
+  public static final String ENDPOINT = "endpoint";
+  public static final String SIGNATURE_VERSION = "signature_version";
   public static final String PATHSTYLE_ACCESS = "pathStyleAccess";
-  private static final String DEFAULT_S3_CONFIG = "defaultS3Config";
-  private static final String CONNECTION_TYPE = "connectionType";
+  public static final String DEFAULT_S3_CONFIG = "defaultS3Config";
+  public static final String CONNECTION_TYPE = "connectionType";
   private static final String USE_DEFAULTS = "useDefaults";
 
   private FileSystemOptions fileSystemOptions;
@@ -90,15 +89,6 @@ public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
   public String getRegion() {
     return (String) this.getParam( getFileSystemOptions(), REGION );
-  }
-
-  public S3CommonFileSystemConfigBuilder setMinioRegion( String minioRegion ) {
-    this.setParam( getFileSystemOptions(), MINIO_REGION, minioRegion );
-    return this;
-  }
-
-  public String getMinioRegion() {
-    return (String) this.getParam( getFileSystemOptions(), MINIO_REGION );
   }
 
   public void setCredentialsFile( String credentialsFile ) {
