@@ -32,6 +32,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 public class VfsSharedObjectsIOTest {
@@ -192,6 +194,50 @@ public class VfsSharedObjectsIOTest {
       assertEquals( 0, nodesMap.size() );
     } finally {
       sharedObjectsIO.unlock();
+    }
+  }
+
+  @Test
+  public void testEmptyNameSharedObjectLifecycleAcrossReload() throws Exception {
+    String rootPath = ROOT_FILE_PATH + "-empty-name";
+    FileObject projectDirectory = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( rootPath );
+    projectDirectory.createFolder();
+
+    String emptyName = "";
+
+    SharedObjectsIO sharedObjectsIO = new VfsSharedObjectsIO( rootPath, DefaultBowl.getInstance() );
+    try {
+      sharedObjectsIO.lock();
+
+      DatabaseMeta dbMeta = createDatabaseMeta( emptyName );
+      sharedObjectsIO.saveSharedObject( db_type, emptyName, dbMeta.toNode() );
+
+      Map<String, Node> nodesMap = sharedObjectsIO.getSharedObjects( db_type );
+      assertEquals( 1, nodesMap.size() );
+      assertNotNull( nodesMap.get( emptyName ) );
+
+      Node node = sharedObjectsIO.getSharedObject( db_type, emptyName );
+      assertNotNull( node );
+    } finally {
+      sharedObjectsIO.unlock();
+    }
+
+    SharedObjectsIO reloadedSharedObjectsIO = new VfsSharedObjectsIO( rootPath, DefaultBowl.getInstance() );
+    try {
+      reloadedSharedObjectsIO.lock();
+
+      Map<String, Node> reloadedNodesMap = reloadedSharedObjectsIO.getSharedObjects( db_type );
+      assertEquals( 1, reloadedNodesMap.size() );
+      assertNotNull( reloadedNodesMap.get( emptyName ) );
+
+      Node reloadedNode = reloadedSharedObjectsIO.getSharedObject( db_type, emptyName );
+      assertNotNull( reloadedNode );
+
+      reloadedSharedObjectsIO.delete( db_type, emptyName );
+      assertEquals( 0, reloadedSharedObjectsIO.getSharedObjects( db_type ).size() );
+      assertNull( reloadedSharedObjectsIO.getSharedObject( db_type, emptyName ) );
+    } finally {
+      reloadedSharedObjectsIO.unlock();
     }
   }
 

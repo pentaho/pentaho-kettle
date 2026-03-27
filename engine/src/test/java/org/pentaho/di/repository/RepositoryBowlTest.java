@@ -6,10 +6,16 @@ import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.utils.EncryptUtils;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
+import org.junit.After;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+
+import java.lang.reflect.Field;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -20,12 +26,25 @@ import static org.mockito.Mockito.when;
 
 public class RepositoryBowlTest {
 
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
   private static final String DESCRIPTION = "Connection Description";
   private static final String CONNECTION_NAME = "Connection Name";
   private static final String PASSWORD = "testpassword";
   private static final String PASSWORD2 = "testpassword2";
   private static final String ROLE1 = "role1";
   private static final String ROLE2 = "role2";
+
+  @After
+  public void cleanUpRegisteredProvider() throws Exception {
+    Field providersField = ConnectionManager.class.getDeclaredField( "connectionProviders" );
+    providersField.setAccessible( true );
+
+    @SuppressWarnings( "unchecked" )
+    Map<String, ?> providers = (Map<String, ?>) providersField.get( ConnectionManager.getInstance() );
+    providers.remove( TestConnectionWithBucketsProvider.SCHEME );
+    ConnectionManager.getInstance().reset();
+  }
 
   @Test
   public void testChangeSubscriber() throws Exception {
