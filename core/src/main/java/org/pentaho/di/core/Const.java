@@ -201,6 +201,7 @@ public class Const {
   public static String JNDI_DIRECTORY = NVL( System.getProperty( "KETTLE_JNDI_ROOT" ), System
     .getProperty( "org.osjava.sj.root" ) );
 
+
   /*
    * The images directory
    *
@@ -2552,6 +2553,43 @@ public class Const {
     String dataDir =  getKettleDirectory() + Const.FILE_SEPARATOR + "data";
     return NVL( System.getenv( "WEBSPOON_USER_HOME" ), NVL( System.getProperty( "WEBSPOON_USER_HOME" ),
             dataDir ) );
+  }
+
+  /**
+   * Returns the directory where JDBC driver JARs are stored for dynamic loading.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code JDBC_DRIVERS_DIRECTORY}
+   *       — set via Docker {@code ENV}, Kubernetes {@code env:}, ECS task definition, etc.</li>
+   *   <li>JVM system property {@code JDBC_DRIVERS_DIRECTORY}
+   *       — set via {@code -DJDBC_DRIVERS_DIRECTORY=...} at startup.</li>
+   *   <li>{@code null} — caller falls back to solution-path or kettle.properties lookup.</li>
+   * </ol>
+   *
+   * @return the configured JDBC drivers directory, or {@code null} if not set in any source
+   */
+  public static String getJdbcDriversDirectory() {
+    return NVL( System.getenv( "JDBC_DRIVERS_DIRECTORY" ),
+      System.getProperty( "JDBC_DRIVERS_DIRECTORY" ) );
+  }
+
+  /**
+   * Returns the base URL of the connection-management service used to download JDBC driver JARs
+   * on demand when the JAR is not present on disk.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code JDBC_DRIVER_SERVICE_URL}</li>
+   *   <li>JVM system property {@code JDBC_DRIVER_SERVICE_URL}</li>
+   *   <li>{@code null} — download is disabled.</li>
+   * </ol>
+   *
+   * @return the download service base URL (no trailing slash), or {@code null} if not configured
+   */
+  public static String getJdbcDriverServiceUrl() {
+    return NVL( System.getenv( "JDBC_DRIVER_SERVICE_URL" ),
+      System.getProperty( "JDBC_DRIVER_SERVICE_URL" ) );
   }
 
   /**

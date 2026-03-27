@@ -79,6 +79,19 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public static final String XML_TAG = "connection";
 
+  /**
+   * Attribute key for the absolute path to the dynamically loaded JDBC driver JAR.
+   * Stored in {@link #getAttributes()} so it is serialised to/from KTR XML automatically.
+   * Value must be an absolute path on the server, e.g. {@code /opt/drivers/ojdbc11.jar}.
+   */
+  public static final String ATTRIBUTE_DYNAMIC_DRIVER_JAR = "dynamicDriverJar";
+
+  /**
+   * Attribute key for the fully-qualified class name of the dynamically loaded JDBC driver
+   * (e.g. {@code oracle.jdbc.OracleDriver}).
+   */
+  public static final String ATTRIBUTE_DYNAMIC_DRIVER_CLASS = "dynamicDriverClass";
+
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.DATABASE;
 
   private static final String DROP_TABLE_STATEMENT = "DROP TABLE IF EXISTS ";
@@ -934,6 +947,47 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   public void setAttributes( Properties attributes ) {
     databaseInterface.setAttributes( attributes );
+  }
+
+  /**
+   * @return the absolute path to the dynamic driver JAR on the server, or {@code null} if not set
+   */
+  public String getDynamicDriverJar() {
+    return getAttributes().getProperty( ATTRIBUTE_DYNAMIC_DRIVER_JAR );
+  }
+
+  /**
+   * Set the absolute path to the dynamically loaded JDBC driver JAR on the server.
+   * All consumers treat this value as an absolute file system path passed to {@code new File(path)}.
+   *
+   * @param jarFilePath absolute path, e.g. {@code /opt/drivers/ojdbc11.jar}
+   */
+  public void setDynamicDriverJar( String jarFilePath ) {
+    if ( jarFilePath == null ) {
+      getAttributes().remove( ATTRIBUTE_DYNAMIC_DRIVER_JAR );
+    } else {
+      getAttributes().setProperty( ATTRIBUTE_DYNAMIC_DRIVER_JAR, jarFilePath );
+    }
+  }
+
+  /**
+   * @return the fully-qualified dynamic driver class name, or {@code null} if not set
+   */
+  public String getDynamicDriverClass() {
+    return getAttributes().getProperty( ATTRIBUTE_DYNAMIC_DRIVER_CLASS );
+  }
+
+  /**
+   * Set the fully-qualified class name of the dynamically loaded JDBC driver.
+   *
+   * @param driverClassName e.g. {@code oracle.jdbc.OracleDriver}
+   */
+  public void setDynamicDriverClass( String driverClassName ) {
+    if ( driverClassName == null ) {
+      getAttributes().remove( ATTRIBUTE_DYNAMIC_DRIVER_CLASS );
+    } else {
+      getAttributes().setProperty( ATTRIBUTE_DYNAMIC_DRIVER_CLASS, driverClassName );
+    }
   }
 
   /**

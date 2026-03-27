@@ -11,14 +11,15 @@
  * Change Date: 2029-07-20
  ******************************************************************************/
 
-
 package org.pentaho.di.core.database;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.InputStream;
+import java.io.File;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.sql.BatchUpdateException;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -126,6 +127,52 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   private static final Map<String, Set<String>> registeredDrivers = new HashMap<>();
 
   private DatabaseMeta databaseMeta;
+
+  /**
+   * Classloader used when {@link DatabaseMeta#getConnectionProperties()} has dynamicDriverJar and dynamicDriverClass.
+   * Each Database instance owns its own loader — one per connection in the KTR.
+   * Closed in {@link #disconnect()} after the SQL connection is released.
+   *
+   * <p><b>Why {@code volatile}:</b> In a multi-step transformation, one thread may be inside
+   * {@link #connectUsingClass} loading the driver JAR while a separate thread (e.g. the
+   * transformation engine responding to a user-initiated "Stop") concurrently calls
+   * {@link #disconnect()}, which closes and nullifies this loader. Without {@code volatile},
+   * the JVM is free to cache the field in a CPU register or write-buffer, so the connecting
+   * thread could still see the old non-null loader even after the disconnecting thread has
+   * already closed it — leading to a use-after-close crash.
+   *
+   * <p><b>Real-time use-case:</b> A Kettle transformation has two "Table Input" steps that
+   * each open their own connection with a dynamic JDBC JAR (e.g. a custom Snowflake driver).
+   * When the user cancels the job, the engine calls {@code disconnect()} on every step in
+   * parallel. The {@code volatile} guarantee ensures that once Thread-A nullifies this field
+   * in {@link #closeDynamicClassLoader()}, Thread-B immediately sees {@code null} and skips
+   * the close attempt — preventing a double-close {@link java.io.IOException}.
+   */
+  private volatile ChildFirstURLClassLoader dynamicDriverClassLoader;
+
+  /**
+   * Driver instance loaded via {@link #dynamicDriverClassLoader}.
+   * Used to call {@code driver.connect()} directly, bypassing {@link java.sql.DriverManager},
+   * so that two steps using different versions of the same driver (e.g. MySQL 5 and MySQL 8)
+   * never interfere with each other through the shared DriverManager registry.
+   *
+   * <p><b>Why {@code volatile}:</b> {@link #openConnectionViaDynamicDriver} reads this field
+   * on the step-execution thread to obtain the {@link java.sql.Driver} reference, while
+   * {@link #closeDynamicClassLoader()} may be called concurrently from a disconnect/cancel
+   * thread and sets the field to {@code null}. Without {@code volatile},  the CPU cache
+   * coherency protocol is not guaranteed to propagate the write before the read, so the
+   * executing thread could call {@code connect()} on a stale driver whose classloader has
+   * already been closed — causing a {@link java.lang.ClassNotFoundException} or silent data
+   * corruption.
+   *
+   * <p><b>Real-time use-case:</b> A streaming transformation processes records from two
+   * distinct MySQL versions (5.7 and 8.0) in parallel steps. Each step has its own
+   * {@code Database} instance with a distinct dynamic driver. If the job times out and the
+   * engine calls {@code disconnect()} from the scheduler thread, {@code volatile} ensures
+   * the executing step thread immediately observes the null driver and stops attempting to
+   * re-use the closed driver instance.
+   */
+  private volatile Driver dynamicDriver;
 
   private static final String DATA_SERVICES_PLUGIN_ID = "KettleThin";
 
@@ -443,9 +490,15 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
     try {
       if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
+        log.logDetailed( "Acquiring JNDI connection for database [" + databaseMeta.getName() + "]..." );
+        long startJndi = System.currentTimeMillis();
         this.connection = getDataSource( partitionId ).getConnection();
+        log.logDetailed( "JNDI connection acquired for database [" + databaseMeta.getName() + "] in " + ( System.currentTimeMillis() - startJndi ) + " ms" );
       } else if ( databaseMeta.isUsingConnectionPool() ) {
+        log.logDetailed( "Acquiring pooled connection for database [" + databaseMeta.getName() + "]..." );
+        long startPool = System.currentTimeMillis();
         this.connection = getDataSource( partitionId ).getConnection();
+        log.logDetailed( "Pooled connection acquired for database [" + databaseMeta.getName() + "] in " + ( System.currentTimeMillis() - startPool ) + " ms" );
         if ( getConnection().getAutoCommit() != isAutoCommit() ) {
           setAutoCommit( isAutoCommit() );
         }
@@ -499,7 +552,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       // NullPointerException is happen when we will try to run the transformation on the remote server but
       // server does not have such databases, so will using legacy routine as well
       if ( databaseMeta.isNeedUpdate() && !ConnectionPoolUtil.hasOldConfig( databaseMeta, partitionId ) ) {
-        dsp.invalidateNamedDataSource( ConnectionPoolUtil.getDataSourceName( databaseMeta, partitionId ), DatasourceType.POOLED );
+        dsp.invalidateNamedDataSource( ConnectionPoolUtil.getDataSourceName( databaseMeta, partitionId ),
+          DatasourceType.POOLED );
         databaseMeta.setNeedUpdate( false );
       }
       return ConnectionPoolUtil.getDataSource( log, databaseMeta, partitionId );
@@ -527,33 +581,50 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     PluginInterface plugin =
       PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
 
-    try {
-      synchronized ( java.sql.DriverManager.class ) {
-        ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader( plugin );
-        Class<?> driverClass = classLoader.loadClass( classname );
+    Properties properties = databaseMeta.getAttributes();
 
-        // Only need DelegatingDriver for drivers not from our classloader
-        if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
-          String pluginId =
-            PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+    String jarPath = properties.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_JAR );
+    String jdbcDriverClass = properties.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_CLASS );
 
-          Set<String> registeredDriversFromPlugin = registeredDrivers.computeIfAbsent( pluginId, k -> new HashSet<>() );
+    boolean usingDynamicDriver = StringUtils.isNotBlank( jarPath ) && StringUtils.isNotBlank( jdbcDriverClass );
 
-          // Prevent registering multiple delegating drivers for same class, plugin
-          if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
-            DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
-            registeredDriversFromPlugin.add( driverClass.getCanonicalName() );
+    final String effectiveClassName = usingDynamicDriver ? jdbcDriverClass : classname;
+
+    if ( usingDynamicDriver ) {
+      // connect() is public synchronized, and shareConnectionWith() is private synchronized,
+      // so every code path that reaches here already holds the monitor on 'this'.
+      // No additional synchronization is needed.
+      loadDynamicDriver( jarPath, effectiveClassName );
+    } else {
+      try {
+        synchronized ( java.sql.DriverManager.class ) {
+          ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader( plugin );
+          Class<?> driverClass = classLoader.loadClass( classname );
+
+          // Only need DelegatingDriver for drivers not from our classloader
+          if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
+            String pluginId =
+              PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+
+            Set<String> registeredDriversFromPlugin =
+              registeredDrivers.computeIfAbsent( pluginId, k -> new HashSet<>() );
+
+            // Prevent registering multiple delegating drivers for same class, plugin
+            if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
+              DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
+              registeredDriversFromPlugin.add( driverClass.getCanonicalName() );
+            }
+          } else {
+            // Trigger static register block in driver class
+            Class.forName( classname );
           }
-        } else {
-          // Trigger static register block in driver class
-          Class.forName( classname );
         }
+      } catch ( NoClassDefFoundError | ClassNotFoundException e ) {
+        throw new KettleDatabaseException( BaseMessages.getString( PKG,
+          "Database.Exception.UnableToFindClassMissingDriver", classname, plugin.getName() ), e );
+      } catch ( Exception e ) {
+        throw new KettleDatabaseException( "Exception while loading class", e );
       }
-    } catch ( NoClassDefFoundError | ClassNotFoundException e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG,
-        "Database.Exception.UnableToFindClassMissingDriver", classname, plugin.getName() ), e );
-    } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Exception while loading class", e );
     }
 
     try {
@@ -586,8 +657,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( databaseMeta.getPassword() ) );
       }
 
-      Properties properties = databaseMeta.getConnectionProperties();
-
       if ( databaseMeta.supportsOptionsInURL() ) {
         if ( !Utils.isEmpty( username ) || !Utils.isEmpty( password ) ) {
           // Allow for empty username with given password, in this case username must be given with one space
@@ -612,11 +681,21 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         }
       }
 
-      connection = DriverManager.getConnection( url, properties );
+      log.logDetailed( "Acquiring JDBC connection for database [" + databaseMeta.getName() + "] using driver class [" + classname + "]..." );
+      long startJdbc = System.currentTimeMillis();
+      if ( usingDynamicDriver ) {
+        connection = openConnectionViaDynamicDriver( effectiveClassName, url, properties );
+      } else {
+        connection = DriverManager.getConnection( url, properties );
+      }
+      log.logDetailed( "JDBC connection acquired for database [" + databaseMeta.getName() + "] in " + ( System.currentTimeMillis() - startJdbc ) + " ms" );
 
     } catch ( SQLException sqlException ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Exception.ConnectionTestFailed", toString() ), sqlException );
+      closeDynamicClassLoader();
+      throw new KettleDatabaseException(
+        BaseMessages.getString( PKG, "Database.Exception.ConnectionTestFailed", toString() ), sqlException );
     } catch ( Exception e ) {
+      closeDynamicClassLoader();
       throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
     }
   }
@@ -627,6 +706,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   public synchronized void disconnect() {
     try {
       if ( connection == null || connection.isClosed() ) {
+        closeDynamicClassLoader();
         return; // Nothing to do...
       }
     } catch ( SQLException ex ) {
@@ -634,6 +714,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       log.logError( "Error checking closing connection:" + Const.CR + ex.getMessage() );
       log.logError( Const.getStackTracker( ex ) );
     }
+
+    log.logDetailed( "Disconnecting from database [" + databaseMeta.getName() + "]..." );
+    long startDisconnect = System.currentTimeMillis();
 
     if ( pstmt != null ) {
       tryCloseAndLog( pstmt, "statement" );
@@ -652,7 +735,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       prepStatementUpdate = null;
     }
     if ( pstmtSeq != null ) {
-      tryCloseAndLog(  pstmtSeq, "seq statement" );
+      tryCloseAndLog( pstmtSeq, "seq statement" );
       pstmtSeq = null;
     }
 
@@ -683,18 +766,133 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       // Always close the connection, irrespective of what happens above...
       try {
         if ( dataSource instanceof CachedManagedDataSourceInterface ) {
-          ((CachedManagedDataSourceInterface) dataSource).removeInUseBy( ownerName );
+          ( (CachedManagedDataSourceInterface) dataSource ).removeInUseBy( ownerName );
         }
         dataSource = null;
         closeConnectionOnly();
+        log.logDetailed( "Disconnected from database [" + databaseMeta.getName() + "] in " + ( System.currentTimeMillis() - startDisconnect ) + " ms" );
       } catch ( KettleDatabaseException ignoredKde ) { // The only exception thrown from closeConnectionOnly()
         // cannot do anything about this but log it
         log.logError(
           "Error disconnecting from database - closeConnectionOnly failed:" + Const.CR + ignoredKde.getMessage() );
         log.logError( Const.getStackTracker( ignoredKde ) );
+      } finally {
+        // Release the isolated JAR classloader and driver reference so the JAR file handle
+        // is freed (critical on Windows) and the classloader is eligible for GC.
+        // Called here — after closeConnectionOnly() — to guarantee the TCP connection is
+        // fully closed before the classloader that loaded its driver classes is torn down.
+        closeDynamicClassLoader();
       }
     }
   }
+
+  /**
+   * Closes the dynamic driver ClassLoader and releases the JAR file handle.
+   * Null-safe and idempotent — safe to call when no dynamic driver is loaded or multiple times.
+   */
+  private void closeDynamicClassLoader() {
+    try {
+      if ( dynamicDriverClassLoader != null ) {
+        dynamicDriverClassLoader.close();
+      }
+    } catch ( Exception e ) {
+      // Best-effort cleanup — log but do not propagate so disconnect() always completes.
+      log.logDebug( "Warning: failed to close dynamic driver ClassLoader: " + errorMsg( e ) );
+    } finally {
+      dynamicDriver = null;
+      dynamicDriverClassLoader = null;
+    }
+  }
+
+  /**
+   * Resolves the driver JAR path, obtains the cached {@link Driver} instance from
+   * {@link DynamicDriverCache}, and sets {@link #dynamicDriver} ready for
+   * {@link #openConnectionViaDynamicDriver}.
+   *
+   * <p><b>Warm path (typical):</b> {@link DynamicDriverCache#getOrLoadDriver} finds the
+   * entry under the shared read lock and returns the {@link Driver} immediately — no
+   * classloader creation, no JAR file read, no NFS round-trips.
+   *
+   * <p><b>Cold path (first connect for this JAR+class):</b>
+   * {@link DynamicDriverCache#getOrLoadDriver} creates a {@link ChildFirstURLClassLoader},
+   * reads the JAR once, loads the driver class, instantiates the {@link Driver}, caches
+   * it, and returns it. All subsequent connects share this instance.
+   *
+   * <p><b>Why no per-connection classloader:</b> {@link Driver#connect} is specified to
+   * be thread-safe and stateless with respect to connection parameters. Sharing the
+   * {@link Driver} across connections is the standard JDBC connection-pool pattern.
+   * If two connections reference different JARs or different driver classes, they receive
+   * separate {@link DynamicDriverCache} entries and thus separate classloaders.
+   *
+   * <p>{@link #dynamicDriverClassLoader} is set to {@code null} because the classloader
+   * is owned and kept alive by {@link DynamicDriverCache}. {@link #closeDynamicClassLoader}
+   * therefore only clears the {@link #dynamicDriver} reference on disconnect — it does not
+   * close the cache's classloader.
+   */
+  private void loadDynamicDriver( String jarPath, String effectiveClassName ) throws KettleDatabaseException {
+    // Always resolve first — returns immediately if jarPath exists on disk (no overhead),
+    // otherwise walks the fallback chain. The resolved absolute path is the cache key so
+    // a downloaded or fallback-located JAR is cached and reused correctly on every connect.
+    String resolvedPath = JdbcDriverResolver.resolve( jarPath );
+
+    if ( !resolvedPath.toLowerCase().endsWith( ".jar" ) ) {
+      throw new KettleDatabaseException( "Dynamic driver path does not point to a JAR file: " + resolvedPath );
+    }
+
+    // Warm path: read lock + map lookup, returns in microseconds.
+    // Cold path: JAR loaded once, Driver cached JVM-wide, never loaded again for this (jar, class).
+    dynamicDriver = DynamicDriverCache.getInstance().getOrLoadDriver( resolvedPath, effectiveClassName );
+
+    // The Driver's classloader is owned by DynamicDriverCache — this Database instance
+    // does not hold a classloader reference and has nothing to close on disconnect.
+    dynamicDriverClassLoader = null;
+  }
+
+  /**
+   * Opens a JDBC connection via the already-loaded {@link #dynamicDriver}, bypassing
+   * {@link DriverManager}. Validates URL acceptance before connecting.
+   */
+  private Connection openConnectionViaDynamicDriver( String effectiveClassName, String url, Properties properties )
+    throws KettleDatabaseException {
+    Driver localDriver = dynamicDriver;
+    boolean accepts;
+    try {
+      accepts = localDriver.acceptsURL( url );
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException(
+        "Dynamic driver '" + effectiveClassName + "' threw exception checking URL '"
+          + url + "': " + errorMsg( e ), e );
+    }
+    if ( !accepts ) {
+      throw new KettleDatabaseException(
+        "Dynamic driver '" + effectiveClassName + "' does not accept URL: " + url
+          + " — check the JDBC URL format." );
+    }
+    try {
+      Connection c = localDriver.connect( url, properties );
+      if ( c == null ) {
+        throw new KettleDatabaseException(
+          "Dynamic driver '" + effectiveClassName + "' returned null for URL: " + url
+            + " — check that the URL format and driver class are correct." );
+      }
+      return c;
+    } catch ( KettleDatabaseException e ) {
+      throw e;
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException(
+        "Dynamic driver '" + effectiveClassName + "' failed to connect to URL '"
+          + url + "': " + errorMsg( e ), e );
+    }
+  }
+
+  /**
+   * Returns the exception message, or the simple class name when the message is null.
+   * Avoids repetitive inline ternary expressions in error-handling code.
+   */
+  private static String errorMsg( Exception e ) {
+    return e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+  }
+
 
   @Override
   public void close() {
@@ -720,6 +918,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       }
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Error disconnecting from database '" + toString() + "'", e );
+    } finally {
+      closeDynamicClassLoader();
     }
   }
 
@@ -766,7 +966,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * @param commitSize The number of rows to wait before doing a commit on the connection.
    */
   public void setCommit( int commitSize ) {
-    setCommitSize(commitSize);
+    setCommitSize( commitSize );
     setAutoCommit();
   }
 
@@ -1391,8 +1591,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   /**
    * Close the prepared statement of the insert statement.
    *
-   * @param ps             The prepared statement to empty and close.
-   * @param batch          true if you are using batch processing
+   * @param ps           The prepared statement to empty and close.
+   * @param batch        true if you are using batch processing
    * @param batchCounter The number of rows on the batch queue
    * @throws KettleDatabaseException
    */
@@ -1465,8 +1665,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   /**
    * Close the prepared statement of the insert statement.
    *
-   * @param ps             The prepared statement to empty and close.
-   * @param batch          true if you are using batch processing (typically true for this method)
+   * @param ps    The prepared statement to empty and close.
+   * @param batch true if you are using batch processing (typically true for this method)
    * @throws KettleDatabaseException
    * @deprecated use emptyAndCommit() instead (pass in the number of rows left in the batch)
    */
@@ -2010,7 +2210,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * <p>Contrary to previous versions of similar duplicated methods, this implementation
    * does not require quoted identifiers.
    *
-   * @param schemaname     The name of the schema to check.
+   * @param schemaname The name of the schema to check.
    * @param tablename  The name of the table to check.
    * @param columnname The name of the column to check.
    * @return true if the table exists, false if it doesn't.
@@ -3297,7 +3497,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   }
 
   public void truncateTable( String schema, String tablename ) throws KettleDatabaseException {
-    if ( Utils.isEmpty( connectionGroup ) && !databaseMeta.getPluginId().equalsIgnoreCase( "MySQL" ) ) { // this is a hack to fix a know issue on MySQL issue name on Pentaho side BISERVER-14546
+    if ( Utils.isEmpty( connectionGroup ) && !databaseMeta.getPluginId().equalsIgnoreCase(
+      "MySQL" ) ) { // this is a hack to fix a know issue on MySQL issue name on Pentaho side BISERVER-14546
       String truncateStatement = databaseMeta.getTruncateTableStatement( schema, tablename );
       if ( truncateStatement == null ) {
         throw new KettleDatabaseException( "Truncate table not supported by "
@@ -4994,7 +5195,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * @throws KettleDatabaseException in case anything goes wrong.
    * @sendSinglestatement send one statement
    */
-  public Result execStatementsFromFile( Bowl bowl,  String filename, boolean sendSinglestatement )
+  public Result execStatementsFromFile( Bowl bowl, String filename, boolean sendSinglestatement )
     throws KettleException {
     FileObject sqlFile = null;
     InputStream is = null;
