@@ -970,7 +970,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       
       setDefaultAttributesValues();
 
-      setName( XMLHandler.getTagValue( con, "name" ) );
+      String name = XMLHandler.getTagValue( con, "name" );
+      if ( name == null ) {
+        name = "";
+      }
+      setName( name );
       setDisplayName( getName() );
       setHostname( XMLHandler.getTagValue( con, "server" ) );
       String acc = XMLHandler.getTagValue( con, "access" );
