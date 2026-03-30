@@ -92,6 +92,12 @@ public final class JdbcDriverResolver {
    * @throws KettleDatabaseException if the JAR cannot be found or downloaded
    */
   public static String resolve( String driverId, String configuredPath ) throws KettleDatabaseException {
+    if ( configuredPath == null || configuredPath.trim().isEmpty() ) {
+      throw new KettleDatabaseException(
+        "JdbcDriverResolver: configured JAR path for driver '" + driverId + "' is null or blank. "
+          + "Set the dynamic driver JAR attribute (file name or absolute path) on the database connection." );
+    }
+
     // 1 — configured path exists as-is
     if ( existsAsFile( configuredPath ) ) {
       return configuredPath;

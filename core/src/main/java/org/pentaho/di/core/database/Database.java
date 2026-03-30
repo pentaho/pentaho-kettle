@@ -130,7 +130,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   private DatabaseMeta databaseMeta;
 
   /**
-   * Classloader used when {@link DatabaseMeta#getConnectionProperties()} has dynamicDriverJar and dynamicDriverClass.
+   * Classloader used when dynamic JDBC driver loading is configured on the {@link DatabaseMeta}
+   * via its attributes (for example, a {@code dynamicDriverId} resolved through service
+   * metadata and {@code JdbcDriverResolver}), rather than via connection properties such as
+   * {@code dynamicDriverJar} / {@code dynamicDriverClass}.
    * Each Database instance owns its own loader — one per connection in the KTR.
    * Closed in {@link #disconnect()} after the SQL connection is released.
    *
@@ -582,20 +585,26 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     PluginInterface plugin =
       PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
 
-    Properties properties = databaseMeta.getAttributes();
+    Properties attributes = databaseMeta.getAttributes();
+    Properties properties = databaseMeta.getConnectionProperties();
 
-    String jarPath = properties.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_JAR );
-    String driverId = properties.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_ID );
+    String jarPath = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_JAR );
+    String driverId = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_ID );
 
-    boolean usingDynamicDriver = StringUtils.isNotBlank( driverId ) && StringUtils.isNotBlank( Const.isFusionConnectionManagementEnabled() );
+    boolean usingDynamicDriver = StringUtils.isNotBlank( driverId )
+      && StringUtils.isNotBlank( jarPath )
+      && Const.isFusionConnectionManagementEnabled();
+
+    // Resolved once here; reused when opening the connection below to avoid a second HTTP call.
+    String jdbcDriverClass = null;
 
     if ( usingDynamicDriver ) {
       // connect() is public synchronized, and shareConnectionWith() is private synchronized,
       // so every code path that reaches here already holds the monitor on 'this'.
       // No additional synchronization is needed.
-        var driverMetadata = getMetadataFromDriver( driverId );
-        String jdbcDriverClass = driverMetadata.get( "driverClassName" ).toString();
-        loadDynamicDriver( driverId, jarPath, jdbcDriverClass );
+      var driverMetadata = getMetadataFromDriver( driverId );
+      jdbcDriverClass = driverMetadata.get( "driverClassName" ).toString();
+      loadDynamicDriver( driverId, jarPath, jdbcDriverClass );
     } else {
       try {
         synchronized ( java.sql.DriverManager.class ) {
@@ -685,8 +694,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       log.logDetailed( "Acquiring JDBC connection for database [" + databaseMeta.getName() + "] using driver class [" + classname + "]..." );
       long startJdbc = System.currentTimeMillis();
       if ( usingDynamicDriver ) {
-        var driverMetadata = getMetadataFromDriver( driverId );
-        String jdbcDriverClass = driverMetadata.get( "driverClassName" ).toString();
         connection = openConnectionViaDynamicDriver( jdbcDriverClass, url, properties );
       } else {
         connection = DriverManager.getConnection( url, properties );
@@ -703,33 +710,41 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
-  private static Map<String, Object> getMetadataFromDriver(String driverId ) throws KettleDatabaseException {
-      Map<String, Object> metadata;
-      String serviceBaseUrl = Const.getJdbcDriverServiceUrl();
+  private static Map<String, Object> getMetadataFromDriver( String driverId ) throws KettleDatabaseException {
+    String serviceBaseUrl = Const.getJdbcDriverServiceUrl();
+    if ( serviceBaseUrl == null || serviceBaseUrl.trim().isEmpty() ) {
+      throw new KettleDatabaseException(
+        "Cannot fetch driver metadata for '" + driverId + "': JDBC_DRIVER_SERVICE_URL is not configured. "
+          + "Set the environment variable or system property 'JDBC_DRIVER_SERVICE_URL'." );
+    }
 
-      try {
-          HttpURLConnection conn = (HttpURLConnection) new URL( serviceBaseUrl + "/api/v1/connection-drivers/" + driverId ).openConnection();
-          conn.setConnectTimeout( 10_000 );
-          conn.setReadTimeout( 60_000 );
-          conn.setRequestMethod( "GET" );
+    String metadataUrl = serviceBaseUrl + "/api/v1/connection-drivers/" + driverId;
+    HttpURLConnection conn = null;
+    try {
+      conn = (HttpURLConnection) new URL( metadataUrl ).openConnection();
+      conn.setConnectTimeout( 10_000 );
+      conn.setReadTimeout( 60_000 );
+      conn.setRequestMethod( "GET" );
 
-          int status = conn.getResponseCode();
-          if ( status != HttpURLConnection.HTTP_OK ) {
-              throw new KettleDatabaseException(
-                      "JdbcDriverResolver: download of '" + driverId + "' failed — HTTP " + status
-                              + " from " + serviceBaseUrl + "/api/v1/connection-drivers/" + driverId );
-          }
-
-          ObjectMapper mapper = new ObjectMapper();
-          metadata = mapper.readValue( conn.getInputStream(), Map.class );
-          conn.disconnect();
-      } catch (Exception e) {
-          throw new KettleDatabaseException(
-                  "JdbcDriverResolver: failed to download '" + driverId + "' from '"
-                          + serviceBaseUrl + "': " + e.getMessage(), e );
+      int status = conn.getResponseCode();
+      if ( status != HttpURLConnection.HTTP_OK ) {
+        throw new KettleDatabaseException(
+          "Failed to fetch driver metadata for '" + driverId + "' — HTTP " + status + " from " + metadataUrl );
       }
 
-      return metadata;
+      try ( java.io.InputStream is = conn.getInputStream() ) {
+        return new ObjectMapper().readValue( is, Map.class );
+      }
+    } catch ( KettleDatabaseException e ) {
+      throw e;
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException(
+        "Failed to fetch driver metadata for '" + driverId + "' from '" + metadataUrl + "': " + e.getMessage(), e );
+    } finally {
+      if ( conn != null ) {
+        conn.disconnect();
+      }
+    }
   }
 
   /**
@@ -887,6 +902,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   private Connection openConnectionViaDynamicDriver( String effectiveClassName, String url, Properties properties )
     throws KettleDatabaseException {
     Driver localDriver = dynamicDriver;
+    if ( localDriver == null ) {
+      throw new KettleDatabaseException(
+        "Dynamic driver for '" + effectiveClassName + "' has been unloaded (disconnect was called concurrently). "
+          + "Reconnect to reload the driver." );
+    }
     boolean accepts;
     try {
       accepts = localDriver.acceptsURL( url );
