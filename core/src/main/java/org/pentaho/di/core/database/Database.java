@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -137,22 +138,24 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * Each Database instance owns its own loader — one per connection in the KTR.
    * Closed in {@link #disconnect()} after the SQL connection is released.
    *
-   * <p><b>Why {@code volatile}:</b> In a multi-step transformation, one thread may be inside
-   * {@link #connectUsingClass} loading the driver JAR while a separate thread (e.g. the
+   * <p><b>Why {@code AtomicReference}:</b> In a multi-step transformation, one thread may be
+   * inside {@link #connectUsingClass} loading the driver JAR while a separate thread (e.g. the
    * transformation engine responding to a user-initiated "Stop") concurrently calls
-   * {@link #disconnect()}, which closes and nullifies this loader. Without {@code volatile},
-   * the JVM is free to cache the field in a CPU register or write-buffer, so the connecting
-   * thread could still see the old non-null loader even after the disconnecting thread has
-   * already closed it — leading to a use-after-close crash.
+   * {@link #disconnect()}, which closes and nullifies this loader. {@code volatile} alone is not
+   * sufficient because the check-then-close sequence ({@code if (x != null) x.close()}) is a
+   * compound operation that is not atomic. {@link java.util.concurrent.atomic.AtomicReference}
+   * allows {@link #closeDynamicClassLoader()} to atomically retrieve-and-clear the reference via
+   * {@code getAndSet(null)}, so at most one thread will ever call {@code close()}.
    *
    * <p><b>Real-time use-case:</b> A Kettle transformation has two "Table Input" steps that
    * each open their own connection with a dynamic JDBC JAR (e.g. a custom Snowflake driver).
    * When the user cancels the job, the engine calls {@code disconnect()} on every step in
-   * parallel. The {@code volatile} guarantee ensures that once Thread-A nullifies this field
-   * in {@link #closeDynamicClassLoader()}, Thread-B immediately sees {@code null} and skips
-   * the close attempt — preventing a double-close {@link java.io.IOException}.
+   * parallel. The {@code getAndSet(null)} guarantee ensures that once Thread-A claims this field
+   * in {@link #closeDynamicClassLoader()}, Thread-B receives {@code null} from its own
+   * {@code getAndSet(null)} and skips the close attempt — preventing a double-close
+   * {@link java.io.IOException}.
    */
-  private volatile ChildFirstURLClassLoader dynamicDriverClassLoader;
+  private final AtomicReference<ChildFirstURLClassLoader> dynamicDriverClassLoader = new AtomicReference<>();
 
   /**
    * Driver instance loaded via {@link #dynamicDriverClassLoader}.
@@ -160,23 +163,23 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * so that two steps using different versions of the same driver (e.g. MySQL 5 and MySQL 8)
    * never interfere with each other through the shared DriverManager registry.
    *
-   * <p><b>Why {@code volatile}:</b> {@link #openConnectionViaDynamicDriver} reads this field
-   * on the step-execution thread to obtain the {@link java.sql.Driver} reference, while
+   * <p><b>Why {@code AtomicReference}:</b> {@link #openConnectionViaDynamicDriver} reads this
+   * field on the step-execution thread to obtain the {@link java.sql.Driver} reference, while
    * {@link #closeDynamicClassLoader()} may be called concurrently from a disconnect/cancel
-   * thread and sets the field to {@code null}. Without {@code volatile},  the CPU cache
-   * coherency protocol is not guaranteed to propagate the write before the read, so the
-   * executing thread could call {@code connect()} on a stale driver whose classloader has
-   * already been closed — causing a {@link java.lang.ClassNotFoundException} or silent data
-   * corruption.
+   * thread and sets the field to {@code null}. {@code volatile} alone does not make the
+   * null-check-then-use pattern atomic. {@link java.util.concurrent.atomic.AtomicReference}
+   * provides the necessary memory-visibility guarantee for simple reads ({@code get()}) and
+   * makes writes ({@code set(null)}) atomically observable, so the executing thread
+   * consistently sees either a valid driver or {@code null} — never a partially published state.
    *
    * <p><b>Real-time use-case:</b> A streaming transformation processes records from two
    * distinct MySQL versions (5.7 and 8.0) in parallel steps. Each step has its own
    * {@code Database} instance with a distinct dynamic driver. If the job times out and the
-   * engine calls {@code disconnect()} from the scheduler thread, {@code volatile} ensures
-   * the executing step thread immediately observes the null driver and stops attempting to
-   * re-use the closed driver instance.
+   * engine calls {@code disconnect()} from the scheduler thread, {@code AtomicReference}
+   * ensures the executing step thread immediately observes the null driver via {@code get()}
+   * and stops attempting to re-use the closed driver instance.
    */
-  private volatile Driver dynamicDriver;
+  private final AtomicReference<Driver> dynamicDriver = new AtomicReference<>();
 
   private static final String DATA_SERVICES_PLUGIN_ID = "KettleThin";
 
@@ -838,16 +841,15 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * Null-safe and idempotent — safe to call when no dynamic driver is loaded or multiple times.
    */
   private void closeDynamicClassLoader() {
-    try {
-      if ( dynamicDriverClassLoader != null ) {
-        dynamicDriverClassLoader.close();
+    dynamicDriver.set( null );
+    ChildFirstURLClassLoader loader = dynamicDriverClassLoader.getAndSet( null );
+    if ( loader != null ) {
+      try {
+        loader.close();
+      } catch ( Exception e ) {
+        // Best-effort cleanup — log but do not propagate so disconnect() always completes.
+        log.logDebug( "Warning: failed to close dynamic driver ClassLoader: " + errorMsg( e ) );
       }
-    } catch ( Exception e ) {
-      // Best-effort cleanup — log but do not propagate so disconnect() always completes.
-      log.logDebug( "Warning: failed to close dynamic driver ClassLoader: " + errorMsg( e ) );
-    } finally {
-      dynamicDriver = null;
-      dynamicDriverClassLoader = null;
     }
   }
 
@@ -888,11 +890,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
     // Warm path: read lock + map lookup, returns in microseconds.
     // Cold path: JAR loaded once, Driver cached JVM-wide, never loaded again for this (jar, class).
-    dynamicDriver = DynamicDriverCache.getInstance().getOrLoadDriver( resolvedPath, effectiveClassName );
+    dynamicDriver.set( DynamicDriverCache.getInstance().getOrLoadDriver( resolvedPath, effectiveClassName ) );
 
     // The Driver's classloader is owned by DynamicDriverCache — this Database instance
     // does not hold a classloader reference and has nothing to close on disconnect.
-    dynamicDriverClassLoader = null;
+    dynamicDriverClassLoader.set( null );
   }
 
   /**
@@ -901,7 +903,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    */
   private Connection openConnectionViaDynamicDriver( String effectiveClassName, String url, Properties properties )
     throws KettleDatabaseException {
-    Driver localDriver = dynamicDriver;
+    Driver localDriver = dynamicDriver.get();
     if ( localDriver == null ) {
       throw new KettleDatabaseException(
         "Dynamic driver for '" + effectiveClassName + "' has been unloaded (disconnect was called concurrently). "
