@@ -225,35 +225,6 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     databaseMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
     databaseMeta.setObjectRevision( repo.createObjectRevision( version ) );
     databaseMeta.clearChanged();
-    temporarySetting( databaseMeta );
     return databaseMeta;
-  }
-
-  @SuppressWarnings( { "java:S1192" } )
-  private static void temporarySetting( DatabaseMeta databaseMeta ) {
-    if ( databaseMeta != null ) {
-      var attributes = databaseMeta.getAttributes();
-      if ( attributes == null ) {
-        attributes = new Properties();
-        databaseMeta.setAttributes( attributes );
-      }
-
-      if ( "Local-Postgres-42.6.2".equals( databaseMeta.getName() ) ) {
-        attributes.put( "dynamicDriverJar", "postgresql-42.7.10.jar" );
-        attributes.put( "dynamicDriverClass", "org.postgresql.Driver" );
-      } else if ( "Local-Postgres-42.7.10".equals( databaseMeta.getName() ) ) {
-        attributes.put( "dynamicDriverJar", "postgresql-42.6.2.jar" );
-        attributes.put( "dynamicDriverClass", "org.postgresql.Driver" );
-      } else if ( "Local-MySql-8.0.17".equals( databaseMeta.getName() ) ) {
-        attributes.put( "dynamicDriverJar", "mysql-connector-java-8.0.17.jar" );
-        attributes.put( "dynamicDriverClass", "com.mysql.cj.jdbc.Driver" );
-      } else if ( "Local-MySql-5.0.5".equals( databaseMeta.getName() ) ) {
-        attributes.put( "dynamicDriverJar", "mysql-connector-java-5.0.5.jar" );
-        attributes.put( "dynamicDriverClass", "com.mysql.jdbc.Driver" );
-      } else if ( "Local-Snowflake-3.14.1".equals( databaseMeta.getName() ) ) {
-        attributes.put( "dynamicDriverJar", "snowflake-jdbc-3.14.1.jar" );
-        attributes.put( "dynamicDriverClass", "net.snowflake.client.jdbc.SnowflakeDriver" );
-      }
-    }
   }
 }
