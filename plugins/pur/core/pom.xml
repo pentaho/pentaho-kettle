@@ -5,7 +5,7 @@
 
   <artifactId>pdi-pur-plugin-core</artifactId>
   <packaging>jar</packaging>
-  <version>11.0.0.0-237</version>
+  <version>11.0.0.0-C309</version>
 
   <name>PDI PUR Plugin Core</name>
 
@@ -89,13 +89,13 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${platform.version}</version>
+      <version>11.0.0.0-C309</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${platform.version}</version>
+      <version>11.0.0.0-C309</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -119,7 +119,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-      <version>${platform.version}</version>
+      <version>11.0.0.0-C309</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -272,7 +272,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pdi.version}</version>
+      <version>11.0.0.0-C309</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
