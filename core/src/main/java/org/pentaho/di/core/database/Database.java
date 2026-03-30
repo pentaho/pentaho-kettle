@@ -17,8 +17,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.InputStream;
-import java.io.File;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.BatchUpdateException;
 import java.sql.Blob;
@@ -108,6 +108,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.sql.DataSource;
 
 /**
@@ -584,17 +585,17 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     Properties properties = databaseMeta.getAttributes();
 
     String jarPath = properties.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_JAR );
-    String jdbcDriverClass = properties.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_CLASS );
+    String driverId = properties.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_ID );
 
-    boolean usingDynamicDriver = StringUtils.isNotBlank( jarPath ) && StringUtils.isNotBlank( jdbcDriverClass );
-
-    final String effectiveClassName = usingDynamicDriver ? jdbcDriverClass : classname;
+    boolean usingDynamicDriver = StringUtils.isNotBlank( driverId ) && StringUtils.isNotBlank( Const.isFusionConnectionManagementEnabled() );
 
     if ( usingDynamicDriver ) {
       // connect() is public synchronized, and shareConnectionWith() is private synchronized,
       // so every code path that reaches here already holds the monitor on 'this'.
       // No additional synchronization is needed.
-      loadDynamicDriver( jarPath, effectiveClassName );
+        var driverMetadata = getMetadataFromDriver( driverId );
+        String jdbcDriverClass = driverMetadata.get( "driverClassName" ).toString();
+        loadDynamicDriver( driverId, jarPath, jdbcDriverClass );
     } else {
       try {
         synchronized ( java.sql.DriverManager.class ) {
@@ -684,7 +685,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       log.logDetailed( "Acquiring JDBC connection for database [" + databaseMeta.getName() + "] using driver class [" + classname + "]..." );
       long startJdbc = System.currentTimeMillis();
       if ( usingDynamicDriver ) {
-        connection = openConnectionViaDynamicDriver( effectiveClassName, url, properties );
+        connection = openConnectionViaDynamicDriver( classname, url, properties );
       } else {
         connection = DriverManager.getConnection( url, properties );
       }
@@ -698,6 +699,35 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       closeDynamicClassLoader();
       throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
     }
+  }
+
+  private static Map<String, Object> getMetadataFromDriver(String driverId ) throws KettleDatabaseException {
+      Map<String, Object> metadata;
+      String serviceBaseUrl = Const.getJdbcDriverServiceUrl();
+
+      try {
+          HttpURLConnection conn = (HttpURLConnection) new URL( serviceBaseUrl + "/api/v1/connection-drivers/" + driverId ).openConnection();
+          conn.setConnectTimeout( 10_000 );
+          conn.setReadTimeout( 60_000 );
+          conn.setRequestMethod( "GET" );
+
+          int status = conn.getResponseCode();
+          if ( status != HttpURLConnection.HTTP_OK ) {
+              throw new KettleDatabaseException(
+                      "JdbcDriverResolver: download of '" + driverId + "' failed — HTTP " + status
+                              + " from " + serviceBaseUrl + "/api/v1/connection-drivers/" + driverId );
+          }
+
+          ObjectMapper mapper = new ObjectMapper();
+          metadata = mapper.readValue( conn.getInputStream(), Map.class );
+          conn.disconnect();
+      } catch (Exception e) {
+          throw new KettleDatabaseException(
+                  "JdbcDriverResolver: failed to download '" + driverId + "' from '"
+                          + serviceBaseUrl + "': " + e.getMessage(), e );
+      }
+
+      return metadata;
   }
 
   /**
@@ -806,7 +836,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
   /**
    * Resolves the driver JAR path, obtains the cached {@link Driver} instance from
-   * {@link DynamicDriverCache}, and sets {@link #dynamicDriver} ready for
+   * {@link DynamicDriverCache} and sets {@link #dynamicDriver} ready for
    * {@link #openConnectionViaDynamicDriver}.
    *
    * <p><b>Warm path (typical):</b> {@link DynamicDriverCache#getOrLoadDriver} finds the
@@ -829,11 +859,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * therefore only clears the {@link #dynamicDriver} reference on disconnect — it does not
    * close the cache's classloader.
    */
-  private void loadDynamicDriver( String jarPath, String effectiveClassName ) throws KettleDatabaseException {
+  private void loadDynamicDriver( String driverId, String jarPath, String effectiveClassName ) throws KettleDatabaseException {
     // Always resolve first — returns immediately if jarPath exists on disk (no overhead),
     // otherwise walks the fallback chain. The resolved absolute path is the cache key so
     // a downloaded or fallback-located JAR is cached and reused correctly on every connect.
-    String resolvedPath = JdbcDriverResolver.resolve( jarPath );
+    String resolvedPath = JdbcDriverResolver.resolve( driverId, jarPath);
 
     if ( !resolvedPath.toLowerCase().endsWith( ".jar" ) ) {
       throw new KettleDatabaseException( "Dynamic driver path does not point to a JAR file: " + resolvedPath );

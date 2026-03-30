@@ -91,7 +91,7 @@ public final class JdbcDriverResolver {
    * @return absolute path of the resolved JAR file
    * @throws KettleDatabaseException if the JAR cannot be found or downloaded
    */
-  public static String resolve( String configuredPath ) throws KettleDatabaseException {
+  public static String resolve( String driverId, String configuredPath ) throws KettleDatabaseException {
     // 1 — configured path exists as-is
     if ( existsAsFile( configuredPath ) ) {
       return configuredPath;
@@ -121,7 +121,7 @@ public final class JdbcDriverResolver {
     }
 
     // 5 — download from connection-management service
-    return downloadFromService( jarName, configuredPath );
+    return downloadFromService( driverId );
   }
 
   // ---------------------------------------------------------------------------
@@ -227,111 +227,102 @@ public final class JdbcDriverResolver {
    *   <li>Environment variable {@code JDBC_DRIVER_SERVICE_URL}</li>
    *   <li>System property {@code JDBC_DRIVER_SERVICE_URL}</li>
    * </ol>
-   * The JAR is fetched from {@code <baseUrl>/<jarName>}.
+   * The JAR is fetched from {@code <baseUrl>/<driverId>}.
    *
-   * @param jarName        file name of the JAR to download
-   * @param configuredPath original configured path (used for error messages only)
+   * @param driverId       id of the JDBC driver to download from connection-management service
    * @return absolute path of the downloaded JAR
    * @throws KettleDatabaseException if the download URL is not configured or the download fails
    */
-  private static String downloadFromService( String jarName, String configuredPath )
+  private static String downloadFromService( String driverId )
     throws KettleDatabaseException {
 
     // Const.getJdbcDriverServiceUrl() applies NVL(getenv, getProperty) — works on all environments.
     String serviceBaseUrl = Const.getJdbcDriverServiceUrl();
 
-    if ( serviceBaseUrl == null || serviceBaseUrl.trim().isEmpty() ) {
-      throw new KettleDatabaseException(
-        "JdbcDriverResolver: driver JAR '" + jarName + "' not found at any known location "
-          + "(configured path: '" + configuredPath + "'). "
-          + "Set environment variable or system property 'JDBC_DRIVER_SERVICE_URL'"
-          + " to enable automatic download from the connection-management service." );
-    }
-
-    // One lock per JAR name — threads for *different* JARs never block each other.
-    ReentrantLock lock = DOWNLOAD_LOCKS.computeIfAbsent( jarName, k -> new ReentrantLock() );
-    lock.lock();
-    try {
-      Path saveDir = resolveWritableSaveDir();
-      Path savePath = saveDir.resolve( jarName );
-
-      // Re-check after acquiring the lock: a waiting thread may find the file was already
-      // downloaded by the thread that held the lock before it.
-      if ( Files.isRegularFile( savePath ) ) {
-        log.logBasic( "JdbcDriverResolver: '" + jarName + "' already downloaded by concurrent thread → "
-          + savePath );
-        return savePath.toAbsolutePath().toString();
-      }
-
-      String downloadUrl = serviceBaseUrl.trim().replaceAll( "/$", "" ) + "/" + jarName;
-      // Write to a temp file first; move atomically on success so no thread ever
-      // observes a partial JAR on disk.
-      Path tempPath = saveDir.resolve( jarName + ".tmp" );
-
-      log.logBasic( "JdbcDriverResolver: downloading '" + jarName + "' from " + downloadUrl
-        + " → " + savePath );
-
-      try {
-        Files.createDirectories( saveDir );
-        HttpURLConnection conn = (HttpURLConnection) new URL( downloadUrl ).openConnection();
-        conn.setConnectTimeout( 10_000 );
-        conn.setReadTimeout( 60_000 );
-        conn.setRequestMethod( "GET" );
-        conn.setRequestProperty( "Accept", "application/octet-stream" );
-
-        int status = conn.getResponseCode();
-        if ( status != HttpURLConnection.HTTP_OK ) {
-          throw new KettleDatabaseException(
-            "JdbcDriverResolver: download of '" + jarName + "' failed — HTTP " + status
-              + " from " + downloadUrl );
+        if ( serviceBaseUrl == null || serviceBaseUrl.trim().isEmpty() ) {
+            throw new KettleDatabaseException(
+                    "JdbcDriverResolver: driver JAR '" + driverId + ".jar" + "' not found at any known location "
+                            + "Set environment variable or system property 'JDBC_DRIVER_SERVICE_URL'"
+                            + " to enable automatic download from the connection-management service." );
         }
 
-        try ( InputStream in = conn.getInputStream();
-              FileOutputStream out = new FileOutputStream( tempPath.toFile() ) ) {
-          byte[] buf = new byte[ 8192 ];
-          int read;
-          while ( ( read = in.read( buf ) ) != -1 ) {
-            out.write( buf, 0, read );
-          }
+        // One lock per JAR name — threads for *different* JARs never block each other.
+        ReentrantLock lock = DOWNLOAD_LOCKS.computeIfAbsent( driverId + ".jar", k -> new ReentrantLock() );
+        lock.lock();
+        try {
+            Path saveDir = resolveWritableSaveDir();
+            Path savePath = saveDir.resolve( driverId + ".jar" );
+
+            // Re-check after acquiring the lock: a waiting thread may find the file was already
+            // downloaded by the thread that held the lock before it.
+            if ( Files.isRegularFile( savePath ) ) {
+                log.logBasic( "JdbcDriverResolver: '" + driverId + ".jar" + "' already downloaded by concurrent thread → "
+                        + savePath );
+                return savePath.toAbsolutePath().toString();
+            }
+
+            String downloadUrl = "http://localhost:8080/api/v1/connection-drivers/" + driverId + "/download";
+            // Write to a temp file first; move atomically on success so no thread ever
+            // observes a partial JAR on disk.
+            Path tempPath = saveDir.resolve( driverId + ".jar" + ".tmp" );
+
+            log.logBasic( "JdbcDriverResolver: downloading '" + driverId + ".jar" + "' from " + downloadUrl
+                    + " → " + savePath );
+
+            try {
+                Files.createDirectories( saveDir );
+                HttpURLConnection conn = (HttpURLConnection) new URL( downloadUrl ).openConnection();
+                conn.setConnectTimeout( 10_000 );
+                conn.setReadTimeout( 60_000 );
+                conn.setRequestMethod( "GET" );
+                conn.setRequestProperty( "Accept", "*/*" );
+
+                int status = conn.getResponseCode();
+                if ( status != HttpURLConnection.HTTP_OK ) {
+                    throw new KettleDatabaseException(
+                            "JdbcDriverResolver: download of '" + driverId + ".jar" + "' failed — HTTP " + status
+                                    + " from " + downloadUrl );
+                }
+
+                try ( InputStream in = conn.getInputStream();
+                      FileOutputStream out = new FileOutputStream( tempPath.toFile() ) ) {
+                    byte[] buf = new byte[ 8192 ];
+                    int read;
+                    while ( ( read = in.read( buf ) ) != -1 ) {
+                        out.write( buf, 0, read );
+                    }
+                } finally {
+                    conn.disconnect();
+                }
+
+                // Move temp file to final location; fall back to non-atomic copy if needed.
+                try {
+                    Files.move( tempPath, savePath, StandardCopyOption.ATOMIC_MOVE,
+                            StandardCopyOption.REPLACE_EXISTING );
+                } catch ( java.nio.file.AtomicMoveNotSupportedException e ) {
+                    Files.move( tempPath, savePath, StandardCopyOption.REPLACE_EXISTING );
+                }
+
+                log.logBasic( "JdbcDriverResolver: download complete → " + savePath );
+
+                DynamicDriverCache.getInstance().evictByJar( savePath.toAbsolutePath().toString() );
+
+                return savePath.toAbsolutePath().toString();
+
+            } catch ( KettleDatabaseException e ) {
+                deleteSilently( tempPath );
+                throw e;
+            } catch ( Exception e ) {
+                deleteSilently( tempPath );
+                throw new KettleDatabaseException(
+                        "JdbcDriverResolver: failed to download '" + driverId + ".jar" + "' from '"
+                                + downloadUrl + "': " + e.getMessage(), e );
+            }
         } finally {
-          conn.disconnect();
+            lock.unlock();
+            DOWNLOAD_LOCKS.remove( driverId + ".jar", lock );
         }
-
-        // Atomic move: on the same filesystem this is a rename — instantaneous and safe.
-        Files.move( tempPath, savePath, StandardCopyOption.ATOMIC_MOVE,
-          StandardCopyOption.REPLACE_EXISTING );
-
-        log.logBasic( "JdbcDriverResolver: download complete → " + savePath );
-
-        // The JAR on disk has just been replaced. Evict any stale DynamicDriverCache entry
-        // for this path so the next connect() cold-loads the new file instead of serving
-        // the old version's bytes from the OS page cache.
-        // The driver class name is not known here, so evictByJar() removes all entries
-        // matching this path regardless of class name.
-        DynamicDriverCache.getInstance().evictByJar( savePath.toAbsolutePath().toString() );
-
-        // DynamicDriverCache.cache() is called by Database.loadDynamicDriver() immediately
-        // after this method returns, using the resolved absolute path and the driver class name.
-        return savePath.toAbsolutePath().toString();
-
-      } catch ( KettleDatabaseException e ) {
-        deleteSilently( tempPath );
-        throw e;
-      } catch ( Exception e ) {
-        deleteSilently( tempPath );
-        throw new KettleDatabaseException(
-          "JdbcDriverResolver: failed to download '" + jarName + "' from '"
-            + downloadUrl + "': " + e.getMessage(), e );
-      }
-    } finally {
-      lock.unlock();
-      // Remove the lock entry from the map now that it is no longer needed.
-      // remove(key, value) is atomic: it only removes the entry if it still maps to this
-      // exact lock instance, so we never accidentally evict a lock that a concurrent thread
-      // already re-inserted via computeIfAbsent after our unlock.
-      DOWNLOAD_LOCKS.remove( jarName, lock );
     }
-  }
 
   /**
    * Deletes a file without throwing — used to clean up temp files on failure.
