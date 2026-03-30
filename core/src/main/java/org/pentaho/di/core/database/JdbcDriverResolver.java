@@ -261,7 +261,7 @@ public final class JdbcDriverResolver {
                 return savePath.toAbsolutePath().toString();
             }
 
-            String downloadUrl = "http://localhost:8080/api/v1/connection-drivers/" + driverId + "/download";
+            String downloadUrl = serviceBaseUrl + "/api/v1/connection-drivers/" + driverId + "/download";
             // Write to a temp file first; move atomically on success so no thread ever
             // observes a partial JAR on disk.
             Path tempPath = saveDir.resolve( driverId + ".jar" + ".tmp" );
