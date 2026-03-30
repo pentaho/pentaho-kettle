@@ -685,7 +685,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       log.logDetailed( "Acquiring JDBC connection for database [" + databaseMeta.getName() + "] using driver class [" + classname + "]..." );
       long startJdbc = System.currentTimeMillis();
       if ( usingDynamicDriver ) {
-        connection = openConnectionViaDynamicDriver( classname, url, properties );
+        var driverMetadata = getMetadataFromDriver( driverId );
+        String jdbcDriverClass = driverMetadata.get( "driverClassName" ).toString();
+        connection = openConnectionViaDynamicDriver( jdbcDriverClass, url, properties );
       } else {
         connection = DriverManager.getConnection( url, properties );
       }
