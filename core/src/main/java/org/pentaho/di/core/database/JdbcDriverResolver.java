@@ -233,7 +233,7 @@ public final class JdbcDriverResolver {
    *   <li>Environment variable {@code JDBC_DRIVER_SERVICE_URL}</li>
    *   <li>System property {@code JDBC_DRIVER_SERVICE_URL}</li>
    * </ol>
-   * The JAR is fetched from {@code <baseUrl>/<driverId>}.
+   * The JAR is fetched from {@code <baseUrl>/api/v1/connection-drivers/<driverId>/download}.
    *
    * @param driverId       id of the JDBC driver to download from connection-management service
    * @return absolute path of the downloaded JAR
