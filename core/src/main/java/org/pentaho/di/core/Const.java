@@ -2592,13 +2592,22 @@ public class Const {
       System.getProperty( "JDBC_DRIVER_SERVICE_URL" ) );
   }
 
-    /**
-     * @return is connection-management service flow enabled.
-     */
-    public static String isFusionConnectionManagementEnabled() {
-        return NVL( System.getenv( "FUSION_CONNECTION_MANAGEMENT_ENABLED" ),
-                System.getProperty( "FUSION_CONNECTION_MANAGEMENT_ENABLED" ) );
-    }
+  /**
+   * Indicates whether the Fusion connection-management service flow is enabled.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code FUSION_CONNECTION_MANAGEMENT_ENABLED}</li>
+   *   <li>JVM system property {@code FUSION_CONNECTION_MANAGEMENT_ENABLED}</li>
+   *   <li>{@code false} if neither is set to {@code "true"} (case-insensitive).</li>
+   * </ol>
+   *
+   * @return {@code true} if the feature flag is explicitly set to {@code "true"}, otherwise {@code false}
+   */
+  public static boolean isFusionConnectionManagementEnabled() {
+    return Boolean.parseBoolean( NVL( System.getenv( "FUSION_CONNECTION_MANAGEMENT_ENABLED" ),
+      System.getProperty( "FUSION_CONNECTION_MANAGEMENT_ENABLED" ) ) );
+  }
 
   /**
    * Determines the Kettle directory in the user's home directory.

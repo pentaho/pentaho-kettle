@@ -220,7 +220,7 @@ public final class DynamicDriverCache {
     ChildFirstURLClassLoader loader = null;
     CacheEntry entry;
     try {
-      loader = new ChildFirstURLClassLoader( new URL[] { jarUrl }, ClassLoader.getPlatformClassLoader() );
+      loader = new ChildFirstURLClassLoader( new URL[] { jarUrl }, Database.class.getClassLoader() );
       Class<?> driverClass = loader.loadClass( driverClassName );
       Driver driver = (Driver) driverClass.getDeclaredConstructor().newInstance();
       entry = new CacheEntry( loader, driver );
