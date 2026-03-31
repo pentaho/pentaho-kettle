@@ -16,6 +16,7 @@ package org.pentaho.di.core.database;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -48,6 +49,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.core.util.EnvUtil;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.Const;
@@ -854,47 +856,65 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
   }
 
   /**
-   * Resolves the driver JAR path, obtains the cached {@link Driver} instance from
-   * {@link DynamicDriverCache} and sets {@link #dynamicDriver} ready for
-   * {@link #openConnectionViaDynamicDriver}.
+   * Resolves the driver JAR path and loads the {@link Driver}, setting {@link #dynamicDriver}
+   * ready for {@link #openConnectionViaDynamicDriver}.
    *
-   * <p><b>Warm path (typical):</b> {@link DynamicDriverCache#getOrLoadDriver} finds the
-   * entry under the shared read lock and returns the {@link Driver} immediately — no
-   * classloader creation, no JAR file read, no NFS round-trips.
+   * <p><b>Cached path</b> ({@code KETTLE_DYNAMIC_DRIVER_CACHE_ENABLED=Y}):
+   * Delegates to {@link DynamicDriverCache#getOrLoadDriver}, which reuses the same
+   * {@link Driver} instance and classloader JVM-wide. No JAR reads after the first connect.
+   * {@link #dynamicDriverClassLoader} is left {@code null} because the classloader lifetime
+   * is managed by {@link DynamicDriverCache}, not by this {@link Database} instance.
    *
-   * <p><b>Cold path (first connect for this JAR+class):</b>
-   * {@link DynamicDriverCache#getOrLoadDriver} creates a {@link ChildFirstURLClassLoader},
-   * reads the JAR once, loads the driver class, instantiates the {@link Driver}, caches
-   * it, and returns it. All subsequent connects share this instance.
-   *
-   * <p><b>Why no per-connection classloader:</b> {@link Driver#connect} is specified to
-   * be thread-safe and stateless with respect to connection parameters. Sharing the
-   * {@link Driver} across connections is the standard JDBC connection-pool pattern.
-   * If two connections reference different JARs or different driver classes, they receive
-   * separate {@link DynamicDriverCache} entries and thus separate classloaders.
-   *
-   * <p>{@link #dynamicDriverClassLoader} is set to {@code null} because the classloader
-   * is owned and kept alive by {@link DynamicDriverCache}. {@link #closeDynamicClassLoader}
-   * therefore only clears the {@link #dynamicDriver} reference on disconnect — it does not
-   * close the cache's classloader.
+   * <p><b>No-cache path</b> (default — property absent or not {@code Y}):
+   * Creates a fresh {@link ChildFirstURLClassLoader} per connection, loads the driver class,
+   * and stores the loader in {@link #dynamicDriverClassLoader} so that
+   * {@link #closeDynamicClassLoader()} closes it (and releases the JAR file handle) on
+   * {@link #disconnect()}. Each connection is fully isolated with no shared JVM state.
    */
   private void loadDynamicDriver( String driverId, String jarPath, String effectiveClassName ) throws KettleDatabaseException {
-    // Always resolve first — returns immediately if jarPath exists on disk (no overhead),
-    // otherwise walks the fallback chain. The resolved absolute path is the cache key so
-    // a downloaded or fallback-located JAR is cached and reused correctly on every connect.
-    String resolvedPath = JdbcDriverResolver.resolve( driverId, jarPath);
+    // Always resolve first — returns immediately if jarPath exists on disk,
+    // otherwise walks the fallback chain. The resolved path is stable for the connection lifetime.
+    String resolvedPath = JdbcDriverResolver.resolve( driverId, jarPath );
 
     if ( !resolvedPath.toLowerCase().endsWith( ".jar" ) ) {
       throw new KettleDatabaseException( "Dynamic driver path does not point to a JAR file: " + resolvedPath );
     }
 
-    // Warm path: read lock + map lookup, returns in microseconds.
-    // Cold path: JAR loaded once, Driver cached JVM-wide, never loaded again for this (jar, class).
-    dynamicDriver.set( DynamicDriverCache.getInstance().getOrLoadDriver( resolvedPath, effectiveClassName ) );
+    boolean cacheEnabled = "Y".equalsIgnoreCase(
+      EnvUtil.getSystemProperty( Const.KETTLE_DYNAMIC_DRIVER_CACHE_ENABLED ) );
 
-    // The Driver's classloader is owned by DynamicDriverCache — this Database instance
-    // does not hold a classloader reference and has nothing to close on disconnect.
-    dynamicDriverClassLoader.set( null );
+    if ( cacheEnabled ) {
+      // Cached path: Driver is shared JVM-wide; classloader is owned by DynamicDriverCache.
+      dynamicDriver.set( DynamicDriverCache.getInstance().getOrLoadDriver( resolvedPath, effectiveClassName ) );
+      dynamicDriverClassLoader.set( null );
+    } else {
+      // No-cache path: fresh classloader and Driver per connection; closed on disconnect().
+      URL jarUrl;
+      try {
+        jarUrl = new File( resolvedPath ).toPath().toUri().toURL();
+      } catch ( Exception e ) {
+        throw new KettleDatabaseException(
+          "Dynamic driver: cannot convert JAR path to URL: " + resolvedPath, e );
+      }
+      ChildFirstURLClassLoader loader = null;
+      try {
+        loader = new ChildFirstURLClassLoader( new URL[] { jarUrl }, Database.class.getClassLoader() );
+        Class<?> driverClass = loader.loadClass( effectiveClassName );
+        Driver driver = (Driver) driverClass.getDeclaredConstructor().newInstance();
+        dynamicDriver.set( driver );
+        dynamicDriverClassLoader.set( loader );
+      } catch ( Exception e ) {
+        if ( loader != null ) {
+          try {
+            loader.close();
+          } catch ( Exception ignored ) {
+            // best-effort
+          }
+        }
+        throw new KettleDatabaseException(
+          "Dynamic driver: failed to load '" + effectiveClassName + "' from '" + resolvedPath + "': " + e.getMessage(), e );
+      }
+    }
   }
 
   /**
