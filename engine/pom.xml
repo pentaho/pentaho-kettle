@@ -595,12 +595,12 @@
       <version>${fasterxml-jackson.non-osgi.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>${hibernate-core.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-jcache</artifactId>
       <version>${hibernate-jcache.version}</version>
       <exclusions>
