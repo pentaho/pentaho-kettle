@@ -78,11 +78,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * so that {@code containsKey()} / {@code get()} are purely read-only and safe under the
  * shared read lock.
  */
-// Singleton is intentional: this cache must be JVM-wide so all Database instances
-// share the same OS page-cache warm-up state. One instance per JVM is the correct
-// lifetime — a per-instance or per-request cache would defeat the purpose entirely.
-@SuppressWarnings( "squid:S6548" )
-public final class DynamicDriverCache {
+public enum DynamicDriverCache {
+
+  INSTANCE;
 
   private static final LogChannelInterface log = LogChannel.GENERAL;
 
@@ -92,11 +90,6 @@ public final class DynamicDriverCache {
    * seen over the server lifetime. 50 is far more than any real deployment needs.
    */
   static final int MAX_CACHE_SIZE = 50;
-
-  /**
-   * Singleton — one cache for the entire JVM lifetime.
-   */
-  private static final DynamicDriverCache INSTANCE = new DynamicDriverCache();
 
   /**
    * Cache key: absolute JAR path + driver class name.
@@ -160,9 +153,6 @@ public final class DynamicDriverCache {
    * Eviction removes the oldest-inserted (FIFO) entry when MAX_CACHE_SIZE is exceeded.
    */
   private final LinkedHashMap<CacheKey, CacheEntry> cache = new LinkedHashMap<>( 16, 0.75f, false );
-
-  private DynamicDriverCache() {
-  }
 
   /**
    * Returns the singleton instance.

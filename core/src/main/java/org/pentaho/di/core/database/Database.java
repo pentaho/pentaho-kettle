@@ -731,6 +731,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       conn.setReadTimeout( 60_000 );
       conn.setRequestMethod( "GET" );
 
+      String bearerToken = CmsTokenProvider.getInstance().getToken();
+      if ( bearerToken != null ) {
+        conn.setRequestProperty( "Authorization", "Bearer " + bearerToken );
+      }
+
       int status = conn.getResponseCode();
       if ( status != HttpURLConnection.HTTP_OK ) {
         throw new KettleDatabaseException(

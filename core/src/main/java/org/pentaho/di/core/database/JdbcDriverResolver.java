@@ -283,6 +283,11 @@ public final class JdbcDriverResolver {
                 conn.setRequestMethod( "GET" );
                 conn.setRequestProperty( "Accept", "*/*" );
 
+                String bearerToken = CmsTokenProvider.getInstance().getToken();
+                if ( bearerToken != null ) {
+                  conn.setRequestProperty( "Authorization", "Bearer " + bearerToken );
+                }
+
                 int status = conn.getResponseCode();
                 if ( status != HttpURLConnection.HTTP_OK ) {
                     throw new KettleDatabaseException(
