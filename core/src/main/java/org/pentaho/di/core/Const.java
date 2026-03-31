@@ -2602,7 +2602,8 @@ public class Const {
    * @return the download service base URL (no trailing slash), or {@code null} if not configured
    */
   public static String getJdbcDriverServiceUrl() {
-    return "http://localhost:8080";
+    return NVL( System.getenv( "JDBC_DRIVER_SERVICE_URL" ),
+      System.getProperty( "JDBC_DRIVER_SERVICE_URL" ) );
   }
 
   /**
