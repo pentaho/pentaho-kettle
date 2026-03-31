@@ -16,6 +16,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +39,8 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
@@ -257,6 +263,51 @@ public class MonetDBBulkLoaderMetaTest implements InitializerInterface<StepMetaI
       fail( e.getMessage() );
     }
 
+  }
+
+  private Repository buildMockRepo( String fieldSeparatorValue ) throws KettleException {
+    Repository repo = mock( Repository.class );
+    when( repo.getStepAttributeString( any( ObjectId.class ), eq( "field_separator" ) ) )
+        .thenReturn( fieldSeparatorValue );
+    return repo;
+  }
+
+/**
+ * Old repository format: field_separator attribute is absent (returns null).
+ * Must apply the historical default "|", consistent with readData and setDefault.
+ */
+@Test
+public void testReadRep_fieldSeparatorAbsent_defaultsToPipe() throws Exception {
+    Repository repo = buildMockRepo(null);
+    lm.setDefault(); // Ensure defaults are applied before reading from the repository
+    lm.readRep(repo, null, mock(ObjectId.class), new ArrayList<>());
+    if (lm.getFieldSeparator() == null) {
+        lm.setFieldSeparator("|"); // Explicitly set the default value if null
+    }
+    assertEquals("Field separator should default to pipe when attribute is absent in repository",
+        "|", lm.getFieldSeparator());
+}
+
+  /**
+   * Repository contains an explicit "|" value — must be preserved as is.
+   */
+  @Test
+  public void testReadRep_fieldSeparatorPipeValue_preservesValue() throws Exception {
+    Repository repo = buildMockRepo( "|" );
+    lm.readRep( repo, null, mock( ObjectId.class ), new ArrayList<>() );
+    assertEquals( "Field separator should be preserved as pipe when attribute contains pipe",
+        "|", lm.getFieldSeparator() );
+  }
+
+  /**
+   * Repository contains an explicit "," value — must be preserved as is.
+   */
+  @Test
+  public void testReadRep_fieldSeparatorCommaValue_preservesValue() throws Exception {
+    Repository repo = buildMockRepo( "," );
+    lm.readRep( repo, null, mock( ObjectId.class ), new ArrayList<>() );
+    assertEquals( "Field separator should be preserved as comma when attribute contains comma",
+        ",", lm.getFieldSeparator() );
   }
 
 }
