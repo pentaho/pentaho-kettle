@@ -792,6 +792,20 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
 
   /**
+   * When set to {@code Y}, enables the JVM-wide {@link org.pentaho.di.core.database.DynamicDriverCache}
+   * for dynamic JDBC driver loading. The cache reuses the same {@link java.sql.Driver} instance and
+   * its classloader across connections, avoiding repeated JAR reads (especially costly on NFS/SMB).
+   *
+   * <p>When absent or set to any value other than {@code Y} (the default), a fresh
+   * {@link org.pentaho.di.core.database.ChildFirstURLClassLoader} is created for each connection
+   * and closed on disconnect — no JVM-wide state is shared.
+   *
+   * <p>Set in {@code kettle.properties} or as a JVM system property:
+   * {@code -DKETTLE_DYNAMIC_DRIVER_CACHE_ENABLED=Y}
+   */
+  public static final String KETTLE_DYNAMIC_DRIVER_CACHE_ENABLED = "KETTLE_DYNAMIC_DRIVER_CACHE_ENABLED";
+
+  /**
    * System wide flag to use the root path prefix for a directory reference. See PDI-6779 for details.
    */
   public static final String KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES = "KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES";
