@@ -33,7 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 
 public class DatabaseDelegate extends AbstractDelegate implements ITransformer, SharedObjectAssembler<DatabaseMeta>,
-  java.io.Serializable {
+    java.io.Serializable {
 
   private static final long serialVersionUID = 1512547938350522165L; /* EESOURCE: UPDATE SERIALVERUID */
 
@@ -203,7 +203,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
         String code = property.getName().replace( databaseTypeCode + ".", "" );
         String attribute = property.getString();
         databaseMeta.addExtraOption( databaseTypeCode, code,
-          ( attribute == null || attribute.length() == 0 ) ? "" : attribute );
+                ( attribute == null || attribute.length() == 0 ) ? "" : attribute );
       }
     }
   }

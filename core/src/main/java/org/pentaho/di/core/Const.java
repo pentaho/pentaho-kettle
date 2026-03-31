@@ -2602,8 +2602,61 @@ public class Const {
    * @return the download service base URL (no trailing slash), or {@code null} if not configured
    */
   public static String getJdbcDriverServiceUrl() {
-    return NVL( System.getenv( "JDBC_DRIVER_SERVICE_URL" ),
-      System.getProperty( "JDBC_DRIVER_SERVICE_URL" ) );
+    return "http://localhost:8080";
+  }
+
+  /**
+   * Returns the full Keycloak token endpoint for the connection-management service
+   * (e.g. {@code https://keycloak.example.com/realms/pdi/protocol/openid-connect/token}).
+   * Used by the client-credentials flow to obtain a bearer token before calling
+   * {@code JDBC_DRIVER_SERVICE_URL}.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code CMS_TOKEN_URL}</li>
+   *   <li>JVM system property {@code CMS_TOKEN_URL}</li>
+   *   <li>{@code null} — authentication is disabled.</li>
+   * </ol>
+   *
+   * @return the token endpoint URL, or {@code null} if not configured
+   */
+  public static String getCmsTokenUrl() {
+    return NVL( System.getenv( "CMS_TOKEN_URL" ),
+      System.getProperty( "CMS_TOKEN_URL" ) );
+  }
+
+  /**
+   * Returns the Keycloak client ID for the PDI service account.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code CMS_CLIENT_ID}</li>
+   *   <li>JVM system property {@code CMS_CLIENT_ID}</li>
+   *   <li>{@code null} — authentication is disabled.</li>
+   * </ol>
+   *
+   * @return the client ID, or {@code null} if not configured
+   */
+  public static String getCmsClientId() {
+    return NVL( System.getenv( "CMS_CLIENT_ID" ),
+      System.getProperty( "CMS_CLIENT_ID" ) );
+  }
+
+  /**
+   * Returns the Keycloak client secret for the PDI service account.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code CMS_CLIENT_SECRET}</li>
+   *   <li>JVM system property {@code CMS_CLIENT_SECRET}</li>
+   *   <li>{@code null} — authentication is disabled.</li>
+   * </ol>
+   *
+   * @return the client secret, or {@code null} if not configured
+   */
+  public static String getCmsClientSecret() {
+    return NVL( System.getenv( "CMS_CLIENT_SECRET" ),
+      System.getProperty( "CMS_CLIENT_SECRET" ) );
   }
 
   /**
