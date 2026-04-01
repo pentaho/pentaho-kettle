@@ -596,9 +596,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     String jarPath = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_JAR );
     String driverId = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_ID );
 
-    boolean usingDynamicDriver = StringUtils.isNotBlank( driverId )
-      && StringUtils.isNotBlank( jarPath )
-      && Const.isFusionConnectionManagementEnabled();
+    boolean usingDynamicDriver = ( StringUtils.isNotBlank( driverId ) && Const.isFusionConnectionManagementEnabled() )
+            || ( StringUtils.isNotBlank( jarPath ) && Const.isFusionConnectionManagementEnabled()) ;
 
     // Resolved once here; reused when opening the connection below to avoid a second HTTP call.
     String jdbcDriverClass = null;

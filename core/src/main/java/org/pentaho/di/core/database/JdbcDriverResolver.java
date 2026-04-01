@@ -127,6 +127,17 @@ public final class JdbcDriverResolver {
     }
 
     // 5 — download from connection-management service
+    // If cache is enabled, check whether the JAR was already downloaded on a previous run
+    // before making an outbound HTTP request to the connection-management service.
+    boolean cacheEnabled = "Y".equalsIgnoreCase(
+            EnvUtil.getSystemProperty( Const.KETTLE_DYNAMIC_DRIVER_CACHE_ENABLED ) );
+    if ( cacheEnabled ) {
+      Path cachedJar = resolveWritableSaveDir().resolve( driverId + ".jar" );
+      if ( Files.isRegularFile( cachedJar ) ) {
+        log.logBasic( "JdbcDriverResolver: cache hit — previously downloaded JAR → " + cachedJar );
+        return cachedJar.toAbsolutePath().toString();
+      }
+    }
     return downloadFromService( driverId );
   }
 
