@@ -3,7 +3,6 @@ package org.pentaho.di.shared;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 
 import java.io.OutputStream;
@@ -107,11 +106,30 @@ public abstract class XmlFileSharedObjectsIO implements SharedObjectsIO {
   }
 
   protected void addNodeToMap( String type, Node node ) throws KettleXMLException {
-    String tagName = XMLHandler.getTagValue( node, NAME_TAG );
-    if ( !Utils.isEmpty( tagName ) ) {
-      log.debug( "Checking if connection exist {}", SharedObjectType.valueOf( type.toUpperCase() ) );
-      getNodesMapForType( type ).put( tagName, node );
+    SharedObjectType sharedObjectType = parseSharedObjectType( type );
+    if ( sharedObjectType == null ) {
+      // Ignore unsupported node types.
+      return;
     }
+    // Validate and resolve map by type first to avoid assuming node shape before type is known.
+    Map<String, Node> nodeMap = getNodesMapForType( sharedObjectType );
+    String tagName = XMLHandler.getTagValue( node, NAME_TAG );
+    if ( tagName == null ) {
+      tagName = "";
+    }
+    nodeMap.put( tagName, node );
+  }
+
+  private SharedObjectType parseSharedObjectType( String type ) {
+    if ( type == null ) {
+      return null;
+    }
+    for ( SharedObjectType sharedObjectType : SharedObjectType.values() ) {
+      if ( sharedObjectType.getName().equalsIgnoreCase( type ) ) {
+        return sharedObjectType;
+      }
+    }
+    return null;
   }
 
   /**
