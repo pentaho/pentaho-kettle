@@ -41,6 +41,8 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+@Deprecated
+/** @deprecated use {@link org.pentaho.di.core.util.HttpClientManager} */
 public class HttpClientManager {
   private static final int CONNECTIONS_PER_ROUTE = 100;
   private static final int TOTAL_CONNECTIONS = 200;
