@@ -73,37 +73,25 @@ class ChildFirstURLClassLoader extends URLClassLoader {
   }
 
   /**
-   * Returns {@code true} for classes that must always come from the JDK, container,
-   * or Pentaho framework — never from the driver JAR.
+   * Returns {@code true} for classes that must always come from the JDK or platform —
+   * these are never present in a driver JAR and must be loaded by the bootstrap or
+   * platform class loader.
    * <p>
-   * This prevents a JDBC driver JAR that happens to bundle e.g. SLF4J, Apache Commons,
-   * or (hypothetically) a Pentaho class from shadowing the versions already on the
-   * application classpath, which would cause {@code ClassCastException} or subtle
-   * incompatibilities at runtime.
+   * All other classes (including third-party libraries bundled inside the driver JAR
+   * such as logging frameworks or Apache Commons) are intentionally loaded child-first
+   * so that the driver gets its own versions without interfering with PDI's classpath.
+   * The sole interface between PDI and the driver is {@code java.sql.*}, which is
+   * covered by the {@code java.*} prefix below.
    */
   private boolean isJdkClass( String name ) {
     return name.startsWith( "java." )
       || name.startsWith( "javax." )
-      || name.startsWith( "jakarta." )   // Jakarta EE (servlet, persistence, etc.)
+      || name.startsWith( "jakarta." )   // Jakarta EE APIs provided by the platform
       || name.startsWith( "sun." )
       || name.startsWith( "com.sun." )
       || name.startsWith( "jdk." )
-      || name.startsWith( "org.ietf." )
-      || name.startsWith( "org.w3c." )
-      || name.startsWith( "org.xml." )
-      // Pentaho / Hitachi Vantara framework classes must come from the application
-      // classpath, not from a bundled copy inside the driver JAR.
-      || name.startsWith( "org.pentaho." )
-      || name.startsWith( "com.pentaho." )
-      // Specific shared Apache framework libraries that must NOT be overridden by
-      // a bundled copy inside a driver JAR.
-      // NOTE: do NOT block the entire org.apache.* namespace — many JDBC drivers
-      // (Apache Derby: org.apache.derby.*, Apache Phoenix: org.apache.phoenix.*,
-      //  Apache Hive: org.apache.hive.*, etc.) have driver classes under org.apache.*
-      // that MUST be loaded from the JAR.
-      || name.startsWith( "org.apache.commons." )
-      || name.startsWith( "org.apache.logging." )
-      || name.startsWith( "org.apache.log4j." )
-      || name.startsWith( "org.slf4j." );
+      || name.startsWith( "org.ietf." )  // JDK-bundled GSSAPI / Kerberos
+      || name.startsWith( "org.w3c." )   // JDK-bundled DOM API
+      || name.startsWith( "org.xml." );  // JDK-bundled SAX API
   }
 }
