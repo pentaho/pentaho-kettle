@@ -301,9 +301,13 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
       // This expression will only be true if a yes answer was previously recorded.
       fullyQuoteSQL = "Y".equals( XMLHandler.getTagValue( stepnode, "fully_quote_sql" ) );
 
-      fieldSeparator = XMLHandler.getTagValue( stepnode, "field_separator" );
-      if ( fieldSeparator == null ) {
+      if ( XMLHandler.getSubNode( stepnode, "field_separator" ) == null ) {
         fieldSeparator = "|";
+      } else {
+        fieldSeparator = XMLHandler.getTagValue( stepnode, "field_separator" );
+        if ( fieldSeparator == null ) {
+          fieldSeparator = "";
+        }
       }
       fieldEnclosure = XMLHandler.getTagValue( stepnode, "field_enclosure" );
       if ( fieldEnclosure == null ) {
