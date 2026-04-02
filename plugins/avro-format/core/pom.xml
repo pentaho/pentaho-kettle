@@ -121,9 +121,13 @@
           <groupId>org.eclipse.platform</groupId>
           <artifactId>org.eclipse.equinox.common</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.swt</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-    <!-- SWT is required to compile, any version of any architecture will work -->
+
     <dependency>
       <groupId>org.eclipse.swt</groupId>
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
