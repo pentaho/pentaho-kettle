@@ -1,0 +1,15 @@
+name: pentaho-kettle pull request workflow
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+
+  reusable-pr-workflow:
+    uses: pentaho/actions-common/.github/workflows/pr.yml@HNC-563
+    with:
+      slack_channels: ""
+      sonar_project_key: "org.pentaho.di:pdi"
+    secrets: inherit
+    
