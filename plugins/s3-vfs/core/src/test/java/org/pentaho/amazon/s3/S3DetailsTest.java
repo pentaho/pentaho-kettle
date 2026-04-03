@@ -31,6 +31,9 @@ public class S3DetailsTest {
     s3Details.setAccessKey( "ASIAXJ3TZZPFVO3NK6O" );
     s3Details.setSecretKey( "jKbmptEdHk6cTXXqGodacxJn5yaETIIhKjJb/oZ" );
     s3Details.setRootPath( "test/path" );
+    s3Details.setTrustStoreFilePath( "/path/to/truststore.jks" );
+    s3Details.setTrustStorePassword( "changeit" );
+    s3Details.setTrustAll( "true" );
 
     Map<String, String> props = s3Details.getProperties();
     assertThat( props.get( "name" ), equalTo( "name" ) );
@@ -38,8 +41,11 @@ public class S3DetailsTest {
     assertThat( props.get( "accessKey" ), equalTo( "ASIAXJ3TZZPFVO3NK6O" ) );
     assertThat( props.get( "secretKey" ), equalTo( "jKbmptEdHk6cTXXqGodacxJn5yaETIIhKjJb/oZ" ) );
     assertThat( props.get( "rootPath" ), equalTo( "test/path" ) );
-    assertThat( props.size(), equalTo( 17 ) );
-    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 6L ) );
+    assertThat( props.get( "trustStoreFilePath" ), equalTo( "/path/to/truststore.jks" ) );
+    assertThat( props.get( "trustStorePassword" ), equalTo( "changeit" ) );
+    assertThat( props.get( "trustAll" ), equalTo( "true" ) );
+    assertThat( props.size(), equalTo( 20 ) );
+    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 9L ) );
   }
 
   @Test
@@ -51,6 +57,9 @@ public class S3DetailsTest {
     s3Details.setEndpoint( "http://localhost:9000" );
     s3Details.setPathStyleAccess( "true");
     s3Details.setSignatureVersion( "v4" );
+    s3Details.setTrustStoreFilePath( "/path/to/truststore.jks" );
+    s3Details.setTrustStorePassword( "changeit" );
+    s3Details.setTrustAll( "true" );
 
     Map<String, String> props = s3Details.getProperties();
     assertThat( props.get( "name" ), equalTo( "name" ) );
@@ -60,9 +69,12 @@ public class S3DetailsTest {
     assertThat( props.get( "endpoint" ), equalTo( "http://localhost:9000" ) );
     assertThat( props.get( "pathStyleAccess" ), equalTo( "true" ) );
     assertThat( props.get( "signatureVersion" ), equalTo( "v4" ) );
+    assertThat( props.get( "trustStoreFilePath" ), equalTo( "/path/to/truststore.jks" ) );
+    assertThat( props.get( "trustStorePassword" ), equalTo( "changeit" ) );
+    assertThat( props.get( "trustAll" ), equalTo( "true" ) );
 
-    assertThat( props.size(), equalTo( 17 ) );
-    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 8L ) );
+    assertThat( props.size(), equalTo( 20 ) );
+    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 11L ) );
   }
 
 }
