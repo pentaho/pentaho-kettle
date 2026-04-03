@@ -33,6 +33,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.util.RepositoryPathEncoder;
 
@@ -357,8 +359,32 @@ public class RepositoryCleanupUtil {
       ClientConfig clientConfig = new ClientConfig();
       clientConfig.property( ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE );
       client = ClientBuilder.newClient( clientConfig );
-      HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( username, Encr.decryptPasswordOptionallyEncrypted( password ) );
-      client.register( feature );
+      
+      // Check if session-based authentication is enabled
+      final boolean useSessionAuth = AuthenticationContext.SESSION_AUTH_TOKEN.equals( password );
+
+      if ( useSessionAuth ) {
+        // Get authentication context using the factory pattern
+        AuthenticationContext authContext =
+          SpoonSessionManager.getInstance().getAuthenticationContext( url );
+        
+        // Check if authenticated
+        if ( authContext.isAuthenticated() ) {
+          String jsessionId = authContext.getJSessionId();
+
+          // Register a ClientRequestFilter to add Cookie header to every request
+          final String finalJsessionId = jsessionId;
+          client.register( (jakarta.ws.rs.client.ClientRequestFilter) requestContext ->
+            requestContext.getHeaders().add( "Cookie", "JSESSIONID=" + finalJsessionId )
+          );
+        } else {
+          throw new SessionAuthenticationException( "Session-based authentication is enabled but no valid session found. Please authenticate through browser first." );
+        }
+      } else {
+        // Use basic authentication with username/password
+        HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( username, Encr.decryptPasswordOptionallyEncrypted( password ) );
+        client.register( feature );
+      }
     }
 
     WebTarget target = client.target( url + AUTHENTICATION + AdministerSecurityAction.NAME );
@@ -609,6 +635,15 @@ public class RepositoryCleanupUtil {
     public NormalExitException( int exitCode ) {
       super();
       this.exitCode = exitCode;
+    }
+  }
+
+  /**
+   * Thrown when session-based authentication is enabled but no valid session is found.
+   */
+  public static class SessionAuthenticationException extends Exception {
+    public SessionAuthenticationException( String message ) {
+      super( message );
     }
   }
 }

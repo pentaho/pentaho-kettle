@@ -24,6 +24,7 @@ import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.repository.exception.RepositoryExceptionUtils;
 import org.pentaho.di.ui.spoon.Spoon;
 
 public class RepositorySecurityUI {
@@ -64,6 +65,12 @@ public class RepositorySecurityUI {
     } catch ( KettleRepositoryLostException krle ) {
       Spoon.getInstance().handleRepositoryLost( krle );
     } catch ( KettleException e ) {
+      // Check if this is a session expiry - if so, don't show error dialog
+      // Let it propagate to be handled by calling method (which has try-catch for session recovery)
+      if ( RepositoryExceptionUtils.isSessionExpired( e ) ) {
+        return true; // Indicate error but don't show dialog
+      }
+
       KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
       if ( krle != null ) {
         Spoon.getInstance().handleRepositoryLost( krle );
