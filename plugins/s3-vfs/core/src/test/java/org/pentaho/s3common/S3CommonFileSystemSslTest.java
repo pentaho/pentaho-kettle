@@ -61,7 +61,7 @@ public class S3CommonFileSystemSslTest {
     var s3Opts = getS3Opts( details );
 
     var clientConfig = new ClientConfiguration();
-    S3CommonFileSystem.setSslContext( clientConfig, s3Opts.trustStore().get() );
+    S3CommonFileSystem.setSslContext( clientConfig, s3Opts );
     var sslFactory = clientConfig.getApacheHttpClientConfig().getSslSocketFactory();
     testSslConnection( sslFactory );
   }
@@ -73,7 +73,7 @@ public class S3CommonFileSystemSslTest {
     var s3Opts = getS3Opts( details );
 
     var clientConfig = new ClientConfiguration();
-    S3CommonFileSystem.setSslContext( clientConfig, s3Opts.trustStore().get() );
+    S3CommonFileSystem.setSslContext( clientConfig, s3Opts );
     var sslFactory = clientConfig.getApacheHttpClientConfig().getSslSocketFactory();
     testSslConnection( sslFactory );
   }
@@ -97,7 +97,7 @@ public class S3CommonFileSystemSslTest {
     var s3Opts = getS3Opts( details );
 
     var clientConfig = new ClientConfiguration();
-    S3CommonFileSystem.setSslContext( clientConfig, s3Opts.trustStore().get() );
+    S3CommonFileSystem.setSslContext( clientConfig, s3Opts );
     var sslFactory = clientConfig.getApacheHttpClientConfig().getSslSocketFactory();
     testSslConnection( sslFactory );
   }
@@ -110,7 +110,7 @@ public class S3CommonFileSystemSslTest {
     var s3Opts = getS3Opts( details );
 
     var clientConfig = new ClientConfiguration();
-    S3CommonFileSystem.setSslContext( clientConfig, s3Opts.trustStore().get() );
+    S3CommonFileSystem.setSslContext( clientConfig, s3Opts );
     var sslFactory = clientConfig.getApacheHttpClientConfig().getSslSocketFactory();
     testSslConnection( sslFactory );
   }
@@ -123,7 +123,7 @@ public class S3CommonFileSystemSslTest {
     var s3Opts = getS3Opts( details );
 
     var clientConfig = new ClientConfiguration();
-    S3CommonFileSystem.setSslContext( clientConfig, s3Opts.trustStore().get() );
+    S3CommonFileSystem.setSslContext( clientConfig, s3Opts );
     var sslFactory = clientConfig.getApacheHttpClientConfig().getSslSocketFactory();
     testSslConnection( sslFactory );
   }
@@ -137,7 +137,7 @@ public class S3CommonFileSystemSslTest {
     var s3Opts = getS3Opts( details );
 
     var clientConfig = new ClientConfiguration();
-    S3CommonFileSystem.setSslContext( clientConfig, s3Opts.trustStore().get() );
+    S3CommonFileSystem.setSslContext( clientConfig, s3Opts );
     var sslFactory = clientConfig.getApacheHttpClientConfig().getSslSocketFactory();
     testSslConnection( sslFactory );
   }
@@ -152,7 +152,7 @@ public class S3CommonFileSystemSslTest {
     var s3Opts = getS3Opts( details );
 
     var clientConfig = new ClientConfiguration();
-    S3CommonFileSystem.setSslContext( clientConfig, s3Opts.trustStore().get() );
+    S3CommonFileSystem.setSslContext( clientConfig, s3Opts );
     var sslFactory = clientConfig.getApacheHttpClientConfig().getSslSocketFactory();
     testSslConnection( sslFactory );
   }

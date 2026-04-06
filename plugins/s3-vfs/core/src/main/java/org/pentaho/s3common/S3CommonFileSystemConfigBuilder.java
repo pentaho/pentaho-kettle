@@ -40,6 +40,8 @@ public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
   public static final String TRUST_STORE_FILE_PATH = "trustStoreFilePath";
   public static final String TRUST_STORE_PASSWORD = "trustStorePassword";
   public static final String TRUST_ALL = "trustAll";
+  public static final String KEY_STORE_FILE_PATH = "keyStoreFilePath";
+  public static final String KEY_STORE_PASSWORD = "keyStorePassword";
   private static final String USE_DEFAULTS = "useDefaults";
 
   private FileSystemOptions fileSystemOptions;
@@ -175,6 +177,22 @@ public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
   public String getTrustAll() {
     return (String) this.getParam( getFileSystemOptions(), TRUST_ALL );
+  }
+
+  public void setKeyStoreFilePath( String keyStoreFilePath ) {
+    this.setParam( getFileSystemOptions(), KEY_STORE_FILE_PATH, keyStoreFilePath );
+  }
+
+  public String getKeyStoreFilePath() {
+    return (String) this.getParam( getFileSystemOptions(), KEY_STORE_FILE_PATH );
+  }
+
+  public void setKeyStorePassword( String keyStorePassword ) {
+    this.setParam( getFileSystemOptions(), KEY_STORE_PASSWORD, keyStorePassword );
+  }
+
+  public String getKeyStorePassword() {
+    return (String) this.getParam( getFileSystemOptions(), KEY_STORE_PASSWORD );
   }
 
   public boolean useDefaults() {

@@ -20,15 +20,18 @@ public class S3Options {
   private final Optional<CredentialsFile> credFileAuth;
   private final BaseS3Options base;
   private final Optional<TrustStore> trustStoreFile;
+  private final Optional<KeyStore> keyStoreFile;
 
   private S3Options( Optional<AuthKeys> authKeys,
                      Optional<CredentialsFile> credFileAuth,
                      BaseS3Options base,
-                     Optional<TrustStore> trustStoreFile ) {
+                     Optional<TrustStore> trustStoreFile,
+                     Optional<KeyStore> keyStoreFile ) {
     this.authKeys = authKeys;
     this.credFileAuth = credFileAuth;
     this.base = base;
     this.trustStoreFile = trustStoreFile;
+    this.keyStoreFile = keyStoreFile;
   }
 
   public static S3Options from( S3CommonFileSystemConfigBuilder opts ) {
@@ -36,7 +39,8 @@ public class S3Options {
       AuthKeys.from( opts ),
       CredentialsFile.from( opts ),
       BaseS3Options.from( opts ),
-      TrustStore.from( opts ) );
+      TrustStore.from( opts ),
+      KeyStore.from( opts ) );
   }
 
   public static S3Options from( Map<String, String> opts ) {
@@ -44,7 +48,8 @@ public class S3Options {
       AuthKeys.from( opts ),
       CredentialsFile.from( opts ),
       BaseS3Options.from( opts ),
-      TrustStore.from( opts ) );
+      TrustStore.from( opts ),
+      KeyStore.from( opts ) );
   }
 
   public Optional<AuthKeys> authKeys() {
@@ -61,6 +66,10 @@ public class S3Options {
 
   public Optional<TrustStore> trustStore() {
     return trustStoreFile;
+  }
+
+  public Optional<KeyStore> keyStore() {
+    return keyStoreFile;
   }
 
   public void setAuthKeys( AuthKeys keys ) {
@@ -169,6 +178,30 @@ public class S3Options {
       return StringUtils.isBlank( filePath ) && !trustAll
         ? Optional.empty()
         : Optional.of( new TrustStore( filePath, pass, trustAll ) );
+    }
+  }
+
+  public record KeyStore( String filePath, String password ) {
+
+    static Optional<KeyStore> from( S3CommonFileSystemConfigBuilder cfg ) {
+      var filePath = cfg.getKeyStoreFilePath();
+      var password = cfg.getKeyStorePassword();
+      return maybeKeyStore( filePath, password );
+    }
+
+    static Optional<KeyStore> from( Map<String, String> opts ) {
+      var filePath = opts.get( S3Details.PROP_KEY_STORE_FILE_PATH );
+      var password = Encr.decryptPassword( opts.get( S3Details.PROP_KEY_STORE_PASSWORD ) );
+      return maybeKeyStore( filePath, password );
+    }
+
+    private static Optional<KeyStore> maybeKeyStore( String filePath, String password ) {
+      if ( StringUtils.isEmpty( password ) ) {
+        password = null;
+      }
+      return StringUtils.isBlank( filePath )
+        ? Optional.empty()
+        : Optional.of( new KeyStore( filePath, password ) );
     }
   }
 }

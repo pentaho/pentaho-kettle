@@ -34,6 +34,8 @@ public class S3DetailsTest {
     s3Details.setTrustStoreFilePath( "/path/to/truststore.jks" );
     s3Details.setTrustStorePassword( "changeit" );
     s3Details.setTrustAll( "true" );
+    s3Details.setKeyStoreFilePath( "/path/to/keystore.jks" );
+    s3Details.setKeyStorePassword( "keystorepass" );
 
     Map<String, String> props = s3Details.getProperties();
     assertThat( props.get( "name" ), equalTo( "name" ) );
@@ -44,8 +46,10 @@ public class S3DetailsTest {
     assertThat( props.get( "trustStoreFilePath" ), equalTo( "/path/to/truststore.jks" ) );
     assertThat( props.get( "trustStorePassword" ), equalTo( "changeit" ) );
     assertThat( props.get( "trustAll" ), equalTo( "true" ) );
-    assertThat( props.size(), equalTo( 20 ) );
-    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 9L ) );
+    assertThat( props.get( "keyStoreFilePath" ), equalTo( "/path/to/keystore.jks" ) );
+    assertThat( props.get( "keyStorePassword" ), equalTo( "keystorepass" ) );
+    assertThat( props.size(), equalTo( 22 ) );
+    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 11L ) );
   }
 
   @Test
@@ -60,6 +64,8 @@ public class S3DetailsTest {
     s3Details.setTrustStoreFilePath( "/path/to/truststore.jks" );
     s3Details.setTrustStorePassword( "changeit" );
     s3Details.setTrustAll( "true" );
+    s3Details.setKeyStoreFilePath( "/path/to/keystore.jks" );
+    s3Details.setKeyStorePassword( "keystorepass" );
 
     Map<String, String> props = s3Details.getProperties();
     assertThat( props.get( "name" ), equalTo( "name" ) );
@@ -72,9 +78,11 @@ public class S3DetailsTest {
     assertThat( props.get( "trustStoreFilePath" ), equalTo( "/path/to/truststore.jks" ) );
     assertThat( props.get( "trustStorePassword" ), equalTo( "changeit" ) );
     assertThat( props.get( "trustAll" ), equalTo( "true" ) );
+    assertThat( props.get( "keyStoreFilePath" ), equalTo( "/path/to/keystore.jks" ) );
+    assertThat( props.get( "keyStorePassword" ), equalTo( "keystorepass" ) );
 
-    assertThat( props.size(), equalTo( 20 ) );
-    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 11L ) );
+    assertThat( props.size(), equalTo( 22 ) );
+    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 13L ) );
   }
 
 }

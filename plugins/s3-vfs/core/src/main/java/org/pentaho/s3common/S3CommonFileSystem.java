@@ -14,6 +14,9 @@
 package org.pentaho.s3common;
 
 import java.io.File;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +25,7 @@ import java.util.function.Supplier;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;
@@ -35,8 +39,10 @@ import org.pentaho.amazon.s3.S3Util;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.core.util.StorageUnitConverter;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.s3common.S3Options.AuthKeys;
@@ -206,7 +212,9 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
     clientConfiguration.setSignerOverride( S3Util.isEmpty( baseOpts.signatureVersion() ) ?
       S3Util.SIGNATURE_VERSION_SYSTEM_PROPERTY : baseOpts.signatureVersion() );
 
-    options.trustStore().ifPresent( trustStore -> setSslContext( clientConfiguration, trustStore ) );
+    if ( options.trustStore().isPresent() || options.keyStore().isPresent() ) {
+      setSslContext( clientConfiguration, options );
+    }
     return AmazonS3ClientBuilder.standard()
       .withEndpointConfiguration(
         new AwsClientBuilder.EndpointConfiguration( baseOpts.endpoint(), baseOpts.region() ) )
@@ -358,24 +366,48 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
     getS3TransferManager().copy( src, dest );
   }
 
-  public static void setSslContext( ClientConfiguration clientConfig, S3Options.TrustStore opts ) {
-    try {
-      SSLContext sslContext;
-      if ( StringUtils.isNotBlank( opts.filePath() ) ) {
-        var bowl = DefaultBowl.getInstance();
-        var kettleVfs = KettleVFS.getInstance( bowl );
-        try ( var fileObj = kettleVfs.getFileObject( opts.filePath() );
-              var content = fileObj.getContent();
-              var in = content.getInputStream() ) {
-          sslContext = HttpClientManager.getSslContext( opts.trustAll(), in, opts.pass() );
-        }
-      } else {
-        sslContext = HttpClientManager.getSslContext( opts.trustAll(), null, null );
-      }
+  public static void setSslContext( ClientConfiguration clientConfig, S3Options opts ) {
+    boolean trustAll = opts.trustStore().map( S3Options.TrustStore::trustAll ).orElse( false );
+    String trustStoreFile = opts.trustStore().map( S3Options.TrustStore::filePath ).orElse( null );
+    String trustStorePass = opts.trustStore().map( S3Options.TrustStore::pass ).orElse( null );
+    String keyStoreFile = opts.keyStore().map( S3Options.KeyStore::filePath ).orElse( null );
+    String keyStorePass = opts.keyStore().map( S3Options.KeyStore::password ).orElse( null );
+
+    var bowl = DefaultBowl.getInstance();
+    var vfs = KettleVFS.getInstance( bowl );
+    try ( var trustStoreIn = getInputStream( vfs, trustStoreFile );
+          var keyStoreIn = getInputStream( vfs, keyStoreFile ) ) {
+
+      SSLContext sslContext = HttpClientManager.getSslContext(
+        trustAll, trustStoreIn, trustStorePass,
+        keyStoreIn, keyStorePass, keyStorePass );
       clientConfig.getApacheHttpClientConfig().setSslSocketFactory(
         new SSLConnectionSocketFactory( sslContext ) );
+
     } catch ( Exception e ) {
       logger.error( "Failed to create SSL configuration from trust store", e );
     }
   }
+
+  private static InputStream getInputStream( IKettleVFS vfs, String path ) throws KettleFileException,
+    FileSystemException {
+    if ( path == null ) {
+      return null;
+    }
+    var fileObj = vfs.getFileObject( path );
+    try {
+      var content = fileObj.getContent();
+      var inputStream = content.getInputStream();
+      return new FilterInputStream( inputStream ) {
+        @Override
+        public void close() throws IOException {
+          IOUtils.closeQuietly( inputStream, content, fileObj );
+        }
+      };
+    } catch ( FileSystemException e ) {
+      IOUtils.closeQuietly( fileObj );
+      throw e;
+    }
+  }
+
 }

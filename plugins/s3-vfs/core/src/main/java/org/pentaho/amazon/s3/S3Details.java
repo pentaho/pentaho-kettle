@@ -56,6 +56,8 @@ public class S3Details extends BaseVFSConnectionDetails {
   public static final String PROP_TRUST_STORE_FILE_PATH = S3CommonFileSystemConfigBuilder.TRUST_STORE_FILE_PATH;
   public static final String PROP_TRUST_STORE_PASSWORD = S3CommonFileSystemConfigBuilder.TRUST_STORE_PASSWORD;
   public static final String PROP_TRUST_ALL = S3CommonFileSystemConfigBuilder.TRUST_ALL;
+  public static final String PROP_KEY_STORE_FILE_PATH = S3CommonFileSystemConfigBuilder.KEY_STORE_FILE_PATH;
+  public static final String PROP_KEY_STORE_PASSWORD = S3CommonFileSystemConfigBuilder.KEY_STORE_PASSWORD;
 
   @MetaStoreAttribute private String name;
 
@@ -92,6 +94,9 @@ public class S3Details extends BaseVFSConnectionDetails {
   @MetaStoreAttribute private String trustStoreFilePath;
   @MetaStoreAttribute @Encrypted private String trustStorePassword;
   @MetaStoreAttribute private String trustAll;
+
+  @MetaStoreAttribute private String keyStoreFilePath;
+  @MetaStoreAttribute @Encrypted private String keyStorePassword;
 
   @Override public String getName() {
     return name;
@@ -262,6 +267,22 @@ public class S3Details extends BaseVFSConnectionDetails {
     this.trustAll = trustAll;
   }
 
+  public String getKeyStoreFilePath() {
+    return keyStoreFilePath;
+  }
+
+  public void setKeyStoreFilePath( String keyStoreFilePath ) {
+    this.keyStoreFilePath = keyStoreFilePath;
+  }
+
+  public String getKeyStorePassword() {
+    return keyStorePassword;
+  }
+
+  public void setKeyStorePassword( String keyStorePassword ) {
+    this.keyStorePassword = keyStorePassword;
+  }
+
   @Override protected void fillProperties( Map<String, String> props ) {
     props.put( PROP_NAME, getName() );
     props.put( PROP_DESCRIPTION, getDescription() );
@@ -281,6 +302,8 @@ public class S3Details extends BaseVFSConnectionDetails {
     props.put( PROP_TRUST_STORE_FILE_PATH, getTrustStoreFilePath() );
     props.put( PROP_TRUST_STORE_PASSWORD, getTrustStorePassword() );
     props.put( PROP_TRUST_ALL, getTrustAll() );
+    props.put( PROP_KEY_STORE_FILE_PATH, getKeyStoreFilePath() );
+    props.put( PROP_KEY_STORE_PASSWORD, getKeyStorePassword() );
     super.fillProperties( props );
   }
 

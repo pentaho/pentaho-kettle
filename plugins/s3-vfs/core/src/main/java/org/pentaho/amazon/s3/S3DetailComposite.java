@@ -118,6 +118,10 @@ public class S3DetailComposite implements VFSDetailsComposite {
   private PasswordVisibleTextVar wTrustStorePassword;
   private CheckBoxVar wTrustAll;
 
+  private Group gKeyStore;
+  private FileChooserVar wKeyStoreFilePath;
+  private PasswordVisibleTextVar wKeyStorePassword;
+
   public S3DetailComposite( Bowl bowl, Composite composite, S3Details details, PropsUI props ) {
     helper = new VFSDetailsCompositeHelper( PKG, props );
     this.bowl = bowl;
@@ -177,6 +181,8 @@ public class S3DetailComposite implements VFSDetailsComposite {
 
     createTrustStoreGroup( wWidgetHolder );
 
+    createKeyStoreGroup( wWidgetHolder );
+
     wPathStyleAccess = createStandByCheckBoxVar();
     wMinioRegion = createStandByTextVar();
 
@@ -233,6 +239,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
       modifyEvent -> details.setPathStyleAccessVariable( wPathStyleAccess.getVariableName() ) );
 
     setTrustStoreListeners();
+    setKeyStoreListeners();
 
     VFSDetailsCompositeHelper.setupCompositeResizeListener( wComposite );
     initializingUiForFirstTime = false;
@@ -252,6 +259,13 @@ public class S3DetailComposite implements VFSDetailsComposite {
       }
 
     } );
+  }
+
+  private void setKeyStoreListeners() {
+    wKeyStoreFilePath.addModifyListener(
+      modifyEvent -> details.setKeyStoreFilePath( wKeyStoreFilePath.getText() ) );
+    wKeyStorePassword.addModifyListener(
+      modifyEvent -> details.setKeyStorePassword( wKeyStorePassword.getText() ) );
   }
 
   private void onTrustAllChanged() {
@@ -280,6 +294,24 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wTrustAll = new CheckBoxVar( variableSpace, gSslTrustStore, SWT.CHECK );
     wTrustAll.setText( BaseMessages.getString( PKG, "ConnectionDialog.s3.TrustAll.Label" ) );
     wTrustAll.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL ) );
+  }
+
+  private void createKeyStoreGroup( Composite parent ) {
+    gKeyStore = new Group( parent, TEXT_VAR_FLAGS );
+    gKeyStore.setLayout( new GridLayout( 1, false ) );
+    gKeyStore.setText( BaseMessages.getString( PKG, "ConnectionDialog.s3.KeyStoreGroup.Label" ) );
+
+    Label lblFilePath = new Label( gKeyStore, SWT.LEFT );
+    lblFilePath.setText( BaseMessages.getString( PKG, "ConnectionDialog.s3.KeyStoreFile.Label" ) );
+
+    wKeyStoreFilePath = new FileChooserVar( bowl, variableSpace, gKeyStore, TEXT_VAR_FLAGS, BaseMessages.getString( "System.Button.Browse" ) );
+    wKeyStoreFilePath.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL ) );
+
+    Label lblFilePass = new Label( gKeyStore, SWT.LEFT );
+    lblFilePass.setText( BaseMessages.getString( PKG, "ConnectionDialog.s3.KeyStorePassword.Label" ) );
+
+    wKeyStorePassword = createStandbyPasswordVisibleTextVar( gKeyStore );
+    wKeyStorePassword.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL ) );
   }
 
   private String getAuthTypeLabel( AuthType authType ) {
@@ -371,6 +403,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
       above = moveWidgetToBottomHalf( wEndpoint, "ConnectionDialog.s3.Endpoint.Label", above );
       above = moveWidgetToBottomHalf( wSignatureVersion, "ConnectionDialog.s3.SignatureVersion.Label", above );
       above = moveGroupToBottomHalf( gSslTrustStore, above );
+      above = moveGroupToBottomHalf( gKeyStore, above );
       above = moveWidgetToBottomHalf( wPathStyleAccess, "ConnectionDialog.s3.PathStyleAccess.Label", above );
       above = moveWidgetToBottomHalf( wDefaultS3Config, "ConnectionDialog.s3.DefaultS3Config.Label", above );
     }
@@ -396,6 +429,9 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wTrustStorePassword.setText( Const.NVL( details.getTrustStorePassword(), "" ) );
     wTrustAll.setSelection( Boolean.parseBoolean( Const.NVL( details.getTrustAll(), "false" ) ) );
     onTrustAllChanged();
+
+    wKeyStoreFilePath.setText( Const.NVL( details.getKeyStoreFilePath(), "" ) );
+    wKeyStorePassword.setText( Const.NVL( details.getKeyStorePassword(), "" ) );
   }
 
   private void populateRegion() {
