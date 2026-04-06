@@ -816,9 +816,25 @@ public class Condition implements Cloneable, XMLInterface {
       int nrconditions = XMLHandler.countNodes( conditions, XML_TAG );
       if ( nrconditions == 0 ) {
         // ATOMIC!
-        setLeftValuename( XMLHandler.getTagValue( condnode, "leftvalue" ) );
+        String leftValueName = XMLHandler.getTagValue( condnode, "leftvalue" );
+        // When Const.KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE=Y, an empty tag (<leftvalue/>) becomes "".
+        // Treat that the same as null, otherwise we may try to resolve a field with an empty name.
+        if ( Utils.isEmpty( leftValueName ) ) {
+          leftValueName = null;
+        }
+        setLeftValuename( leftValueName );
+
         setFunction( getFunction( XMLHandler.getTagValue( condnode, "function" ) ) );
-        setRightValuename( XMLHandler.getTagValue( condnode, "rightvalue" ) );
+
+        String rightValueName = XMLHandler.getTagValue( condnode, "rightvalue" );
+        // When Const.KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE=Y, an empty tag (<rightvalue/>) becomes "".
+        // Treat that the same as null, otherwise downstream code (notably UI rendering) may think a field was chosen
+        // and hide the right-exact constant.
+        if ( Utils.isEmpty( rightValueName ) ) {
+          rightValueName = null;
+        }
+        setRightValuename( rightValueName );
+
         Node exactnode = XMLHandler.getSubNode( condnode, ValueMetaAndData.XML_TAG );
         if ( exactnode != null ) {
           ValueMetaAndData exact = new ValueMetaAndData( exactnode );
