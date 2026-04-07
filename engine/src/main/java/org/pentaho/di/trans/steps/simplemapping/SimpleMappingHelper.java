@@ -13,6 +13,7 @@
 package org.pentaho.di.trans.steps.simplemapping;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -143,13 +144,13 @@ public class SimpleMappingHelper extends BaseStepHelper {
       boolean isInputMapping = queryParams.getOrDefault( "isMappingInput", "false" ).equals( "true" );
       StepMeta stepMeta = transMeta.findStep( simpleMappingMeta.getParentStepMeta().getName() );
       RowMetaInterface sourceRowMeta = getFieldsFromStep( transMeta, mappingTransMeta,  stepMeta, true, isInputMapping );
-      String[] sourceFields = sourceRowMeta.getFieldNames();
+      JSONArray sourceFieldsArray = generateFieldsJSON( sourceRowMeta );
 
       RowMetaInterface targetRowMeta = getFieldsFromStep( transMeta, mappingTransMeta,  stepMeta, false, isInputMapping );
-      String[] targetFields = targetRowMeta.getFieldNames();
+      JSONArray targetFieldsArray = generateFieldsJSON( targetRowMeta );
       response.put( ACTION_STATUS, SUCCESS_RESPONSE );
-      response.put( SOURCE_FIELDS, Arrays.stream( sourceFields ).toList() );
-      response.put( TARGET_FIELDS, Arrays.stream( targetFields ).toList() );
+      response.put( SOURCE_FIELDS, sourceFieldsArray );
+      response.put( TARGET_FIELDS, targetFieldsArray );
     } catch ( Exception ex ) {
       log.logError( ex.getMessage() );
       response.put( ACTION_STATUS, FAILURE_RESPONSE );
@@ -183,5 +184,18 @@ public class SimpleMappingHelper extends BaseStepHelper {
       StepMeta mappingOutputStepMeta = mappingTransMeta.findMappingOutputStep( null );
       return mappingTransMeta.getStepFields( mappingOutputStepMeta );
     }
+  }
+
+  private JSONArray generateFieldsJSON( RowMetaInterface fields ) {
+    JSONArray rowsArray = new JSONArray();
+
+    for ( int i = 0; i < fields.getValueMetaList().size(); i++ ) {
+      JSONObject rowObject = new JSONObject();
+      rowObject.put( "type", fields.getValueMeta( i ).getTypeDesc() );
+      rowObject.put( "name", fields.getValueMeta( i ).getName() );
+      rowsArray.add( rowObject );
+    }
+
+    return rowsArray;
   }
 }

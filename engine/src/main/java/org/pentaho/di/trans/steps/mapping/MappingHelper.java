@@ -13,6 +13,7 @@
 package org.pentaho.di.trans.steps.mapping;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -153,13 +154,13 @@ public class MappingHelper extends BaseStepHelper {
       String inputStepName = queryParams.getOrDefault( "inputStepName", "" );
       String outputStepName = queryParams.getOrDefault( "outputStepName", "" );
       RowMetaInterface sourceRowMeta = getFieldsFromStep( transMeta, mappingTransMeta, mappingMeta.getParentStepMeta().getName(), inputStepName, true, isSourceMapping );
-      String[] sourceFields = sourceRowMeta.getFieldNames();
-      response.put( SOURCE_FIELDS, Arrays.stream( sourceFields ).toList() );
+      JSONArray sourceFieldsArray = generateFieldsJSON( sourceRowMeta );
 
       RowMetaInterface targetRowMeta = getFieldsFromStep( transMeta, mappingTransMeta, mappingMeta.getParentStepMeta().getName(), outputStepName, false, isSourceMapping );
-      String[] targetFields = targetRowMeta.getFieldNames();
-      response.put( TARGET_FIELDS, Arrays.stream( targetFields ).toList() );
+      JSONArray targetFieldsArray = generateFieldsJSON( targetRowMeta );
 
+      response.put( SOURCE_FIELDS, sourceFieldsArray );
+      response.put( TARGET_FIELDS, targetFieldsArray );
       response.put( ACTION_STATUS, SUCCESS_RESPONSE );
     } catch ( Exception ex ) {
       log.logError( ex.getMessage() );
@@ -244,5 +245,18 @@ public class MappingHelper extends BaseStepHelper {
       }
       return mappingTransMeta.getStepFields( stepMeta );
     }
+  }
+
+  private JSONArray generateFieldsJSON( RowMetaInterface fields ) {
+    JSONArray rowsArray = new JSONArray();
+
+    for ( int i = 0; i < fields.getValueMetaList().size(); i++ ) {
+      JSONObject rowObject = new JSONObject();
+      rowObject.put( "name", fields.getValueMeta( i ).getName() );
+      rowObject.put( "type", fields.getValueMeta( i ).getTypeDesc() );
+      rowsArray.add( rowObject );
+    }
+
+    return rowsArray;
   }
 }
