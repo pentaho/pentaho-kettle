@@ -86,6 +86,11 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
     s3CommonFileSystemConfigBuilder.setSignatureVersion( getVar( s3Details.getSignatureVersion(), space ) );
     s3CommonFileSystemConfigBuilder.setDefaultS3Config( getVar( s3Details.getDefaultS3Config(), space ) );
     s3CommonFileSystemConfigBuilder.setConnectionType( getVar( s3Details.getConnectionType(), space ) );
+    s3CommonFileSystemConfigBuilder.setTrustStoreFilePath( getVar( s3Details.getTrustStoreFilePath(), space ) );
+    s3CommonFileSystemConfigBuilder.setTrustStorePassword( getVar( s3Details.getTrustStorePassword(), space ) );
+    s3CommonFileSystemConfigBuilder.setTrustAll( getVar( s3Details.getTrustAll(), space ) );
+    s3CommonFileSystemConfigBuilder.setKeyStoreFilePath( getVar( s3Details.getKeyStoreFilePath(), space ) );
+    s3CommonFileSystemConfigBuilder.setKeyStorePassword( getVar( s3Details.getKeyStorePassword(), space ) );
     return s3CommonFileSystemConfigBuilder.getFileSystemOptions();
   }
 

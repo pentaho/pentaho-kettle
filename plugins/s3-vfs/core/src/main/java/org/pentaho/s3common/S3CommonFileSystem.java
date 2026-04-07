@@ -14,12 +14,18 @@
 package org.pentaho.s3common;
 
 import java.io.File;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.net.ssl.SSLContext;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;
@@ -32,10 +38,14 @@ import org.pentaho.amazon.s3.S3Details;
 import org.pentaho.amazon.s3.S3Util;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.core.util.StorageUnitConverter;
+import org.pentaho.di.core.vfs.IKettleVFS;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.s3common.S3Options.AuthKeys;
-import org.pentaho.s3common.S3Options.BaseS3Options;
 import org.pentaho.s3common.S3Options.CredentialsFile;
 
 import org.slf4j.Logger;
@@ -55,6 +65,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 
 public abstract class S3CommonFileSystem extends AbstractFileSystem {
 
@@ -195,20 +207,20 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
   }
 
   public static AmazonS3 createClientFromEndpoint( S3Options options ) {
-    return createBuilder( options.base() )
-      .withCredentials( createCredentialsProvider( options ) )
-      .build();
-  }
-
-  private static AmazonS3ClientBuilder createBuilder( BaseS3Options baseOpts ) {
+    var baseOpts = options.base();
     ClientConfiguration clientConfiguration = new ClientConfiguration();
     clientConfiguration.setSignerOverride( S3Util.isEmpty( baseOpts.signatureVersion() ) ?
       S3Util.SIGNATURE_VERSION_SYSTEM_PROPERTY : baseOpts.signatureVersion() );
+
+    if ( options.trustStore().isPresent() || options.keyStore().isPresent() ) {
+      setSslContext( clientConfiguration, options );
+    }
     return AmazonS3ClientBuilder.standard()
       .withEndpointConfiguration(
         new AwsClientBuilder.EndpointConfiguration( baseOpts.endpoint(), baseOpts.region() ) )
       .withPathStyleAccessEnabled( baseOpts.pathStyleAccess() )
-      .withClientConfiguration( clientConfiguration );
+      .withClientConfiguration( clientConfiguration )
+      .withCredentials( createCredentialsProvider( options ) ).build();
   }
 
   /** Invalidate client and clear VFS cache if properties changed */
@@ -352,6 +364,50 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
    */
   public void copy( S3CommonFileObject src, S3CommonFileObject dest ) throws FileSystemException {
     getS3TransferManager().copy( src, dest );
+  }
+
+  public static void setSslContext( ClientConfiguration clientConfig, S3Options opts ) {
+    boolean trustAll = opts.trustStore().map( S3Options.TrustStore::trustAll ).orElse( false );
+    String trustStoreFile = opts.trustStore().map( S3Options.TrustStore::filePath ).orElse( null );
+    String trustStorePass = opts.trustStore().map( S3Options.TrustStore::pass ).orElse( null );
+    String keyStoreFile = opts.keyStore().map( S3Options.KeyStore::filePath ).orElse( null );
+    String keyStorePass = opts.keyStore().map( S3Options.KeyStore::password ).orElse( null );
+
+    var bowl = DefaultBowl.getInstance();
+    var vfs = KettleVFS.getInstance( bowl );
+    try ( var trustStoreIn = getInputStream( vfs, trustStoreFile );
+          var keyStoreIn = getInputStream( vfs, keyStoreFile ) ) {
+
+      SSLContext sslContext = HttpClientManager.getSslContext(
+        trustAll, trustStoreIn, trustStorePass,
+        keyStoreIn, keyStorePass, keyStorePass );
+      clientConfig.getApacheHttpClientConfig().setSslSocketFactory(
+        new SSLConnectionSocketFactory( sslContext ) );
+
+    } catch ( Exception e ) {
+      logger.error( "Failed to create SSL configuration from trust store", e );
+    }
+  }
+
+  private static InputStream getInputStream( IKettleVFS vfs, String path ) throws KettleFileException,
+    FileSystemException {
+    if ( path == null ) {
+      return null;
+    }
+    var fileObj = vfs.getFileObject( path );
+    try {
+      var content = fileObj.getContent();
+      var inputStream = content.getInputStream();
+      return new FilterInputStream( inputStream ) {
+        @Override
+        public void close() throws IOException {
+          IOUtils.closeQuietly( inputStream, content, fileObj );
+        }
+      };
+    } catch ( FileSystemException e ) {
+      IOUtils.closeQuietly( fileObj );
+      throw e;
+    }
   }
 
 }
