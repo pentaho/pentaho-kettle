@@ -18,7 +18,6 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.EnvUtil;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -41,9 +40,9 @@ import java.util.concurrent.locks.ReentrantLock;
  *       which checks OS env var first, then JVM system property. Covers Docker {@code ENV},
  *       Kubernetes {@code env:}, ECS task definitions, and {@code -D} JVM args uniformly.</li>
  *   <li><b>Kettle property {@code JDBC_DRIVERS_DIRECTORY}</b> from {@code kettle.properties}
- *       — for on-prem / BA Server installations.</li>
- *   <li><b>Pentaho solution path</b> — {@code ${solution-path}/jdbc-drivers/<jarName>}
- *       (resolved via {@code PentahoSystem} when available, relative path otherwise).</li>
+ *       — for on-prem / BA Server installations. When running on pentaho-server, configure
+ *       this property to point at the appropriate directory
+ *       (e.g. {@code pentaho-solutions/jdbc-drivers}).</li>
  *   <li><b>Download</b> from the connection-management service — base URL read via
  *       {@link Const#getJdbcDriverServiceUrl()} ({@code JDBC_DRIVER_SERVICE_URL} env var or
  *       system property). JAR saved to the first writable directory from the chain above.</li>
@@ -120,13 +119,7 @@ public final class JdbcDriverResolver {
       return resolved;
     }
 
-    // 4 — Pentaho solution path  /jdbc-drivers/<jarName>
-    resolved = tryDirectory( solutionJdbcDriversDir(), jarName, "solution-path/" + JDBC_DRIVERS_SUBDIR );
-    if ( resolved != null ) {
-      return resolved;
-    }
-
-    // 5 — download from connection-management service
+    // 4 — download from connection-management service
     // If cache is enabled, check whether the JAR was already downloaded on a previous run
     // before making an outbound HTTP request to the connection-management service.
     boolean cacheEnabled = "Y".equalsIgnoreCase(
@@ -171,51 +164,6 @@ public final class JdbcDriverResolver {
       return props.getProperty( key );
     } catch ( Exception e ) {
       log.logDebug( "JdbcDriverResolver: could not read kettle.properties: " + e.getMessage() );
-      return null;
-    }
-  }
-
-  /**
-   * Resolves the {@code jdbc-drivers} sub-directory under the Pentaho solution path.
-   * Uses {@code PentahoSystem} when available (BA/EE server context); falls back to a
-   * relative path resolved from the JVM working directory for plain PDI (Carte/Studio).
-   */
-  private static String solutionJdbcDriversDir() {
-    // Try PentahoSystem (available when running inside the BA server)
-    try {
-      Class<?> sysClass = Class.forName( "org.pentaho.platform.engine.core.system.PentahoSystem" );
-      Object appCtx = sysClass.getMethod( "getApplicationContext" ).invoke( null );
-      if ( appCtx != null ) {
-        String solutionPath = (String) appCtx.getClass()
-          .getMethod( "getSolutionPath", String.class )
-          .invoke( appCtx, JDBC_DRIVERS_SUBDIR );
-        if ( solutionPath != null && !solutionPath.trim().isEmpty() ) {
-          return solutionPath.trim();
-        }
-      }
-    } catch ( Exception ignored ) {
-      // Not running inside BA server — fall through to relative path
-    }
-
-    // Fallback: resolve relative to the current working directory (Carte / Studio)
-    try {
-      String cwd = new File( "" ).getCanonicalPath();
-      // Walk up looking for "pentaho-server" or "data-integration" markers
-      Path p = Paths.get( cwd );
-      for ( int i = 0; i < 5; i++ ) {
-        Path candidate = p.resolve( JDBC_DRIVERS_SUBDIR );
-        if ( Files.isDirectory( candidate ) ) {
-          return candidate.toString();
-        }
-        if ( p.getParent() == null ) {
-          break;
-        }
-        p = p.getParent();
-      }
-      // Last resort: cwd/jdbc-drivers (may not exist yet — download will create it)
-      return Paths.get( cwd, JDBC_DRIVERS_SUBDIR ).toString();
-    } catch ( Exception e ) {
-      log.logDebug( "JdbcDriverResolver: could not determine solution path: " + e.getMessage() );
       return null;
     }
   }
@@ -371,8 +319,7 @@ public final class JdbcDriverResolver {
   private static Path resolveWritableSaveDir() {
     String[] candidates = {
       Const.getJdbcDriversDirectory(),          // NVL(getenv, getProperty) for JDBC_DRIVERS_DIRECTORY
-      kettleProperty( "JDBC_DRIVERS_DIRECTORY" ), // kettle.properties
-      solutionJdbcDriversDir()                  // PentahoSystem / CWD walk
+      kettleProperty( "JDBC_DRIVERS_DIRECTORY" )  // kettle.properties
     };
     for ( String dir : candidates ) {
       if ( dir != null && !dir.trim().isEmpty() ) {

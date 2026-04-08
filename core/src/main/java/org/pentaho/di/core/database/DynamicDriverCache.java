@@ -78,9 +78,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * so that {@code containsKey()} / {@code get()} are purely read-only and safe under the
  * shared read lock.
  */
-public enum DynamicDriverCache {
+public class DynamicDriverCache {
 
-  INSTANCE;
+  private static final DynamicDriverCache INSTANCE = new DynamicDriverCache();
+
+  private DynamicDriverCache() { }
 
   private static final LogChannelInterface log = LogChannel.GENERAL;
 
