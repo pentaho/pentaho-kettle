@@ -318,12 +318,7 @@ public final class JdbcDriverResolver {
                 }
 
                 // Move temp file to final location; fall back to non-atomic copy if needed.
-                try {
-                    Files.move( tempPath, savePath, StandardCopyOption.ATOMIC_MOVE,
-                            StandardCopyOption.REPLACE_EXISTING );
-                } catch ( java.nio.file.AtomicMoveNotSupportedException e ) {
-                    Files.move( tempPath, savePath, StandardCopyOption.REPLACE_EXISTING );
-                }
+                moveWithAtomicFallback( tempPath, savePath );
 
                 log.logBasic( "JdbcDriverResolver: download complete → " + savePath );
 
@@ -345,6 +340,18 @@ public final class JdbcDriverResolver {
             DOWNLOAD_LOCKS.remove( driverId + ".jar", lock );
         }
     }
+
+  /**
+   * Moves {@code source} to {@code target}, attempting an atomic move first and falling back to a
+   * non-atomic replace if the filesystem does not support atomic moves.
+   */
+  private static void moveWithAtomicFallback( Path source, Path target ) throws java.io.IOException {
+    try {
+      Files.move( source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING );
+    } catch ( java.nio.file.AtomicMoveNotSupportedException e ) {
+      Files.move( source, target, StandardCopyOption.REPLACE_EXISTING );
+    }
+  }
 
   /**
    * Deletes a file without throwing — used to clean up temp files on failure.
