@@ -590,18 +590,16 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     PluginInterface plugin =
       PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
 
-    Properties attributes = databaseMeta.getAttributes();
     Properties properties = databaseMeta.getConnectionProperties();
-
+    Properties attributes = databaseMeta.getAttributes();
     String jarPath = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_JAR );
     String driverId = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_ID );
 
-    boolean usingDynamicDriver = ( StringUtils.isNotBlank( driverId ) && Const.isFusionConnectionManagementEnabled() )
-            || ( StringUtils.isNotBlank( jarPath ) && Const.isFusionConnectionManagementEnabled()) ;
+    boolean usingDynamicDriver = ( StringUtils.isNotBlank( driverId ) || StringUtils.isNotBlank( jarPath ) )
+      && Const.isFusionConnectionManagementEnabled();
 
     // Resolved once here; reused when opening the connection below to avoid a second HTTP call.
     String jdbcDriverClass = null;
-
     if ( usingDynamicDriver ) {
       // connect() is public synchronized, and shareConnectionWith() is private synchronized,
       // so every code path that reaches here already holds the monitor on 'this'.
@@ -610,90 +608,13 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       jdbcDriverClass = driverMetadata.get( "driverClassName" ).toString();
       loadDynamicDriver( driverId, jarPath, jdbcDriverClass );
     } else {
-      try {
-        synchronized ( java.sql.DriverManager.class ) {
-          ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader( plugin );
-          Class<?> driverClass = classLoader.loadClass( classname );
-
-          // Only need DelegatingDriver for drivers not from our classloader
-          if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
-            String pluginId =
-              PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
-
-            Set<String> registeredDriversFromPlugin =
-              registeredDrivers.computeIfAbsent( pluginId, k -> new HashSet<>() );
-
-            // Prevent registering multiple delegating drivers for same class, plugin
-            if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
-              DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
-              registeredDriversFromPlugin.add( driverClass.getCanonicalName() );
-            }
-          } else {
-            // Trigger static register block in driver class
-            Class.forName( classname );
-          }
-        }
-      } catch ( NoClassDefFoundError | ClassNotFoundException e ) {
-        throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.Exception.UnableToFindClassMissingDriver", classname, plugin.getName() ), e );
-      } catch ( Exception e ) {
-        throw new KettleDatabaseException( "Exception while loading class", e );
-      }
+      loadStaticDriver( classname, plugin );
     }
 
     try {
-      String url;
-
-      if ( databaseMeta.isPartitioned() && !Utils.isEmpty( partitionId ) ) {
-        url = environmentSubstitute( databaseMeta.getURL( partitionId ) );
-      } else {
-        url = environmentSubstitute( databaseMeta.getURL() );
-      }
-
-      String clusterUsername = null;
-      String clusterPassword = null;
-      if ( databaseMeta.isPartitioned() && !Utils.isEmpty( partitionId ) ) {
-        // Get the cluster information...
-        PartitionDatabaseMeta partition = databaseMeta.getPartitionMeta( partitionId );
-        if ( partition != null ) {
-          clusterUsername = partition.getUsername();
-          clusterPassword = Encr.decryptPasswordOptionallyEncrypted( partition.getPassword() );
-        }
-      }
-
-      String username;
-      String password;
-      if ( !Utils.isEmpty( clusterUsername ) ) {
-        username = clusterUsername;
-        password = clusterPassword;
-      } else {
-        username = environmentSubstitute( databaseMeta.getUsername() );
-        password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( databaseMeta.getPassword() ) );
-      }
-
-      if ( databaseMeta.supportsOptionsInURL() ) {
-        if ( !Utils.isEmpty( username ) || !Utils.isEmpty( password ) ) {
-          // Allow for empty username with given password, in this case username must be given with one space
-          properties.put( "user", Const.NVL( username, " " ) );
-          properties.put( "password", Const.NVL( password, "" ) );
-          if ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerNativeDatabaseMeta ) {
-            // Handle MSSQL Instance name. Would rather this was handled in the dialect
-            // but cannot (without refactor) get to variablespace for variable substitution from
-            // a BaseDatabaseMeta subclass.
-            String instance = environmentSubstitute( databaseMeta.getSQLServerInstance() );
-            if ( !Utils.isEmpty( instance ) ) {
-              url += ";instanceName=" + instance;
-            }
-          }
-        } // else: Perhaps the username is in the URL or no username is required...
-      } else {
-        if ( !Utils.isEmpty( username ) ) {
-          properties.put( "user", username );
-        }
-        if ( !Utils.isEmpty( password ) ) {
-          properties.put( "password", password );
-        }
-      }
+      String url = resolveUrl( partitionId );
+      String[] credentials = resolveCredentials( partitionId );
+      url = applyCredentialsToProperties( url, credentials[0], credentials[1], properties );
 
       log.logDetailed( "Acquiring JDBC connection for database [" + databaseMeta.getName() + "] using driver class [" + classname + "]..." );
       long startJdbc = System.currentTimeMillis();
@@ -703,7 +624,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         connection = DriverManager.getConnection( url, properties );
       }
       log.logDetailed( "JDBC connection acquired for database [" + databaseMeta.getName() + "] in " + ( System.currentTimeMillis() - startJdbc ) + " ms" );
-
     } catch ( SQLException sqlException ) {
       closeDynamicClassLoader();
       throw new KettleDatabaseException(
@@ -712,6 +632,90 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       closeDynamicClassLoader();
       throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
     }
+  }
+
+  private void loadStaticDriver( String classname, PluginInterface plugin ) throws KettleDatabaseException {
+    try {
+      synchronized ( java.sql.DriverManager.class ) {
+        ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader( plugin );
+        Class<?> driverClass = classLoader.loadClass( classname );
+        // Only need DelegatingDriver for drivers not from our classloader
+        if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
+          registerDelegatingDriver( driverClass );
+        } else {
+          // Trigger static register block in driver class
+          Class.forName( classname );
+        }
+      }
+    } catch ( NoClassDefFoundError | ClassNotFoundException e ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG,
+        "Database.Exception.UnableToFindClassMissingDriver", classname, plugin.getName() ), e );
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException( "Exception while loading class", e );
+    }
+  }
+
+  private void registerDelegatingDriver( Class<?> driverClass ) throws Exception {
+    String pluginId =
+      PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+    Set<String> registeredDriversFromPlugin = registeredDrivers.computeIfAbsent( pluginId, k -> new HashSet<>() );
+    // Prevent registering multiple delegating drivers for same class, plugin
+    if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
+      DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
+      registeredDriversFromPlugin.add( driverClass.getCanonicalName() );
+    }
+  }
+
+  private String resolveUrl( String partitionId ) throws KettleDatabaseException {
+    if ( databaseMeta.isPartitioned() && !Utils.isEmpty( partitionId ) ) {
+      return environmentSubstitute( databaseMeta.getURL( partitionId ) );
+    }
+    return environmentSubstitute( databaseMeta.getURL() );
+  }
+
+  private String[] resolveCredentials( String partitionId ) {
+    if ( databaseMeta.isPartitioned() && !Utils.isEmpty( partitionId ) ) {
+      PartitionDatabaseMeta partition = databaseMeta.getPartitionMeta( partitionId );
+      if ( partition != null && !Utils.isEmpty( partition.getUsername() ) ) {
+        return new String[] { partition.getUsername(),
+          Encr.decryptPasswordOptionallyEncrypted( partition.getPassword() ) };
+      }
+    }
+    return new String[] {
+      environmentSubstitute( databaseMeta.getUsername() ),
+      Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( databaseMeta.getPassword() ) ) };
+  }
+
+  private String applyCredentialsToProperties( String url, String username, String password, Properties properties ) {
+    if ( databaseMeta.supportsOptionsInURL() ) {
+      if ( !Utils.isEmpty( username ) || !Utils.isEmpty( password ) ) {
+        // Allow for empty username with given password, in this case username must be given with one space
+        properties.put( "user", Const.NVL( username, " " ) );
+        properties.put( "password", Const.NVL( password, "" ) );
+        url = appendMssqlInstanceIfNeeded( url );
+      } // else: Perhaps the username is in the URL or no username is required...
+    } else {
+      if ( !Utils.isEmpty( username ) ) {
+        properties.put( "user", username );
+      }
+      if ( !Utils.isEmpty( password ) ) {
+        properties.put( "password", password );
+      }
+    }
+    return url;
+  }
+
+  private String appendMssqlInstanceIfNeeded( String url ) {
+    if ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerNativeDatabaseMeta ) {
+      // Handle MSSQL Instance name. Would rather this was handled in the dialect
+      // but cannot (without refactor) get to variablespace for variable substitution from
+      // a BaseDatabaseMeta subclass.
+      String instance = environmentSubstitute( databaseMeta.getSQLServerInstance() );
+      if ( !Utils.isEmpty( instance ) ) {
+        return url + ";instanceName=" + instance;
+      }
+    }
+    return url;
   }
 
   private static Map<String, Object> getMetadataFromDriver( String driverId ) throws KettleDatabaseException {
