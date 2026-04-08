@@ -662,8 +662,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     // Prevent registering multiple delegating drivers for same class, plugin
     if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
       try {
-        DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
-      } catch ( InstantiationException | IllegalAccessException | SQLException e ) {
+        DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.getDeclaredConstructor().newInstance() ) );
+      } catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | java.lang.reflect.InvocationTargetException | SQLException e ) {
         throw new KettleDatabaseException(
           "Unable to register delegating driver for class " + driverClass.getCanonicalName(), e );
       }
