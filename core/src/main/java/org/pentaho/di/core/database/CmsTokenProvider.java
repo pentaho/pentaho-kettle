@@ -51,9 +51,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * cached token) is lock-free. The slow path (token fetch) is guarded by {@code synchronized}
  * with a double-check to prevent concurrent callers from each issuing a separate token request.
  */
-public enum CmsTokenProvider {
+public class CmsTokenProvider {
 
-  INSTANCE;
+  private static final CmsTokenProvider INSTANCE = new CmsTokenProvider();
+
+  private CmsTokenProvider() { }
 
   private static final LogChannelInterface log = LogChannel.GENERAL;
 
