@@ -655,13 +655,18 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
   }
 
-  private void registerDelegatingDriver( Class<?> driverClass ) throws Exception {
+  private void registerDelegatingDriver( Class<?> driverClass ) throws KettleDatabaseException {
     String pluginId =
       PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
     Set<String> registeredDriversFromPlugin = registeredDrivers.computeIfAbsent( pluginId, k -> new HashSet<>() );
     // Prevent registering multiple delegating drivers for same class, plugin
     if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
-      DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
+      try {
+        DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
+      } catch ( InstantiationException | IllegalAccessException | SQLException e ) {
+        throw new KettleDatabaseException(
+          "Unable to register delegating driver for class " + driverClass.getCanonicalName(), e );
+      }
       registeredDriversFromPlugin.add( driverClass.getCanonicalName() );
     }
   }
