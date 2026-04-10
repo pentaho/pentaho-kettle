@@ -16,6 +16,7 @@ package org.pentaho.di.trans;
 
 import org.pentaho.di.base.IMetaFileCache;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
@@ -4471,7 +4472,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL( transMeta.getName(), "" ) );
 
     // setup fallbacks
-    if ( hasRepoDir ) {
+    if ( hasRepoDir && !isVfs() ) {
       variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, variables.getVariable(
         Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
     } else {
@@ -5785,6 +5786,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   public void setExecutingClustered( boolean executingClustered ) {
     this.executingClustered = executingClustered;
+  }
+
+  /**
+   * Checks if the transformation's filename has a VFS reference.
+   *
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public boolean isVfs() {
+    return this.transMeta != null && StringUtils.startsWith( transMeta.getFilename(), ConnectionFileProvider.ROOT_URI );
   }
 
   @Override

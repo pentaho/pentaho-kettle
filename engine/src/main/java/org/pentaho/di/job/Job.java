@@ -33,11 +33,13 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.base.IMetaFileCache;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
@@ -1475,7 +1477,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         .getRepositoryDirectory().getPath() : "" );
 
     // setup fallbacks
-    if ( hasRepoDir ) {
+    if ( hasRepoDir && !isVfs() ) {
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, variables.getVariable(
           Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
     } else {
@@ -1507,6 +1509,15 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       hasRepoDir ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
         : hasFilename ? Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY
         : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  /**
+   * Checks if the job's filename has a VFS reference.
+   *
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public boolean isVfs() {
+    return this.jobMeta != null && StringUtils.startsWith( jobMeta.getFilename(), ConnectionFileProvider.ROOT_URI );
   }
 
   /*

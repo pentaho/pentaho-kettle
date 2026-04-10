@@ -19,6 +19,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.ClusterSchemaManagementInterface;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -2303,6 +2304,25 @@ public class TransMeta extends AbstractMeta
   }
 
   /**
+   * Checks if the transformation's filename has a VFS reference.
+   *
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public boolean isVfsReference() {
+    return isVfsReference( getFilename() );
+  }
+
+  /**
+   * Checks if the specified filename has a VFS reference.
+   *
+   * @param filename the filename to check
+   * @return true if it is a VFS reference, false otherwise
+   */
+  public static boolean isVfsReference( String filename ) {
+    return StringUtils.startsWith( filename, ConnectionFileProvider.ROOT_URI );
+  }
+
+  /**
    * Checks (using the exact filename and transformation name) if the transformation is referenced by a repository. If
    * referenced by a repository, the exact filename should be empty and the exact transformation name should be
    * non-empty.
@@ -3086,6 +3106,35 @@ public class TransMeta extends AbstractMeta
    *
    * @param xmlStream
    *          the XML input stream from which to read the transformation definition
+   * @param fname
+   *          The filename
+   * @param rep
+   *          the repository
+   * @param setInternalVariables
+   *          whether to set internal variables as a result of the creation
+   * @param parentVariableSpace
+   *          the parent variable space
+   * @param prompter
+   *          a GUI component that will prompt the user if the new transformation will overwrite an existing one
+   * @throws KettleXMLException
+   *           if any errors occur during parsing of the specified stream
+   * @throws KettleMissingPluginsException
+   *           in case missing plugins were found (details are in the exception in that case)
+   */
+  public TransMeta( InputStream xmlStream, String fname, Repository rep, boolean setInternalVariables,
+                    VariableSpace parentVariableSpace, OverwritePrompter prompter )
+    throws KettleXMLException, KettleMissingPluginsException {
+    Document doc = XMLHandler.loadXMLFile( xmlStream, null, false, false );
+    Node transnode = XMLHandler.getSubNode( doc, XML_TAG );
+    loadXML( transnode, fname, rep, setInternalVariables, parentVariableSpace, prompter );
+  }
+
+
+  /**
+   * Instantiates a new transformation meta-data object.
+   *
+   * @param xmlStream
+   *          the XML input stream from which to read the transformation definition
    * @param rep
    *          the repository
    * @param setInternalVariables
@@ -3274,10 +3323,12 @@ public class TransMeta extends AbstractMeta
 
         // If we are not using a repository, we are getting the transformation from a file
         // Set the filename here so it can be used in variables for ALL aspects of the transformation FIX: PDI-8890
-        if ( null == rep ) {
+        // Though connected to repository, if filename starts with pvfs, we are using a VFS file, so set the filename
+        if ( null == rep || isVfsReference( fname ) ) {
           setFilename( fname );
-        } else {
-          // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
+        }
+        // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
+        if ( rep != null ) {
           setRepository( rep );
         }
 
@@ -3439,8 +3490,9 @@ public class TransMeta extends AbstractMeta
         transformationType = TransformationType.getTransformationTypeByCode( transTypeCode );
 
         // Optionally load the repository directory...
+        // Though connected to repository, if we are using a VFS file, not setting repository directory
         //
-        if ( rep != null ) {
+        if ( rep != null && !isVfsReference( fname ) ) {
           String directoryPath = XMLHandler.getTagValue( infonode, "directory" );
           if ( directoryPath != null ) {
             directory = rep.findDirectory( directoryPath );
@@ -5941,7 +5993,7 @@ public class TransMeta extends AbstractMeta
 
     boolean hasRepoDir = getRepositoryDirectory() != null && getRepository() != null;
 
-    if ( hasRepoDir ) {
+    if ( hasRepoDir && !isVfsReference() ) {
       variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
           variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
     } else {
@@ -6019,7 +6071,8 @@ public class TransMeta extends AbstractMeta
 
   protected void setInternalEntryCurrentDirectory() {
     variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
-      repository != null ?  Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
+      ( repository != null && !isVfsReference() ) ?
+        Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
         : filename != null ? Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY
         : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
