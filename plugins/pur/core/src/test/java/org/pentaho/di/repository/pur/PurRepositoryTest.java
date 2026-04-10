@@ -83,11 +83,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings( "squid:S1192" )
-public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
+public class PurRepositoryTest extends RepositoryTestLazySupport {
   private VariableSpace mockedVariableSpace;
   private HasDatabasesInterface mockedHasDbInterface;
 
-  public PurRepositoryUnitTest( Boolean lazyRepo ) {
+  public PurRepositoryTest( Boolean lazyRepo ) {
     super( lazyRepo );
   }
 
