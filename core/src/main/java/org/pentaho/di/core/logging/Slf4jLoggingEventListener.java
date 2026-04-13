@@ -124,7 +124,16 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
               subjects.add( name );
             }
           } else {
-            subjects.add( path + SEPARATOR + name );
+            // If the filename already includes the repository directory path, don't prepend it again.
+            // We only treat it as 'already includes' if the filename starts with the same directory boundary.
+            final boolean startsWithRepoPath = isNotBlank( name )
+              && ( name.startsWith( path + SEPARATOR ) || name.equals( path ) );
+
+            if ( startsWithRepoPath ) {
+              subjects.add( name );
+            } else {
+              subjects.add( path + SEPARATOR + name );
+            }
           }
         } else if ( name != null && name.length() > 0 ) {
           subjects.add( name );
