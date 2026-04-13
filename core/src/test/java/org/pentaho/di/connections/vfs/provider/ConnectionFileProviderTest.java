@@ -160,8 +160,9 @@ public class ConnectionFileProviderTest {
       }
       @Override
       public VariableSpace getADefaultVariableSpace() {
-        return null;
-
+        var vars = new Variables();
+        vars.initializeVariablesFrom( null );
+        return vars;
       }
       @Override
       public Set<Bowl> getParentBowls() {
