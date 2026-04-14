@@ -26,11 +26,7 @@ import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public class DatabaseDelegate extends AbstractDelegate implements ITransformer, SharedObjectAssembler<DatabaseMeta>,
     java.io.Serializable {
@@ -84,6 +80,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
 
     // Then the basic db information
     //
+    rootNode.setProperty( "ID", databaseMeta.getId() );
     rootNode.setProperty( PROP_TYPE, databaseMeta.getPluginId() );
     rootNode.setProperty( PROP_CONTYPE, DatabaseMeta.getAccessTypeDesc( databaseMeta.getAccessType() ) );
     rootNode.setProperty( PROP_HOST_NAME, databaseMeta.getHostname() );
@@ -149,13 +146,17 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
   public void dataNodeToElement( final DataNode rootNode, final RepositoryElementInterface element )
     throws KettleException {
     DatabaseMeta databaseMeta = (DatabaseMeta) element;
+
+    // if there is an ID - no need for the rest of the fields?
+    databaseMeta.setId( getString( rootNode, "ID" ) );
     databaseMeta.setDatabaseType( getString( rootNode, PROP_TYPE ) );
     databaseMeta.setAccessType( DatabaseMeta.getAccessType( getString( rootNode, PROP_CONTYPE ) ) );
     databaseMeta.setHostname( getString( rootNode, PROP_HOST_NAME ) );
     databaseMeta.setDBName( getString( rootNode, PROP_DATABASE_NAME ) );
     databaseMeta.setDBPort( getString( rootNode, PROP_PORT ) );
     databaseMeta.setUsername( getString( rootNode, PROP_USERNAME ) );
-    databaseMeta.setPassword( Encr.decryptPasswordOptionallyEncrypted( getString( rootNode, PROP_PASSWORD ) ) );
+    // in order for the spike to work we need to disable encryption
+    databaseMeta.setPassword( getString( rootNode, PROP_PASSWORD ) );
     databaseMeta.setServername( getString( rootNode, PROP_SERVERNAME ) );
     databaseMeta.setDataTablespace( getString( rootNode, PROP_DATA_TBS ) );
     databaseMeta.setIndexTablespace( getString( rootNode, PROP_INDEX_TBS ) );

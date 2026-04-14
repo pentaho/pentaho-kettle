@@ -119,9 +119,11 @@ public abstract class BaseSharedObjectsManager<T extends SharedObjectInterface<T
 
       sharedObjectsIO.saveSharedObject( sharedObjectType, name, node );
       Node readBackNode = sharedObjectsIO.getSharedObject( sharedObjectType, name );
-      T readBack = createSharedObjectUsingNode( readBackNode );
 
-      sharedObjectsMap.put( name, readBack.makeClone() );
+      if ( readBackNode != null ) {
+        T readBack = createSharedObjectUsingNode( readBackNode );
+        sharedObjectsMap.put( name, readBack.makeClone() );
+      }
     } finally {
       sharedObjectsIO.unlock();
     }

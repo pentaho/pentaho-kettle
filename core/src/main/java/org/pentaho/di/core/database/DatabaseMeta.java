@@ -14,6 +14,7 @@
 
 package org.pentaho.di.core.database;
 
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
@@ -505,6 +506,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * @return the system dependend database interface for this database metadata definition
    */
   public DatabaseInterface getDatabaseInterface() {
+    // if database interface is a proxy one, and it has loaded the actual one - return it
+    if ( databaseInterface instanceof ConnectionManagementServiceMeta cmsMeta && cmsMeta.isDataLoaded()) {
+      return cmsMeta.getDelegateDatabaseInterface();
+    }
+
     return databaseInterface;
   }
 
@@ -548,6 +554,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    *           when the type could not be found or referenced.
    */
   private static final DatabaseInterface findDatabaseInterface( String databaseTypeDesc ) throws KettleDatabaseException {
+    if ( StringUtils.isBlank( databaseTypeDesc ) ) {
+      return new ConnectionManagementServiceMeta();
+    }
+
     PluginRegistry registry = PluginRegistry.getInstance();
     PluginInterface plugin = registry.getPlugin( DatabasePluginType.class, databaseTypeDesc );
     if ( plugin == null ) {
@@ -590,9 +600,16 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public void replaceMeta( DatabaseMeta databaseMeta, boolean cloneUpdateFlag ) {
     this.setValues(
-      databaseMeta.getName(), databaseMeta.getPluginId(), databaseMeta.getAccessTypeDesc(), databaseMeta
-        .getHostname(), databaseMeta.getDatabaseName(), databaseMeta.getDatabasePortNumberString(),
-      databaseMeta.getUsername(), databaseMeta.getPassword() );
+            databaseMeta.getId(),
+            databaseMeta.getName(),
+            databaseMeta.getPluginId(),
+            databaseMeta.getAccessTypeDesc(),
+            databaseMeta.getHostname(),
+            databaseMeta.getDatabaseName(),
+            databaseMeta.getDatabasePortNumberString(),
+            databaseMeta.getUsername(),
+            databaseMeta.getPassword()
+    );
     this.setServername( databaseMeta.getServername() );
     this.setDataTablespace( databaseMeta.getDataTablespace() );
     this.setIndexTablespace( databaseMeta.getIndexTablespace() );
@@ -610,7 +627,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     replaceMeta( databaseMeta, false );
   }
 
-  public void setValues( String name, String type, String access, String host, String db, String port,
+  public void setValues( String name, String type, String access, String host, String db, String port, String user, String pass ) {
+    setValues( null, name, type, access, host, db, port, user, pass);
+  }
+
+  public void setValues( String id, String name, String type, String access, String host, String db, String port,
     String user, String pass ) {
     try {
       databaseInterface = getDatabaseInterface( type );
@@ -618,6 +639,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       throw new RuntimeException( "Database type not found!", kde );
     }
 
+    setId( id );
     setName( name );
     setAccessType( getAccessType( access ) );
     setHostname( host );
@@ -638,6 +660,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       throw new RuntimeException( "Database type [" + type + "] not found!", kde );
     }
 
+    setId( oldInterface.getId() );
     setName( oldInterface.getName() );
     setDisplayName( oldInterface.getDisplayName() );
     setAccessType( oldInterface.getAccessType() );
@@ -654,6 +677,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public void setValues( DatabaseMeta info ) {
     databaseInterface = (DatabaseInterface) info.databaseInterface.clone();
+  }
+
+  public void setId( String id) {
+    databaseInterface.setId( id );
+  }
+
+  public String getId() {
+    return databaseInterface.getId();
   }
 
   /**
@@ -970,6 +1001,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       
       setDefaultAttributesValues();
 
+      setId( XMLHandler.getTagValue( con, "id" ) );
       setName( XMLHandler.getTagValue( con, "name" ) );
       setDisplayName( getName() );
       setHostname( XMLHandler.getTagValue( con, "server" ) );
@@ -1030,6 +1062,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     StringBuilder retval = new StringBuilder( 250 );
 
     retval.append( "  <" ).append( XML_TAG ).append( '>' ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "id", getId() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "server", getHostname() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "type", getPluginId() ) );
@@ -1072,6 +1105,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
     retval.append( "  </" + XML_TAG + ">" ).append( Const.CR );
     return retval.toString();
+  }
+
+  public boolean isConnectionManagementServiceConnection() {
+    return databaseInterface instanceof ConnectionManagementServiceMeta;
   }
 
   @Override

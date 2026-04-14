@@ -832,6 +832,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     transMeta.activateParameters();
     ConnectionUtil.init( transMeta );
 
+    ConnectionUtil.initConnectionManagementServiceConnections( transMeta );
+
     if ( transMeta.getName() == null ) {
       if ( transMeta.getFilename() != null ) {
         log.logBasic( BaseMessages.getString( PKG, "Trans.Log.DispacthingStartedForFilename", transMeta

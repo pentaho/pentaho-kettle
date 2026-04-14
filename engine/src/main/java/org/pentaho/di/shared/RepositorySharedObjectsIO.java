@@ -202,23 +202,19 @@ public class RepositorySharedObjectsIO implements SharedObjectsIO {
 
   @Override
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
-    SharedObjectType objectType = SharedObjectType.valueOf( type.toUpperCase() );
+    var objectType = SharedObjectType.valueOf( type.toUpperCase() );
+    var repoElement = switch (objectType) {
+        case CONNECTION -> new DatabaseMeta(node);
+//      // in case we do not want to persist database meta
+//        {
+//          var dbMeta = new DatabaseMeta(node);
+//          yield dbMeta.isConnectionManagementServiceConnection() ? null : dbMeta;
+//        }
+        case SLAVESERVER -> new SlaveServer(node);
+        case PARTITIONSCHEMA -> new PartitionSchema(node);
+        case CLUSTERSCHEMA -> new ClusterSchema(node, slaveServerSupplier.get());
+    };
 
-    RepositoryElementInterface repoElement = null;
-    switch ( objectType ) {
-      case CONNECTION:
-        repoElement = new DatabaseMeta( node );
-        break;
-      case SLAVESERVER:
-        repoElement = new SlaveServer( node );
-        break;
-      case PARTITIONSCHEMA:
-        repoElement = new PartitionSchema( node );
-        break;
-      case CLUSTERSCHEMA:
-        repoElement = new ClusterSchema( node, slaveServerSupplier.get() );
-        break;
-    }
     if ( repoElement != null ) {
       repository.save( repoElement, Const.VERSION_COMMENT_EDIT_VERSION, null );
     }

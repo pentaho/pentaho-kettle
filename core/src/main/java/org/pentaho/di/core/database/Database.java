@@ -583,7 +583,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         password = clusterPassword;
       } else {
         username = environmentSubstitute( databaseMeta.getUsername() );
-        password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( databaseMeta.getPassword() ) );
+
+        // In order for Spike to work passwords do not use encryption
+        password = environmentSubstitute( databaseMeta.getPassword() );
       }
 
       Properties properties = databaseMeta.getConnectionProperties();
