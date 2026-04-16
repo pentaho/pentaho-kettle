@@ -1,7 +1,7 @@
-name: Pull request workflow
+name: Merge workflow
 
 on:
-  pull_request:
+  push:
     branches: [ "main" ]
 
   workflow_dispatch:
