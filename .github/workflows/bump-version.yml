@@ -67,8 +67,6 @@ jobs:
           # Reconstruct version, joining the parts by dots
           new_version=$(IFS='.'; echo "${parts[*]}")
 
-          clean_new_version="$new_version"
-
           # Reattach the -SNAPSHOT suffix if it was present
           if [[ "$current_version" == *-SNAPSHOT ]]; then
             new_version="$new_version-SNAPSHOT"
@@ -76,10 +74,8 @@ jobs:
 
           echo "Base version: $base_version"
           echo "New version: $new_version"
-          echo "Clean new version: $clean_new_version"
           echo "base_version=$base_version" >> $GITHUB_OUTPUT
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
-          echo "clean_new_version=$clean_new_version" >> $GITHUB_OUTPUT
 
       - name: Update Maven version
         run: mvn versions:set -DnewVersion=${{ steps.increment-version.outputs.new_version }} -DprocessAllModules=true -DgenerateBackupPoms=false
