@@ -39,23 +39,18 @@ jobs:
       - name: Collect built artifact names
         id: get-artifacts
         run: |
-          # Collect groupId:artifactId:version for every module in the reactor
-          group_id=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout --non-recursive)
-          version="${{ steps.get-version.outputs.base_version }}"
-
-          artifact_ids=$(mvn -q \
+          # Collect full groupId:artifactId:version per module from the reactor.
+          # Each module may declare its own groupId (e.g. pentaho-kettle vs org.pentaho.di.plugins),
+          # so we cannot reuse the root groupId — exec:exec is called with all three expressions.
+          artifacts=$(mvn -q \
             -Dexec.executable='echo' \
-            -Dexec.args='${project.artifactId}' \
-            exec:exec 2>/dev/null)
-
-          # Build comma-separated list of groupId:artifactId:version coordinates
-          artifacts=$(echo "$artifact_ids" | awk -v g="$group_id" -v v="$version" \
-            'NF {print g ":" $1 ":" v}' | paste -sd ',')
+            -Dexec.args='${project.groupId}:${project.artifactId}:${project.version}' \
+            exec:exec 2>/dev/null | grep -v '^$' | paste -sd ',')
 
           echo "Collected artifacts: $artifacts"
           echo "artifacts=$artifacts" >> $GITHUB_OUTPUT
 
-  reusable-pr-workflow:
+  reusable-merge-workflow:
     needs: resolve-version
     uses: pentaho/actions-common/.github/workflows/merge.yml@stable
     with:
@@ -71,7 +66,7 @@ jobs:
     # target workflow does not yet exist in pentaho/pentaho-platform).
     if: vars.TRIGGER_DOWNSTREAM_ENABLED == 'true'
     runs-on: [ k8s ]
-    needs: [ resolve-version, reusable-pr-workflow ]
+    needs: [ resolve-version, reusable-merge-workflow ]
     steps:
       - name: Dispatch workflow in pentaho/pentaho-platform
         uses: actions/github-script@v7
