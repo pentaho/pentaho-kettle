@@ -40,6 +40,8 @@ jobs:
 
       - name: Checkout source repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PENTAHO_BUILDGUY }}
 
       - name: Get current version
         id: get-version
