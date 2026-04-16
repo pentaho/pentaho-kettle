@@ -24,20 +24,32 @@ import org.pentaho.xul.swt.tab.TabItem;
 public class SpoonEEJobDelegate extends SpoonJobDelegate implements java.io.Serializable {
 
   private static final long serialVersionUID = 5658845199854709546L; /* EESOURCE: UPDATE SERIALVERUID */
-  ILockService service;
 
   public SpoonEEJobDelegate( Spoon spoon ) {
     super( spoon );
+  }
+
+  /**
+   * Retrieves the current {@link ILockService} from the repository. This must be fetched each time rather than
+   * cached, because after a session timeout and reconnection the repository creates new service instances backed
+   * by fresh web-service stubs. Holding a stale reference would cause
+   * {@code "close method has already been invoked"} errors.
+   *
+   * @return the lock service, or {@code null} if unavailable
+   */
+  private ILockService getLockService() {
     Repository repository = spoon.getRepository();
+    if ( repository == null ) {
+      return null;
+    }
     try {
       if ( repository.hasService( ILockService.class ) ) {
-        service = (ILockService) repository.getService( ILockService.class );
-      } else {
-        throw new IllegalStateException();
+        return (ILockService) repository.getService( ILockService.class );
       }
     } catch ( KettleException e ) {
-      throw new RuntimeException( e );
+      log.logDebug( "Unable to retrieve ILockService from repository", e );
     }
+    return null;
   }
 
   @Override
@@ -47,6 +59,7 @@ public class SpoonEEJobDelegate extends SpoonJobDelegate implements java.io.Seri
     if ( tabEntry != null ) {
       TabItem tabItem = tabEntry.getTabItem();
       try {
+        ILockService service = getLockService();
         if ( ( service != null ) && ( jobMeta.getObjectId() != null )
             && ( service.getJobLock( jobMeta.getObjectId() ) != null ) ) {
           tabItem.setImage( GUIResource.getInstance().getImageLocked() );

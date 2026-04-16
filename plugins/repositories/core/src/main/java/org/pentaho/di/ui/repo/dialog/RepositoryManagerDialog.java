@@ -67,6 +67,11 @@ import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
+import org.pentaho.di.ui.repo.service.BrowserAuthenticationService;
+import org.pentaho.di.ui.repo.util.PurRepositoryUtils;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 import java.util.ArrayList;
@@ -75,6 +80,9 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -88,6 +96,7 @@ import java.util.stream.Stream;
 public class RepositoryManagerDialog extends Dialog {
 
   public static final int MARGIN = 15;
+  private static final String DISPLAY_NAME = "displayName";
 
   protected Shell dialog;
   protected Display display;
@@ -118,6 +127,10 @@ public class RepositoryManagerDialog extends Dialog {
 
   private static final String HELP_URL =
     Const.getDocUrl( "use-a-pentaho-repository-in-pdi" );
+  private static final String BROWSER_LOGIN_FAILED_KEY = "repositories.browserLogin.failed";
+  private static final String BROWSER_LOGIN_ERROR_TITLE_KEY = "repositories.error.browserLogin.title";
+  private static final String CONFIG_ERROR_TITLE_KEY = "repositories.error.configuration.title";
+  private static final String CONFIG_SSO_URL_MISSING_KEY = "repositories.error.configuration.ssoUrlMissing";
 
   public RepositoryManagerDialog( Shell parent ) {
     super( parent );
@@ -317,7 +330,7 @@ public class RepositoryManagerDialog extends Dialog {
 
     setToList = () -> {
       lblHeader.setText( BaseMessages.getString( PKG, "repositories.repos.label" ) );
-      lblNote.setText( "Manage Pentaho repositories" );
+      lblNote.setText( BaseMessages.getString( PKG, "repositories.manager.note" ) );
 
 
       refreshList.run();
@@ -533,8 +546,98 @@ public class RepositoryManagerDialog extends Dialog {
       repoColumn.getColumn().setWidth( Math.max( 370, r.width - defaultColumn.getColumn().getWidth() ) );
     } );
 
+    // Add context menu for repository list
+    Menu contextMenu = new Menu( repoList.getTable() );
+    repoList.getTable().setMenu( contextMenu );
 
-    // Listener for the connect button
+    MenuItem loginUsernamePasswordItem = new MenuItem( contextMenu, SWT.PUSH );
+    loginUsernamePasswordItem.setText( BaseMessages.getString( PKG, "repositories.login.usernamePassword" ) );
+    loginUsernamePasswordItem.addSelectionListener( new SelectionAdapter() {
+      @SuppressWarnings( "unchecked" )
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        IStructuredSelection sel = repoList.getStructuredSelection();
+        if ( !sel.isEmpty() ) {
+          JSONObject item = (JSONObject) sel.getFirstElement();
+          String repoName = item.get( DISPLAY_NAME ).toString();
+          new RepositoryConnectionDialog( dialog.getShell() ).createDialog( repoName );
+        }
+      }
+    } );
+
+    MenuItem loginBrowserItem = new MenuItem( contextMenu, SWT.PUSH );
+    loginBrowserItem.setText( BaseMessages.getString( PKG, "repositories.login.ssoMenu" ) );
+    loginBrowserItem.addSelectionListener( new SelectionAdapter() {
+      @SuppressWarnings( "unchecked" )
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        IStructuredSelection sel = repoList.getStructuredSelection();
+        if ( !sel.isEmpty() ) {
+          JSONObject item = (JSONObject) sel.getFirstElement();
+          String repoName = item.get( DISPLAY_NAME ).toString();
+          log.logDebug( "Browser login context menu item selected for: " + repoName );
+
+          try {
+            // Try to get repository metadata - use fresh instance if needed
+            RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repoName );
+            if ( repositoryMeta == null ) {
+              log.logDebug( "Repository metadata not found in passed instance, reloading from disk" );
+              // Reload from disk which maintains current state
+              repositoryMeta = reloadRepositoriesMetadata( repoName );
+            }
+            log.logDebug( "Repository metadata for browser login: " + ( repositoryMeta != null ? "found" : "null" ) );
+
+            if ( repositoryMeta != null && PurRepositoryUtils.supportsBrowserAuth( repositoryMeta ) ) {
+              String serverUrl = PurRepositoryUtils.getServerUrl( repositoryMeta );
+              String authorizationUri = PurRepositoryUtils.getSsoAuthorizationUri( repositoryMeta );
+              log.logDebug( "SSO Context Menu: Got authorizationUri from metadata: " + authorizationUri );
+              if ( Utils.isEmpty( authorizationUri ) ) {
+                authorizationUri = (String) item.getOrDefault( "ssoAuthorizationUri", null );
+                log.logDebug( "SSO Context Menu: authorizationUri was empty, fallback to row JSON: " + authorizationUri );
+              }
+              log.logDebug( "SSO Context Menu: Server URL for browser login: " + ( serverUrl != null ? serverUrl : "null" ) );
+              log.logDebug( "SSO Context Menu: Final authorizationUri to use: " + ( authorizationUri != null ? authorizationUri : "null" ) );
+
+              if ( serverUrl != null && !serverUrl.trim().isEmpty() ) {
+                openBrowserLogin( repoName, serverUrl, repositoriesMeta, authorizationUri );
+              } else {
+                log.logError( "Server URL is not configured for browser login on: " + repoName );
+                showErrorDialog(
+                  BaseMessages.getString( PKG, CONFIG_ERROR_TITLE_KEY ),
+                  BaseMessages.getString( PKG, CONFIG_SSO_URL_MISSING_KEY ) );
+              }
+            } else {
+              log.logError( "Browser authentication not supported for: " + repoName );
+              showErrorDialog( BaseMessages.getString( PKG, "repositories.error.notSupported.title" ), BaseMessages.getString( PKG, "repositories.error.notSupported.browserAuth" ) );
+            }
+          } catch ( Exception ex ) {
+            showErrorDialog( BaseMessages.getString( PKG, BROWSER_LOGIN_ERROR_TITLE_KEY ), BaseMessages.getString( PKG, BROWSER_LOGIN_FAILED_KEY, ex.getMessage() ) );
+          }
+        }
+      }
+    } );
+
+    // Update context menu dynamically based on selected repository
+    contextMenu.addListener( SWT.Show, event -> {
+      IStructuredSelection sel = repoList.getStructuredSelection();
+      if ( !sel.isEmpty() ) {
+        JSONObject item = (JSONObject) sel.getFirstElement();
+        String repoName = item.get( DISPLAY_NAME ).toString();
+        RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repoName );
+        
+        // Check if browser login is supported
+        boolean browserAuthSupported = PurRepositoryUtils.supportsBrowserAuth( repositoryMeta );
+        loginBrowserItem.setEnabled( browserAuthSupported );
+        
+        if ( browserAuthSupported ) {
+          loginBrowserItem.setText( BaseMessages.getString( PKG, "repositories.login.ssoAvailable" ) );
+        } else {
+          loginBrowserItem.setText( BaseMessages.getString( PKG, "repositories.login.browserNotAvailable" ) );
+        }
+      }
+    } );
+
+    // Listener for the connect button - show popup menu with connection options
     btnConnect.addSelectionListener( new SelectionAdapter() {
       @SuppressWarnings( "unchecked" )
       @Override
@@ -542,13 +645,29 @@ public class RepositoryManagerDialog extends Dialog {
         IStructuredSelection sel = repoList.getStructuredSelection();
         if ( !sel.isEmpty() ) {
           JSONObject item = (JSONObject) sel.getFirstElement();
-          String repoName = item.get( "displayName" ).toString();
+          String repoName = item.get( DISPLAY_NAME ).toString();
+          log.logDebug( "Connect button clicked for repository: " + repoName );
+
+          // Try to get repository metadata - use controller's instance if passed one is stale
           RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repoName );
+          if ( repositoryMeta == null ) {
+            log.logDebug( "Repository metadata not found in passed instance, reloading from controller" );
+            // Reload from controller which maintains current state
+            RepositoriesMeta currentReposMeta = new RepositoriesMeta();
+            try {
+              currentReposMeta.readData();
+              repositoryMeta = currentReposMeta.findRepository( repoName );
+            } catch ( KettleException ke ) {
+              log.logDebug( "Error reloading repositories metadata", ke );
+            }
+          }
+          log.logDebug( "Repository metadata lookup result: " + ( repositoryMeta != null ? "found" : "null" ) );
+
           if ( item.get( "id" ) != null && item.get( "id" ).toString()
             .equals( BaseMessages.getString( PKG, "repositories.kettleFileRepository.name" ) ) ) {
             if ( repositoryMeta == null ) {
               repositoryMeta =
-                new KettleFileRepositoryMeta( item.get( "id" ).toString(), item.get( "displayName" ).toString(),
+                new KettleFileRepositoryMeta( item.get( "id" ).toString(), item.get( DISPLAY_NAME ).toString(),
                   item.get( "description" ).toString(), item.get( "location" ).toString() );
             }
             try {
@@ -558,7 +677,49 @@ public class RepositoryManagerDialog extends Dialog {
               log.logError( BaseMessages.getString( PKG, "repositories.kettleFileRepositoryConnect.exception" ), ke );
             }
           } else {
-            new RepositoryConnectionDialog( dialog.getShell() ).createDialog( repoName );
+            // For enterprise repository, check the authMethod and connect accordingly
+            String authMethod = (String) item.getOrDefault( "authMethod", "USERNAME_PASSWORD" );
+            log.logDebug( "Repository authentication method: " + authMethod );
+
+            if ( "SSO".equals( authMethod ) ) {
+              // Connect using SSO
+              if ( repositoryMeta == null ) {
+                log.logError( "Cannot connect using SSO: Repository metadata is null for: " + repoName );
+                showErrorDialog(
+                  BaseMessages.getString( PKG, "repositories.error.connection.title" ),
+                  BaseMessages.getString( PKG, "repositories.error.connection.repoMetaMissing", repoName )
+                );
+                return;
+              }
+
+              String serverUrl = PurRepositoryUtils.getServerUrl( repositoryMeta );
+              String authorizationUri = PurRepositoryUtils.getSsoAuthorizationUri( repositoryMeta );
+              log.logDebug( "SSO Connect: Got authorizationUri from metadata: " + authorizationUri );
+              if ( Utils.isEmpty( authorizationUri ) ) {
+                authorizationUri = (String) item.getOrDefault( "ssoAuthorizationUri", null );
+                log.logDebug( "SSO Connect: authorizationUri was empty, fallback to row JSON: " + authorizationUri );
+              }
+              log.logDebug( "Server URL for SSO: " + ( serverUrl != null ? serverUrl : "null" ) );
+              log.logDebug( "Final authorizationUri to use: " + ( authorizationUri != null ? authorizationUri : "null" ) );
+
+              if ( serverUrl != null && !serverUrl.trim().isEmpty() ) {
+                try {
+                  openBrowserLogin( repoName, serverUrl, repositoriesMeta, authorizationUri );
+                } catch ( Exception ex ) {
+                  log.logError( "Error opening browser login", ex );
+                  showErrorDialog( BaseMessages.getString( PKG, BROWSER_LOGIN_ERROR_TITLE_KEY ),
+                    BaseMessages.getString( PKG, BROWSER_LOGIN_FAILED_KEY, ex.getMessage() ) );
+                }
+              } else {
+                log.logError( "Cannot connect using SSO: Server URL is not configured for: " + repoName );
+                showErrorDialog( BaseMessages.getString( PKG, CONFIG_ERROR_TITLE_KEY ),
+                  BaseMessages.getString( PKG, CONFIG_SSO_URL_MISSING_KEY ) );
+              }
+            } else {
+              // Connect with Username/Password (default)
+              log.logDebug( "Opening username/password login dialog for: " + repoName );
+              new RepositoryConnectionDialog( dialog.getShell() ).createDialog( repoName );
+            }
           }
 
         }
@@ -589,8 +750,8 @@ public class RepositoryManagerDialog extends Dialog {
           String name = (String) item.getOrDefault( BaseRepositoryMeta.DISPLAY_NAME, "" );
           if ( !Utils.isEmpty( name ) ) {
 
-            String deleteMessage = String.format( "Are you sure you wish to remove the '%s' repository?", name );
-
+            String deleteMessage =
+              BaseMessages.getString( PKG, "repositories.confirm.deleteRepo", name );
             MessageBox delBox = new MessageBox( dialog, SWT.ICON_WARNING | SWT.YES | SWT.NO );
             delBox.setText( BaseMessages.getString( PKG, "repositories.delrepo.label" ) );
             delBox.setMessage( deleteMessage );
@@ -649,7 +810,7 @@ public class RepositoryManagerDialog extends Dialog {
     j.putAll( results );
     try {
       RepositoryConnectController.getInstance().createRepository( id, results );
-      log.logBasic( "Repository: " + results.get( "displayName" ) + " creation successfully" );
+      log.logBasic( "Repository: " + results.get( DISPLAY_NAME ) + " creation successfully" );
     } catch ( Exception e ) {
       log.logError( "Error creating repository", e );
     }
@@ -672,6 +833,24 @@ public class RepositoryManagerDialog extends Dialog {
     }
     //Switch back to the list view upon successful create
     setToList.run();
+  }
+
+  /**
+   * Reloads repository metadata from disk for the specified repository name.
+   * This is useful when the passed instance is stale or incomplete.
+   *
+   * @param repoName the name of the repository to reload
+   * @return the loaded RepositoryMeta, or null if not found or error occurs
+   */
+  private RepositoryMeta reloadRepositoriesMetadata( String repoName ) {
+    RepositoriesMeta currentReposMeta = new RepositoriesMeta();
+    try {
+      currentReposMeta.readData();
+      return currentReposMeta.findRepository( repoName );
+    } catch ( KettleException ke ) {
+      log.logDebug( "Error reloading repositories metadata", ke );
+      return null;
+    }
   }
 
   private void onDeleteRepository( String repoName ) {
@@ -716,5 +895,115 @@ public class RepositoryManagerDialog extends Dialog {
     public BaseRepoFormComposite getComposite() {
       return composite;
     }
+  }
+
+  /**
+   * Opens a browser login using HTTP callback for repository authentication.
+   * Uses BrowserAuthenticationService which opens the system browser and starts
+   * a local HTTP server to receive the authentication callback from Pentaho server.
+   *
+   * @param repoName The name of the repository to connect to
+   * @param serverUrl The server URL for authentication
+   * @param repositoriesMeta The repository metadata
+   */
+  public void openBrowserLogin( String repoName, String serverUrl, RepositoriesMeta repositoriesMeta,
+                                String authorizationUri ) {
+    // Validate serverUrl as a URI up-front, before closing the dialog or launching the browser.
+    // SpoonSessionManager.getAuthenticationContext(String) returns null for malformed URLs,
+    // so catch that early with a clear error rather than NPE-ing in the async callback.
+    java.net.URI serverUri;
+    try {
+      serverUri = new java.net.URI( serverUrl );
+      if ( serverUri.getHost() == null ) {
+        throw new java.net.URISyntaxException( serverUrl, "missing host" );
+      }
+    } catch ( java.net.URISyntaxException e ) {
+      log.logError( "Invalid server URL for browser login: " + serverUrl, e );
+      showErrorDialog(
+        BaseMessages.getString( PKG, CONFIG_ERROR_TITLE_KEY ),
+        BaseMessages.getString( PKG, "repositories.error.configuration.invalidServerUrl", serverUrl ) );
+      return;
+    }
+
+    try {
+      if ( dialog != null && !dialog.isDisposed() ) {
+        dialog.close();
+      }
+
+      BrowserAuthenticationService authService =
+          new BrowserAuthenticationService();
+
+      CompletableFuture<BrowserAuthenticationService.SessionInfo>
+          future = authService.authenticate( serverUrl, authorizationUri );
+
+      future.thenAccept( sessionInfo ->
+        Display.getDefault().asyncExec( () -> {
+          try {
+            AuthenticationContext authContext =
+              SpoonSessionManager.getInstance()
+                .getAuthenticationContext( serverUrl );
+            if ( authContext == null ) {
+              log.logError( "Failed to create authentication context for server URL: " + serverUrl );
+              showErrorDialog(
+                BaseMessages.getString( PKG, "repositories.error.connectionFailed.title" ),
+                BaseMessages.getString( PKG, "repositories.error.configuration.invalidServerUrl", serverUrl ) );
+              return;
+            }
+            authContext.storeJSessionId( sessionInfo.getJsessionId() );
+
+            RepositoryConnectController.getInstance().connectToRepository(
+              repoName,
+              sessionInfo.getUsername(),
+              AuthenticationContext.SESSION_AUTH_TOKEN
+            );
+          } catch ( Exception e ) {
+            log.logError( "Error connecting to repository after browser authentication", e );
+            showErrorDialog(
+              BaseMessages.getString( PKG, "repositories.error.connectionFailed.title" ),
+              BaseMessages.getString( PKG, "repositories.error.connectionFailed.afterAuth", e.getMessage() ) );
+          }
+        } )
+      ).exceptionally( error -> {
+        log.logError( "Browser authentication failed", error );
+        Display.getDefault().asyncExec( () -> showErrorDialog(
+          BaseMessages.getString( PKG, "repositories.error.authenticationFailed.title" ),
+          formatBrowserAuthErrorMessage( error ) ) );
+        return null;
+      } );
+    } catch ( Exception e ) {
+      showErrorDialog( BaseMessages.getString( PKG, BROWSER_LOGIN_ERROR_TITLE_KEY ), BaseMessages.getString( PKG, BROWSER_LOGIN_FAILED_KEY, e.getMessage() ) );
+    }
+  }
+
+  private void showErrorDialog( String title, String message ) {
+    MessageBox errorBox = new MessageBox( Spoon.getInstance().getShell(), SWT.ICON_ERROR | SWT.OK );
+    errorBox.setText( title );
+    errorBox.setMessage( message );
+    errorBox.open();
+  }
+
+  private String formatBrowserAuthErrorMessage( Throwable error ) {
+    Throwable rootCause = unwrapRootCause( error );
+    if ( rootCause instanceof TimeoutException ) {
+      return BaseMessages.getString( PKG, "repositories.error.authenticationTimedOutMessage" );
+    }
+
+    String details = rootCause != null && rootCause.getMessage() != null
+      ? rootCause.getMessage().trim()
+      : null;
+
+    if ( details == null || details.isEmpty() ) {
+      return BaseMessages.getString( PKG, "repositories.error.authenticationGenericError" );
+    }
+
+    return BaseMessages.getString( PKG, "repositories.error.authenticationErrorWithDetails", details );
+  }
+
+  private Throwable unwrapRootCause( Throwable throwable ) {
+    Throwable current = throwable;
+    while ( current instanceof CompletionException && current.getCause() != null ) {
+      current = current.getCause();
+    }
+    return current;
   }
 }
