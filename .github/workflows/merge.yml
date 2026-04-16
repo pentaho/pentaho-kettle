@@ -1,0 +1,97 @@
+name: Pull request workflow
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  resolve-version:
+    runs-on: [ k8s ]
+    container:
+      image: ${{ vars.PDIA_AC_CONTAINER_IMAGE }}
+      credentials:
+        username: ${{ secrets.PENTAHO_CICD_ONE_USER }}
+        password: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
+    outputs:
+      base_version: ${{ steps.get-version.outputs.base_version }}
+      artifacts: ${{ steps.get-artifacts.outputs.artifacts }}
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+
+      - name: Retrieve settings file
+        id: common-maven
+        uses: pentaho/actions-common@stable
+
+      - name: Copy settings.xml to .m2 directory
+        shell: sh
+        run: cp "${{ steps.common-maven.outputs.settings-file-path }}" /root/.m2
+
+      - name: Get current version from pom.xml
+        id: get-version
+        run: |
+          base_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "Resolved version: $base_version"
+          echo "base_version=$base_version" >> $GITHUB_OUTPUT
+
+      - name: Collect built artifact names
+        id: get-artifacts
+        run: |
+          # Collect groupId:artifactId:version for every module in the reactor
+          group_id=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout --non-recursive)
+          version="${{ steps.get-version.outputs.base_version }}"
+
+          artifact_ids=$(mvn -q \
+            -Dexec.executable='echo' \
+            -Dexec.args='${project.artifactId}' \
+            exec:exec 2>/dev/null)
+
+          # Build comma-separated list of groupId:artifactId:version coordinates
+          artifacts=$(echo "$artifact_ids" | awk -v g="$group_id" -v v="$version" \
+            'NF {print g ":" $1 ":" v}' | paste -sd ',')
+
+          echo "Collected artifacts: $artifacts"
+          echo "artifacts=$artifacts" >> $GITHUB_OUTPUT
+
+  reusable-pr-workflow:
+    needs: resolve-version
+    uses: pentaho/actions-common/.github/workflows/merge.yml@stable
+    with:
+      additional_mvn_directives: "jib:buildTar"
+      modules_to_build: "."
+      base_version: ${{ needs.resolve-version.outputs.base_version }}
+    secrets: inherit
+
+  trigger-downstream:
+    name: Trigger downstream pentaho-platform workflow
+    # Set repository variable TRIGGER_DOWNSTREAM_ENABLED=true to enable this job.
+    # Leave it unset or set to any other value to skip (safe default while the
+    # target workflow does not yet exist in pentaho/pentaho-platform).
+    if: vars.TRIGGER_DOWNSTREAM_ENABLED == 'true'
+    runs-on: [ k8s ]
+    needs: [ resolve-version, reusable-pr-workflow ]
+    steps:
+      - name: Dispatch workflow in pentaho/pentaho-platform
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PENTAHO_BUILDGUY }}
+          script: |
+            const version   = '${{ needs.resolve-version.outputs.base_version }}';
+            const artifacts = '${{ needs.resolve-version.outputs.artifacts }}';
+
+            console.log(`Triggering pentaho-platform workflow`);
+            console.log(`  version:   ${version}`);
+            console.log(`  artifacts: ${artifacts}`);
+
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'pentaho',
+              repo: 'pentaho-platform',
+              workflow_id: 'merge.yml',
+              ref: 'main',
+              inputs: {
+                version:   version,
+                artifacts: artifacts
+              }
+            });
