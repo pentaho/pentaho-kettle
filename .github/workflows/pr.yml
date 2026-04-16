@@ -1,0 +1,15 @@
+name: Pull request workflow
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  reusable-pr-workflow:
+    uses: pentaho/actions-common/.github/workflows/pr.yml@stable
+    with:
+      additional_mvn_directives: "jib:buildTar"
+      modules_to_build: "."
+    secrets: inherit
