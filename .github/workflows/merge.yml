@@ -14,6 +14,8 @@ jobs:
       credentials:
         username: ${{ secrets.PENTAHO_CICD_ONE_USER }}
         password: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
+      volumes:
+        - /home/runner/caches/pentaho/.m2:/root/.m2
     outputs:
       base_version: ${{ steps.get-version.outputs.base_version }}
       artifacts: ${{ steps.get-artifacts.outputs.artifacts }}
@@ -38,14 +40,18 @@ jobs:
 
       - name: Collect built artifact names
         id: get-artifacts
+        shell: bash
         run: |
+          set -euo pipefail
+
           # Collect full groupId:artifactId:version per module from the reactor.
           # Each module may declare its own groupId (e.g. pentaho-kettle vs org.pentaho.di.plugins),
           # so we cannot reuse the root groupId — exec:exec is called with all three expressions.
+          # stderr is intentionally NOT suppressed so Maven failures surface immediately.
           artifacts=$(mvn -q \
             -Dexec.executable='echo' \
             -Dexec.args='${project.groupId}:${project.artifactId}:${project.version}' \
-            exec:exec 2>/dev/null | grep -v '^$' | paste -sd ',')
+            exec:exec | grep -v '^$' | paste -sd ',')
 
           echo "Collected artifacts: $artifacts"
           echo "artifacts=$artifacts" >> $GITHUB_OUTPUT
