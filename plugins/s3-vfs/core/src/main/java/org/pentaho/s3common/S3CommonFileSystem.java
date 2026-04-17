@@ -169,7 +169,7 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
                                           Optional<? extends ConnectionDetails> defaultS3Connection ) {
 
     S3Options options;
-    if ( s3CommonFileSystemConfigBuilder.getName() == null && defaultS3Connection.isPresent() ) {
+    if ( defaultS3Connection.isPresent() ) {
       // using a default S3 connection
       options = S3Options.from( currentConnectionProperties );
     } else {
@@ -249,9 +249,15 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
     }
   }
 
+  /**
+   * Get the default S3 connection if it exists and is applicable to this configuration.
+   * <br>
+   * A default S3 connection will replace connection references that bypass pvfs (eg. by writing {@code s3://} directly)
+   */
   public static Optional<? extends ConnectionDetails> getDefaultS3Connection( Supplier<ConnectionManager> connectionManagerSupplier,
                                                                               S3CommonFileSystemConfigBuilder s3CommonFileSystemConfigBuilder ) {
-    if ( s3CommonFileSystemConfigBuilder.useDefaults() ) {
+    // Connections created via a details must always have a name
+    if ( s3CommonFileSystemConfigBuilder.useDefaults() && s3CommonFileSystemConfigBuilder.getName() == null ) {
       try {
         return connectionManagerSupplier.get().getConnectionDetailsByScheme( "s3" ).stream()
           .filter( S3CommonFileSystem::isDefaultS3Connection )
