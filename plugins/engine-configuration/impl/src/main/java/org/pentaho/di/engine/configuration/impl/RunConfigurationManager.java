@@ -13,12 +13,12 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +31,16 @@ public class RunConfigurationManager implements RunConfigurationService {
 
   private final List<RunConfigurationProvider> runConfigurationProviders;
 
+  public static RunConfigurationManager getInstance( Bowl bowl ) {
+    return new RunConfigurationManager(
+      RunConfigurationProviderFactoryManagerImpl.getInstance().generateProviders( bowl::getMetastore ) );
+  }
+
+  /**
+   * @deprecated Use {@link #getInstance(Bowl)} or {@link Bowl#getManager(Class)} with
+   * {@code RunConfigurationService.class} instead.
+   */
+  @Deprecated
   public static RunConfigurationManager getInstance( CheckedMetaStoreSupplier bowlSupplier ) {
     return new RunConfigurationManager(
       RunConfigurationProviderFactoryManagerImpl.getInstance().generateProviders( bowlSupplier ) );
@@ -51,7 +61,7 @@ public class RunConfigurationManager implements RunConfigurationService {
       runConfigurations.addAll( runConfigurationProvider.load() );
     }
     Collections.sort( runConfigurations, ( o1, o2 ) -> {
-      if ( o2.getName().equals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
+      if ( o2.getName().equals( RunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
         return 1;
       }
       return o1.getName().compareToIgnoreCase( o2.getName() );
@@ -107,7 +117,7 @@ public class RunConfigurationManager implements RunConfigurationService {
       names.addAll( runConfigurationProvider.getNames() );
     }
     Collections.sort( names, ( o1, o2 ) -> {
-      if ( o2.equals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
+      if ( o2.equals( RunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
         return 1;
       }
       return o1.compareToIgnoreCase( o2 );
@@ -121,7 +131,7 @@ public class RunConfigurationManager implements RunConfigurationService {
       names.addAll( runConfigurationProvider.getNames() );
     }
     Collections.sort( names, ( o1, o2 ) -> {
-      if ( o2.equals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
+      if ( o2.equals( RunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
         return 1;
       }
       return o1.compareToIgnoreCase( o2 );

@@ -74,14 +74,14 @@ public class RunConfigurationDelegateTest {
   private MockedStatic<Spoon> mockedSpoon;
 
   @Before
-  public void setup() {
+  public void setup() throws KettleException {
     spoon = mock( Spoon.class );
     doReturn( mock( Shell.class ) ).when( spoon ).getShell();
 
     mockedSpoon = mockStatic( Spoon.class );
     when( Spoon.getInstance() ).thenReturn( spoon );
 
-    delegate = spy( RunConfigurationDelegate.getInstance( () -> DefaultBowl.getInstance().getMetastore() ) );
+    delegate = spy( RunConfigurationDelegate.getInstance( DefaultBowl.getInstance() ) );
     service = mock( RunConfigurationManager.class );
     delegate.setRunConfigurationManager( service );
   }
@@ -589,7 +589,7 @@ public class RunConfigurationDelegateTest {
     when( targetManager.getNames() ).thenReturn( new ArrayList<>() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.loadAndCopyToProject( srcManager, "TestConfig" );
 
@@ -630,7 +630,7 @@ public class RunConfigurationDelegateTest {
     when( targetManager.getNames() ).thenReturn( new ArrayList<>() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.loadAndMoveToGlobal( srcManager, "TestConfig" );
 
@@ -671,7 +671,7 @@ public class RunConfigurationDelegateTest {
     when( targetManager.getNames() ).thenReturn( new ArrayList<>() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.loadAndMoveToProject( srcManager, "TestConfig" );
 
@@ -792,7 +792,7 @@ public class RunConfigurationDelegateTest {
     when( targetManager.getNames() ).thenReturn( new ArrayList<>() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.copyToGlobal( srcManager, config );
 
@@ -815,7 +815,7 @@ public class RunConfigurationDelegateTest {
     when( targetManager.getNames() ).thenReturn( new ArrayList<>() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.moveToGlobal( srcManager, config );
 
@@ -841,7 +841,7 @@ public class RunConfigurationDelegateTest {
     doReturn( true ).when( delegate ).shouldOverwrite( any() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.copyToGlobal( srcManager, config );
 
@@ -867,7 +867,7 @@ public class RunConfigurationDelegateTest {
     doReturn( false ).when( delegate ).shouldOverwrite( any() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.copyToGlobal( srcManager, config );
 
@@ -890,7 +890,7 @@ public class RunConfigurationDelegateTest {
     when( targetManager.getNames() ).thenReturn( new ArrayList<>() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.copyToProject( srcManager, config );
 
@@ -913,7 +913,7 @@ public class RunConfigurationDelegateTest {
     when( targetManager.getNames() ).thenReturn( new ArrayList<>() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.moveToProject( srcManager, config );
 
@@ -957,7 +957,7 @@ public class RunConfigurationDelegateTest {
     when( targetManager.getNames() ).thenReturn( new ArrayList<>() );
 
     try ( MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class ) ) {
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.loadAndCopyToGlobal( srcManager, "TestConfig" );
 
@@ -988,7 +988,7 @@ public class RunConfigurationDelegateTest {
           MockedStatic<RunConfigurationManager> mockedRCM = mockStatic( RunConfigurationManager.class );
           MockedConstruction<ErrorDialog> mockedError = mockConstruction( ErrorDialog.class ) ) {
       repoUtils.when( () -> RepositoryExceptionUtils.isSessionExpired( sessionError ) ).thenReturn( true );
-      mockedRCM.when( () -> RunConfigurationManager.getInstance( any() ) ).thenReturn( targetManager );
+      mockedRCM.when( () -> RunConfigurationManager.getInstance( any( Bowl.class ) ) ).thenReturn( targetManager );
 
       delegate.copyToGlobal( srcManager, config );
 

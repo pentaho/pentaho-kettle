@@ -13,27 +13,31 @@
 
 package org.pentaho.di.engine.ui;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Tree;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
-import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
+import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TreeSelection;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tree;
+
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -44,6 +48,12 @@ import java.util.function.Supplier;
 public class RunConfigurationPopupMenuExtension implements ExtensionPointInterface {
 
   private static Class<?> PKG = RunConfigurationPopupMenuExtension.class;
+  private static final String ACTION_CREATE = "create";
+  private static final String ACTION_EDIT = "edit";
+  private static final String ACTION_MOVE = "move";
+  private static final String ACTION_COPY = "copy";
+  private static final String ACTION_DUPLICATE = "duplicate";
+  private static final String ACTION_DELETE = "delete";
 
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private RunConfigurationTreeItem runConfigurationTreeItem;
@@ -63,7 +73,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
       popupMenu = createRootPopupMenu( selectionTree );
     } else if ( selection instanceof RunConfigurationTreeItem ) {
       runConfigurationTreeItem = (RunConfigurationTreeItem) selection;
-      if ( runConfigurationTreeItem.getName().equalsIgnoreCase( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
+      if ( runConfigurationTreeItem.getName().equalsIgnoreCase( RunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
         return;
       }
       popupMenu = createItemPopupMenu( selectionTree );
@@ -85,10 +95,7 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
         @Override
         public void widgetSelected( SelectionEvent selectionEvent ) {
           // new goes to the Spoon's current bowl
-          Bowl bowl = Spoon.getInstance().getManagementBowl();
-          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
-          RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-          runConfigurationDelegate.create();
+          executeWithDelegate( Spoon.getInstance().getManagementBowl(), ACTION_CREATE, RunConfigurationDelegate::create );
         }
       } );
     }
@@ -102,11 +109,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
       editMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.Edit" ) );
       editMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-          Bowl bowl = getEventBowl();
-          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
-          RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-          // Use loadAndEdit which handles session expiry during load
-          runConfigurationDelegate.loadAndEdit( runConfigurationTreeItem.getName() );
+          executeWithDelegate( getEventBowl(), ACTION_EDIT,
+            delegate -> delegate.loadAndEdit( runConfigurationTreeItem.getName() ) );
         }
       } );
     }
@@ -122,11 +126,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
               spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
       moveMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-          Bowl bowl = getEventBowl();
-          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
-          RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-          RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.loadAndMoveToGlobal( runConfigurationManager, runConfigurationTreeItem.getName() );
+          executeWithDelegateAndManager( getEventBowl(), ACTION_MOVE,
+            ( delegate, manager ) -> delegate.loadAndMoveToGlobal( manager, runConfigurationTreeItem.getName() ) );
         }
       } );
 
@@ -135,11 +136,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
               spoonSupplier.get().getGlobalManagementBowl().getLevelDisplayName() ) );
       copyMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-          Bowl bowl = getEventBowl();
-          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
-          RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-          RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.loadAndCopyToGlobal( runConfigurationManager, runConfigurationTreeItem.getName() );
+          executeWithDelegateAndManager( getEventBowl(), ACTION_COPY,
+            ( delegate, manager ) -> delegate.loadAndCopyToGlobal( manager, runConfigurationTreeItem.getName() ) );
         }
       } );
     }
@@ -150,22 +148,16 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
       moveMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.MoveToProject" ) );
       moveMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-          Bowl bowl = getEventBowl();
-          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
-          RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-          RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.loadAndMoveToProject( runConfigurationManager, runConfigurationTreeItem.getName() );
+          executeWithDelegateAndManager( getEventBowl(), ACTION_MOVE,
+            ( delegate, manager ) -> delegate.loadAndMoveToProject( manager, runConfigurationTreeItem.getName() ) );
         }
       } );
       MenuItem copyMenuItem = new MenuItem( itemMenu, SWT.NONE );
       copyMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.CopyToProject" ) );
       copyMenuItem.addSelectionListener( new SelectionAdapter() {
         @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-          Bowl bowl = getEventBowl();
-          CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
-          RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-          RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( ms );
-          runConfigurationDelegate.loadAndCopyToProject( runConfigurationManager, runConfigurationTreeItem.getName() );
+          executeWithDelegateAndManager( getEventBowl(), ACTION_COPY,
+            ( delegate, manager ) -> delegate.loadAndCopyToProject( manager, runConfigurationTreeItem.getName() ) );
         }
       } );
     }
@@ -179,10 +171,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
     }
     duplicateMenuItem.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        Bowl bowl = getEventBowl();
-        CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
-        RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-        runConfigurationDelegate.loadAndDuplicate( runConfigurationTreeItem.getName() );
+        executeWithDelegate( getEventBowl(), ACTION_DUPLICATE,
+          delegate -> delegate.loadAndDuplicate( runConfigurationTreeItem.getName() ) );
       }
     } );
 
@@ -190,10 +180,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
     deleteMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.Delete" ) );
     deleteMenuItem.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        Bowl bowl = getEventBowl();
-        CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
-        RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
-        runConfigurationDelegate.loadAndDelete( runConfigurationTreeItem.getName() );
+        executeWithDelegate( getEventBowl(), ACTION_DELETE,
+          delegate -> delegate.loadAndDelete( runConfigurationTreeItem.getName() ) );
       }
     } );
     return itemMenu;
@@ -206,6 +194,51 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
     } else {
       return spoonSupplier.get().getManagementBowl();
     }
+  }
+
+  private RunConfigurationDelegate getRunConfigurationDelegate( Bowl bowl, String action ) {
+    try {
+      return RunConfigurationDelegate.getInstance( bowl );
+    } catch ( KettleException e ) {
+      showUiError( action, e );
+      return null;
+    }
+  }
+
+  private RunConfigurationService getRunConfigurationManager( Bowl bowl, String action ) {
+    try {
+      return bowl.getManager( RunConfigurationService.class );
+    } catch ( KettleException e ) {
+      showUiError( action, e );
+      return null;
+    }
+  }
+
+  private void executeWithDelegate( Bowl bowl, String action, Consumer<RunConfigurationDelegate> consumer ) {
+    RunConfigurationDelegate runConfigurationDelegate = getRunConfigurationDelegate( bowl, action );
+    if ( runConfigurationDelegate == null ) {
+      return;
+    }
+
+    consumer.accept( runConfigurationDelegate );
+  }
+
+  private void executeWithDelegateAndManager( Bowl bowl, String action,
+                                              BiConsumer<RunConfigurationDelegate, RunConfigurationService> consumer ) {
+    RunConfigurationDelegate runConfigurationDelegate = getRunConfigurationDelegate( bowl, action );
+    RunConfigurationService runConfigurationManager = getRunConfigurationManager( bowl, action );
+    if ( runConfigurationDelegate == null || runConfigurationManager == null ) {
+      return;
+    }
+
+    consumer.accept( runConfigurationDelegate, runConfigurationManager );
+  }
+
+  private void showUiError( String action, KettleException e ) {
+    Spoon spoon = spoonSupplier.get();
+    Shell shell = spoon.getShell();
+    String title = "Run Configuration Error";
+    new ErrorDialog( shell, title, "Unable to " + action + " run configuration", e );
   }
 }
 

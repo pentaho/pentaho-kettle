@@ -13,22 +13,23 @@
 
 package org.pentaho.di.engine.configuration.impl.extension;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
+import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.EmbeddedRunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
+import org.pentaho.di.engine.configuration.impl.RunConfigurationProviderFactoryManagerImpl;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionExtension;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 
-import java.util.function.Function;
+import com.google.common.annotations.VisibleForTesting;
 
 @ExtensionPoint(
     id = "RunConfigurationInjectExtensionPoint",
@@ -37,8 +38,7 @@ import java.util.function.Function;
   )
 public class RunConfigurationInjectExtensionPoint implements ExtensionPointInterface {
 
-  private Function<JobMeta, RunConfigurationManager> rcmProvider =
-    jm -> RunConfigurationManager.getInstance( () -> jm.getBowl().getMetastore() );
+  private RunConfigurationService runConfigurationManager;
 
   @Override
   public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
@@ -71,11 +71,16 @@ public class RunConfigurationInjectExtensionPoint implements ExtensionPointInter
 
   @VisibleForTesting
   void setRunConfigurationManager( RunConfigurationManager runConfigurationManager ) {
-    this.rcmProvider = x -> runConfigurationManager;
+    this.runConfigurationManager = runConfigurationManager;
   }
 
-  private RunConfigurationManager getRunConfigurationManager( JobMeta meta) {
-    return rcmProvider.apply( meta );
+  private RunConfigurationService getRunConfigurationManager( JobMeta meta ) throws KettleException {
+    if ( runConfigurationManager != null ) {
+      return runConfigurationManager;
+    }
+
+    RunConfigurationProviderFactoryManagerImpl.getInstance();
+    return meta.getBowl().getManager( RunConfigurationService.class );
   }
 
 }

@@ -307,6 +307,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       this.proxyHostname = slaveServer.proxyHostname;
       this.proxyPort = slaveServer.proxyPort;
       this.nonProxyHosts = slaveServer.nonProxyHosts;
+      this.propertiesMasterName = slaveServer.propertiesMasterName;
+      this.overrideExistingProperties = slaveServer.overrideExistingProperties;
       this.master = slaveServer.master;
 
       this.id = slaveServer.id;
@@ -515,6 +517,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   /**
+   * @param propertiesMasterName the master name for reading properties
+   */
+  public void setPropertiesMasterName( String propertiesMasterName ) {
+    lock.writeLock().lock();
+    this.propertiesMasterName = propertiesMasterName;
+    lock.writeLock().unlock();
+  }
+
+  /**
    * @return flag for read properties from Master
    */
   public boolean isOverrideExistingProperties() {
@@ -524,6 +535,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     } finally {
       lock.readLock().unlock();
     }
+  }
+
+  /**
+   * @param overrideExistingProperties flag for overriding existing properties from master
+   */
+  public void setOverrideExistingProperties( boolean overrideExistingProperties ) {
+    lock.writeLock().lock();
+    this.overrideExistingProperties = overrideExistingProperties;
+    lock.writeLock().unlock();
   }
 
   /**

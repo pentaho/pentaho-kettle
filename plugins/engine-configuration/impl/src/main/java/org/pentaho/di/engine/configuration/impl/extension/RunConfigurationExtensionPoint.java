@@ -17,7 +17,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
+import org.pentaho.di.engine.configuration.api.RunConfigurationService;
+import org.pentaho.di.engine.configuration.impl.RunConfigurationProviderFactoryManagerImpl;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.ArrayList;
@@ -36,8 +37,9 @@ public class RunConfigurationExtensionPoint implements ExtensionPointInterface {
     List<String> runConfigurations = (ArrayList<String>) ( (Object[]) o )[ 0 ];
     String type = (String) ( (Object[]) o )[ 1 ];
 
-    RunConfigurationManager runConfigurationManager =
-      RunConfigurationManager.getInstance( () -> Spoon.getInstance().getExecutionBowl().getMetastore() );
+    RunConfigurationProviderFactoryManagerImpl.getInstance();
+    RunConfigurationService runConfigurationManager =
+      Spoon.getInstance().getExecutionBowl().getManager( RunConfigurationService.class );
 
     runConfigurations.addAll( runConfigurationManager.getNames( type ) );
   }
