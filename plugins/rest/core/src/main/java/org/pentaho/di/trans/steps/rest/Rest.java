@@ -35,6 +35,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -46,7 +47,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.util.HttpClientManager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -355,9 +355,9 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   protected void setSSLConfiguration( RestData data ) throws KettleException {
-    try {
+    try ( var trustStoreIn = getInputStream( data.trustStoreFile ) ) {
       data.sslContext = HttpClientManager.getSslContext( meta.isIgnoreSsl(),
-        getInputStream( data.trustStoreFile ),
+        trustStoreIn,
         data.trustStorePassword );
 
     } catch ( NoSuchAlgorithmException e ) {
