@@ -32,7 +32,7 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.security.policy.rolebased.ws.IAuthorizationPolicyWebService;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Method;
@@ -801,7 +801,7 @@ public class PurRepositoryConnectorTest {
     when( mockSession.getName() ).thenReturn( "adminUser" );
 
     IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
-    IAuthorizationPolicyWebService mockAuthPolicy = mock( IAuthorizationPolicyWebService.class );
+    IAuthorizationPolicy mockAuthPolicy = mock( IAuthorizationPolicy.class );
     when( mockAuthPolicy.isAllowed( any() ) ).thenReturn( true );
 
     try ( MockedStatic<PentahoSystem> mockedPS = mockStatic( PentahoSystem.class );
@@ -811,7 +811,7 @@ public class PurRepositoryConnectorTest {
       mockedPSH.when( PentahoSessionHolder::getSession ).thenReturn( mockSession );
       mockedPS.when( () -> PentahoSystem.getSystemSetting( "singleDiServerInstance", "true" ) ).thenReturn( "true" );
       mockedPS.when( () -> PentahoSystem.get( IUnifiedRepository.class ) ).thenReturn( mockRepo );
-      mockedPS.when( () -> PentahoSystem.get( IAuthorizationPolicyWebService.class ) ).thenReturn( mockAuthPolicy );
+      mockedPS.when( () -> PentahoSystem.get( IAuthorizationPolicy.class ) ).thenReturn( mockAuthPolicy );
 
       RepositoryConnectResult result = connector.connect( "adminUser", "password" );
 
@@ -840,7 +840,7 @@ public class PurRepositoryConnectorTest {
     when( mockSession.getName() ).thenReturn( "regularUser" );
 
     IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
-    IAuthorizationPolicyWebService mockAuthPolicy = mock( IAuthorizationPolicyWebService.class );
+    IAuthorizationPolicy mockAuthPolicy = mock( IAuthorizationPolicy.class );
     when( mockAuthPolicy.isAllowed( any() ) ).thenReturn( false );
 
     try ( MockedStatic<PentahoSystem> mockedPS = mockStatic( PentahoSystem.class );
@@ -850,7 +850,7 @@ public class PurRepositoryConnectorTest {
       mockedPSH.when( PentahoSessionHolder::getSession ).thenReturn( mockSession );
       mockedPS.when( () -> PentahoSystem.getSystemSetting( "singleDiServerInstance", "true" ) ).thenReturn( "true" );
       mockedPS.when( () -> PentahoSystem.get( IUnifiedRepository.class ) ).thenReturn( mockRepo );
-      mockedPS.when( () -> PentahoSystem.get( IAuthorizationPolicyWebService.class ) ).thenReturn( mockAuthPolicy );
+      mockedPS.when( () -> PentahoSystem.get( IAuthorizationPolicy.class ) ).thenReturn( mockAuthPolicy );
 
       RepositoryConnectResult result = connector.connect( "regularUser", "password" );
 

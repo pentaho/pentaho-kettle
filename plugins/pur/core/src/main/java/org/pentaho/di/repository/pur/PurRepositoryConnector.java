@@ -46,7 +46,7 @@ import org.pentaho.di.ui.repository.pur.services.IRoleSupportSecurityManager;
 import org.pentaho.di.ui.repository.pur.services.ITrashService;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
 import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
-import org.pentaho.platform.security.policy.rolebased.ws.IAuthorizationPolicyWebService;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -204,7 +204,8 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     result.setUser( inProcessUser );
     result.setSuccess( true );
     result.getUser().setAdmin(
-      PentahoSystem.get( IAuthorizationPolicyWebService.class ).isAllowed( RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION )
+      PentahoSystem.get( IAuthorizationPolicy.class ).isAllowed(
+        IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION )
     );
     if ( log.isDebug() ) {
       log.logDebug( BaseMessages.getString(
