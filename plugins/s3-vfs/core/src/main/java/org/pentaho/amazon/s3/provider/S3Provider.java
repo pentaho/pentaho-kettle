@@ -91,6 +91,7 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
     s3CommonFileSystemConfigBuilder.setTrustAll( getVar( s3Details.getTrustAll(), space ) );
     s3CommonFileSystemConfigBuilder.setKeyStoreFilePath( getVar( s3Details.getKeyStoreFilePath(), space ) );
     s3CommonFileSystemConfigBuilder.setKeyStorePassword( getVar( s3Details.getKeyStorePassword(), space ) );
+    s3CommonFileSystemConfigBuilder.setUseDefaults( false ); // defaults only for direct s3 access
     return s3CommonFileSystemConfigBuilder.getFileSystemOptions();
   }
 
@@ -221,11 +222,6 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
   public AmazonS3 getS3Client( S3Details s3Details ) throws KettleException {
     var opts = getOpts( s3Details );
     var cfgBuilder = new S3CommonFileSystemConfigBuilder( opts );
-
-    var defaultS3 = S3CommonFileSystem.getDefaultS3Connection( connectionManagerSupplier, cfgBuilder );
-    if ( defaultS3.isPresent() && defaultS3.get() instanceof S3Details defS3 ) {
-      cfgBuilder = new S3CommonFileSystemConfigBuilder( getOpts( defS3 ) );
-    }
 
     var options = S3Options.from( cfgBuilder );
     if ( StringUtils.isNotEmpty( options.base().endpoint() ) ) {

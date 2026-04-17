@@ -83,9 +83,9 @@ public class S3Options {
     }
 
     static Optional<AuthKeys> from( Map<String, String> props ) {
-      String accessKey = Encr.decryptPassword( props.get( S3Details.PROP_ACCESS_KEY ) );
-      String secretKey = Encr.decryptPassword( props.get( S3Details.PROP_SECRET_KEY ) );
-      String sessionToken = Encr.decryptPassword( props.get( S3Details.PROP_SESSION_TOKEN ) );
+      String accessKey = Encr.decryptPasswordOptionallyEncrypted( props.get( S3Details.PROP_ACCESS_KEY ) );
+      String secretKey = Encr.decryptPasswordOptionallyEncrypted( props.get( S3Details.PROP_SECRET_KEY ) );
+      String sessionToken = Encr.decryptPasswordOptionallyEncrypted( props.get( S3Details.PROP_SESSION_TOKEN ) );
       return maybeAuth( accessKey, secretKey, sessionToken );
     }
 
