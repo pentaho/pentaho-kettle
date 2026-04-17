@@ -79,6 +79,19 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public static final String XML_TAG = "connection";
 
+  /**
+   * Attribute key for the dynamically loaded JDBC driver JAR.
+   * Stored in {@link #getAttributes()} so it is serialised to/from KTR XML automatically.
+   * The value can be either an absolute path on the server (e.g. {@code /opt/drivers/ojdbc11.jar})
+   * or just the JAR file name (e.g. {@code ojdbc11.jar}). When only a file name is provided,
+   * {@code JdbcDriverResolver} will locate the JAR by searching configured directories
+   * (environment variable, kettle.properties, Pentaho solution path) or downloading it
+   * from the connection-management service.
+   */
+  public static final String ATTRIBUTE_DYNAMIC_DRIVER_JAR = "dynamicDriverJar";
+
+  public static final String ATTRIBUTE_DYNAMIC_DRIVER_ID = "dynamicDriverId";
+
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.DATABASE;
 
   private static final String DROP_TABLE_STATEMENT = "DROP TABLE IF EXISTS ";

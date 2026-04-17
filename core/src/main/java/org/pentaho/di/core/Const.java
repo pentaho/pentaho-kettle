@@ -201,6 +201,7 @@ public class Const {
   public static String JNDI_DIRECTORY = NVL( System.getProperty( "KETTLE_JNDI_ROOT" ), System
     .getProperty( "org.osjava.sj.root" ) );
 
+
   /*
    * The images directory
    *
@@ -789,6 +790,20 @@ public class Const {
    * System wide flag to ignore timezone while writing date/timestamp value to the database. See PDI-10749 for details.
    */
   public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
+
+  /**
+   * When set to {@code Y}, enables the JVM-wide {@link org.pentaho.di.core.database.DynamicDriverCache}
+   * for dynamic JDBC driver loading. The cache reuses the same {@link java.sql.Driver} instance and
+   * its classloader across connections, avoiding repeated JAR reads (especially costly on NFS/SMB).
+   *
+   * <p>When absent or set to any value other than {@code Y} (the default), a fresh
+   * {@link org.pentaho.di.core.database.ChildFirstURLClassLoader} is created for each connection
+   * and closed on disconnect — no JVM-wide state is shared.
+   *
+   * <p>Set in {@code kettle.properties} or as a JVM system property:
+   * {@code -DKETTLE_DYNAMIC_DRIVER_CACHE_ENABLED=Y}
+   */
+  public static final String KETTLE_DYNAMIC_DRIVER_CACHE_ENABLED = "KETTLE_DYNAMIC_DRIVER_CACHE_ENABLED";
 
   /**
    * System wide flag to use the root path prefix for a directory reference. See PDI-6779 for details.
@@ -2552,6 +2567,114 @@ public class Const {
     String dataDir =  getKettleDirectory() + Const.FILE_SEPARATOR + "data";
     return NVL( System.getenv( "WEBSPOON_USER_HOME" ), NVL( System.getProperty( "WEBSPOON_USER_HOME" ),
             dataDir ) );
+  }
+
+  /**
+   * Returns the directory where JDBC driver JARs are stored for dynamic loading.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code JDBC_DRIVERS_DIRECTORY}
+   *       — set via Docker {@code ENV}, Kubernetes {@code env:}, ECS task definition, etc.</li>
+   *   <li>JVM system property {@code JDBC_DRIVERS_DIRECTORY}
+   *       — set via {@code -DJDBC_DRIVERS_DIRECTORY=...} at startup.</li>
+   *   <li>{@code null} — caller falls back to solution-path or kettle.properties lookup.</li>
+   * </ol>
+   *
+   * @return the configured JDBC drivers directory, or {@code null} if not set in any source
+   */
+  public static String getJdbcDriversDirectory() {
+    return NVL( System.getenv( "JDBC_DRIVERS_DIRECTORY" ),
+      System.getProperty( "JDBC_DRIVERS_DIRECTORY" ) );
+  }
+
+  /**
+   * Returns the base URL of the connection-management service used to download JDBC driver JARs
+   * on demand when the JAR is not present on disk.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code JDBC_DRIVER_SERVICE_URL}</li>
+   *   <li>JVM system property {@code JDBC_DRIVER_SERVICE_URL}</li>
+   *   <li>{@code null} — download is disabled.</li>
+   * </ol>
+   *
+   * @return the download service base URL (no trailing slash), or {@code null} if not configured
+   */
+  public static String getJdbcDriverServiceUrl() {
+    return NVL( System.getenv( "JDBC_DRIVER_SERVICE_URL" ),
+      System.getProperty( "JDBC_DRIVER_SERVICE_URL" ) );
+  }
+
+  /**
+   * Returns the full Keycloak token endpoint for the connection-management service
+   * (e.g. {@code https://keycloak.example.com/realms/pdi/protocol/openid-connect/token}).
+   * Used by the client-credentials flow to obtain a bearer token before calling
+   * {@code JDBC_DRIVER_SERVICE_URL}.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code CMS_TOKEN_URL}</li>
+   *   <li>JVM system property {@code CMS_TOKEN_URL}</li>
+   *   <li>{@code null} — authentication is disabled.</li>
+   * </ol>
+   *
+   * @return the token endpoint URL, or {@code null} if not configured
+   */
+  public static String getCmsTokenUrl() {
+    return NVL( System.getenv( "CMS_TOKEN_URL" ),
+      System.getProperty( "CMS_TOKEN_URL" ) );
+  }
+
+  /**
+   * Returns the Keycloak client ID for the PDI service account.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code CMS_CLIENT_ID}</li>
+   *   <li>JVM system property {@code CMS_CLIENT_ID}</li>
+   *   <li>{@code null} — authentication is disabled.</li>
+   * </ol>
+   *
+   * @return the client ID, or {@code null} if not configured
+   */
+  public static String getCmsClientId() {
+    return NVL( System.getenv( "CMS_CLIENT_ID" ),
+      System.getProperty( "CMS_CLIENT_ID" ) );
+  }
+
+  /**
+   * Returns the Keycloak client secret for the PDI service account.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code CMS_CLIENT_SECRET}</li>
+   *   <li>JVM system property {@code CMS_CLIENT_SECRET}</li>
+   *   <li>{@code null} — authentication is disabled.</li>
+   * </ol>
+   *
+   * @return the client secret, or {@code null} if not configured
+   */
+  public static String getCmsClientSecret() {
+    return NVL( System.getenv( "CMS_CLIENT_SECRET" ),
+      System.getProperty( "CMS_CLIENT_SECRET" ) );
+  }
+
+  /**
+   * Indicates whether the Fusion connection-management service flow is enabled.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code FUSION_CONNECTION_MANAGEMENT_ENABLED}</li>
+   *   <li>JVM system property {@code FUSION_CONNECTION_MANAGEMENT_ENABLED}</li>
+   *   <li>{@code false} if neither is set to {@code "true"} (case-insensitive).</li>
+   * </ol>
+   *
+   * @return {@code true} if the feature flag is explicitly set to {@code "true"}, otherwise {@code false}
+   */
+  public static boolean isFusionConnectionManagementEnabled() {
+    return Boolean.parseBoolean( NVL( System.getenv( "FUSION_CONNECTION_MANAGEMENT_ENABLED" ),
+      System.getProperty( "FUSION_CONNECTION_MANAGEMENT_ENABLED" ) ) );
   }
 
   /**
