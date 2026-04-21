@@ -17,7 +17,7 @@ jobs:
       volumes:
         - /home/runner/caches/pentaho/.m2:/root/.m2
     outputs:
-      base_version: ${{ steps.get-version.outputs.base_version }}
+      base_version: ${{ steps.build-version.outputs.base_version }}
       artifacts: ${{ steps.get-artifacts.outputs.artifacts }}
     steps:
       - name: Checkout source repo
@@ -34,9 +34,37 @@ jobs:
       - name: Get current version from pom.xml
         id: get-version
         run: |
-          base_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "Resolved version: $base_version"
-          echo "base_version=$base_version" >> $GITHUB_OUTPUT
+          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "Current version: $current_version"
+          echo "current_version=$current_version" >> $GITHUB_OUTPUT
+
+      - name: Build date-based version
+        id: build-version
+        shell: bash
+        run: |
+          current_version=${{ steps.get-version.outputs.current_version }}
+
+          # Remove the -SNAPSHOT suffix if present
+          base_version=${current_version%-SNAPSHOT}
+
+          # Replace the last version segment with current date (YYYYMMDD)
+          # e.g. 11.1.0.0-SNAPSHOT → 11.1.0.20260421-SNAPSHOT
+          date_segment=$(date -u +%Y%m%d)
+          new_version=$(echo "$base_version" | sed "s/\.[^.]*$/.${date_segment}/")
+
+          # Reattach the -SNAPSHOT suffix if it was present
+          if [[ "$current_version" == *-SNAPSHOT ]]; then
+            new_version="$new_version-SNAPSHOT"
+          fi
+
+          echo "Base version: $base_version"
+          echo "New version:  $new_version"
+          echo "base_version=$new_version" >> $GITHUB_OUTPUT
+
+      - name: Apply virtual version to pom.xml files
+        # Version is set in-memory for this build only.
+        # Changes are NOT committed back to the repository — pom.xml files remain unchanged in main.
+        run: mvn versions:set -DnewVersion=${{ steps.build-version.outputs.base_version }} -DprocessAllModules=true -DgenerateBackupPoms=false
 
       - name: Collect built artifact names
         id: get-artifacts
@@ -60,9 +88,16 @@ jobs:
     needs: resolve-version
     uses: pentaho/actions-common/.github/workflows/merge.yml@stable
     with:
-      additional_mvn_directives: "jib:buildTar"
       modules_to_build: "."
       base_version: ${{ needs.resolve-version.outputs.base_version }}
+      # Apply the virtual date-based version at build time so the reusable workflow's
+      # fresh checkout also uses the correct version without committing pom.xml changes.
+      additional_mvn_directives: >-
+        versions:set
+        -DnewVersion=${{ needs.resolve-version.outputs.base_version }}
+        -DprocessAllModules=true
+        -DgenerateBackupPoms=false
+      run_release_candidate: 'true'
     secrets: inherit
 
   trigger-downstream:
