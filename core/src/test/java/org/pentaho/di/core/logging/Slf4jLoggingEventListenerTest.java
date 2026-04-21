@@ -172,6 +172,23 @@ public class Slf4jLoggingEventListenerTest {
   }
 
   @Test
+  public void testJobDoesNotDuplicateRepositoryPathWhenFilenameAlreadyIncludesIt() {
+    when( logObjProvider.apply( logChannelId ) ).thenReturn( loggingObject );
+    when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.JOB );
+    when( message.getLevel() ).thenReturn( LogLevel.BASIC );
+
+    when( loggingObject.getRepositoryDirectory() ).thenReturn( repositoryDirectory );
+    when( repositoryDirectory.getPath() ).thenReturn( "/public" );
+
+    // Filename coming from repository execution already includes the repository directory
+    when( loggingObject.getFilename() ).thenReturn( "/public/jb_internalPath.kjb" );
+
+    listener.eventAdded( logEvent );
+
+    verify( jobLogger ).info( "[/public/jb_internalPath.kjb]  " + msgText );
+  }
+
+  @Test
   public void testTransPreservesRepositoryPathWhenFilenameIsNotAbsoluteRepoPath() {
     when( logObjProvider.apply( logChannelId ) ).thenReturn( loggingObject );
     when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.TRANS );
@@ -186,5 +203,22 @@ public class Slf4jLoggingEventListenerTest {
     listener.eventAdded( logEvent );
 
     verify( transLogger ).info( "[/public/jb_internalPath.ktr]  " + msgText );
+  }
+
+  @Test
+  public void testJobPreservesRepositoryPathWhenFilenameIsNotAbsoluteRepoPath() {
+    when( logObjProvider.apply( logChannelId ) ).thenReturn( loggingObject );
+    when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.JOB );
+    when( message.getLevel() ).thenReturn( LogLevel.BASIC );
+
+    when( loggingObject.getRepositoryDirectory() ).thenReturn( repositoryDirectory );
+    when( repositoryDirectory.getPath() ).thenReturn( "/public" );
+
+    // Filename without leading '/' should still get repository path prepended
+    when( loggingObject.getFilename() ).thenReturn( "jb_internalPath.kjb" );
+
+    listener.eventAdded( logEvent );
+
+    verify( jobLogger ).info( "[/public/jb_internalPath.kjb]  " + msgText );
   }
 }
