@@ -89,6 +89,9 @@ public final class JdbcDriverResolver {
    * @throws KettleDatabaseException if the JAR cannot be found or downloaded
    */
   public static String resolve( String driverId ) throws KettleDatabaseException {
+    if ( driverId == null || driverId.trim().isEmpty() ) {
+      throw new KettleDatabaseException( "JdbcDriverResolver: driverId must not be null or blank" );
+    }
     String configuredPath = driverId + ".jar";
     // 1 — configured path exists as-is
     if ( existsAsFile( configuredPath ) ) {
