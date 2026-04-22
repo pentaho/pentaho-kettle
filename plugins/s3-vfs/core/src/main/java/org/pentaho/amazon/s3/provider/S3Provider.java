@@ -13,25 +13,14 @@
 
 package org.pentaho.amazon.s3.provider;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.BasicSessionCredentials;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.auth.profile.ProfilesConfigFile;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ListBucketsPaginatedRequest;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.pentaho.amazon.s3.S3Details;
-import org.pentaho.amazon.s3.S3Util;
 import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionProvider;
@@ -46,7 +35,9 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.s3.vfs.S3FileProvider;
+import org.pentaho.s3common.S3CommonFileSystem;
 import org.pentaho.s3common.S3CommonFileSystemConfigBuilder;
+import org.pentaho.s3common.S3Options;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -57,6 +48,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 
 /**
@@ -87,7 +79,6 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
     s3CommonFileSystemConfigBuilder.setSecretKey( getVar( s3Details.getSecretKey(), space ) );
     s3CommonFileSystemConfigBuilder.setSessionToken( getVar( s3Details.getSessionToken(), space ) );
     s3CommonFileSystemConfigBuilder.setRegion( getVar( s3Details.getRegion(), space ) );
-    s3CommonFileSystemConfigBuilder.setMinioRegion( getVar( s3Details.getMinioRegion(), space ) );
     s3CommonFileSystemConfigBuilder.setCredentialsFile( getVar( s3Details.getCredentialsFilePath(), space ) );
     s3CommonFileSystemConfigBuilder.setProfileName( getVar( s3Details.getProfileName(), space ) );
     s3CommonFileSystemConfigBuilder.setEndpoint( getVar( s3Details.getEndpoint(), space ) );
@@ -95,6 +86,11 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
     s3CommonFileSystemConfigBuilder.setSignatureVersion( getVar( s3Details.getSignatureVersion(), space ) );
     s3CommonFileSystemConfigBuilder.setDefaultS3Config( getVar( s3Details.getDefaultS3Config(), space ) );
     s3CommonFileSystemConfigBuilder.setConnectionType( getVar( s3Details.getConnectionType(), space ) );
+    s3CommonFileSystemConfigBuilder.setTrustStoreFilePath( getVar( s3Details.getTrustStoreFilePath(), space ) );
+    s3CommonFileSystemConfigBuilder.setTrustStorePassword( getVar( s3Details.getTrustStorePassword(), space ) );
+    s3CommonFileSystemConfigBuilder.setTrustAll( getVar( s3Details.getTrustAll(), space ) );
+    s3CommonFileSystemConfigBuilder.setKeyStoreFilePath( getVar( s3Details.getKeyStoreFilePath(), space ) );
+    s3CommonFileSystemConfigBuilder.setKeyStorePassword( getVar( s3Details.getKeyStorePassword(), space ) );
     return s3CommonFileSystemConfigBuilder.getFileSystemOptions();
   }
 
@@ -110,10 +106,9 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
    * @throws FileSystemException - throws exception whenever there is any exception thrown while doing the listBuckets() call
    */
   @Override public List<VFSRoot> getLocations( S3Details s3Details ) throws FileSystemException {
-    VariableSpace space = getSpace( s3Details );
     List<VFSRoot> buckets = new ArrayList<>();
     try {
-      AmazonS3 s3 = getAmazonS3( s3Details, space );
+      AmazonS3 s3 = getS3Client( s3Details );
       if ( s3 != null ) {
         for ( Bucket bucket : s3.listBuckets() ) {
           buckets.add( new VFSRoot( bucket.getName(), bucket.getCreationDate() ) );
@@ -143,13 +138,13 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
   @Override public boolean test( S3Details s3Details ) throws KettleException {
     VariableSpace space = getSpace( s3Details );
     s3Details = prepare( s3Details );
-    AmazonS3 amazonS3 = getAmazonS3( s3Details, space );
+    AmazonS3 amazonS3 = getS3Client( s3Details );
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
     try {
       // make sure that sax parsing classes are loaded from this cl.
       // TCCL may have been set to a bundle classloader.
       Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-      Objects.requireNonNull( amazonS3 ).getS3AccountOwner();
+      Objects.requireNonNull( amazonS3 ).listBuckets( new ListBucketsPaginatedRequest().withMaxBuckets( 1 ) );
 
       List<? extends ConnectionDetails> connections =
         connectionManagerSupplier.get().getConnectionDetailsByScheme( S3FileProvider.SCHEME );
@@ -223,86 +218,24 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
     return KettleVFS.getInstance( bowl ).getFileObject( uri, new Variables(), fsopts );
   }
 
-  private AmazonS3 getAmazonS3( S3Details s3Details, VariableSpace space ) throws KettleException {
-    AWSCredentials awsCredentials;
-    AWSCredentialsProvider awsCredentialsProvider = null;
-
-    String accessKey = getVar( s3Details.getAccessKey(), space );
-    String secretKey = getVar( s3Details.getSecretKey(), space );
-    String sessionToken = getVar( s3Details.getSessionToken(), space );
-    String credentialsFilePath = getVar( s3Details.getCredentialsFilePath(), space );
-    String profileName = getVar( s3Details.getProfileName(), space );
-
-    String endpoint = getVar( s3Details.getEndpoint(), space );
-    String pathStyleAccess =
-      getBooleanStringOfVariable( s3Details.getPathStyleAccessVariable(), s3Details.getPathStyleAccess(),
-        space );
-    String signatureVersion = getVar( s3Details.getSignatureVersion(), space );
-    boolean access = ( pathStyleAccess == null ) || Boolean.parseBoolean( pathStyleAccess );
-
-    try {
-      if ( s3Details.getAuthType().equals( ACCESS_KEY_SECRET_KEY ) ) {
-
-        if ( S3Util.isEmpty( getVar( s3Details.getSessionToken(), space ) ) ) {
-          //throws IllegalArgumentException if accessKey/secretKey is null
-          awsCredentials = new BasicAWSCredentials( accessKey, secretKey );
-        } else {
-          awsCredentials =
-            new BasicSessionCredentials( accessKey, secretKey, sessionToken );
-        }
-        //throws IllegalArgumentException if awsCredentials is null
-        awsCredentialsProvider = new AWSStaticCredentialsProvider( awsCredentials );
-
-      }
-
-      if ( s3Details.getAuthType().equals( CREDENTIALS_FILE ) ) {
-        //throws IllegalArgumentException if credentialsFilePath is null
-        ProfilesConfigFile profilesConfigFile = new ProfilesConfigFile( credentialsFilePath );
-        awsCredentialsProvider = new ProfileCredentialsProvider( profilesConfigFile, profileName );
-      }
-      // TODO: semi-repeated code with S3CommonFileSystem
-
-      String region = getVar( s3Details.getMinioRegion(), space );
-      if ( region == null ) {
-        region = getVar( s3Details.getRegion(), space );
-        region = !S3Util.isEmpty( region ) ? Regions.fromName( region ).getName() : Regions.DEFAULT_REGION.getName();
-      }
-
-      String endPoint = getVar( s3Details.getEndpoint(), space );
-
-      if ( awsCredentialsProvider != null && S3Util.isEmpty( endPoint ) ) {
-        return AmazonS3ClientBuilder.standard().withCredentials( awsCredentialsProvider )
-          .enableForceGlobalBucketAccess().withRegion( region ).build();
-      }
-
-      if ( awsCredentialsProvider != null && !S3Util.isEmpty( endPoint ) ) {
-        ClientConfiguration clientConfiguration = new ClientConfiguration();
-        clientConfiguration.setSignerOverride(
-          S3Util.isEmpty( signatureVersion ) ? S3Util.SIGNATURE_VERSION_SYSTEM_PROPERTY : signatureVersion );
-        return AmazonS3ClientBuilder.standard()
-          .withEndpointConfiguration( new AwsClientBuilder.EndpointConfiguration( endpoint, region ) )
-          .withPathStyleAccessEnabled( access )
-          .withClientConfiguration( clientConfiguration )
-          .withCredentials( awsCredentialsProvider )
-          .build();
-      }
-
-      return null;
-
-    } catch ( IllegalArgumentException e ) {
-      // Opting to throw KettleException instead of returning false only to preserve UI compatibility.
-      // Kettle user may be depending on the exception info to see what's invalid.
-      throw new KettleException( e );
-    }
-  }
-
-  private String getBooleanStringOfVariable( String variableName, String defaultValue, VariableSpace space ) {
-    return String.valueOf( getBooleanValueOfVariable( space, variableName, defaultValue ) );
-  }
-
   public AmazonS3 getS3Client( S3Details s3Details ) throws KettleException {
-    VariableSpace space = getSpace( s3Details );
-    return getAmazonS3( s3Details, space );
+    var opts = getOpts( s3Details );
+    var cfgBuilder = new S3CommonFileSystemConfigBuilder( opts );
+
+    var defaultS3 = S3CommonFileSystem.getDefaultS3Connection( connectionManagerSupplier, cfgBuilder );
+    if ( defaultS3.isPresent() && defaultS3.get() instanceof S3Details defS3 ) {
+      cfgBuilder = new S3CommonFileSystemConfigBuilder( getOpts( defS3 ) );
+    }
+
+    var options = S3Options.from( cfgBuilder );
+    if ( StringUtils.isNotEmpty( options.base().endpoint() ) ) {
+      return S3CommonFileSystem.createClientFromEndpoint( options );
+    } else {
+      return AmazonS3ClientBuilder.standard().withCredentials( S3CommonFileSystem.createCredentialsProvider( options ) )
+        .enableForceGlobalBucketAccess().withRegion( options.base().region() ).build();
+    }
+
+
   }
 
 }

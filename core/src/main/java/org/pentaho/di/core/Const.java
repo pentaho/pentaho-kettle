@@ -2602,7 +2602,8 @@ public class Const {
    * @return the download service base URL (no trailing slash), or {@code null} if not configured
    */
   public static String getJdbcDriverServiceUrl() {
-    return "http://localhost:8080";
+    return NVL( System.getenv( "JDBC_DRIVER_SERVICE_URL" ),
+      System.getProperty( "JDBC_DRIVER_SERVICE_URL" ) );
   }
 
   /**
@@ -2672,7 +2673,8 @@ public class Const {
    * @return {@code true} if the feature flag is explicitly set to {@code "true"}, otherwise {@code false}
    */
   public static boolean isFusionConnectionManagementEnabled() {
-    return true;
+    return Boolean.parseBoolean( NVL( System.getenv( "FUSION_CONNECTION_MANAGEMENT_ENABLED" ),
+      System.getProperty( "FUSION_CONNECTION_MANAGEMENT_ENABLED" ) ) );
   }
 
   /**

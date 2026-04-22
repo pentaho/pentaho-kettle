@@ -16,26 +16,32 @@ package org.pentaho.s3common;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemConfigBuilder;
 import org.apache.commons.vfs2.FileSystemOptions;
+
 import org.pentaho.s3n.vfs.S3NFileSystem;
+
 
 /**
  * Configuration Builder for S3 File System
  */
 public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
-  private static final String NAME = "name";
-  private static final String ACCESS_KEY = "accessKey";
-  private static final String SECRET_KEY = "secretKey";
-  private static final String SESSION_TOKEN = "sessionToken";
-  private static final String REGION = "region";
-  private static final String MINIO_REGION = "minioRegion";
-  private static final String CREDENTIALS_FILE = "credentialsFile";
-  private static final String PROFILE_NAME = "profileName";
-  private static final String ENDPOINT = "endpoint";
-  private static final String SIGNATURE_VERSION = "signature_version";
+  public static final String NAME = "name";
+  public static final String ACCESS_KEY = "accessKey";
+  public static final String SECRET_KEY = "secretKey";
+  public static final String SESSION_TOKEN = "sessionToken";
+  public static final String REGION = "region";
+  public static final String CREDENTIALS_FILE = "credentialsFile";
+  public static final String PROFILE_NAME = "profileName";
+  public static final String ENDPOINT = "endpoint";
+  public static final String SIGNATURE_VERSION = "signature_version";
   public static final String PATHSTYLE_ACCESS = "pathStyleAccess";
-  private static final String DEFAULT_S3_CONFIG = "defaultS3Config";
-  private static final String CONNECTION_TYPE = "connectionType";
+  public static final String DEFAULT_S3_CONFIG = "defaultS3Config";
+  public static final String CONNECTION_TYPE = "connectionType";
+  public static final String TRUST_STORE_FILE_PATH = "trustStoreFilePath";
+  public static final String TRUST_STORE_PASSWORD = "trustStorePassword";
+  public static final String TRUST_ALL = "trustAll";
+  public static final String KEY_STORE_FILE_PATH = "keyStoreFilePath";
+  public static final String KEY_STORE_PASSWORD = "keyStorePassword";
   private static final String USE_DEFAULTS = "useDefaults";
 
   private FileSystemOptions fileSystemOptions;
@@ -90,15 +96,6 @@ public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
   public String getRegion() {
     return (String) this.getParam( getFileSystemOptions(), REGION );
-  }
-
-  public S3CommonFileSystemConfigBuilder setMinioRegion( String minioRegion ) {
-    this.setParam( getFileSystemOptions(), MINIO_REGION, minioRegion );
-    return this;
-  }
-
-  public String getMinioRegion() {
-    return (String) this.getParam( getFileSystemOptions(), MINIO_REGION );
   }
 
   public void setCredentialsFile( String credentialsFile ) {
@@ -156,6 +153,46 @@ public class S3CommonFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
   public String getConnectionType() {
     return (String) this.getParam( getFileSystemOptions(), CONNECTION_TYPE );
+  }
+
+  public void setTrustStoreFilePath( String trustStoreFilePath ) {
+    this.setParam( getFileSystemOptions(), TRUST_STORE_FILE_PATH, trustStoreFilePath );
+  }
+
+  public String getTrustStoreFilePath() {
+    return (String) this.getParam( getFileSystemOptions(), TRUST_STORE_FILE_PATH );
+  }
+
+  public void setTrustStorePassword( String trustStorePassword ) {
+    this.setParam( getFileSystemOptions(), TRUST_STORE_PASSWORD, trustStorePassword );
+  }
+
+  public String getTrustStorePassword() {
+    return (String) this.getParam( getFileSystemOptions(), TRUST_STORE_PASSWORD );
+  }
+
+  public void setTrustAll( String trustAll ) {
+    this.setParam( getFileSystemOptions(), TRUST_ALL, trustAll );
+  }
+
+  public String getTrustAll() {
+    return (String) this.getParam( getFileSystemOptions(), TRUST_ALL );
+  }
+
+  public void setKeyStoreFilePath( String keyStoreFilePath ) {
+    this.setParam( getFileSystemOptions(), KEY_STORE_FILE_PATH, keyStoreFilePath );
+  }
+
+  public String getKeyStoreFilePath() {
+    return (String) this.getParam( getFileSystemOptions(), KEY_STORE_FILE_PATH );
+  }
+
+  public void setKeyStorePassword( String keyStorePassword ) {
+    this.setParam( getFileSystemOptions(), KEY_STORE_PASSWORD, keyStorePassword );
+  }
+
+  public String getKeyStorePassword() {
+    return (String) this.getParam( getFileSystemOptions(), KEY_STORE_PASSWORD );
   }
 
   public boolean useDefaults() {

@@ -334,7 +334,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 
           String shortFilename = info.getFile().getName().getBaseName();
 
-          if ( !info.getFile().getParent().equals( info.getBaseFolder() ) ) {
+          if ( !info.getFile().getParent().getName().getURI().equals( info.getBaseFolder().getName().getURI() ) ) {
             // Not in the Base Folder..Only if include sub folders
             if ( includeSubfolders ) {
               returncode = includeFileCheck( info, shortFilename );
