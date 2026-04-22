@@ -47,9 +47,9 @@ jobs:
           # Remove the -SNAPSHOT suffix if present
           base_version=${current_version%-SNAPSHOT}
 
-          # Replace the last version segment with current date (YYYYMMDD)
-          # e.g. 11.1.0.0-SNAPSHOT → 11.1.0.20260421-SNAPSHOT
-          date_segment=$(date -u +%Y%m%d)
+          # Replace the last version segment with current date+time (YYYYMMDD-HHmm)
+          # e.g. 11.1.0.0-SNAPSHOT → 11.1.0.20260423-1530-SNAPSHOT
+          date_segment=$(date -u +%Y%m%d-%H%M)
           new_version=$(echo "$base_version" | sed "s/\.[^.]*$/.${date_segment}/")
 
           # Reattach the -SNAPSHOT suffix if it was present
