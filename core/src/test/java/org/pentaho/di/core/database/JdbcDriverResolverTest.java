@@ -88,20 +88,6 @@ public class JdbcDriverResolverTest {
   }
 
   // ---------------------------------------------------------------------------
-  // Step 1 — configured path exists as-is
-  // ---------------------------------------------------------------------------
-
-  @Test
-  public void resolve_configuredPathExistsAsFile_returnsImmediately() throws Exception {
-    File jar = tmp.newFile( JAR_NAME );
-    Files.write( jar.toPath(), FAKE_JAR_BYTES );
-
-    String result = JdbcDriverResolver.resolve( DRIVER_ID, jar.getAbsolutePath() );
-
-    assertEquals( jar.getAbsolutePath(), result );
-  }
-
-  // ---------------------------------------------------------------------------
   // Step 2 — JDBC_DRIVERS_DIRECTORY system property (Const.getJdbcDriversDirectory)
   // ---------------------------------------------------------------------------
 
@@ -112,10 +98,8 @@ public class JdbcDriverResolverTest {
     Files.write( jar.toPath(), FAKE_JAR_BYTES );
 
     System.setProperty( "JDBC_DRIVERS_DIRECTORY", driversDir.getAbsolutePath() );
-    // Configured path does NOT exist — only the base name is known
-    String nonExistent = tmp.getRoot().getAbsolutePath() + "/nonexistent/" + JAR_NAME;
 
-    String result = JdbcDriverResolver.resolve( DRIVER_ID, nonExistent );
+    String result = JdbcDriverResolver.resolve( DRIVER_ID );
 
     assertEquals( jar.getAbsoluteFile().getCanonicalPath(),
       new File( result ).getCanonicalPath() );
@@ -124,14 +108,12 @@ public class JdbcDriverResolverTest {
   @Test
   public void resolve_systemPropertyDirDoesNotContainJar_continuesResolutionChain() throws Exception {
     File driversDir = tmp.newFolder( "drivers-empty" );
-    // No JAR placed in the directory.
     System.setProperty( "JDBC_DRIVERS_DIRECTORY", driversDir.getAbsolutePath() );
     System.clearProperty( "JDBC_DRIVER_SERVICE_URL" );
 
     // Resolution must fall through to step 5 (download) and fail with "not configured"
-    String nonExistent = tmp.getRoot().getAbsolutePath() + "/nonexistent/" + JAR_NAME;
     try {
-      JdbcDriverResolver.resolve( DRIVER_ID, nonExistent );
+      JdbcDriverResolver.resolve( DRIVER_ID );
       fail( "Expected KettleDatabaseException because no service URL is set" );
     } catch ( KettleDatabaseException ex ) {
       assertTrue( "Message should mention JDBC_DRIVER_SERVICE_URL",
@@ -160,8 +142,7 @@ public class JdbcDriverResolverTest {
       // Ensure step 2 does NOT fire
       System.clearProperty( "JDBC_DRIVERS_DIRECTORY" );
 
-      String nonExistent = tmp.getRoot().getAbsolutePath() + "/nonexistent/" + JAR_NAME;
-      String result = JdbcDriverResolver.resolve( DRIVER_ID, nonExistent );
+      String result = JdbcDriverResolver.resolve( DRIVER_ID );
 
       assertEquals( jar.getAbsoluteFile().getCanonicalPath(),
         new File( result ).getCanonicalPath() );
@@ -179,9 +160,8 @@ public class JdbcDriverResolverTest {
     System.clearProperty( "JDBC_DRIVERS_DIRECTORY" );
     System.clearProperty( "JDBC_DRIVER_SERVICE_URL" );
 
-    String nonExistent = tmp.getRoot().getAbsolutePath() + "/nonexistent/" + JAR_NAME;
     try {
-      JdbcDriverResolver.resolve( DRIVER_ID, nonExistent );
+      JdbcDriverResolver.resolve( DRIVER_ID );
       fail( "Expected KettleDatabaseException" );
     } catch ( KettleDatabaseException ex ) {
       assertTrue( ex.getMessage().contains( "JDBC_DRIVER_SERVICE_URL" ) );
@@ -197,8 +177,7 @@ public class JdbcDriverResolverTest {
       System.setProperty( "JDBC_DRIVER_SERVICE_URL",
         "http://localhost:" + server.getAddress().getPort() );
 
-      String nonExistent = tmp.getRoot().getAbsolutePath() + "/nonexistent/" + JAR_NAME;
-      String result = JdbcDriverResolver.resolve( DRIVER_ID, nonExistent );
+      String result = JdbcDriverResolver.resolve( DRIVER_ID );
 
       assertTrue( "Result path must end with the JAR name", result.endsWith( JAR_NAME ) );
       assertTrue( "Downloaded file must exist on disk", new File( result ).isFile() );
@@ -217,9 +196,8 @@ public class JdbcDriverResolverTest {
       System.setProperty( "JDBC_DRIVER_SERVICE_URL",
         "http://localhost:" + server.getAddress().getPort() );
 
-      String nonExistent = tmp.getRoot().getAbsolutePath() + "/nonexistent/" + JAR_NAME;
       try {
-        JdbcDriverResolver.resolve( DRIVER_ID, nonExistent );
+        JdbcDriverResolver.resolve( DRIVER_ID );
         fail( "Expected KettleDatabaseException on HTTP 404" );
       } catch ( KettleDatabaseException ex ) {
         assertTrue( "Message should mention HTTP 404", ex.getMessage().contains( "404" ) );
@@ -239,9 +217,8 @@ public class JdbcDriverResolverTest {
       System.setProperty( "JDBC_DRIVER_SERVICE_URL",
         "http://localhost:" + server.getAddress().getPort() );
 
-      String nonExistent = tmp.getRoot().getAbsolutePath() + "/nonexistent/" + JAR_NAME;
       try {
-        JdbcDriverResolver.resolve( DRIVER_ID, nonExistent );
+        JdbcDriverResolver.resolve( DRIVER_ID );
       } catch ( KettleDatabaseException ignored ) {
         // expected
       }
@@ -289,14 +266,12 @@ public class JdbcDriverResolverTest {
       System.setProperty( "JDBC_DRIVER_SERVICE_URL",
         "http://localhost:" + server.getAddress().getPort() );
 
-      String nonExistent = tmp.getRoot().getAbsolutePath() + "/nonexistent/" + JAR_NAME;
-
       ExecutorService pool = Executors.newFixedThreadPool( 2 );
-      Future<String> f1 = pool.submit( () -> JdbcDriverResolver.resolve( DRIVER_ID, nonExistent ) );
+      Future<String> f1 = pool.submit( () -> JdbcDriverResolver.resolve( DRIVER_ID ) );
 
       firstRequestStarted.await(); // wait until thread 1 is inside the HTTP call
 
-      Future<String> f2 = pool.submit( () -> JdbcDriverResolver.resolve( DRIVER_ID, nonExistent ) );
+      Future<String> f2 = pool.submit( () -> JdbcDriverResolver.resolve( DRIVER_ID ) );
 
       releaseFirst.countDown(); // let the download finish
 
@@ -326,8 +301,7 @@ public class JdbcDriverResolverTest {
       System.setProperty( "JDBC_DRIVER_SERVICE_URL",
         "http://localhost:" + server.getAddress().getPort() );
 
-      String nonExistent = tmp.getRoot().getAbsolutePath() + "/nonexistent/" + JAR_NAME;
-      String result = JdbcDriverResolver.resolve( DRIVER_ID, nonExistent );
+      String result = JdbcDriverResolver.resolve( DRIVER_ID );
 
       assertTrue( "Result must point to an existing file", new File( result ).isFile() );
       // Clean up so we don't leave files in the real tmpdir

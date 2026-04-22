@@ -82,21 +82,14 @@ public final class JdbcDriverResolver {
   /**
    * Returns an absolute path to the JDBC driver JAR.
    *
-   * <p>If {@code configuredPath} points to an existing file it is returned immediately.
+   * <p>If {@code driverId} points to an existing file it is returned immediately.
    * Otherwise the resolution chain described in the class Javadoc is followed.
    *
-   * @param configuredPath the JAR path as stored in the database connection attributes
-   *                       (may be a full path or just a file name)
    * @return absolute path of the resolved JAR file
    * @throws KettleDatabaseException if the JAR cannot be found or downloaded
    */
-  public static String resolve( String driverId, String configuredPath ) throws KettleDatabaseException {
-    if ( configuredPath == null || configuredPath.trim().isEmpty() ) {
-      throw new KettleDatabaseException(
-        "JdbcDriverResolver: configured JAR path for driver '" + driverId + "' is null or blank. "
-          + "Set the dynamic driver JAR attribute (file name or absolute path) on the database connection." );
-    }
-
+  public static String resolve( String driverId ) throws KettleDatabaseException {
+    String configuredPath = driverId + ".jar";
     // 1 — configured path exists as-is
     if ( existsAsFile( configuredPath ) ) {
       return configuredPath;
