@@ -111,7 +111,7 @@ public class JdbcDriverResolverTest {
     System.setProperty( "JDBC_DRIVERS_DIRECTORY", driversDir.getAbsolutePath() );
     System.clearProperty( "JDBC_DRIVER_SERVICE_URL" );
 
-    // Resolution must fall through to step 5 (download) and fail with "not configured"
+    // Resolution must fall through to step 4 (download) and fail with "not configured"
     try {
       JdbcDriverResolver.resolve( DRIVER_ID );
       fail( "Expected KettleDatabaseException because no service URL is set" );
