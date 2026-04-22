@@ -86,26 +86,26 @@ public final class JdbcDriverResolver {
    * <p>If {@code configuredPath} points to an existing file it is returned immediately.
    * Otherwise the resolution chain described in the class Javadoc is followed.
    *
-   * @param configuredPath the JAR path as stored in the database connection attributes
-   *                       (may be a full path or just a file name)
+//   * @param configuredPath the JAR path as stored in the database connection attributes
+//   *                       (may be a full path or just a file name)
    * @return absolute path of the resolved JAR file
    * @throws KettleDatabaseException if the JAR cannot be found or downloaded
    */
-  public static String resolve( String driverId, String configuredPath ) throws KettleDatabaseException {
-    if ( configuredPath == null || configuredPath.trim().isEmpty() ) {
-      throw new KettleDatabaseException(
-        "JdbcDriverResolver: configured JAR path for driver '" + driverId + "' is null or blank. "
-          + "Set the dynamic driver JAR attribute (file name or absolute path) on the database connection." );
-    }
+  public static String resolve( String driverId ) throws KettleDatabaseException {
+//    if ( configuredPath == null || configuredPath.trim().isEmpty() ) {
+//      throw new KettleDatabaseException(
+//        "JdbcDriverResolver: configured JAR path for driver '" + driverId + "' is null or blank. "
+//          + "Set the dynamic driver JAR attribute (file name or absolute path) on the database connection." );
+//    }
 
-    // 1 — configured path exists as-is
-    if ( existsAsFile( configuredPath ) ) {
-      return configuredPath;
-    }
+//    // 1 — configured path exists as-is
+//    if ( existsAsFile( configuredPath ) ) {
+//      return configuredPath;
+//    }
 
-    String jarName = Paths.get( configuredPath ).getFileName().toString();
-    log.logBasic( "JdbcDriverResolver: JAR not found at configured path '" + configuredPath
-      + "' — searching by file name '" + jarName + "'" );
+    String jarName = Paths.get( driverId + ".jar" ).getFileName().toString();
+//    log.logBasic( "JdbcDriverResolver: JAR not found at configured path '" + configuredPath
+//      + "' — searching by file name '" + jarName + "'" );
 
     // 2 — JDBC_DRIVERS_DIRECTORY: env var wins over system property (via Const)
     String resolved = tryDirectory( Const.getJdbcDriversDirectory(), jarName, "Const.getJdbcDriversDirectory()" );
@@ -294,10 +294,10 @@ public final class JdbcDriverResolver {
                 conn.setRequestMethod( "GET" );
                 conn.setRequestProperty( "Accept", "*/*" );
 
-                String bearerToken = CmsTokenProvider.getInstance().getToken();
-                if ( bearerToken != null ) {
-                  conn.setRequestProperty( "Authorization", "Bearer " + bearerToken );
-                }
+//                String bearerToken = CmsTokenProvider.getInstance().getToken();
+//                if ( bearerToken != null ) {
+//                  conn.setRequestProperty( "Authorization", "Bearer " + bearerToken );
+//                }
 
                 int status = conn.getResponseCode();
                 if ( status != HttpURLConnection.HTTP_OK ) {

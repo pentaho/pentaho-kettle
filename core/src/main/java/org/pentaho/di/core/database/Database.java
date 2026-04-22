@@ -592,11 +592,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
     Properties properties = databaseMeta.getConnectionProperties();
     Properties attributes = databaseMeta.getAttributes();
-    String jarPath = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_JAR );
-    String driverId = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_ID );
+//    String jarPath = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_JAR );
+    String driverId = "0fd89ab1-ec7c-4a33-bf1e-fbeb4b3e9516";
 
-    boolean usingDynamicDriver = ( StringUtils.isNotBlank( driverId ) || StringUtils.isNotBlank( jarPath ) )
-      && Const.isFusionConnectionManagementEnabled();
+    boolean usingDynamicDriver = StringUtils.isNotBlank( driverId ) && Const.isFusionConnectionManagementEnabled();
 
     // Resolved once here; reused when opening the connection below to avoid a second HTTP call.
     String jdbcDriverClass = null;
@@ -606,7 +605,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       // No additional synchronization is needed.
       var driverMetadata = getMetadataFromDriver( driverId );
       jdbcDriverClass = driverMetadata.get( "driverClassName" ).toString();
-      loadDynamicDriver( driverId, jarPath, jdbcDriverClass );
+      loadDynamicDriver( driverId, jdbcDriverClass );
     } else {
       loadStaticDriver( classname, plugin );
     }
@@ -739,10 +738,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       conn.setReadTimeout( 60_000 );
       conn.setRequestMethod( "GET" );
 
-      String bearerToken = CmsTokenProvider.getInstance().getToken();
-      if ( bearerToken != null ) {
-        conn.setRequestProperty( "Authorization", "Bearer " + bearerToken );
-      }
+//      String bearerToken = CmsTokenProvider.getInstance().getToken();
+//      if ( bearerToken != null ) {
+//        conn.setRequestProperty( "Authorization", "Bearer " + bearerToken );
+//      }
 
       int status = conn.getResponseCode();
       if ( status != HttpURLConnection.HTTP_OK ) {
@@ -884,10 +883,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * {@link #closeDynamicClassLoader()} closes it (and releases the JAR file handle) on
    * {@link #disconnect()}. Each connection is fully isolated with no shared JVM state.
    */
-  private void loadDynamicDriver( String driverId, String jarPath, String effectiveClassName ) throws KettleDatabaseException {
+  private void loadDynamicDriver( String driverId, String effectiveClassName ) throws KettleDatabaseException {
     // Always resolve first — returns immediately if jarPath exists on disk,
     // otherwise walks the fallback chain. The resolved path is stable for the connection lifetime.
-    String resolvedPath = JdbcDriverResolver.resolve( driverId, jarPath );
+    String resolvedPath = JdbcDriverResolver.resolve( driverId );
 
     if ( !resolvedPath.toLowerCase().endsWith( ".jar" ) ) {
       throw new KettleDatabaseException( "Dynamic driver path does not point to a JAR file: " + resolvedPath );
