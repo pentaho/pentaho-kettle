@@ -32,6 +32,7 @@ import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryBase;
+import org.pentaho.di.job.entry.JobEntryHelperInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -1158,6 +1159,11 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
   @Override
   public boolean evaluates() {
     return true;
+  }
+
+  @Override
+  public JobEntryHelperInterface getJobEntryHelperInterface() {
+    return new JobEntrySimpleEvalHelper();
   }
 
 }
