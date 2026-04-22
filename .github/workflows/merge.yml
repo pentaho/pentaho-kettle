@@ -97,7 +97,7 @@ jobs:
         -DnewVersion=${{ needs.resolve-version.outputs.base_version }}
         -DprocessAllModules=true
         -DgenerateBackupPoms=false
-      run_release_candidate: 'true'
+      run_release_candidate: true
     secrets: inherit
 
   trigger-downstream:
