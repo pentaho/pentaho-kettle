@@ -85,35 +85,35 @@ public final class JdbcDriverResolver {
    * <p>If {@code configuredPath} points to an existing file it is returned immediately.
    * Otherwise the resolution chain described in the class Javadoc is followed.
    *
-   * @param configuredPath the JAR path as stored in the database connection attributes
-   *                       (may be a full path or just a file name)
+//   * @param configuredPath the JAR path as stored in the database connection attributes
+//   *                       (may be a full path or just a file name)
    * @return absolute path of the resolved JAR file
    * @throws KettleDatabaseException if the JAR cannot be found or downloaded
    */
-  public static String resolve( String driverId, String configuredPath ) throws KettleDatabaseException {
-    if ( configuredPath == null || configuredPath.trim().isEmpty() ) {
-      throw new KettleDatabaseException(
-        "JdbcDriverResolver: configured JAR path for driver '" + driverId + "' is null or blank. "
-          + "Set the dynamic driver JAR attribute (file name or absolute path) on the database connection." );
-    }
-
-    // 1 — configured path exists as-is
-    if ( existsAsFile( configuredPath ) ) {
-      return configuredPath;
-    }
-
-    String jarName = Paths.get( configuredPath ).getFileName().toString();
-    log.logBasic( "JdbcDriverResolver: JAR not found at configured path '" + configuredPath
-      + "' — searching by file name '" + jarName + "'" );
+  public static String resolve( String driverId ) throws KettleDatabaseException {
+//    if ( configuredPath == null || configuredPath.trim().isEmpty() ) {
+//      throw new KettleDatabaseException(
+//        "JdbcDriverResolver: configured JAR path for driver '" + driverId + "' is null or blank. "
+//          + "Set the dynamic driver JAR attribute (file name or absolute path) on the database connection." );
+//    }
+//
+//    // 1 — configured path exists as-is
+//    if ( existsAsFile( configuredPath ) ) {
+//      return configuredPath;
+//    }
+//
+//    String jarName = Paths.get( configuredPath ).getFileName().toString();
+//    log.logBasic( "JdbcDriverResolver: JAR not found at configured path '" +
+//      + "' — searching by file name '" + driverId + "'" );
 
     // 2 — JDBC_DRIVERS_DIRECTORY: env var wins over system property (via Const)
-    String resolved = tryDirectory( Const.getJdbcDriversDirectory(), jarName, "Const.getJdbcDriversDirectory()" );
+    String resolved = tryDirectory( Const.getJdbcDriversDirectory(), driverId+".jar", Const.getJdbcDriversDirectory() );
     if ( resolved != null ) {
       return resolved;
     }
 
     // 3 — JDBC_DRIVERS_DIRECTORY from kettle.properties (on-prem / BA Server)
-    resolved = tryDirectory( kettleProperty( "JDBC_DRIVERS_DIRECTORY" ), jarName,
+    resolved = tryDirectory( kettleProperty( "JDBC_DRIVERS_DIRECTORY" ), driverId+".jar",
       "kettle.properties:JDBC_DRIVERS_DIRECTORY" );
     if ( resolved != null ) {
       return resolved;
