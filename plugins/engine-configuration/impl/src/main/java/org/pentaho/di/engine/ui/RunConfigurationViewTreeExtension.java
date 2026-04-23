@@ -20,7 +20,6 @@ import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.SelectionTreeExtension;
@@ -48,7 +47,7 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
           bowl = Spoon.getInstance().getManagementBowl();
         }
         RunConfigurationDelegate runConfigurationDelegate =
-          RunConfigurationDelegate.getInstance( () -> bowl.getMetastore() );
+          RunConfigurationDelegate.getInstance( bowl );
 
         runConfigurationDelegate.edit( runConfigurationDelegate.load( name ) );
       }
@@ -56,8 +55,7 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
       if ( selectionTreeExtension.getSelection().equals( RunConfiguration.class ) ) {
         // Create new RunConfiguration
         Bowl bowl = Spoon.getInstance().getManagementBowl();
-        CheckedMetaStoreSupplier ms = () -> bowl.getMetastore();
-        RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( ms );
+        RunConfigurationDelegate runConfigurationDelegate = RunConfigurationDelegate.getInstance( bowl );
         runConfigurationDelegate.create();
       }
     }
