@@ -3,7 +3,7 @@ package org.pentaho.di.repovfs.plugin.client;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
-import org.pentaho.di.plugins.repofvs.pur.converter.LazyLoader;
+import org.pentaho.di.core.util.LazyLoader;
 import org.pentaho.di.plugins.repofvs.pur.vfs.PurFileSystemConfig;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;

@@ -19,8 +19,8 @@ import org.pentaho.di.connections.vfs.provider.ConnectionFileSystem;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.util.LazyLoader;
 import org.pentaho.di.core.util.UUIDUtil;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
 import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.function.Supplier;
 
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
@@ -57,23 +58,17 @@ public class KettleVFSImpl implements IKettleVFS {
 
   private final Bowl bowl;
 
-  private static VariableSpace defaultVariableSpace;
-
-  static {
-    // Create a new empty variable space...
-    //
-    defaultVariableSpace = new Variables();
-    defaultVariableSpace.initializeVariablesFrom( null );
-  }
+  private Supplier<VariableSpace> defaultVariableSpace;
 
   // non-public. Should only be created by the factory in KettleVFS
   KettleVFSImpl( Bowl bowl ) {
     this.bowl = Preconditions.checkNotNull( bowl );
+    this.defaultVariableSpace = new LazyLoader<>( bowl::getADefaultVariableSpace );
   }
 
   @Override
   public FileObject getFileObject( String vfsFilename ) throws KettleFileException {
-    return getFileObject( vfsFilename, defaultVariableSpace );
+    return getFileObject( vfsFilename, defaultVariableSpace.get() );
   }
 
   @Override
@@ -83,7 +78,7 @@ public class KettleVFSImpl implements IKettleVFS {
 
   @Override
   public FileObject getFileObject( String vfsFilename, FileSystemOptions fsOptions ) throws KettleFileException {
-    return getFileObject( vfsFilename, defaultVariableSpace, fsOptions );
+    return getFileObject( vfsFilename, defaultVariableSpace.get(), fsOptions );
   }
 
   // IMPORTANT:
@@ -185,7 +180,7 @@ public class KettleVFSImpl implements IKettleVFS {
       return null;
     }
     if ( varSpace == null ) {
-      varSpace = defaultVariableSpace;
+      varSpace = defaultVariableSpace.get();
     }
 
     IKettleFileSystemConfigBuilder configBuilder =
@@ -230,7 +225,7 @@ public class KettleVFSImpl implements IKettleVFS {
 
   @Override
   public String getFriendlyURI( String filename ) {
-    return getFriendlyURI( filename, defaultVariableSpace );
+    return getFriendlyURI( filename, defaultVariableSpace.get() );
   }
 
   @Override
@@ -308,7 +303,7 @@ public class KettleVFSImpl implements IKettleVFS {
 
   @Override
   public InputStream getInputStream( String vfsFilename ) throws KettleFileException {
-    return getInputStream( vfsFilename, defaultVariableSpace );
+    return getInputStream( vfsFilename, defaultVariableSpace.get() );
   }
 
   @Override
@@ -354,7 +349,7 @@ public class KettleVFSImpl implements IKettleVFS {
 
   @Override
   public OutputStream getOutputStream( String vfsFilename, boolean append ) throws KettleFileException {
-    return getOutputStream( vfsFilename, defaultVariableSpace, append );
+    return getOutputStream( vfsFilename, defaultVariableSpace.get(), append );
   }
 
   @Override
@@ -431,8 +426,7 @@ public class KettleVFSImpl implements IKettleVFS {
 
   @Override
   public void reset() {
-    defaultVariableSpace = new Variables();
-    defaultVariableSpace.initializeVariablesFrom( null );
+    defaultVariableSpace = new LazyLoader<>( bowl::getADefaultVariableSpace );
   }
 
 
