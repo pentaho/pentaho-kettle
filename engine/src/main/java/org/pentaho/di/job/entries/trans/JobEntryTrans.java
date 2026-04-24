@@ -1321,21 +1321,28 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       TransMeta transMeta = metaFileLoader.getMetaForEntry( parentJobMeta.getBowl(), rep, metaStore, space );
 
       if ( transMeta != null ) {
-        // set Internal.Entry.Current.Directory again because it was changed
-        transMeta.setInternalKettleVariables();
+        // Pass repository and metastore references first.
+        //
+        transMeta.setRepository( rep );
+        transMeta.setMetaStore( metaStore );
+
+        // NOTE: do NOT call transMeta.setInternalKettleVariables() here.
+        // MetaFileLoaderImpl.getMetaForEntry has already seeded Internal.Entry.Current.Directory (and
+        // friends) on the loaded meta from the freshly resolved tmpSpace for *this* job-entry invocation.
+        // Calling setInternalKettleVariables() at this point would recompute those vars from the meta's
+        // own (potentially stale or context-mismatched) directory/filename fields and clobber the
+        // correct value -- this was the root cause of Internal.Entry.Current.Directory resolving to the
+        // parent directory (e.g. "/public" instead of "/public/test") when a transformation is invoked
+        // from a job entry.
+
         //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the
         // parent parameter.
-
         StepWithMappingMeta.replaceVariableValues( transMeta, space, "Trans" );
         if ( isPassingAllParameters() ) {
           // All other parent parameters need to get copied into the child parameters  (when the 'Inherit all
           // variables from the transformation?' option is checked)
           StepWithMappingMeta.addMissingVariables( transMeta, space );
         }
-        // Pass repository and metastore references
-        //
-        transMeta.setRepository( rep );
-        transMeta.setMetaStore( metaStore );
       }
 
       return transMeta;
