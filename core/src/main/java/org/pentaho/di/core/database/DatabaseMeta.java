@@ -1062,46 +1062,50 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     StringBuilder retval = new StringBuilder( 250 );
 
     retval.append( "  <" ).append( XML_TAG ).append( '>' ).append( Const.CR );
+
     retval.append( "    " ).append( XMLHandler.addTagValue( "id", getId() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", getName() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "server", getHostname() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "type", getPluginId() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "access", getAccessTypeDesc() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "database", getDatabaseName() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "port", getDatabasePortNumberString() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "username", getUsername() ) );
-    retval.append( "    " ).append(
-      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "servername", getServername() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "data_tablespace", getDataTablespace() ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "index_tablespace", getIndexTablespace() ) );
-    appendObjectId( retval );
 
-    // only write the tag out if it is set to true
-    if ( isReadOnly() ) {
-      retval.append( "    " ).append( XMLHandler.addTagValue( "read_only", Boolean.toString( isReadOnly() ) ) );
-    }
+    if ( StringUtils.isBlank( getId() ) ) {
+      retval.append("    ").append(XMLHandler.addTagValue("server", getHostname()));
+      retval.append("    ").append(XMLHandler.addTagValue("type", getPluginId()));
+      retval.append("    ").append(XMLHandler.addTagValue("access", getAccessTypeDesc()));
+      retval.append("    ").append(XMLHandler.addTagValue("database", getDatabaseName()));
+      retval.append("    ").append(XMLHandler.addTagValue("port", getDatabasePortNumberString()));
+      retval.append("    ").append(XMLHandler.addTagValue("username", getUsername()));
+      retval.append("    ").append(
+              XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(getPassword())));
+      retval.append("    ").append(XMLHandler.addTagValue("servername", getServername()));
+      retval.append("    ").append(XMLHandler.addTagValue("data_tablespace", getDataTablespace()));
+      retval.append("    ").append(XMLHandler.addTagValue("index_tablespace", getIndexTablespace()));
+      appendObjectId(retval);
 
-    retval.append( "    <attributes>" ).append( Const.CR );
-
-    List<String> list = new ArrayList<>();
-    Set<Object> keySet = getAttributes().keySet();
-    for ( Object object : keySet ) {
-      list.add( (String) object );
-    }
-    Collections.sort( list ); // Sort the entry-sets to make sure we can compare XML strings: if the order is different,
-                              // the XML is different.
-
-    for ( Iterator<String> iter = list.iterator(); iter.hasNext(); ) {
-      String code = iter.next();
-      String attribute = getAttributes().getProperty( code );
-      if ( !Utils.isEmpty( attribute ) ) {
-        retval.append( "      <attribute>"
-          + XMLHandler.addTagValue( "code", code, false )
-          + XMLHandler.addTagValue( "attribute", attribute, false ) + "</attribute>" + Const.CR );
+      // only write the tag out if it is set to true
+      if (isReadOnly()) {
+        retval.append("    ").append(XMLHandler.addTagValue("read_only", Boolean.toString(isReadOnly())));
       }
+
+      retval.append("    <attributes>").append(Const.CR);
+
+      List<String> list = new ArrayList<>();
+      Set<Object> keySet = getAttributes().keySet();
+      for (Object object : keySet) {
+        list.add((String) object);
+      }
+      Collections.sort(list); // Sort the entry-sets to make sure we can compare XML strings: if the order is different,
+      // the XML is different.
+
+      for (Iterator<String> iter = list.iterator(); iter.hasNext(); ) {
+        String code = iter.next();
+        String attribute = getAttributes().getProperty(code);
+        if (!Utils.isEmpty(attribute)) {
+          retval.append("      <attribute>"
+                  + XMLHandler.addTagValue("code", code, false)
+                  + XMLHandler.addTagValue("attribute", attribute, false) + "</attribute>" + Const.CR);
+        }
+      }
+      retval.append("    </attributes>").append(Const.CR);
     }
-    retval.append( "    </attributes>" ).append( Const.CR );
 
     retval.append( "  </" + XML_TAG + ">" ).append( Const.CR );
     return retval.toString();
