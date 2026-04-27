@@ -14,11 +14,14 @@
 
 package org.pentaho.di.trans.steps.fileinput.text;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.playlist.FilePlayListReplay;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -37,6 +40,10 @@ import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
 public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFileInputData> implements StepInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
+  public static final String FILE_TYPE_CSV_RFC4180 = "CSV-RFC4180";
+
+  private CsvRFC4180ReaderFactory csvRFC4180ReaderFactory;
+
   public TextFileInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
       Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -45,6 +52,9 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
   @Override
   protected IBaseFileInputReader createReader( TextFileInputMeta meta, TextFileInputData data, FileObject file )
     throws Exception {
+    if ( FILE_TYPE_CSV_RFC4180.equalsIgnoreCase( meta.content.fileType ) && csvRFC4180ReaderFactory != null ) {
+      return csvRFC4180ReaderFactory.createReader( this, meta, data, file, log );
+    }
     return new TextFileInputReader( this, meta, data, file, log );
   }
 
@@ -72,15 +82,34 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     data.separator = environmentSubstitute( meta.content.separator );
     data.enclosure = environmentSubstitute( meta.content.enclosure );
     data.escapeCharacter = environmentSubstitute( meta.content.escapeCharacter );
+
+    // If the user chose the RFC 4180 reader, validate that the service is available
+    if ( FILE_TYPE_CSV_RFC4180.equalsIgnoreCase( meta.content.fileType ) ) {
+      try {
+        Collection<CsvRFC4180ReaderFactory> services =
+          PluginServiceLoader.loadServices( CsvRFC4180ReaderFactory.class );
+        if ( services.isEmpty() ) {
+          logError( BaseMessages.getString( PKG, "TextFileInput.Error.CsvRFC4180ReaderNotAvailable" ) );
+          return false;
+        }
+        csvRFC4180ReaderFactory = services.iterator().next();
+      } catch ( KettlePluginException e ) {
+        logError( BaseMessages.getString( PKG, "TextFileInput.Error.CsvRFC4180ReaderNotAvailable" ), e );
+        return false;
+      }
+    }
+
     // CSV without separator defined
-    if ( meta.content.fileType.equalsIgnoreCase( "CSV" ) && ( meta.content.separator == null || meta.content.separator
-        .isEmpty() ) ) {
+    if ( ( meta.content.fileType.equalsIgnoreCase( "CSV" )
+        || FILE_TYPE_CSV_RFC4180.equalsIgnoreCase( meta.content.fileType ) )
+        && ( meta.content.separator == null || meta.content.separator.isEmpty() ) ) {
       logError( BaseMessages.getString( PKG, "TextFileInput.Exception.NoSeparator" ) );
       return false;
     }
 
     return true;
   }
+
   public boolean isWaitingForData() {
     return true;
   }

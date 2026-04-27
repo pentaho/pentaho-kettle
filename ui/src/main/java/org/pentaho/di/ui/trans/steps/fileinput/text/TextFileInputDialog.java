@@ -1032,6 +1032,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wFiletype );
     wFiletype.add( "CSV" );
     wFiletype.add( "Fixed" );
+    // Conditionally add CSV-RFC4180 if the reader service is available
+    try {
+      java.util.Collection<org.pentaho.di.trans.steps.fileinput.text.CsvRFC4180ReaderFactory> rfc4180Services =
+        org.pentaho.di.core.service.PluginServiceLoader.loadServices(
+          org.pentaho.di.trans.steps.fileinput.text.CsvRFC4180ReaderFactory.class );
+      if ( !rfc4180Services.isEmpty() ) {
+        wFiletype.add( "CSV-RFC4180" );
+      }
+    } catch ( Exception ex ) {
+      // Service not available; only CSV and Fixed will be shown
+    }
     wFiletype.select( 0 );
     wFiletype.addModifyListener( lsMod );
     fdFiletype = new FormData();
@@ -2577,7 +2588,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void get() {
-    if ( wFiletype.getText().equalsIgnoreCase( "CSV" ) ) {
+    if ( wFiletype.getText().equalsIgnoreCase( "CSV" )
+      || wFiletype.getText().equalsIgnoreCase( "CSV-RFC4180" ) ) {
       getFields();
     } else {
       getFixed();

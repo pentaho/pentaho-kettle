@@ -24,10 +24,12 @@ import org.pentaho.di.core.compress.CompressionInputStream;
 import org.pentaho.di.core.compress.CompressionProvider;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -39,7 +41,9 @@ import org.pentaho.di.trans.steps.file.BaseFileField;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -303,6 +307,14 @@ public class TextFileInputHelper extends BaseStepHelper implements CsvInputAware
   // Logic to Get the first x lines is moved from TextFileInputDialog to step class
   public List<String> getFirst( TextFileInputMeta meta, TransMeta transMeta, int nrlines, boolean skipHeaders )
     throws KettleException {
+    // Delegate to the RFC 4180 reader service when the file type is CSV-RFC4180
+    if ( TextFileInput.FILE_TYPE_CSV_RFC4180.equalsIgnoreCase( meta.content.fileType ) ) {
+      CsvRFC4180ReaderFactory factory = loadCsvRFC4180Factory();
+      if ( factory != null ) {
+        return factory.getFirst( meta, transMeta, nrlines, skipHeaders );
+      }
+    }
+
     FileInputList textFileList = meta.getFileInputList( transMeta.getBowl(), transMeta );
     List<String> retval = new ArrayList<>();
 
@@ -457,5 +469,57 @@ public class TextFileInputHelper extends BaseStepHelper implements CsvInputAware
     massagedFieldName = Const.replace( massagedFieldName, " ", "_" );
     massagedFieldName = Const.replace( massagedFieldName, "-", "_" );
     return massagedFieldName;
+  }
+
+  @Override
+  public String[] getFieldNamesImpl( final TransMeta transMeta, final BufferedInputStreamReader reader,
+                                     final CsvInputAwareMeta meta ) throws KettleException {
+    // Delegate to the RFC 4180 reader service when the file type is CSV-RFC4180
+    if ( meta instanceof TextFileInputMeta ) {
+      TextFileInputMeta textMeta = (TextFileInputMeta) meta;
+      if ( TextFileInput.FILE_TYPE_CSV_RFC4180.equalsIgnoreCase( textMeta.content.fileType ) ) {
+        CsvRFC4180ReaderFactory factory = loadCsvRFC4180Factory();
+        if ( factory != null ) {
+          String[] fieldNames = factory.getFieldNames( transMeta, textMeta );
+          // Apply the same massaging as the default implementation
+          for ( int i = 0; i < fieldNames.length; i++ ) {
+            fieldNames[i] = Const.trim( fieldNames[i] );
+            if ( !meta.hasHeader() ) {
+              DecimalFormat df = new DecimalFormat( "000" );
+              fieldNames[i] = "Field_" + df.format( i );
+            } else if ( !org.pentaho.di.core.util.Utils.isEmpty( meta.getEnclosure() )
+              && fieldNames[i].startsWith( meta.getEnclosure() )
+              && fieldNames[i].endsWith( meta.getEnclosure() )
+              && fieldNames[i].length() > 1 ) {
+              fieldNames[i] = fieldNames[i].substring( 1, fieldNames[i].length() - 1 );
+            }
+            fieldNames[i] = Const.trim( fieldNames[i] );
+            fieldNames[i] = massageFieldName( fieldNames[i] );
+          }
+          return fieldNames;
+        }
+      }
+    }
+    // Fall back to the default implementation
+    return CsvInputAwareHelper.super.getFieldNamesImpl( transMeta, reader, meta );
+  }
+
+  /**
+   * Attempts to load the CsvRFC4180ReaderFactory service via the PluginServiceLoader.
+   *
+   * @return the factory instance, or null if not available
+   */
+  private CsvRFC4180ReaderFactory loadCsvRFC4180Factory() {
+    try {
+      Collection<CsvRFC4180ReaderFactory> services =
+        PluginServiceLoader.loadServices( CsvRFC4180ReaderFactory.class );
+      if ( !services.isEmpty() ) {
+        return services.iterator().next();
+      }
+    } catch ( KettlePluginException e ) {
+      logError( BaseMessages.getString( PKG, "TextFileInputDialog.Exception.ErrorGettingFirstLines",
+        "", "" ), e );
+    }
+    return null;
   }
 }
