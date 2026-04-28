@@ -98,6 +98,11 @@
       <artifactId>classic-extensions-sampledata</artifactId>
       <version>${pentaho-reporting.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho.reporting.engine</groupId>
+      <artifactId>wizard-core</artifactId>
+      <version>${pentaho-reporting.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -137,6 +142,7 @@
                 classic-extensions-scripting,
                 classic-extensions-toc,
                 classic-extensions-xpath,
+                wizard-core,
                 commons-database-model,
                 commons-digester,
                 commons-lang3,
