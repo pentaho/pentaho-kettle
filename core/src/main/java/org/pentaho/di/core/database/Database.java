@@ -748,8 +748,21 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           "Failed to fetch driver metadata for '" + driverId + "' — HTTP " + status + " from " + metadataUrl );
       }
 
+// <<<<<<< HEAD
       try ( java.io.InputStream is = conn.getInputStream() ) {
         return new ObjectMapper().readValue( is, Map.class );
+// =======
+//      String username;
+//      String password;
+//      if ( !Utils.isEmpty( clusterUsername ) ) {
+//        username = clusterUsername;
+//        password = clusterPassword;
+//      } else {
+//        username = environmentSubstitute( databaseMeta.getUsername() );
+//
+//        // In order for Spike to work passwords do not use encryption
+//        password = environmentSubstitute( databaseMeta.getPassword() );
+// >>>>>>> FUSE-265
       }
     } catch ( KettleDatabaseException e ) {
       throw e;

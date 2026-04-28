@@ -261,6 +261,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
 
   private static final String FIELDNAME_PROTECTOR = "_";
 
+  private String id;
   private String name;
   private String displayName;
   private int accessType; // Database.TYPE_ODBC / NATIVE / OCI
@@ -363,6 +364,16 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   @Override
   public void setChanged( boolean changed ) {
     this.changed = changed;
+  }
+
+  @Override
+  public String getId() {
+    return id;
+  }
+
+  @Override
+  public void setId( String id ) {
+    this.id = id;
   }
 
   /**
