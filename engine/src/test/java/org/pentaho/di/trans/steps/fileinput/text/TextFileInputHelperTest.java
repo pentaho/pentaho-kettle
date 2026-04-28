@@ -677,6 +677,7 @@ public class TextFileInputHelperTest {
   @Test
   public void testGetFirst_NoFiles_ReturnsEmptyList() throws Exception {
     TextFileInputMeta meta = mock( TextFileInputMeta.class );
+    meta.content = new TextFileInputMeta.Content();
     TransMeta tMeta = mock( TransMeta.class );
     FileInputList fileList = mock( FileInputList.class );
 
@@ -692,6 +693,7 @@ public class TextFileInputHelperTest {
   @Test
   public void testGetFirst_ExceptionInTry_CallsCatchBlock() {
     TextFileInputMeta meta = mock( TextFileInputMeta.class );
+    meta.content = new TextFileInputMeta.Content();
     TransMeta tmeta = mock( TransMeta.class );
     FileInputList fileList = mock( FileInputList.class );
     FileObject fileObject = mock( FileObject.class );
