@@ -380,8 +380,8 @@ public class Rest extends BaseStep implements StepInterface {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
     }
   }
-  
-  
+
+
 
 
   /**

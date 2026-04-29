@@ -275,7 +275,7 @@ public class HttpClientManager {
     } catch (UnrecoverableKeyException | IOException | CertificateException | KeyStoreException e) {
       // This should never happen since we're passing null for keystore parameters
       throw new KeyManagementException("Unexpected error: " + e.getMessage(), e );
-    }  
+    }
   }
 
   /**
