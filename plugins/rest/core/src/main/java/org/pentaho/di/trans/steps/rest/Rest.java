@@ -75,11 +75,17 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   protected Object[] callRest( Object[] rowData ) throws KettleException {
-    try ( Client client = getClient( rowData ) ) {
+    Client client = null;
+    try {
+      client = getClient( rowData );
       WebTarget target = buildRequest( client, rowData );
       return invokeRequest( target, rowData );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CanNotReadURL", data.realUrl ), e );
+    } finally {
+      if ( client != null ) {
+        client.close();
+      }
     }
   }
 
@@ -270,15 +276,29 @@ public class Rest extends BaseStep implements StepInterface {
     Response response;
     try {
       switch ( data.method ) {
-        case RestMeta.HTTP_METHOD_GET -> response = invocationBuilder.get( Response.class );
-        case RestMeta.HTTP_METHOD_POST -> response = invocationBuilder.post( getEntity( contentType, entityString ) );
-        case RestMeta.HTTP_METHOD_PUT -> response = invocationBuilder.put( getEntity( contentType, entityString ) );
-        case RestMeta.HTTP_METHOD_DELETE -> response = invocationBuilder.delete();
-        case RestMeta.HTTP_METHOD_HEAD -> response = invocationBuilder.head();
-        case RestMeta.HTTP_METHOD_OPTIONS -> response = invocationBuilder.options();
-        case RestMeta.HTTP_METHOD_PATCH ->
+        case RestMeta.HTTP_METHOD_GET:
+          response = invocationBuilder.get( Response.class );
+          break;
+        case RestMeta.HTTP_METHOD_POST:
+          response = invocationBuilder.post( getEntity( contentType, entityString ) );
+          break;
+        case RestMeta.HTTP_METHOD_PUT:
+          response = invocationBuilder.put( getEntity( contentType, entityString ) );
+          break;
+        case RestMeta.HTTP_METHOD_DELETE:
+          response = invocationBuilder.delete();
+          break;
+        case RestMeta.HTTP_METHOD_HEAD:
+          response = invocationBuilder.head();
+          break;
+        case RestMeta.HTTP_METHOD_OPTIONS:
+          response = invocationBuilder.options();
+          break;
+        case RestMeta.HTTP_METHOD_PATCH:
           response = invocationBuilder.method( RestMeta.HTTP_METHOD_PATCH, getEntity( contentType, entityString ) );
-        default -> throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
+          break;
+        default:
+          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Request could not be processed", e );
@@ -646,15 +666,32 @@ public class Rest extends BaseStep implements StepInterface {
   private void calcMediaType() {
     String applicationType = Const.NVL( meta.getApplicationType(), "" );
     switch ( applicationType ) {
-      case RestMeta.APPLICATION_TYPE_XML -> data.mediaType = MediaType.APPLICATION_XML_TYPE;
-      case RestMeta.APPLICATION_TYPE_JSON -> data.mediaType = MediaType.APPLICATION_JSON_TYPE;
-      case RestMeta.APPLICATION_TYPE_OCTET_STREAM -> data.mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
-      case RestMeta.APPLICATION_TYPE_XHTML -> data.mediaType = MediaType.APPLICATION_XHTML_XML_TYPE;
-      case RestMeta.APPLICATION_TYPE_FORM_URLENCODED -> data.mediaType = MediaType.APPLICATION_FORM_URLENCODED_TYPE;
-      case RestMeta.APPLICATION_TYPE_ATOM_XML -> data.mediaType = MediaType.APPLICATION_ATOM_XML_TYPE;
-      case RestMeta.APPLICATION_TYPE_SVG_XML -> data.mediaType = MediaType.APPLICATION_SVG_XML_TYPE;
-      case RestMeta.APPLICATION_TYPE_TEXT_XML -> data.mediaType = MediaType.TEXT_XML_TYPE;
-      default -> data.mediaType = MediaType.TEXT_PLAIN_TYPE;
+      case RestMeta.APPLICATION_TYPE_XML:
+        data.mediaType = MediaType.APPLICATION_XML_TYPE;
+        break;
+      case RestMeta.APPLICATION_TYPE_JSON:
+        data.mediaType = MediaType.APPLICATION_JSON_TYPE;
+        break;
+      case RestMeta.APPLICATION_TYPE_OCTET_STREAM:
+        data.mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+        break;
+      case RestMeta.APPLICATION_TYPE_XHTML:
+        data.mediaType = MediaType.APPLICATION_XHTML_XML_TYPE;
+        break;
+      case RestMeta.APPLICATION_TYPE_FORM_URLENCODED:
+        data.mediaType = MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+        break;
+      case RestMeta.APPLICATION_TYPE_ATOM_XML:
+        data.mediaType = MediaType.APPLICATION_ATOM_XML_TYPE;
+        break;
+      case RestMeta.APPLICATION_TYPE_SVG_XML:
+        data.mediaType = MediaType.APPLICATION_SVG_XML_TYPE;
+        break;
+      case RestMeta.APPLICATION_TYPE_TEXT_XML:
+        data.mediaType = MediaType.TEXT_XML_TYPE;
+        break;
+      default:
+        data.mediaType = MediaType.TEXT_PLAIN_TYPE;
     }
   }
 
