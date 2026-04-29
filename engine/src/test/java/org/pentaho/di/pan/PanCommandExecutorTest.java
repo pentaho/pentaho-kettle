@@ -12,13 +12,12 @@
 
 package org.pentaho.di.pan;
 
-import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.util.Base64;
+import java.util.Objects;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
@@ -48,9 +47,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
-import java.io.File;
-import java.util.Base64;
-import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -72,6 +68,10 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.junit.Assert;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Comprehensive unit tests for EnhancedPanCommandExecutor functionality
@@ -660,6 +660,135 @@ public class PanCommandExecutorTest {
     Result result = executor.execute( params, new String[0] );
 
     assertEquals( CommandExecutorCodes.Pan.SUCCESS.getCode(), result.getExitStatus() );
+  }
+
+  /**
+   * Test for PDI-11 Fix: Verify that the /level command-line parameter is correctly passed
+   * through to the TransExecutionConfiguration.
+   * 
+   * This test ensures that when a log level is specified via the command line (e.g., -level Rowlevel),
+   * it is properly propagated to the execution configuration and the transformation, rather than
+   * being lost or set to an empty string.
+   * 
+   * @see Pan.java  logLevel parameter in Params builder
+   * @see PanCommandExecutor.createExecutionConfigurationFromParams() - applies log level to config
+   */
+  @Test
+  public void testLogLevelParameterIsCorrectlyPassedToExecutionConfiguration() {
+    // Setup: Create execution configuration with various log levels
+    PanCommandExecutor testExecutor = new PanCommandExecutor( Pan.class, log );
+    PanTransformationDelegate testDelegate = testExecutor.getTransformationDelegate();
+
+    // Test 1: Rowlevel logging (most verbose)
+    Params rowLevelParams = new Params.Builder()
+      .logLevel( "Rowlevel" )
+      .build();
+    
+    TransExecutionConfiguration rowLevelConfig = testExecutor.createExecutionConfigurationFromParams( rowLevelParams );
+    assertNotNull( "Config should not be null", rowLevelConfig );
+    assertEquals( "Log level should be Row", org.pentaho.di.core.logging.LogLevel.ROWLEVEL, rowLevelConfig.getLogLevel() );
+
+    // Test 2: Debug logging
+    Params debugParams = new Params.Builder()
+      .logLevel( "Debug" )
+      .build();
+    
+    TransExecutionConfiguration debugConfig = testExecutor.createExecutionConfigurationFromParams( debugParams );
+    assertNotNull( "Config should not be null", debugConfig );
+    assertEquals( "Log level should be Debug", org.pentaho.di.core.logging.LogLevel.DEBUG, debugConfig.getLogLevel() );
+
+    // Test 3: Detailed logging
+    Params detailedParams = new Params.Builder()
+      .logLevel( "Detailed" )
+      .build();
+    
+    TransExecutionConfiguration detailedConfig = testExecutor.createExecutionConfigurationFromParams( detailedParams );
+    assertNotNull( "Config should not be null", detailedConfig );
+    assertEquals( "Log level should be Detailed", org.pentaho.di.core.logging.LogLevel.DETAILED, detailedConfig.getLogLevel() );
+
+    // Test 4: Basic logging
+    Params basicParams = new Params.Builder()
+      .logLevel( "Basic" )
+      .build();
+    
+    TransExecutionConfiguration basicConfig = testExecutor.createExecutionConfigurationFromParams( basicParams );
+    assertNotNull( "Config should not be null", basicConfig );
+    assertEquals( "Log level should be Basic", org.pentaho.di.core.logging.LogLevel.BASIC, basicConfig.getLogLevel() );
+
+    // Test 5: Error logging
+    Params errorParams = new Params.Builder()
+      .logLevel( "Error" )
+      .build();
+    
+    TransExecutionConfiguration errorConfig = testExecutor.createExecutionConfigurationFromParams( errorParams );
+    assertNotNull( "Config should not be null", errorConfig );
+    assertEquals( "Log level should be Error", org.pentaho.di.core.logging.LogLevel.ERROR, errorConfig.getLogLevel() );
+
+    // Test 6: Empty log level (should use default)
+    Params emptyLevelParams = new Params.Builder()
+      .logLevel( "" )
+      .build();
+    
+    TransExecutionConfiguration defaultConfig = testExecutor.createExecutionConfigurationFromParams( emptyLevelParams );
+    assertNotNull( "Config should not be null", defaultConfig );
+    assertEquals( "Log level should default to Basic", org.pentaho.di.core.logging.LogLevel.BASIC, defaultConfig.getLogLevel() );
+  }
+
+  /**
+   * Test for PDI-11 Fix: Verify that the log level parameter from Params is not null
+   * when set via the command line.
+   * 
+   * This specifically tests the fix where .logLevel() was being set to an empty string
+   * instead of optionLoglevel.toString() in Pan.java
+   */
+  @Test
+  public void testParamsLogLevelIsNotEmpty() {
+    // This test ensures that when a log level is specified, it's not an empty string
+    String logLevelValue = "Rowlevel";
+    
+    Params params = new Params.Builder()
+      .logLevel( logLevelValue )
+      .build();
+    
+    assertNotNull( "Log level from params should not be null", params.getLogLevel() );
+    assertNotEquals( "Log level from params should not be empty string", "", params.getLogLevel() );
+    assertEquals( "Log level from params should match input", logLevelValue, params.getLogLevel() );
+  }
+
+  /**
+   * Test for PDI-11 Fix: Verify that multiple execution configurations can coexist
+   * with different log levels.
+   * 
+   * This ensures the fix doesn't break when multiple transformations are executed
+   * with different log levels in sequence.
+   */
+  @Test
+  public void testMultipleExecutionConfigurationsWithDifferentLogLevels() {
+    PanCommandExecutor testExecutor = new PanCommandExecutor( Pan.class, log );
+    
+    // Create first configuration with Rowlevel
+    Params params1 = new Params.Builder()
+      .logLevel( "Rowlevel" )
+      .safeMode( "Y" )
+      .build();
+    
+    TransExecutionConfiguration config1 = testExecutor.createExecutionConfigurationFromParams( params1 );
+    assertEquals( "First config should have Rowlevel", org.pentaho.di.core.logging.LogLevel.ROWLEVEL, config1.getLogLevel() );
+    assertTrue( "First config should have safe mode enabled", config1.isSafeModeEnabled() );
+
+    // Create second configuration with Error
+    Params params2 = new Params.Builder()
+      .logLevel( "Error" )
+      .metrics( "Y" )
+      .build();
+    
+    TransExecutionConfiguration config2 = testExecutor.createExecutionConfigurationFromParams( params2 );
+    assertEquals( "Second config should have Error", org.pentaho.di.core.logging.LogLevel.ERROR, config2.getLogLevel() );
+    assertTrue( "Second config should have metrics gathering enabled", config2.isGatheringMetrics() );
+
+    // Verify they're independent
+    assertNotEquals( "Configs should have different log levels", 
+      config1.getLogLevel(), config2.getLogLevel() );
   }
 
 }

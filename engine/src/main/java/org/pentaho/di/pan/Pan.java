@@ -265,7 +265,7 @@ public class Pan {
         .safeMode( optionSafemode.toString() )
         .metrics( optionMetrics.toString() )
         .listFileParams( optionListParam.toString() )
-        .logLevel( "" )
+        .logLevel( optionLoglevel.toString() )
         .maxLogLines( "" )
         .maxLogTimeout( "" )
         .logFile( "" )
