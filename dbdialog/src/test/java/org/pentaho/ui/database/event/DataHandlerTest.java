@@ -15,15 +15,16 @@ package org.pentaho.ui.database.event;
 import java.util.Properties;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 import org.pentaho.ui.util.Launch;
 import org.pentaho.ui.util.Launch.Status;
 import org.pentaho.ui.xul.XulComponent;
@@ -58,6 +59,9 @@ import static org.mockito.Mockito.when;
  */
 public class DataHandlerTest {
 
+  @ClassRule
+  public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+
   DataHandler dataHandler;
   Document document;
   XulDomContainer xulDomContainer;
@@ -78,9 +82,13 @@ public class DataHandlerTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
-    PluginRegistry.init();
-    KettleLogStore.init();
+    // Use a targeted plugin search instead of PluginRegistry.init() to avoid triggering a full
+    // classpath scan. PluginRegistry.init() loads PluginRegistryExtension implementations, one of
+    // which (from commons-xul-swt) initialises SWT's GTK native library and throws
+    // UnsatisfiedLinkError on headless CI agents that lack GTK. searchPlugins() registers only
+    // database plugins without that broader scan. KettleLogStore is initialised by
+    // RestorePDIEnvironment via KettleClientEnvironment.init().
+    DatabasePluginType.getInstance().searchPlugins();
   }
 
   @Before
