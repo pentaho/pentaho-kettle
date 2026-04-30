@@ -16,6 +16,8 @@ package org.pentaho.di.trans.steps.rest;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -31,7 +33,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -41,8 +42,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.di.core.annotations.Step;
-import org.pentaho.di.core.bowl.Bowl;
 import org.w3c.dom.Node;
 
 import java.util.List;
@@ -58,8 +57,46 @@ import java.util.List;
 public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String[] APPLICATION_TYPES = new String[] {
-    "TEXT PLAIN", "XML", "JSON", "OCTET STREAM", "XHTML", "FORM URLENCODED", "ATOM XML", "SVG XML", "TEXT XML" };
+  private static final String TAG_APPLICATION_TYPE = "applicationType";
+  private static final String TAG_BODY_FIELD = "bodyField";
+  private static final String TAG_CODE = "code";
+  private static final String TAG_DYNAMIC_METHOD = "dynamicMethod";
+  private static final String TAG_FIELD = "field";
+  private static final String TAG_HEADER = "header";
+  private static final String TAG_HEADER_FIELD = "header_field";
+  private static final String TAG_HEADER_NAME = "header_name";
+  private static final String TAG_HEADERS = "headers";
+  private static final String TAG_HTTP_LOGIN = "httpLogin";
+  private static final String TAG_HTTP_PASSWORD = "httpPassword";
+  private static final String TAG_IGNORE_SSL = "ignoreSsl";
+  private static final String TAG_MATRIX_PARAMETER = "matrixParameter";
+  private static final String TAG_MATRIX_PARAMETER_FIELD = "matrix_parameter_field";
+  private static final String TAG_MATRIX_PARAMETER_NAME = "matrix_parameter_name";
+  private static final String TAG_MATRIX_PARAMETERS = "matrixParameters";
+  private static final String TAG_METHOD = "method";
+  private static final String TAG_METHOD_FIELD_NAME = "methodFieldName";
+  private static final String TAG_NAME = "name";
+  private static final String TAG_PARAMETER = "parameter";
+  private static final String TAG_PARAMETER_FIELD = "parameter_field";
+  private static final String TAG_PARAMETER_NAME = "parameter_name";
+  private static final String TAG_PARAMETERS = "parameters";
+  private static final String TAG_PREEMPTIVE = "preemptive";
+  private static final String TAG_PROXY_HOST = "proxyHost";
+  private static final String TAG_PROXY_PORT = "proxyPort";
+  private static final String TAG_RESPONSE_HEADER = "response_header";
+  private static final String TAG_RESPONSE_TIME = "response_time";
+  private static final String TAG_RESULT = "result";
+  private static final String TAG_RESULT_CODE = "result_code";
+  private static final String TAG_RESULT_NAME = "result_name";
+  private static final String TAG_TRUST_STORE_FILE = "trustStoreFile";
+  private static final String TAG_TRUST_STORE_PASSWORD = "trustStorePassword";
+  private static final String TAG_URL = "url";
+  private static final String TAG_URL_FIELD = "urlField";
+  private static final String TAG_URL_IN_FIELD = "urlInField";
+  private static final String TAG_SPACES8 = "        ";
+  private static final String TAG_SPACES6 = "      ";
+  private static final String TAG_SPACES4 = "    ";
+
   public static final String APPLICATION_TYPE_TEXT_PLAIN = "TEXT PLAIN";
   public static final String APPLICATION_TYPE_XML = "XML";
   public static final String APPLICATION_TYPE_JSON = "JSON";
@@ -69,10 +106,12 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   public static final String APPLICATION_TYPE_ATOM_XML = "ATOM XML";
   public static final String APPLICATION_TYPE_SVG_XML = "SVG XML";
   public static final String APPLICATION_TYPE_TEXT_XML = "TEXT XML";
+  public static final String[] APPLICATION_TYPES =
+    new String[] { APPLICATION_TYPE_TEXT_PLAIN, APPLICATION_TYPE_XML, APPLICATION_TYPE_JSON,
+      APPLICATION_TYPE_OCTET_STREAM, APPLICATION_TYPE_XHTML, APPLICATION_TYPE_FORM_URLENCODED,
+      APPLICATION_TYPE_ATOM_XML, APPLICATION_TYPE_SVG_XML, APPLICATION_TYPE_TEXT_XML };
 
   private String applicationType;
-
-  public static final String[] HTTP_METHODS = new String[] { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH"};
 
   public static final String HTTP_METHOD_GET = "GET";
   public static final String HTTP_METHOD_POST = "POST";
@@ -81,6 +120,9 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   public static final String HTTP_METHOD_HEAD = "HEAD";
   public static final String HTTP_METHOD_OPTIONS = "OPTIONS";
   public static final String HTTP_METHOD_PATCH = "PATCH";
+  public static final String[] HTTP_METHODS =
+    new String[] { HTTP_METHOD_GET, HTTP_METHOD_POST, HTTP_METHOD_PUT, HTTP_METHOD_DELETE, HTTP_METHOD_HEAD,
+      HTTP_METHOD_OPTIONS, HTTP_METHOD_PATCH };
 
   /** URL / service to be called */
   private String url;
@@ -366,35 +408,49 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     readData( stepnode, databases );
   }
 
+  /**
+   * Allocate internal structures according to the number of headers and parameters.
+   *
+   * @param nrHeaders    number of headers
+   * @param nrParameters number of parameters
+   * @deprecated use {@link RestMeta#allocate(int, int, int)} instead
+   */
   @Deprecated
-  public void allocate( int nrheaders, int nrparamers ) {
-    allocate( nrheaders, nrparamers, 0 );
+  public void allocate( int nrHeaders, int nrParameters ) {
+    allocate( nrHeaders, nrParameters, 0 );
   }
 
-  public void allocate( int nrheaders, int nrparamers, int nrmatrixparameters ) {
-    headerField = new String[nrheaders];
-    headerName = new String[nrheaders];
-    parameterField = new String[nrparamers];
-    parameterName = new String[nrparamers];
-    matrixParameterField = new String[nrmatrixparameters];
-    matrixParameterName = new String[nrmatrixparameters];
+  /**
+   * Allocate internal structures according to the given components' sizes
+   *
+   * @param nrHeaders number of headers
+   * @param nrParameters number of parameters
+   * @param nrMatrixParameters number of matrix parameters
+   */
+  public void allocate( int nrHeaders, int nrParameters, int nrMatrixParameters ) {
+    headerField = new String[ nrHeaders ];
+    headerName = new String[ nrHeaders ];
+    parameterField = new String[ nrParameters ];
+    parameterName = new String[ nrParameters ];
+    matrixParameterField = new String[ nrMatrixParameters ];
+    matrixParameterName = new String[ nrMatrixParameters ];
   }
 
   @Override
   public Object clone() {
     RestMeta retval = (RestMeta) super.clone();
 
-    int nrheaders = headerName.length;
-    int nrparameters = parameterField.length;
-    int nrmatrixparameters = matrixParameterField.length;
+    int nrHeaders = headerName.length;
+    int nrParameters = parameterField.length;
+    int nrMatrixParameters = matrixParameterField.length;
 
-    retval.allocate( nrheaders, nrparameters, nrmatrixparameters );
-    System.arraycopy( headerField, 0, retval.headerField, 0, nrheaders );
-    System.arraycopy( headerName, 0, retval.headerName, 0, nrheaders );
-    System.arraycopy( parameterField, 0, retval.parameterField, 0, nrparameters );
-    System.arraycopy( parameterName, 0, retval.parameterName, 0, nrparameters );
-    System.arraycopy( matrixParameterField, 0, retval.matrixParameterField, 0, nrmatrixparameters );
-    System.arraycopy( matrixParameterName, 0, retval.matrixParameterName, 0, nrmatrixparameters );
+    retval.allocate( nrHeaders, nrParameters, nrMatrixParameters );
+    System.arraycopy( headerField, 0, retval.headerField, 0, nrHeaders );
+    System.arraycopy( headerName, 0, retval.headerName, 0, nrHeaders );
+    System.arraycopy( parameterField, 0, retval.parameterField, 0, nrParameters );
+    System.arraycopy( parameterName, 0, retval.parameterName, 0, nrParameters );
+    System.arraycopy( matrixParameterField, 0, retval.matrixParameterField, 0, nrMatrixParameters );
+    System.arraycopy( matrixParameterName, 0, retval.matrixParameterName, 0, nrMatrixParameters );
 
     return retval;
   }
@@ -449,33 +505,33 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
-    retval.append( "    " ).append( XMLHandler.addTagValue( "applicationType", applicationType ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "method", method ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "url", url ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "urlInField", urlInField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "dynamicMethod", dynamicMethod ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "methodFieldName", methodFieldName ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_APPLICATION_TYPE, applicationType ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_METHOD, method ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_URL, url ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_URL_IN_FIELD, urlInField ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_DYNAMIC_METHOD, dynamicMethod ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_METHOD_FIELD_NAME, methodFieldName ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "urlField", urlField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "bodyField", bodyField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "httpLogin", httpLogin ) );
-    retval.append( "    " ).append(
-        XMLHandler.addTagValue( "httpPassword", Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_URL_FIELD, urlField ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_BODY_FIELD, bodyField ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_HTTP_LOGIN, httpLogin ) );
+    retval.append( TAG_SPACES4 ).append(
+        XMLHandler.addTagValue( TAG_HTTP_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyHost", proxyHost ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyPort", proxyPort ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "preemptive", preemptive ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_PROXY_HOST, proxyHost ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_PROXY_PORT, proxyPort ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_PREEMPTIVE, preemptive ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "trustStoreFile", trustStoreFile ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "ignoreSsl", ignoreSsl ) );
-    retval.append( "    " ).append(
-        XMLHandler.addTagValue( "trustStorePassword", Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_TRUST_STORE_FILE, trustStoreFile ) );
+    retval.append( TAG_SPACES4 ).append( XMLHandler.addTagValue( TAG_IGNORE_SSL, ignoreSsl ) );
+    retval.append( TAG_SPACES4 ).append(
+        XMLHandler.addTagValue( TAG_TRUST_STORE_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
 
     retval.append( "    <headers>" ).append( Const.CR );
     for ( int i = 0, len = ( headerName != null ? headerName.length : 0 ); i < len; i++ ) {
       retval.append( "      <header>" ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "field", headerField[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", headerName[i] ) );
+      retval.append( TAG_SPACES8 ).append( XMLHandler.addTagValue( TAG_FIELD, headerField[i] ) );
+      retval.append( TAG_SPACES8 ).append( XMLHandler.addTagValue( TAG_NAME, headerName[i] ) );
       retval.append( "        </header>" ).append( Const.CR );
     }
     retval.append( "      </headers>" ).append( Const.CR );
@@ -483,8 +539,8 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    <parameters>" ).append( Const.CR );
     for ( int i = 0, len = ( parameterName != null ? parameterName.length : 0 ); i < len; i++ ) {
       retval.append( "      <parameter>" ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "field", parameterField[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameterName[i] ) );
+      retval.append( TAG_SPACES8 ).append( XMLHandler.addTagValue( TAG_FIELD, parameterField[i] ) );
+      retval.append( TAG_SPACES8 ).append( XMLHandler.addTagValue( TAG_NAME, parameterName[i] ) );
       retval.append( "        </parameter>" ).append( Const.CR );
     }
     retval.append( "      </parameters>" ).append( Const.CR );
@@ -492,17 +548,17 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    <matrixParameters>" ).append( Const.CR );
     for ( int i = 0, len = ( matrixParameterName != null ? matrixParameterName.length : 0 ); i < len; i++ ) {
       retval.append( "      <matrixParameter>" ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "field", matrixParameterField[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", matrixParameterName[i] ) );
+      retval.append( TAG_SPACES8 ).append( XMLHandler.addTagValue( TAG_FIELD, matrixParameterField[i] ) );
+      retval.append( TAG_SPACES8 ).append( XMLHandler.addTagValue( TAG_NAME, matrixParameterName[i] ) );
       retval.append( "        </matrixParameter>" ).append( Const.CR );
     }
     retval.append( "      </matrixParameters>" ).append( Const.CR );
 
     retval.append( "    <result>" ).append( Const.CR );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "name", fieldName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "code", resultCodeFieldName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "response_time", responseTimeFieldName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "response_header", responseHeaderFieldName ) );
+    retval.append( TAG_SPACES6 ).append( XMLHandler.addTagValue( TAG_NAME, fieldName ) );
+    retval.append( TAG_SPACES6 ).append( XMLHandler.addTagValue( TAG_CODE, resultCodeFieldName ) );
+    retval.append( TAG_SPACES6 ).append( XMLHandler.addTagValue( TAG_RESPONSE_TIME, responseTimeFieldName ) );
+    retval.append( TAG_SPACES6 ).append( XMLHandler.addTagValue( TAG_RESPONSE_HEADER, responseHeaderFieldName ) );
     retval.append( "      </result>" ).append( Const.CR );
 
     return retval.toString();
@@ -510,107 +566,107 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   private void readData( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     try {
-      applicationType = XMLHandler.getTagValue( stepnode, "applicationType" );
-      method = XMLHandler.getTagValue( stepnode, "method" );
-      url = XMLHandler.getTagValue( stepnode, "url" );
-      urlInField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "urlInField" ) );
-      methodFieldName = XMLHandler.getTagValue( stepnode, "methodFieldName" );
+      applicationType = XMLHandler.getTagValue( stepnode, TAG_APPLICATION_TYPE );
+      method = XMLHandler.getTagValue( stepnode, TAG_METHOD );
+      url = XMLHandler.getTagValue( stepnode, TAG_URL );
+      urlInField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_URL_IN_FIELD ) );
+      methodFieldName = XMLHandler.getTagValue( stepnode, TAG_METHOD_FIELD_NAME );
 
-      dynamicMethod = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "dynamicMethod" ) );
-      urlField = XMLHandler.getTagValue( stepnode, "urlField" );
-      bodyField = XMLHandler.getTagValue( stepnode, "bodyField" );
-      httpLogin = XMLHandler.getTagValue( stepnode, "httpLogin" );
-      httpPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "httpPassword" ) );
+      dynamicMethod = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_DYNAMIC_METHOD ) );
+      urlField = XMLHandler.getTagValue( stepnode, TAG_URL_FIELD );
+      bodyField = XMLHandler.getTagValue( stepnode, TAG_BODY_FIELD );
+      httpLogin = XMLHandler.getTagValue( stepnode, TAG_HTTP_LOGIN );
+      httpPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, TAG_HTTP_PASSWORD ) );
 
-      proxyHost = XMLHandler.getTagValue( stepnode, "proxyHost" );
-      proxyPort = XMLHandler.getTagValue( stepnode, "proxyPort" );
-      preemptive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "preemptive" ) );
+      proxyHost = XMLHandler.getTagValue( stepnode, TAG_PROXY_HOST );
+      proxyPort = XMLHandler.getTagValue( stepnode, TAG_PROXY_PORT );
+      preemptive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_PREEMPTIVE ) );
 
-      ignoreSsl = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "ignoreSsl" ) );
-      trustStoreFile = XMLHandler.getTagValue( stepnode, "trustStoreFile" );
+      ignoreSsl = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_IGNORE_SSL ) );
+      trustStoreFile = XMLHandler.getTagValue( stepnode, TAG_TRUST_STORE_FILE );
       trustStorePassword =
-          Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "trustStorePassword" ) );
+          Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, TAG_TRUST_STORE_PASSWORD ) );
 
-      Node headernode = XMLHandler.getSubNode( stepnode, "headers" );
-      int nrheaders = XMLHandler.countNodes( headernode, "header" );
-      Node paramnode = XMLHandler.getSubNode( stepnode, "parameters" );
-      int nrparameters = XMLHandler.countNodes( paramnode, "parameter" );
-      Node matrixparamnode = XMLHandler.getSubNode( stepnode, "matrixParameters" );
-      int nrmatrixparameters = XMLHandler.countNodes( matrixparamnode, "matrixParameter" );
+      Node headerNode = XMLHandler.getSubNode( stepnode, TAG_HEADERS );
+      int nrHeaders = XMLHandler.countNodes( headerNode, TAG_HEADER );
+      Node paramNode = XMLHandler.getSubNode( stepnode, TAG_PARAMETERS );
+      int nrParameters = XMLHandler.countNodes( paramNode, TAG_PARAMETER );
+      Node matrixParametersNode = XMLHandler.getSubNode( stepnode, TAG_MATRIX_PARAMETERS );
+      int nrMatrixParameters = XMLHandler.countNodes( matrixParametersNode, TAG_MATRIX_PARAMETER );
 
-      allocate( nrheaders, nrparameters, nrmatrixparameters );
-      for ( int i = 0; i < nrheaders; i++ ) {
-        Node anode = XMLHandler.getSubNodeByNr( headernode, "header", i );
-        headerField[i] = XMLHandler.getTagValue( anode, "field" );
-        headerName[i] = XMLHandler.getTagValue( anode, "name" );
+      allocate( nrHeaders, nrParameters, nrMatrixParameters );
+      for ( int i = 0; i < nrHeaders; i++ ) {
+        Node anode = XMLHandler.getSubNodeByNr( headerNode, TAG_HEADER, i );
+        headerField[i] = XMLHandler.getTagValue( anode, TAG_FIELD );
+        headerName[i] = XMLHandler.getTagValue( anode, TAG_NAME );
       }
-      for ( int i = 0; i < nrparameters; i++ ) {
-        Node anode = XMLHandler.getSubNodeByNr( paramnode, "parameter", i );
-        parameterField[i] = XMLHandler.getTagValue( anode, "field" );
-        parameterName[i] = XMLHandler.getTagValue( anode, "name" );
+      for ( int i = 0; i < nrParameters; i++ ) {
+        Node anode = XMLHandler.getSubNodeByNr( paramNode, TAG_PARAMETER, i );
+        parameterField[i] = XMLHandler.getTagValue( anode, TAG_FIELD );
+        parameterName[i] = XMLHandler.getTagValue( anode, TAG_NAME );
       }
-      for ( int i = 0; i < nrmatrixparameters; i++ ) {
-        Node anode = XMLHandler.getSubNodeByNr( matrixparamnode, "matrixParameter", i );
-        matrixParameterField[i] = XMLHandler.getTagValue( anode, "field" );
-        matrixParameterName[i] = XMLHandler.getTagValue( anode, "name" );
+      for ( int i = 0; i < nrMatrixParameters; i++ ) {
+        Node anode = XMLHandler.getSubNodeByNr( matrixParametersNode, TAG_MATRIX_PARAMETER, i );
+        matrixParameterField[i] = XMLHandler.getTagValue( anode, TAG_FIELD );
+        matrixParameterName[i] = XMLHandler.getTagValue( anode, TAG_NAME );
       }
 
-      fieldName = XMLHandler.getTagValue( stepnode, "result", "name" ); // Optional, can be null
-      resultCodeFieldName = XMLHandler.getTagValue( stepnode, "result", "code" ); // Optional, can be null
-      responseTimeFieldName = XMLHandler.getTagValue( stepnode, "result", "response_time" ); // Optional, can be null
-      responseHeaderFieldName = XMLHandler.getTagValue( stepnode, "result", "response_header" ); // Optional, can be null
+      fieldName = XMLHandler.getTagValue( stepnode, TAG_RESULT, TAG_NAME ); // Optional, can be null
+      resultCodeFieldName = XMLHandler.getTagValue( stepnode, TAG_RESULT, TAG_CODE ); // Optional, can be null
+      responseTimeFieldName = XMLHandler.getTagValue( stepnode, TAG_RESULT, TAG_RESPONSE_TIME ); // Optional, can be null
+      responseHeaderFieldName = XMLHandler.getTagValue( stepnode, TAG_RESULT, TAG_RESPONSE_HEADER ); // Optional, can be null
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "RestMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
   @Override
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases ) throws KettleException {
     try {
-      applicationType = rep.getStepAttributeString( id_step, "applicationType" );
-      method = rep.getStepAttributeString( id_step, "method" );
-      url = rep.getStepAttributeString( id_step, "url" );
-      urlInField = rep.getStepAttributeBoolean( id_step, "urlInField" );
+      applicationType = rep.getStepAttributeString( idStep, TAG_APPLICATION_TYPE );
+      method = rep.getStepAttributeString( idStep, TAG_METHOD );
+      url = rep.getStepAttributeString( idStep, TAG_URL );
+      urlInField = rep.getStepAttributeBoolean( idStep, TAG_URL_IN_FIELD );
 
-      methodFieldName = rep.getStepAttributeString( id_step, "methodFieldName" );
-      dynamicMethod = rep.getStepAttributeBoolean( id_step, "dynamicMethod" );
-      urlField = rep.getStepAttributeString( id_step, "urlField" );
-      bodyField = rep.getStepAttributeString( id_step, "bodyField" );
-      httpLogin = rep.getStepAttributeString( id_step, "httpLogin" );
+      methodFieldName = rep.getStepAttributeString( idStep, TAG_METHOD_FIELD_NAME );
+      dynamicMethod = rep.getStepAttributeBoolean( idStep, TAG_DYNAMIC_METHOD );
+      urlField = rep.getStepAttributeString( idStep, TAG_URL_FIELD );
+      bodyField = rep.getStepAttributeString( idStep, TAG_BODY_FIELD );
+      httpLogin = rep.getStepAttributeString( idStep, TAG_HTTP_LOGIN );
       httpPassword =
-        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "httpPassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( idStep, TAG_HTTP_PASSWORD ) );
 
-      proxyHost = rep.getStepAttributeString( id_step, "proxyHost" );
-      proxyPort = rep.getStepAttributeString( id_step, "proxyPort" );
+      proxyHost = rep.getStepAttributeString( idStep, TAG_PROXY_HOST );
+      proxyPort = rep.getStepAttributeString( idStep, TAG_PROXY_PORT );
 
-      trustStoreFile = rep.getStepAttributeString( id_step, "trustStoreFile" );
-      ignoreSsl = "Y".equalsIgnoreCase( rep.getStepAttributeString( id_step, "ignoreSsl") );
+      trustStoreFile = rep.getStepAttributeString( idStep, TAG_TRUST_STORE_FILE );
+      ignoreSsl = "Y".equalsIgnoreCase( rep.getStepAttributeString( idStep, TAG_IGNORE_SSL ) );
       trustStorePassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "trustStorePassword" ) );
+          Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( idStep, TAG_TRUST_STORE_PASSWORD ) );
 
-      preemptive = rep.getStepAttributeBoolean( id_step, "preemptive" );
-      int nrheaders = rep.countNrStepAttributes( id_step, "header_field" );
-      int nrparams = rep.countNrStepAttributes( id_step, "parameter_field" );
-      int nrmatrixparams = rep.countNrStepAttributes( id_step, "matrix_parameter_field" );
-      allocate( nrheaders, nrparams, nrmatrixparams );
+      preemptive = rep.getStepAttributeBoolean( idStep, TAG_PREEMPTIVE );
+      int nrHeaders = rep.countNrStepAttributes( idStep, TAG_HEADER_FIELD );
+      int nrParams = rep.countNrStepAttributes( idStep, TAG_PARAMETER_FIELD );
+      int nrMatrixParams = rep.countNrStepAttributes( idStep, TAG_MATRIX_PARAMETER_FIELD );
+      allocate( nrHeaders, nrParams, nrMatrixParams );
 
-      for ( int i = 0; i < nrheaders; i++ ) {
-        headerField[i] = rep.getStepAttributeString( id_step, i, "header_field" );
-        headerName[i] = rep.getStepAttributeString( id_step, i, "header_name" );
+      for ( int i = 0; i < nrHeaders; i++ ) {
+        headerField[i] = rep.getStepAttributeString( idStep, i, TAG_HEADER_FIELD );
+        headerName[i] = rep.getStepAttributeString( idStep, i, TAG_HEADER_NAME );
       }
-      for ( int i = 0; i < nrparams; i++ ) {
-        parameterField[i] = rep.getStepAttributeString( id_step, i, "parameter_field" );
-        parameterName[i] = rep.getStepAttributeString( id_step, i, "parameter_name" );
+      for ( int i = 0; i < nrParams; i++ ) {
+        parameterField[i] = rep.getStepAttributeString( idStep, i, TAG_PARAMETER_FIELD );
+        parameterName[i] = rep.getStepAttributeString( idStep, i, TAG_PARAMETER_NAME );
       }
-      for ( int i = 0; i < nrmatrixparams; i++ ) {
-        matrixParameterField[i] = rep.getStepAttributeString( id_step, i, "matrix_parameter_field" );
-        matrixParameterName[i] = rep.getStepAttributeString( id_step, i, "matrix_parameter_name" );
+      for ( int i = 0; i < nrMatrixParams; i++ ) {
+        matrixParameterField[i] = rep.getStepAttributeString( idStep, i, TAG_MATRIX_PARAMETER_FIELD );
+        matrixParameterName[i] = rep.getStepAttributeString( idStep, i, TAG_MATRIX_PARAMETER_NAME );
       }
 
-      fieldName = rep.getStepAttributeString( id_step, "result_name" );
-      resultCodeFieldName = rep.getStepAttributeString( id_step, "result_code" );
-      responseTimeFieldName = rep.getStepAttributeString( id_step, "response_time" );
-      responseHeaderFieldName = rep.getStepAttributeString( id_step, "response_header" );
+      fieldName = rep.getStepAttributeString( idStep, TAG_RESULT_NAME );
+      resultCodeFieldName = rep.getStepAttributeString( idStep, TAG_RESULT_CODE );
+      responseTimeFieldName = rep.getStepAttributeString( idStep, TAG_RESPONSE_TIME );
+      responseHeaderFieldName = rep.getStepAttributeString( idStep, TAG_RESPONSE_HEADER );
     } catch ( Exception e ) {
       throw new KettleException(
         BaseMessages.getString( PKG, "RestMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
@@ -618,49 +674,49 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
     try {
-      rep.saveStepAttribute( id_transformation, id_step, "applicationType", applicationType );
-      rep.saveStepAttribute( id_transformation, id_step, "method", method );
-      rep.saveStepAttribute( id_transformation, id_step, "url", url );
-      rep.saveStepAttribute( id_transformation, id_step, "methodFieldName", methodFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_APPLICATION_TYPE, applicationType );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_METHOD, method );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_URL, url );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_METHOD_FIELD_NAME, methodFieldName );
 
-      rep.saveStepAttribute( id_transformation, id_step, "dynamicMethod", dynamicMethod );
-      rep.saveStepAttribute( id_transformation, id_step, "urlInField", urlInField );
-      rep.saveStepAttribute( id_transformation, id_step, "urlField", urlField );
-      rep.saveStepAttribute( id_transformation, id_step, "bodyField", bodyField );
-      rep.saveStepAttribute( id_transformation, id_step, "httpLogin", httpLogin );
-      rep.saveStepAttribute( id_transformation, id_step, "httpPassword", Encr
+      rep.saveStepAttribute( idTransformation, idStep, TAG_DYNAMIC_METHOD, dynamicMethod );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_URL_IN_FIELD, urlInField );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_URL_FIELD, urlField );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_BODY_FIELD, bodyField );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_HTTP_LOGIN, httpLogin );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_HTTP_PASSWORD, Encr
         .encryptPasswordIfNotUsingVariables( httpPassword ) );
 
-      rep.saveStepAttribute( id_transformation, id_step, "proxyHost", proxyHost );
-      rep.saveStepAttribute( id_transformation, id_step, "proxyPort", proxyPort );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_PROXY_HOST, proxyHost );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_PROXY_PORT, proxyPort );
 
-      rep.saveStepAttribute( id_transformation, id_step, "ignoreSsl", ignoreSsl );
-      rep.saveStepAttribute( id_transformation, id_step, "trustStoreFile", trustStoreFile );
-      rep.saveStepAttribute( id_transformation, id_step, "trustStorePassword", Encr
+      rep.saveStepAttribute( idTransformation, idStep, TAG_IGNORE_SSL, ignoreSsl );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_TRUST_STORE_FILE, trustStoreFile );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_TRUST_STORE_PASSWORD, Encr
           .encryptPasswordIfNotUsingVariables( trustStorePassword ) );
 
-      rep.saveStepAttribute( id_transformation, id_step, "preemptive", preemptive );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_PREEMPTIVE, preemptive );
       for ( int i = 0; i < headerName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "header_field", headerField[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "header_name", headerName[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_HEADER_FIELD, headerField[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_HEADER_NAME, headerName[i] );
       }
       for ( int i = 0; i < parameterField.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "parameter_field", parameterField[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "parameter_name", parameterName[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_PARAMETER_FIELD, parameterField[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_PARAMETER_NAME, parameterName[i] );
       }
       for ( int i = 0; i < matrixParameterField.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "matrix_parameter_field", matrixParameterField[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "matrix_parameter_name", matrixParameterName[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_MATRIX_PARAMETER_FIELD, matrixParameterField[i] );
+        rep.saveStepAttribute( idTransformation, idStep, i, TAG_MATRIX_PARAMETER_NAME, matrixParameterName[i] );
       }
-      rep.saveStepAttribute( id_transformation, id_step, "result_name", fieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "result_code", resultCodeFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "response_time", responseTimeFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "response_header", responseHeaderFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_RESULT_NAME, fieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_RESULT_CODE, resultCodeFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_RESPONSE_TIME, responseTimeFieldName );
+      rep.saveStepAttribute( idTransformation, idStep, TAG_RESPONSE_HEADER, responseHeaderFieldName );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "RestMeta.Exception.UnableToSaveStepInfo" )
-        + id_step, e );
+        + idStep, e );
     }
   }
 
@@ -673,11 +729,11 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
           PKG, "RestMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
     } else {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "RestMeta.CheckResult.NoInpuReceived" ), stepMeta );
     }
     remarks.add( cr );
@@ -686,22 +742,22 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     if ( urlInField ) {
       if ( Utils.isEmpty( urlField ) ) {
         cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.UrlfieldMissing" ), stepMeta );
       } else {
         cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.UrlfieldOk" ), stepMeta );
       }
 
     } else {
       if ( Utils.isEmpty( url ) ) {
         cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.UrlMissing" ), stepMeta );
       } else {
         cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages
             .getString( PKG, "RestMeta.CheckResult.UrlOk" ), stepMeta );
       }
     }
@@ -711,22 +767,22 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     if ( dynamicMethod ) {
       if ( Utils.isEmpty( methodFieldName ) ) {
         cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.MethodFieldMissing" ), stepMeta );
       } else {
         cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.MethodFieldOk" ), stepMeta );
       }
 
     } else {
       if ( Utils.isEmpty( method ) ) {
         cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.MethodMissing" ), stepMeta );
       } else {
         cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.MethodOk" ), stepMeta );
       }
     }
