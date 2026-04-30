@@ -14,11 +14,11 @@ package org.pentaho.ui.database.event;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.plugins.DatabasePluginType;
-import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -39,15 +39,22 @@ import static org.mockito.Mockito.when;
  */
 public class FragmentHandlerTest {
 
+  @ClassRule
+  public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+
   FragmentHandler fragmentHandler;
   Document document;
   XulDomContainer xulDomContainer;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
-    PluginRegistry.init();
-    KettleLogStore.init();
+    // Use a targeted plugin search instead of PluginRegistry.init() to avoid triggering a full
+    // classpath scan. PluginRegistry.init() loads PluginRegistryExtension implementations, one of
+    // which (from commons-xul-swt) initialises SWT's GTK native library and throws
+    // UnsatisfiedLinkError on headless CI agents that lack GTK. searchPlugins() registers only
+    // database plugins without that broader scan. KettleLogStore is initialised by
+    // RestorePDIEnvironment via KettleClientEnvironment.init().
+    DatabasePluginType.getInstance().searchPlugins();
   }
 
   @Before
