@@ -125,7 +125,7 @@ jobs:
               owner: 'pentaho',
               repo: 'pentaho-platform',
               workflow_id: 'merge.yml',
-              ref: 'main',
+              ref: 'FUSE-184-dev-ops-prepare-github-action-for-kettle-core-and-pentaho-platform',
               inputs: {
                 version:   version,
                 artifacts: artifacts
