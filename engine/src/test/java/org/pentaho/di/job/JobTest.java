@@ -374,7 +374,7 @@ public class JobTest {
     assertFalse( job.isVfs() );
   }
 
-  // ==================== BISERVER-15478 Tests ====================
+  // -------------------- BISERVER-15478 Tests --------------------
   // These tests exercise Job.initializeVariables(), the extracted method called by Job.run()
   // that determines which source is used to initialize the job's variable space.
   // Priority order: parentJob > jobMeta > default space.
