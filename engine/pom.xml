@@ -59,7 +59,6 @@
     <olap4j-xmla.version>1.2.0</olap4j-xmla.version>
     <wsdl4j.version>1.6.2</wsdl4j.version>
     <wsdl4j-qname.version>1.6.1</wsdl4j-qname.version>
-    <hibernate-core.version>5.4.24.Final</hibernate-core.version>
     <hibernate-commons-annotations.version>3.2.0.Final</hibernate-commons-annotations.version>
     <hibernate-ehcache.version>5.4.24.Final</hibernate-ehcache.version>
     <jboss-logging.version>3.4.3.Final</jboss-logging.version>
