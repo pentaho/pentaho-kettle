@@ -12,6 +12,7 @@
 
 package org.pentaho.di.repository.pur;
 
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -148,7 +149,13 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     DatabaseMeta databaseMeta = (DatabaseMeta) element;
 
     // if there is an ID - no need for the rest of the fields?
-    databaseMeta.setId( getString( rootNode, "ID" ) );
+    var id = getString( rootNode, "ID" );
+
+    if (StringUtils.isNotBlank( id ) ) {
+      databaseMeta.setId( id );
+      return;
+    }
+
     databaseMeta.setDatabaseType( getString( rootNode, PROP_TYPE ) );
     databaseMeta.setAccessType( DatabaseMeta.getAccessType( getString( rootNode, PROP_CONTYPE ) ) );
     databaseMeta.setHostname( getString( rootNode, PROP_HOST_NAME ) );

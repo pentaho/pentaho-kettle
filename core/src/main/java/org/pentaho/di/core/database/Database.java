@@ -686,7 +686,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
     return new String[] {
       environmentSubstitute( databaseMeta.getUsername() ),
-      Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( databaseMeta.getPassword() ) ) };
+      environmentSubstitute( databaseMeta.getPassword() ) };
   }
 
   private String applyCredentialsToProperties( String url, String username, String password, Properties properties ) {
