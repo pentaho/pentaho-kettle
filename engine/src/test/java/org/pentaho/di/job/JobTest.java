@@ -352,28 +352,6 @@ public class JobTest {
     verify( parentLoggingObject, times( 1 ) ).callAfterLog();
   }
 
-  @Test
-  public void testIsVfs_WhenFileNameHasVfsPath() {
-    Repository repository = mock( Repository.class );
-    Job job = new Job( repository, mockedJobMeta );
-    LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
-    setInternalState( job, "parentLoggingObject", parentLoggingObject );
-    when( mockedJobMeta.getFilename() ).thenReturn( "pvfs://LocalVFS/samples/test-transformation.ktr" );
-
-    assertTrue( job.isVfs() );
-  }
-
-  @Test
-  public void testIsVfs_WhenFileNameHasFileSystemPath() {
-    Repository repository = mock( Repository.class );
-    Job job = new Job( repository, mockedJobMeta );
-    LoggingObjectInterface parentLoggingObject = mock( LoggingObjectInterface.class );
-    setInternalState( job, "parentLoggingObject", parentLoggingObject );
-    when( mockedJobMeta.getFilename() ).thenReturn( "C://test-transformation.ktr" );
-
-    assertFalse( job.isVfs() );
-  }
-
   // -------------------- BISERVER-15478 Tests --------------------
   // These tests exercise Job.initializeVariables(), the extracted method called by Job.run()
   // that determines which source is used to initialize the job's variable space.

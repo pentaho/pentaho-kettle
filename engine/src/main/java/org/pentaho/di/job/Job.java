@@ -377,7 +377,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     } else if ( jobMeta != null && variables != jobMeta ) {
       variables.initializeVariablesFrom( jobMeta );
     } else if ( jobMeta == null ) {
-      variables.initializeVariablesFrom( getBowl().getADefaultVariableSpace() );
+      initializeVariablesFromDefaultSpace();
     }
   }
 
@@ -1509,11 +1509,22 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   }
 
-  private Bowl getBowl() {
-    if ( jobMeta != null ) {
-      return jobMeta.getBowl();
+  /**
+   * Initializes variables from the default variable space (system properties, kettle.properties, etc.)
+   * while preserving any variables that were explicitly set before this method is called.
+   * <p>
+   * This is used when there is no parent job to inherit variables from. Variables set via
+   * {@link #setVariable(String, String)} or {@link #shareVariablesWith(VariableSpace)} before
+   * {@link #run()} is called will be preserved.
+   * </p>
+   */
+  void initializeVariablesFromDefaultSpace() {
+    VariableSpace defaultSpace = Variables.getADefaultVariableSpace();
+    for ( String varName : defaultSpace.listVariables() ) {
+      if ( variables.getVariable( varName ) == null ) {
+        variables.setVariable( varName, defaultSpace.getVariable( varName ) );
+      }
     }
-    return DefaultBowl.getInstance();
   }
 
   protected void setInternalEntryCurrentDirectory( boolean hasFilename, boolean hasRepoDir  ) {
