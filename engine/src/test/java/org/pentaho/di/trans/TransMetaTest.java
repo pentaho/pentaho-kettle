@@ -927,7 +927,8 @@ public class TransMetaTest {
     String xml = transMetaWithNullFilename.getXML();
 
     // Should have empty filename tag
-    assertTrue( "XML should contain filename tag even when null", xml.contains( "<filename/>" ) || xml.contains( "<filename></filename>" ) );
+    assertTrue( "XML should contain filename tag even when null",
+      xml.contains( "<filename/>" ) || xml.contains( "<filename />" ) || xml.contains( "<filename></filename>" ) );
 
     // Deserialize and verify
     org.w3c.dom.Document doc = XMLHandler.loadXMLString( xml );
