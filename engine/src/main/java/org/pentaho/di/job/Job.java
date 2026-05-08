@@ -359,6 +359,29 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   }
 
   /**
+   * Initializes the job's variable space from the appropriate source.
+   * <p>
+   * Priority order: parentJob > jobMeta > default space.
+   * <p>
+   * BISERVER-15478: Using jobMeta preserves variables set before execution (e.g., via shareVariablesWith),
+   * ensuring scheduled jobs retain variables passed by the scheduler. This is consistent with how Trans
+   * inherits from TransMeta.
+   * <p>
+   * Note: The variable space may already be shared with jobMeta via shareVariablesWith().
+   * In that case (variables == jobMeta), initialization is skipped to avoid creating a
+   * self-referential parent chain (jobMeta.parent = jobMeta).
+   */
+  void initializeVariables() {
+    if ( parentJob != null ) {
+      variables.initializeVariablesFrom( parentJob );
+    } else if ( jobMeta != null && variables != jobMeta ) {
+      variables.initializeVariablesFrom( jobMeta );
+    } else if ( jobMeta == null ) {
+      initializeVariablesFromDefaultSpace();
+    }
+  }
+
+  /**
    * Threads main loop: called by Thread.start();
    */
   @Override public void run() {
@@ -370,10 +393,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       setFinished( false );
       setInitialized( true );
 
-      // Create a new variable name space as we want jobs to have their own set of variables.
-      // initialize from parentJob or null
-      //
-      variables.initializeVariablesFrom( parentJob );
+      initializeVariables();
       setInternalKettleVariables( variables );
       copyParametersFrom( jobMeta );
       activateParameters();
@@ -1487,6 +1507,24 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
 
+  }
+
+  /**
+   * Initializes variables from the default variable space (system properties, kettle.properties, etc.)
+   * while preserving any variables that were explicitly set before this method is called.
+   * <p>
+   * This is used when there is no parent job to inherit variables from. Variables set via
+   * {@link #setVariable(String, String)} or {@link #shareVariablesWith(VariableSpace)} before
+   * {@link #run()} is called will be preserved.
+   * </p>
+   */
+  void initializeVariablesFromDefaultSpace() {
+    VariableSpace defaultSpace = Variables.getADefaultVariableSpace();
+    for ( String varName : defaultSpace.listVariables() ) {
+      if ( variables.getVariable( varName ) == null ) {
+        variables.setVariable( varName, defaultSpace.getVariable( varName ) );
+      }
+    }
   }
 
   protected void setInternalEntryCurrentDirectory( boolean hasFilename, boolean hasRepoDir  ) {
