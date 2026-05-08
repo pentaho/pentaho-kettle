@@ -169,6 +169,52 @@ public class KettleVFS {
     return normalizedPath;
   }
 
+  /**
+   * Normalizes a filename to a consistent format suitable for use as a transformation or job filename.
+   * This method:
+   * - Resolves relative paths to absolute paths for local files
+   * - Adds the file:// scheme prefix for local files without a scheme
+   * - Preserves paths that already have a scheme (file://, hdfs://, s3://, etc.)
+   * - Skips normalization for paths containing unresolved variables (${...})
+   *
+   * @param filename The filename to normalize
+   * @return The normalized filename, or the original if null/empty or contains variables
+   */
+  public static String normalizeFilePath( String filename ) {
+    if ( filename == null || filename.trim().isEmpty() ) {
+      return filename;
+    }
+
+    String result = filename;
+
+    // Don't normalize paths with unresolved variables
+    if ( result.contains( "${" ) ) {
+      return result;
+    }
+
+    // Check if it already has a scheme (file://, hdfs://, s3://, etc.)
+    if ( hasSchemePattern( result ) ) {
+      // Already has a scheme, return as-is
+      return result;
+    }
+
+    // For local files without a scheme, resolve to absolute path and add file:// prefix
+    File file = new File( result );
+    String absolutePath = file.getAbsolutePath();
+
+    // Add file:// prefix
+    // On Windows, paths start with drive letter (e.g., C:\), need file:///
+    // On Unix/Mac, paths start with /, need file://
+    if ( absolutePath.startsWith( "/" ) ) {
+      result = "file://" + absolutePath;
+    } else {
+      // Windows path
+      result = "file:///" + absolutePath.replace( '\\', '/' );
+    }
+
+    return result;
+  }
+
   public static boolean hasSchemePattern( String path ) {
     return hasSchemePattern( path, PROVIDER_PATTERN_SCHEME );
   }
