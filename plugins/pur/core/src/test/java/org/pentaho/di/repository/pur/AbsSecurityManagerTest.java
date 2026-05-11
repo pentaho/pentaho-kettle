@@ -31,7 +31,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.platform.security.policy.rolebased.RoleBindingStruct;
 import org.pentaho.platform.security.policy.rolebased.ws.IRoleAuthorizationPolicyRoleBindingDaoWebService;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class AbsSecurityManagerTest {
 
@@ -282,7 +281,7 @@ public class AbsSecurityManagerTest {
     AbsSecurityManager manager = new AbsSecurityManager( repository, repositoryMeta, userInfo, serviceManager );
 
     // Simulate serviceManager being null (e.g. after deserialization of the transient field)
-    ReflectionTestUtils.setField( manager, "serviceManager", null );
+    manager.setServiceManagerForTesting( null );
 
     // Now initialize — the retry path will see serviceManager == null at line 104
     manager.initialize( "en" );

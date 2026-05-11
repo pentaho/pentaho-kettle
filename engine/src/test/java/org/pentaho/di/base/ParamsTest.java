@@ -58,7 +58,7 @@ public class ParamsTest {
   }
 
   @Test
-  public void builderSetsAllStringProperties() {
+  public void builderSetsRepositoryAndExecutionProperties() {
     Params params = new Params.Builder()
       .repoName( "testRepo" )
       .blockRepoConns( "true" )
@@ -89,43 +89,7 @@ public class ParamsTest {
       .runConfiguration( "testConfig" )
       .build();
 
-    String[][] expected = {
-      {"getRepoName", "testRepo"},
-      {"getBlockRepoConns", "true"},
-      {"getRepoUsername", "testUser"},
-      {"getTrustRepoUser", "true"},
-      {"getRepoPassword", "testPass"},
-      {"getInputDir", "/test/dir"},
-      {"getInputFile", "test.ktr"},
-      {"getListRepoFiles", "true"},
-      {"getListRepoDirs", "true"},
-      {"getExportRepo", "true"},
-      {"getLocalFile", "local.ktr"},
-      {"getLocalJarFile", "test.jar"},
-      {"getLocalInitialDir", "/initial/dir"},
-      {"getListRepos", "true"},
-      {"getSafeMode", "true"},
-      {"getMetrics", "true"},
-      {"getListFileParams", "true"},
-      {"getLogLevel", "DEBUG"},
-      {"getMaxLogLines", "1000"},
-      {"getMaxLogTimeout", "30"},
-      {"getLogFile", "test.log"},
-      {"getOldLogFile", "old.log"},
-      {"getVersion", "1.0"},
-      {"getResultSetStepName", "testStep"},
-      {"getResultSetCopyNumber", "1"},
-      {"getBase64Zip", "dGVzdA=="},
-      {"getRunConfiguration", "testConfig"}
-    };
-
-    for ( String[] pair : expected ) {
-      try {
-        assertEquals( pair[1], Params.class.getMethod( pair[0] ).invoke( params ) );
-      } catch ( Exception e ) {
-        throw new AssertionError( "Failed for method: " + pair[0], e );
-      }
-    }
+    assertRepositoryAndExecutionProperties( params );
   }
 
   @Test
@@ -139,6 +103,36 @@ public class ParamsTest {
     assertEquals( mockNamedParams, params.getNamedParams() );
     assertEquals( mockCustomNamedParams, params.getCustomNamedParams() );
     assertEquals( mockPluginNamedParams, params.getPluginNamedParams() );
+  }
+
+  @Test
+  public void builderSetsInteractiveAuthProperties() {
+    Params params = new Params.Builder()
+      .browserAuth( "Y" )
+      .deviceCode( "Y" )
+      .preferredIdp( "keycloak" )
+      .serviceAccount( "Y" )
+      .build();
+
+    assertEquals( "Y", params.getBrowserAuth() );
+    assertEquals( "Y", params.getDeviceCode() );
+    assertEquals( "keycloak", params.getPreferredIdp() );
+    assertEquals( "Y", params.getServiceAccount() );
+  }
+
+  @Test
+  public void settersUpdateInteractiveAuthProperties() {
+    Params params = new Params.Builder().build();
+
+    params.setBrowserAuth( "Y" );
+    params.setDeviceCode( "Y" );
+    params.setPreferredIdp( "azure" );
+    params.setServiceAccount( "N" );
+
+    assertEquals( "Y", params.getBrowserAuth() );
+    assertEquals( "Y", params.getDeviceCode() );
+    assertEquals( "azure", params.getPreferredIdp() );
+    assertEquals( "N", params.getServiceAccount() );
   }
 
   @Test
@@ -307,44 +301,36 @@ public class ParamsTest {
   public void settersUpdatePropertiesCorrectly() {
     Params params = new Params.Builder().build();
 
-    String[][] propertyValues = {
-      {"setRepoName", "getRepoName", "newRepo"},
-      {"setBlockRepoConns", "getBlockRepoConns", "false"},
-      {"setRepoUsername", "getRepoUsername", "newUser"},
-      {"setTrustRepoUser", "getTrustRepoUser", "false"},
-      {"setRepoPassword", "getRepoPassword", "newPass"},
-      {"setInputDir", "getInputDir", "/new/dir"},
-      {"setInputFile", "getInputFile", "new.ktr"},
-      {"setListRepoFiles", "getListRepoFiles", "false"},
-      {"setListRepoDirs", "getListRepoDirs", "false"},
-      {"setExportRepo", "getExportRepo", "false"},
-      {"setLocalFile", "getLocalFile", "newLocal.ktr"},
-      {"setLocalJarFile", "getLocalJarFile", "new.jar"},
-      {"setLocalInitialDir", "getLocalInitialDir", "/new/initial"},
-      {"setListRepos", "getListRepos", "false"},
-      {"setSafeMode", "getSafeMode", "false"},
-      {"setMetrics", "getMetrics", "false"},
-      {"setListFileParams", "getListFileParams", "false"},
-      {"setLogLevel", "getLogLevel", "INFO"},
-      {"setMaxLogLines", "getMaxLogLines", "500"},
-      {"setMaxLogTimeout", "getMaxLogTimeout", "60"},
-      {"setLogFile", "getLogFile", "new.log"},
-      {"setOldLogFile", "getOldLogFile", "newOld.log"},
-      {"setVersion", "getVersion", "2.0"},
-      {"setResultSetStepName", "getResultSetStepName", "newStep"},
-      {"setResultSetCopyNumber", "getResultSetCopyNumber", "3"},
-      {"setBase64Zip", "getBase64Zip", "bmV3VGVzdA=="},
-      {"setRunConfiguration", "getRunConfiguration", "newConfig"}
-    };
+    params.setUuid( "new-uuid" );
+    params.setRepoName( "newRepo" );
+    params.setBlockRepoConns( "false" );
+    params.setRepoUsername( "newUser" );
+    params.setTrustRepoUser( "false" );
+    params.setRepoPassword( "newPass" );
+    params.setInputDir( "/new/dir" );
+    params.setInputFile( "new.ktr" );
+    params.setListRepoFiles( "false" );
+    params.setListRepoDirs( "false" );
+    params.setExportRepo( "false" );
+    params.setLocalFile( "newLocal.ktr" );
+    params.setLocalJarFile( "new.jar" );
+    params.setLocalInitialDir( "/new/initial" );
+    params.setListRepos( "false" );
+    params.setSafeMode( "false" );
+    params.setMetrics( "false" );
+    params.setListFileParams( "false" );
+    params.setLogLevel( "INFO" );
+    params.setMaxLogLines( "500" );
+    params.setMaxLogTimeout( "60" );
+    params.setLogFile( "new.log" );
+    params.setOldLogFile( "newOld.log" );
+    params.setVersion( "2.0" );
+    params.setResultSetStepName( "newStep" );
+    params.setResultSetCopyNumber( "3" );
+    params.setBase64Zip( "bmV3VGVzdA==" );
+    params.setRunConfiguration( "newConfig" );
 
-    for ( String[] prop : propertyValues ) {
-      try {
-        Params.class.getMethod( prop[0], String.class ).invoke( params, prop[2] );
-        assertEquals( prop[2], Params.class.getMethod( prop[1] ).invoke( params ) );
-      } catch ( Exception e ) {
-        throw new AssertionError( "Failed for property: " + prop[0], e );
-      }
-    }
+    assertUpdatedMutableProperties( params );
 
     params.setNamedParams( mockNamedParams );
     params.setCustomNamedParams( mockCustomNamedParams );
@@ -385,5 +371,66 @@ public class ParamsTest {
     assertNull( params.getNamedParams() );
     assertNull( params.getCustomNamedParams() );
     assertNull( params.getPluginNamedParams() );
+  }
+
+  private void assertRepositoryAndExecutionProperties( Params params ) {
+    assertEquals( "testRepo", params.getRepoName() );
+    assertEquals( "true", params.getBlockRepoConns() );
+    assertEquals( "testUser", params.getRepoUsername() );
+    assertEquals( "true", params.getTrustRepoUser() );
+    assertEquals( "testPass", params.getRepoPassword() );
+    assertEquals( "/test/dir", params.getInputDir() );
+    assertEquals( "test.ktr", params.getInputFile() );
+    assertEquals( "true", params.getListRepoFiles() );
+    assertEquals( "true", params.getListRepoDirs() );
+    assertEquals( "true", params.getExportRepo() );
+    assertEquals( "local.ktr", params.getLocalFile() );
+    assertEquals( "test.jar", params.getLocalJarFile() );
+    assertEquals( "/initial/dir", params.getLocalInitialDir() );
+    assertEquals( "true", params.getListRepos() );
+    assertEquals( "true", params.getSafeMode() );
+    assertEquals( "true", params.getMetrics() );
+    assertEquals( "true", params.getListFileParams() );
+    assertEquals( "DEBUG", params.getLogLevel() );
+    assertEquals( "1000", params.getMaxLogLines() );
+    assertEquals( "30", params.getMaxLogTimeout() );
+    assertEquals( "test.log", params.getLogFile() );
+    assertEquals( "old.log", params.getOldLogFile() );
+    assertEquals( "1.0", params.getVersion() );
+    assertEquals( "testStep", params.getResultSetStepName() );
+    assertEquals( "1", params.getResultSetCopyNumber() );
+    assertEquals( "dGVzdA==", params.getBase64Zip() );
+    assertEquals( "testConfig", params.getRunConfiguration() );
+  }
+
+  private void assertUpdatedMutableProperties( Params params ) {
+    assertEquals( "new-uuid", params.getUuid() );
+    assertEquals( "newRepo", params.getRepoName() );
+    assertEquals( "false", params.getBlockRepoConns() );
+    assertEquals( "newUser", params.getRepoUsername() );
+    assertEquals( "false", params.getTrustRepoUser() );
+    assertEquals( "newPass", params.getRepoPassword() );
+    assertEquals( "/new/dir", params.getInputDir() );
+    assertEquals( "new.ktr", params.getInputFile() );
+    assertEquals( "false", params.getListRepoFiles() );
+    assertEquals( "false", params.getListRepoDirs() );
+    assertEquals( "false", params.getExportRepo() );
+    assertEquals( "newLocal.ktr", params.getLocalFile() );
+    assertEquals( "new.jar", params.getLocalJarFile() );
+    assertEquals( "/new/initial", params.getLocalInitialDir() );
+    assertEquals( "false", params.getListRepos() );
+    assertEquals( "false", params.getSafeMode() );
+    assertEquals( "false", params.getMetrics() );
+    assertEquals( "false", params.getListFileParams() );
+    assertEquals( "INFO", params.getLogLevel() );
+    assertEquals( "500", params.getMaxLogLines() );
+    assertEquals( "60", params.getMaxLogTimeout() );
+    assertEquals( "new.log", params.getLogFile() );
+    assertEquals( "newOld.log", params.getOldLogFile() );
+    assertEquals( "2.0", params.getVersion() );
+    assertEquals( "newStep", params.getResultSetStepName() );
+    assertEquals( "3", params.getResultSetCopyNumber() );
+    assertEquals( "bmV3VGVzdA==", params.getBase64Zip() );
+    assertEquals( "newConfig", params.getRunConfiguration() );
   }
 }
