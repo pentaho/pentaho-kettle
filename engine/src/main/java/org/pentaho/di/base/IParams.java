@@ -216,8 +216,34 @@ public interface IParams extends Serializable {
    * @return  Map custom plugin named parameter key/value pairs
    */
   Map<String, String> getPluginParams();
+
+
   /**
    * @return runConfiguration the name of the run configuration to use
    */
   String getRunConfiguration();
+
+
+  /**
+   * @return browserAuth flag to enable OAuth 2.0 browser-based authorization
+   * code flow with PKCE authentication
+   */
+  String getBrowserAuth();
+
+  /**
+   * @return deviceCode flag to enable OAuth 2.0 Device Authorization Grant (RFC
+   * 8628) for authentication
+   */
+  String getDeviceCode();
+
+  /**
+   * @return preferredIdp optional IdP registration ID requested by the caller
+   */
+  String getPreferredIdp();
+
+  /**
+   * @return serviceAccount flag to enable OAuth 2.0 Client Credentials grant
+   * authentication for non-interactive execution
+   */
+  String getServiceAccount();
 }

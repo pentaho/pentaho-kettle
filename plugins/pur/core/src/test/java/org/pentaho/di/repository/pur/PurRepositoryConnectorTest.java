@@ -12,10 +12,12 @@
 
 package org.pentaho.di.repository.pur;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -25,6 +27,7 @@ import org.mockito.MockedStatic;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.pan.auth.CredentialProvider;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
 import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.api.engine.IApplicationContext;
@@ -34,9 +37,7 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +51,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -73,8 +75,9 @@ public class PurRepositoryConnectorTest {
     PurRepository mockPurRepository = mock( PurRepository.class );
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
     PurRepositoryConnector purRepositoryConnector =
-      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
+      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider );
     purRepositoryConnector.disconnect();
     purRepositoryConnector.disconnect();
   }
@@ -85,8 +88,9 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "" ).when( location ).getUrl();
     ExecutorService service = mock( ExecutorService.class );
@@ -126,9 +130,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -182,9 +187,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -217,9 +223,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -251,9 +258,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -285,9 +293,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -316,9 +325,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -348,9 +358,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -399,9 +410,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "" ).when( location ).getUrl();
 
@@ -436,9 +448,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector purRepositoryConnector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -510,9 +523,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -543,9 +557,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "" ).when( location ).getUrl();
 
@@ -560,13 +575,13 @@ public class PurRepositoryConnectorTest {
     doReturn( mockBuilder ).when( mockBuilder ).setDefaultCredentialsProvider( any() );
     doReturn( mockHttpClient ).when( mockBuilder ).build();
 
-    CloseableHttpResponse mockResponse = mock( CloseableHttpResponse.class );
-    HttpEntity mockEntity = mock( HttpEntity.class );
-    when( mockEntity.getContent() ).thenReturn(
-      new ByteArrayInputStream( "admin".getBytes( StandardCharsets.UTF_8 ) ) );
-    when( mockEntity.getContentLength() ).thenReturn( (long) "admin".length() );
-    when( mockResponse.getEntity() ).thenReturn( mockEntity );
-    when( mockHttpClient.execute( any() ) ).thenReturn( mockResponse );
+    ClassicHttpResponse mockResponse = mock( ClassicHttpResponse.class );
+    when( mockResponse.getCode() ).thenReturn( 200 );
+    when( mockResponse.getEntity() ).thenReturn( new StringEntity( "admin" ) );
+    doAnswer( invocation -> {
+      HttpClientResponseHandler<?> handler = invocation.getArgument( 1 );
+      return handler.handleResponse( mockResponse );
+    } ).when( mockHttpClient ).execute( any( ClassicHttpRequest.class ), any( HttpClientResponseHandler.class ) );
 
     try ( MockedStatic<HttpClientBuilder> mockedBuilder = mockStatic( HttpClientBuilder.class ) ) {
       mockedBuilder.when( HttpClientBuilder::create ).thenReturn( mockBuilder );
@@ -582,9 +597,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "" ).when( location ).getUrl();
 
@@ -598,7 +614,8 @@ public class PurRepositoryConnectorTest {
     doReturn( mockBuilder ).when( mockBuilder ).setDefaultCredentialsProvider( any() );
     CloseableHttpClient mockHttpClient = mock( CloseableHttpClient.class );
     doReturn( mockHttpClient ).when( mockBuilder ).build();
-    when( mockHttpClient.execute( any() ) ).thenThrow( new RuntimeException( "Connection refused" ) );
+    when( mockHttpClient.execute( any( ClassicHttpRequest.class ), any( HttpClientResponseHandler.class ) ) )
+      .thenThrow( new RuntimeException( "Connection refused" ) );
 
     try ( MockedStatic<HttpClientBuilder> mockedBuilder = mockStatic( HttpClientBuilder.class ) ) {
       mockedBuilder.when( HttpClientBuilder::create ).thenReturn( mockBuilder );
@@ -629,9 +646,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "" ).when( location ).getUrl();
     setupExecutorFutures( connector );
@@ -658,9 +676,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "" ).when( location ).getUrl();
     setupExecutorFutures( connector );
@@ -687,9 +706,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "" ).when( location ).getUrl();
     setupExecutorFutures( connector );
@@ -719,9 +739,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "" ).when( location ).getUrl();
     setupExecutorFutures( connector );
@@ -754,9 +775,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "" ).when( location ).getUrl();
     setupExecutorFutures( connector );
@@ -790,9 +812,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -829,9 +852,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -866,9 +890,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -910,9 +935,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -955,9 +981,10 @@ public class PurRepositoryConnectorTest {
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider ) );
     doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
     doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
 
@@ -997,9 +1024,10 @@ public class PurRepositoryConnectorTest {
     PurRepository mockPurRepository = mock( PurRepository.class );
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
+      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider );
 
     AbsSecurityProvider mockProvider = mock( AbsSecurityProvider.class );
     when( mockProvider.getAllowedActions( any() ) )
@@ -1020,9 +1048,10 @@ public class PurRepositoryConnectorTest {
     PurRepository mockPurRepository = mock( PurRepository.class );
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
+      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider );
 
     String adminAction =
       org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION;
@@ -1044,9 +1073,10 @@ public class PurRepositoryConnectorTest {
     PurRepository mockPurRepository = mock( PurRepository.class );
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
+      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider );
 
     AbsSecurityProvider mockProvider = mock( AbsSecurityProvider.class );
     when( mockProvider.getAllowedActions( any() ) )
@@ -1066,9 +1096,10 @@ public class PurRepositoryConnectorTest {
     PurRepository mockPurRepository = mock( PurRepository.class );
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     RootRef mockRootRef = mock( RootRef.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
 
     PurRepositoryConnector connector =
-      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
+      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef, mockCredentialProvider );
 
     AbsSecurityProvider mockProvider = mock( AbsSecurityProvider.class );
     when( mockProvider.getAllowedActions( any() ) ).thenReturn( Collections.emptyList() );

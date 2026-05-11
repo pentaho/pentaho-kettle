@@ -54,14 +54,14 @@ public class SsoProviderServiceTest {
   @Test
   public void testBuildProvidersUrl_appendsEndpoint() {
     assertEquals(
-      "http://localhost:8080/pentaho/plugin/login/api/v0/oauth-providers",
+      "http://localhost:8080/pentaho/plugin/pentaho-oauth/api//providers",
       service.buildProvidersUrl( "http://localhost:8080/pentaho" ) );
   }
 
   @Test
   public void testBuildProvidersUrl_stripsTrailingSlash() {
     assertEquals(
-      "http://localhost:8080/pentaho/plugin/login/api/v0/oauth-providers",
+      "http://localhost:8080/pentaho/plugin/pentaho-oauth/api/providers",
       service.buildProvidersUrl( "http://localhost:8080/pentaho/" ) );
   }
 
@@ -77,7 +77,7 @@ public class SsoProviderServiceTest {
 
   @Test
   public void testFetchProviders_404_returnsEmptyList() throws Exception {
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 404, "" );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 404, "" );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertNotNull( result );
@@ -86,7 +86,7 @@ public class SsoProviderServiceTest {
 
   @Test
   public void testFetchProviders_500_throwsIOException() {
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 500, "Internal Server Error" );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 500, "Internal Server Error" );
 
     try {
       service.fetchProviders( baseUrl + "/pentaho" );
@@ -98,7 +98,7 @@ public class SsoProviderServiceTest {
 
   @Test
   public void testFetchProviders_403_throwsIOException() {
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 403, "Forbidden" );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 403, "Forbidden" );
 
     try {
       service.fetchProviders( baseUrl + "/pentaho" );
@@ -111,7 +111,7 @@ public class SsoProviderServiceTest {
 
   @Test
   public void testFetchProviders_notJsonArray_returnsEmptyList() throws Exception {
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, "{\"key\":\"value\"}" );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, "{\"key\":\"value\"}" );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertNotNull( result );
@@ -120,7 +120,7 @@ public class SsoProviderServiceTest {
 
   @Test
   public void testFetchProviders_malformedJson_throwsIOException() {
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, "NOT_JSON{{{{" );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, "NOT_JSON{{{{" );
 
     try {
       service.fetchProviders( baseUrl + "/pentaho" );
@@ -132,7 +132,7 @@ public class SsoProviderServiceTest {
 
   @Test
   public void testFetchProviders_invalidItems_skipped() throws Exception {
-    String path = "/pentaho/plugin/login/api/v0/oauth-providers";
+    String path = "/pentaho/plugin/pentaho-oauth/api/providers";
     Object[][] cases = {
       { "arrayItemNotObject", "[\"not-an-object\", 42]" },
       { "blankAuthorizationUri", "[{\"enabled\":true,\"clientName\":\"Google\","
@@ -164,7 +164,7 @@ public class SsoProviderServiceTest {
     String json = "[{\"enabled\":true,\"clientName\":\"Google\","
       + "\"authorizationUri\":\"https://accounts.google.com/o/oauth2/auth\","
       + "\"registrationId\":\"google\"}]";
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, json );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, json );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertEquals( 1, result.size() );
@@ -179,7 +179,7 @@ public class SsoProviderServiceTest {
     String json = "[{\"enabled\":\"true\",\"clientName\":\"Okta\","
       + "\"authorizationUri\":\"https://dev.okta.com/oauth2/v1/authorize\","
       + "\"registrationId\":\"okta\"}]";
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, json );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, json );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertEquals( 1, result.size() );
@@ -193,7 +193,7 @@ public class SsoProviderServiceTest {
     String json = "[{\"enabled\":\"false\",\"clientName\":\"Skipped\","
       + "\"authorizationUri\":\"https://example.com/auth\","
       + "\"registrationId\":\"skip\"}]";
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, json );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, json );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertTrue( result.isEmpty() );
@@ -206,7 +206,7 @@ public class SsoProviderServiceTest {
     String json = "[{\"enabled\":1,\"clientName\":\"NumericProvider\","
       + "\"authorizationUri\":\"https://example.com/auth\","
       + "\"registrationId\":\"numeric\"}]";
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, json );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, json );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertTrue( result.isEmpty() );
@@ -216,7 +216,7 @@ public class SsoProviderServiceTest {
   public void testFetchProviders_nullRegistrationId() throws Exception {
     String json = "[{\"enabled\":true,\"clientName\":\"Azure\","
       + "\"authorizationUri\":\"https://login.microsoftonline.com/common/oauth2/authorize\"}]";
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, json );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, json );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertEquals( 1, result.size() );
@@ -233,7 +233,7 @@ public class SsoProviderServiceTest {
       + "\"authorizationUri\":\"https://dev.okta.com/oauth2/v1/authorize\","
       + "\"registrationId\":\"okta\"}"
       + "]";
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, json );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, json );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertEquals( 2, result.size() );
@@ -250,7 +250,7 @@ public class SsoProviderServiceTest {
       + "\"registrationId\":\"disabled\"},"
       + "\"not-an-object\""
       + "]";
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, json );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, json );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertEquals( 1, result.size() );
@@ -259,7 +259,7 @@ public class SsoProviderServiceTest {
 
   @Test
   public void testFetchProviders_emptyArray_returnsEmptyList() throws Exception {
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 200, "[]" );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 200, "[]" );
 
     List<SsoProviderService.SsoProvider> result = service.fetchProviders( baseUrl + "/pentaho" );
     assertTrue( result.isEmpty() );
@@ -287,7 +287,7 @@ public class SsoProviderServiceTest {
   @Test
   public void testFetchProviders_connectionDisconnectedInFinally() throws Exception {
     // Covers lines 76-79: when connection is non-null, disconnect() must be called in finally
-    registerHandler( "/pentaho/plugin/login/api/v0/oauth-providers", 500, "Server Error" );
+    registerHandler( "/pentaho/plugin/pentaho-oauth/api/providers", 500, "Server Error" );
 
     // Use a real HTTP call that will fail with 500 (IOException thrown at line 50).
     // The finally block should still disconnect.
