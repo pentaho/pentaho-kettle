@@ -86,7 +86,7 @@ public class StreamToTransNodeConverter implements Converter {
     try {
       return loadTransformationAsStream( fileId );
     } catch ( Exception e ) {
-      logger.error( e );
+      logger.error( e.getMessage(), e );
       return null;
     }
   }
@@ -100,7 +100,7 @@ public class StreamToTransNodeConverter implements Converter {
     try {
       return getTransformationStream( repository, fileId );
     } catch ( KettleException e ) {
-      logger.error( e );
+      logger.error( e.getMessage(), e );
       // file is there and may be legacy, attempt simple export
       return getLegacyTransformationStream( fileId, file );
     }

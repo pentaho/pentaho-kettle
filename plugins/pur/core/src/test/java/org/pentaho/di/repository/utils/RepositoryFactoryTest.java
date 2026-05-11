@@ -27,9 +27,13 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
 
+import java.util.function.Supplier;
+
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -78,18 +82,26 @@ public class RepositoryFactoryTest {
     IRepositoryFactory.CachingRepositoryFactory cachingRepositoryFactory =
         new IRepositoryFactory.CachingRepositoryFactory( mockFactory );
 
-    cachingRepositoryFactory.connect( "foo" );
+    Repository createdOnCacheMiss = mock( Repository.class );
+    when( mockFactory.connect( "foo" ) ).thenReturn( createdOnCacheMiss );
 
-    verify( mockFactory, times( 1 ) ).connect( "foo" );
-
-    // Test with Cache Hit
+    // First call behaves like cache miss: invoke supplier and return created repository.
+    // Second call behaves like cache hit: return pre-cached repository.
     Repository mockRepository = mock( Repository.class );
-    when( cacheManager.cacheEnabled( IRepositoryFactory.CachingRepositoryFactory.REGION ) ).thenReturn( true );
-    when( cacheManager.getFromRegionCache( IRepositoryFactory.CachingRepositoryFactory.REGION, "joe" ) ).thenReturn(
-        mockRepository );
+    when( cacheManager.getOrCreateFromRegionCache(
+      eq( IRepositoryFactory.CachingRepositoryFactory.REGION ),
+      eq( "joe" ),
+      any() ) )
+      .thenAnswer( invocation -> ( (Supplier<?>) invocation.getArgument( 2 ) ).get() )
+      .thenReturn( mockRepository );
+
+    Repository firstRepo = cachingRepositoryFactory.connect( "foo" );
+    assertThat( firstRepo, sameInstance( createdOnCacheMiss ) );
 
     Repository repo = cachingRepositoryFactory.connect( "foo" );
     assertThat( repo, sameInstance( mockRepository ) );
+
+    verify( mockFactory, times( 1 ) ).connect( "foo" );
   }
 
   @Test

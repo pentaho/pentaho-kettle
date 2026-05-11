@@ -85,18 +85,21 @@ public interface IRepositoryFactory {
       ICacheManager cacheManager = PentahoSystem.getCacheManager( session );
 
       String sessionName = session.getName();
-      Repository repository = (Repository) cacheManager.getFromRegionCache( REGION, sessionName );
-      if ( repository == null ) {
-        logger.debug( "Repository not cached for user: " + sessionName + ". Creating new Repository." );
-        repository = delegate.connect( repositoryName );
-        if ( !cacheManager.cacheEnabled( REGION ) ) {
-          cacheManager.addCacheRegion( REGION );
+      try {
+        return (Repository) cacheManager.getOrCreateFromRegionCache( REGION, sessionName, () -> {
+          logger.debug( "Repository not cached for user: " + sessionName + ". Creating new Repository." );
+          try {
+            return delegate.connect( repositoryName );
+          } catch ( KettleException e ) {
+            throw new IllegalStateException( "Failed to create repository for user: " + sessionName, e );
+          }
+        } );
+      } catch ( IllegalStateException e ) {
+        if ( e.getCause() instanceof KettleException kettleException ) {
+          throw kettleException;
         }
-        cacheManager.putInRegionCache( REGION, sessionName, repository );
-      } else {
-        logger.debug( "Repository was cached for user: " + sessionName );
+        throw e;
       }
-      return repository;
     }
   }
 
