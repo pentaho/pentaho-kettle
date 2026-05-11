@@ -20,7 +20,8 @@ import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.core.parameters.DuplicateParamException;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
@@ -28,27 +29,25 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.security.ExitInterceptor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.security.Permission;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.pentaho.di.security.ExitInterceptor;
 
 public class KitchenTest {
 
   private static final String TEST_PARAM_NAME = "testParam";
   private static final String DEFAULT_PARAM_VALUE = "default value";
-  private static final String NOT_DEFAULT_PARAM_VALUE = "not the default value";
 
   private ByteArrayOutputStream sysOutContent;
   private ByteArrayOutputStream sysErrContent;
@@ -83,7 +82,7 @@ public class KitchenTest {
   }
 
   @Test
-  public void testKitchenStatusCodes() throws Exception {
+  public void testKitchenStatusCodes() {
 
     assertNull( CommandExecutorCodes.Kitchen.getByCode( 9999 ) );
     assertNotNull( CommandExecutorCodes.Kitchen.getByCode( 0 ) );
@@ -101,7 +100,7 @@ public class KitchenTest {
   }
 
   @Test
-  public void testConfigureParameters() throws Exception {
+  public void testConfigureParameters() throws DuplicateParamException, UnknownParamException {
     JobMeta jobMeta = new JobMeta();
     jobMeta.addParameterDefinition( TEST_PARAM_NAME, DEFAULT_PARAM_VALUE, "This tests a default parameter" );
 
@@ -120,10 +119,7 @@ public class KitchenTest {
   }
 
   @Test
-  public void testListRepos() throws Exception {
-
-    PrintStream origSysOut;
-    PrintStream origSysErr;
+  public void testListRepos() {
 
     final String TEST_REPO_DUMMY_NAME = "dummy-repo-name";
     final String TEST_REPO_DUMMY_DESC = "dummy-repo-description";
@@ -136,45 +132,16 @@ public class KitchenTest {
 
     KitchenCommandExecutor testPanCommandExecutor = new KitchenCommandExecutorForTesting( null, null, mockRepositoriesMeta );
 
-    origSysOut = System.out;
-    origSysErr = System.err;
+    Result executionResult = runKitchenCommand( testPanCommandExecutor, new String[] { "/listrep" } );
 
-    try {
-
-      System.setOut( new PrintStream( sysOutContent ) );
-      System.setErr( new PrintStream( sysErrContent ) );
-
-      Kitchen.setCommandExecutor( testPanCommandExecutor );
-      Kitchen.main( new String[] { "/listrep" } );
-
-    } catch ( SecurityException e ) {
-      // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
-
-      System.out.println( sysOutContent );
-
-      assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_NAME ) );
-      assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_DESC ) );
-
-      Result result = Kitchen.getCommandExecutor().getResult();
-      assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
-
-    } finally {
-      // sanitize
-
-      Kitchen.setCommandExecutor( null );
-
-      System.setOut( origSysOut );
-      System.setErr( origSysErr );
-
-    }
+    assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_NAME ) );
+    assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_DESC ) );
+    assertNotNull( executionResult );
+    assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), executionResult.getExitStatus() );
   }
 
   @Test
-  public void testListDirs() throws Exception {
-
-    PrintStream origSysOut;
-    PrintStream origSysErr;
+  public void testListDirs() throws KettleException {
 
     final String DUMMY_DIR_1 = "test-dir-1";
     final String DUMMY_DIR_2 = "test-dir-2";
@@ -182,47 +149,20 @@ public class KitchenTest {
     when( mockRepository.getDirectoryNames( any() ) ).thenReturn( new String[]{ DUMMY_DIR_1, DUMMY_DIR_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    KitchenCommandExecutor testPanCommandExecutor = new KitchenCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
+    KitchenCommandExecutorForTesting testPanCommandExecutor = new KitchenCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
-    origSysOut = System.out;
-    origSysErr = System.err;
+    Result executionResult = runKitchenCommand( testPanCommandExecutor,
+      new String[] { "/listdir:true", "/rep:test-repo", "/preferredidp:keycloak", "/level:Basic" } );
 
-    try {
-
-      System.setOut( new PrintStream( sysOutContent ) );
-      System.setErr( new PrintStream( sysErrContent ) );
-
-      Kitchen.setCommandExecutor( testPanCommandExecutor );
-      // (case-insensitive) should accept either 'Y' (default) or 'true'
-      Kitchen.main( new String[] { "/listdir:true", "/rep:test-repo", "/level:Basic" } );
-
-    } catch ( SecurityException e ) {
-      // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
-
-      System.out.println( sysOutContent );
-
-      assertTrue( sysOutContent.toString().contains( DUMMY_DIR_1 ) );
-      assertTrue( sysOutContent.toString().contains( DUMMY_DIR_2 ) );
-
-      Result result = Kitchen.getCommandExecutor().getResult();
-      assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
-
-    } finally {
-      // sanitize
-
-      Kitchen.setCommandExecutor( null );
-
-      System.setOut( origSysOut );
-      System.setErr( origSysErr );
-    }
+    assertTrue( sysOutContent.toString().contains( DUMMY_DIR_1 ) );
+    assertTrue( sysOutContent.toString().contains( DUMMY_DIR_2 ) );
+    assertEquals( "keycloak", testPanCommandExecutor.getCapturedPreferredIdp() );
+    assertNotNull( executionResult );
+    assertEquals( CommandExecutorCodes.Kitchen.SUCCESS.getCode(), executionResult.getExitStatus() );
   }
 
   @Test
-  public void testListJobs() throws Exception {
-
-    PrintStream origSysOut;
-    PrintStream origSysErr;
+  public void testListJobs() throws KettleException {
 
     final String DUMMY_JOB_1 = "test-job-name-1";
     final String DUMMY_JOB_2 = "test-job-name-2";
@@ -232,37 +172,39 @@ public class KitchenTest {
 
     KitchenCommandExecutor testPanCommandExecutor = new KitchenCommandExecutorForTesting( mockRepository, mockRepositoryMeta,  null );
 
-    origSysOut = System.out;
-    origSysErr = System.err;
+    Result executionResult = runKitchenCommand( testPanCommandExecutor,
+      new String[] { "/listjobs:Y", "/rep:test-repo", "/level:Basic" } );
 
-    try {
+    assertTrue( sysOutContent.toString().contains( DUMMY_JOB_1 ) );
+    assertTrue( sysOutContent.toString().contains( DUMMY_JOB_2 ) );
+    assertNotNull( executionResult );
+    assertEquals( CommandExecutorCodes.Kitchen.SUCCESS.getCode(), executionResult.getExitStatus() );
+  }
 
-      System.setOut( new PrintStream( sysOutContent ) );
-      System.setErr( new PrintStream( sysErrContent ) );
+  private Result runKitchenCommand( KitchenCommandExecutor commandExecutor, String[] arguments ) {
+    PrintStream originalSysOut = System.out;
+    PrintStream originalSysErr = System.err;
 
-      Kitchen.setCommandExecutor( testPanCommandExecutor );
-      // (case-insensitive) should accept either 'Y' (default) or 'true'
-      Kitchen.main( new String[] { "/listjobs:Y", "/rep:test-repo", "/level:Basic" } );
+    try ( PrintStream redirectedOut = new PrintStream( sysOutContent );
+          PrintStream redirectedErr = new PrintStream( sysErrContent ) ) {
+      System.setOut( redirectedOut );
+      System.setErr( redirectedErr );
 
-    } catch ( SecurityException e ) {
-      // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
+      Kitchen.setCommandExecutor( commandExecutor );
 
-      System.out.println( sysOutContent );
+      try {
+        Kitchen.main( arguments );
+      } catch ( SecurityException e ) {
+        // Expected when ExitInterceptor blocks System.exit().
+      } catch ( Exception e ) {
+        throw new AssertionError( e );
+      }
 
-      assertTrue( sysOutContent.toString().contains( DUMMY_JOB_1 ) );
-      assertTrue( sysOutContent.toString().contains( DUMMY_JOB_2 ) );
-
-      Result result = Kitchen.getCommandExecutor().getResult();
-      assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
-
+      return Kitchen.getCommandExecutor().getResult();
     } finally {
-      // sanitize
-
       Kitchen.setCommandExecutor( null );
-
-      System.setOut( origSysOut );
-      System.setErr( origSysErr );
+      System.setOut( originalSysOut );
+      System.setErr( originalSysErr );
     }
   }
 
@@ -271,6 +213,7 @@ public class KitchenTest {
     private Repository testRepository;
     private RepositoryMeta testRepositoryMeta;
     private RepositoriesMeta testRepositoriesMeta;
+    private String capturedPreferredIdp;
 
     public KitchenCommandExecutorForTesting( Repository testRepository, RepositoryMeta testRepositoryMeta,
                                              RepositoriesMeta testRepositoriesMeta ) {
@@ -294,8 +237,27 @@ public class KitchenTest {
 
     @Override
     public Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
-                                                         final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
+                                                         final RepositoryOperation... operations ) throws KettleException {
       return testRepository != null ? testRepository : super.establishRepositoryConnection( repositoryMeta, username, password, operations );
+    }
+
+    @Override
+    public Repository establishRepositoryConnectionWithBrowserAuth( RepositoryMeta repositoryMeta,
+                                                                    String username,
+                                                                    String password,
+                                                                    boolean useBrowserAuth,
+                                                                    boolean useDeviceCode,
+                                                                    boolean useServiceAccount,
+                                                                    String preferredIdp,
+                                                                    RepositoryOperation... operations ) throws KettleException {
+      capturedPreferredIdp = preferredIdp;
+      return testRepository != null ? testRepository : super.establishRepositoryConnectionWithBrowserAuth(
+        repositoryMeta, username, password, useBrowserAuth, useDeviceCode, useServiceAccount, preferredIdp,
+        operations );
+    }
+
+    private String getCapturedPreferredIdp() {
+      return capturedPreferredIdp;
     }
   }
 }

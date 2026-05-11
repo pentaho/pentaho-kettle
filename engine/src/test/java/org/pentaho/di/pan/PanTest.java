@@ -22,10 +22,11 @@ import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -38,7 +39,6 @@ import org.pentaho.di.trans.TransMeta;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.security.Permission;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -51,7 +51,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PanTest {
-  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+  @ClassRule
+  public static final RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String TEST_PARAM_NAME = "testParam";
   private static final String DEFAULT_PARAM_VALUE = "default value";
@@ -66,7 +67,7 @@ public class PanTest {
   RepositoryDirectoryInterface mockRepositoryDirectory;
 
   @BeforeClass
-  public static void setUpClass() throws Exception {
+  public static void setUpClass() throws KettleException {
     KettleEnvironment.init();
   }
 
@@ -111,7 +112,7 @@ public class PanTest {
   }
 
   @Test
-  public void testConfigureParameters() throws Exception {
+  public void testConfigureParameters() throws DuplicateParamException, UnknownParamException {
     TransMeta transMeta = new TransMeta();
     transMeta.addParameterDefinition( TEST_PARAM_NAME, DEFAULT_PARAM_VALUE, "This tests a default parameter" );
 
@@ -138,10 +139,7 @@ public class PanTest {
   }
 
   @Test
-  public void testListRepos() throws Exception {
-
-    PrintStream origSysOut;
-    PrintStream origSysErr;
+  public void testListRepos() {
 
     final String TEST_REPO_DUMMY_NAME = "dummy-repo-name";
     final String TEST_REPO_DUMMY_DESC = "dummy-repo-description";
@@ -154,45 +152,16 @@ public class PanTest {
 
     PanCommandExecutorForTesting testPanCommandExecutor = new PanCommandExecutorForTesting( null, null, mockRepositoriesMeta );
 
-    origSysOut = System.out;
-    origSysErr = System.err;
+    Result executionResult = runPanCommand( testPanCommandExecutor, new String[] { "/listrep" } );
 
-    try {
-
-      System.setOut( new PrintStream( sysOutContent ) );
-      System.setErr( new PrintStream( sysErrContent ) );
-
-      Pan.setCommandExecutor( testPanCommandExecutor );
-      Pan.main( new String[] { "/listrep" } );
-
-    } catch ( SecurityException e ) {
-      // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
-
-      System.out.println( sysOutContent );
-
-      assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_NAME ) );
-      assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_DESC ) );
-
-      Result result = Pan.getCommandExecutor().getResult();
-      assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
-
-    } finally {
-      // sanitize
-
-      Pan.setCommandExecutor( null );
-
-      System.setOut( origSysOut );
-      System.setErr( origSysErr );
-
-    }
+    assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_NAME ) );
+    assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_DESC ) );
+    assertNotNull( executionResult );
+    assertEquals( CommandExecutorCodes.Pan.SUCCESS.getCode(), executionResult.getExitStatus() );
   }
 
   @Test
-  public void testListDirs() throws Exception {
-
-    PrintStream origSysOut;
-    PrintStream origSysErr;
+  public void testListDirs() throws KettleException {
 
     final String DUMMY_DIR_1 = "test-dir-1";
     final String DUMMY_DIR_2 = "test-dir-2";
@@ -203,45 +172,18 @@ public class PanTest {
     PanCommandExecutorForTesting testPanCommandExecutor =
       new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
-    origSysOut = System.out;
-    origSysErr = System.err;
+    Result executionResult = runPanCommand( testPanCommandExecutor,
+      new String[] { "/listdir:true", "/rep:test-repo", "/preferredidp:keycloak", "/level:Basic" } );
 
-    try {
-
-      System.setOut( new PrintStream( sysOutContent ) );
-      System.setErr( new PrintStream( sysErrContent ) );
-
-      Pan.setCommandExecutor( testPanCommandExecutor );
-      // (case-insensitive) should accept either 'Y' (default) or 'true'
-      Pan.main( new String[] { "/listdir:true", "/rep:test-repo", "/level:Basic" } );
-
-    } catch ( SecurityException e ) {
-      // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
-
-      System.out.println( sysOutContent );
-
-      assertTrue( sysOutContent.toString().contains( DUMMY_DIR_1 ) );
-      assertTrue( sysOutContent.toString().contains( DUMMY_DIR_2 ) );
-
-      Result result = Pan.getCommandExecutor().getResult();
-      assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
-
-    } finally {
-      // sanitize
-
-      Pan.setCommandExecutor( null );
-
-      System.setOut( origSysOut );
-      System.setErr( origSysErr );
-    }
+    assertTrue( sysOutContent.toString().contains( DUMMY_DIR_1 ) );
+    assertTrue( sysOutContent.toString().contains( DUMMY_DIR_2 ) );
+    assertEquals( "keycloak", testPanCommandExecutor.getCapturedPreferredIdp() );
+    assertNotNull( executionResult );
+    assertEquals( CommandExecutorCodes.Pan.SUCCESS.getCode(), executionResult.getExitStatus() );
   }
 
   @Test
-  public void testListTrans() throws Exception {
-
-    PrintStream origSysOut;
-    PrintStream origSysErr;
+  public void testListTrans() throws KettleException {
 
     final String DUMMY_TRANS_1 = "test-trans-name-1";
     final String DUMMY_TRANS_2 = "test-trans-name-2";
@@ -252,37 +194,37 @@ public class PanTest {
     PanCommandExecutorForTesting testPanCommandExecutor =
       new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
-    origSysOut = System.out;
-    origSysErr = System.err;
+    Result executionResult = runPanCommand( testPanCommandExecutor,
+      new String[] { "/listtrans:Y", "/rep:test-repo", "/level:Basic" } );
 
-    try {
+    assertTrue( sysOutContent.toString().contains( DUMMY_TRANS_1 ) );
+    assertTrue( sysOutContent.toString().contains( DUMMY_TRANS_2 ) );
+    assertNotNull( executionResult );
+    assertEquals( CommandExecutorCodes.Pan.SUCCESS.getCode(), executionResult.getExitStatus() );
+  }
 
-      System.setOut( new PrintStream( sysOutContent ) );
-      System.setErr( new PrintStream( sysErrContent ) );
+  private Result runPanCommand( PanCommandExecutor commandExecutor, String[] arguments ) {
+    PrintStream originalSysOut = System.out;
+    PrintStream originalSysErr = System.err;
 
-      Pan.setCommandExecutor( testPanCommandExecutor );
-      // (case-insensitive) should accept either 'Y' (default) or 'true'
-      Pan.main( new String[] { "/listtrans:Y", "/rep:test-repo", "/level:Basic" } );
+    try ( PrintStream redirectedOut = new PrintStream( sysOutContent );
+          PrintStream redirectedErr = new PrintStream( sysErrContent ) ) {
+      System.setOut( redirectedOut );
+      System.setErr( redirectedErr );
 
-    } catch ( SecurityException e ) {
-      // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
+      Pan.setCommandExecutor( commandExecutor );
 
-      System.out.println( sysOutContent );
+      try {
+        Pan.main( arguments );
+      } catch ( SecurityException e ) {
+        // Expected when ExitInterceptor blocks System.exit().
+      }
 
-      assertTrue( sysOutContent.toString().contains( DUMMY_TRANS_1 ) );
-      assertTrue( sysOutContent.toString().contains( DUMMY_TRANS_2 ) );
-
-      Result result = Pan.getCommandExecutor().getResult();
-      assertNotNull( result );
-      assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
-
+      return Pan.getCommandExecutor().getResult();
     } finally {
-      // sanitize
-
       Pan.setCommandExecutor( null );
-
-      System.setOut( origSysOut );
-      System.setErr( origSysErr );
+      System.setOut( originalSysOut );
+      System.setErr( originalSysErr );
     }
   }
 
@@ -291,6 +233,7 @@ public class PanTest {
     private final Repository testRepository;
     private final RepositoryMeta testRepositoryMeta;
     private final RepositoriesMeta testRepositoriesMeta;
+    private String capturedPreferredIdp;
 
     public PanCommandExecutorForTesting( Repository testRepository, RepositoryMeta testRepositoryMeta,
                                          RepositoriesMeta testRepositoriesMeta ) {
@@ -314,8 +257,27 @@ public class PanTest {
 
     @Override
     public Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
-                                                     final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
+                                                     final RepositoryOperation... operations ) throws KettleException {
       return testRepository != null ? testRepository : super.establishRepositoryConnection( repositoryMeta, username, password, operations );
+    }
+
+    @Override
+    public Repository establishRepositoryConnectionWithBrowserAuth( RepositoryMeta repositoryMeta,
+                                                                    String username,
+                                                                    String password,
+                                                                    boolean useBrowserAuth,
+                                                                    boolean useDeviceCode,
+                                                                    boolean useServiceAccount,
+                                                                    String preferredIdp,
+                                                                    RepositoryOperation... operations ) throws KettleException {
+      capturedPreferredIdp = preferredIdp;
+      return testRepository != null ? testRepository : super.establishRepositoryConnectionWithBrowserAuth(
+        repositoryMeta, username, password, useBrowserAuth, useDeviceCode, useServiceAccount, preferredIdp,
+        operations );
+    }
+
+    private String getCapturedPreferredIdp() {
+      return capturedPreferredIdp;
     }
   }
 }

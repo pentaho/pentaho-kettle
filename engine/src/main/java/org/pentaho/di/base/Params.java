@@ -54,6 +54,15 @@ public class Params implements IParams {
   private NamedParams customNamedParams;
   private NamedParams pluginNamedParams;
   private String runConfiguration;
+  private String browserAuth;
+  private String deviceCode;
+  private String preferredIdp;
+  /**
+   * When set to "Y", Pan uses the OAuth 2.0 Client Credentials grant (RFC 6749
+   * §4.4) for non-interactive service-account authentication. No browser, no
+   * user. Suitable for CI/CD pipelines, cron jobs, and k8s workloads.
+   */
+  private String serviceAccount;
 
   private Params() {
 
@@ -91,6 +100,10 @@ public class Params implements IParams {
     private NamedParams customNamedParams;
     private NamedParams pluginNamedParams;
     private String runConfiguration;
+    private String browserAuth;
+    private String deviceCode;
+    private String preferredIdp;
+    private String serviceAccount;
 
     public Builder() {
       this( java.util.UUID.randomUUID().toString() );
@@ -250,6 +263,26 @@ public class Params implements IParams {
       return this;
     }
 
+    public Builder browserAuth( String browserAuth ) {
+      this.browserAuth = browserAuth;
+      return this;
+    }
+
+    public Builder deviceCode( String deviceCode ) {
+      this.deviceCode = deviceCode;
+      return this;
+    }
+
+    public Builder preferredIdp( String preferredIdp ) {
+      this.preferredIdp = preferredIdp;
+      return this;
+    }
+
+    public Builder serviceAccount( String serviceAccount ) {
+      this.serviceAccount = serviceAccount;
+      return this;
+    }
+
     public Params build() {
       Params params = new Params();
       params.uuid = uuid;
@@ -284,10 +317,66 @@ public class Params implements IParams {
       params.customNamedParams = customNamedParams;
       params.pluginNamedParams = pluginNamedParams;
       params.runConfiguration = runConfiguration;
-
+      params.browserAuth = browserAuth;
+      params.deviceCode = deviceCode;
+      params.preferredIdp = preferredIdp;
+      params.serviceAccount = serviceAccount;
 
       return params;
     }
+  }
+
+  /**
+   * Get the browser authentication flag.
+   * When set to "Y", Pan will attempt browser-based authentication
+   * instead of requiring a password.
+   *
+   * @return "Y" if browser auth is enabled, null or empty otherwise
+   */
+  public String getBrowserAuth() {
+    return browserAuth;
+  }
+
+  public void setBrowserAuth( String browserAuth ) {
+    this.browserAuth = browserAuth;
+  }
+
+  /**
+   * Get the device code authentication flag.
+   * When set to "Y", Pan will use OAuth 2.0 Device Authorization Grant (RFC 8628)
+   * for authentication. This is useful in headless/SSH environments.
+   *
+   * @return "Y" if device code auth is enabled, null or empty otherwise
+   */
+  public String getDeviceCode() {
+    return deviceCode;
+  }
+
+  public void setDeviceCode( String deviceCode ) {
+    this.deviceCode = deviceCode;
+  }
+
+  public String getPreferredIdp() {
+    return preferredIdp;
+  }
+
+  public void setPreferredIdp( String preferredIdp ) {
+    this.preferredIdp = preferredIdp;
+  }
+
+  /**
+   * Get the service-account authentication flag.
+   * When set to "Y", Pan will use the OAuth 2.0 Client Credentials grant
+   * (RFC 6749 §4.4) for non-interactive service-account authentication.
+   *
+   * @return "Y" if service-account auth is enabled, null or empty otherwise
+   */
+  public String getServiceAccount() {
+    return serviceAccount;
+  }
+
+  public void setServiceAccount( String serviceAccount ) {
+    this.serviceAccount = serviceAccount;
   }
 
   @Override

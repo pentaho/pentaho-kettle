@@ -24,6 +24,7 @@ import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
@@ -38,7 +39,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Base64;
+import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,6 +50,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
@@ -61,25 +65,25 @@ public class KitchenCommandExecutorTest {
 
   interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
   }
-  
+
   @BeforeClass
-  public static void initKettle() throws Exception {
+  public static void initKettle() throws KettleException {
     KettleEnvironment.init();
   }
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() throws KettleException, IOException {
     KettleLogStore.init();
     mockedKitchenCommandExecutor = mock( KitchenCommandExecutor.class );
     result = mock( Result.class );
     logChannelInterface = mock( LogChannelInterface.class );
-    // call real methods for loadTransFromFilesystem(), loadTransFromRepository();
+    // call real methods for loadTransFromFilesystem(), loadTransFromRepository()
     when( mockedKitchenCommandExecutor.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     doCallRealMethod().when( mockedKitchenCommandExecutor ).loadJobFromFilesystem( anyString(), anyString(), any() );
     doCallRealMethod().when( mockedKitchenCommandExecutor ).loadJobFromRepository( any(), anyString(), anyString() );
     doCallRealMethod().when( mockedKitchenCommandExecutor ).decodeBase64ToZipFile( any(), anyBoolean() );
     doCallRealMethod().when( mockedKitchenCommandExecutor ).decodeBase64ToZipFile( any(), anyString() );
-    doCallRealMethod().when( mockedKitchenCommandExecutor).getReturnCode();
+    doCallRealMethod().when( mockedKitchenCommandExecutor ).getReturnCode();
   }
 
   @After
@@ -92,7 +96,7 @@ public class KitchenCommandExecutorTest {
   @Test
   public void testFilesystemBase64Zip() throws Exception {
     String fileName = "hello-world.kjb";
-    File zipFile = new File( getClass().getResource( "testKjbArchive.zip" ).toURI() );
+    File zipFile = new File( Objects.requireNonNull( getClass().getResource( "testKjbArchive.zip" ) ).toURI() );
     String base64Zip = Base64.getEncoder().encodeToString( FileUtils.readFileToByteArray( zipFile ) );
     Job job = mockedKitchenCommandExecutor.loadJobFromFilesystem( "", fileName, base64Zip );
     assertNotNull( job );
@@ -120,7 +124,8 @@ public class KitchenCommandExecutorTest {
   @Test
   public void testReturnCodeFailWithNoErrors() {
     when( mockedKitchenCommandExecutor.getResult() ).thenReturn( result );
-    assertEquals( mockedKitchenCommandExecutor.getReturnCode(), CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+    assertEquals( mockedKitchenCommandExecutor.getReturnCode(),
+      CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
   }
 
   @Test
@@ -132,12 +137,14 @@ public class KitchenCommandExecutorTest {
     try ( MockedStatic<BaseMessages> baseMessagesMockedStatic = mockStatic( BaseMessages.class ) ) {
       // Mock returns
       when( params.getRepoName() ).thenReturn( "NoExistingRepository" );
-      baseMessagesMockedStatic.when( () -> BaseMessages.getString( any( Class.class ), anyString(), any() ) ).thenReturn( "" );
+      baseMessagesMockedStatic.when( () -> BaseMessages.getString( any( Class.class ), anyString(), any() ) )
+        .thenReturn( "" );
 
       try {
-        Result result = kitchenCommandExecutor.execute( params, null );
-        Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), result.getExitStatus() );
-      } catch ( Throwable throwable ) {
+        Result executionResult = kitchenCommandExecutor.execute( params, null );
+        Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(),
+          executionResult.getExitStatus() );
+      } catch ( KettleException e ) {
         Assert.fail();
       }
     }
@@ -150,7 +157,7 @@ public class KitchenCommandExecutorTest {
 
     PluginMockInterface pluginInterface = mock( PluginMockInterface.class );
     when( pluginInterface.getName() ).thenReturn( KettleExtensionPoint.JobFinish.id );
-    when( pluginInterface.getMainType() ).thenReturn( (Class) ExtensionPointInterface.class );
+    doReturn( ExtensionPointInterface.class ).when( pluginInterface ).getMainType();
     when( pluginInterface.getIds() ).thenReturn( new String[] { "extensionpointId" } );
 
     ExtensionPointInterface extensionPoint = mock( ExtensionPointInterface.class );
@@ -159,7 +166,7 @@ public class KitchenCommandExecutorTest {
     PluginRegistry.addPluginType( ExtensionPointPluginType.getInstance() );
     PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, pluginInterface );
 
-    String fullPath = getClass().getResource( "brokenjob.kjb" ).getPath();
+    String fullPath = Objects.requireNonNull( getClass().getResource( "brokenjob.kjb" ) ).getPath();
     Params params = mock( Params.class );
 
     when( params.getRepoName() ).thenReturn( "" );
@@ -174,9 +181,10 @@ public class KitchenCommandExecutorTest {
     }
 
     KitchenCommandExecutor kitchenCommandExecutor = new KitchenCommandExecutor( KitchenCommandExecutor.class );
-    Result result = kitchenCommandExecutor.execute( params );
+    Result executionResult = kitchenCommandExecutor.execute( params );
 
     Assert.assertTrue( kettleXMLExceptionThrown );
+    Assert.assertEquals( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(), executionResult.getExitStatus() );
 
     verify( extensionPoint, times( 1 ) ).callExtensionPoint( any( LogChannelInterface.class ), same( job ) );
   }

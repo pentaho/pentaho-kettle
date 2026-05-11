@@ -12,10 +12,12 @@
 
 package org.pentaho.di.repository.pur;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -34,9 +36,7 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +50,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -560,13 +561,13 @@ public class PurRepositoryConnectorTest {
     doReturn( mockBuilder ).when( mockBuilder ).setDefaultCredentialsProvider( any() );
     doReturn( mockHttpClient ).when( mockBuilder ).build();
 
-    CloseableHttpResponse mockResponse = mock( CloseableHttpResponse.class );
-    HttpEntity mockEntity = mock( HttpEntity.class );
-    when( mockEntity.getContent() ).thenReturn(
-      new ByteArrayInputStream( "admin".getBytes( StandardCharsets.UTF_8 ) ) );
-    when( mockEntity.getContentLength() ).thenReturn( (long) "admin".length() );
-    when( mockResponse.getEntity() ).thenReturn( mockEntity );
-    when( mockHttpClient.execute( any() ) ).thenReturn( mockResponse );
+    ClassicHttpResponse mockResponse = mock( ClassicHttpResponse.class );
+    when( mockResponse.getCode() ).thenReturn( 200 );
+    when( mockResponse.getEntity() ).thenReturn( new StringEntity( "admin" ) );
+    doAnswer( invocation -> {
+      HttpClientResponseHandler<?> handler = invocation.getArgument( 1 );
+      return handler.handleResponse( mockResponse );
+    } ).when( mockHttpClient ).execute( any( ClassicHttpRequest.class ), any( HttpClientResponseHandler.class ) );
 
     try ( MockedStatic<HttpClientBuilder> mockedBuilder = mockStatic( HttpClientBuilder.class ) ) {
       mockedBuilder.when( HttpClientBuilder::create ).thenReturn( mockBuilder );
@@ -598,7 +599,8 @@ public class PurRepositoryConnectorTest {
     doReturn( mockBuilder ).when( mockBuilder ).setDefaultCredentialsProvider( any() );
     CloseableHttpClient mockHttpClient = mock( CloseableHttpClient.class );
     doReturn( mockHttpClient ).when( mockBuilder ).build();
-    when( mockHttpClient.execute( any() ) ).thenThrow( new RuntimeException( "Connection refused" ) );
+    when( mockHttpClient.execute( any( ClassicHttpRequest.class ), any( HttpClientResponseHandler.class ) ) )
+      .thenThrow( new RuntimeException( "Connection refused" ) );
 
     try ( MockedStatic<HttpClientBuilder> mockedBuilder = mockStatic( HttpClientBuilder.class ) ) {
       mockedBuilder.when( HttpClientBuilder::create ).thenReturn( mockBuilder );
