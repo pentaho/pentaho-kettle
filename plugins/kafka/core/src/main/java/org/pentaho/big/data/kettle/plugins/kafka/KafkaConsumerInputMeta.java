@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 import org.pentaho.hadoop.shim.api.cluster.NamedCluster;
 import org.pentaho.hadoop.shim.api.cluster.NamedClusterService;
@@ -688,6 +689,11 @@ public class KafkaConsumerInputMeta extends BaseStreamStepMeta implements StepMe
   @Metaverse.NodeLink ( nodeName = TIMESTAMP_FIELD_NAME, parentNodeName = KAFKA_TOPIC_METAVERSE, linkDirection = "OUT" )
   public String getTimestampOutputName() {
     return timestampField.getOutputName();
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new KafkaConsumerInputHelper( this );
   }
 
 }
