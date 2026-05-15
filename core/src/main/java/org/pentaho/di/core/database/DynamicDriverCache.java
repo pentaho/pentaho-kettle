@@ -16,7 +16,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
-import java.io.File;
 import java.net.URL;
 import java.sql.Driver;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -94,15 +94,17 @@ public class DynamicDriverCache {
   static final int MAX_CACHE_SIZE = 50;
 
   /**
-   * Cache key: absolute JAR path + driver class name.
+   * Cache key: absolute JAR path + driver class name + extra JARs path.
    */
   static final class CacheKey {
     final String jarPath;
     final String driverClass;
+    final List<String> extraJarPaths;
 
-    CacheKey( String jarPath, String driverClass ) {
+    CacheKey( String jarPath, String driverClass, List<String> extraJarPaths ) {
       this.jarPath = jarPath;
       this.driverClass = driverClass;
+      this.extraJarPaths = extraJarPaths == null ? List.of() : List.copyOf( extraJarPaths );
     }
 
     @Override
@@ -113,13 +115,14 @@ public class DynamicDriverCache {
       if ( !( o instanceof CacheKey ) ) {
         return false;
       }
-      CacheKey other = (CacheKey) o;
-      return jarPath.equals( other.jarPath ) && driverClass.equals( other.driverClass );
+      CacheKey cacheKey = (CacheKey) o;
+      return Objects.equals( jarPath, cacheKey.jarPath ) && Objects.equals( driverClass, cacheKey.driverClass )
+        && Objects.equals( extraJarPaths, cacheKey.extraJarPaths );
     }
 
     @Override
     public int hashCode() {
-      return 31 * jarPath.hashCode() + driverClass.hashCode();
+      return Objects.hash( jarPath, driverClass, extraJarPaths );
     }
   }
 
@@ -186,13 +189,14 @@ public class DynamicDriverCache {
    *
    * @param jarAbsolutePath absolute path of the driver JAR on disk
    * @param driverClassName fully-qualified JDBC driver class name
+   * @param extraJarsAbsolutePath absolute path of the extra JARs on disk
    * @return a live, thread-safe {@link Driver} instance
    * @throws KettleDatabaseException if the JAR cannot be read or the class cannot be loaded
    */
-  public Driver getOrLoadDriver( String jarAbsolutePath, String driverClassName )
+  public Driver getOrLoadDriver( String jarAbsolutePath, String driverClassName, List<String> extraJarsAbsolutePath )
     throws KettleDatabaseException {
 
-    CacheKey key = new CacheKey( jarAbsolutePath, driverClassName );
+    CacheKey key = new CacheKey( jarAbsolutePath, driverClassName, extraJarsAbsolutePath );
 
     // 1. Fast read-lock check — concurrent callers never block each other here.
     rwLock.readLock().lock();
@@ -207,12 +211,13 @@ public class DynamicDriverCache {
     }
 
     // 2. Expensive work outside any lock — NFS/SMB reads happen here.
-    log.logBasic( "DynamicDriverCache: loading " + driverClassName + " from " + jarAbsolutePath );
-    URL jarUrl = getJarUrl( jarAbsolutePath );
+    log.logBasic( "DynamicDriverCache: loading " + driverClassName + " from " + jarAbsolutePath + ", " + extraJarsAbsolutePath );
+
+    List<URL> urls = JdbcDriverResolver.buildUrlList( jarAbsolutePath, extraJarsAbsolutePath );
     ChildFirstURLClassLoader loader = null;
     CacheEntry entry;
     try {
-      loader = new ChildFirstURLClassLoader( new URL[] { jarUrl }, Database.class.getClassLoader() );
+      loader = new ChildFirstURLClassLoader( urls.toArray( new URL[ 0 ] ), Database.class.getClassLoader() );
       Class<?> driverClass = loader.loadClass( driverClassName );
       Driver driver = (Driver) driverClass.getDeclaredConstructor().newInstance();
       entry = new CacheEntry( loader, driver );
@@ -302,26 +307,6 @@ public class DynamicDriverCache {
       rwLock.readLock().unlock();
     }
   }
-
-  private static URL getJarUrl( String jarAbsolutePath ) throws KettleDatabaseException {
-    File jarFile = new File( jarAbsolutePath );
-    if ( !jarFile.exists() || !jarFile.isFile() ) {
-      throw new KettleDatabaseException( "DynamicDriverCache: JAR not found: " + jarAbsolutePath );
-    }
-    if ( !jarFile.getName().toLowerCase().endsWith( ".jar" ) ) {
-      throw new KettleDatabaseException( "DynamicDriverCache: not a JAR file: " + jarAbsolutePath );
-    }
-
-    URL jarUrl;
-    try {
-      jarUrl = jarFile.toPath().toUri().toURL();
-    } catch ( Exception e ) {
-      throw new KettleDatabaseException(
-        "DynamicDriverCache: cannot convert path to URL: " + jarAbsolutePath, e );
-    }
-    return jarUrl;
-  }
-
 
   private static void closeSilently( ChildFirstURLClassLoader loader ) {
     if ( loader == null ) {

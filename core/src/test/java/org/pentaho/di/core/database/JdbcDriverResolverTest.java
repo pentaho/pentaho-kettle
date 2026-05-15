@@ -27,9 +27,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -136,7 +140,7 @@ public class JdbcDriverResolverTest {
     // Write kettle.properties to the CWD — EnvUtil checks this path first
     Path cwdKettleProps = Paths.get( "kettle.properties" );
     Files.write( cwdKettleProps,
-      ( "JDBC_DRIVERS_DIRECTORY=" + driversDir.getAbsolutePath() ).getBytes() );
+      ( "JDBC_DRIVERS_DIRECTORY=" + driversDir.getAbsolutePath().replace( "\\", "/" ) ).getBytes() );
 
     try {
       // Ensure step 2 does NOT fire
@@ -225,7 +229,7 @@ public class JdbcDriverResolverTest {
 
       // The .tmp file must not be left behind
       File tempFile = new File( saveDir, JAR_NAME + ".tmp" );
-      assertTrue( "Temp file must be cleaned up after failed download", !tempFile.exists() );
+      assertFalse( "Temp file must be cleaned up after failed download", tempFile.exists() );
     } finally {
       server.stop( 0 );
     }
@@ -309,6 +313,74 @@ public class JdbcDriverResolverTest {
     } finally {
       server.stop( 0 );
     }
+  }
+
+  @Test
+  public void resolveAll_resolvesMultipleDrivers() throws Exception {
+    File driversDir = tmp.newFolder( "drivers" );
+    File jar1 = new File( driversDir, "driver-a.jar" );
+    File jar2 = new File( driversDir, "extra-driver-a.jar" );
+    Files.write( jar1.toPath(), FAKE_JAR_BYTES );
+    Files.write( jar2.toPath(), FAKE_JAR_BYTES );
+    System.setProperty( "JDBC_DRIVERS_DIRECTORY", driversDir.getAbsolutePath() );
+
+    List<String> input = Arrays.asList( "driver-a", "extra-driver-a" );
+    List<String> result = JdbcDriverResolver.resolveAll( input );
+
+    assertEquals( 2, result.size() );
+    assertTrue( result.get( 0 ).endsWith( "driver-a.jar" ) );
+    assertTrue( result.get( 1 ).endsWith( "extra-driver-a.jar" ) );
+  }
+
+  @Test
+  public void buildUrlList_mainJarOnly_returnsSingleUrl() throws Exception {
+    File jar = tmp.newFile( "main-driver.jar" );
+    Files.write( jar.toPath(), FAKE_JAR_BYTES );
+
+    List<URL> urls = JdbcDriverResolver.buildUrlList( jar.getAbsolutePath(), null );
+
+    assertEquals( 1, urls.size() );
+    assertTrue( urls.get( 0 ).toString().endsWith( "main-driver.jar" ) );
+  }
+
+  @Test
+  public void buildUrlList_mainJarPlusExtras_returnsAllUrls() throws Exception {
+    File mainJar = tmp.newFile( "main.jar" );
+    File extraJar1 = tmp.newFile( "extra1.jar" );
+    File extraJar2 = tmp.newFile( "extra2.jar" );
+    Files.write( mainJar.toPath(), FAKE_JAR_BYTES );
+    Files.write( extraJar1.toPath(), FAKE_JAR_BYTES );
+    Files.write( extraJar2.toPath(), FAKE_JAR_BYTES );
+
+    List<String> extras = Arrays.asList( extraJar1.getAbsolutePath(), extraJar2.getAbsolutePath() );
+    List<URL> urls = JdbcDriverResolver.buildUrlList( mainJar.getAbsolutePath(), extras );
+
+    assertEquals( 3, urls.size() );
+    assertTrue( urls.get( 0 ).toString().endsWith( "main.jar" ) );
+    assertTrue( urls.get( 1 ).toString().endsWith( "extra1.jar" ) );
+    assertTrue( urls.get( 2 ).toString().endsWith( "extra2.jar" ) );
+  }
+
+  @Test( expected = KettleDatabaseException.class )
+  public void buildUrlList_mainJarNotFound_throws() throws Exception {
+    JdbcDriverResolver.buildUrlList( "/nonexistent/path/driver.jar", null );
+  }
+
+  @Test( expected = KettleDatabaseException.class )
+  public void buildUrlList_extraJarNotFound_throws() throws Exception {
+    File mainJar = tmp.newFile( "main.jar" );
+    Files.write( mainJar.toPath(), FAKE_JAR_BYTES );
+
+    List<String> extras = List.of( "/nonexistent/extra.jar" );
+    JdbcDriverResolver.buildUrlList( mainJar.getAbsolutePath(), extras );
+  }
+
+  @Test( expected = KettleDatabaseException.class )
+  public void buildUrlList_mainJarNotJarExtension_throws() throws Exception {
+    File notAJar = tmp.newFile( "driver.txt" );
+    Files.write( notAJar.toPath(), FAKE_JAR_BYTES );
+
+    JdbcDriverResolver.buildUrlList( notAJar.getAbsolutePath(), null );
   }
 
   // ---------------------------------------------------------------------------

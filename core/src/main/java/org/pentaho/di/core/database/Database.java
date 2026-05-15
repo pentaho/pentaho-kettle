@@ -16,7 +16,6 @@ package org.pentaho.di.core.database;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.Closeable;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -36,6 +35,7 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -593,6 +593,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     Properties properties = databaseMeta.getConnectionProperties();
     Properties attributes = databaseMeta.getAttributes();
     String driverId = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_ID );
+    String driverExtraJars = attributes.getProperty( DatabaseMeta.ATTRIBUTE_DYNAMIC_DRIVER_EXTRA_JAR_IDS );
 
     boolean usingDynamicDriver = StringUtils.isNotBlank( driverId ) && Const.isFusionConnectionManagementEnabled();
 
@@ -604,7 +605,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       // No additional synchronization is needed.
       var driverMetadata = getMetadataFromDriver( driverId );
       jdbcDriverClass = driverMetadata.get( "driverClassName" ).toString();
-      loadDynamicDriver( driverId, jdbcDriverClass );
+      List<String> listDriverExtraJars = StringUtils.isNotBlank( driverExtraJars )
+        ? Arrays.asList( driverExtraJars.split( "," ) )
+        : new ArrayList<>();
+      loadDynamicDriver( driverId, jdbcDriverClass, listDriverExtraJars );
     } else {
       loadStaticDriver( classname, plugin );
     }
@@ -882,7 +886,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
    * {@link #closeDynamicClassLoader()} closes it (and releases the JAR file handle) on
    * {@link #disconnect()}. Each connection is fully isolated with no shared JVM state.
    */
-  private void loadDynamicDriver( String driverId, String effectiveClassName ) throws KettleDatabaseException {
+  private void loadDynamicDriver( String driverId, String effectiveClassName, List<String> listDriverExtraJars ) throws KettleDatabaseException {
     // Always resolve first — returns immediately if driverId exists on disk,
     // otherwise walks the fallback chain. The resolved path is stable for the connection lifetime.
     String resolvedPath = JdbcDriverResolver.resolve( driverId );
@@ -891,25 +895,20 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       throw new KettleDatabaseException( "Dynamic driver path does not point to a JAR file: " + resolvedPath );
     }
 
+    List<String> extraJarPaths = JdbcDriverResolver.resolveAll( listDriverExtraJars );
     boolean cacheEnabled = "Y".equalsIgnoreCase(
       EnvUtil.getSystemProperty( Const.KETTLE_DYNAMIC_DRIVER_CACHE_ENABLED ) );
 
     if ( cacheEnabled ) {
       // Cached path: Driver is shared JVM-wide; classloader is owned by DynamicDriverCache.
-      dynamicDriver.set( DynamicDriverCache.getInstance().getOrLoadDriver( resolvedPath, effectiveClassName ) );
+      dynamicDriver.set( DynamicDriverCache.getInstance().getOrLoadDriver( resolvedPath, effectiveClassName, extraJarPaths ) );
       dynamicDriverClassLoader.set( null );
     } else {
       // No-cache path: fresh classloader and Driver per connection; closed on disconnect().
-      URL jarUrl;
-      try {
-        jarUrl = new File( resolvedPath ).toPath().toUri().toURL();
-      } catch ( Exception e ) {
-        throw new KettleDatabaseException(
-          "Dynamic driver: cannot convert JAR path to URL: " + resolvedPath, e );
-      }
+      List<URL> urls = JdbcDriverResolver.buildUrlList( resolvedPath, extraJarPaths );
       ChildFirstURLClassLoader loader = null;
       try {
-        loader = new ChildFirstURLClassLoader( new URL[] { jarUrl }, Database.class.getClassLoader() );
+        loader = new ChildFirstURLClassLoader( urls.toArray( new URL[ 0 ] ), Database.class.getClassLoader() );
         Class<?> driverClass = loader.loadClass( effectiveClassName );
         Driver driver = (Driver) driverClass.getDeclaredConstructor().newInstance();
         dynamicDriver.set( driver );
