@@ -115,7 +115,6 @@ public class StreamToJobNodeConverter implements Converter {
       return null;
     }
     SharedObjectUtil.copySharedObjects( repository.getBowl(), jobMeta, true );
-    SharedObjectUtil.stripObjectIds( jobMeta );
     String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
     return new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) );
   }

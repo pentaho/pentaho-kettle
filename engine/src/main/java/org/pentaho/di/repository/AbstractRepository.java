@@ -26,7 +26,15 @@ import java.util.List;
  */
 public abstract class AbstractRepository implements Repository {
 
-  private final Bowl bowl = new RepositoryBowl( this );
+  private final Bowl bowl;
+
+  protected AbstractRepository() {
+    bowl = new RepositoryBowl( this );
+  }
+
+  protected AbstractRepository( Bowl bowl ) {
+    this.bowl = bowl;
+  }
 
   @Override
   public long getJobEntryAttributeInteger( ObjectId id_jobentry, String code ) throws KettleException {

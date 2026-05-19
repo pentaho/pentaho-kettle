@@ -119,6 +119,9 @@ public class SharedObjectUtil {
   /**
    * Copies shared objects from the source bowl to the target AbstractMeta if they aren't already there. If onlyUsedDbs
    * is true, the only database connections that will be copied will be those used by the target meta.
+    *
+    * Copied objects have their ObjectIds cleared before they are added to the target, so this method is suitable for
+    * export/serialization flows that should not preserve repository identity.
    *
    *
    * @param sourceBowl
@@ -127,17 +130,17 @@ public class SharedObjectUtil {
   public static void copySharedObjects( Bowl sourceBowl, AbstractMeta targetMeta, boolean onlyUsedDbs )
       throws KettleException {
     copyAll( sourceBowl.getManager( ClusterSchemaManagementInterface.class ),
-             targetMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class ), false );
+             targetMeta.getSharedObjectManager( ClusterSchemaManagementInterface.class ), false, true );
     copyAll( sourceBowl.getManager( PartitionSchemaManagementInterface.class ),
-             targetMeta.getSharedObjectManager( PartitionSchemaManagementInterface.class ), false );
+             targetMeta.getSharedObjectManager( PartitionSchemaManagementInterface.class ), false, true );
     copyAll( sourceBowl.getManager( SlaveServerManagementInterface.class ),
-             targetMeta.getSharedObjectManager( SlaveServerManagementInterface.class ), false );
+             targetMeta.getSharedObjectManager( SlaveServerManagementInterface.class ), false, true );
 
     if ( onlyUsedDbs ) {
-      copyUsedDbConnections( sourceBowl, targetMeta );
+      copyUsedDbConnections( sourceBowl, targetMeta, true );
     } else {
       copyAll( sourceBowl.getManager( DatabaseManagementInterface.class ),
-               targetMeta.getSharedObjectManager( DatabaseManagementInterface.class ), false );
+               targetMeta.getSharedObjectManager( DatabaseManagementInterface.class ), false, true );
     }
   }
 
@@ -162,7 +165,9 @@ public class SharedObjectUtil {
   /**
    * Copies all the shared objects from the source manager to the target manager. If overwrite is true, copy will
    * happen whether or not the target manager already has the object (case insensitive). If overwrite is false, copy
-   * will not happen if the target manager already has the object
+    * will not happen if the target manager already has the object.
+    *
+    * This overload preserves ObjectIds.
    *
    *
    * @param sourceManager
@@ -172,16 +177,49 @@ public class SharedObjectUtil {
   public static <T extends SharedObjectInterface<T> & RepositoryElementInterface>
     void copyAll( SharedObjectsManagementInterface<T> sourceManager, SharedObjectsManagementInterface<T> targetManager,
       boolean overwrite ) throws KettleException {
+    copyAll( sourceManager, targetManager, overwrite, false );
+  }
+
+  /**
+   * Copies all shared objects from source manager to target manager.
+   *
+   * @param sourceManager source manager
+   * @param targetManager target manager
+   * @param overwrite true to overwrite existing objects in target manager
+   * @param clearObjectIds true to clear each copied object's ObjectId before add
+   * @param <T> shared object type
+   */
+  public static <T extends SharedObjectInterface<T> & RepositoryElementInterface>
+    void copyAll( SharedObjectsManagementInterface<T> sourceManager, SharedObjectsManagementInterface<T> targetManager,
+      boolean overwrite, boolean clearObjectIds ) throws KettleException {
     if ( sourceManager != null && targetManager != null ) {
       for ( T object : sourceManager.getAll() ) {
         if ( overwrite || targetManager.get( object.getName() ) == null ) {
+          if ( clearObjectIds && object.getObjectId() != null ) {
+            object.setObjectId( null );
+          }
           targetManager.add( object );
         }
       }
     }
   }
 
+  /**
+   * Copies only used database connections from source bowl to target meta and preserves ObjectIds.
+   */
   public static void copyUsedDbConnections( Bowl sourceBowl, AbstractMeta targetMeta ) throws KettleException {
+    copyUsedDbConnections( sourceBowl, targetMeta, false );
+  }
+
+  /**
+   * Copies only used database connections from source bowl to target meta.
+   *
+   * @param sourceBowl source bowl
+   * @param targetMeta target meta
+   * @param clearObjectIds true to clear each copied database ObjectId before add
+   */
+  public static void copyUsedDbConnections( Bowl sourceBowl, AbstractMeta targetMeta, boolean clearObjectIds )
+      throws KettleException {
     DatabaseManagementInterface sourceManager = sourceBowl.getManager( DatabaseManagementInterface.class );
     DatabaseManagementInterface targetManager = targetMeta.getSharedObjectManager( DatabaseManagementInterface.class );
 
@@ -189,6 +227,9 @@ public class SharedObjectUtil {
     for ( String name : usedNames ) {
       DatabaseMeta db = sourceManager.get( name );
       if ( db != null && targetManager.get( name ) == null ) {
+        if ( clearObjectIds && db.getObjectId() != null ) {
+          db.setObjectId( null );
+        }
         targetManager.add( db );
         targetMeta.databaseUpdated( name );
       }
@@ -212,7 +253,9 @@ public class SharedObjectUtil {
 
   /**
    * Remove ObjectIds from all the Local objects. Use before serializing to some format that should not contain object
-   * ids from the repository.
+    * ids from the repository.
+    *
+    * This remains useful for objects introduced through paths other than copySharedObjects.
    *
    *
    * @param meta
@@ -231,8 +274,10 @@ public class SharedObjectUtil {
     }
     List<T> all = manager.getAll();
     for ( T object : all ) {
-      object.setObjectId( null );
-      manager.add( object );
+      if ( object.getObjectId() != null ) {
+        object.setObjectId( null );
+        manager.add( object );
+      }
     }
   }
 

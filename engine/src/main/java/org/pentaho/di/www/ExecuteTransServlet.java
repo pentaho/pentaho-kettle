@@ -253,6 +253,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     try {
 
       final Repository repository = openRepository( repOption, userOption, passOption );
+      clearBowlCache( repository );
       final TransMeta transMeta = loadTransformation( repository, transOption, getPopulatedVariableSpaceFromRequest( request, new Variables() ) );
 
       // Set the servlet parameters as variables in the transformation

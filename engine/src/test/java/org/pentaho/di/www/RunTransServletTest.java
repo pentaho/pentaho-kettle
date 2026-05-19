@@ -41,8 +41,11 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -154,6 +157,7 @@ public class RunTransServletTest {
 
     RunTransServlet runTransServlet = Mockito.mock( RunTransServlet.class );
     Mockito.doCallRealMethod().when( runTransServlet ).doGet( any(), any() );
+    doNothing().when( runTransServlet ).clearBowlCache( same( repository ) );
 
     Trans trans =
       new Trans( transMeta, new SimpleLoggingObject( RunTransServlet.CONTEXT_PATH, LoggingObjectType.CARTE, null ) );
@@ -166,5 +170,6 @@ public class RunTransServletTest {
 
     runTransServlet.doGet( request, response );
     Assert.assertEquals( testValue, trans.getParameterValue( testParameter ) );
+    verify( runTransServlet ).clearBowlCache( same( repository ) );
   }
 }

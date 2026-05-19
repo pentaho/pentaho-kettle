@@ -4440,6 +4440,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void loadObjectFromRepository(
       ObjectId objectId, RepositoryObjectType objectType, String revision ) throws Exception {
     // Try to open the selected transformation.
+    clearBowlCaches();
     if ( objectType.equals( RepositoryObjectType.TRANSFORMATION ) ) {
       try {
         TransLoadProgressDialog progressDialog = new TransLoadProgressDialog( shell, rep, objectId, revision );
@@ -5217,6 +5218,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // does the file exist? If not, show an error dialog
     boolean fileExists = false;
     boolean loaded = false;
+    clearBowlCaches();
 
     if ( rep != null && !importFile && !forceLocalFile ) {
       // load from the repository
@@ -5409,6 +5411,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     //
     setTransMetaVariables( transMeta );
 
+    clearBowlCaches();
+
     // Pass repository information
     //
     transMeta.setRepository( rep );
@@ -5460,6 +5464,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // the transformation metadata too.
       //
       setJobMetaVariables( jobMeta );
+
+      clearBowlCaches();
 
       // Pass repository information
       //
@@ -5973,7 +5979,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           SharedObjectUtil.moveAllSharedObjects( ameta, rep.getBowl() );
         }
         // refresh the dbs in the meta
-        ameta.allDatabasesUpdated();
         forceRefreshTree( true);
       }
 
@@ -6382,7 +6387,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         return false;
       }
     }
-
+    // make sure we export the latest config
+    clearBowlCaches();
     RepositoryExportProgressDialog repd =
       new RepositoryExportProgressDialog( shell, rep, directoryToExport, filename, importRules );
     repd.open();
@@ -6460,6 +6466,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         versionOk = true;
       }
     }
+
+    // make sure any config import decisions are based on the latest state. 
+    clearBowlCaches();
 
     String[] filenames = dialog.getFileNames();
     if ( filenames.length > 0 ) {
@@ -6975,6 +6984,25 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     addDragSourceToTree( selectionTree );
   }
 
+  // This full thing may not be needed every time. 
+  // Generally, we want to clear these caches whenever a user-initiated action 
+  // opens, saves, or executes a file. 
+  public void clearBowlCaches() {
+    globalManagementBowl.clearCache();
+    managementBowl.clearCache();
+    executionBowl.clearCache();
+
+    // update open metas so they match the new cache state.
+    List<TransMeta> transList = delegates.trans.getTransformationList();
+    List<JobMeta> jobList = delegates.jobs.getJobList();
+    for ( TransMeta transMeta : transList ) {
+      transMeta.allDatabasesUpdated();
+    }
+    for ( JobMeta jobMeta : jobList ) {
+      jobMeta.allDatabasesUpdated();
+    }
+  }
+
   public void forceRefreshTree() {
     forceRefreshTree( true ); 
   } 
@@ -6982,9 +7010,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void forceRefreshTree( boolean clearCaches ) {
     // refresh underlying data
     if ( clearCaches ) {
-      globalManagementBowl.clearCache();
-      managementBowl.clearCache();
-      executionBowl.clearCache();
+      clearBowlCaches();
     }
 
     if ( selectionTreeManager != null ) {
