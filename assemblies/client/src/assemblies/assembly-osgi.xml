@@ -14,5 +14,9 @@
       <source>${project.basedir}/src/main/resources/drivers/README</source>
       <outputDirectory>./drivers</outputDirectory>
     </file>
+    <file>
+      <source>${project.basedir}/src/main/resources/drivers/lib/README</source>
+      <outputDirectory>./drivers/lib</outputDirectory>
+    </file>
   </files>
 </assembly>
