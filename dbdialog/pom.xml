@@ -49,6 +49,13 @@
 
     <!-- Test dependencies -->
     <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-core</artifactId>
       <version>${powermock.version}</version>
