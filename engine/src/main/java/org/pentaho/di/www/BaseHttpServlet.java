@@ -22,9 +22,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
 
 
 public class BaseHttpServlet extends HttpServlet {
@@ -195,6 +198,16 @@ public class BaseHttpServlet extends HttpServlet {
       variableSpace.setVariable( parameter, values != null && values.length > 0 ? values[0] : "" );
     }
     return variableSpace;
+  }
+
+  protected void clearBowlCache( Repository repository ) {
+    clearBowlCache( repository == null ? DefaultBowl.getInstance() : repository.getBowl() );
+  }
+
+  protected void clearBowlCache( Bowl bowl ) {
+    if ( bowl != null ) {
+      bowl.clearCache();
+    }
   }
 
 }

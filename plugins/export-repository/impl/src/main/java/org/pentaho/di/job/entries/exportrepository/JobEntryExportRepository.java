@@ -27,6 +27,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -453,6 +454,11 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
       || export_type.equals( Export_Jobs ) || export_type.equals( Export_Trans )
       || export_type.equals( Export_One_Folder ) ) {
       realoutfilename = buildFilename( realoutfilename );
+    }
+
+    if ( !Props.isInitialized() ) {
+      // For export specifically, initialize props to honor "only used db connections" setting
+      Props.init( Props.TYPE_PROPERTIES_SPOON );
     }
 
     NrErrors = 0;

@@ -79,7 +79,7 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
   }
 
   public RepositoryProxy( final DataNode node, Repository parentRep ) {
-    super();
+    super( parentRep.getBowl() );
     this.node = node;
     this.parentRep = parentRep;
   }
