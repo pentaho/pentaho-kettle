@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.owasp.encoder.Encode;
+
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -90,6 +92,7 @@ public class StartTransServletTest {
       when( mockTrans.getLogChannelId() ).thenReturn( "test" );
       when( mockTrans.getTransMeta() ).thenReturn( mockTransMeta );
       when( mockTransMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
+      when( mockTransMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
 
       startTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
       assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );

@@ -198,6 +198,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     Repository repository;
     try {
       repository = openRepository( repOption, userOption, passOption );
+      clearBowlCache( repository );
     } catch ( KettleRepositoryNotFoundException krnfe ) {
       // Repository not found.
       response.setStatus( HttpServletResponse.SC_NOT_FOUND );

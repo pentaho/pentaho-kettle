@@ -32,6 +32,7 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.partition.PartitionSchemaManagementInterface;
 import org.pentaho.di.repository.IRepositoryImporter;
 import org.pentaho.di.repository.RepositoryImporter;
+import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.shared.SharedObjectsIO.SharedObjectType;
 import org.pentaho.di.shared.SharedObjectUtil.ComparedState;
 import org.pentaho.di.trans.TransMeta;
@@ -40,6 +41,7 @@ import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -129,6 +131,120 @@ public class SharedObjectUtilTest {
     Assert.assertNotNull( ssChanges );
     Assert.assertEquals( 1, ssChanges.size() );
     Assert.assertEquals( ComparedState.NEW, ssChanges.get( "new" ) );
+  }
+
+  @Test
+  public void testCopySharedObjectsClearsObjectIdsOnCopiedObjects() throws Exception {
+    DatabaseMeta sourceDb = new DatabaseMeta();
+    sourceDb.setName( "db" );
+    sourceDb.setObjectId( new StringObjectId( "db-id" ) );
+
+    SlaveServer sourceSlave = new SlaveServer();
+    sourceSlave.setName( "slave" );
+    sourceSlave.setObjectId( new StringObjectId( "slave-id" ) );
+
+    PartitionSchema sourcePartition = new PartitionSchema();
+    sourcePartition.setName( "partition" );
+    sourcePartition.setObjectId( new StringObjectId( "partition-id" ) );
+
+    MemorySharedObjectsIO sharedIO = new MemorySharedObjectsIO();
+    Bowl bowl = new BaseBowl() {
+      @Override
+      public SharedObjectsIO getSharedObjectsIO() {
+        return sharedIO;
+      }
+
+      @Override
+      public IMetaStore getMetastore() throws MetaStoreException {
+        throw new UnsupportedOperationException( "should be unused" );
+      }
+
+      @Override
+      public VariableSpace getADefaultVariableSpace() {
+        throw new UnsupportedOperationException( "should be unused" );
+      }
+    };
+
+    bowl.getManager( DatabaseManagementInterface.class ).add( sourceDb );
+    bowl.getManager( PartitionSchemaManagementInterface.class ).add( sourcePartition );
+    bowl.getManager( SlaveServerManagementInterface.class ).add( sourceSlave );
+
+    TransMeta targetMeta = new TransMeta();
+    SharedObjectUtil.copySharedObjects( bowl, targetMeta, false );
+
+    Assert.assertNull( targetMeta.getSharedObjectManager( DatabaseManagementInterface.class ).get( "db" ).getObjectId() );
+    Assert.assertNull( targetMeta.getSharedObjectManager( PartitionSchemaManagementInterface.class ).get( "partition" )
+      .getObjectId() );
+    Assert.assertNull( targetMeta.getSharedObjectManager( SlaveServerManagementInterface.class ).get( "slave" )
+      .getObjectId() );
+
+    // The source object in the bowl keeps its repository identity.
+    Assert.assertNotNull( bowl.getManager( DatabaseManagementInterface.class ).get( "db" ).getObjectId() );
+  }
+
+  @Test
+  public void testCopyAllDefaultContractKeepsObjectIds() throws Exception {
+    TransMeta sourceMeta = new TransMeta();
+    DatabaseMeta sourceDb = new DatabaseMeta();
+    sourceDb.setName( "db" );
+    sourceDb.setObjectId( new StringObjectId( "db-id" ) );
+    sourceMeta.getSharedObjectManager( DatabaseManagementInterface.class ).add( sourceDb );
+
+    TransMeta targetMeta = new TransMeta();
+    SharedObjectUtil.copyAll( sourceMeta.getSharedObjectManager( DatabaseManagementInterface.class ),
+      targetMeta.getSharedObjectManager( DatabaseManagementInterface.class ), false );
+
+    Assert.assertEquals( "db-id",
+      targetMeta.getSharedObjectManager( DatabaseManagementInterface.class ).get( "db" ).getObjectId().toString() );
+  }
+
+  @Test
+  public void testCopyUsedDbConnectionsDefaultAndClearObjectIdContracts() throws Exception {
+    DatabaseMeta sourceDb = new DatabaseMeta();
+    sourceDb.setName( "used-db" );
+    sourceDb.setObjectId( new StringObjectId( "used-db-id" ) );
+
+    MemorySharedObjectsIO sharedIO = new MemorySharedObjectsIO();
+    Bowl bowl = new BaseBowl() {
+      @Override
+      public SharedObjectsIO getSharedObjectsIO() {
+        return sharedIO;
+      }
+
+      @Override
+      public IMetaStore getMetastore() throws MetaStoreException {
+        throw new UnsupportedOperationException( "should be unused" );
+      }
+
+      @Override
+      public VariableSpace getADefaultVariableSpace() {
+        throw new UnsupportedOperationException( "should be unused" );
+      }
+    };
+    bowl.getManager( DatabaseManagementInterface.class ).add( sourceDb );
+
+    TransMeta legacyTarget = new TransMeta() {
+      @Override
+      public Set<String> getUsedDatabaseConnectionNames() {
+        return Set.of( "used-db" );
+      }
+    };
+
+    SharedObjectUtil.copyUsedDbConnections( bowl, legacyTarget );
+    Assert.assertEquals( "used-db-id",
+      legacyTarget.getSharedObjectManager( DatabaseManagementInterface.class ).get( "used-db" ).getObjectId()
+        .toString() );
+
+    TransMeta clearIdTarget = new TransMeta() {
+      @Override
+      public Set<String> getUsedDatabaseConnectionNames() {
+        return Set.of( "used-db" );
+      }
+    };
+
+    SharedObjectUtil.copyUsedDbConnections( bowl, clearIdTarget, true );
+    Assert.assertNull( clearIdTarget.getSharedObjectManager( DatabaseManagementInterface.class ).get( "used-db" )
+      .getObjectId() );
   }
 
 

@@ -62,7 +62,7 @@ public class JobDelegateTest {
   @Mock private JobLogTable mockJobLogTable;
   @Mock private JobEntryCopy mockJobEntryCopy;
 
-  private JobDelegate jobDelegate = new JobDelegate( mockPurRepository, mockUnifiedRepository );
+  private JobDelegate jobDelegate;
   private Map<String, Map<String, String>> attributes = new HashMap<>();
   private Map<String, String> group = new HashMap<>();
 
@@ -79,6 +79,8 @@ public class JobDelegateTest {
 
   @Before
   public void setup() {
+    jobDelegate = new JobDelegate( mockPurRepository, mockUnifiedRepository );
+    when( mockPurRepository.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     when( mockJobMeta.listParameters() ).thenReturn( new String[] {} );
     when( mockJobMeta.getJobLogTable() ).thenReturn( mockJobLogTable );
     when( mockJobMeta.nrJobEntries() ).thenReturn( 1 );

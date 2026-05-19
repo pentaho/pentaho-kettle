@@ -59,6 +59,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
     JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
 
     JobMeta jobMeta = jobConfiguration.getJobMeta();
+    servlet.clearBowlCache( jobMeta.getBowl() );
     jobMeta.setLogLevel( jobExecutionConfiguration.getLogLevel() );
     jobMeta.injectVariables( jobExecutionConfiguration.getVariables() );
 
@@ -116,6 +117,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
   protected Trans createTrans( TransConfiguration transConfiguration ) throws UnknownParamException {
     TransMeta transMeta = transConfiguration.getTransMeta();
     TransExecutionConfiguration transExecutionConfiguration = transConfiguration.getTransExecutionConfiguration();
+    clearBowlCache( transMeta.getBowl() );
     transMeta.setLogLevel( transExecutionConfiguration.getLogLevel() );
     transMeta.injectVariables( transExecutionConfiguration.getVariables() );
 

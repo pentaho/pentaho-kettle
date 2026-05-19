@@ -183,7 +183,6 @@ public class JobFileListener implements FileListener, ConnectionListener {
         lmeta = jmeta;
         SharedObjectUtil.copySharedObjects( spoon.getGlobalManagementBowl(), jmeta,
           Props.getInstance().areOnlyUsedConnectionsSavedToXML() );
-        SharedObjectUtil.stripObjectIds( jmeta );
       } else {
         lmeta = meta;
       }

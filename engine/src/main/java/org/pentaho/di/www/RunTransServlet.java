@@ -165,6 +165,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
     try {
 
       final Repository repository = transformationMap.getSlaveServerConfig().getRepository();
+      clearBowlCache( repository );
       final TransMeta transMeta = loadTrans( repository, transOption, getPopulatedVariableSpaceFromRequest( request, new Variables() ) );
 
       // Set the servlet parameters as variables in the transformation

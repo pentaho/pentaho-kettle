@@ -18,9 +18,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.bowl.BaseBowl;
@@ -268,7 +266,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testBowlClearCache() throws Exception {
+  public void testSetBowlDoesNotClearCache() throws Exception {
     MemorySharedObjectsIO sharedObjectsIO = new MemorySharedObjectsIO();
 
     Bowl bowl = mock( BaseBowl.class );
@@ -279,28 +277,11 @@ public class AbstractMetaTest {
     List<DatabaseMeta> databases = meta.getDatabases();
     assertEquals( 0, databases.size() );
 
-    doAnswer( new Answer<Void>() {
-      public Void answer( InvocationOnMock invocation ) {
-        // write directly to the SharedObjectsIO to simulate another process having done the write
-        DatabaseMeta dbMeta = new DatabaseMeta();
-        dbMeta.setName( "foo" );
-        try {
-          sharedObjectsIO.lock();
-          sharedObjectsIO.saveSharedObject( SharedObjectsIO.SharedObjectType.CONNECTION.getName(), "foo",
-            dbMeta.toNode());
-        } catch ( KettleException e ) {
-          throw new RuntimeException( e );
-        } finally {
-          sharedObjectsIO.unlock();
-        }
-        return null;
-      }
-    } ).when( bowl ).clearCache();
-
     AbstractMetaStub meta2 = new AbstractMetaStub();
     meta2.setBowl( bowl );
     List<DatabaseMeta> databases2 = meta2.getDatabases();
-    assertEquals( 1, databases2.size() );
+    assertEquals( 0, databases2.size() );
+    verify( bowl, never() ).clearCache();
   }
 
   @Test
