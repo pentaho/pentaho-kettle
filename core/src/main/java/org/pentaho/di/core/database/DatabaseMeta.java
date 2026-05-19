@@ -91,6 +91,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public static final String ATTRIBUTE_DYNAMIC_DRIVER_JAR = "dynamicDriverJar";
 
   public static final String ATTRIBUTE_DYNAMIC_DRIVER_ID = "dynamicDriverId";
+  public static final String ATTRIBUTE_DYNAMIC_DRIVER_EXTRA_JAR_IDS = "dynamicDriverExtraJarIds";
 
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.DATABASE;
 

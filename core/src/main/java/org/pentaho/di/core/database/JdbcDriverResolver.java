@@ -18,6 +18,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.EnvUtil;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -26,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -128,6 +131,42 @@ public final class JdbcDriverResolver {
       }
     }
     return downloadFromService( driverId );
+  }
+
+  /**
+   * Resolves a list of driver IDs to their absolute JAR paths.
+   * Each entry is resolved via {@link #resolve(String)}. Null/blank entries are skipped.
+   *
+   * @param driverIds list of driver identifiers (can be {@code null})
+   * @return list of resolved absolute JAR paths (never {@code null}, may be empty)
+   * @throws KettleDatabaseException if any individual resolve fails
+   */
+  public static List<String> resolveAll( List<String> driverIds ) throws KettleDatabaseException {
+    List<String> resolved = new ArrayList<>();
+    if ( driverIds != null ) {
+      for ( String driverId : driverIds ) {
+        if ( driverId != null && !driverId.trim().isEmpty() ) {
+          resolved.add( resolve( driverId.trim() ) );
+        }
+      }
+    }
+    return resolved;
+  }
+
+  /**
+   * Builds the list of JAR URLs from a main path plus extras.
+   */
+  public static List<URL> buildUrlList( String mainJarPath, List<String> extraJarPaths ) throws KettleDatabaseException {
+    List<URL> urls = new ArrayList<>();
+    urls.add( toJarUrl( mainJarPath ) );
+    if ( extraJarPaths != null ) {
+      for ( String extra : extraJarPaths ) {
+        if ( extra != null && !extra.trim().isEmpty() ) {
+          urls.add( toJarUrl( extra.trim() ) );
+        }
+      }
+    }
+    return urls;
   }
 
   // ---------------------------------------------------------------------------
@@ -342,5 +381,29 @@ public final class JdbcDriverResolver {
       return false;
     }
     return Files.isRegularFile( Paths.get( path ) );
+  }
+
+  /**
+   * Converts an absolute JAR path to a {@link URL}, validating that the file exists
+   * and has a {@code .jar} extension.
+   *
+   * @param jarAbsolutePath absolute path to the JAR file
+   * @return the file URL
+   * @throws KettleDatabaseException if the file does not exist, is not a regular file,
+   *                                  does not end with .jar, or cannot be converted
+   */
+  private static URL toJarUrl( String jarAbsolutePath ) throws KettleDatabaseException {
+    File jarFile = new File( jarAbsolutePath );
+    if ( !jarFile.exists() || !jarFile.isFile() ) {
+      throw new KettleDatabaseException( "JdbcDriverResolver: JAR not found: " + jarAbsolutePath );
+    }
+    if ( !jarFile.getName().toLowerCase().endsWith( ".jar" ) ) {
+      throw new KettleDatabaseException( "JdbcDriverResolver: not a JAR file: " + jarAbsolutePath );
+    }
+    try {
+      return jarFile.toPath().toUri().toURL();
+    } catch ( Exception e ) {
+      throw new KettleDatabaseException( "JdbcDriverResolver: Cannot convert path to URL: " + jarAbsolutePath, e );
+    }
   }
 }
