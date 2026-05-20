@@ -186,7 +186,6 @@ jobs:
       additional_snapshot_mvn_directives: >-
         ${{ needs.resolve-version.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', needs.resolve-version.outputs.libraries_to_update, needs.resolve-version.outputs.build_version) || '' }}
 
-      run_release_candidate: true
     secrets: inherit
 
 
