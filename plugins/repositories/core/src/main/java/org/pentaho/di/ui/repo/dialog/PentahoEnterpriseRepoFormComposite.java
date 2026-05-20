@@ -20,6 +20,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -60,6 +62,7 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
   private static final String SSO_REGISTRATION_ID = "ssoRegistrationId";
 
   private Text txtUrl;
+  private Label lAuthMethod;
   private Button radioUsernamePassword;
   private Button radioSSO;
   private Combo comboSsoProvider;
@@ -70,6 +73,8 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
   private String selectedAuthorizationUri;
   private String selectedRegistrationId;
   private String lastLoadedUrl;
+  private boolean lastOAuthEnabled;
+  private boolean populating;
   private Runnable pendingProviderLoad = null;
   private final ExecutorService providerLoadExecutor =
     Executors.newSingleThreadExecutor( r -> {
@@ -78,10 +83,12 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
       return t;
     } );
   private final AtomicReference<Future<?>> providerLoadFuture = new AtomicReference<>();
+  private Exception lastFetchProviderException = null;
 
 
   public PentahoEnterpriseRepoFormComposite( Composite parent, int style ) {
     super( parent, style );
+    setSsoControlsVisible( false );
   }
 
   @Override
@@ -98,37 +105,7 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
     txtUrl.setLayoutData(
       new FormDataBuilder().left( 0, 0 ).top( lUrl, LABEL_CONTROL_MARGIN ).width( MEDIUM_WIDTH ).result() );
     txtUrl.addModifyListener( lsMod );
-    txtUrl.addModifyListener( event -> {
-      lastLoadedUrl = null;
-      if ( !radioSSO.getSelection() ) {
-        return;
-      }
-      clearProviderSelection( true );
-      // Cancel any previously scheduled debounced load
-      if ( pendingProviderLoad != null ) {
-        getDisplay().timerExec( -1, pendingProviderLoad );
-        pendingProviderLoad = null;
-      }
-      if ( Utils.isEmpty( txtUrl.getText() ) ) {
-        comboSsoProvider.setEnabled( false );
-        setSsoStatusInfo( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.enterUrl" ) );
-        layout( true, true );
-        setSaveButtonEnabled();
-        return;
-      }
-    
-      comboSsoProvider.setEnabled( false );
-      setSsoStatusInfo( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loading" ) );
-      layout( true, true );
-      setSaveButtonEnabled();
-      pendingProviderLoad = () -> {
-        if ( !isDisposed() && radioSSO.getSelection() ) {
-          loadSsoProviders( false );
-        }
-        pendingProviderLoad = null;
-      };
-      getDisplay().timerExec( 2000, pendingProviderLoad );
-    } );
+    txtUrl.addModifyListener( event -> onUrlModified() );
     txtUrl.addFocusListener( new FocusAdapter() {
       @Override
       public void focusLost( FocusEvent e ) {
@@ -138,7 +115,7 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
     props.setLook( txtUrl );
 
     // Authentication method radio buttons
-    Label lAuthMethod = new Label( this, SWT.NONE );
+    lAuthMethod = new Label( this, SWT.NONE );
     lAuthMethod.setText( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.label.authMethod" ) );
     lAuthMethod.setLayoutData(
       new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( txtUrl, CONTROL_MARGIN ).result() );
@@ -229,37 +206,41 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
   @SuppressWarnings( "unchecked" )
   @Override
   public void populate( JSONObject source ) {
-    super.populate( source );
-    txtUrl.setText( (String) source.getOrDefault( "url", "http://localhost:8080/pentaho" ) );
-    props.setLook( txtUrl );
-    
-    // Set authentication method
-    String authMethod = (String) source.getOrDefault( "authMethod", AUTH_METHOD_USERNAME_PASSWORD );
-    if ( AUTH_METHOD_SSO.equals( authMethod ) ) {
-      radioSSO.setSelection( true );
-      radioUsernamePassword.setSelection( false );
-    } else {
-      radioUsernamePassword.setSelection( true );
-      radioSSO.setSelection( false );
-    }
+    populating = true;
+    try {
+      super.populate( source );
+      txtUrl.setText( (String) source.getOrDefault( "url", "http://localhost:8080/pentaho" ) );
+      props.setLook( txtUrl );
 
-    selectedAuthorizationUri = stringValue( source.get( SSO_AUTHORIZATION_URI ) );
-    selectedRegistrationId = stringValue( source.get( SSO_REGISTRATION_ID ) );
-    String providerName = stringValue( source.get( SSO_PROVIDER_NAME ) );
-    
-    log.logDebug( "populate() - Loaded authorizationUri: " + selectedAuthorizationUri );
-    log.logDebug( "populate() - Loaded registrationId: " + selectedRegistrationId );
-    log.logDebug( "populate() - Loaded providerName: " + providerName );
-    
-    if ( !Utils.isEmpty( providerName ) ) {
-      comboSsoProvider.setItems( providerName );
-      comboSsoProvider.select( 0 );
-    }
+      // Set authentication method
+      String authMethod = (String) source.getOrDefault( "authMethod", AUTH_METHOD_USERNAME_PASSWORD );
+      if ( AUTH_METHOD_SSO.equals( authMethod ) ) {
+        radioSSO.setSelection( true );
+        radioUsernamePassword.setSelection( false );
+      } else {
+        radioUsernamePassword.setSelection( true );
+        radioSSO.setSelection( false );
+      }
 
-    updateSsoControls();
-    if ( radioSSO.getSelection() ) {
-      loadSsoProviders( true );
+      selectedAuthorizationUri = stringValue( source.get( SSO_AUTHORIZATION_URI ) );
+      selectedRegistrationId = stringValue( source.get( SSO_REGISTRATION_ID ) );
+      String providerName = stringValue( source.get( SSO_PROVIDER_NAME ) );
+
+      log.logDebug( "populate() - Loaded authorizationUri: " + selectedAuthorizationUri );
+      log.logDebug( "populate() - Loaded registrationId: " + selectedRegistrationId );
+      log.logDebug( "populate() - Loaded providerName: " + providerName );
+
+      if ( !Utils.isEmpty( providerName ) ) {
+        comboSsoProvider.setItems( providerName );
+        comboSsoProvider.select( 0 );
+      }
+
+      updateSsoControls();
+      cancelPendingProviderLoad();
+    } finally {
+      populating = false;
     }
+    loadSsoProviders( true );
   }
 
   @Override
@@ -269,43 +250,126 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
       && ( !radioSSO.getSelection() || !Utils.isEmpty( selectedAuthorizationUri ) );
   }
 
-  private void onUrlFocusLost() {
-    if ( radioSSO.getSelection() ) {
-      if ( pendingProviderLoad != null ) {
-        getDisplay().timerExec( -1, pendingProviderLoad );
-        pendingProviderLoad = null;
-      }
-      loadSsoProviders( false );
+  private void onUrlModified() {
+    if ( populating ) {
+      return;
     }
+    lastLoadedUrl = null;
+    if ( radioSSO.getSelection() ) {
+      clearProviderSelection( true );
+    }
+    cancelPendingProviderLoad();
+    if ( Utils.isEmpty( txtUrl.getText() ) ) {
+      handleEmptyUrlWhileSsoSelected();
+      setSaveButtonEnabled();
+      return;
+    }
+    handleNonEmptyUrlWhileSsoSelected();
+    setSaveButtonEnabled();
+    scheduleDebouncedProviderLoad();
+  }
+
+  private void cancelPendingProviderLoad() {
+    if ( pendingProviderLoad != null ) {
+      getDisplay().timerExec( -1, pendingProviderLoad );
+      pendingProviderLoad = null;
+    }
+  }
+
+  private void handleEmptyUrlWhileSsoSelected() {
+    if ( radioSSO.getSelection() ) {
+      comboSsoProvider.setEnabled( false );
+      setSsoStatusInfo( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.enterUrl" ) );
+      layout( true, true );
+    }
+  }
+
+  private void handleNonEmptyUrlWhileSsoSelected() {
+    if ( radioSSO.getSelection() ) {
+      comboSsoProvider.setEnabled( false );
+      setSsoStatusInfo( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loading" ) );
+      layout( true, true );
+    }
+  }
+
+  private void scheduleDebouncedProviderLoad() {
+    pendingProviderLoad = () -> {
+      if ( !isDisposed() ) {
+        loadSsoProviders( false );
+      }
+      pendingProviderLoad = null;
+    };
+    getDisplay().timerExec( 2000, pendingProviderLoad );
+  }
+
+  private void onUrlFocusLost() {
+    cancelPendingProviderLoad();
+    loadSsoProviders( false );
+  }
+
+  private void setSsoControlsVisible( boolean visible ) {
+    lAuthMethod.setVisible( visible );
+    radioUsernamePassword.setVisible( visible );
+    radioSSO.setVisible( visible );
+
+    if ( !visible && radioSSO.getSelection() ) {
+      radioUsernamePassword.setSelection( true );
+      radioSSO.setSelection( false );
+      clearProviderSelection( true );
+    }
+
+    updateSsoControls();
   }
 
   private void updateSsoControls() {
     boolean ssoSelected = radioSSO.getSelection();
-    lblSsoProvider.setEnabled( ssoSelected );
-    comboSsoProvider.setEnabled( ssoSelected );
-    lblSsoStatus.setEnabled( ssoSelected );
+    boolean ssoVisible = radioSSO.getVisible() && ssoSelected;
+    lblSsoProvider.setVisible( ssoVisible );
+    comboSsoProvider.setVisible( ssoVisible );
+    lblSsoStatus.setVisible( ssoVisible );
+    lblSsoProvider.setEnabled( ssoVisible );
+    comboSsoProvider.setEnabled( ssoVisible );
+    lblSsoStatus.setEnabled( ssoVisible );
 
-    if ( !ssoSelected ) {
+    // Re-anchor Description below the appropriate control depending on visibility state
+    if ( lDescription != null && lDescription.getLayoutData() != null ) {
+      FormData fd = (FormData) lDescription.getLayoutData();
+      if ( !radioSSO.getVisible() ) {
+        fd.top = new FormAttachment( txtUrl, CONTROL_MARGIN );
+      } else if ( ssoSelected ) {
+        fd.top = new FormAttachment( lblSsoStatus, CONTROL_MARGIN );
+      } else {
+        fd.top = new FormAttachment( radioSSO, CONTROL_MARGIN );
+      }
+      layout( true, true );
+      redraw();
+    }
+
+    if ( !ssoVisible ) {
       lblSsoStatus.setText( "" );
     }
   }
 
   private void loadSsoProviders( boolean preserveCurrentSelection ) {
-    if ( !radioSSO.getSelection() ) {
-      return;
-    }
-
     String serverUrl = txtUrl.getText();
     if ( Utils.isEmpty( serverUrl ) ) {
       clearProviderSelection( true );
-      lblSsoStatus.setText( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.enterUrl" ) );
+      comboSsoProvider.setEnabled( false );
+      setSsoStatusInfo( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.enterUrl" ) );
       layout( true, true );
       setSaveButtonEnabled();
       return;
     }
 
-    if ( serverUrl.equals( lastLoadedUrl ) && !ssoProviders.isEmpty() ) {
-      restoreProviderSelection( preserveCurrentSelection );
+    if ( serverUrl.equals( lastLoadedUrl ) ) {
+      setSsoControlsVisible( lastOAuthEnabled );
+      if ( lastOAuthEnabled && radioSSO.getSelection() ) {
+        comboSsoProvider.removeAll();
+        for ( SsoProviderService.SsoProvider provider : ssoProviders ) {
+          comboSsoProvider.add( provider.clientName() );
+        }
+        restoreProviderSelection( preserveCurrentSelection );
+      }
       return;
     }
 
@@ -314,10 +378,12 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
     final String savedRegistrationId = selectedRegistrationId;
 
     // Show loading indicator while the network request is in progress
-    clearProviderSelection( true );
-    comboSsoProvider.setEnabled( false );
-    lblSsoStatus.setText( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loading" ) );
-    layout( true, true );
+    if ( radioSSO.getSelection() ) {
+      clearProviderSelection( true );
+      comboSsoProvider.setEnabled( false );
+      setSsoStatusInfo( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loading" ) );
+      layout( true, true );
+    }
     setSaveButtonEnabled();
 
     final String urlToLoad = serverUrl;
@@ -327,28 +393,48 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
         savedRegistrationId ) ) );
   }
 
+  private List<SsoProviderService.SsoProvider> fetchProvidersOrEmpty( String urlToLoad ) {
+    lastFetchProviderException = null;
+    try {
+      return ssoProviderService.fetchProviders( urlToLoad );
+    } catch ( Exception e ) {
+      lastFetchProviderException = e;
+      return Collections.emptyList();
+    }
+  }
+
   private void fetchAndApplyProviders( String urlToLoad, boolean preserveCurrentSelection,
                                        String savedAuthorizationUri, String savedRegistrationId ) {
-    List<SsoProviderService.SsoProvider> fetchedProviders;
+    boolean oauthEnabled = false;
+    List<SsoProviderService.SsoProvider> fetchedProviders = Collections.emptyList();
     Exception fetchException = null;
     try {
-      fetchedProviders = ssoProviderService.fetchProviders( urlToLoad );
+      oauthEnabled = ssoProviderService.isOAuthEnabled( urlToLoad );
+      if ( oauthEnabled ) {
+        fetchedProviders = fetchProvidersOrEmpty( urlToLoad );
+        if ( lastFetchProviderException != null ) {
+          fetchException = lastFetchProviderException;
+        }
+      }
     } catch ( Exception e ) {
-      fetchedProviders = Collections.emptyList();
+      // isOAuthEnabled itself failed - treat as non-OAuth URL
+      oauthEnabled = false;
       fetchException = e;
     }
 
+    final boolean finalOauthEnabled = oauthEnabled;
     final List<SsoProviderService.SsoProvider> finalProviders = fetchedProviders;
     final Exception finalException = fetchException;
 
     getDisplay().asyncExec( () -> applyFetchedProviders( urlToLoad, finalProviders, finalException,
-      preserveCurrentSelection, savedAuthorizationUri, savedRegistrationId ) );
+      preserveCurrentSelection, savedAuthorizationUri, savedRegistrationId, finalOauthEnabled ) );
   }
 
   private void applyFetchedProviders( String urlToLoad, List<SsoProviderService.SsoProvider> finalProviders,
                                       Exception finalException, boolean preserveCurrentSelection,
-                                      String savedAuthorizationUri, String savedRegistrationId ) {
-    if ( isDisposed() || !radioSSO.getSelection() ) {
+                                      String savedAuthorizationUri, String savedRegistrationId,
+                                      boolean oauthEnabled ) {
+    if ( isDisposed() ) {
       return;
     }
 
@@ -357,38 +443,53 @@ public class PentahoEnterpriseRepoFormComposite extends BaseRepoFormComposite {
       return;
     }
 
-    // Restore the saved selection state so that restoreProviderSelection can find the right provider
-    if ( preserveCurrentSelection ) {
-      selectedAuthorizationUri = savedAuthorizationUri;
-      selectedRegistrationId = savedRegistrationId;
-    }
-
-    comboSsoProvider.setEnabled( true );
-
     if ( finalException != null ) {
       log.logDebug( "loadSsoProviders() - error fetching from " + urlToLoad + ": " + finalException.getMessage() );
-      if ( Utils.isEmpty( comboSsoProvider.getText() ) ) {
-        clearProviderSelection( true );
+      if ( !oauthEnabled ) {
+        // isOAuthEnabled call itself failed - treat as non-OAuth URL
+        ssoProviders = Collections.emptyList();
+        lastLoadedUrl = urlToLoad;
+        lastOAuthEnabled = false;
+        setSsoControlsVisible( false );
+      } else {
+        // OAuth is enabled but fetching providers failed - show auth controls with error
+        ssoProviders = Collections.emptyList();
+        lastLoadedUrl = urlToLoad;
+        lastOAuthEnabled = true;
+        setSsoControlsVisible( true );
+        if ( radioSSO.getSelection() ) {
+          clearProviderSelection( true );
+          comboSsoProvider.setEnabled( false );
+          setSsoStatusError( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loadError" ) );
+        }
       }
-      setSsoStatusError( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loadError" ) );
-    } else {
-      ssoProviders = finalProviders;
-      lastLoadedUrl = urlToLoad;
-      log.logDebug( "loadSsoProviders() - fetched " + ssoProviders.size() + " providers from " + urlToLoad );
+      layout( true, true );
+      setSaveButtonEnabled();
+      return;
+    }
 
+    ssoProviders = finalProviders;
+    lastLoadedUrl = urlToLoad;
+    lastOAuthEnabled = oauthEnabled;
+    setSsoControlsVisible( oauthEnabled );
+    log.logDebug( "loadSsoProviders() - oauthEnabled=" + oauthEnabled + ", fetched " + ssoProviders.size() + " providers from " + urlToLoad );
+
+    if ( oauthEnabled && radioSSO.getSelection() ) {
+      // Restore the saved selection state so that restoreProviderSelection can find the right provider
+      if ( preserveCurrentSelection ) {
+        selectedAuthorizationUri = savedAuthorizationUri;
+        selectedRegistrationId = savedRegistrationId;
+      }
+
+      comboSsoProvider.setEnabled( true );
       comboSsoProvider.removeAll();
       for ( SsoProviderService.SsoProvider provider : ssoProviders ) {
         log.logDebug( "loadSsoProviders() - Adding provider: " + provider.clientName() + " with authUri: " + provider.authorizationUri() );
         comboSsoProvider.add( provider.clientName() );
       }
 
-      if ( ssoProviders.isEmpty() ) {
-        clearProviderSelection( true );
-        setSsoStatusInfo( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.noProviders" ) );
-      } else {
-        restoreProviderSelection( preserveCurrentSelection );
-        setSsoStatusInfo( "" );
-      }
+      restoreProviderSelection( preserveCurrentSelection );
+      setSsoStatusInfo( "" );
     }
 
     layout( true, true );

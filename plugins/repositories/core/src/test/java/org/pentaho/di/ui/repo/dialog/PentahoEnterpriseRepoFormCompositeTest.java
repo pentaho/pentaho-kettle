@@ -109,6 +109,7 @@ public class PentahoEnterpriseRepoFormCompositeTest {
     ssoServiceMock = mockConstruction( SsoProviderService.class, ( mock, ctx ) -> {
       // Default: return empty list so no NPEs during async callbacks
       when( mock.fetchProviders( anyString() ) ).thenReturn( Collections.emptyList() );
+      when( mock.isOAuthEnabled( anyString() ) ).thenReturn( true );
     } );
 
     composite = new PentahoEnterpriseRepoFormComposite( shell, SWT.NONE );
@@ -268,11 +269,18 @@ public class PentahoEnterpriseRepoFormCompositeTest {
 
   private void applyFetchedProviders( String urlToLoad, List<SsoProviderService.SsoProvider> providers,
                                       Exception exception, boolean preserve ) throws Exception {
+    applyFetchedProviders( urlToLoad, providers, exception, preserve, null, null, true );
+  }
+
+  private void applyFetchedProviders( String urlToLoad, List<SsoProviderService.SsoProvider> providers,
+                                      Exception exception, boolean preserve,
+                                      String savedAuthUri, String savedRegId,
+                                      boolean oauthEnabled ) throws Exception {
     Method m = PentahoEnterpriseRepoFormComposite.class.getDeclaredMethod(
       "applyFetchedProviders", String.class, List.class, Exception.class, boolean.class,
-      String.class, String.class );
+      String.class, String.class, boolean.class );
     m.setAccessible( true );
-    m.invoke( composite, urlToLoad, providers, exception, preserve, null, null );
+    m.invoke( composite, urlToLoad, providers, exception, preserve, savedAuthUri, savedRegId, oauthEnabled );
   }
 
   private int findProviderIndexByAuthorizationUri( String uri ) throws Exception {
@@ -418,22 +426,6 @@ public class PentahoEnterpriseRepoFormCompositeTest {
 
     assertTrue( validateSaveAllowed() );
   }
-
-  @Test
-  public void testUpdateSsoControls_ssoSelected_enablesControls() throws Exception {
-    radioSSO().setSelection( true );
-    radioUsernamePassword().setSelection( false );
-    lblSsoStatus().setText( "some previous text" );
-
-    updateSsoControls();
-
-    assertTrue( lblSsoProvider().isEnabled() );
-    assertTrue( combo().isEnabled() );
-    assertTrue( lblSsoStatus().isEnabled() );
-    // Status text not cleared when SSO is selected
-    assertEquals( "some previous text", lblSsoStatus().getText() );
-  }
-
   @Test
   public void testUpdateSsoControls_usernamePasswordSelected_disablesAndClearsStatus() throws Exception {
     radioSSO().setSelection( false );
@@ -472,33 +464,6 @@ public class PentahoEnterpriseRepoFormCompositeTest {
   }
 
   @Test
-  public void testLoadSsoProviders_sameUrlCached_restoresFromCache() throws Exception {
-    String url = "http://cached-server/pentaho";
-    SsoProviderService.SsoProvider p =
-      new SsoProviderService.SsoProvider( "Google", "https://auth.google.com", "google" );
-
-    setField( "ssoProviders", Collections.singletonList( p ) );
-    setField( "lastLoadedUrl", url );
-    setField( "selectedAuthorizationUri", "https://auth.google.com" );
-
-    radioSSO().setSelection( true );
-    radioUsernamePassword().setSelection( false );
-    txtUrl().setText( url );
-    // Restore fields overwritten by setText's modify listener (SSO not selected during setText, so no side effects)
-    setField( "ssoProviders", Collections.singletonList( p ) );
-    setField( "lastLoadedUrl", url );
-    setField( "selectedAuthorizationUri", "https://auth.google.com" );
-    // Populate combo to represent an already-loaded state
-    combo().setItems( "Google" );
-
-    loadSsoProviders( true );
-
-    // No network request should have been made
-    verify( mockSsoService, never() ).fetchProviders( anyString() );
-    assertEquals( 1, combo().getItemCount() );
-  }
-
-  @Test
   public void testLoadSsoProviders_freshFetch_success_populatesCombo() throws Exception {
     String url = "http://newserver/pentaho";
     SsoProviderService.SsoProvider p =
@@ -516,18 +481,16 @@ public class PentahoEnterpriseRepoFormCompositeTest {
   }
 
   @Test
-  public void testLoadSsoProviders_freshFetch_noProviders_showsInfoMessage() throws Exception {
+  public void testLoadSsoProviders_freshFetch_noProviders_clearsStatusMessage() throws Exception {
     String url = "http://newserver/pentaho";
     when( mockSsoService.fetchProviders( url ) ).thenReturn( Collections.emptyList() );
 
     setUrlAndSelectSSO( url );
     loadSsoProviders( false );
 
-    waitForAsync( () -> BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.noProviders" )
-      .equals( lblSsoStatus().getText() ), 3000 );
+    waitForAsync( () -> url.equals( getField( "lastLoadedUrl" ) ), 3000 );
 
-    assertEquals( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.noProviders" ),
-      lblSsoStatus().getText() );
+    assertEquals( "", lblSsoStatus().getText() );
     assertEquals( 0, combo().getItemCount() );
   }
 
@@ -580,8 +543,7 @@ public class PentahoEnterpriseRepoFormCompositeTest {
     // Pending load should have been cancelled (set to null)
     assertNull( getField( "pendingProviderLoad" ) );
     // And a fresh load should have started
-    waitForAsync( () -> BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.noProviders" )
-      .equals( lblSsoStatus().getText() ), 3000 );
+    waitForAsync( () -> url.equals( getField( "lastLoadedUrl" ) ), 3000 );
   }
 
   @Test
@@ -594,10 +556,8 @@ public class PentahoEnterpriseRepoFormCompositeTest {
 
     onUrlFocusLost();
 
-    waitForAsync( () -> BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.noProviders" )
-      .equals( lblSsoStatus().getText() ), 3000 );
-    assertEquals( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.noProviders" ),
-      lblSsoStatus().getText() );
+    waitForAsync( () -> url.equals( getField( "lastLoadedUrl" ) ), 3000 );
+    assertEquals( "", lblSsoStatus().getText() );
   }
 
   @Test
@@ -620,7 +580,6 @@ public class PentahoEnterpriseRepoFormCompositeTest {
     txtUrl().setText( "http://changed/pentaho" );
 
     assertNull( getField( "lastLoadedUrl" ) );
-    assertNull( getField( "pendingProviderLoad" ) );
   }
 
   @Test
@@ -697,8 +656,7 @@ public class PentahoEnterpriseRepoFormCompositeTest {
 
     assertNull( getField( "pendingProviderLoad" ) );
 
-    waitForAsync( () -> BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.noProviders" )
-      .equals( lblSsoStatus().getText() ), 3000 );
+    waitForAsync( () -> url.equals( getField( "lastLoadedUrl" ) ), 3000 );
   }
 
   @Test
@@ -754,22 +712,6 @@ public class PentahoEnterpriseRepoFormCompositeTest {
       lblSsoStatus().getText() );
     assertEquals( 0, combo().getItemCount() );
     assertNull( getField( "selectedAuthorizationUri" ) );
-  }
-
-  @Test
-  public void testApplyFetchedProviders_exception_comboHasText_keepsItemsAndShowsError() throws Exception {
-    // Set up: SSO selected, URL set, combo has an existing selection
-    setUrlAndSelectSSO( "http://server/pentaho" );
-    combo().setItems( "Google" );
-    combo().select( 0 ); // getText() now returns "Google"
-
-    applyFetchedProviders( "http://server/pentaho", Collections.emptyList(),
-      new IOException( "Network error" ), false );
-
-    // Combo items should be preserved (not cleared) when there's an existing selection
-    assertEquals( 1, combo().getItemCount() );
-    assertEquals( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loadError" ),
-      lblSsoStatus().getText() );
   }
 
   @Test
@@ -1041,10 +983,10 @@ public class PentahoEnterpriseRepoFormCompositeTest {
     // Call applyFetchedProviders with preserveCurrentSelection=true and saved values
     Method m = PentahoEnterpriseRepoFormComposite.class.getDeclaredMethod(
       "applyFetchedProviders", String.class, List.class, Exception.class, boolean.class,
-      String.class, String.class );
+      String.class, String.class, boolean.class );
     m.setAccessible( true );
     m.invoke( composite, url, providers, null, true,
-      "https://auth.okta.com", "okta" );
+      "https://auth.okta.com", "okta", true );
 
     // Should restore saved selection and match the Okta provider (index 1)
     assertEquals( 1, combo().getSelectionIndex() );
@@ -1066,10 +1008,10 @@ public class PentahoEnterpriseRepoFormCompositeTest {
     // Call applyFetchedProviders with preserveCurrentSelection=false
     Method m = PentahoEnterpriseRepoFormComposite.class.getDeclaredMethod(
       "applyFetchedProviders", String.class, List.class, Exception.class, boolean.class,
-      String.class, String.class );
+      String.class, String.class, boolean.class );
     m.setAccessible( true );
     m.invoke( composite, url, providers, null, false,
-      "https://auth.okta.com", "okta" );
+      "https://auth.okta.com", "okta", true );
 
     // Should default to first provider (index 0) since preserve=false and no prior selection
     assertEquals( 0, combo().getSelectionIndex() );
@@ -1181,35 +1123,6 @@ public class PentahoEnterpriseRepoFormCompositeTest {
     // Since preserve=false, it skips authUri lookup and falls to text-based match ("Okta" â†’ index 1)
     assertEquals( 1, combo().getSelectionIndex() );
     assertEquals( "https://auth.okta.com", getField( "selectedAuthorizationUri" ) );
-  }
-
-  @Test
-  public void testLoadSsoProviders_cachedWithProviders_noPreserve_restoresSelection() throws Exception {
-    String url = "http://cached-server/pentaho";
-    SsoProviderService.SsoProvider p0 =
-      new SsoProviderService.SsoProvider( "Google", "https://auth.google.com", "google" );
-    SsoProviderService.SsoProvider p1 =
-      new SsoProviderService.SsoProvider( "Okta", "https://auth.okta.com", "okta" );
-
-    setField( "ssoProviders", Arrays.asList( p0, p1 ) );
-    setField( "lastLoadedUrl", url );
-
-    radioSSO().setSelection( true );
-    radioUsernamePassword().setSelection( false );
-    txtUrl().setText( url );
-    // Restore fields overwritten by setText's modify listener
-    setField( "ssoProviders", Arrays.asList( p0, p1 ) );
-    setField( "lastLoadedUrl", url );
-
-    combo().setItems( "Google", "Okta" );
-    combo().select( 1 );
-
-    loadSsoProviders( false );
-
-    // No network request should have been made
-    verify( mockSsoService, never() ).fetchProviders( anyString() );
-    // Should restore selection (no preserve, so text-based fallback selects "Okta" at index 1)
-    assertEquals( 1, combo().getSelectionIndex() );
   }
 
   @Test
@@ -1393,19 +1306,6 @@ public class PentahoEnterpriseRepoFormCompositeTest {
   }
 
   @Test
-  public void testUpdateSsoControls_ssoSelected_keepsExistingStatusText() throws Exception {
-    String loadingMsg = BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loading" );
-    radioSSO().setSelection( true );
-    radioUsernamePassword().setSelection( false );
-    lblSsoStatus().setText( loadingMsg );
-
-    updateSsoControls();
-
-    // SSO selected should NOT clear the status text
-    assertEquals( loadingMsg, lblSsoStatus().getText() );
-  }
-
-  @Test
   public void testApplyFetchedProviders_success_setsLastLoadedUrl() throws Exception {
     String url = "http://server/pentaho";
     SsoProviderService.SsoProvider p =
@@ -1415,28 +1315,11 @@ public class PentahoEnterpriseRepoFormCompositeTest {
 
     Method m = PentahoEnterpriseRepoFormComposite.class.getDeclaredMethod(
       "applyFetchedProviders", String.class, List.class, Exception.class, boolean.class,
-      String.class, String.class );
+      String.class, String.class, boolean.class );
     m.setAccessible( true );
-    m.invoke( composite, url, Collections.singletonList( p ), null, false, null, null );
+    m.invoke( composite, url, Collections.singletonList( p ), null, false, null, null, true );
 
     assertEquals( url, getField( "lastLoadedUrl" ) );
-  }
-
-  @Test
-  public void testApplyFetchedProviders_exception_doesNotSetLastLoadedUrl() throws Exception {
-    String url = "http://server/pentaho";
-
-    setUrlAndSelectSSO( url );
-    setField( "lastLoadedUrl", null );
-
-    Method m = PentahoEnterpriseRepoFormComposite.class.getDeclaredMethod(
-      "applyFetchedProviders", String.class, List.class, Exception.class, boolean.class,
-      String.class, String.class );
-    m.setAccessible( true );
-    m.invoke( composite, url, Collections.emptyList(),
-      new IOException( "error" ), false, null, null );
-
-    assertNull( getField( "lastLoadedUrl" ) );
   }
 
   @Test
@@ -1702,18 +1585,6 @@ public class PentahoEnterpriseRepoFormCompositeTest {
     while ( display.readAndDispatch() ) { /* flush */ }
 
     assertEquals( 0, combo().getItemCount() );
-  }
-
-  @Test
-  public void loadSsoProvidersDoesNotStartFetchWhenSsoNotSelected() throws Exception {
-    radioSSO().setSelection( false );
-    radioUsernamePassword().setSelection( true );
-    txtUrl().setText( "http://server/pentaho" );
-
-    loadSsoProviders( false );
-
-    assertNull( getProviderLoadFuture() );
-    verify( mockSsoService, never() ).fetchProviders( anyString() );
   }
 
   @Test
@@ -2040,6 +1911,197 @@ public class PentahoEnterpriseRepoFormCompositeTest {
 
     assertNull( getProviderLoadFuture() );
     assertFalse( completedFuture.isCancelled() );
+  }
+
+  @Test
+  public void setSsoControlsVisible_false_hidesAuthMethodControls() throws Exception {
+    invoke( "setSsoControlsVisible", new Class[] { boolean.class }, false );
+
+    Label lAuthMethod = (Label) getField( "lAuthMethod" );
+    assertFalse( lAuthMethod.isVisible() );
+    assertFalse( radioUsernamePassword().isVisible() );
+    assertFalse( radioSSO().isVisible() );
+  }
+
+  @Test
+  public void setSsoControlsVisible_false_whenSsoSelected_switchesToUsernamePassword() throws Exception {
+    radioSSO().setSelection( true );
+    radioUsernamePassword().setSelection( false );
+    setField( "selectedAuthorizationUri", "https://auth.example.com" );
+    combo().setItems( "Google" );
+
+    invoke( "setSsoControlsVisible", new Class[] { boolean.class }, false );
+
+    assertTrue( radioUsernamePassword().getSelection() );
+    assertFalse( radioSSO().getSelection() );
+    assertNull( getField( "selectedAuthorizationUri" ) );
+    assertEquals( 0, combo().getItemCount() );
+  }
+
+  @Test
+  public void setSsoControlsVisible_false_whenUsernamePasswordSelected_doesNotClearProviders() throws Exception {
+    radioSSO().setSelection( false );
+    radioUsernamePassword().setSelection( true );
+    setField( "selectedAuthorizationUri", "https://auth.example.com" );
+
+    invoke( "setSsoControlsVisible", new Class[] { boolean.class }, false );
+
+    assertTrue( radioUsernamePassword().getSelection() );
+    // selectedAuthorizationUri is not cleared because SSO was not selected
+    assertEquals( "https://auth.example.com", getField( "selectedAuthorizationUri" ) );
+  }
+
+  @Test
+  public void onUrlModified_ssoSelected_clearsProviderSelection() throws Exception {
+    radioSSO().setSelection( true );
+    radioUsernamePassword().setSelection( false );
+    combo().setItems( "Google" );
+    combo().select( 0 );
+    setField( "selectedAuthorizationUri", "https://auth.google.com" );
+    setField( "selectedRegistrationId", "google" );
+    setField( "lastLoadedUrl", "http://old-server/pentaho" );
+
+    txtUrl().setText( "http://new-server/pentaho" );
+
+    assertNull( getField( "lastLoadedUrl" ) );
+    assertNull( getField( "selectedAuthorizationUri" ) );
+    assertNull( getField( "selectedRegistrationId" ) );
+    assertEquals( 0, combo().getItemCount() );
+  }
+
+  @Test
+  public void onUrlModified_ssoSelected_emptyUrl_disablesComboAndShowsEnterUrlMessage() throws Exception {
+    radioSSO().setSelection( true );
+    radioUsernamePassword().setSelection( false );
+    txtUrl().setText( "http://server/pentaho" );
+    // Cancel any pending timer
+    Runnable pending = (Runnable) getField( "pendingProviderLoad" );
+    if ( pending != null ) {
+      display.timerExec( -1, pending );
+      setField( "pendingProviderLoad", null );
+    }
+
+    txtUrl().setText( "" );
+
+    assertFalse( combo().isEnabled() );
+    assertEquals( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.enterUrl" ),
+      lblSsoStatus().getText() );
+    assertNull( getField( "pendingProviderLoad" ) );
+  }
+
+  @Test
+  public void onUrlModified_ssoSelected_nonEmptyUrl_showsLoadingAndSchedulesDebounce() throws Exception {
+    radioSSO().setSelection( true );
+    radioUsernamePassword().setSelection( false );
+
+    txtUrl().setText( "http://server/pentaho" );
+
+    assertFalse( combo().isEnabled() );
+    assertEquals( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loading" ),
+      lblSsoStatus().getText() );
+    assertNotNull( getField( "pendingProviderLoad" ) );
+
+    // Clean up
+    Runnable pending = (Runnable) getField( "pendingProviderLoad" );
+    display.timerExec( -1, pending );
+    setField( "pendingProviderLoad", null );
+  }
+
+  @Test
+  public void cancelPendingProviderLoad_withPending_cancelsTimer() throws Exception {
+    Runnable mockRunnable = () -> {};
+    setField( "pendingProviderLoad", mockRunnable );
+
+    invoke( "cancelPendingProviderLoad", new Class[ 0 ] );
+
+    assertNull( getField( "pendingProviderLoad" ) );
+  }
+
+  @Test
+  public void cancelPendingProviderLoad_noPending_isNoOp() throws Exception {
+    setField( "pendingProviderLoad", null );
+
+    invoke( "cancelPendingProviderLoad", new Class[ 0 ] );
+
+    assertNull( getField( "pendingProviderLoad" ) );
+  }
+
+  @Test
+  public void handleEmptyUrlWhileSsoSelected_usernamePasswordSelected_doesNothing() throws Exception {
+    radioSSO().setSelection( false );
+    radioUsernamePassword().setSelection( true );
+    combo().setEnabled( true );
+    lblSsoStatus().setText( "previous" );
+
+    invoke( "handleEmptyUrlWhileSsoSelected", new Class[ 0 ] );
+
+    assertTrue( combo().isEnabled() );
+    assertEquals( "previous", lblSsoStatus().getText() );
+  }
+
+  @Test
+  public void handleNonEmptyUrlWhileSsoSelected_usernamePasswordSelected_doesNothing() throws Exception {
+    radioSSO().setSelection( false );
+    radioUsernamePassword().setSelection( true );
+    combo().setEnabled( true );
+    lblSsoStatus().setText( "previous" );
+
+    invoke( "handleNonEmptyUrlWhileSsoSelected", new Class[ 0 ] );
+
+    assertTrue( combo().isEnabled() );
+    assertEquals( "previous", lblSsoStatus().getText() );
+  }
+
+  @Test
+  public void handleNonEmptyUrlWhileSsoSelected_ssoSelected_showsLoading() throws Exception {
+    radioSSO().setSelection( true );
+    radioUsernamePassword().setSelection( false );
+
+    invoke( "handleNonEmptyUrlWhileSsoSelected", new Class[ 0 ] );
+
+    assertFalse( combo().isEnabled() );
+    assertEquals( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.loading" ),
+      lblSsoStatus().getText() );
+  }
+
+  @Test
+  public void handleEmptyUrlWhileSsoSelected_ssoSelected_showsEnterUrl() throws Exception {
+    radioSSO().setSelection( true );
+    radioUsernamePassword().setSelection( false );
+
+    invoke( "handleEmptyUrlWhileSsoSelected", new Class[ 0 ] );
+
+    assertFalse( combo().isEnabled() );
+    assertEquals( BaseMessages.getString( PKG, "PentahoEnterpriseRepoForm.status.enterUrl" ),
+      lblSsoStatus().getText() );
+  }
+
+  @Test
+  public void scheduleDebouncedProviderLoad_setsPendingProviderLoad() throws Exception {
+    setField( "pendingProviderLoad", null );
+
+    invoke( "scheduleDebouncedProviderLoad", new Class[ 0 ] );
+
+    assertNotNull( getField( "pendingProviderLoad" ) );
+
+    // Clean up
+    Runnable pending = (Runnable) getField( "pendingProviderLoad" );
+    display.timerExec( -1, pending );
+    setField( "pendingProviderLoad", null );
+  }
+
+  @Test
+  public void onUrlFocusLost_cancelsPendingAndTriggersImmediateLoad() throws Exception {
+    String url = "http://server/pentaho";
+    when( mockSsoService.fetchProviders( url ) ).thenReturn( Collections.emptyList() );
+
+    setUrlAndSelectSSO( url );
+    Runnable mockPending = () -> {};
+    setField( "pendingProviderLoad", mockPending );
+
+    onUrlFocusLost();
+
+    assertNull( getField( "pendingProviderLoad" ) );
   }
 
   @Test

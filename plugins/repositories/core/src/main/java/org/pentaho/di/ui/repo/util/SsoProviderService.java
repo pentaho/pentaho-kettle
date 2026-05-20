@@ -80,6 +80,40 @@ public class SsoProviderService {
     }
   }
 
+  public boolean isOAuthEnabled( String serverUrl ) throws IOException {
+    String settingsUrl = normalizeBaseUrl( serverUrl ) + "/plugin/login/api/v0/system-settings";
+    HttpURLConnection connection = null;
+
+    try {
+      connection = (HttpURLConnection) new URL( settingsUrl ).openConnection();
+      connection.setInstanceFollowRedirects( false );
+      connection.setRequestMethod( "GET" );
+      connection.setConnectTimeout( CONNECT_TIMEOUT_MS );
+      connection.setReadTimeout( READ_TIMEOUT_MS );
+      connection.setRequestProperty( "Accept", "application/json" );
+
+      int responseCode = connection.getResponseCode();
+      if ( responseCode < 200 || responseCode >= 300 ) {
+        return false;
+      }
+
+      try ( InputStreamReader reader =
+              new InputStreamReader( connection.getInputStream(), StandardCharsets.UTF_8 ) ) {
+        Object parsed = new JSONParser().parse( reader );
+        if ( parsed instanceof JSONObject settingsObject ) {
+          return getBoolean( settingsObject.get( "isOAuthEnabled" ) );
+        }
+      } catch ( Exception e ) {
+        return false;
+      }
+      return false;
+    } finally {
+      if ( connection != null ) {
+        connection.disconnect();
+      }
+    }
+  }
+
   public String buildProvidersUrl( String serverUrl ) {
     return normalizeBaseUrl( serverUrl ) + "/plugin/login/api/v0/oauth-providers";
   }
