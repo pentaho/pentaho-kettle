@@ -13,6 +13,7 @@
 
 package org.pentaho.di.ui.repo.timeout;
 
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
@@ -373,7 +374,18 @@ public class SessionTimeoutHandler {
    */
   private <T> T awaitFutureWithEventLoop( CompletableFuture<T> future )
       throws ExecutionException, InterruptedException {
-    Display display = Display.getCurrent();
+    // Skip SWT entirely in headless environments — Display.getCurrent() would trigger
+    // native library loading (which fails with UnsatisfiedLinkError on headless CI).
+    if ( GraphicsEnvironment.isHeadless() ) {
+      return future.get();
+    }
+    Display display;
+    try {
+      display = Display.getCurrent();
+    } catch ( Exception e ) {
+      // SWT native library unavailable — fall back to blocking get()
+      display = null;
+    }
     if ( display == null ) {
       // Not on the UI thread — safe to block
       return future.get();

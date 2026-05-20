@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Assume;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
@@ -58,11 +59,23 @@ import static org.mockito.Mockito.when;
 
 public class SessionTimeoutHandlerTest {
 
+  /**
+   * True only when SWT Display can be initialized in this JVM/OS environment.
+   * On headless Linux CI the native GTK static initializer fails with UnsatisfiedLinkError;
+   * we detect that once in setUpClass and skip Display-dependent tests via Assume.
+   */
+  private static boolean displayUsable = false;
+
   @BeforeClass
   public static void setUpClass() {
     if ( !KettleLogStore.isInitialized() ) {
       KettleLogStore.init();
     }
+    // Use GraphicsEnvironment.isHeadless() as a safe proxy for SWT Display availability.
+    // Class.forName("...Display") would trigger the native GTK static initializer, which
+    // fails on headless Linux CI and permanently poisons the Display class for the JVM session,
+    // breaking every subsequent test that references Display — even indirectly.
+    displayUsable = !java.awt.GraphicsEnvironment.isHeadless();
   }
 
   private RepositoryConnectController repositoryConnectController;
@@ -237,6 +250,7 @@ public class SessionTimeoutHandlerTest {
 
   @Test
   public void showLoginScreenReturnsTrueWhenBrowserReauthSucceeds() {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     RepositoryMeta repoMeta = mock( RepositoryMeta.class );
     when( repositoryConnectController.getConnectedRepository() ).thenReturn( repoMeta );
 
@@ -406,6 +420,7 @@ public class SessionTimeoutHandlerTest {
 
   @Test
   public void confirmSessionExpiryReturnsTrueWhenUserClicksOK() throws Exception {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     try ( MockedStatic<Spoon> spoonStatic = mockStatic( Spoon.class ) ) {
       Spoon spoon = mock( Spoon.class );
       Display display = mock( Display.class );
@@ -745,6 +760,7 @@ public class SessionTimeoutHandlerTest {
 
   @Test( expected = KettleRepositoryLostException.class )
   public void handleLoginCanceledClosesRepositoryAndThrows() throws Throwable {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     try ( MockedStatic<Spoon> spoonStatic = mockStatic( Spoon.class ) ) {
       Spoon spoon = mock( Spoon.class );
       Display display = mock( Display.class );
@@ -766,6 +782,7 @@ public class SessionTimeoutHandlerTest {
 
   @Test( expected = KettleRepositoryLostException.class )
   public void handleLoginCanceledLogsErrorWhenCloseRepositoryThrows() throws Throwable {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     try ( MockedStatic<Spoon> spoonStatic = mockStatic( Spoon.class ) ) {
       Spoon spoon = mock( Spoon.class );
       Display display = mock( Display.class );

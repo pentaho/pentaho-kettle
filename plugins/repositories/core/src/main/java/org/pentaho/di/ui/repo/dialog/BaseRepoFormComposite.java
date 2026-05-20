@@ -44,6 +44,7 @@ public abstract class BaseRepoFormComposite extends Composite {
   protected Button btnSave;
   protected Text txtDisplayName;
   protected Text txtDescription;
+  protected Label lDescription;
   protected Button chkDefault;
   protected String originalName;
   protected PropsUI props;
@@ -74,7 +75,7 @@ public abstract class BaseRepoFormComposite extends Composite {
       new FormDataBuilder().left( 0, 0 ).top( lDispName, LABEL_CONTROL_MARGIN ).width( MEDIUM_WIDTH ).result() );
     txtDisplayName.addModifyListener( lsMod );
 
-    Label lDescription = new Label( this, SWT.None );
+    lDescription = new Label( this, SWT.None );
     lDescription.setText( BaseMessages.getString( PKG, "repositories.description.label" ) );
     lDescription.setLayoutData(
       new FormDataBuilder().left( 0, 0 ).right( 100, 0 ).top( uiAfterDisplayName(), CONTROL_MARGIN ).result() );
