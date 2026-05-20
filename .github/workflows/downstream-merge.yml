@@ -1,4 +1,4 @@
-name: Merge workflow
+name: Downstream merge workflow
 
 on:
   push:
@@ -16,6 +16,13 @@ jobs:
         password: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
       volumes:
         - /home/runner/caches/pentaho/.m2:/root/.m2
+    env:
+      # Pentaho settings.xml references ${env.RESOLVE_REPO_MIRROR} (and credentials).
+      # These must be exported so Maven can substitute them when resolving plugins/deps
+      # that are not already present in the local .m2 cache.
+      RESOLVE_REPO_MIRROR: ${{ format('{0}/{1}', vars.ARTIFACTORY_BASE_URL, inputs.resolve_repo || 'pnt-mvn') }}
+      RESOLVE_REPO_USER: ${{ secrets.PENTAHO_CICD_ONE_USER }}
+      RESOLVE_REPO_PASS: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
     outputs:
       build_version: ${{ steps.build-version.outputs.build_version }}
       artifacts: ${{ steps.get-artifacts.outputs.artifacts }}
