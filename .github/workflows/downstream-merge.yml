@@ -71,7 +71,14 @@ jobs:
       - name: Get current version from pom.xml
         id: get-version
         run: |
-          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          current_version=$(python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          NS = {"m": "http://maven.apache.org/POM/4.0.0"}
+          root = ET.parse("pom.xml").getroot()
+          version = root.find("m:version", NS)
+          print(version.text.strip())
+          PY
+          )
           echo "Current version: $current_version"
           echo "current_version=$current_version" >> $GITHUB_OUTPUT
 
