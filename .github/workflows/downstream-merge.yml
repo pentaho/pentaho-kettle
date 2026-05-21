@@ -120,6 +120,11 @@ jobs:
           -DprocessAllModules=true
           -DgenerateBackupPoms=false
 
+      - name: Write build version to release-versions.properties
+        shell: bash
+        run: |
+          echo "build_version=${{ steps.build-version.outputs.build_version }}" > .github/release-versions.properties
+
       - name: Collect built artifact names
         id: get-artifacts
         shell: bash
