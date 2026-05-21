@@ -97,9 +97,9 @@ jobs:
           new_version=$(echo "$build_version" | sed "s/\.[^.]*$/.${date_segment}/")
 
           # Reattach the -SNAPSHOT suffix if it was present
-          if [[ "$current_version" == *-SNAPSHOT ]]; then
-            new_version="$new_version-SNAPSHOT"
-          fi
+          #          if [[ "$current_version" == *-SNAPSHOT ]]; then
+          #            new_version="$new_version-SNAPSHOT"
+          #          fi
 
           echo "Base version: $build_version"
           echo "New version:  $new_version"
