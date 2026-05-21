@@ -186,7 +186,6 @@ jobs:
     with:
       modules_to_build: "."
       base_version: ${{ needs.resolve-version.outputs.build_version }}
-      version: ${{ needs.resolve-version.outputs.build_version }}
       run_snapshot: false
       run_release_candidate: true
       container_image: "one.hitachivantara.com/devops-docker-release/pentaho/actions-common:jdk21-20260413.227"
