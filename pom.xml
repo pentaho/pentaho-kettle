@@ -60,6 +60,8 @@
     <pentaho-i18n-bundle.version>11.1.0.0-SNAPSHOT</pentaho-i18n-bundle.version>
     <pentaho-capability-manager.version>11.1.0.0-SNAPSHOT</pentaho-capability-manager.version>
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
+    <teradata-tpt-plugin-package.version>11.1.0.0-SNAPSHOT</teradata-tpt-plugin-package.version>
+
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
