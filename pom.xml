@@ -104,7 +104,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
-        <version>${pentaho-metastore.version}</version>
+        <version>${metastore.version}</version>
       </dependency>
 
       <!-- Jetty dependencies PPP-5150 -->

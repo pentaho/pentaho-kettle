@@ -27,6 +27,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
+      <version>${metastore.version}</version>
       <scope>provided</scope>
     </dependency>
 
