@@ -70,6 +70,7 @@
     <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
     <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
     <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
+    <artifactory-maven-plugin.version>3.7.0</artifactory-maven-plugin.version>
   </properties>
 
   <dependencyManagement>
