@@ -192,7 +192,7 @@ jobs:
       container_image: "one.hitachivantara.com/devops-docker-release/pentaho/actions-common:jdk21-20260413.227"
       # Apply the virtual date-based version at build time so the reusable workflow's
       # fresh checkout also uses the correct version without committing pom.xml changes.
-      additional_snapshot_mvn_directives: >-
+      additional_mvn_directives: >-
          ${{ needs.resolve-version.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', needs.resolve-version.outputs.libraries_to_update, needs.resolve-version.outputs.build_version) || '' }}
 
     secrets: inherit

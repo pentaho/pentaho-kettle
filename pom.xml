@@ -56,6 +56,7 @@
     <commons-xul.version>11.1.0.0-SNAPSHOT</commons-xul.version>
     <pentaho-metastore.version>11.1.0.0-SNAPSHOT</pentaho-metastore.version>
     <metastore.version>11.1.0.0-SNAPSHOT</metastore.version>
+    <platform.version>11.1.0.0-SNAPSHOT</platform.version>
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
