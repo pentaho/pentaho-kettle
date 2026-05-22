@@ -16,7 +16,6 @@
 
   <properties>
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
