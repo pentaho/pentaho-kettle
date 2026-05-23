@@ -19,21 +19,23 @@ import org.apache.commons.vfs2.FileObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.utils.TestUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 /**
@@ -43,6 +45,8 @@ public class JobEntrySFTPIT {
 
   @ClassRule
   public static TemporaryFolder folder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder outputFolder = new TemporaryFolder();
 
   private static SftpServer server;
 
@@ -62,20 +66,17 @@ public class JobEntrySFTPIT {
 
   @Test
   public void getFile_WhenDestinationIsSetViaVariable() throws Exception {
-    final String localDir = TestUtils.createTempDir();
-    KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject( localDir ).createFolder();
-
-    final String myVar = "my-var";
-
     final String sftpDir = "job-entry-sftp-test";
     final String fileName = "file.txt";
+    final String myVar = "my-var";
+    final String expectedDownloadedFilePath = outputFolder.getRoot().getAbsolutePath() + File.separator + fileName;
 
     uploadFile( sftpDir, fileName );
 
     JobEntrySFTP job = new JobEntrySFTP();
-    job.setVariable( myVar, localDir );
+    job.setVariable( myVar, outputFolder.getRoot().getAbsolutePath() );
 
-    JobMeta jobMeta=mock( JobMeta.class );
+    JobMeta jobMeta=spy( new JobMeta() );
     job.setParentJobMeta( jobMeta );
 
     Job parent = mock( Job.class );
@@ -93,7 +94,7 @@ public class JobEntrySFTPIT {
     job.execute( new Result(), 1 );
 
     FileObject downloaded = KettleVFS.getInstance( DefaultBowl.getInstance() )
-      .getFileObject( localDir + "/" + fileName );
+      .getFileObject( expectedDownloadedFilePath );
     assertTrue( downloaded.exists() );
     downloaded.delete();
   }
