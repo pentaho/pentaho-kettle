@@ -14,7 +14,6 @@
 package org.pentaho.di.job.entries.ftpsget;
 
 import org.apache.commons.vfs2.FileObject;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -22,20 +21,24 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 
+import java.io.File;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 /**
@@ -82,7 +85,8 @@ public class JobEntryFTPSGetIT {
   @Test
   public void downloadFile_WhenDestinationIsSetViaVariable() throws Exception {
     final String myVar = "my-var";
-    final String expectedDownloadedFilePath = outputFolder.getRoot().getAbsolutePath() + "/" + FtpsServer.SAMPLE_FILE;
+    final String expectedDownloadedFilePath =
+      outputFolder.getRoot().getAbsolutePath() + File.separator + FtpsServer.SAMPLE_FILE;
 
     jobEntry.setVariable( myVar, outputFolder.getRoot().getAbsolutePath() );
     jobEntry.setTargetDirectory( String.format( "${%s}", myVar ) );
@@ -101,12 +105,13 @@ public class JobEntryFTPSGetIT {
 
   @Test
   public void downloadFile_WhenDestinationIsSetDirectly() throws Exception {
-    final String expectedDownloadedFilePath = outputFolder.getRoot().getAbsolutePath() + "/" + FtpsServer.SAMPLE_FILE;
+    final String expectedDownloadedFilePath =
+      outputFolder.getRoot().getAbsolutePath() + File.separator + FtpsServer.SAMPLE_FILE;
 
     jobEntry.setTargetDirectory( outputFolder.getRoot().getAbsolutePath() );
 
     FileObject downloaded = KettleVFS.getInstance( DefaultBowl.getInstance() )
-       .getFileObject( expectedDownloadedFilePath );
+      .getFileObject( expectedDownloadedFilePath );
     assertFalse( downloaded.exists() );
     try {
       jobEntry.execute( new Result(), 1 );
@@ -123,8 +128,8 @@ public class JobEntryFTPSGetIT {
     when( parentJob.getLogLevel() ).thenReturn( LogLevel.BASIC );
     when( parentJob.getContainerObjectId() ).thenReturn( UUID.randomUUID().toString() );
     job.setParentJob( parentJob );
-    JobMeta parentJobMeta = mock( JobMeta.class );
-    when( parentJobMeta.getNamedClusterEmbedManager() ).thenReturn( null );
+    JobMeta parentJobMeta = spy( JobMeta.class );
+    doReturn( mock( NamedClusterEmbedManager.class ) ).when( parentJobMeta ).getNamedClusterEmbedManager();
     job.setParentJobMeta( parentJobMeta );
     job.setLogLevel( LogLevel.NOTHING );
   }
