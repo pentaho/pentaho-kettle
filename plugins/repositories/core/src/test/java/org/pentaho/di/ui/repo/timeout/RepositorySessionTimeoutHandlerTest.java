@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Assume;
 import org.mockito.MockedStatic;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -49,11 +50,23 @@ import static org.mockito.Mockito.when;
 
 public class RepositorySessionTimeoutHandlerTest {
 
+  /**
+   * True only when SWT Display can be initialized in this JVM/OS environment.
+   * On headless Linux CI the native GTK static initializer fails with UnsatisfiedLinkError;
+   * we detect that once in setUpClass and skip Display-dependent tests via Assume.
+   */
+  private static boolean displayUsable = false;
+
   @BeforeClass
   public static void setUpClass() {
     if ( !KettleLogStore.isInitialized() ) {
       KettleLogStore.init();
     }
+    // Use GraphicsEnvironment.isHeadless() as a safe proxy for SWT Display availability.
+    // Class.forName("...Display") would trigger the native GTK static initializer, which
+    // fails on headless Linux CI and permanently poisons the Display class for the JVM session,
+    // breaking every subsequent test that references Display — even indirectly.
+    displayUsable = !java.awt.GraphicsEnvironment.isHeadless();
   }
 
   private ReconnectableRepository repository;
@@ -198,6 +211,7 @@ public class RepositorySessionTimeoutHandlerTest {
 
   @Test( expected = KettleRepositoryLostException.class )
   public void testInvokeSessionExpiredLoginFailsSetsRepositoryNullViaSyncExec() throws Throwable {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     Method method = Repository.class.getMethod( "getName" );
     when( repository.getName() ).thenThrow( new KettleAuthenticationException( "Session expired" ) );
     when( mockSessionTimeoutHandler.showLoginScreen( any() ) ).thenReturn( false );
