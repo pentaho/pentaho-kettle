@@ -21,29 +21,57 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * HTTP callback authentication service for Pentaho Repository.
  * Opens system browser, starts local HTTP callback server, captures JSESSIONID.
  */
+@SuppressWarnings( "java:S6548" ) // Singleton is intentional — shared auth state prevents concurrent flows
 public class BrowserAuthenticationService {
 
   private static final LogChannelInterface log = new LogChannel( "BrowserAuthenticationService" );
   static final int CALLBACK_PORT = 8282;
   private static final int TIMEOUT_SECONDS = 300; // 5 minutes
+  private static final int SERVER_START_MAX_RETRIES = 5;
+  private static final long SERVER_START_RETRY_DELAY_MS = 150L;
   static final String PARAM_AUTHORIZATION_URI = "authorizationUri";
+
+  // Singleton is required: authInProgress, authGeneration, and callbackServer state must be shared
+  // across all callers to prevent concurrent authentication flows on the same callback port.
+  @SuppressWarnings( "java:S6548" ) // Singleton pattern is intentional and necessary here
+  private static class InstanceHolder {
+    private static final BrowserAuthenticationService INSTANCE = new BrowserAuthenticationService();
+  }
+
+  public static BrowserAuthenticationService getInstance() {
+    return InstanceHolder.INSTANCE;
+  }
 
   private HttpServer callbackServer;
   private CompletableFuture<SessionInfo> sessionFuture;
+
+  /** Tracks whether a browser-auth flow is currently active. */
+  private final AtomicBoolean authInProgress = new AtomicBoolean( false );
+
+  /**
+   * Incremented each time a new auth flow starts so that whenComplete callbacks
+   * from a cancelled/stale flow never stop the newly started server.
+   */
+  private final AtomicInteger authGeneration = new AtomicInteger( 0 );
 
   /**
    * Initiates HTTP callback authentication flow.
@@ -56,10 +84,20 @@ public class BrowserAuthenticationService {
   }
 
   public CompletableFuture<SessionInfo> authenticate( String serverUrl, String authorizationUri ) {
+
+    // Guard: caller must check isAuthInProgress() and call cancelCurrentAuth() if needed
+    // before calling this method. Do NOT start a new server if one is already bound.
+    if ( authInProgress.get() ) {
+      log.logBasic( "authenticate() called while auth already in progress — returning existing future." );
+      return sessionFuture;
+    }
+
+    authInProgress.set( true );
+    final int myGeneration = authGeneration.incrementAndGet();
     sessionFuture = new CompletableFuture<>();
 
     try {
-      startCallbackServer();
+      startCallbackServerWithRetry();
       String authUrl = buildAuthenticationUrl( serverUrl, authorizationUri );
       openSystemBrowser( authUrl );
 
@@ -67,8 +105,11 @@ public class BrowserAuthenticationService {
 
       return sessionFuture.orTimeout( TIMEOUT_SECONDS, TimeUnit.SECONDS )
         .whenComplete( ( result, error ) -> {
-          stopCallbackServer();
-          if ( error != null ) {
+          if ( authGeneration.get() == myGeneration ) {
+            authInProgress.set( false );
+            stopCallbackServer();
+          }
+          if ( error != null && !isUserInitiatedCancellation( error ) ) {
             log.logError( "HTTP callback authentication failed or timed out", error );
           }
         } );
@@ -76,10 +117,59 @@ public class BrowserAuthenticationService {
     } catch ( Exception e ) {
       log.logError( "Failed to initiate HTTP callback authentication", e );
       sessionFuture.completeExceptionally( e );
-      stopCallbackServer();
+      if ( authGeneration.get() == myGeneration ) {
+        authInProgress.set( false );
+        stopCallbackServer();
+      }
       return sessionFuture;
     }
   }
+
+  /**
+   * Returns whether a browser authentication flow is currently active.
+   */
+  public boolean isAuthInProgress() {
+    return authInProgress.get();
+  }
+
+  /**
+   * Cancels the currently running auth flow — stops the callback server and
+   * completes the existing future exceptionally so any pending listeners are notified.
+   * Call this before starting a new login when {@link #isAuthInProgress()} returns true.
+   */
+  public void cancelCurrentAuth() {
+    // Bump generation FIRST so any in-flight whenComplete sees a stale value
+    // and skips cleanup — preventing it from stopping the new server we are about to start.
+    authGeneration.incrementAndGet();
+    if ( sessionFuture != null && !sessionFuture.isDone() ) {
+      sessionFuture.completeExceptionally(
+        new UserCancelledAuthException( "Login cancelled by user to start a new login." ) );
+    }
+    stopCallbackServer();
+    authInProgress.set( false );
+  }
+
+  public static boolean isUserInitiatedCancellation( Throwable throwable ) {
+    Throwable current = throwable;
+    while ( current != null ) {
+      if ( current instanceof UserCancelledAuthException ) {
+        return true;
+      }
+      if ( current instanceof CompletionException && current.getCause() != null ) {
+        current = current.getCause();
+        continue;
+      }
+      current = current.getCause();
+    }
+    return false;
+  }
+
+  public static class UserCancelledAuthException extends Exception {
+    public UserCancelledAuthException( String message ) {
+      super( message );
+    }
+  }
+
 
   /**
    * Starts the local HTTP callback server.
@@ -89,6 +179,47 @@ public class BrowserAuthenticationService {
     callbackServer.createContext( "/pentaho/auth/callback", new CallbackHandler() );
     callbackServer.setExecutor( null );
     callbackServer.start();
+  }
+
+  void startCallbackServerWithRetry() throws IOException {
+    IOException lastException = null;
+    for ( int attempt = 1; attempt <= SERVER_START_MAX_RETRIES; attempt++ ) {
+      try {
+        startCallbackServer();
+        return;
+      } catch ( IOException e ) {
+        lastException = e;
+        if ( !isAddressAlreadyInUse( e ) || attempt == SERVER_START_MAX_RETRIES ) {
+          throw e;
+        }
+        log.logBasic( "Callback port still busy; retrying callback server start (attempt "
+          + attempt + "/" + SERVER_START_MAX_RETRIES + ")" );
+        try {
+          Thread.sleep( SERVER_START_RETRY_DELAY_MS );
+        } catch ( InterruptedException interrupted ) {
+          Thread.currentThread().interrupt();
+          throw new IOException( "Interrupted while waiting to retry callback server startup", interrupted );
+        }
+      }
+    }
+    if ( lastException != null ) {
+      throw lastException;
+    }
+  }
+
+  boolean isAddressAlreadyInUse( Throwable throwable ) {
+    Throwable current = throwable;
+    while ( current != null ) {
+      if ( current instanceof BindException ) {
+        return true;
+      }
+      String message = current.getMessage();
+      if ( message != null && message.toLowerCase( Locale.ROOT ).contains( "address already in use" ) ) {
+        return true;
+      }
+      current = current.getCause();
+    }
+    return false;
   }
 
   /**

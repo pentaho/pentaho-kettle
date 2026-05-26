@@ -388,7 +388,7 @@ public class SessionTimeoutHandler {
   }
 
   BrowserAuthenticationService createBrowserAuthenticationService() {
-    return new BrowserAuthenticationService();
+    return BrowserAuthenticationService.getInstance();
   }
 
   /**

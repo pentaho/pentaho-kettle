@@ -28,10 +28,12 @@ import java.awt.Desktop;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.BindException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
@@ -39,6 +41,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -392,6 +395,332 @@ public class BrowserAuthenticationServiceTest {
   }
 
   @Test
+  public void authenticateReturnsExistingFutureWhenAuthAlreadyInProgress() throws Exception {
+    BrowserAuthenticationService noopService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        // no-op
+      }
+    };
+
+    CompletableFuture<BrowserAuthenticationService.SessionInfo> first =
+      noopService.authenticate( "http://server:8080/pentaho" );
+    CompletableFuture<BrowserAuthenticationService.SessionInfo> second =
+      noopService.authenticate( "http://server:8080/pentaho" );
+
+    // Both futures should resolve to the same result when the callback completes
+    BrowserAuthenticationService.CallbackHandler handler = noopService.new CallbackHandler();
+    HttpExchange exchange = mockExchangeWithQuery( "jsessionid=SHARED&username=admin" );
+    handler.handle( exchange );
+
+    assertEquals( "SHARED", first.get().getJsessionId() );
+    assertEquals( "SHARED", second.get().getJsessionId() );
+    noopService.stopCallbackServer();
+  }
+
+  @Test
+  public void authenticateSetsAuthInProgressToTrue() {
+    BrowserAuthenticationService noopService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        // no-op
+      }
+    };
+
+    assertFalse( noopService.isAuthInProgress() );
+
+    noopService.authenticate( "http://server:8080/pentaho" );
+
+    assertTrue( noopService.isAuthInProgress() );
+    noopService.stopCallbackServer();
+  }
+
+  @Test
+  public void authenticateClearsAuthInProgressOnServerStartFailure() {
+    BrowserAuthenticationService failingService = new BrowserAuthenticationService() {
+      @Override HttpServer createHttpServer( int port ) throws IOException {
+        throw new IOException( "port in use" );
+      }
+    };
+
+    failingService.authenticate( "http://localhost:8080/pentaho" );
+
+    assertFalse( failingService.isAuthInProgress() );
+  }
+
+  @Test
+  public void authenticateClearsAuthInProgressOnBrowserOpenFailure() {
+    BrowserAuthenticationService failingService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) throws IOException {
+        throw new IOException( "no browser" );
+      }
+    };
+
+    failingService.authenticate( "http://localhost:8080/pentaho" );
+
+    assertFalse( failingService.isAuthInProgress() );
+  }
+
+  @Test
+  public void authenticatePassesAuthorizationUriToBuildUrl() {
+    final String[] capturedUrl = { null };
+    BrowserAuthenticationService capturingService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        capturedUrl[0] = url;
+      }
+    };
+
+    capturingService.authenticate( "http://localhost:8080/pentaho", "oauth2/authorization/azure" );
+
+    assertNotNull( capturedUrl[0] );
+    assertTrue( capturedUrl[0].contains( "authorizationUri=oauth2%2Fauthorization%2Fazure" ) );
+    capturingService.stopCallbackServer();
+  }
+
+  @Test
+  public void authenticateWithoutAuthorizationUriDoesNotIncludeParam() {
+    final String[] capturedUrl = { null };
+    BrowserAuthenticationService capturingService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        capturedUrl[0] = url;
+      }
+    };
+
+    capturingService.authenticate( "http://localhost:8080/pentaho" );
+
+    assertNotNull( capturedUrl[0] );
+    assertFalse( capturedUrl[0].contains( "authorizationUri" ) );
+    capturingService.stopCallbackServer();
+  }
+
+  @Test
+  public void cancelCurrentAuthClearsAuthInProgress() {
+    BrowserAuthenticationService noopService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        // no-op
+      }
+    };
+
+    noopService.authenticate( "http://server:8080/pentaho" );
+    assertTrue( noopService.isAuthInProgress() );
+
+    noopService.cancelCurrentAuth();
+
+    assertFalse( noopService.isAuthInProgress() );
+  }
+
+  @Test
+  public void cancelCurrentAuthCompletesExistingFutureExceptionally() {
+    BrowserAuthenticationService noopService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        // no-op
+      }
+    };
+
+    CompletableFuture<BrowserAuthenticationService.SessionInfo> future =
+      noopService.authenticate( "http://server:8080/pentaho" );
+
+    noopService.cancelCurrentAuth();
+
+    assertTrue( future.isCompletedExceptionally() );
+  }
+
+  @Test
+  public void cancelCurrentAuthAllowsNewAuthFlowToStart() {
+    BrowserAuthenticationService noopService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        // no-op
+      }
+    };
+
+    CompletableFuture<BrowserAuthenticationService.SessionInfo> first =
+      noopService.authenticate( "http://server:8080/pentaho" );
+
+    noopService.cancelCurrentAuth();
+
+    CompletableFuture<BrowserAuthenticationService.SessionInfo> second =
+      noopService.authenticate( "http://server:8080/pentaho" );
+
+    assertNotSame( first, second );
+    assertFalse( second.isDone() );
+    noopService.stopCallbackServer();
+  }
+
+  @Test
+  public void cancelCurrentAuthIsIdempotentWhenNoAuthInProgress() {
+    BrowserAuthenticationService noopService = new BrowserAuthenticationService();
+
+    assertFalse( noopService.isAuthInProgress() );
+
+    noopService.cancelCurrentAuth();
+
+    assertFalse( noopService.isAuthInProgress() );
+  }
+
+  @Test
+  public void cancelCurrentAuthStopsCallbackServer() {
+    final boolean[] serverStopped = { false };
+    BrowserAuthenticationService trackingService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        // no-op
+      }
+      @Override void stopCallbackServer() {
+        serverStopped[0] = true;
+        super.stopCallbackServer();
+      }
+    };
+
+    trackingService.authenticate( "http://server:8080/pentaho" );
+
+    trackingService.cancelCurrentAuth();
+
+    assertTrue( serverStopped[0] );
+  }
+
+  @Test
+  public void cancelCurrentAuthExceptionIsUserCancelledAuthException() throws Exception {
+    BrowserAuthenticationService noopService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        // no-op
+      }
+    };
+
+    CompletableFuture<BrowserAuthenticationService.SessionInfo> future =
+      noopService.authenticate( "http://server:8080/pentaho" );
+
+    noopService.cancelCurrentAuth();
+
+    try {
+      future.get();
+      fail( "Expected ExecutionException" );
+    } catch ( ExecutionException e ) {
+      assertTrue( e.getCause() instanceof BrowserAuthenticationService.UserCancelledAuthException );
+      assertTrue( e.getCause().getMessage().contains( "cancelled" ) );
+    }
+  }
+
+  @Test
+  public void cancelCurrentAuthDoesNotAffectAlreadyCompletedFuture() throws Exception {
+    BrowserAuthenticationService noopService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        // no-op
+      }
+    };
+
+    CompletableFuture<BrowserAuthenticationService.SessionInfo> future =
+      noopService.authenticate( "http://server:8080/pentaho" );
+
+    // Simulate successful callback completion before cancel
+    BrowserAuthenticationService.CallbackHandler handler = noopService.new CallbackHandler();
+    HttpExchange exchange = mockExchangeWithQuery( "jsessionid=SESSION_OK&username=admin" );
+    handler.handle( exchange );
+
+    assertFalse( future.isCompletedExceptionally() );
+
+    noopService.cancelCurrentAuth();
+
+    // Future should remain successfully completed — cancel does not overwrite
+    assertFalse( future.isCompletedExceptionally() );
+    assertEquals( "SESSION_OK", future.get().getJsessionId() );
+  }
+
+  @Test
+  public void cancelCurrentAuthIncrementsGenerationToPreventStaleCleanup() {
+    BrowserAuthenticationService noopService = new BrowserAuthenticationService() {
+      @Override void openSystemBrowser( String url ) {
+        // no-op
+      }
+    };
+
+    noopService.authenticate( "http://server:8080/pentaho" );
+    noopService.cancelCurrentAuth();
+
+    // After cancel, a new authenticate should work without the old whenComplete interfering
+    CompletableFuture<BrowserAuthenticationService.SessionInfo> second =
+      noopService.authenticate( "http://server:8080/pentaho" );
+
+    assertFalse( second.isDone() );
+    assertTrue( noopService.isAuthInProgress() );
+    noopService.stopCallbackServer();
+  }
+
+  @Test
+  public void isUserInitiatedCancellationReturnsTrueForUserCancelledException() {
+    Throwable ex = new BrowserAuthenticationService.UserCancelledAuthException( "cancelled" );
+    assertTrue( BrowserAuthenticationService.isUserInitiatedCancellation( ex ) );
+  }
+
+  @Test
+  public void isUserInitiatedCancellationReturnsTrueWhenWrappedInCompletionException() {
+    Throwable cause = new BrowserAuthenticationService.UserCancelledAuthException( "cancelled" );
+    Throwable wrapped = new CompletionException( cause );
+    assertTrue( BrowserAuthenticationService.isUserInitiatedCancellation( wrapped ) );
+  }
+
+  @Test
+  public void isUserInitiatedCancellationReturnsFalseForOtherExceptions() {
+    assertFalse( BrowserAuthenticationService.isUserInitiatedCancellation( new RuntimeException( "other" ) ) );
+  }
+
+  @Test
+  public void isUserInitiatedCancellationReturnsFalseForNull() {
+    assertFalse( BrowserAuthenticationService.isUserInitiatedCancellation( null ) );
+  }
+
+  @Test
+  public void isUserInitiatedCancellationReturnsTrueWhenDeeplyNestedInCompletionExceptions() {
+    Throwable root = new BrowserAuthenticationService.UserCancelledAuthException( "deep" );
+    Throwable mid = new CompletionException( root );
+    Throwable outer = new CompletionException( mid );
+    assertTrue( BrowserAuthenticationService.isUserInitiatedCancellation( outer ) );
+  }
+
+  @Test
+  public void isUserInitiatedCancellationReturnsTrueWhenWrappedInGenericException() {
+    Throwable cause = new BrowserAuthenticationService.UserCancelledAuthException( "wrapped" );
+    Throwable wrapper = new RuntimeException( "runtime", cause );
+    assertTrue( BrowserAuthenticationService.isUserInitiatedCancellation( wrapper ) );
+  }
+
+  @Test
+  public void isUserInitiatedCancellationReturnsFalseForCompletionExceptionWithoutUserCancelled() {
+    Throwable inner = new IOException( "network error" );
+    Throwable wrapped = new CompletionException( inner );
+    assertFalse( BrowserAuthenticationService.isUserInitiatedCancellation( wrapped ) );
+  }
+
+  @Test
+  public void isUserInitiatedCancellationReturnsFalseForExceptionWithNullCause() {
+    Throwable ex = new RuntimeException( "no cause" );
+    assertFalse( BrowserAuthenticationService.isUserInitiatedCancellation( ex ) );
+  }
+
+  @Test
+  public void isUserInitiatedCancellationReturnsFalseForCompletionExceptionWithNullCause() {
+    Throwable ex = new CompletionException( null );
+    assertFalse( BrowserAuthenticationService.isUserInitiatedCancellation( ex ) );
+  }
+
+  @Test
+  public void userCancelledAuthExceptionPreservesMessage() {
+    BrowserAuthenticationService.UserCancelledAuthException ex =
+      new BrowserAuthenticationService.UserCancelledAuthException( "Login cancelled by user to start a new login." );
+    assertEquals( "Login cancelled by user to start a new login.", ex.getMessage() );
+  }
+
+  @Test
+  public void userCancelledAuthExceptionIsAnException() {
+    BrowserAuthenticationService.UserCancelledAuthException ex =
+      new BrowserAuthenticationService.UserCancelledAuthException( "test" );
+    assertTrue( ex instanceof Exception );
+  }
+
+  @Test
+  public void userCancelledAuthExceptionAllowsNullMessage() {
+    BrowserAuthenticationService.UserCancelledAuthException ex =
+      new BrowserAuthenticationService.UserCancelledAuthException( null );
+    assertNull( ex.getMessage() );
+  }
+
+  @Test
   public void callbackPortIsPositive() {
     assertTrue( BrowserAuthenticationService.CALLBACK_PORT > 0 );
   }
@@ -427,11 +756,6 @@ public class BrowserAuthenticationServiceTest {
   }
 
   @Test
-  public void resolveCallbackHostUsesIpFromServerUrl() {
-    assertEquals( "192.168.1.50", service.resolveCallbackHost( "http://192.168.1.50:8080/pentaho" ) );
-  }
-
-  @Test
   public void resolveCallbackHostFallsBackToLocalhostForNullUrl() {
     assertEquals( "localhost", service.resolveCallbackHost( null ) );
   }
@@ -455,12 +779,6 @@ public class BrowserAuthenticationServiceTest {
     };
     assertEquals( "localhost", testService.resolveCallbackHost( "http://anything" ) );
   }
-
-  @Test
-  public void resolveCallbackHostUsesHostnameFromServerUrl() {
-    assertEquals( "myserver.example.com", service.resolveCallbackHost( "http://myserver.example.com:8080/pentaho" ) );
-  }
-
 
   @Test
   public void escapeHtmlEncodesAmpersand() {
@@ -510,6 +828,226 @@ public class BrowserAuthenticationServiceTest {
     } catch ( IOException e ) {
       assertTrue( e.getMessage().contains( "Port" ) );
     }
+  }
+
+  // ===== startCallbackServerWithRetry =====
+
+  @Test
+  public void startCallbackServerWithRetrySucceedsOnFirstAttempt() throws IOException {
+    final int[] attempts = { 0 };
+    BrowserAuthenticationService testService = new BrowserAuthenticationService() {
+      @Override void startCallbackServer() throws IOException {
+        attempts[0]++;
+      }
+    };
+
+    testService.startCallbackServerWithRetry();
+
+    assertEquals( 1, attempts[0] );
+  }
+
+  @Test
+  public void startCallbackServerWithRetryRetriesOnBindException() throws IOException {
+    final int[] attempts = { 0 };
+    BrowserAuthenticationService testService = new BrowserAuthenticationService() {
+      @Override void startCallbackServer() throws IOException {
+        attempts[0]++;
+        if ( attempts[0] < 3 ) {
+          throw new IOException( "address already in use", new BindException( "Address already in use" ) );
+        }
+      }
+    };
+
+    testService.startCallbackServerWithRetry();
+
+    assertEquals( 3, attempts[0] );
+  }
+
+  @Test
+  public void startCallbackServerWithRetrySucceedsOnSecondAttempt() throws IOException {
+    final int[] attempts = { 0 };
+    BrowserAuthenticationService testService = new BrowserAuthenticationService() {
+      @Override void startCallbackServer() throws IOException {
+        attempts[0]++;
+        if ( attempts[0] == 1 ) {
+          throw new IOException( "address already in use", new BindException( "Address already in use" ) );
+        }
+      }
+    };
+
+    testService.startCallbackServerWithRetry();
+
+    assertEquals( 2, attempts[0] );
+  }
+
+  @Test
+  public void startCallbackServerWithRetryThrowsImmediatelyForNonBindException() {
+    final int[] attempts = { 0 };
+    BrowserAuthenticationService testService = new BrowserAuthenticationService() {
+      @Override void startCallbackServer() throws IOException {
+        attempts[0]++;
+        throw new IOException( "permission denied" );
+      }
+    };
+
+    try {
+      testService.startCallbackServerWithRetry();
+      fail( "Expected IOException" );
+    } catch ( IOException e ) {
+      assertEquals( "permission denied", e.getMessage() );
+      assertEquals( 1, attempts[0] );
+    }
+  }
+
+  @Test
+  public void startCallbackServerWithRetryThrowsAfterMaxRetries() {
+    final int[] attempts = { 0 };
+    BrowserAuthenticationService testService = new BrowserAuthenticationService() {
+      @Override void startCallbackServer() throws IOException {
+        attempts[0]++;
+        throw new IOException( "address already in use", new BindException( "Address already in use" ) );
+      }
+    };
+
+    try {
+      testService.startCallbackServerWithRetry();
+      fail( "Expected IOException" );
+    } catch ( IOException e ) {
+      assertTrue( e.getMessage().contains( "address already in use" ) );
+      assertEquals( 5, attempts[0] );
+    }
+  }
+
+  @Test
+  public void startCallbackServerWithRetryThrowsOnLastAttemptWithBindException() {
+    BrowserAuthenticationService testService = new BrowserAuthenticationService() {
+      @Override void startCallbackServer() throws IOException {
+        throw new IOException( "Address already in use", new BindException( "Address already in use" ) );
+      }
+    };
+
+    try {
+      testService.startCallbackServerWithRetry();
+      fail( "Expected IOException" );
+    } catch ( IOException e ) {
+      assertTrue( e.getCause() instanceof BindException );
+    }
+  }
+
+  @Test
+  public void startCallbackServerWithRetryThrowsIOExceptionOnInterruptDuringSleep() {
+    final int[] attempts = { 0 };
+    BrowserAuthenticationService testService = new BrowserAuthenticationService() {
+      @Override void startCallbackServer() throws IOException {
+        attempts[0]++;
+        throw new IOException( "address already in use", new BindException( "Address already in use" ) );
+      }
+    };
+
+    Thread.currentThread().interrupt();
+
+    try {
+      testService.startCallbackServerWithRetry();
+      fail( "Expected IOException" );
+    } catch ( IOException e ) {
+      assertTrue( e.getMessage().contains( "Interrupted" ) );
+      assertTrue( e.getCause() instanceof InterruptedException );
+    } finally {
+      // Clear interrupted status
+      Thread.interrupted();
+    }
+  }
+
+  @Test
+  public void startCallbackServerWithRetryRestoresInterruptFlagOnInterrupt() {
+    final int[] attempts = { 0 };
+    BrowserAuthenticationService testService = new BrowserAuthenticationService() {
+      @Override void startCallbackServer() throws IOException {
+        attempts[0]++;
+        throw new IOException( "address already in use", new BindException( "Address already in use" ) );
+      }
+    };
+
+    Thread.currentThread().interrupt();
+
+    try {
+      testService.startCallbackServerWithRetry();
+      fail( "Expected IOException" );
+    } catch ( IOException e ) {
+      assertTrue( Thread.currentThread().isInterrupted() );
+    } finally {
+      Thread.interrupted();
+    }
+  }
+
+  @Test
+  public void startCallbackServerWithRetryOnlyRetriesOnFirstAttemptBeforeInterrupt() {
+    final int[] attempts = { 0 };
+    BrowserAuthenticationService testService = new BrowserAuthenticationService() {
+      @Override void startCallbackServer() throws IOException {
+        attempts[0]++;
+        throw new IOException( "address already in use", new BindException( "Address already in use" ) );
+      }
+    };
+
+    Thread.currentThread().interrupt();
+
+    try {
+      testService.startCallbackServerWithRetry();
+      fail( "Expected IOException" );
+    } catch ( IOException e ) {
+      assertEquals( 1, attempts[0] );
+    } finally {
+      Thread.interrupted();
+    }
+  }
+
+  // ===== isAddressAlreadyInUse =====
+
+  @Test
+  public void isAddressAlreadyInUseReturnsTrueForBindException() {
+    assertTrue( service.isAddressAlreadyInUse( new BindException( "Address already in use" ) ) );
+  }
+
+  @Test
+  public void isAddressAlreadyInUseReturnsTrueForNestedBindException() {
+    IOException wrapper = new IOException( "Failed to start", new BindException( "Address already in use" ) );
+    assertTrue( service.isAddressAlreadyInUse( wrapper ) );
+  }
+
+  @Test
+  public void isAddressAlreadyInUseReturnsTrueForMessageContainingAddressAlreadyInUse() {
+    IOException ex = new IOException( "Could not bind: Address already in use" );
+    assertTrue( service.isAddressAlreadyInUse( ex ) );
+  }
+
+  @Test
+  public void isAddressAlreadyInUseReturnsTrueForMessageCaseInsensitive() {
+    IOException ex = new IOException( "ADDRESS ALREADY IN USE" );
+    assertTrue( service.isAddressAlreadyInUse( ex ) );
+  }
+
+  @Test
+  public void isAddressAlreadyInUseReturnsFalseForUnrelatedIOException() {
+    assertFalse( service.isAddressAlreadyInUse( new IOException( "permission denied" ) ) );
+  }
+
+  @Test
+  public void isAddressAlreadyInUseReturnsFalseForNull() {
+    assertFalse( service.isAddressAlreadyInUse( null ) );
+  }
+
+  @Test
+  public void isAddressAlreadyInUseReturnsFalseForExceptionWithNullMessage() {
+    assertFalse( service.isAddressAlreadyInUse( new IOException( (String) null ) ) );
+  }
+
+  @Test
+  public void isAddressAlreadyInUseReturnsTrueForDeeplyNestedBindException() {
+    BindException bind = new BindException( "Address already in use" );
+    IOException mid = new IOException( "mid", bind );
+    RuntimeException outer = new RuntimeException( "outer", mid );
+    assertTrue( service.isAddressAlreadyInUse( outer ) );
   }
 
   @Test
@@ -881,6 +1419,33 @@ public class BrowserAuthenticationServiceTest {
 
     assertTrue( future.isCompletedExceptionally() );
     testService.stopCallbackServer();
+  }
+
+  @Test
+  public void getInstanceReturnsNonNull() {
+    BrowserAuthenticationService instance = BrowserAuthenticationService.getInstance();
+    assertNotNull( instance );
+  }
+
+  @Test
+  public void getInstanceReturnsSameInstanceOnMultipleCalls() {
+    BrowserAuthenticationService first = BrowserAuthenticationService.getInstance();
+    BrowserAuthenticationService second = BrowserAuthenticationService.getInstance();
+    assertSame( first, second );
+  }
+
+  @Test
+  public void getInstanceReturnsSameInstanceAcrossThreads() throws Exception {
+    CompletableFuture<BrowserAuthenticationService> future1 = CompletableFuture.supplyAsync(
+      BrowserAuthenticationService::getInstance );
+    CompletableFuture<BrowserAuthenticationService> future2 = CompletableFuture.supplyAsync(
+      BrowserAuthenticationService::getInstance );
+
+    BrowserAuthenticationService instance1 = future1.get();
+    BrowserAuthenticationService instance2 = future2.get();
+
+    assertNotNull( instance1 );
+    assertSame( instance1, instance2 );
   }
 }
 

@@ -70,6 +70,7 @@ public class RepositoryConnectMenuTest {
   private RepositoryConnectController repoController;
   private Shell mockShell;
   private Display mockDisplay;
+  private BrowserAuthenticationService mockAuthService;
 
   @BeforeClass
   public static void setUpClass() throws Exception {
@@ -121,6 +122,11 @@ public class RepositoryConnectMenuTest {
     // Build menu object via reflection to avoid constructor side-effects
     // (constructor calls getRepoControllerInstance() and addListener())
     menu = createMenuWithReflection( spoon, repoController );
+
+    // Create a mock BrowserAuthenticationService and make the menu return it
+    mockAuthService = mock( BrowserAuthenticationService.class );
+    menu = spy( menu );
+    doAnswer( inv -> mockAuthService ).when( menu ).getBrowserAuthService();
   }
 
   private RepositoryConnectMenu createMenuWithReflection( Spoon spoon,
@@ -146,12 +152,9 @@ public class RepositoryConnectMenuTest {
     RepositoryMeta repoMeta = mock( RepositoryMeta.class );
     String serverUrl = "http://localhost:8080/pentaho";
 
-    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) -> {
-              CompletableFuture<SessionInfo> pending = new CompletableFuture<>();
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( pending );
-            } ) ) {
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
+
+    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class ) ) {
 
       purUtils.when( () -> PurRepositoryUtils.supportsBrowserAuth( repoMeta ) ).thenReturn( true );
       purUtils.when( () -> PurRepositoryUtils.getAuthMethod( repoMeta ) ).thenReturn( "SSO" );
@@ -159,9 +162,7 @@ public class RepositoryConnectMenuTest {
 
       invokeConnectBasedOnAuthMethod( "myRepo", repoMeta );
 
-      // BrowserAuthenticationService should have been constructed and authenticate called
-      BrowserAuthenticationService constructed = authMock.constructed().get( 0 );
-      verify( constructed ).authenticate( serverUrl, null );
+      verify( mockAuthService ).authenticate( serverUrl, null );
     }
   }
 
@@ -176,11 +177,9 @@ public class RepositoryConnectMenuTest {
     AuthenticationContext mockAuthContext = mock( AuthenticationContext.class );
     SpoonSessionManager mockSessionMgr = mock( SpoonSessionManager.class );
     when( mockSessionMgr.getAuthenticationContext( serverUrl ) ).thenReturn( mockAuthContext );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( completedFuture );
 
-    try ( MockedStatic<SpoonSessionManager> sessionMock = mockStatic( SpoonSessionManager.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( completedFuture ) ) ) {
+    try ( MockedStatic<SpoonSessionManager> sessionMock = mockStatic( SpoonSessionManager.class ) ) {
 
       sessionMock.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
 
@@ -211,11 +210,9 @@ public class RepositoryConnectMenuTest {
     when( mockSessionMgr.getAuthenticationContext( serverUrl ) ).thenReturn( mockAuthContext );
     doThrow( new RuntimeException( "Connection refused" ) )
       .when( repoController ).connectToRepository( anyString(), anyString(), anyString() );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( completedFuture );
 
     try ( MockedStatic<SpoonSessionManager> sessionMock = mockStatic( SpoonSessionManager.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( completedFuture ) );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -236,11 +233,9 @@ public class RepositoryConnectMenuTest {
 
     CompletableFuture<SessionInfo> failedFuture = new CompletableFuture<>();
     failedFuture.completeExceptionally( new RuntimeException( "Server unreachable" ) );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( failedFuture );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( failedFuture ) );
-          MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
+    try ( MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
       invokeOpenBrowserLogin( "myRepo", serverUrl );
@@ -261,11 +256,9 @@ public class RepositoryConnectMenuTest {
 
     CompletableFuture<SessionInfo> timedOutFuture = new CompletableFuture<>();
     timedOutFuture.completeExceptionally( new TimeoutException( "Timed out" ) );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( timedOutFuture );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( timedOutFuture ) );
-          MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
+    try ( MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
       invokeOpenBrowserLogin( "myRepo", serverUrl );
@@ -280,11 +273,10 @@ public class RepositoryConnectMenuTest {
   public void testOpenBrowserLogin_AuthenticateThrows_ShowsError() throws Exception {
     String serverUrl = "http://localhost:8080/pentaho";
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenThrow(
-                new RuntimeException( "Port already in use" ) ) );
-          MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenThrow(
+      new RuntimeException( "Port already in use" ) );
+
+    try ( MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
       invokeOpenBrowserLogin( "myRepo", serverUrl );
@@ -303,17 +295,11 @@ public class RepositoryConnectMenuTest {
   public void testOpenBrowserLogin_PassesCorrectServerUrl() throws Exception {
     String serverUrl = "https://secure-server:443/pentaho";
 
-    CompletableFuture<SessionInfo> pending = new CompletableFuture<>();
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( pending ) ) ) {
+    invokeOpenBrowserLogin( "myRepo", serverUrl );
 
-      invokeOpenBrowserLogin( "myRepo", serverUrl );
-
-      BrowserAuthenticationService constructed = authMock.constructed().get( 0 );
-      verify( constructed ).authenticate( "https://secure-server:443/pentaho", null );
-    }
+    verify( mockAuthService ).authenticate( "https://secure-server:443/pentaho", null );
   }
 
   @Test
@@ -321,11 +307,9 @@ public class RepositoryConnectMenuTest {
     RepositoryMeta repoMeta = mock( RepositoryMeta.class );
     String serverUrl = "http://localhost:8080/pentaho";
 
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenThrow( new RuntimeException( "Fatal error" ) );
+
     try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) -> {
-              when( mock.authenticate( anyString(), any() ) ).thenThrow( new RuntimeException( "Fatal error" ) );
-            } );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -348,9 +332,7 @@ public class RepositoryConnectMenuTest {
   public void testConnectBasedOnAuthMethod_SSO_NullServerUrl_LogsErrorAndSkipsBrowserLogin() throws Exception {
     RepositoryMeta repoMeta = mock( RepositoryMeta.class );
 
-    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class ) ) {
+    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class ) ) {
 
       purUtils.when( () -> PurRepositoryUtils.getAuthMethod( repoMeta ) ).thenReturn( "SSO" );
       purUtils.when( () -> PurRepositoryUtils.getServerUrl( repoMeta ) ).thenReturn( null );
@@ -358,8 +340,8 @@ public class RepositoryConnectMenuTest {
 
       invokeConnectBasedOnAuthMethod( "myRepo", repoMeta );
 
-      // BrowserAuthenticationService should never be constructed
-      assertTrue( authMock.constructed().isEmpty() );
+      // authenticate should never be called when serverUrl is null
+      verify( mockAuthService, never() ).authenticate( anyString(), any() );
     }
   }
 
@@ -367,9 +349,7 @@ public class RepositoryConnectMenuTest {
   public void testConnectBasedOnAuthMethod_SSO_EmptyServerUrl_LogsErrorAndSkipsBrowserLogin() throws Exception {
     RepositoryMeta repoMeta = mock( RepositoryMeta.class );
 
-    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class ) ) {
+    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class ) ) {
 
       purUtils.when( () -> PurRepositoryUtils.getAuthMethod( repoMeta ) ).thenReturn( "SSO" );
       purUtils.when( () -> PurRepositoryUtils.getServerUrl( repoMeta ) ).thenReturn( "   " );
@@ -377,7 +357,7 @@ public class RepositoryConnectMenuTest {
 
       invokeConnectBasedOnAuthMethod( "myRepo", repoMeta );
 
-      assertTrue( authMock.constructed().isEmpty() );
+      verify( mockAuthService, never() ).authenticate( anyString(), any() );
     }
   }
 
@@ -387,11 +367,9 @@ public class RepositoryConnectMenuTest {
     String serverUrl = "http://localhost:8080/pentaho";
     String authUri = "https://auth.example.com/oauth2/authorize";
 
-    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) -> {
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
-            } ) ) {
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
+
+    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class ) ) {
 
       purUtils.when( () -> PurRepositoryUtils.getAuthMethod( repoMeta ) ).thenReturn( "SSO" );
       purUtils.when( () -> PurRepositoryUtils.getServerUrl( repoMeta ) ).thenReturn( serverUrl );
@@ -399,8 +377,7 @@ public class RepositoryConnectMenuTest {
 
       invokeConnectBasedOnAuthMethod( "myRepo", repoMeta );
 
-      BrowserAuthenticationService constructed = authMock.constructed().get( 0 );
-      verify( constructed ).authenticate( serverUrl, authUri );
+      verify( mockAuthService ).authenticate( serverUrl, authUri );
     }
   }
 
@@ -446,12 +423,9 @@ public class RepositoryConnectMenuTest {
     RepositoryMeta repoMeta = mock( RepositoryMeta.class );
     String serverUrl = "http://localhost:8080/pentaho";
 
-    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) -> {
-              CompletableFuture<SessionInfo> pending = new CompletableFuture<>();
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( pending );
-            } ) ) {
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
+
+    try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class ) ) {
 
       purUtils.when( () -> PurRepositoryUtils.getAuthMethod( repoMeta ) ).thenReturn( "SSO" );
       purUtils.when( () -> PurRepositoryUtils.getServerUrl( repoMeta ) ).thenReturn( serverUrl );
@@ -460,8 +434,7 @@ public class RepositoryConnectMenuTest {
 
       invokeConnectBasedOnAuthMethod( "myRepo", repoMeta );
 
-      BrowserAuthenticationService constructed = authMock.constructed().get( 0 );
-      verify( constructed ).authenticate( serverUrl, "   " );
+      verify( mockAuthService ).authenticate( serverUrl, "   " );
     }
   }
 
@@ -471,14 +444,9 @@ public class RepositoryConnectMenuTest {
     RepositoryMeta repoMeta = mock( RepositoryMeta.class );
     String serverUrl = "http://localhost:8080/pentaho";
 
-    // The BrowserAuthenticationService constructor throws, which is caught inside openBrowserLogin.
-    // Then showErrorDialog is called which throws a second exception — this propagates to the
-    // outer catch at line 275-276 in connectBasedOnAuthMethod.
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenThrow( new RuntimeException( "auth init failed" ) );
+
     try ( MockedStatic<PurRepositoryUtils> purUtils = mockStatic( PurRepositoryUtils.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) -> {
-              when( mock.authenticate( anyString(), any() ) ).thenThrow( new RuntimeException( "auth init failed" ) );
-            } );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class, ( mock, ctx ) -> {
               // Make open() throw so the exception escapes openBrowserLogin's catch block
@@ -497,6 +465,42 @@ public class RepositoryConnectMenuTest {
     }
   }
 
+  @Test
+  public void testOpenBrowserLogin_ConfirmCancelReceivesCorrectShell() throws Exception {
+    String serverUrl = "http://localhost:8080/pentaho";
+
+    try ( MockedStatic<org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper> helperMock =
+            mockStatic( org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper.class ) ) {
+
+      helperMock.when( () -> org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper
+        .confirmCancelExistingLoginIfNeeded( any( Shell.class ), any( BrowserAuthenticationService.class ) ) )
+        .thenReturn( false );
+
+      invokeOpenBrowserLogin( "myRepo", serverUrl );
+
+      helperMock.verify( () -> org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper
+        .confirmCancelExistingLoginIfNeeded( mockShell, mockAuthService ) );
+    }
+  }
+
+  @Test
+  public void testOpenBrowserLogin_NonUserCancelledException_ShowsErrorDialog() throws Exception {
+    String serverUrl = "http://localhost:8080/pentaho";
+
+    CompletableFuture<SessionInfo> failedFuture = new CompletableFuture<>();
+    failedFuture.completeExceptionally( new RuntimeException( "Server unreachable" ) );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( failedFuture );
+
+    try ( MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
+            mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
+
+      invokeOpenBrowserLogin( "myRepo", serverUrl );
+
+      org.eclipse.swt.widgets.MessageBox msgBox = mbMock.constructed().get( 0 );
+      verify( msgBox ).setText( "Authentication Failed" );
+      verify( msgBox ).open();
+    }
+  }
   // ── openBrowserLogin — additional branches ────────────────────────────────
 
   @Test
@@ -504,14 +508,11 @@ public class RepositoryConnectMenuTest {
     String serverUrl = "http://localhost:8080/pentaho";
     String authUri = "https://auth.example.com/oauth2/authorize";
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() ) ) ) {
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
 
-      invokeOpenBrowserLogin( "myRepo", serverUrl, authUri );
+    invokeOpenBrowserLogin( "myRepo", serverUrl, authUri );
 
-      verify( authMock.constructed().get( 0 ) ).authenticate( serverUrl, authUri );
-    }
+    verify( mockAuthService ).authenticate( serverUrl, authUri );
   }
 
   @Test
@@ -522,11 +523,9 @@ public class RepositoryConnectMenuTest {
       new java.util.concurrent.CompletionException( new RuntimeException( "inner cause" ) );
     CompletableFuture<SessionInfo> failedFuture = new CompletableFuture<>();
     failedFuture.completeExceptionally( wrappedEx );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( failedFuture );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( failedFuture ) );
-          MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
+    try ( MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
       invokeOpenBrowserLogin( "myRepo", serverUrl, null );
@@ -617,20 +616,6 @@ public class RepositoryConnectMenuTest {
       "RepositoryConnectMenu.Dialog.BrowserAuthGenericError" ), result );
   }
 
-  @Test
-  public void testFormatBrowserAuthErrorMessage_CompletionExceptionWithNullCause_ReturnsGenericMessage()
-    throws Exception {
-    // CompletionException with null cause — unwrapRootCause loop terminates immediately
-    java.util.concurrent.CompletionException ce = new java.util.concurrent.CompletionException( null );
-
-    String result = invokeFormatBrowserAuthErrorMessage( ce );
-
-    // Root cause is the CompletionException itself (cause is null, loop stops)
-    // getMessage() on CompletionException with null cause is null
-    assertEquals( BaseMessages.getString( RepositoryConnectMenu.class,
-      "RepositoryConnectMenu.Dialog.BrowserAuthGenericError" ), result );
-  }
-
   // ── unwrapRootCause ──────────────────────────────────────────────────────
 
   @Test
@@ -704,9 +689,7 @@ public class RepositoryConnectMenuTest {
     // Create a SelectionEvent with the mock widget
     Event event = new Event();
     event.widget = mockWidget;
-    // Use a spy on the menu to verify connectBasedOnAuthMethod is called
-    RepositoryConnectMenu spyMenu = spy( menu );
-    setField( spyMenu, "repositoriesMeta", reposMeta );
+    // menu is already a spy from setUp
 
     // Stub connectBasedOnAuthMethod to do nothing (it's private, use doAnswer on the spy)
     // Since connectBasedOnAuthMethod is private, we invoke the callback logic directly:
@@ -729,7 +712,7 @@ public class RepositoryConnectMenuTest {
       // repositoryMeta.getId() is NOT "KettleFileRepository" so the else branch executes
       // This is exactly what lines 185-187 do
       assertNotEquals( "KettleFileRepository", repoMeta.getId() );
-      connectMethod.invoke( spyMenu, repoName, repoMeta );
+      connectMethod.invoke( menu, repoName, repoMeta );
 
       // Verify RepositoryConnectionDialog was created (USERNAME_PASSWORD falls through to else branch)
       org.pentaho.di.ui.repo.dialog.RepositoryConnectionDialog dlg = dlgMock.constructed().get( 0 );

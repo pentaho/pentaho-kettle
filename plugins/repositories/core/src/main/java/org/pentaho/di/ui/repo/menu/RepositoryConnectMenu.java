@@ -35,6 +35,7 @@ import org.pentaho.di.ui.repo.dialog.RepositoryConnectionDialog;
 import org.pentaho.di.ui.repo.dialog.RepositoryManagerDialog;
 import org.pentaho.di.ui.repo.service.BrowserAuthenticationService;
 import org.pentaho.di.ui.repo.service.BrowserAuthenticationService.SessionInfo;
+import org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper;
 import org.pentaho.di.ui.repo.util.PurRepositoryUtils;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
@@ -290,7 +291,12 @@ public class RepositoryConnectMenu {
    */
   private void openBrowserLogin( String repoName, String serverUrl, String authorizationUri ) {
     try {
-      BrowserAuthenticationService authService = new BrowserAuthenticationService();
+      BrowserAuthenticationService authService = getBrowserAuthService();
+
+      if ( !BrowserAuthDialogHelper.confirmCancelExistingLoginIfNeeded( spoon.getShell(), authService ) ) {
+        return;
+      }
+
       CompletableFuture<SessionInfo> future = authService.authenticate( serverUrl, authorizationUri );
 
       future.thenAccept( sessionInfo ->
@@ -323,6 +329,10 @@ public class RepositoryConnectMenu {
           }
         } )
       ).exceptionally( ex -> {
+        if ( BrowserAuthenticationService.isUserInitiatedCancellation( ex ) ) {
+          log.logBasic( "Previous browser login was cancelled to start a new login; skipping error dialog." );
+          return null;
+        }
         log.logError( BaseMessages.getString( PKG, "RepositoryConnectMenu.ErrorBrowserAuthFailed" ), ex );
         spoon.getDisplay().asyncExec( () ->
           showErrorDialog(
@@ -368,5 +378,9 @@ public class RepositoryConnectMenu {
       current = current.getCause();
     }
     return current;
+  }
+
+  BrowserAuthenticationService getBrowserAuthService() {
+    return BrowserAuthenticationService.getInstance();
   }
 }
