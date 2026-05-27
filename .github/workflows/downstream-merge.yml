@@ -205,6 +205,8 @@ jobs:
     # target workflow does not yet exist in pentaho/pentaho-platform).
     runs-on: [ k8s ]
     needs: [ resolve-version, reusable-merge-workflow ]
+    env:
+      DOWNSTREAM_REF: 'FUSE-184-dev-ops-prepare-github-action-for-kettle-core-and-pentaho-platform'
     steps:
       - name: Dispatch workflow in pentaho/pentaho-platform
         uses: actions/github-script@v7
@@ -218,7 +220,7 @@ jobs:
               owner: 'pentaho',
               repo: 'pentaho-platform',
               workflow_id: 'merge.yml',
-              ref: 'FUSE-184-dev-ops-prepare-github-action-for-kettle-core-and-pentaho-platform',
+              ref: process.env.DOWNSTREAM_REF,
             };
 
             console.log(`Triggering downstream workflow`);
