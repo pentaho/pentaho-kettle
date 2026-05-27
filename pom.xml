@@ -6,7 +6,7 @@
 
   <groupId>org.pentaho.di</groupId>
   <artifactId>pdi</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.20260527-2211-39</version>
   <packaging>pom</packaging>
 
   <name>Pentaho Data Integration</name>
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>[11.1.0.0-1,11.1.0.0-999]</version>
   </parent>
 
   <scm>
@@ -53,14 +53,14 @@
     <license.licenseName>apache_v2</license.licenseName>
 
     <!-- Pentaho dependencies -->
-    <commons-xul.version>11.1.0.0-SNAPSHOT</commons-xul.version>
-    <pentaho-metastore.version>11.1.0.0-SNAPSHOT</pentaho-metastore.version>
-    <metastore.version>11.1.0.0-SNAPSHOT</metastore.version>
-    <platform.version>11.1.0.0-SNAPSHOT</platform.version>
-    <pentaho-i18n-bundle.version>11.1.0.0-SNAPSHOT</pentaho-i18n-bundle.version>
-    <pentaho-capability-manager.version>11.1.0.0-SNAPSHOT</pentaho-capability-manager.version>
-    <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <teradata-tpt-plugin-package.version>11.1.0.0-SNAPSHOT</teradata-tpt-plugin-package.version>
+    <commons-xul.version>[11.1.0.0-1,11.1.0.0-999]</commons-xul.version>
+    <pentaho-metastore.version>[11.1.0.0-1,11.1.0.0-999]</pentaho-metastore.version>
+    <metastore.version>[11.1.0.0-1,11.1.0.0-999]</metastore.version>
+    <platform.version>[11.1.0.0-1,11.1.0.0-999]</platform.version>
+    <pentaho-i18n-bundle.version>[11.1.0.0-1,11.1.0.0-999]</pentaho-i18n-bundle.version>
+    <pentaho-capability-manager.version>[11.1.0.0-1,11.1.0.0-999]</pentaho-capability-manager.version>
+    <pentaho-metaverse.version>[11.1.0.0-1,11.1.0.0-999]</pentaho-metaverse.version>
+    <teradata-tpt-plugin-package.version>[11.1.0.0-1,11.1.0.0-999]</teradata-tpt-plugin-package.version>
 
 
     <!-- Third-party dependencies -->
