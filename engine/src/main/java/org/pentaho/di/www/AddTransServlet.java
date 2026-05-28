@@ -234,6 +234,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       // If there was a repository, we know about it at this point in time.
       //
       final Repository repository = transExecutionConfiguration.getRepository();
+      clearBowlCache( repository );
 
       String carteObjectId = UUID.randomUUID().toString();
       SimpleLoggingObject servletLoggingObject =

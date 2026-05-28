@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho
  *
@@ -25,7 +26,7 @@ import org.w3c.dom.Node;
 /**
  * This Manager that does not cache anything. Complete passthrough to the provided SharedObjectsIO instance.
  *
-*/
+ */
 public abstract class PassthroughManager<T extends SharedObjectInterface<T> & RepositoryElementInterface>
   implements SharedObjectsManagementInterface<T> {
 
@@ -40,6 +41,7 @@ public abstract class PassthroughManager<T extends SharedObjectInterface<T> & Re
   /**
    * This method is used to create concrete SharedObjectInterface implementation class. This will be implemented by
    * subclasses.
+   * 
    * @param node
    * @return
    * @throws KettleException
@@ -59,7 +61,7 @@ public abstract class PassthroughManager<T extends SharedObjectInterface<T> & Re
   }
 
   @Override
-  public T get( String name) throws KettleException {
+  public T get( String name ) throws KettleException {
     try {
       sharedObjectsIO.lock();
       Node node = sharedObjectsIO.getSharedObject( type, name );
@@ -74,24 +76,23 @@ public abstract class PassthroughManager<T extends SharedObjectInterface<T> & Re
   }
 
   @Override
-  public List<T> getAll( ) throws KettleException {
+  public List<T> getAll() throws KettleException {
     try {
       sharedObjectsIO.lock();
-    
-    Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( type );
-    List<T> result = new ArrayList<>( nodeMap.size() );
+      Map<String, Node> nodeMap = sharedObjectsIO.getSharedObjects( type );
+      List<T> result = new ArrayList<>( nodeMap.size() );
 
-    for ( Node node : nodeMap.values() ) {
-      result.add( createSharedObjectUsingNode( node ) );
-    }
-    return result;
+      for ( Node node : nodeMap.values() ) {
+        result.add( createSharedObjectUsingNode( node ) );
+      }
+      return result;
     } finally {
       sharedObjectsIO.unlock();
     }
   }
 
   @Override
-  public void clear( ) throws KettleException {
+  public void clear() throws KettleException {
     sharedObjectsIO.clear( type );
   }
 
@@ -101,7 +102,7 @@ public abstract class PassthroughManager<T extends SharedObjectInterface<T> & Re
   }
 
   @Override
-  public void remove( String name) throws KettleException {
+  public void remove( String name ) throws KettleException {
     sharedObjectsIO.delete( type, name );
   }
 

@@ -15,6 +15,7 @@ package org.pentaho.di.www;
 
 import jakarta.servlet.ReadListener;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
@@ -33,8 +34,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertFalse;
 import static org.pentaho.di.core.util.Assert.assertTrue;
@@ -64,6 +67,28 @@ public class RegisterJobServletTest {
   @Test
   public void createJobGatheringMetricsFalseTest() throws Exception {
     assertFalse( createJob( false ).isGatheringMetrics() );
+  }
+
+  @Test
+  public void createJobClearsBowlCacheTest() throws Exception {
+    RegisterJobServlet jobServlet = spy( new RegisterJobServlet() );
+    JobMap jobMap = mock( JobMap.class );
+    jobServlet.setup( new TransformationMap(), jobMap, new SocketRepository( new LogChannel( "test" ) ), new ArrayList<>() );
+    JobConfiguration conf = mock( JobConfiguration.class );
+    JobExecutionConfiguration execConf = mock( JobExecutionConfiguration.class );
+    JobMeta jobMeta = mock( JobMeta.class );
+    SlaveServerConfig slaveServerConfig = mock( SlaveServerConfig.class );
+    Bowl bowl = mock( Bowl.class );
+    when( conf.getJobExecutionConfiguration() ).thenReturn( execConf );
+    when( conf.getJobMeta() ).thenReturn( jobMeta );
+    when( jobMap.getSlaveServerConfig() ).thenReturn( slaveServerConfig );
+    when( jobMeta.listParameters() ).thenReturn( new String[] {} );
+    when( jobMeta.getBowl() ).thenReturn( bowl );
+    doNothing().when( jobServlet ).clearBowlCache( bowl );
+
+    jobServlet.createJob( conf );
+
+    verify( jobServlet ).clearBowlCache( bowl );
   }
 
   private Job createJob( boolean gatheringMetrics ) throws Exception {

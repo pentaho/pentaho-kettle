@@ -14,6 +14,7 @@ package org.pentaho.di.ui.repo.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
@@ -81,7 +82,7 @@ public class PentahoEnterpriseRepoFormCompositeTest {
 
     try {
       display = new Display();
-    } catch ( SWTError e ) {
+    } catch ( SWTError | SWTException | UnsatisfiedLinkError | NoClassDefFoundError e ) {
       Assume.assumeNoException( "No display available; skipping SWT UI tests in this environment.", e );
     }
   }
