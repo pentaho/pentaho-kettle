@@ -19,7 +19,6 @@
   <properties>
     <!-- Kettle dependencies -->
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <metastore.version>11.1.0.0-SNAPSHOT</metastore.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <pentaho-osgi-bundles.version>11.1.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <pdi-pur-plugin.version>11.1.0.0-SNAPSHOT</pdi-pur-plugin.version>

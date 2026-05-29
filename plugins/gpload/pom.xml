@@ -81,7 +81,6 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
-        <version>${pdi.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
