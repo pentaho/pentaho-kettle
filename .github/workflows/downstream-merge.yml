@@ -23,6 +23,26 @@ jobs:
       RESOLVE_REPO_MIRROR: ${{ format('{0}/{1}', vars.ARTIFACTORY_BASE_URL, inputs.resolve_repo || 'pnt-mvn') }}
       RESOLVE_REPO_USER: ${{ secrets.PENTAHO_CICD_ONE_USER }}
       RESOLVE_REPO_PASS: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
+
+      ARTIFACTORY_HOST: https://${{ vars.ARTIFACTORY_HOST }}
+      ARTIFACTORY_BASE_URL: ${ARTIFACTORY_HOST}/artifactory
+
+      NEXUS_DEPLOY_USER: ${{ secrets.PENTAHO_CICD_ONE_USER }}
+      NEXUS_DEPLOY_PASSWORD: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
+
+      PUBLIC_RELEASE_REPO: pntpub-maven-dev
+      PUBLIC_RELEASE_REPO_URL: ${ARTIFACTORY_BASE_URL}/${PUBLIC_RELEASE_REPO}
+      PRIVATE_RELEASE_REPO: pntprv-maven-dev
+      PRIVATE_RELEASE_REPO_URL: ${ARTIFACTORY_BASE_URL}/${PRIVATE_RELEASE_REPO}
+
+      PUBLIC_SNAPSHOT_REPO: pntpub-maven-snapshot
+      PUBLIC_SNAPSHOT_REPO_URL: ${ARTIFACTORY_BASE_URL}/${PUBLIC_SNAPSHOT_REPO}
+      PRIVATE_SNAPSHOT_REPO: pntprv-maven-snapshot
+      PRIVATE_SNAPSHOT_REPO_URL: ${ARTIFACTORY_BASE_URL}/${PRIVATE_SNAPSHOT_REPO}
+
+      DOCKER_PULL_HOST: ${{ vars.ARTIFACTORY_HOST }}/pnt-docker/
+      DOCKER_PUBLIC_PUSH_HOST: ${{ vars.ARTIFACTORY_HOST }}/pntpub-docker-dev/
+      DOCKER_PRIVATE_PUSH_HOST: ${{ vars.ARTIFACTORY_HOST }}/pntprv-docker-dev/
     outputs:
       build_version: ${{ steps.build-version.outputs.build_version }}
       artifacts: ${{ steps.get-artifacts.outputs.artifacts }}
@@ -30,6 +50,8 @@ jobs:
     steps:
       - name: Checkout source repo
         uses: actions/checkout@v4
+
+      - run: git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
 
       - name: Retrieve settings file
         id: common-maven
