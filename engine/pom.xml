@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.20260529-1525-43</version>
   </parent>
 
   <properties>
@@ -23,10 +23,10 @@
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
 
     <!-- Pentaho dependencies -->
-    <pentaho-reporting.version>11.1.0.0-SNAPSHOT</pentaho-reporting.version>
-    <pentaho-registry.version>11.1.0.0-SNAPSHOT</pentaho-registry.version>
-    <pentaho-connections.version>11.1.0.0-SNAPSHOT</pentaho-connections.version>
-    <mondrian.version>11.1.0.0-SNAPSHOT</mondrian.version>
+    <pentaho-reporting.version>[11.1.0.0-1,11.1.0.0-999]</pentaho-reporting.version>
+    <pentaho-registry.version>[11.1.0.0-1,11.1.0.0-999]</pentaho-registry.version>
+    <pentaho-connections.version>[11.1.0.0-1,11.1.0.0-999]</pentaho-connections.version>
+    <mondrian.version>[11.1.0.0-1,11.1.0.0-999]</mondrian.version>
 
     <!-- Third-party dependencies -->
     <antlr-complete.version>3.5.2</antlr-complete.version>
