@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.pentaho.di</groupId>
         <artifactId>pdi-core</artifactId>
-        <version>10.2.0.4-354</version>
+        <version>10.2.0.4-354-CUST-311</version>
     </parent>
 
     <properties>
@@ -56,12 +56,12 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <version>${project.version}</version>
+            <version>10.2.0.4-354</version>
         </dependency>
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <version>${project.version}</version>
+            <version>10.2.0.4-354</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-dbdialog</artifactId>
-            <version>${project.version}</version>
+            <version>10.2.0.4-354</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.eclipse.swt</groupId>
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-ui-swt</artifactId>
-            <version>${project.version}</version>
+            <version>10.2.0.4-354</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.eclipse.swt</groupId>
@@ -211,12 +211,12 @@
         <dependency>
             <groupId>org.pentaho.di.plugins</groupId>
             <artifactId>pentaho-metastore-locator-api</artifactId>
-            <version>${project.version}</version>
+            <version>10.2.0.4-354</version>
         </dependency>
         <dependency>
             <groupId>org.pentaho.di.plugins</groupId>
             <artifactId>pentaho-kettle-repository-locator-api</artifactId>
-            <version>${project.version}</version>
+            <version>10.2.0.4-354</version>
         </dependency>
 
         <!--  Pentaho reporting dependencies -->

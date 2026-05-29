@@ -11,72 +11,72 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>10.2.0.4-354</version>
+    <version>10.2.0.4-354-CUST-311</version>
   </parent>
 
   <properties>
     <!-- plugins -->
-    <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
+    <pdi-core-plugin.version>10.2.0.4-354</pdi-core-plugin.version>
     <big-data-plugin.version>10.2.0.4-354</big-data-plugin.version>
-    <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
-    <kettle-shapefilereader-plugin.version>${project.version}</kettle-shapefilereader-plugin.version>
-    <kettle-drools8-plugin.version>${project.version}</kettle-drools8-plugin.version>
-    <kettle-gpload-plugin.version>${project.version}</kettle-gpload-plugin.version>
-    <kettle-hl7-plugin.version>${project.version}</kettle-hl7-plugin.version>
-    <mail-job-plugin.version>${project.version}</mail-job-plugin.version>
+    <kettle-s3csvinput-plugin.version>10.2.0.4-354</kettle-s3csvinput-plugin.version>
+    <kettle-shapefilereader-plugin.version>10.2.0.4-354</kettle-shapefilereader-plugin.version>
+    <kettle-drools8-plugin.version>10.2.0.4-354</kettle-drools8-plugin.version>
+    <kettle-gpload-plugin.version>10.2.0.4-354</kettle-gpload-plugin.version>
+    <kettle-hl7-plugin.version>10.2.0.4-354</kettle-hl7-plugin.version>
+    <mail-job-plugin.version>10.2.0.4-354</mail-job-plugin.version>
     <pdi-salesforce-plugin.version>10.2.0.4-354</pdi-salesforce-plugin.version>
-    <monet-db-bulk-loader-plugin.version>${project.version}</monet-db-bulk-loader-plugin.version>
-    <yaml-input-plugin.version>${project.version}</yaml-input-plugin.version>
+    <monet-db-bulk-loader-plugin.version>10.2.0.4-354</monet-db-bulk-loader-plugin.version>
+    <yaml-input-plugin.version>10.2.0.4-354</yaml-input-plugin.version>
     <pentaho-reporting-plugin.version>10.2.0.4-354</pentaho-reporting-plugin.version>
-    <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
-    <get-file-sftp-plugin.version>${project.version}</get-file-sftp-plugin.version>
-    <ftps-plugin.version>${project.version}</ftps-plugin.version>
-    <oracle-bulk-loader-plugin.version>${project.version}</oracle-bulk-loader-plugin.version>
-    <terafast-bulk-loader-plugin.version>${project.version}</terafast-bulk-loader-plugin.version>
-    <postgresql-db-bulk-loader-plugin.version>${project.version}</postgresql-db-bulk-loader-plugin.version>
-    <rss-plugin.version>${project.version}</rss-plugin.version>
-    <infobright-bulk-loader-plugin.version>${project.version}</infobright-bulk-loader-plugin.version>
-    <excel-plugin.version>${project.version}</excel-plugin.version>
-    <ldap-plugin.version>${project.version}</ldap-plugin.version>
-    <ivw-bulk-loader-plugin.version>${project.version}</ivw-bulk-loader-plugin.version>
-    <sftpput-plugin.version>${project.version}</sftpput-plugin.version>
-    <put-file-sftp-plugin.version>${project.version}</put-file-sftp-plugin.version>
-    <edi2xml-plugin.version>${project.version}</edi2xml-plugin.version>
-    <random-cc-number-generator-plugin.version>${project.version}</random-cc-number-generator-plugin.version>
-    <credit-card-validator-plugin.version>${project.version}</credit-card-validator-plugin.version>
-    <mondrianinput-plugin.version>${project.version}</mondrianinput-plugin.version>
+    <ms-access-plugin.version>10.2.0.4-354</ms-access-plugin.version>
+    <get-file-sftp-plugin.version>10.2.0.4-354</get-file-sftp-plugin.version>
+    <ftps-plugin.version>10.2.0.4-354</ftps-plugin.version>
+    <oracle-bulk-loader-plugin.version>10.2.0.4-354</oracle-bulk-loader-plugin.version>
+    <terafast-bulk-loader-plugin.version>10.2.0.4-354</terafast-bulk-loader-plugin.version>
+    <postgresql-db-bulk-loader-plugin.version>10.2.0.4-354</postgresql-db-bulk-loader-plugin.version>
+    <rss-plugin.version>10.2.0.4-354</rss-plugin.version>
+    <infobright-bulk-loader-plugin.version>10.2.0.4-354</infobright-bulk-loader-plugin.version>
+    <excel-plugin.version>10.2.0.4-354</excel-plugin.version>
+    <ldap-plugin.version>10.2.0.4-354</ldap-plugin.version>
+    <ivw-bulk-loader-plugin.version>10.2.0.4-354</ivw-bulk-loader-plugin.version>
+    <sftpput-plugin.version>10.2.0.4-354</sftpput-plugin.version>
+    <put-file-sftp-plugin.version>10.2.0.4-354</put-file-sftp-plugin.version>
+    <edi2xml-plugin.version>10.2.0.4-354</edi2xml-plugin.version>
+    <random-cc-number-generator-plugin.version>10.2.0.4-354</random-cc-number-generator-plugin.version>
+    <credit-card-validator-plugin.version>10.2.0.4-354</credit-card-validator-plugin.version>
+    <mondrianinput-plugin.version>10.2.0.4-354</mondrianinput-plugin.version>
     <pdi-sap-plugin.version>10.2.0.4-354</pdi-sap-plugin.version>
-    <jms-streaming-plugin.version>${project.version}</jms-streaming-plugin.version>
-    <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
+    <jms-streaming-plugin.version>10.2.0.4-354</jms-streaming-plugin.version>
+    <pdi-teradata-tpt-plugin-package.version>10.2.0.4-354</pdi-teradata-tpt-plugin-package.version>
     <pdi-platform-utils-plugin.version>10.2.0.4-354</pdi-platform-utils-plugin.version>
     <vertica-bulkloader-plugin.version>10.2.0.4-354</vertica-bulkloader-plugin.version>
     <pdi-pur-plugin.version>10.2.0.4-354</pdi-pur-plugin.version>
     <pentaho-mongodb-plugin.version>10.2.0.4-354</pentaho-mongodb-plugin.version>
-    <engine-configuration-plugin.version>${project.version}</engine-configuration-plugin.version>
-    <metastore-locator-plugin.version>${project.version}</metastore-locator-plugin.version>
-    <repository-locator-plugin.version>${project.version}</repository-locator-plugin.version>
-    <file-open-save-new-plugin.version>${project.version}</file-open-save-new-plugin.version>
-    <mysql-bulk-load-plugin.version>${project.version}</mysql-bulk-load-plugin.version>
-    <repositories-plugin.version>${project.version}</repositories-plugin.version>
-    <connections-plugin.version>${project.version}</connections-plugin.version>
-    <meta-inject-plugin.version>${project.version}</meta-inject-plugin.version>
-    <mqtt-streaming-plugin.version>${project.version}</mqtt-streaming-plugin.version>
-    <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
-    <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
-    <mail-plugin.version>${project.version}</mail-plugin.version>
+    <engine-configuration-plugin.version>10.2.0.4-354</engine-configuration-plugin.version>
+    <metastore-locator-plugin.version>10.2.0.4-354</metastore-locator-plugin.version>
+    <repository-locator-plugin.version>10.2.0.4-354</repository-locator-plugin.version>
+    <file-open-save-new-plugin.version>10.2.0.4-354</file-open-save-new-plugin.version>
+    <mysql-bulk-load-plugin.version>10.2.0.4-354</mysql-bulk-load-plugin.version>
+    <repositories-plugin.version>10.2.0.4-354</repositories-plugin.version>
+    <connections-plugin.version>10.2.0.4-354</connections-plugin.version>
+    <meta-inject-plugin.version>10.2.0.4-354</meta-inject-plugin.version>
+    <mqtt-streaming-plugin.version>10.2.0.4-354</mqtt-streaming-plugin.version>
+    <pentaho-s3-vfs-plugin.version>10.2.0.4-354</pentaho-s3-vfs-plugin.version>
+    <pdi-avro-format-plugin.version>10.2.0.4-354</pdi-avro-format-plugin.version>
+    <mail-plugin.version>10.2.0.4-354</mail-plugin.version>
     <pentaho-metaverse.version>10.2.0.4-354</pentaho-metaverse.version>
     <pdi-xml-plugin.version>10.2.0.4-354</pdi-xml-plugin.version>
     <pdi-json-plugin.version>10.2.0.4-354</pdi-json-plugin.version>
     <pdi-rest-plugin.version>10.2.0.4-354</pdi-rest-plugin.version>
-    <get-repository-names-plugin.version>${project.version}</get-repository-names-plugin.version>
-    <connected-to-repository-plugin.version>${project.version}</connected-to-repository-plugin.version>
-    <export-repository-plugin.version>${project.version}</export-repository-plugin.version>
-    <ftp-delete-plugin.version>${project.version}</ftp-delete-plugin.version>
-    <mail-validator-plugin.version>${project.version}</mail-validator-plugin.version>
-    <email-messages-plugin.version>${project.version}</email-messages-plugin.version>
-    <put-a-file-with-ftp-plugin.version>${project.version}</put-a-file-with-ftp-plugin.version>
-    <get-file-with-ftp.version>${project.version}</get-file-with-ftp.version>
-    <msg-box-info.version>${project.version}</msg-box-info.version>
+    <get-repository-names-plugin.version>10.2.0.4-354</get-repository-names-plugin.version>
+    <connected-to-repository-plugin.version>10.2.0.4-354</connected-to-repository-plugin.version>
+    <export-repository-plugin.version>10.2.0.4-354</export-repository-plugin.version>
+    <ftp-delete-plugin.version>10.2.0.4-354</ftp-delete-plugin.version>
+    <mail-validator-plugin.version>10.2.0.4-354</mail-validator-plugin.version>
+    <email-messages-plugin.version>10.2.0.4-354</email-messages-plugin.version>
+    <put-a-file-with-ftp-plugin.version>10.2.0.4-354</put-a-file-with-ftp-plugin.version>
+    <get-file-with-ftp.version>10.2.0.4-354</get-file-with-ftp.version>
+    <msg-box-info.version>10.2.0.4-354</msg-box-info.version>
   </properties>
 
   <dependencies>

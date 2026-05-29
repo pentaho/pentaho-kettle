@@ -11,11 +11,11 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>10.2.0.4-354</version>
+    <version>10.2.0.4-354-CUST-311</version>
   </parent>
 
   <properties>
-    <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
+    <pdi-dataservice-driver-bundle.version>10.2.0.4-354</pdi-dataservice-driver-bundle.version>
 
     <pentaho-launcher.version>10.2.0.4-354</pentaho-launcher.version>
     <pentaho-karaf.version>10.2.0.4-354</pentaho-karaf.version>
@@ -286,7 +286,7 @@
         <dependency>
           <groupId>org.hitachivantara.karaf.assemblies</groupId>
           <artifactId>client</artifactId>
-          <version>${pentaho-karaf.version}</version>
+          <version>10.2.0.4-354-CUST-311</version>
           <type>zip</type>
           <exclusions>
             <exclusion>
