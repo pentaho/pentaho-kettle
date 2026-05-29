@@ -217,7 +217,7 @@ jobs:
         uses: lumada-common-services/gh-composite-actions@stable
         with:
             command: |
-              mvn clean deploy -Daudit -Pcicd-release -Dbuild.name=${{ steps.prepare-build-namee.outputs.build_name }} -Dbuild.number=${{ needs.resolve-version.outputs.build_version}} -amd ${{ inputs.additional_snapshot_mvn_directives }} ${{ needs.resolve-version.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', needs.resolve-version.outputs.libraries_to_update, needs.resolve-version.outputs.build_version) || '' }}
+              mvn clean deploy -Dmaven.test.skip=true -Daudit -Pcicd-release -Dbuild.name=${{ steps.prepare-build-namee.outputs.build_name }} -Dbuild.number=${{ needs.resolve-version.outputs.build_version}} -amd ${{ inputs.additional_snapshot_mvn_directives }} ${{ needs.resolve-version.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', needs.resolve-version.outputs.libraries_to_update, needs.resolve-version.outputs.build_version) || '' }}
         env:
             cmd_type: ${{ env.SET_CMD_TYPE }}
             unit_test_reporter: 'java-junit'
