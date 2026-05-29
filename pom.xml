@@ -54,7 +54,6 @@
 
     <!-- Pentaho dependencies -->
     <commons-xul.version>11.1.0.0-SNAPSHOT</commons-xul.version>
-    <pentaho-metastore.version>11.1.0.0-SNAPSHOT</pentaho-metastore.version>
     <metastore.version>11.1.0.0-SNAPSHOT</metastore.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <pentaho-i18n-bundle.version>11.1.0.0-SNAPSHOT</pentaho-i18n-bundle.version>
