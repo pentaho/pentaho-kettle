@@ -200,8 +200,6 @@ jobs:
 
   trigger-downstream:
     name: Trigger downstream pentaho-platform workflow
-    # Set repository variable TRIGGER_DOWNSTREAM_ENABLED=true to enable this job.
-    # Leave it unset or set to any other value to skip (safe default while the
     # target workflow does not yet exist in pentaho/pentaho-platform).
     runs-on: [ k8s ]
     needs: [ resolve-version, reusable-merge-workflow ]

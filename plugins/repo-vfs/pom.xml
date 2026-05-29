@@ -18,7 +18,6 @@
   <name>PDI Repository VFS Provider Plugin</name>
 
   <properties>
-    <pdi.version>${platform.version}</pdi.version>
     <mockito.version>5.10.0</mockito.version>
   </properties>
 

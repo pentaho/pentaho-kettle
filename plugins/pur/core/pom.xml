@@ -19,7 +19,6 @@
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
 
     <!-- Kettle dependencies -->
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
 
     <!-- Pentaho dependenceis -->
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>

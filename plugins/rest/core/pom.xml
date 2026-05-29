@@ -14,7 +14,6 @@
 
   <name>PDI Rest Plugin Core</name>
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <commons-xul.version>11.1.0.0-SNAPSHOT</commons-xul.version>
