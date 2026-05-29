@@ -19,10 +19,8 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayDeque;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -482,11 +480,11 @@ public class BrokerAuthClientTest {
 
   @Test
   public void pollUntilCompleteReturnsCompletedResultOnFirstSuccessfulPoll() {
-    TestBrokerAuthClient client = new TestBrokerAuthClient();
+    BrokerAuthClient client = spy( new BrokerAuthClient( mock( OAuthHttpClient.class ) ) );
     BrokerAuthClient.BrokerFlowResult completed = new BrokerAuthClient.BrokerFlowResult(
       AUTH_HANDLE, "COMPLETED", BrokerAuthClient.GRANT_DEVICE_CODE, USERNAME, null, null, null, null,
       null, null, null, null, ACCESS_TOKEN, 0, null, 1893456000L, REFRESH_HANDLE );
-    client.enqueuePollResult( completed );
+    doReturn( completed ).when( client ).pollOnce( AUTH_STATUS_URL, AUTH_HANDLE );
 
     BrokerAuthClient.BrokerFlowResult result = client.pollUntilComplete( SERVER_URL, AUTH_HANDLE );
 
@@ -496,8 +494,9 @@ public class BrokerAuthClientTest {
 
   @Test
   public void pollUntilCompleteReturnsInterruptedErrorWhenAwaitIsInterrupted() {
-    TestBrokerAuthClient client = new TestBrokerAuthClient();
-    client.enqueuePollResult( BrokerAuthClient.BrokerFlowResult.pending( AUTH_HANDLE ) );
+    BrokerAuthClient client = spy( new BrokerAuthClient( mock( OAuthHttpClient.class ) ) );
+    doReturn( BrokerAuthClient.BrokerFlowResult.pending( AUTH_HANDLE ) )
+      .when( client ).pollOnce( AUTH_STATUS_URL, AUTH_HANDLE );
 
     Thread.currentThread().interrupt();
     try {
@@ -512,7 +511,7 @@ public class BrokerAuthClientTest {
 
   @Test
   public void pollForCompletionReturnsTimeoutWhenDeadlineHasPassed() {
-    TestBrokerAuthClient client = new TestBrokerAuthClient();
+    BrokerAuthClient client = spy( new BrokerAuthClient( mock( OAuthHttpClient.class ) ) );
     AtomicReference<BrokerAuthClient.BrokerFlowResult> resultRef = new AtomicReference<>();
     CountDownLatch doneLatch = new CountDownLatch( 1 );
 
@@ -527,8 +526,8 @@ public class BrokerAuthClientTest {
 
   @Test
   public void pollForCompletionFailsAfterThreeConsecutiveConnectionFailures() {
-    TestBrokerAuthClient client = new TestBrokerAuthClient();
-    client.enqueuePollResult( BrokerAuthClient.BrokerFlowResult.pending( null ) );
+    BrokerAuthClient client = spy( new BrokerAuthClient( mock( OAuthHttpClient.class ) ) );
+    doReturn( BrokerAuthClient.BrokerFlowResult.pending( null ) ).when( client ).pollOnce( AUTH_STATUS_URL, AUTH_HANDLE );
     AtomicReference<BrokerAuthClient.BrokerFlowResult> resultRef = new AtomicReference<>();
     CountDownLatch doneLatch = new CountDownLatch( 1 );
     AtomicInteger failures = new AtomicInteger( 2 );
@@ -543,16 +542,17 @@ public class BrokerAuthClientTest {
 
   @Test
   public void pollForCompletionResetsConsecutiveFailuresWhenPendingHandleIsReturned() {
-    TestBrokerAuthClient client = new TestBrokerAuthClient();
-    client.enqueuePollResult( BrokerAuthClient.BrokerFlowResult.pending( AUTH_HANDLE ) );
+    BrokerAuthClient client = spy( new BrokerAuthClient( mock( OAuthHttpClient.class ) ) );
+    doReturn( BrokerAuthClient.BrokerFlowResult.pending( AUTH_HANDLE ) ).when( client ).pollOnce( AUTH_STATUS_URL, AUTH_HANDLE );
     AtomicReference<BrokerAuthClient.BrokerFlowResult> resultRef = new AtomicReference<>();
     CountDownLatch doneLatch = new CountDownLatch( 1 );
     AtomicInteger failures = new AtomicInteger( 2 );
+    AtomicInteger pollCount = new AtomicInteger( 9 );
 
     client.pollForCompletion( AUTH_STATUS_URL, AUTH_HANDLE, Instant.now().plusSeconds( 60 ), resultRef, doneLatch,
-      new AtomicInteger( 9 ), failures );
+      pollCount, failures );
 
-    assertEquals( 10, client.lastAttempt() );
+    assertEquals( 10, pollCount.get() );
     assertEquals( 0, failures.get() );
     assertEquals( 1L, doneLatch.getCount() );
     assertNull( resultRef.get() );
@@ -560,11 +560,11 @@ public class BrokerAuthClientTest {
 
   @Test
   public void pollForCompletionReturnsExpiredTerminalResult() {
-    TestBrokerAuthClient client = new TestBrokerAuthClient();
+    BrokerAuthClient client = spy( new BrokerAuthClient( mock( OAuthHttpClient.class ) ) );
     BrokerAuthClient.BrokerFlowResult expired = new BrokerAuthClient.BrokerFlowResult(
       AUTH_HANDLE, "EXPIRED", null, null, null, null, null, null, null, null, null, null, null,
       0, null, 0L, null );
-    client.enqueuePollResult( expired );
+    doReturn( expired ).when( client ).pollOnce( AUTH_STATUS_URL, AUTH_HANDLE );
     AtomicReference<BrokerAuthClient.BrokerFlowResult> resultRef = new AtomicReference<>();
     CountDownLatch doneLatch = new CountDownLatch( 1 );
 
@@ -577,8 +577,8 @@ public class BrokerAuthClientTest {
 
   @Test
   public void refreshAccessTokenReturnsInterruptedErrorWhenJitterSleepIsInterrupted() {
-    TestBrokerAuthClient client = new TestBrokerAuthClient();
-    client.setNextJitterMs( 1 );
+    BrokerAuthClient client = spy( new BrokerAuthClient( mock( OAuthHttpClient.class ) ) );
+    doReturn( 1L ).when( client ).nextRefreshJitterMs();
 
     Thread.currentThread().interrupt();
     try {
@@ -626,43 +626,4 @@ public class BrokerAuthClientTest {
       + "}";
   }
 
-  private static final class TestBrokerAuthClient extends BrokerAuthClient {
-    private final Queue<BrokerFlowResult> pollResults = new ArrayDeque<>();
-    private long nextJitterMs;
-    private int lastAttempt;
-
-    TestBrokerAuthClient() {
-      super( mock( OAuthHttpClient.class ) );
-    }
-
-    void enqueuePollResult( BrokerFlowResult result ) {
-      pollResults.add( result );
-    }
-
-    void setNextJitterMs( long nextJitterMs ) {
-      this.nextJitterMs = nextJitterMs;
-    }
-
-    int lastAttempt() {
-      return lastAttempt;
-    }
-
-    @Override
-    public BrokerFlowResult pollOnce( String serverUrl, String authHandle ) {
-      return pollResults.isEmpty() ? BrokerFlowResult.pending( authHandle ) : pollResults.remove();
-    }
-
-    @Override
-    void pollForCompletion( String url, String authHandle, Instant deadline,
-                            AtomicReference<BrokerFlowResult> resultRef, CountDownLatch doneLatch,
-                            AtomicInteger pollCount, AtomicInteger consecutiveFailures ) {
-      super.pollForCompletion( url, authHandle, deadline, resultRef, doneLatch, pollCount, consecutiveFailures );
-      lastAttempt = pollCount.get();
-    }
-
-    @Override
-    long nextRefreshJitterMs() {
-      return nextJitterMs;
-    }
-  }
 }

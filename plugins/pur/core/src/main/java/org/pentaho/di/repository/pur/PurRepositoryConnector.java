@@ -12,21 +12,20 @@
 
 package org.pentaho.di.repository.pur;
 
+import com.pentaho.di.services.PentahoDiPlugin;
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
 import com.pentaho.pdi.ws.RepositorySyncException;
 import jakarta.xml.ws.WebServiceException;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.pentaho.di.cli.auth.BrowserAuthSessionHolder;
+import org.pentaho.di.cli.auth.CredentialProvider;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.cli.auth.BrowserAuthSessionHolder;
-import org.pentaho.di.cli.auth.CredentialProvider;
-import org.pentaho.di.ui.spoon.session.AuthenticationContext;
-import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
@@ -39,6 +38,8 @@ import org.pentaho.di.ui.repository.pur.services.ILockService;
 import org.pentaho.di.ui.repository.pur.services.IRevisionService;
 import org.pentaho.di.ui.repository.pur.services.IRoleSupportSecurityManager;
 import org.pentaho.di.ui.repository.pur.services.ITrashService;
+import org.pentaho.di.ui.spoon.session.AuthenticationContext;
+import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -57,6 +58,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
   private static final String SINGLE_DI_SERVER_INSTANCE = "singleDiServerInstance";
   private static final String REMOTE_DI_SERVER_INSTANCE = "remoteDiServerInstance";
   private static final Class<?> PKG = PurRepository.class;
+  public static final String PUR_REPOSITORY_FAILED_LOGIN_MESSAGE = "PurRepository.FailedLogin.Message";
   private final LogChannelInterface log;
   private final PurRepository purRepository;
   private final PurRepositoryMeta repositoryMeta;
@@ -74,7 +76,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
   }
 
   private boolean allowedActionsContains( AbsSecurityProvider provider, String action ) throws KettleException {
-    List<String> allowedActions = provider.getAllowedActions( IAbsSecurityProvider.NAMESPACE );
+    List<String> allowedActions = provider.getAllowedActions( RepositorySecurityProvider.NAMESPACE );
     for ( String actionName : allowedActions ) {
       if ( action != null && action.equals( actionName ) ) {
         return true;
@@ -198,13 +200,13 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       serviceManager.close();
       Thread.currentThread().interrupt();
       throw new KettleException( ie );
-    } catch ( Throwable e ) {
+    } catch ( Exception e ) {
       result.setSuccess( false );
       serviceManager.close();
       // Handle authentication failures gracefully (401 Unauthorized)
       if ( isAuthenticationFailure( e ) ) {
-        log.logError( BaseMessages.getString( PKG, "PurRepository.FailedLogin.Message" ) );
-        throw new KettleException( BaseMessages.getString( PKG, "PurRepository.FailedLogin.Message" ) );
+        log.logError( BaseMessages.getString( PKG, PUR_REPOSITORY_FAILED_LOGIN_MESSAGE ) );
+        throw new KettleException( BaseMessages.getString( PKG, PUR_REPOSITORY_FAILED_LOGIN_MESSAGE ) );
       }
       throw new KettleException( e );
     }
@@ -292,7 +294,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       // If the user does not have access to administer security we do not need to add
       // them to the service list
       if ( !allowedActionsContains( (AbsSecurityProvider) result.getSecurityProvider(),
-        IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION ) ) {
+        RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION ) ) {
         return false;
       }
       result.setSecurityManager( new AbsSecurityManager( purRepository, repositoryMeta, result.getUser(),
@@ -428,7 +430,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     WebServiceException repoException = repoFuture.get();
     if ( repoException != null ) {
       log.logError( repoException.getMessage() );
-      throw new KettleException( BaseMessages.getString( PKG, "PurRepository.FailedLogin.Message" ), repoException );
+      throw new KettleException( BaseMessages.getString( PKG, PUR_REPOSITORY_FAILED_LOGIN_MESSAGE ), repoException );
     }
     Exception syncException = syncFuture.get();
     if ( syncException != null ) {
@@ -460,9 +462,9 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       registry.registerService( IRoleSupportSecurityManager.class, result.getSecurityManager() );
       registry.registerService( IAbsSecurityManager.class, result.getSecurityManager() );
     }
-    registry.registerService( PurRepositoryRestService.PurRepositoryPluginApiRevision.class,
+    registry.registerService( PentahoDiPlugin.PurRepositoryPluginApiRevision.class,
       serviceManager.createService( username, decryptedPassword,
-        PurRepositoryRestService.PurRepositoryPluginApiRevision.class ) );
+        PentahoDiPlugin.PurRepositoryPluginApiRevision.class ) );
     registry.registerService( IRevisionService.class,
       new UnifiedRepositoryRevisionService( result.getUnifiedRepository(), rootRef ) );
     registry.registerService( IAclService.class,
@@ -496,15 +498,9 @@ public class PurRepositoryConnector implements IRepositoryConnector {
   }
 
   public static boolean inProcess() {
-    boolean inProcess = false;
     boolean remoteDiServer = BooleanUtils
       .toBoolean( PentahoSystem.getSystemSetting( REMOTE_DI_SERVER_INSTANCE, "false" ) ); //$NON-NLS-1$
-    if ( "true".equals(
-      PentahoSystem.getSystemSetting( SINGLE_DI_SERVER_INSTANCE, "true" ) ) ) { //$NON-NLS-1$ //$NON-NLS-2$
-      inProcess = true;
-    } else if ( !remoteDiServer && PentahoSystem.getApplicationContext().getFullyQualifiedServerURL() != null ) {
-      inProcess = true;
-    }
-    return inProcess;
+    return "true".equals( PentahoSystem.getSystemSetting( SINGLE_DI_SERVER_INSTANCE, "true" ) )
+      || ( !remoteDiServer && PentahoSystem.getApplicationContext().getFullyQualifiedServerURL() != null );
   }
 }

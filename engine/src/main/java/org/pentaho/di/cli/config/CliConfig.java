@@ -12,6 +12,7 @@
 
 package org.pentaho.di.cli.config;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
@@ -64,7 +65,8 @@ public class CliConfig {
   private final Properties cliConfigProperties = new Properties();
   private final File configFile;
 
-  private CliConfig() {
+  @VisibleForTesting
+  CliConfig() {
     this.configFile = new File( Const.getKettleDirectory(), CONFIG_FILE_NAME );
     loadCliConfig();
   }

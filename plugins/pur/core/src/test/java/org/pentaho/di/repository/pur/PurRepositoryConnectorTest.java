@@ -24,22 +24,24 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
+import org.pentaho.di.cli.auth.BrowserAuthSessionHolder;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
 import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.api.engine.IApplicationContext;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -59,6 +61,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings( { "rawtypes", "unchecked", "removal" } )
 public class PurRepositoryConnectorTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
@@ -174,6 +177,54 @@ public class PurRepositoryConnectorTest {
       assertEquals( "sessionUser", result.getUser().getLogin() );
       // decryptedPassword should be empty when session auth is used, so password on user should be ""
       assertEquals( "", result.getUser().getPassword() );
+    }
+  }
+
+  @Test
+  public void testConnectWithoutPasswordRequiresStoredCredential() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    BrowserAuthSessionHolder holder = mock( BrowserAuthSessionHolder.class );
+    when( holder.findAccessToken( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.empty() );
+    when( holder.findSessionCookie( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.empty() );
+
+    try ( MockedStatic<BrowserAuthSessionHolder> mockedHolder = mockStatic( BrowserAuthSessionHolder.class ) ) {
+      mockedHolder.when( BrowserAuthSessionHolder::getInstance ).thenReturn( holder );
+
+      try {
+        new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) )
+          .connect( "alice" );
+        Assert.fail( "Expected missing credential failure" );
+      } catch ( KettleException e ) {
+        assertTrue( e.getMessage().contains( "OAuth access token" ) );
+      }
+    }
+  }
+
+  @Test
+  public void testConnectWithoutPasswordDelegatesWithEmptyPasswordWhenCredentialExists() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector = spy(
+      new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) ) );
+    RepositoryConnectResult expected = mock( RepositoryConnectResult.class );
+    doReturn( expected ).when( connector ).connect( "alice", "" );
+
+    BrowserAuthSessionHolder holder = mock( BrowserAuthSessionHolder.class );
+    when( holder.findAccessToken( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.empty() );
+    when( holder.findSessionCookie( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.of( "JSESSIONID=1" ) );
+
+    try ( MockedStatic<BrowserAuthSessionHolder> mockedHolder = mockStatic( BrowserAuthSessionHolder.class ) ) {
+      mockedHolder.when( BrowserAuthSessionHolder::getInstance ).thenReturn( holder );
+
+      assertEquals( expected, connector.connect( "alice" ) );
+      verify( connector ).connect( "alice", "" );
     }
   }
 
@@ -483,7 +534,6 @@ public class PurRepositoryConnectorTest {
    * Helper: runs connect() with a capturing executor, returns all captured Callables.
    * The 4th callable is always the session-service callable.
    */
-  @SuppressWarnings( "unchecked" )
   private List<Callable> captureSessionCallable( PurRepositoryConnector connector,
       String username, String password ) throws Exception {
     ExecutorService service = mock( ExecutorService.class );
@@ -613,7 +663,6 @@ public class PurRepositoryConnectorTest {
    * Helper: sets up executor futures so the normal (non-in-process) connect path can run.
    * connect() may still throw from registerRepositoryServices; tests should catch it.
    */
-  @SuppressWarnings( "unchecked" )
   private void setupExecutorFutures( PurRepositoryConnector connector ) throws Exception {
     ExecutorService service = mock( ExecutorService.class );
     doReturn( service ).when( connector ).getExecutor();
@@ -905,7 +954,6 @@ public class PurRepositoryConnectorTest {
     assertNotNull( thrown.getMessage() );
   }
 
-  @SuppressWarnings( "unchecked" )
   @Test
   public void testConnect_InterruptedException_ClosesServiceManagerAndRestoresInterruptFlag() throws Exception {
     PurRepository mockPurRepository = mock( PurRepository.class );
@@ -950,7 +998,6 @@ public class PurRepositoryConnectorTest {
     assertTrue( "Interrupt flag should be restored", Thread.interrupted() ); // also clears it
   }
 
-  @SuppressWarnings( "unchecked" )
   @Test
   public void testConnect_GeneralException_ClosesServiceManagerAndThrowsKettleException() throws Exception {
     PurRepository mockPurRepository = mock( PurRepository.class );

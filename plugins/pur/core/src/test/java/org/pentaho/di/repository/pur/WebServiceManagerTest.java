@@ -20,8 +20,8 @@ import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.xml.ws.BindingProvider;
-import jakarta.xml.ws.handler.MessageContext;
 import jakarta.xml.ws.Service;
+import jakarta.xml.ws.handler.MessageContext;
 import jakarta.xml.ws.soap.SOAPBinding;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
@@ -36,6 +36,7 @@ import org.pentaho.di.ui.spoon.session.AuthenticationContext;
 import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
 
+import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,9 +45,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Future;
-
-import javax.xml.namespace.QName;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -775,13 +775,13 @@ public class WebServiceManagerTest {
   public void testCreateService_InjectedCredentialProviderAddsBearerSoapHeader() throws Exception {
     CredentialProvider credentialProvider = new CredentialProvider() {
       @Override
-      public java.util.Optional<String> findAccessToken( String serverUrl ) {
-        return BASE_URL.equals( serverUrl ) ? java.util.Optional.of( "access-token" ) : java.util.Optional.empty();
+      public Optional<String> findAccessToken( String serverUrl ) {
+        return BASE_URL.equals( serverUrl ) ? Optional.of( "access-token" ) : Optional.empty();
       }
 
       @Override
-      public java.util.Optional<String> findSessionCookie( String serverUrl ) {
-        return java.util.Optional.empty();
+      public Optional<String> findSessionCookie( String serverUrl ) {
+        return Optional.empty();
       }
     };
 
@@ -816,13 +816,13 @@ public class WebServiceManagerTest {
   public void testCreateService_InjectedNonBasicCredentialBypassesSoapCache() throws Exception {
     CredentialProvider credentialProvider = new CredentialProvider() {
       @Override
-      public java.util.Optional<String> findAccessToken( String serverUrl ) {
-        return BASE_URL.equals( serverUrl ) ? java.util.Optional.of( "access-token" ) : java.util.Optional.empty();
+      public Optional<String> findAccessToken( String serverUrl ) {
+        return BASE_URL.equals( serverUrl ) ? Optional.of( "access-token" ) : java.util.Optional.empty();
       }
 
       @Override
-      public java.util.Optional<String> findSessionCookie( String serverUrl ) {
-        return java.util.Optional.empty();
+      public Optional<String> findSessionCookie( String serverUrl ) {
+        return Optional.empty();
       }
     };
 

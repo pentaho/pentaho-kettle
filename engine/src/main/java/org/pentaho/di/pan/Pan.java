@@ -12,6 +12,7 @@
 
 package org.pentaho.di.pan;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
@@ -138,10 +139,11 @@ public class Pan {
     return args;
   }
 
-  private static CommandLineOption[] prepareCommandLineOptions( List<String> args,
-                                                                CommandLineOption[] options,
-                                                                NamedParams pluginNamedParams,
-                                                                LogChannelInterface log ) {
+  @VisibleForTesting
+  static CommandLineOption[] prepareCommandLineOptions( List<String> args,
+                                                        CommandLineOption[] options,
+                                                        NamedParams pluginNamedParams,
+                                                        LogChannelInterface log ) {
     List<CommandLineOption> updatedOptionList = updateCommandlineOptions( options, pluginNamedParams, log );
     CommandLineOption[] updatedOptions = updatedOptionList.toArray( new CommandLineOption[ 0 ] );
     if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
@@ -158,7 +160,8 @@ public class Pan {
     return updatedOptions;
   }
 
-  private static FileLoggingEventListener configureFileAppender( StringBuilder optionLogfile ) throws KettleException {
+  @VisibleForTesting
+  static FileLoggingEventListener configureFileAppender( StringBuilder optionLogfile ) throws KettleException {
     if ( Utils.isEmpty( optionLogfile ) ) {
       return null;
     }
@@ -168,7 +171,8 @@ public class Pan {
     return fileAppender;
   }
 
-  private static void closeFileAppender( FileLoggingEventListener fileAppender, LogChannelInterface log ) {
+  @VisibleForTesting
+  static void closeFileAppender( FileLoggingEventListener fileAppender, LogChannelInterface log ) {
     if ( fileAppender == null ) {
       return;
     }
@@ -181,7 +185,8 @@ public class Pan {
     KettleLogStore.getAppender().removeLoggingEventListener( fileAppender );
   }
 
-  private static void logDebugArguments( LogChannelInterface log, CommandLineOption[] options ) {
+  @VisibleForTesting
+  static void logDebugArguments( LogChannelInterface log, CommandLineOption[] options ) {
     if ( !log.isDebug() ) {
       return;
     }
@@ -193,14 +198,16 @@ public class Pan {
     log.logDebug( "" );
   }
 
-  private static String formatOptionValue( CommandLineOption option ) {
+  @VisibleForTesting
+  static String formatOptionValue( CommandLineOption option ) {
     if ( isSensitiveOption( option.getOption() ) ) {
       return "<redacted>";
     }
     return String.valueOf( option.getArgument() );
   }
 
-  private static boolean isSensitiveOption( String optionName ) {
+  @VisibleForTesting
+  static boolean isSensitiveOption( String optionName ) {
     String normalizedOption = optionName == null ? "" : optionName.toLowerCase( Locale.ROOT );
     return normalizedOption.contains( "pass" )
       || normalizedOption.contains( "secret" )
@@ -231,7 +238,8 @@ public class Pan {
     return getCommandExecutor().execute( transParams, args.toArray( new String[ 0 ] ) );
   }
 
-  private static NamedParams getPluginNamedParams( LogChannelInterface log ) {
+  @VisibleForTesting
+  static NamedParams getPluginNamedParams( LogChannelInterface log ) {
     NamedParams newNamedParams = new NamedParamsDefault();
     try {
       for ( CommandLineOptionProvider provider : PluginServiceLoader
@@ -244,9 +252,10 @@ public class Pan {
     return newNamedParams;
   }
 
-  private static void updatedPluginParamValue( NamedParams namedParams,
-                                               CommandLineOption[] options,
-                                               LogChannelInterface log ) {
+  @VisibleForTesting
+  static void updatedPluginParamValue( NamedParams namedParams,
+                                       CommandLineOption[] options,
+                                       LogChannelInterface log ) {
     try {
       if ( namedParams != null ) {
         for ( String key : namedParams.listParameters() ) {
@@ -263,9 +272,10 @@ public class Pan {
     }
   }
 
-  private static List<CommandLineOption> updateCommandlineOptions( CommandLineOption[] options,
-                                                                   NamedParams namedParams,
-                                                                   LogChannelInterface log ) {
+  @VisibleForTesting
+  static List<CommandLineOption> updateCommandlineOptions( CommandLineOption[] options,
+                                                           NamedParams namedParams,
+                                                           LogChannelInterface log ) {
     List<CommandLineOption> modifiableList = new ArrayList<>();
     Collections.addAll( modifiableList, options );
 
@@ -285,7 +295,8 @@ public class Pan {
     return modifiableList;
   }
 
-  private static final class PanOptionState {
+  @VisibleForTesting
+  static final class PanOptionState {
     private final StringBuilder optionRepname = new StringBuilder();
     private final StringBuilder optionUsername = new StringBuilder();
     private final StringBuilder optionTrustUser = new StringBuilder();
@@ -374,7 +385,8 @@ public class Pan {
           optionServiceAccount, true, false ) };
     }
 
-    private void applyRepositoryEnvironmentOverrides() {
+    @VisibleForTesting
+    void applyRepositoryEnvironmentOverrides() {
       applyEnvOverride( optionRepname, Const.getEnvironmentVariable( Const.KETTLE_REPOSITORY, null ) );
       applyEnvOverride( optionUsername, Const.getEnvironmentVariable( Const.KETTLE_USER, null ) );
       applyEnvOverride( optionPassword, Const.getEnvironmentVariable( Const.KETTLE_PASSWORD, null ) );
@@ -385,7 +397,8 @@ public class Pan {
       }
     }
 
-    private void applyEnvOverride( StringBuilder target, String envValue ) {
+    @VisibleForTesting
+    void applyEnvOverride( StringBuilder target, String envValue ) {
       if ( Utils.isEmpty( envValue ) ) {
         return;
       }
@@ -433,6 +446,31 @@ public class Pan {
         .serviceAccount( optionServiceAccount.toString() )
         .build();
     }
+
+    @VisibleForTesting
+    StringBuilder getOptionRepname() {
+      return optionRepname;
+    }
+
+    @VisibleForTesting
+    StringBuilder getOptionUsername() {
+      return optionUsername;
+    }
+
+    @VisibleForTesting
+    StringBuilder getOptionPassword() {
+      return optionPassword;
+    }
+
+    @VisibleForTesting
+    StringBuilder getOptionLogfile() {
+      return optionLogfile;
+    }
+
+    @VisibleForTesting
+    StringBuilder getOptionLogfileOld() {
+      return optionLogfileOld;
+    }
   }
 
   /**
@@ -448,7 +486,8 @@ public class Pan {
     PanCommandExecutor.configureParameters( trans, optionParams, transMeta );
   }
 
-  private static void exitJVM( int status ) {
+  @VisibleForTesting
+  static void exitJVM( int status ) {
     ExitInterceptor.exit( status );
   }
 

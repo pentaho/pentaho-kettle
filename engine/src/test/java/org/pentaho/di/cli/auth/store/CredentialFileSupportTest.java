@@ -24,9 +24,14 @@ import java.nio.file.Path;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,6 +49,24 @@ public class CredentialFileSupportTest {
     CredentialFileSupport.ensureParentDirectoryExists( nestedFile );
 
     assertTrue( nestedFile.getParentFile().exists() );
+  }
+
+  @Test
+  public void ensureParentDirectoryExistsThrowsWhenParentCannotBeCreated() {
+    File file = mock( File.class );
+    File parent = mock( File.class );
+
+    when( file.getParentFile() ).thenReturn( parent );
+    when( parent.exists() ).thenReturn( false );
+    when( parent.mkdirs() ).thenReturn( false );
+    when( parent.getAbsolutePath() ).thenReturn( tempDir.getRoot().toPath().resolve( "blocked" ).toString() );
+
+    try {
+      CredentialFileSupport.ensureParentDirectoryExists( file );
+      fail( "Expected directory creation failure" );
+    } catch ( IOException e ) {
+      assertTrue( e.getMessage().contains( "CliFileSupport.CannotCreateDirectory" ) );
+    }
   }
 
   @Test
@@ -82,40 +105,31 @@ public class CredentialFileSupportTest {
   public void applyOwnerOnlyPermissionsLogsWhenPosixWriteFails() {
     LogChannelInterface log = mock( LogChannelInterface.class );
     when( log.isDebug() ).thenReturn( true );
-    File file = new PermissionRejectingFile( tempDir.getRoot().toPath().resolve( "missing.properties" ) );
+    File file = spy( tempDir.getRoot().toPath().resolve( "missing.properties" ).toFile() );
+    doReturn( false ).when( file ).setReadable( false, false );
+    doReturn( false ).when( file ).setWritable( false, false );
+    doReturn( false ).when( file ).setExecutable( false, false );
+    doReturn( false ).when( file ).setReadable( true, true );
+    doReturn( false ).when( file ).setWritable( true, true );
 
     CredentialFileSupport.applyOwnerOnlyPermissions( file, log, "encrypted credential file" );
 
     assertFalse( file.exists() );
+    verify( log, atLeast( 1 ) ).logDebug( anyString() );
     verify( log, atLeastOnce() ).logDebug( contains( "CliFileSupport.CouldNotApplyOperation" ) );
   }
 
-  private static final class PermissionRejectingFile extends File {
-    private final Path path;
+  @Test
+  public void applyOwnerOnlyPermissionsWithoutLogDoesNotThrowOnFallback() {
+    File file = spy( tempDir.getRoot().toPath().resolve( "missing-without-log.properties" ).toFile() );
+    doReturn( false ).when( file ).setReadable( false, false );
+    doReturn( false ).when( file ).setWritable( false, false );
+    doReturn( false ).when( file ).setExecutable( false, false );
+    doReturn( false ).when( file ).setReadable( true, true );
+    doReturn( false ).when( file ).setWritable( true, true );
 
-    PermissionRejectingFile( Path path ) {
-      super( path.toString() );
-      this.path = path;
-    }
+    CredentialFileSupport.applyOwnerOnlyPermissions( file, "encrypted credential file" );
 
-    @Override
-    public Path toPath() {
-      return path;
-    }
-
-    @Override
-    public boolean setReadable( boolean readable, boolean ownerOnly ) {
-      return false;
-    }
-
-    @Override
-    public boolean setWritable( boolean writable, boolean ownerOnly ) {
-      return false;
-    }
-
-    @Override
-    public boolean setExecutable( boolean executable, boolean ownerOnly ) {
-      return false;
-    }
+    assertFalse( file.exists() );
   }
 }

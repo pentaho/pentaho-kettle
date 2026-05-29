@@ -12,6 +12,7 @@
 
 package org.pentaho.di.kitchen;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.cli.auth.TokenCommandHandler;
@@ -187,11 +188,12 @@ public class Kitchen {
     return args;
   }
 
-  private static CommandLineOption[] prepareCommandLineOptions( List<String> args,
-                                                                CommandLineOption[] options,
-                                                                NamedParams pluginNamedParams,
-                                                                LogChannelInterface log,
-                                                                Future<KettleException> kettleInitFuture )
+  @VisibleForTesting
+  static CommandLineOption[] prepareCommandLineOptions( List<String> args,
+                                                        CommandLineOption[] options,
+                                                        NamedParams pluginNamedParams,
+                                                        LogChannelInterface log,
+                                                        Future<KettleException> kettleInitFuture )
     throws KettleException {
     List<CommandLineOption> updatedOptionList = updateCommandlineOptions( options, pluginNamedParams, log );
     CommandLineOption[] updatedOptions = updatedOptionList.toArray( new CommandLineOption[ 0 ] );
@@ -204,7 +206,8 @@ public class Kitchen {
     return updatedOptions;
   }
 
-  private static FileLoggingEventListener configureFileAppender( StringBuilder optionLogfile ) throws KettleException {
+  @VisibleForTesting
+  static FileLoggingEventListener configureFileAppender( StringBuilder optionLogfile ) throws KettleException {
     if ( Utils.isEmpty( optionLogfile ) ) {
       return null;
     }
@@ -213,7 +216,8 @@ public class Kitchen {
     return fileAppender;
   }
 
-  private static void closeFileAppender( FileLoggingEventListener fileAppender ) {
+  @VisibleForTesting
+  static void closeFileAppender( FileLoggingEventListener fileAppender ) {
     if ( fileAppender == null ) {
       return;
     }
@@ -299,7 +303,8 @@ public class Kitchen {
     return def;
   }
 
-  private static NamedParams getPluginNamedParam( LogChannelInterface log ) {
+  @VisibleForTesting
+  static NamedParams getPluginNamedParam( LogChannelInterface log ) {
     NamedParams newNamedParams = new NamedParamsDefault();
     try {
       for ( CommandLineOptionProvider provider : PluginServiceLoader
@@ -312,9 +317,10 @@ public class Kitchen {
     return newNamedParams;
   }
 
-  private static List<CommandLineOption> updateCommandlineOptions( CommandLineOption[] options,
-                                                                   NamedParams namedParams,
-                                                                   LogChannelInterface log ) {
+  @VisibleForTesting
+  static List<CommandLineOption> updateCommandlineOptions( CommandLineOption[] options,
+                                                           NamedParams namedParams,
+                                                           LogChannelInterface log ) {
     List<CommandLineOption> modifiableList = new ArrayList<>();
     Collections.addAll( modifiableList, options );
     try {
@@ -334,9 +340,10 @@ public class Kitchen {
     return modifiableList;
   }
 
-  private static void updatedPluginParamValue( NamedParams namedParams,
-                                               CommandLineOption[] options,
-                                               LogChannelInterface log ) {
+  @VisibleForTesting
+  static void updatedPluginParamValue( NamedParams namedParams,
+                                       CommandLineOption[] options,
+                                       LogChannelInterface log ) {
     try {
       if ( namedParams != null ) {
         for ( String key : namedParams.listParameters() ) {
@@ -404,7 +411,8 @@ public class Kitchen {
     }
   }
 
-  private static final class KitchenOptionState {
+  @VisibleForTesting
+  static final class KitchenOptionState {
     private final StringBuilder optionRepname = new StringBuilder();
     private final StringBuilder optionUsername = new StringBuilder();
     private final StringBuilder optionTrustUser = new StringBuilder();
@@ -484,7 +492,8 @@ public class Kitchen {
           optionServiceAccount, true, false ) };
     }
 
-    private void applyRepositoryEnvironmentOverrides() {
+    @VisibleForTesting
+    void applyRepositoryEnvironmentOverrides() {
       applyEnvOverride( optionRepname, Const.getEnvironmentVariable( "KETTLE_REPOSITORY", null ) );
       applyEnvOverride( optionUsername, Const.getEnvironmentVariable( "KETTLE_USER", null ) );
       applyEnvOverride( optionPassword, Const.getEnvironmentVariable( "KETTLE_PASSWORD", null ) );
@@ -495,7 +504,8 @@ public class Kitchen {
       }
     }
 
-    private void applyEnvOverride( StringBuilder target, String envValue ) {
+    @VisibleForTesting
+    void applyEnvOverride( StringBuilder target, String envValue ) {
       if ( Utils.isEmpty( envValue ) ) {
         return;
       }
@@ -542,9 +552,35 @@ public class Kitchen {
         .serviceAccount( optionServiceAccount.toString() )
         .build();
     }
+
+    @VisibleForTesting
+    StringBuilder getOptionRepname() {
+      return optionRepname;
+    }
+
+    @VisibleForTesting
+    StringBuilder getOptionUsername() {
+      return optionUsername;
+    }
+
+    @VisibleForTesting
+    StringBuilder getOptionPassword() {
+      return optionPassword;
+    }
+
+    @VisibleForTesting
+    StringBuilder getOptionLogfile() {
+      return optionLogfile;
+    }
+
+    @VisibleForTesting
+    StringBuilder getOptionLogfileOld() {
+      return optionLogfileOld;
+    }
   }
 
-  private static final void exitJVM( int status ) {
+  @VisibleForTesting
+  static void exitJVM( int status ) {
 
     ExitInterceptor.exit( status );
   }

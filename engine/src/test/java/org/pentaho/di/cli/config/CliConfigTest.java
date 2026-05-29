@@ -14,13 +14,11 @@ package org.pentaho.di.cli.config;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -32,9 +30,6 @@ import static org.junit.Assert.assertTrue;
 import static org.pentaho.di.cli.config.CliConfig.DEFAULT_PREFERRED_IDP;
 
 public class CliConfigTest {
-
-  @ClassRule
-  public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private String originalUserHome;
   private String originalKettleHome;
@@ -65,7 +60,7 @@ public class CliConfigTest {
   }
 
   @Test
-  public void constructorCreatesDefaultConfigFileInTempKettleDirectory() throws Exception {
+  public void constructorCreatesDefaultConfigFileInTempKettleDirectory()  {
     CliConfig config = newConfig();
     File configFile = config.getConfigFile();
 
@@ -76,7 +71,7 @@ public class CliConfigTest {
   }
 
   @Test
-  public void setBrokerReadTimeoutSecondsPersistsValidValuesAndRejectsInvalidOnes() throws Exception {
+  public void setBrokerReadTimeoutSecondsPersistsValidValuesAndRejectsInvalidOnes()  {
     CliConfig config = newConfig();
 
     assertTrue( config.setBrokerReadTimeoutSeconds( 300 ) );
@@ -87,7 +82,7 @@ public class CliConfigTest {
   }
 
   @Test
-  public void tokenStoreBackendAcceptsOnlyKnownValues() throws Exception {
+  public void tokenStoreBackendAcceptsOnlyKnownValues()  {
     CliConfig config = newConfig();
 
     assertEquals( CliConfig.TOKEN_STORE_BACKEND_FILE, config.getTokenStoreBackend() );
@@ -99,7 +94,7 @@ public class CliConfigTest {
   }
 
   @Test
-  public void resetToDefaultsClearsCustomValuesAndRestoresBuiltIns() throws Exception {
+  public void resetToDefaultsClearsCustomValuesAndRestoresBuiltIns()  {
     CliConfig config = newConfig();
     assertTrue( config.setAuthTimeoutSeconds( 900 ) );
     assertTrue( config.setTokenStoreBackend( CliConfig.TOKEN_STORE_BACKEND_FILE ) );
@@ -118,7 +113,39 @@ public class CliConfigTest {
   }
 
   @Test
-  public void genericSetRejectsInvalidNumericBrokerTimeout() throws Exception {
+  public void resetAliasClearsValuesAndRestoresDefaults()  {
+    CliConfig config = newConfig();
+    assertTrue( config.set( CliConfig.KEY_AUTH_TIMEOUT_SECONDS, "900" ) );
+    assertTrue( config.set( CliConfig.KEY_AUTH_PREFERRED_IDP, "keycloak" ) );
+    assertTrue( config.set( "custom.key", "custom-value" ) );
+
+    config.reset();
+
+    assertEquals( 300, config.getAuthTimeoutSeconds() );
+    assertEquals( CliConfig.TOKEN_STORE_BACKEND_FILE, config.getTokenStoreBackend() );
+    assertNull( config.get( "custom.key" ) );
+    assertEquals( DEFAULT_PREFERRED_IDP, config.get( CliConfig.KEY_AUTH_PREFERRED_IDP ) );
+  }
+
+  @Test
+  public void genericSetRoutesKnownKeysAndPersistsCustomValues()  {
+    CliConfig config = newConfig();
+
+    assertTrue( config.set( CliConfig.KEY_AUTH_TIMEOUT_SECONDS, "600" ) );
+    assertTrue( config.set( CliConfig.KEY_AUTH_BROKER_READ_TIMEOUT_SECONDS, "120" ) );
+    assertTrue( config.set( CliConfig.KEY_TOKEN_STORE_BACKEND, CliConfig.TOKEN_STORE_BACKEND_ENC ) );
+    assertTrue( config.set( CliConfig.KEY_AUTH_PREFERRED_IDP, "  keycloak  " ) );
+    assertTrue( config.set( "custom.key", "custom-value" ) );
+
+    assertEquals( 600, config.getAuthTimeoutSeconds() );
+    assertEquals( 120, config.getBrokerReadTimeoutSeconds() );
+    assertEquals( CliConfig.TOKEN_STORE_BACKEND_ENC, config.getTokenStoreBackend() );
+    assertEquals( "keycloak", config.getAuthPreferredIdp() );
+    assertEquals( "custom-value", config.get( "custom.key" ) );
+  }
+
+  @Test
+  public void genericSetRejectsInvalidNumericBrokerTimeout()  {
     CliConfig config = newConfig();
 
     assertFalse( config.set( CliConfig.KEY_AUTH_BROKER_READ_TIMEOUT_SECONDS, "not-a-number" ) );
@@ -126,7 +153,51 @@ public class CliConfigTest {
   }
 
   @Test
-  public void preferredIdpIsTrimmedAndBlankRemovesTheProperty() throws Exception {
+  public void genericSetRejectsInvalidNumericAuthTimeout() {
+    CliConfig config = newConfig();
+
+    assertFalse( config.set( CliConfig.KEY_AUTH_TIMEOUT_SECONDS, "not-a-number" ) );
+    assertEquals( 300, config.getAuthTimeoutSeconds() );
+  }
+
+  @Test
+  public void constructorFallsBackToDefaultsForInvalidStoredValues() throws IOException {
+    Properties properties = new Properties();
+    properties.setProperty( CliConfig.KEY_AUTH_TIMEOUT_SECONDS, "12" );
+    properties.setProperty( CliConfig.KEY_AUTH_BROKER_READ_TIMEOUT_SECONDS, "700" );
+    properties.setProperty( CliConfig.KEY_TOKEN_STORE_BACKEND, "vault" );
+    writeConfigProperties( properties );
+
+    CliConfig config = newConfig();
+
+    assertEquals( 300, config.getAuthTimeoutSeconds() );
+    assertEquals( 30, config.getBrokerReadTimeoutSeconds() );
+    assertEquals( CliConfig.TOKEN_STORE_BACKEND_FILE, config.getTokenStoreBackend() );
+  }
+
+  @Test
+  public void constructorFallsBackToDefaultsWhenConfigFileCannotBeRead() throws IOException {
+    Files.createDirectories( tempHome.resolve( ".kettle" ).resolve( CliConfig.CONFIG_FILE_NAME ) );
+
+    CliConfig config = newConfig();
+
+    assertEquals( 300, config.getAuthTimeoutSeconds() );
+    assertEquals( 30, config.getBrokerReadTimeoutSeconds() );
+    assertEquals( CliConfig.TOKEN_STORE_BACKEND_FILE, config.getTokenStoreBackend() );
+  }
+
+  @Test
+  public void nullKeysAndValuesAreRejectedWithoutMutation()  {
+    CliConfig config = newConfig();
+
+    assertFalse( config.set( null, "value" ) );
+    assertFalse( config.set( "custom.key", null ) );
+    assertFalse( config.remove( null ) );
+    assertNull( config.get( null ) );
+  }
+
+  @Test
+  public void preferredIdpIsTrimmedAndBlankRemovesTheProperty()  {
     CliConfig config = newConfig();
 
     assertTrue( config.set( CliConfig.KEY_AUTH_PREFERRED_IDP, "  keycloak  " ) );
@@ -136,10 +207,42 @@ public class CliConfigTest {
     assertNull( config.getAuthPreferredIdp() );
   }
 
-  private CliConfig newConfig() throws Exception {
-    Constructor<CliConfig> constructor = CliConfig.class.getDeclaredConstructor();
-    constructor.setAccessible( true );
-    return constructor.newInstance();
+  @Test( expected = IllegalArgumentException.class )
+  public void setPropertyThrowsWhenValidationFails()  {
+    CliConfig config = newConfig();
+
+    config.setProperty( CliConfig.KEY_AUTH_TIMEOUT_SECONDS, "not-a-number" );
+  }
+
+  @Test
+  public void removeDeletesConfiguredValues() {
+    CliConfig config = newConfig();
+    assertTrue( config.set( "custom.key", "custom-value" ) );
+
+    assertTrue( config.remove( "custom.key" ) );
+    assertNull( config.get( "custom.key" ) );
+  }
+
+  @Test
+  public void setReturnsFalseWhenConfigFileCannotBeWritten() throws IOException {
+    CliConfig config = newConfig();
+    Path configPath = config.getConfigFile().toPath();
+    Files.deleteIfExists( configPath );
+    Files.createDirectory( configPath );
+
+    assertFalse( config.set( "custom.key", "custom-value" ) );
+  }
+
+  private CliConfig newConfig() {
+    return new CliConfig();
+  }
+
+  private void writeConfigProperties( Properties properties ) throws IOException {
+    Path configFile = tempHome.resolve( ".kettle" ).resolve( CliConfig.CONFIG_FILE_NAME );
+    Files.createDirectories( configFile.getParent() );
+    try ( OutputStream outputStream = Files.newOutputStream( configFile ) ) {
+      properties.store( outputStream, "test" );
+    }
   }
 
   private void deleteRecursively( Path path ) throws IOException {

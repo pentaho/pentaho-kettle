@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,8 +29,13 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 public class OAuthHttpClientTest {
@@ -42,10 +46,15 @@ public class OAuthHttpClientTest {
 
   @Test
   public void postFormAppliesHeadersWritesBodyAndDisconnects() throws IOException {
-    FakeHttpURLConnection connection = new FakeHttpURLConnection();
-    connection.configuredResponseCode = HttpURLConnection.HTTP_OK;
-    connection.inputStream = new ByteArrayInputStream( "success".getBytes( StandardCharsets.UTF_8 ) );
-    TestableOAuthHttpClient client = new TestableOAuthHttpClient( connection );
+    HttpURLConnection connection = mock( HttpURLConnection.class );
+    ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+    OAuthHttpClient client = spy( new OAuthHttpClient( 1000, 1000 ) );
+    doReturn( connection ).when( client ).openConnection( anyString() );
+
+    when( connection.getOutputStream() ).thenReturn( requestBody );
+    when( connection.getResponseCode() ).thenReturn( HttpURLConnection.HTTP_OK );
+    when( connection.getInputStream() )
+      .thenReturn( new ByteArrayInputStream( "success".getBytes( StandardCharsets.UTF_8 ) ) );
 
     Map<String, String> params = new LinkedHashMap<>();
     params.put( "scope", "openid profile" );
@@ -54,61 +63,72 @@ public class OAuthHttpClientTest {
     String result = client.postForm( TOKEN_URI, params, Map.of( "X-Test", HEADER_VALUE ) );
 
     assertEquals( "success", result );
-    assertEquals( TOKEN_URI, client.openedUri );
-    assertEquals( "POST", connection.requestMethod );
-    assertTrue( connection.outputEnabled );
-    assertEquals( "application/x-www-form-urlencoded", connection.requestProperties.get( "Content-Type" ) );
-    assertEquals( "application/json", connection.requestProperties.get( "Accept" ) );
-    assertEquals( HEADER_VALUE, connection.requestProperties.get( "X-Test" ) );
-    assertEquals( "scope=openid%20profile&client_id=", connection.requestBodyAsString() );
-    assertTrue( connection.disconnected );
+    verify( client ).openConnection( TOKEN_URI );
+    verify( connection ).setRequestMethod( "POST" );
+    verify( connection ).setDoOutput( true );
+    verify( connection ).setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
+    verify( connection ).setRequestProperty( "Accept", "application/json" );
+    verify( connection ).setRequestProperty( "X-Test", HEADER_VALUE );
+    assertEquals( "scope=openid%20profile&client_id=", requestBody.toString( StandardCharsets.UTF_8 ) );
+    verify( connection ).disconnect();
   }
 
   @Test
   public void getJsonReturnsNullForNonSuccessResponse() throws IOException {
-    FakeHttpURLConnection connection = new FakeHttpURLConnection();
-    connection.configuredResponseCode = HttpURLConnection.HTTP_BAD_REQUEST;
-    connection.errorStream = new ByteArrayInputStream( "bad-request".getBytes( StandardCharsets.UTF_8 ) );
-    TestableOAuthHttpClient client = new TestableOAuthHttpClient( connection );
+    HttpURLConnection connection = mock( HttpURLConnection.class );
+    OAuthHttpClient client = spy( new OAuthHttpClient( 1000, 1000 ) );
+    doReturn( connection ).when( client ).openConnection( anyString() );
+
+    when( connection.getResponseCode() ).thenReturn( HttpURLConnection.HTTP_BAD_REQUEST );
+    when( connection.getErrorStream() )
+      .thenReturn( new ByteArrayInputStream( "bad-request".getBytes( StandardCharsets.UTF_8 ) ) );
 
     String result = client.getJson( "http://localhost/discovery" );
 
     assertNull( result );
-    assertEquals( "GET", connection.requestMethod );
-    assertEquals( "application/json", connection.requestProperties.get( "Accept" ) );
-    assertTrue( connection.disconnected );
+    verify( connection ).setRequestMethod( "GET" );
+    verify( connection ).setRequestProperty( "Accept", "application/json" );
+    verify( connection ).disconnect();
   }
 
   @Test
   public void postFormRawReturnsStatusAndErrorBody() throws IOException {
-    FakeHttpURLConnection connection = new FakeHttpURLConnection();
-    connection.configuredResponseCode = HttpURLConnection.HTTP_BAD_REQUEST;
-    connection.errorStream = new ByteArrayInputStream( "invalid".getBytes( StandardCharsets.UTF_8 ) );
-    TestableOAuthHttpClient client = new TestableOAuthHttpClient( connection );
+    HttpURLConnection connection = mock( HttpURLConnection.class );
+    ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+    OAuthHttpClient client = spy( new OAuthHttpClient( 1000, 1000 ) );
+    doReturn( connection ).when( client ).openConnection( anyString() );
+
+    when( connection.getOutputStream() ).thenReturn( requestBody );
+    when( connection.getResponseCode() ).thenReturn( HttpURLConnection.HTTP_BAD_REQUEST );
+    when( connection.getErrorStream() )
+      .thenReturn( new ByteArrayInputStream( "invalid".getBytes( StandardCharsets.UTF_8 ) ) );
 
     OAuthHttpClient.PostResult result = client.postFormRaw( TOKEN_URI, Map.of( "grant_type", "x" ) );
 
     assertEquals( HttpURLConnection.HTTP_BAD_REQUEST, result.status() );
     assertEquals( "invalid", result.body() );
-    assertTrue( connection.disconnected );
+    assertEquals( "grant_type=x", requestBody.toString( StandardCharsets.UTF_8 ) );
+    verify( connection ).disconnect();
   }
 
   @Test
   public void postEmptyRawSetsContentLengthAndHeaders() throws IOException {
-    FakeHttpURLConnection connection = new FakeHttpURLConnection();
-    connection.configuredResponseCode = HttpURLConnection.HTTP_OK;
-    connection.inputStream = new ByteArrayInputStream( "{}".getBytes( StandardCharsets.UTF_8 ) );
-    TestableOAuthHttpClient client = new TestableOAuthHttpClient( connection );
+    HttpURLConnection connection = mock( HttpURLConnection.class );
+    OAuthHttpClient client = spy( new OAuthHttpClient( 1000, 1000 ) );
+    doReturn( connection ).when( client ).openConnection( anyString() );
+
+    when( connection.getResponseCode() ).thenReturn( HttpURLConnection.HTTP_OK );
+    when( connection.getInputStream() ).thenReturn( new ByteArrayInputStream( "{}".getBytes( StandardCharsets.UTF_8 ) ) );
 
     OAuthHttpClient.PostResult result =
       client.postEmptyRaw( "http://localhost/status", Map.of( "X-Auth-Handle", "h" ) );
 
     assertEquals( HttpURLConnection.HTTP_OK, result.status() );
     assertEquals( "{}", result.body() );
-    assertEquals( "POST", connection.requestMethod );
-    assertEquals( "0", connection.requestProperties.get( "Content-Length" ) );
-    assertEquals( "h", connection.requestProperties.get( "X-Auth-Handle" ) );
-    assertTrue( connection.disconnected );
+    verify( connection ).setRequestMethod( "POST" );
+    verify( connection ).setRequestProperty( "Content-Length", "0" );
+    verify( connection ).setRequestProperty( "X-Auth-Handle", "h" );
+    verify( connection ).disconnect();
   }
 
   @Test
@@ -124,16 +144,19 @@ public class OAuthHttpClientTest {
   }
 
   @Test
-  public void readErrorBodyReturnsEmptyWhenErrorStreamMissingOrUnreadable() throws IOException {
-    FakeHttpURLConnection nullStreamConnection = new FakeHttpURLConnection();
-    FakeHttpURLConnection failingStreamConnection = new FakeHttpURLConnection();
-    failingStreamConnection.errorStream = new InputStream() {
+  public void readErrorBodyReturnsEmptyWhenErrorStreamMissingOrUnreadable() {
+    HttpURLConnection nullStreamConnection = mock( HttpURLConnection.class );
+    HttpURLConnection failingStreamConnection = mock( HttpURLConnection.class );
+    InputStream failingStream = new InputStream() {
       @Override
       public int read() throws IOException {
         throw new IOException( "boom" );
       }
     };
     OAuthHttpClient client = new OAuthHttpClient( 1000, 1000 );
+
+    when( nullStreamConnection.getErrorStream() ).thenReturn( null );
+    when( failingStreamConnection.getErrorStream() ).thenReturn( failingStream );
 
     assertEquals( "", client.readErrorBody( nullStreamConnection ) );
     assertEquals( "", client.readErrorBody( failingStreamConnection ) );
@@ -169,90 +192,5 @@ public class OAuthHttpClientTest {
     assertNull( client.extractJsonElement( null, "key" ) );
     assertNull( client.extractJsonElement( json, null ) );
     assertNull( client.extractJsonElement( "{not-json", "key" ) );
-  }
-
-  private static final class TestableOAuthHttpClient extends OAuthHttpClient {
-    private final HttpURLConnection connection;
-    private String openedUri;
-
-    private TestableOAuthHttpClient( HttpURLConnection connection ) {
-      super( 1000, 1000 );
-      this.connection = connection;
-    }
-
-    @Override
-    public HttpURLConnection openConnection( String uri ) {
-      openedUri = uri;
-      return connection;
-    }
-  }
-
-  private static final class FakeHttpURLConnection extends HttpURLConnection {
-    private final Map<String, String> requestProperties = new LinkedHashMap<>();
-    private final ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
-    private InputStream inputStream = new ByteArrayInputStream( new byte[ 0 ] );
-    private InputStream errorStream;
-    private int configuredResponseCode = HttpURLConnection.HTTP_OK;
-    private boolean disconnected;
-    private String requestMethod;
-    private boolean outputEnabled;
-
-    private FakeHttpURLConnection() throws IOException {
-      super( URI.create( "http://example.test" ).toURL() );
-    }
-
-    @Override
-    public void disconnect() {
-      disconnected = true;
-    }
-
-    @Override
-    public boolean usingProxy() {
-      return false;
-    }
-
-    @Override
-    public void connect() {
-      // no-op
-    }
-
-    @Override
-    public void setRequestMethod( String method ) {
-      requestMethod = method;
-    }
-
-    @Override
-    public void setDoOutput( boolean doOutput ) {
-      this.outputEnabled = doOutput;
-    }
-
-    @Override
-    public void setRequestProperty( String key, String value ) {
-      requestProperties.put( key, value );
-    }
-
-    @Override
-    public ByteArrayOutputStream getOutputStream() {
-      return requestBody;
-    }
-
-    @Override
-    public int getResponseCode() {
-      return configuredResponseCode;
-    }
-
-    @Override
-    public InputStream getInputStream() {
-      return inputStream;
-    }
-
-    @Override
-    public InputStream getErrorStream() {
-      return errorStream;
-    }
-
-    private String requestBodyAsString() {
-      return requestBody.toString( StandardCharsets.UTF_8 );
-    }
   }
 }

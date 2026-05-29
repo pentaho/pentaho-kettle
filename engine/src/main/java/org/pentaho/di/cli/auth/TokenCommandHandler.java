@@ -12,6 +12,7 @@
 
 package org.pentaho.di.cli.auth;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.Console;
@@ -251,7 +252,8 @@ public class TokenCommandHandler {
    * Prompts the user to enter the token without echoing it to the terminal.
    * Returns null if no console is attached (e.g. CI/pipe).
    */
-  private String promptForToken() {
+  @VisibleForTesting
+  protected String promptForToken() {
     Console console = System.console();
     if ( console == null ) {
       return null;

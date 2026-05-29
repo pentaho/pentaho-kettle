@@ -12,6 +12,7 @@
 
 package org.pentaho.di.base;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -543,7 +544,8 @@ public abstract class AbstractBaseCommandExecutor {
    *
    * @return {@code true} if the browser was successfully launched
    */
-  private boolean tryOpenBrowser( String authorizeUrl ) {
+  @VisibleForTesting
+  protected boolean tryOpenBrowser( String authorizeUrl ) {
     try {
       if ( !Desktop.isDesktopSupported() ) {
         getLog().logDebug( message( "BaseCommandExecutor.Auth.DesktopNotSupported" ) );
@@ -854,7 +856,8 @@ public abstract class AbstractBaseCommandExecutor {
     return brokerDiscoveryClient;
   }
 
-  private BrokerAuthClient createBrokerAuthClient( BrokerDiscoveryClient discoveryClient, String serverUrl ) {
+  @VisibleForTesting
+  protected BrokerAuthClient createBrokerAuthClient( BrokerDiscoveryClient discoveryClient, String serverUrl ) {
     int brokerReadTimeoutMs = CliConfig.getInstance().getBrokerReadTimeoutSeconds() * 1000;
     return discoveryClient.isDpopEnabled( serverUrl )
       ? new BrokerAuthClient( brokerReadTimeoutMs, new DPoPProofBuilder() )
@@ -933,8 +936,9 @@ public abstract class AbstractBaseCommandExecutor {
     return AuthResult.NONE;
   }
 
-  private Repository connectToRepository( RepositoryMeta repositoryMeta, String username, String password,
-                                          RepositoryOperation... operations ) throws KettleException {
+  @VisibleForTesting
+  protected Repository connectToRepository( RepositoryMeta repositoryMeta, String username, String password,
+                                            RepositoryOperation... operations ) throws KettleException {
     Repository rep = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta,
       Repository.class );
     rep.init( repositoryMeta );

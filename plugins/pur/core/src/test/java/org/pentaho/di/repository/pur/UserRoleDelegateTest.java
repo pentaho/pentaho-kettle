@@ -17,10 +17,9 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.UserInfo;
@@ -50,7 +49,6 @@ import static org.pentaho.di.repository.pur.UserRoleHelper.convertToPentahoProxy
 /**
  * @author Andrey Khayrutdinov
  */
-@RunWith( MockitoJUnitRunner.class)
 public class UserRoleDelegateTest {
 
   private static final String ADMIN_USER = "admin";
@@ -66,9 +64,11 @@ public class UserRoleDelegateTest {
   private IUserRoleWebService roleWebService;
 
   private UserRoleDelegate delegate;
+  private AutoCloseable mocks;
 
   @Before
   public void setUp() throws Exception {
+    mocks = MockitoAnnotations.openMocks( this );
 
     when( roleWebService.getUserRoleSecurityInfo() ).thenReturn( new UserRoleSecurityInfo() );
 
@@ -83,6 +83,14 @@ public class UserRoleDelegateTest {
     log = null;
     roleListWebService = null;
     roleWebService = null;
+    if ( mocks != null ) {
+      try {
+        mocks.close();
+      } catch ( Exception ignored ) {
+        // nothing to clean up for this test if Mockito close fails
+      }
+      mocks = null;
+    }
   }
 
   @Test( expected = KettleException.class )
@@ -132,7 +140,7 @@ public class UserRoleDelegateTest {
   }
 
   @Test( expected = KettleException.class )
-  public void createRole_CreatesSuccessfully_WhenNameDiffersInCase() throws Exception {
+  public void createRole_ProhibitsToCreate_WhenNameDiffersOnlyInCase() throws Exception {
     final String name = "role";
     final String upperCased = name.toUpperCase();
 
@@ -140,16 +148,15 @@ public class UserRoleDelegateTest {
     when( roleWebService.getRoles() ).thenReturn( new ProxyPentahoRole[] { convertToPentahoProxyRole( existing ) } );
 
     delegate.createRole( new EERoleInfo( name ) );
-    verify( roleWebService ).createRole( any( ProxyPentahoRole.class ) );
   }
 
   private ServiceManager buildServiceManager( IUserRoleListWebService roleListService,
-                                              IUserRoleWebService userRoleWebService ) throws Exception {
+                                              IUserRoleWebService roleWebService ) throws Exception {
     ServiceManager serviceManager = mock( ServiceManager.class );
     when( serviceManager.createService( ADMIN_USER, ADMIN_PASSWORD, IUserRoleListWebService.class ) )
       .thenReturn( roleListService );
     when( serviceManager.createService( ADMIN_USER, ADMIN_PASSWORD, IUserRoleWebService.class ) )
-      .thenReturn( userRoleWebService );
+      .thenReturn( roleWebService );
     return serviceManager;
   }
 
