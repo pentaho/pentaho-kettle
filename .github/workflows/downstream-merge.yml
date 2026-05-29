@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  resolve-version:
+  resolve-version-and-build:
     runs-on: [ k8s ]
     container:
       image: ${{ vars.PDIA_AC_CONTAINER_IMAGE }}
@@ -105,6 +105,16 @@ jobs:
           echo "New version:  $new_version"
           echo "build_version=$new_version" >> $GITHUB_OUTPUT
 
+      - name: prepare build name
+        id: prepare-build-name
+        shell: bash
+        run: |
+          branch_name="${{ github.ref_name }}"
+          sanitized_branch="${branch_name//\//-}"
+          build_name=${{ github.event.repository.name }}-${sanitized_branch}
+          
+          echo "build_name=$build_name" >> $GITHUB_OUTPUT
+
       - name: Apply virtual version to pom.xml files
         # Version is set in-memory for this build only.
         # Changes are NOT committed back to the repository — pom.xml files remain unchanged in main.
@@ -180,29 +190,44 @@ jobs:
           echo "Collected artifacts:"
           grep '^artifacts=' "$GITHUB_OUTPUT" | tail -n1
 
-  reusable-merge-workflow:
-    needs: resolve-version
-    uses: pentaho/actions-common/.github/workflows/merge.yml@stable
-    with:
-      modules_to_build: "."
-      base_version: ${{ needs.resolve-version.outputs.build_version }}
-      version: ${{ needs.resolve-version.outputs.build_version }}
-      run_snapshot: false
-      run_release_candidate: true
-      container_image: "one.hitachivantara.com/devops-docker-release/pentaho/actions-common:jdk21-20260413.227"
-      # Apply the virtual date-based version at build time so the reusable workflow's
-      # fresh checkout also uses the correct version without committing pom.xml changes.
-      additional_mvn_directives: >-
-        ${{ needs.resolve-version.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', needs.resolve-version.outputs.libraries_to_update, needs.resolve-version.outputs.build_version) || '' }}
+      - name: Build code, deploy artifacts & Run tests
+        id: build_with_unit_tests
+        uses: lumada-common-services/gh-composite-actions@stable
+        with:
+            command: |
+              mvn clean deploy -Daudit -Pcicd-release -Dbuild.name=${{ steps.prepare-build-namee.outputs.build_name }} -Dbuild.number=${{ needs.resolve-version.outputs.build_version}} -amd ${{ inputs.additional_snapshot_mvn_directives }} ${{ needs.resolve-version.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', needs.resolve-version.outputs.libraries_to_update, needs.resolve-version.outputs.build_version) || '' }}
+        env:
+            cmd_type: ${{ env.SET_CMD_TYPE }}
+            unit_test_reporter: 'java-junit'
+            unit_test_fail_on_error: 'true'
+            unit_test_report_path: '**/target/surefire-reports/*.xml'
+            int_test_reporter: 'java-junit'
+            int_test_fail_on_error: 'true'
+            int_test_report_path: '**/target/failsafe-reports/TEST*.xml'
 
-    secrets: inherit
+#  reusable-merge-workflow:
+#    needs: resolve-version
+#    uses: pentaho/actions-common/.github/workflows/merge.yml@stable
+#    with:
+#      modules_to_build: "."
+#      base_version: ${{ needs.resolve-version.outputs.build_version }}
+#      version: ${{ needs.resolve-version.outputs.build_version }}
+#      run_snapshot: false
+#      run_release_candidate: true
+#      container_image: "one.hitachivantara.com/devops-docker-release/pentaho/actions-common:jdk21-20260413.227"
+#      # Apply the virtual date-based version at build time so the reusable workflow's
+#      # fresh checkout also uses the correct version without committing pom.xml changes.
+#      additional_mvn_directives: >-
+#        ${{ needs.resolve-version.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', needs.resolve-version.outputs.libraries_to_update, needs.resolve-version.outputs.build_version) || '' }}
+
+#    secrets: inherit
 
 
   trigger-downstream:
     name: Trigger downstream pentaho-platform workflow
     # target workflow does not yet exist in pentaho/pentaho-platform).
     runs-on: [ k8s ]
-    needs: [ resolve-version, reusable-merge-workflow ]
+    needs: [ resolve-version-and-build ]
     env:
       DOWNSTREAM_REF: 'FUSE-184-dev-ops-prepare-github-action-for-kettle-core-and-pentaho-platform'
     steps:
