@@ -246,7 +246,6 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

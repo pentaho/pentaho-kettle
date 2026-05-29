@@ -30,7 +30,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pdi.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>

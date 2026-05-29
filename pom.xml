@@ -108,6 +108,11 @@
         <artifactId>metastore</artifactId>
         <version>${metastore.version}</version>
       </dependency>
+      <dependency>
+        <groupId>pentaho</groupId>
+        <artifactId>pentaho-platform-api</artifactId>
+        <version>${platform.version}</version>
+      </dependency>
 
       <!-- Jetty dependencies PPP-5150 -->
       <dependency>

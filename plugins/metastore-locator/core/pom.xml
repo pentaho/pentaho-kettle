@@ -52,7 +52,6 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${metastore.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>

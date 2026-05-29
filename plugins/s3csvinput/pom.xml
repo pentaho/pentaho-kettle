@@ -47,7 +47,7 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${pdi.version}</version>
+        <version>${project.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -65,7 +65,6 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
-        <version>${metastore.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -122,7 +121,7 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${pdi.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
         <scope>test</scope>
       </dependency>
