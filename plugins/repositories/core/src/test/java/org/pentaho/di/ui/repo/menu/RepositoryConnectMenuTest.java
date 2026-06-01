@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,6 +65,12 @@ public class RepositoryConnectMenuTest {
 
   private static MockedStatic<GUIResource> guiResourceMock;
   private static MockedStatic<PropsUI> propsUIMock;
+  /**
+   * True only when SWT Display can be initialized in this JVM/OS environment.
+   * On headless Linux CI the native GTK static initializer fails with UnsatisfiedLinkError;
+   * we detect that once in setUpClass and skip Display-dependent tests via Assume.
+   */
+  private static boolean displayUsable = false;
 
   private RepositoryConnectMenu menu;
   private Spoon spoon;
@@ -90,6 +97,12 @@ public class RepositoryConnectMenuTest {
 
     propsUIMock = mockStatic( PropsUI.class );
     propsUIMock.when( PropsUI::getInstance ).thenReturn( mock( PropsUI.class ) );
+
+    // Use GraphicsEnvironment.isHeadless() as a safe proxy for SWT Display availability.
+    // Class.forName("...Display") would trigger the native GTK static initializer, which
+    // fails on headless Linux CI and permanently poisons the Display class for the JVM session,
+    // breaking every subsequent test that references Display — even indirectly.
+    displayUsable = !java.awt.GraphicsEnvironment.isHeadless();
   }
 
   @AfterClass
@@ -106,17 +119,20 @@ public class RepositoryConnectMenuTest {
   public void setUp() throws Exception {
     spoon = mock( Spoon.class );
     mockShell = mock( Shell.class );
-    mockDisplay = mock( Display.class );
     repoController = mock( RepositoryConnectController.class );
 
     when( spoon.getShell() ).thenReturn( mockShell );
-    when( spoon.getDisplay() ).thenReturn( mockDisplay );
 
-    // Make Display.asyncExec run the Runnable immediately for synchronous testing
-    doAnswer( inv -> {
-      ( (Runnable) inv.getArgument( 0 ) ).run();
-      return null;
-    } ).when( mockDisplay ).asyncExec( any( Runnable.class ) );
+    // Only mock Display when it can actually be initialized in this environment.
+    // On headless Linux CI the Display class native initializer fails; displayUsable guards this.
+    if ( displayUsable ) {
+      mockDisplay = mock( Display.class );
+      doAnswer( inv -> {
+        ( (Runnable) inv.getArgument( 0 ) ).run();
+        return null;
+      } ).when( mockDisplay ).asyncExec( any( Runnable.class ) );
+      when( spoon.getDisplay() ).thenReturn( mockDisplay );
+    }
 
     // Build menu object via reflection to avoid constructor side-effects
     // (constructor calls getRepoControllerInstance() and addListener())
@@ -167,6 +183,7 @@ public class RepositoryConnectMenuTest {
 
   @Test
   public void testOpenBrowserLogin_Success_StoresSessionAndConnects() throws Exception {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     String serverUrl = "http://localhost:8080/pentaho";
     String repoName = "myRepo";
 
@@ -200,6 +217,7 @@ public class RepositoryConnectMenuTest {
 
   @Test
   public void testOpenBrowserLogin_ConnectThrows_ShowsError() throws Exception {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     String serverUrl = "http://localhost:8080/pentaho";
     String repoName = "myRepo";
 
@@ -232,6 +250,7 @@ public class RepositoryConnectMenuTest {
 
   @Test
   public void testOpenBrowserLogin_AuthFails_ShowsError() throws Exception {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     String serverUrl = "http://localhost:8080/pentaho";
 
     CompletableFuture<SessionInfo> failedFuture = new CompletableFuture<>();
@@ -257,6 +276,7 @@ public class RepositoryConnectMenuTest {
 
   @Test
   public void testOpenBrowserLogin_Timeout_ShowsTimeoutMessage() throws Exception {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     String serverUrl = "http://localhost:8080/pentaho";
 
     CompletableFuture<SessionInfo> timedOutFuture = new CompletableFuture<>();
@@ -278,6 +298,7 @@ public class RepositoryConnectMenuTest {
 
   @Test
   public void testOpenBrowserLogin_AuthenticateThrows_ShowsError() throws Exception {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     String serverUrl = "http://localhost:8080/pentaho";
 
     try ( MockedConstruction<BrowserAuthenticationService> authMock =
@@ -516,6 +537,7 @@ public class RepositoryConnectMenuTest {
 
   @Test
   public void testOpenBrowserLogin_AuthFails_WrappedInCompletionException_ShowsError() throws Exception {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     String serverUrl = "http://localhost:8080/pentaho";
 
     java.util.concurrent.CompletionException wrappedEx =

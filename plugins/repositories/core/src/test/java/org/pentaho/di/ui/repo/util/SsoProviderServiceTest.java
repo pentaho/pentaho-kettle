@@ -24,6 +24,7 @@ import java.net.InetSocketAddress;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -303,6 +304,90 @@ public class SsoProviderServiceTest {
       // The fact that no resource-leak or hang occurs confirms the finally block executed.
       assertTrue( e.getMessage().contains( "500" ) );
     }
+  }
+
+  @Test
+  public void isOAuthEnabled_parsesValueCorrectly() throws Exception {
+    String path = "/pentaho/plugin/login/api/v0/system-settings";
+    Object[][] cases = {
+      { "booleanTrue", "{\"isOAuthEnabled\":true}", true },
+      { "stringTrue", "{\"isOAuthEnabled\":\"true\"}", true },
+      { "booleanFalse", "{\"isOAuthEnabled\":false}", false }
+    };
+
+    for ( Object[] tc : cases ) {
+      String label = (String) tc[0];
+      String json = (String) tc[1];
+      boolean expected = (boolean) tc[2];
+
+      try {
+        server.removeContext( path );
+      } catch ( IllegalArgumentException ignored ) {
+        // Context doesn't exist yet on the first iteration
+      }
+      registerHandler( path, 200, json );
+
+      assertEquals( "Failed for case: " + label, expected, service.isOAuthEnabled( baseUrl + "/pentaho" ) );
+    }
+  }
+
+  @Test
+  public void isOAuthEnabled_returnsFalse_whenKeyMissing() throws Exception {
+    String json = "{\"someOtherKey\":\"value\"}";
+    registerHandler( "/pentaho/plugin/login/api/v0/system-settings", 200, json );
+
+    assertFalse( service.isOAuthEnabled( baseUrl + "/pentaho" ) );
+  }
+
+  @Test
+  public void isOAuthEnabled_returnsFalse_onNon2xxResponse() throws Exception {
+    registerHandler( "/pentaho/plugin/login/api/v0/system-settings", 500, "error" );
+
+    assertFalse( service.isOAuthEnabled( baseUrl + "/pentaho" ) );
+  }
+
+  @Test
+  public void isOAuthEnabled_returnsFalse_on404() throws Exception {
+    registerHandler( "/pentaho/plugin/login/api/v0/system-settings", 404, "" );
+
+    assertFalse( service.isOAuthEnabled( baseUrl + "/pentaho" ) );
+  }
+
+  @Test
+  public void isOAuthEnabled_returnsFalse_onMalformedJson() throws Exception {
+    registerHandler( "/pentaho/plugin/login/api/v0/system-settings", 200, "NOT_JSON{{" );
+
+    assertFalse( service.isOAuthEnabled( baseUrl + "/pentaho" ) );
+  }
+
+  @Test
+  public void isOAuthEnabled_returnsFalse_whenResponseIsArray() throws Exception {
+    registerHandler( "/pentaho/plugin/login/api/v0/system-settings", 200, "[1,2,3]" );
+
+    assertFalse( service.isOAuthEnabled( baseUrl + "/pentaho" ) );
+  }
+
+
+  @Test
+  public void isOAuthEnabled_returnsFalse_onRedirect300() throws Exception {
+    registerHandler( "/pentaho/plugin/login/api/v0/system-settings", 300, "{\"isOAuthEnabled\":true}" );
+
+    assertFalse( service.isOAuthEnabled( baseUrl + "/pentaho" ) );
+  }
+
+  @Test
+  public void isOAuthEnabled_returnsFalse_onRedirect301() throws Exception {
+    registerHandler( "/pentaho/plugin/login/api/v0/system-settings", 301, "{\"isOAuthEnabled\":true}" );
+
+    assertFalse( service.isOAuthEnabled( baseUrl + "/pentaho" ) );
+  }
+
+  @Test
+  public void isOAuthEnabled_stripsTrailingSlashFromUrl() throws Exception {
+    String json = "{\"isOAuthEnabled\":true}";
+    registerHandler( "/pentaho/plugin/login/api/v0/system-settings", 200, json );
+
+    assertTrue( service.isOAuthEnabled( baseUrl + "/pentaho/" ) );
   }
 
   private void registerHandler( String path, int statusCode, String responseBody ) {
