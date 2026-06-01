@@ -68,6 +68,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 import org.pentaho.di.ui.repo.service.BrowserAuthenticationService;
+import org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper;
 import org.pentaho.di.ui.repo.util.PurRepositoryUtils;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
@@ -926,12 +927,14 @@ public class RepositoryManagerDialog extends Dialog {
     }
 
     try {
+      BrowserAuthenticationService authService = getBrowserAuthService();
+      if ( !BrowserAuthDialogHelper.confirmCancelExistingLoginIfNeeded( Spoon.getInstance().getShell(), authService ) ) {
+        return;
+      }
+
       if ( dialog != null && !dialog.isDisposed() ) {
         dialog.close();
       }
-
-      BrowserAuthenticationService authService =
-          new BrowserAuthenticationService();
 
       CompletableFuture<BrowserAuthenticationService.SessionInfo>
           future = authService.authenticate( serverUrl, authorizationUri );
@@ -964,6 +967,10 @@ public class RepositoryManagerDialog extends Dialog {
           }
         } )
       ).exceptionally( error -> {
+        if ( BrowserAuthenticationService.isUserInitiatedCancellation( error ) ) {
+          log.logBasic( "Previous browser login was cancelled to start a new login; skipping error dialog." );
+          return null;
+        }
         log.logError( "Browser authentication failed", error );
         Display.getDefault().asyncExec( () -> showErrorDialog(
           BaseMessages.getString( PKG, "repositories.error.authenticationFailed.title" ),
@@ -1005,5 +1012,9 @@ public class RepositoryManagerDialog extends Dialog {
       current = current.getCause();
     }
     return current;
+  }
+
+  BrowserAuthenticationService getBrowserAuthService() {
+    return BrowserAuthenticationService.getInstance();
   }
 }

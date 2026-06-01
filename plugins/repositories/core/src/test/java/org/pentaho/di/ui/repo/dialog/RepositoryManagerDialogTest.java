@@ -77,6 +77,7 @@ public class RepositoryManagerDialogTest {
   private LogChannelInterface mockLog;
   /** Non-null only when displayUsable == true; asyncExec configured to run runnables synchronously. */
   private Display mockDisplay;
+  private BrowserAuthenticationService mockAuthService;
 
   @BeforeClass
   public static void setUpClass() throws Exception {
@@ -139,6 +140,11 @@ public class RepositoryManagerDialogTest {
     setField( dialogInstance, "dialog", mockDialogShell );
     setField( dialogInstance, "log", mockLog );
 
+    // Create mock auth service and spy the dialog to return it
+    mockAuthService = mock( BrowserAuthenticationService.class );
+    dialogInstance = org.mockito.Mockito.spy( dialogInstance );
+    doAnswer( inv -> mockAuthService ).when( dialogInstance ).getBrowserAuthService();
+
     when( mockDialogShell.isDisposed() ).thenReturn( false );
   }
 
@@ -154,28 +160,26 @@ public class RepositoryManagerDialogTest {
       .thenReturn( mockAuthContext );
 
     RepositoryConnectController mockController = mock( RepositoryConnectController.class );
+    Spoon mockSpoon = mock( Spoon.class );
+    when( mockSpoon.getShell() ).thenReturn( mockShell );
+
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( completedFuture );
 
     try ( MockedStatic<SpoonSessionManager> sessionMock = mockStatic( SpoonSessionManager.class );
           MockedStatic<Display> displayMock = mockStatic( Display.class );
           MockedStatic<RepositoryConnectController> ctrlMock = mockStatic( RepositoryConnectController.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( completedFuture ) ) ) {
+          MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class ) ) {
 
       sessionMock.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
       displayMock.when( Display::getDefault ).thenReturn( mockDisplay );
       ctrlMock.when( RepositoryConnectController::getInstance ).thenReturn( mockController );
+      spoonMock.when( Spoon::getInstance ).thenReturn( mockSpoon );
 
       dialogInstance.openBrowserLogin( "myRepo", "http://localhost:8080/pentaho",
         new RepositoriesMeta(), null );
 
-      // Verify dialog was closed
       verify( mockDialogShell ).close();
-
-      // Verify session was stored
       verify( mockAuthContext ).storeJSessionId( "JSESS123" );
-
-      // Verify connectToRepository was called with correct arguments
       verify( mockController ).connectToRepository(
         "myRepo",
         "adminUser",
@@ -192,12 +196,10 @@ public class RepositoryManagerDialogTest {
 
     Spoon mockSpoon = mock( Spoon.class );
     when( mockSpoon.getShell() ).thenReturn( mockShell );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( failedFuture );
 
     try ( MockedStatic<Display> displayMock = mockStatic( Display.class );
           MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( failedFuture ) );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -207,10 +209,8 @@ public class RepositoryManagerDialogTest {
       dialogInstance.openBrowserLogin( "myRepo", "http://localhost:8080/pentaho",
         new RepositoriesMeta(), null );
 
-      // Verify error was logged
       verify( mockLog ).logError( eq( "Browser authentication failed" ), any( Throwable.class ) );
 
-      // Verify error dialog was shown
       org.eclipse.swt.widgets.MessageBox msgBox = mbMock.constructed().get( 0 );
       verify( msgBox ).setText( anyString() );
       verify( msgBox ).open();
@@ -225,12 +225,10 @@ public class RepositoryManagerDialogTest {
 
     Spoon mockSpoon = mock( Spoon.class );
     when( mockSpoon.getShell() ).thenReturn( mockShell );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( timedOutFuture );
 
     try ( MockedStatic<Display> displayMock = mockStatic( Display.class );
           MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( timedOutFuture ) );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -240,7 +238,6 @@ public class RepositoryManagerDialogTest {
       dialogInstance.openBrowserLogin( "myRepo", "http://localhost:8080/pentaho",
         new RepositoriesMeta(), null );
 
-      // Verify error dialog was shown
       org.eclipse.swt.widgets.MessageBox msgBox = mbMock.constructed().get( 0 );
       verify( msgBox ).setText( anyString() );
       verify( msgBox ).open();
@@ -251,12 +248,10 @@ public class RepositoryManagerDialogTest {
   public void openBrowserLogin_AuthenticateThrows_ShowsError() {
     Spoon mockSpoon = mock( Spoon.class );
     when( mockSpoon.getShell() ).thenReturn( mockShell );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenThrow(
+      new RuntimeException( "Port already in use" ) );
 
     try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenThrow(
-                new RuntimeException( "Port already in use" ) ) );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -265,7 +260,6 @@ public class RepositoryManagerDialogTest {
       dialogInstance.openBrowserLogin( "myRepo", "http://localhost:8080/pentaho",
         new RepositoriesMeta(), null );
 
-      // Verify error dialog was shown
       org.eclipse.swt.widgets.MessageBox msgBox = mbMock.constructed().get( 0 );
       verify( msgBox ).setText( anyString() );
       verify( msgBox ).open();
@@ -275,17 +269,17 @@ public class RepositoryManagerDialogTest {
   @Test
   public void openBrowserLogin_DialogAlreadyDisposed_SkipsClose() {
     when( mockDialogShell.isDisposed() ).thenReturn( true );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
 
-    CompletableFuture<SessionInfo> pending = new CompletableFuture<>();
+    Spoon mockSpoon = mock( Spoon.class );
+    when( mockSpoon.getShell() ).thenReturn( mockShell );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( pending ) ) ) {
+    try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class ) ) {
+      spoonMock.when( Spoon::getInstance ).thenReturn( mockSpoon );
 
       dialogInstance.openBrowserLogin( "myRepo", "http://localhost:8080/pentaho",
         new RepositoriesMeta(), null );
 
-      // dialog.close() should NOT have been called since it's already disposed
       verify( mockDialogShell, never() ).close();
     }
   }
@@ -293,16 +287,17 @@ public class RepositoryManagerDialogTest {
   @Test
   public void openBrowserLogin_PassesCorrectServerUrl() {
     String serverUrl = "https://secure-server:443/pentaho";
-    CompletableFuture<SessionInfo> pending = new CompletableFuture<>();
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( pending ) ) ) {
+    Spoon mockSpoon = mock( Spoon.class );
+    when( mockSpoon.getShell() ).thenReturn( mockShell );
+
+    try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class ) ) {
+      spoonMock.when( Spoon::getInstance ).thenReturn( mockSpoon );
 
       dialogInstance.openBrowserLogin( "myRepo", serverUrl, new RepositoriesMeta(), null );
 
-      BrowserAuthenticationService constructed = authMock.constructed().get( 0 );
-      verify( constructed ).authenticate( "https://secure-server:443/pentaho", null );
+      verify( mockAuthService ).authenticate( "https://secure-server:443/pentaho", null );
     }
   }
 
@@ -310,16 +305,17 @@ public class RepositoryManagerDialogTest {
   public void openBrowserLogin_PassesAuthorizationUri() {
     String serverUrl = "http://server:8080/pentaho";
     String authUri = "https://idp.example.com/authorize";
-    CompletableFuture<SessionInfo> pending = new CompletableFuture<>();
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( pending ) ) ) {
+    Spoon mockSpoon = mock( Spoon.class );
+    when( mockSpoon.getShell() ).thenReturn( mockShell );
+
+    try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class ) ) {
+      spoonMock.when( Spoon::getInstance ).thenReturn( mockSpoon );
 
       dialogInstance.openBrowserLogin( "myRepo", serverUrl, new RepositoriesMeta(), authUri );
 
-      BrowserAuthenticationService constructed = authMock.constructed().get( 0 );
-      verify( constructed ).authenticate( serverUrl, authUri );
+      verify( mockAuthService ).authenticate( serverUrl, authUri );
     }
   }
 
@@ -481,13 +477,12 @@ public class RepositoryManagerDialogTest {
     Spoon mockSpoon = mock( Spoon.class );
     when( mockSpoon.getShell() ).thenReturn( mockShell );
 
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( completedFuture );
+
     try ( MockedStatic<SpoonSessionManager> sessionMock = mockStatic( SpoonSessionManager.class );
           MockedStatic<Display> displayMock = mockStatic( Display.class );
           MockedStatic<RepositoryConnectController> ctrlMock = mockStatic( RepositoryConnectController.class );
           MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( completedFuture ) );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -517,12 +512,10 @@ public class RepositoryManagerDialogTest {
 
     Spoon mockSpoon = mock( Spoon.class );
     when( mockSpoon.getShell() ).thenReturn( mockShell );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( failedFuture );
 
     try ( MockedStatic<Display> displayMock = mockStatic( Display.class );
           MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( failedFuture ) );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -546,8 +539,6 @@ public class RepositoryManagerDialogTest {
     when( mockSpoon.getShell() ).thenReturn( mockShell );
 
     try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -556,8 +547,7 @@ public class RepositoryManagerDialogTest {
       dialogInstance.openBrowserLogin( "myRepo", "not a valid url :// %%",
         new RepositoriesMeta(), null );
 
-      assertTrue( "No BrowserAuthenticationService should have been created",
-        authMock.constructed().isEmpty() );
+      verify( mockAuthService, never() ).authenticate( anyString(), any() );
       verify( mockDialogShell, never() ).close();
       verify( mockLog ).logError( eq( "Invalid server URL for browser login: not a valid url :// %%" ),
         any( java.net.URISyntaxException.class ) );
@@ -574,8 +564,6 @@ public class RepositoryManagerDialogTest {
     when( mockSpoon.getShell() ).thenReturn( mockShell );
 
     try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -584,8 +572,7 @@ public class RepositoryManagerDialogTest {
       dialogInstance.openBrowserLogin( "myRepo", "file:///local/path",
         new RepositoriesMeta(), null );
 
-      assertTrue( "No BrowserAuthenticationService should have been created",
-        authMock.constructed().isEmpty() );
+      verify( mockAuthService, never() ).authenticate( anyString(), any() );
       verify( mockDialogShell, never() ).close();
       verify( mockLog ).logError( eq( "Invalid server URL for browser login: file:///local/path" ),
         any( java.net.URISyntaxException.class ) );
@@ -602,8 +589,6 @@ public class RepositoryManagerDialogTest {
     when( mockSpoon.getShell() ).thenReturn( mockShell );
 
     try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -612,7 +597,7 @@ public class RepositoryManagerDialogTest {
       dialogInstance.openBrowserLogin( "myRepo", "mailto:user@example.com",
         new RepositoriesMeta(), null );
 
-      assertTrue( authMock.constructed().isEmpty() );
+      verify( mockAuthService, never() ).authenticate( anyString(), any() );
       verify( mockDialogShell, never() ).close();
 
       org.eclipse.swt.widgets.MessageBox msgBox = mbMock.constructed().get( 0 );
@@ -636,13 +621,12 @@ public class RepositoryManagerDialogTest {
 
     RepositoryConnectController mockController = mock( RepositoryConnectController.class );
 
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( completedFuture );
+
     try ( MockedStatic<SpoonSessionManager> sessionMock = mockStatic( SpoonSessionManager.class );
           MockedStatic<Display> displayMock = mockStatic( Display.class );
           MockedStatic<RepositoryConnectController> ctrlMock = mockStatic( RepositoryConnectController.class );
           MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( completedFuture ) );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -667,18 +651,18 @@ public class RepositoryManagerDialogTest {
 
   @Test
   public void openBrowserLogin_ValidHttpsUrl_ProceedsToBrowserAuth() {
-    CompletableFuture<SessionInfo> pending = new CompletableFuture<>();
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( pending ) ) ) {
+    Spoon mockSpoon = mock( Spoon.class );
+    when( mockSpoon.getShell() ).thenReturn( mockShell );
+
+    try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class ) ) {
+      spoonMock.when( Spoon::getInstance ).thenReturn( mockSpoon );
 
       dialogInstance.openBrowserLogin( "myRepo", "https://secure.example.com:443/pentaho",
         new RepositoriesMeta(), "https://idp.example.com/auth" );
 
-      assertEquals( 1, authMock.constructed().size() );
-      BrowserAuthenticationService constructed = authMock.constructed().get( 0 );
-      verify( constructed ).authenticate( "https://secure.example.com:443/pentaho",
+      verify( mockAuthService ).authenticate( "https://secure.example.com:443/pentaho",
         "https://idp.example.com/auth" );
     }
   }
@@ -689,8 +673,6 @@ public class RepositoryManagerDialogTest {
     when( mockSpoon.getShell() ).thenReturn( mockShell );
 
     try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -699,7 +681,7 @@ public class RepositoryManagerDialogTest {
       dialogInstance.openBrowserLogin( "myRepo", "   ",
         new RepositoriesMeta(), null );
 
-      assertTrue( authMock.constructed().isEmpty() );
+      verify( mockAuthService, never() ).authenticate( anyString(), any() );
       verify( mockDialogShell, never() ).close();
 
       org.eclipse.swt.widgets.MessageBox msgBox = mbMock.constructed().get( 0 );
@@ -710,34 +692,37 @@ public class RepositoryManagerDialogTest {
 
   @Test
   public void openBrowserLogin_ValidUrlWithPortNoPath_ProceedsToBrowserAuth() {
-    CompletableFuture<SessionInfo> pending = new CompletableFuture<>();
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( pending ) ) ) {
+    Spoon mockSpoon = mock( Spoon.class );
+    when( mockSpoon.getShell() ).thenReturn( mockShell );
+
+    try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class ) ) {
+      spoonMock.when( Spoon::getInstance ).thenReturn( mockSpoon );
 
       dialogInstance.openBrowserLogin( "myRepo", "http://myserver:9090",
         new RepositoriesMeta(), null );
 
-      assertEquals( 1, authMock.constructed().size() );
       verify( mockDialogShell ).close();
-      verify( authMock.constructed().get( 0 ) ).authenticate( "http://myserver:9090", null );
+      verify( mockAuthService ).authenticate( "http://myserver:9090", null );
     }
   }
 
   @Test
   public void openBrowserLogin_NullDialogField_ValidUrl_ProceedsWithoutClose() throws Exception {
     setField( dialogInstance, "dialog", null );
-    CompletableFuture<SessionInfo> pending = new CompletableFuture<>();
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
 
-    try ( MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( pending ) ) ) {
+    Spoon mockSpoon = mock( Spoon.class );
+    when( mockSpoon.getShell() ).thenReturn( mockShell );
+
+    try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class ) ) {
+      spoonMock.when( Spoon::getInstance ).thenReturn( mockSpoon );
 
       dialogInstance.openBrowserLogin( "myRepo", "http://valid-host:8080/pentaho",
         new RepositoriesMeta(), null );
 
-      assertEquals( 1, authMock.constructed().size() );
+      verify( mockAuthService ).authenticate( "http://valid-host:8080/pentaho", null );
     }
   }
 
@@ -758,13 +743,12 @@ public class RepositoryManagerDialogTest {
 
     RepositoryConnectController mockController = mock( RepositoryConnectController.class );
 
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( completedFuture );
+
     try ( MockedStatic<SpoonSessionManager> sessionMock = mockStatic( SpoonSessionManager.class );
           MockedStatic<Display> displayMock = mockStatic( Display.class );
           MockedStatic<RepositoryConnectController> ctrlMock = mockStatic( RepositoryConnectController.class );
           MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class, ( mock, ctx ) ->
-              when( mock.authenticate( anyString(), any() ) ).thenReturn( completedFuture ) );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -792,8 +776,6 @@ public class RepositoryManagerDialogTest {
     when( mockSpoon.getShell() ).thenReturn( mockShell );
 
     try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
-          MockedConstruction<BrowserAuthenticationService> authMock =
-            mockConstruction( BrowserAuthenticationService.class );
           MockedConstruction<org.eclipse.swt.widgets.MessageBox> mbMock =
             mockConstruction( org.eclipse.swt.widgets.MessageBox.class ) ) {
 
@@ -834,6 +816,51 @@ public class RepositoryManagerDialogTest {
         throw (Exception) e.getCause();
       }
       throw e;
+    }
+  }
+
+  @Test
+  public void openBrowserLogin_ConfirmCancelReturnsFalse_DoesNotAuthenticate() {
+    Spoon mockSpoon = mock( Spoon.class );
+    when( mockSpoon.getShell() ).thenReturn( mockShell );
+
+    try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
+          MockedStatic<org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper> helperMock =
+            mockStatic( org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper.class ) ) {
+
+      spoonMock.when( Spoon::getInstance ).thenReturn( mockSpoon );
+      helperMock.when( () -> org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper
+        .confirmCancelExistingLoginIfNeeded( any( Shell.class ), any( BrowserAuthenticationService.class ) ) )
+        .thenReturn( false );
+
+      dialogInstance.openBrowserLogin( "myRepo", "http://localhost:8080/pentaho",
+        new RepositoriesMeta(), null );
+
+      verify( mockAuthService, never() ).authenticate( anyString(), any() );
+      verify( mockDialogShell, never() ).close();
+    }
+  }
+
+  @Test
+  public void openBrowserLogin_ConfirmCancelReturnsTrue_ProceedsToAuthenticate() {
+    Spoon mockSpoon = mock( Spoon.class );
+    when( mockSpoon.getShell() ).thenReturn( mockShell );
+    when( mockAuthService.authenticate( anyString(), any() ) ).thenReturn( new CompletableFuture<>() );
+
+    try ( MockedStatic<Spoon> spoonMock = mockStatic( Spoon.class );
+          MockedStatic<org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper> helperMock =
+            mockStatic( org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper.class ) ) {
+
+      spoonMock.when( Spoon::getInstance ).thenReturn( mockSpoon );
+      helperMock.when( () -> org.pentaho.di.ui.repo.util.BrowserAuthDialogHelper
+        .confirmCancelExistingLoginIfNeeded( any( Shell.class ), any( BrowserAuthenticationService.class ) ) )
+        .thenReturn( true );
+
+      dialogInstance.openBrowserLogin( "myRepo", "http://localhost:8080/pentaho",
+        new RepositoriesMeta(), null );
+
+      verify( mockAuthService ).authenticate( "http://localhost:8080/pentaho", null );
+      verify( mockDialogShell ).close();
     }
   }
 
