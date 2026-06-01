@@ -15,6 +15,7 @@ package org.pentaho.big.data.kettle.plugins.kafka;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannelFactory;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.trans.Trans;
@@ -41,6 +44,12 @@ import static org.mockito.Mockito.when;
 public class KafkaProducerOutputTest {
   @Mock KafkaProducer<Object, Object> kafkaProducer;
   @Mock KafkaFactory kafkaFactory;
+
+  @Before
+  public void setUpEachTest() {
+    // Reset static logging factory to a concrete implementation to avoid cross-test leakage.
+    KettleLogStore.setLogChannelInterfaceFactory( new LogChannelFactory() );
+  }
 
   @BeforeClass
   public static void setUp() throws Exception {

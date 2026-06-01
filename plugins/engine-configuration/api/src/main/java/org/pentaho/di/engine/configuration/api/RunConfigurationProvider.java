@@ -17,6 +17,8 @@ package org.pentaho.di.engine.configuration.api;
  * Created by bmorrise on 3/16/17.
  */
 public interface RunConfigurationProvider extends RunConfigurationFactory {
+  String DEFAULT_CONFIG_NAME = "Pentaho local";
+
   RunConfiguration getConfiguration();
   RunConfigurationExecutor getExecutor();
   String getType();

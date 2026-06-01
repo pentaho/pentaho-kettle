@@ -3843,6 +3843,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // memory
           // To be able to completely test this, we need to run it as we would normally do in pan
           //
+          // clear caches before loading the new meta
+          spoon.clearBowlCaches();
+
           trans = DefaultTransFactoryManager.getInstance().getTransFactory( executionConfiguration.getRunConfiguration() )
             .create( transMeta, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(),
             transMeta.getFilename(), transMeta );
@@ -3993,6 +3996,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
         // Create a new transformation to execution
         //
+        // clear caches before beginning execution
+        spoon.clearBowlCaches();
         trans = new Trans( transMeta );
         trans.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
         trans.setPreview( true );
@@ -4252,7 +4257,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       @Override
       public void run() {
         try {
-
           trans.setInitialLogBufferStartLine();
           trans.prepareExecution( args );
 

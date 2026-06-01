@@ -144,7 +144,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
   }
 
-  private LogChannelInterface log;
+  private static LogChannelInterface log = new LogChannel( STRING_SLAVESERVER );
 
   private String name;
 
@@ -187,9 +187,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   private ReadWriteLock lock;
 
   public SlaveServer() {
-    initializeVariablesFrom( null );
     id = null;
-    this.log = new LogChannel( STRING_SLAVESERVER );
     this.changedDate = new Date();
     lock = new ReentrantReadWriteLock();
   }
@@ -218,8 +216,6 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
     this.master = master;
     this.sslMode = ssl;
-    initializeVariablesFrom( null );
-    this.log = new LogChannel( this );
   }
 
   public SlaveServer( Node slaveNode ) {
@@ -237,8 +233,6 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.overrideExistingProperties =
       "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "override_existing_properties" ) );
     this.master = "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "master" ) );
-    initializeVariablesFrom( null );
-    this.log = new LogChannel( this );
     readObjectId( slaveNode );
 
     setSslMode( "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, SSL_MODE_TAG ) ) );
@@ -307,6 +301,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       this.proxyHostname = slaveServer.proxyHostname;
       this.proxyPort = slaveServer.proxyPort;
       this.nonProxyHosts = slaveServer.nonProxyHosts;
+      this.propertiesMasterName = slaveServer.propertiesMasterName;
+      this.overrideExistingProperties = slaveServer.overrideExistingProperties;
       this.master = slaveServer.master;
 
       this.id = slaveServer.id;
@@ -515,6 +511,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   /**
+   * @param propertiesMasterName the master name for reading properties
+   */
+  public void setPropertiesMasterName( String propertiesMasterName ) {
+    lock.writeLock().lock();
+    this.propertiesMasterName = propertiesMasterName;
+    lock.writeLock().unlock();
+  }
+
+  /**
    * @return flag for read properties from Master
    */
   public boolean isOverrideExistingProperties() {
@@ -524,6 +529,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     } finally {
       lock.readLock().unlock();
     }
+  }
+
+  /**
+   * @param overrideExistingProperties flag for overriding existing properties from master
+   */
+  public void setOverrideExistingProperties( boolean overrideExistingProperties ) {
+    lock.writeLock().lock();
+    this.overrideExistingProperties = overrideExistingProperties;
+    lock.writeLock().unlock();
   }
 
   /**

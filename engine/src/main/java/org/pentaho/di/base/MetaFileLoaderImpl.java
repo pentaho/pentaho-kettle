@@ -267,12 +267,46 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       }
 
       cacheMeta( idContainer[ 0 ], theMeta );
+      // Re-seed the internal directory variables on the returned meta from the freshly resolved tmpSpace.
+      // The cache may return an instance whose internal vars were last set in a different context
+      // (e.g. from a step loader using getVarSpaceOnlyWithRequiredParentVars, or with rep==null),
+      // which would otherwise leak the wrong Internal.Entry.Current.Directory into the child execution.
+      reseedInternalDirectoryVars( theMeta, tmpSpace );
       return theMeta;
     } catch ( final KettleException ke ) {
       // if we get a KettleException, simply re-throw it
       throw ke;
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( persistentClass, "JobTrans.Exception.MetaDataLoad" ), e );
+    }
+  }
+
+  /**
+   * Force the four internal directory variables on the loaded meta to the values resolved by
+   * {@link CurrentDirectoryResolver} for *this* job-entry invocation. Without this, a cached
+   * TransMeta/JobMeta returned from a previous load can carry stale Internal.Entry.Current.Directory
+   * (and friends) inherited from whatever space was active during that earlier load.
+   */
+  private void reseedInternalDirectoryVars( T theMeta, VariableSpace tmpSpace ) {
+    if ( theMeta == null || tmpSpace == null || !( theMeta instanceof org.pentaho.di.base.AbstractMeta ) ) {
+      return;
+    }
+    org.pentaho.di.base.AbstractMeta meta = (org.pentaho.di.base.AbstractMeta) theMeta;
+    String entryDir = tmpSpace.getVariable( INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY );
+    if ( entryDir != null ) {
+      meta.setVariable( INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, entryDir );
+    }
+    String jobDir = tmpSpace.getVariable( INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY );
+    if ( jobDir != null ) {
+      meta.setVariable( INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, jobDir );
+    }
+    String transDir = tmpSpace.getVariable( INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY );
+    if ( transDir != null ) {
+      meta.setVariable( INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, transDir );
+    }
+    String jobName = tmpSpace.getVariable( INTERNAL_VARIABLE_JOB_FILENAME_NAME );
+    if ( jobName != null ) {
+      meta.setVariable( INTERNAL_VARIABLE_JOB_FILENAME_NAME, jobName );
     }
   }
 

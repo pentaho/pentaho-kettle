@@ -68,7 +68,7 @@ public class S3CommonFileSystemTestUtil {
 
   public static S3CommonFileSystem stubRegionUnSet( S3CommonFileSystem fileSystem ) {
     S3CommonFileSystem fileSystemSpy = Mockito.spy( fileSystem );
-    doReturn( false ).when( fileSystemSpy ).isRegionSet();
+    doReturn( false ).when( fileSystemSpy ).isEnvRegionSet();
     return fileSystemSpy;
   }
 }

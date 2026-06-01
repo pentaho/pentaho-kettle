@@ -38,6 +38,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
@@ -348,6 +349,11 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
 
   public StepDataInterface getStepData() {
     return new RandomCCNumberGeneratorData();
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new RandomCCNumberGeneratorHelper( this );
   }
 
   /**

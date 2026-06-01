@@ -25,6 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -205,6 +206,7 @@ public class TransformationResource {
     try {
       transConfiguration = TransConfiguration.fromXML( xml.toString() );
       TransMeta transMeta = transConfiguration.getTransMeta();
+      clearBowlCache( transMeta.getBowl() );
       TransExecutionConfiguration transExecutionConfiguration =
         transConfiguration.getTransExecutionConfiguration();
       transMeta.setLogLevel( transExecutionConfiguration.getLogLevel() );
@@ -259,6 +261,12 @@ public class TransformationResource {
       e.printStackTrace();
     }
     return null;
+  }
+
+  private void clearBowlCache( Bowl bowl ) {
+    if ( bowl != null ) {
+      bowl.clearCache();
+    }
   }
 
 }

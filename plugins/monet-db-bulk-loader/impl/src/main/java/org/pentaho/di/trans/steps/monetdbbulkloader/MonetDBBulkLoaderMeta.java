@@ -69,6 +69,8 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
     ProvidesDatabaseConnectionInformation {
   private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private static final String TAG_FIELD_SEPARATOR = "field_separator";
+
   /**
    * The database connection name *
    */
@@ -301,9 +303,13 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
       // This expression will only be true if a yes answer was previously recorded.
       fullyQuoteSQL = "Y".equals( XMLHandler.getTagValue( stepnode, "fully_quote_sql" ) );
 
-      fieldSeparator = XMLHandler.getTagValue( stepnode, "field_separator" );
-      if ( fieldSeparator == null ) {
+      if ( XMLHandler.getSubNode( stepnode, TAG_FIELD_SEPARATOR ) == null ) {
         fieldSeparator = "|";
+      } else {
+        fieldSeparator = XMLHandler.getTagValue( stepnode, TAG_FIELD_SEPARATOR );
+        if ( fieldSeparator == null ) {
+          fieldSeparator = "";
+        }
       }
       fieldEnclosure = XMLHandler.getTagValue( stepnode, "field_enclosure" );
       if ( fieldEnclosure == null ) {
@@ -372,7 +378,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
     retval.append( "    " ).append( XMLHandler.addTagValue( "fully_quote_sql", fullyQuoteSQL ) );
 
     // MonetDB Settings Tab
-    retval.append( "    " ).append( XMLHandler.addTagValue( "field_separator", fieldSeparator ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( TAG_FIELD_SEPARATOR, fieldSeparator ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "field_enclosure", fieldEnclosure ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "null_representation", NULLrepresentation ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
@@ -399,7 +405,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
       logFile = rep.getStepAttributeString( id_step, "log_file" );
 
       // The following default assignments are for backward compatibility with files saved under PDI version 4.4 files
-      fieldSeparator = rep.getStepAttributeString( id_step, "field_separator" );
+      fieldSeparator = rep.getStepAttributeString( id_step, TAG_FIELD_SEPARATOR );
       if ( fieldSeparator == null ) {
         fieldEnclosure = "\"";
       }
@@ -450,7 +456,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
       rep.saveStepAttribute( id_transformation, id_step, "fully_quote_sql", fullyQuoteSQL );
 
       // MonetDB Settings Tab
-      rep.saveStepAttribute( id_transformation, id_step, "field_separator", fieldSeparator );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_FIELD_SEPARATOR, fieldSeparator );
       rep.saveStepAttribute( id_transformation, id_step, "field_enclosure", fieldEnclosure );
       rep.saveStepAttribute( id_transformation, id_step, "null_representation", NULLrepresentation );
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );

@@ -19,7 +19,8 @@ import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
+import org.pentaho.di.engine.configuration.api.RunConfigurationService;
+import org.pentaho.di.engine.configuration.impl.RunConfigurationProviderFactoryManagerImpl;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -38,7 +39,8 @@ public class RunConfigurationIsRemoteExtensionPoint implements ExtensionPointInt
     List<Object> items = (List<Object>) o;
     String name = (String) items.get( 0 );
     Bowl bowl = Spoon.getInstance().getExecutionBowl();
-    RunConfigurationManager runConfigurationManager = RunConfigurationManager.getInstance( () -> bowl.getMetastore() );
+    RunConfigurationProviderFactoryManagerImpl.getInstance();
+    RunConfigurationService runConfigurationManager = bowl.getManager( RunConfigurationService.class );
 
     RunConfiguration runConfiguration = runConfigurationManager.load( name );
     if ( runConfiguration != null && runConfiguration.getType().equals( DefaultRunConfiguration.TYPE ) ) {

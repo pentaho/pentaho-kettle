@@ -75,7 +75,10 @@ public class MetaFileLoaderImplTest {
   @After
   public void tearDown() {
     System.setProperty( Const.KETTLE_USE_META_FILE_CACHE, null == oldSystemParam ? "" : oldSystemParam );
-    KettleClientEnvironment.reset();
+    // NOTE: Removed KettleClientEnvironment.reset() as this is a pure unit test for file loading, not global initialization.
+    // Calling reset() causes PluginRegistry to be cleared globally, which corrupts extension-point type registration 
+    // for subsequent tests in the same JVM (e.g., PanCommandExecutorTest). Since this test only calls init() in setUp,
+    // no cleanup is necessary.
   }
 
   @Test

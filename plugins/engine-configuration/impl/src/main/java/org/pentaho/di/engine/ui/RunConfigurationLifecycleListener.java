@@ -17,6 +17,7 @@ import org.pentaho.di.core.annotations.LifecyclePlugin;
 import org.pentaho.di.core.lifecycle.LifeEventHandler;
 import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.lifecycle.LifecycleListener;
+import org.pentaho.di.engine.configuration.impl.RunConfigurationProviderFactoryManagerImpl;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.function.Supplier;
@@ -34,6 +35,9 @@ public class RunConfigurationLifecycleListener implements LifecycleListener {
 
   @Override
   public void onStart( LifeEventHandler handler ) throws LifecycleException {
+    // Ensure the RunConfigurationService manager factory is registered exactly once at startup.
+    RunConfigurationProviderFactoryManagerImpl.getInstance();
+
     Spoon spoon = spoonSupplier.get();
     if ( spoon != null ) {
       spoon.getTreeManager().addTreeProvider( Spoon.STRING_CONFIGURATIONS, new RunConfigurationFolderProvider() );

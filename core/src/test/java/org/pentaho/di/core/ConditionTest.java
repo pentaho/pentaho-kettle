@@ -13,7 +13,6 @@
 
 package org.pentaho.di.core;
 
-import com.google.common.collect.Lists;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.row.RowMeta;
@@ -23,12 +22,13 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ConditionTest {
@@ -71,12 +71,12 @@ public class ConditionTest {
     rowMeta1.addValueMeta( new ValueMetaInteger( "name1" ) );
 
     String left = "name1";
-    ValueMetaAndData right_exact = new ValueMetaAndData( new ValueMetaInteger( "name1" ), new Long( -10 ) );
+    ValueMetaAndData rightExact = new ValueMetaAndData( new ValueMetaInteger( "name1" ), Long.valueOf( -10L ) );
 
-    Condition condition = new Condition( left, Condition.FUNC_SMALLER, null, right_exact );
+    Condition condition = new Condition( left, Condition.FUNC_SMALLER, null, rightExact );
     assertTrue( condition.evaluate( rowMeta1, new Object[] { null, "test" } ) );
 
-    condition = new Condition( left, Condition.FUNC_SMALLER_EQUAL, null, right_exact );
+    condition = new Condition( left, Condition.FUNC_SMALLER_EQUAL, null, rightExact );
     assertTrue( condition.evaluate( rowMeta1, new Object[] { null, "test" } ) );
   }
 
@@ -272,8 +272,89 @@ public class ConditionTest {
       assertEquals( resultsLargerOrEqualFunction.get( i ), condition.evaluate( rowMeta, new Object[] { valuesB.get( i ), valuesA.get( i )  } ) );
       System.out.println(" Result: " + condition.evaluate( rowMeta, new Object[] { valuesB.get( i ), valuesA.get( i )  } ) );
     }
+  }
 
+  @Test
+  public void testEmptyRightValueTagKeepsRightExactConstantWhenYieldEmptyValueIsY() throws Exception {
 
+    System.setProperty( Const.KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE, "Y" );
+
+    String xml = "<condition>" +
+      "<negated>N</negated>" +
+      "<leftvalue>A</leftvalue>" +
+      "<function>=</function>" +
+      "<rightvalue/>" +
+      "<value>" +
+      "<name>constant</name>" +
+      "<type>String</type>" +
+      "<text>Pass</text>" +
+      "<length>-1</length>" +
+      "<precision>-1</precision>" +
+      "<isnull>N</isnull>" +
+      "<mask/>" +
+      "</value>" +
+      "</condition>";
+
+    Condition c = new Condition( xml );
+
+    assertTrue( c.isAtomic() );
+    assertEquals( "A", c.getLeftValuename() );
+    assertEquals( Condition.FUNC_EQUAL, c.getFunction() );
+
+    // Critical: empty rightvalue should not hide / override the rightExact constant.
+    assertNotNull( c.getRightExact() );
+    assertEquals( "Pass", c.getRightExactString() );
+
+    // With KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE=Y, <rightvalue/> would normally become "".
+    // We normalize it back to null so it doesn't mask the right-exact constant.
+    assertNull( c.getRightValuename() );
+  }
+
+  @Test
+  public void testEmptyRightValueTagKeepsRightExactConstantWhenYieldEmptyValueIsN() throws Exception {
+
+    System.setProperty( Const.KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE, "N" );
+
+    String xml = "<condition>" +
+      "<negated>N</negated>" +
+      "<leftvalue>A</leftvalue>" +
+      "<function>=</function>" +
+      "<rightvalue/>" +
+      "<value>" +
+      "<name>constant</name>" +
+      "<type>String</type>" +
+      "<text>Pass</text>" +
+      "<length>-1</length>" +
+      "<precision>-1</precision>" +
+      "<isnull>N</isnull>" +
+      "<mask/>" +
+      "</value>" +
+      "</condition>";
+
+    Condition c = new Condition( xml );
+
+    assertTrue( c.isAtomic() );
+    assertNotNull( c.getRightExact() );
+    assertEquals( "Pass", c.getRightExactString() );
+  }
+
+  @Test
+  public void testEmptyLeftValueTagTreatedAsNullWhenYieldEmptyValueIsY() throws Exception {
+
+    System.setProperty( Const.KETTLE_XML_EMPTY_TAG_YIELDS_EMPTY_VALUE, "Y" );
+
+    String xml = "<condition>" +
+      "<negated>N</negated>" +
+      "<leftvalue/>" +
+      "<function>=</function>" +
+      "<rightvalue>B</rightvalue>" +
+      "</condition>";
+
+    Condition c = new Condition( xml );
+
+    assertTrue( c.isAtomic() );
+    assertNull( c.getLeftValuename() );
+    assertTrue( c.isEmpty() );
   }
 
 }

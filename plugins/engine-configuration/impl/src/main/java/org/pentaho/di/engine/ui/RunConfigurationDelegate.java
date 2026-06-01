@@ -24,13 +24,12 @@ import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
-import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
-import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.JobEntryRunConfigurableInterface;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TreeUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -49,15 +48,51 @@ public class RunConfigurationDelegate {
 
   private RunConfigurationService configurationManager;
 
-  private RunConfigurationDelegate( CheckedMetaStoreSupplier supplier ) {
-    configurationManager = RunConfigurationManager.getInstance( supplier );
+  private RunConfigurationDelegate( Bowl bowl ) throws KettleException {
+    configurationManager = bowl.getManager( RunConfigurationService.class );
   }
 
-  public static RunConfigurationDelegate getInstance( CheckedMetaStoreSupplier supplier ) {
-    return new RunConfigurationDelegate( supplier );
+  public static RunConfigurationDelegate getInstance( Bowl bowl ) throws KettleException {
+    return new RunConfigurationDelegate( bowl );
+  }
+
+  /**
+   * Executes an operation with automatic session expiry handling and retry.
+   * If a session expiry is detected, prompts for re-authentication and retries the operation.
+   *
+   * @param operation The operation to execute (and retry on session expiry)
+   * @param errorContext Description of the operation for error messages
+   */
+  private void executeWithSessionRetry( Runnable operation, String errorContext ) {
+    try {
+      operation.run();
+    } catch ( Exception e ) {
+      if ( spoonSupplier.get().isAuthenticationException( e ) ) {
+        boolean reconnected;
+        try {
+          reconnected = spoonSupplier.get().handleSessionExpiryWithRelogin();
+        } catch ( Exception reloginException ) {
+          showError( errorContext, reloginException );
+          return;
+        }
+        if ( reconnected ) {
+          try {
+            operation.run();
+          } catch ( Exception retryException ) {
+            showError( errorContext, retryException );
+          }
+        }
+      } else {
+        showError( errorContext, e );
+      }
+    }
   }
 
   public void edit( RunConfiguration runConfiguration ) {
+    executeWithSessionRetry( () -> editInternal( runConfiguration ), "Error editing run configuration" );
+  }
+
+  private void editInternal( RunConfiguration runConfiguration ) {
     final String key = runConfiguration.getName();
     List<String> names = configurationManager.getNames();
     RunConfigurationDialog dialog =
@@ -107,6 +142,10 @@ public class RunConfigurationDelegate {
   }
 
   public void delete( RunConfiguration runConfiguration ) {
+    executeWithSessionRetry( () -> deleteInternal( runConfiguration ), "Error deleting run configuration" );
+  }
+
+  private void deleteInternal( RunConfiguration runConfiguration ) {
     RunConfigurationDeleteDialog deleteDialog = new RunConfigurationDeleteDialog( spoonSupplier.get().getShell() );
     int response = deleteDialog.open();
     if ( response == SWT.YES ) {
@@ -116,6 +155,10 @@ public class RunConfigurationDelegate {
   }
 
   public void create() {
+    executeWithSessionRetry( this::createInternal, "Error creating run configuration" );
+  }
+
+  private void createInternal() {
     List<String> names = configurationManager.getNames();
     String name = BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.Configuration.Default" ) + " ";
     int index = 1;
@@ -136,12 +179,71 @@ public class RunConfigurationDelegate {
     }
   }
 
+
+  /**
+   * Show error dialog to user.
+   */
+  private void showError( String title, Exception e ) {
+    Spoon spoon = spoonSupplier.get();
+    Shell shell = spoon.getShell();
+    new ErrorDialog( shell, title, "An error occurred: " + e.getMessage(), e );
+  }
+
   public List<RunConfiguration> load() {
     return configurationManager.load();
   }
 
   public RunConfiguration load( String name ) {
     return configurationManager.load( name );
+  }
+
+  public void loadAndEdit( String name ) {
+    executeWithSessionRetry( () -> {
+      RunConfiguration runConfiguration = configurationManager.load( name );
+      editInternal( runConfiguration );
+    }, "Error editing run configuration" );
+  }
+
+  public void loadAndDuplicate( String name ) {
+    executeWithSessionRetry( () -> {
+      RunConfiguration runConfiguration = configurationManager.load( name );
+      duplicateInternal( runConfiguration );
+    }, "Error duplicating run configuration" );
+  }
+
+  public void loadAndDelete( String name ) {
+    executeWithSessionRetry( () -> {
+      RunConfiguration runConfiguration = configurationManager.load( name );
+      deleteInternal( runConfiguration );
+    }, "Error deleting run configuration" );
+  }
+
+  public void loadAndCopyToGlobal( RunConfigurationService manager, String name ) {
+    executeWithSessionRetry( () -> {
+      RunConfiguration runConfiguration = configurationManager.load( name );
+      copyToGlobalInternal( manager, runConfiguration );
+    }, "Error copying to global" );
+  }
+
+  public void loadAndCopyToProject( RunConfigurationService manager, String name ) {
+    executeWithSessionRetry( () -> {
+      RunConfiguration runConfiguration = configurationManager.load( name );
+      copyToProjectInternal( manager, runConfiguration );
+    }, "Error copying to project" );
+  }
+
+  public void loadAndMoveToGlobal( RunConfigurationService manager, String name ) {
+    executeWithSessionRetry( () -> {
+      RunConfiguration runConfiguration = configurationManager.load( name );
+      moveToGlobalInternal( manager, runConfiguration );
+    }, "Error moving to global" );
+  }
+
+  public void loadAndMoveToProject( RunConfigurationService manager, String name ) {
+    executeWithSessionRetry( () -> {
+      RunConfiguration runConfiguration = configurationManager.load( name );
+      moveToProjectInternal( manager, runConfiguration );
+    }, "Error moving to project" );
   }
 
   private void refreshTree() {
@@ -154,6 +256,10 @@ public class RunConfigurationDelegate {
   }
 
   public void duplicate( RunConfiguration runConfiguration ) {
+    executeWithSessionRetry( () -> duplicateInternal( runConfiguration ), "Error duplicating run configuration" );
+  }
+
+  private void duplicateInternal( RunConfiguration runConfiguration ) {
     Set<String> existingNames = new HashSet<>( configurationManager.getNames() );
     String newName = TreeUtil.findUniqueSuffix( runConfiguration.getName(), existingNames );
     runConfiguration.setName( newName );
@@ -182,26 +288,46 @@ public class RunConfigurationDelegate {
     dialog.open();
   }
 
-  public void copyToGlobal( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
+  public void copyToGlobal( RunConfigurationService manager, RunConfiguration runConfiguration ) {
+    executeWithSessionRetry( () -> copyToGlobalInternal( manager, runConfiguration ), "Error copying to global" );
+  }
+
+  private void copyToGlobalInternal( RunConfigurationService manager, RunConfiguration runConfiguration ) {
     moveCopy( manager, runConfiguration, spoonSupplier.get().getGlobalManagementBowl(), false );
   }
 
-  public void copyToProject( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
+  public void copyToProject( RunConfigurationService manager, RunConfiguration runConfiguration ) {
+    executeWithSessionRetry( () -> copyToProjectInternal( manager, runConfiguration ), "Error copying to project" );
+  }
+
+  private void copyToProjectInternal( RunConfigurationService manager, RunConfiguration runConfiguration ) {
     moveCopy( manager, runConfiguration, spoonSupplier.get().getManagementBowl(), false );
   }
 
-  public void moveToGlobal( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
+  public void moveToGlobal( RunConfigurationService manager, RunConfiguration runConfiguration ) {
+    executeWithSessionRetry( () -> moveToGlobalInternal( manager, runConfiguration ), "Error moving to global" );
+  }
+
+  private void moveToGlobalInternal( RunConfigurationService manager, RunConfiguration runConfiguration ) {
     moveCopy( manager, runConfiguration, spoonSupplier.get().getGlobalManagementBowl(), true );
   }
 
-  public void moveToProject( RunConfigurationManager manager, RunConfiguration runConfiguration ) {
-    moveCopy( manager, runConfiguration, Spoon.getInstance().getManagementBowl(), true );
+  public void moveToProject( RunConfigurationService manager, RunConfiguration runConfiguration ) {
+    executeWithSessionRetry( () -> moveToProjectInternal( manager, runConfiguration ), "Error moving to project" );
   }
 
-  private void moveCopy( RunConfigurationManager srcManager, RunConfiguration runConfiguration, Bowl targetBowl,
+  private void moveToProjectInternal( RunConfigurationService manager, RunConfiguration runConfiguration ) {
+    moveCopy( manager, runConfiguration, spoonSupplier.get().getManagementBowl(), true );
+  }
+
+  private void moveCopy( RunConfigurationService srcManager, RunConfiguration runConfiguration, Bowl targetBowl,
                          boolean deleteSource ) {
-    CheckedMetaStoreSupplier ms = () -> targetBowl.getMetastore();
-    RunConfigurationManager targetManager = RunConfigurationManager.getInstance( ms );
+    RunConfigurationService targetManager;
+    try {
+      targetManager = targetBowl.getManager( RunConfigurationService.class );
+    } catch ( KettleException e ) {
+      throw new IllegalStateException( "Unable to access run configuration manager", e );
+    }
     if ( targetManager.getNames().stream().anyMatch( element -> element.equalsIgnoreCase( runConfiguration.getName() ) ) ) {
       if ( !shouldOverwrite( BaseMessages.getString( PKG, "RunConfigurationDialog.OverwriteRunConfigurationYN",
         runConfiguration.getName() ) ) ) {

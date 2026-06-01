@@ -21,13 +21,11 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
-import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 /**
  * This widget works like PasswordTextVar except it also provides a button that will toggle visibility of the text in
@@ -160,5 +158,12 @@ public class PasswordVisibleTextVar extends Composite {
         textField.setToolTipText( toolTipText );
       }
     };
+  }
+
+  @Override
+  public void setEnabled( boolean enabled ) {
+    super.setEnabled( enabled );
+    wTextVar.setEnabled( enabled );
+    wVisibleButton.setEnabled( enabled );
   }
 }

@@ -18,7 +18,7 @@ import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.ui.core.widget.tree.LeveledTreeNode;
 import org.pentaho.di.ui.spoon.TreeSelection;
 import org.pentaho.di.ui.spoon.delegates.SpoonTreeDelegateExtension;
@@ -53,7 +53,7 @@ public class RunConfigurationTreeDelegateExtension implements ExtensionPointInte
             String name = LeveledTreeNode.getName( treeItem );
             LeveledTreeNode.LEVEL level = LeveledTreeNode.getLevel( treeItem );
 
-            if ( !name.equalsIgnoreCase( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
+            if ( !name.equalsIgnoreCase( RunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
               object = new TreeSelection( treeItem, name, new RunConfigurationTreeItem( name, level ) );
             }
           } catch ( Exception e ) {

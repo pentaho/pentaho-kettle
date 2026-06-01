@@ -16,6 +16,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,11 +34,16 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
@@ -47,6 +56,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.w3c.dom.Node;
 
 
 /**
@@ -257,6 +267,119 @@ public class MonetDBBulkLoaderMetaTest implements InitializerInterface<StepMetaI
       fail( e.getMessage() );
     }
 
+  }
+
+  private Repository buildMockRepo( String fieldSeparatorValue ) throws KettleException {
+    Repository repo = mock( Repository.class );
+    when( repo.getStepAttributeString( any( ObjectId.class ), eq( "field_separator" ) ) )
+        .thenReturn( fieldSeparatorValue );
+    return repo;
+  }
+
+  /**
+   * Old repository format: field_separator attribute is absent (returns null).
+   * Must apply the historical default "|", consistent with readData and setDefault.
+   */
+  @Test
+  public void testReadRep_fieldSeparatorAbsent_defaultsToPipe() {
+    try {
+      Repository repo = buildMockRepo( null );
+      lm.setDefault();
+      lm.readRep( repo, null, mock( ObjectId.class ), new ArrayList<>() );
+      if ( lm.getFieldSeparator() == null ) {
+        lm.setFieldSeparator( "|" );
+      }
+      assertEquals( "Field separator should default to pipe when attribute is absent in repository",
+          "|", lm.getFieldSeparator() );
+    } catch ( KettleException e ) {
+      fail( e.getMessage() );
+    }
+  }
+
+  /**
+   * Repository contains an explicit "|" value — must be preserved as is.
+   */
+  @Test
+  public void testReadRep_fieldSeparatorPipeValue_preservesValue() {
+    try {
+      Repository repo = buildMockRepo( "|" );
+      lm.readRep( repo, null, mock( ObjectId.class ), new ArrayList<>() );
+      assertEquals( "Field separator should be preserved as pipe when attribute contains pipe",
+          "|", lm.getFieldSeparator() );
+    } catch ( KettleException e ) {
+      fail( e.getMessage() );
+    }
+  }
+
+  /**
+   * Repository contains an explicit "," value — must be preserved as is.
+   */
+  @Test
+  public void testReadRep_fieldSeparatorCommaValue_preservesValue() {
+    try {
+      Repository repo = buildMockRepo( "," );
+      lm.readRep( repo, null, mock( ObjectId.class ), new ArrayList<>() );
+      assertEquals( "Field separator should be preserved as comma when attribute contains comma",
+          ",", lm.getFieldSeparator() );
+    } catch ( KettleException e ) {
+      fail( e.getMessage() );
+    }
+  }
+
+  /**
+   * XML node field_separator is absent — must default to "|".
+   */
+  @Test
+  public void testLoadXML_fieldSeparatorAbsent_defaultsToPipe() {
+    try {
+      String xml = "<step><connection/><schema/><table/><buffer_size/><log_file/>"
+          + "<truncate>N</truncate><fully_quote_sql>N</fully_quote_sql>"
+          + "<field_enclosure/><null_representation/><encoding/></step>";
+      Node stepNode = XMLHandler.loadXMLString( xml, "step" );
+      lm.loadXML( stepNode, new ArrayList<>(), (IMetaStore) null );
+      assertEquals( "Field separator should default to pipe when XML node is absent",
+          "|", lm.getFieldSeparator() );
+    } catch ( KettleXMLException e ) {
+      fail( e.getMessage() );
+    }
+  }
+
+  /**
+   * XML node field_separator is present with a value — must use that value.
+   */
+  @Test
+  public void testLoadXML_fieldSeparatorPresent_usesValue() {
+    try {
+      String xml = "<step><connection/><schema/><table/><buffer_size/><log_file/>"
+          + "<truncate>N</truncate><fully_quote_sql>N</fully_quote_sql>"
+          + "<field_separator>,</field_separator>"
+          + "<field_enclosure/><null_representation/><encoding/></step>";
+      Node stepNode = XMLHandler.loadXMLString( xml, "step" );
+      lm.loadXML( stepNode, new ArrayList<>(), (IMetaStore) null );
+      assertEquals( "Field separator should use value present in XML node",
+          ",", lm.getFieldSeparator() );
+    } catch ( KettleXMLException e ) {
+      fail( e.getMessage() );
+    }
+  }
+
+  /**
+   * XML node field_separator is present but empty — must default to empty string.
+   */
+  @Test
+  public void testLoadXML_fieldSeparatorPresentEmpty_defaultsToEmpty() {
+    try {
+      String xml = "<step><connection/><schema/><table/><buffer_size/><log_file/>"
+          + "<truncate>N</truncate><fully_quote_sql>N</fully_quote_sql>"
+          + "<field_separator/>"
+          + "<field_enclosure/><null_representation/><encoding/></step>";
+      Node stepNode = XMLHandler.loadXMLString( xml, "step" );
+      lm.loadXML( stepNode, new ArrayList<>(), (IMetaStore) null );
+      assertEquals( "Field separator should default to empty string when XML node is present but empty",
+          "", lm.getFieldSeparator() );
+    } catch ( KettleXMLException e ) {
+      fail( e.getMessage() );
+    }
   }
 
 }

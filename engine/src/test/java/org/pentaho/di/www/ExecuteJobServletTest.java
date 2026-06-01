@@ -45,11 +45,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
 public class ExecuteJobServletTest {
@@ -96,6 +99,7 @@ public class ExecuteJobServletTest {
       doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
 
       doReturn( repository ).when( spyExecuteJobServlet ).openRepository( REPOSITORY_NAME, AUTHORIZED_USER, PASSWORD );
+      doNothing().when( spyExecuteJobServlet ).clearBowlCache( same( repository ) );
 
       JobMeta jobMeta = buildJobMeta();
 
@@ -113,6 +117,7 @@ public class ExecuteJobServletTest {
 
       assertTrue( out.toString().contains( WebResult.STRING_OK ) );
       assertTrue( out.toString().contains( "Job started" ) );
+      verify( spyExecuteJobServlet ).clearBowlCache( same( repository ) );
     }
   }
 

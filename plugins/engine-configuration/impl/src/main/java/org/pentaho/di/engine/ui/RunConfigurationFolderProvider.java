@@ -13,14 +13,12 @@
 
 package org.pentaho.di.engine.ui;
 
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
+import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -29,7 +27,14 @@ import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -50,48 +55,43 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
     Set<String> bowlNames = new HashSet<>();
     Bowl currentBowl = Spoon.getInstance().getManagementBowl();
     Bowl globalBowl = Spoon.getInstance().getGlobalManagementBowl();
-    String levelName;
     if ( !currentBowl.equals( globalBowl ) ) {
-      RunConfigurationDelegate bowlDelegate =
-        RunConfigurationDelegate.getInstance( () -> currentBowl.getMetastore() );
-      for ( RunConfiguration runConfiguration : bowlDelegate.load() ) {
-        if ( !filterMatch( runConfiguration.getName(), filter ) ) {
-          continue;
-        }
-        if ( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME.equals( runConfiguration.getName() ) ) {
-          continue;
-        }
-        bowlNames.add( runConfiguration.getName() );
-        String imageFile = runConfiguration.isReadOnly() ? "images/run_tree_disabled.svg" : "images/run_tree.svg";
-        TreeNode childTreeNode = createChildTreeNode( treeNode, runConfiguration.getName(), getRunConfigurationImage(
-                guiResource, imageFile ), LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
-        if ( runConfiguration.isReadOnly() ) {
-          childTreeNode.setForeground( getDisabledColor() );
+      for ( RunConfiguration runConfiguration : loadRunConfigurations( currentBowl ) ) {
+        if ( filterMatch( runConfiguration.getName(), filter )
+          && !RunConfigurationProvider.DEFAULT_CONFIG_NAME.equals( runConfiguration.getName() ) ) {
+          bowlNames.add( runConfiguration.getName() );
+          addRunConfigurationNode( treeNode, guiResource, runConfiguration,
+            LeveledTreeNode.LEVEL.PROJECT, currentBowl.getLevelDisplayName(), false );
         }
       }
     }
 
-    RunConfigurationDelegate globalDelegate =
-      RunConfigurationDelegate.getInstance( () -> globalBowl.getMetastore() );
+    addGlobalRunConfigurationNodes( treeNode, filter, guiResource, bowlNames, globalBowl );
+  }
 
-    for ( RunConfiguration runConfiguration : globalDelegate.load() ) {
-      if ( !filterMatch( runConfiguration.getName(), filter ) ) {
-        continue;
-      }
-      LeveledTreeNode.LEVEL level = LeveledTreeNode.LEVEL.GLOBAL;
-      levelName = globalBowl.getLevelDisplayName();
+  private void addGlobalRunConfigurationNodes( TreeNode treeNode, String filter, GUIResource guiResource,
+                                               Set<String> bowlNames, Bowl globalBowl ) {
+    for ( RunConfiguration runConfiguration : loadRunConfigurations( globalBowl ) ) {
+      if ( filterMatch( runConfiguration.getName(), filter ) ) {
+        boolean isDefault = RunConfigurationProvider.DEFAULT_CONFIG_NAME.equals( runConfiguration.getName() );
+        LeveledTreeNode.LEVEL level = isDefault ? LeveledTreeNode.LEVEL.DEFAULT : LeveledTreeNode.LEVEL.GLOBAL;
+        String levelName = isDefault ? LeveledTreeNode.LEVEL_DEFAULT_DISPLAY_NAME : globalBowl.getLevelDisplayName();
 
-      if ( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME.equals( runConfiguration.getName() ) ) {
-        level = LeveledTreeNode.LEVEL.DEFAULT;
-        levelName = LeveledTreeNode.LEVEL_DEFAULT_DISPLAY_NAME;
+        addRunConfigurationNode( treeNode, guiResource, runConfiguration, level, levelName,
+          containsIgnoreCase( bowlNames, runConfiguration.getName() ) );
       }
+    }
+  }
 
-      String imageFile = runConfiguration.isReadOnly() ? "images/run_tree_disabled.svg" : "images/run_tree.svg";
-      TreeNode childTreeNode = createChildTreeNode( treeNode, runConfiguration.getName(), getRunConfigurationImage(
-              guiResource, imageFile ), level, levelName, containsIgnoreCase( bowlNames, runConfiguration.getName() ) );
-      if ( runConfiguration.isReadOnly() ) {
-        childTreeNode.setForeground( getDisabledColor() );
-      }
+  private void addRunConfigurationNode( TreeNode treeNode, GUIResource guiResource,
+                                        RunConfiguration runConfiguration, LeveledTreeNode.LEVEL level,
+                                        String levelName, boolean overridden ) {
+    String imageFile = runConfiguration.isReadOnly() ? "images/run_tree_disabled.svg" : "images/run_tree.svg";
+    TreeNode childTreeNode = createChildTreeNode( treeNode, runConfiguration.getName(),
+      getRunConfigurationImage( guiResource, imageFile ), level, levelName, overridden );
+
+    if ( runConfiguration.isReadOnly() ) {
+      childTreeNode.setForeground( getDisabledColor() );
     }
   }
 
@@ -128,5 +128,14 @@ public class RunConfigurationFolderProvider extends TreeFolderProvider {
   public TreeNode createTreeNode( TreeNode parent, String text, Image image ) {
     TreeNode treeNode = super.createTreeNode( parent, text, image );
     return treeNode;
+  }
+
+  private List<RunConfiguration> loadRunConfigurations( Bowl bowl ) {
+    try {
+      return RunConfigurationDelegate.getInstance( bowl ).load();
+    } catch ( KettleException e ) {
+      LogChannel.GENERAL.logError( "Unable to access run configuration delegate", e );
+      return Collections.emptyList();
+    }
   }
 }

@@ -13,7 +13,6 @@
 
 package org.pentaho.di.engine.configuration.impl.extension;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.exception.KettleException;
@@ -22,17 +21,20 @@ import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
+import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
+import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.EmbeddedRunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
+import org.pentaho.di.engine.configuration.impl.RunConfigurationProviderFactoryManagerImpl;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.function.Function;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,26 +47,25 @@ import java.util.stream.Collectors;
   description = "" )
 public class RunConfigurationImportExtensionPoint implements ExtensionPointInterface {
 
-  private Function<AbstractMeta, RunConfigurationManager> rcmProvider =
-    am -> RunConfigurationManager.getInstance( () -> am.getBowl().getMetastore() );
+  private RunConfigurationService runConfigurationManager;
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     AbstractMeta abstractMeta = (AbstractMeta) o;
 
     final EmbeddedMetaStore embeddedMetaStore = abstractMeta.getEmbeddedMetaStore();
-    RunConfigurationManager runConfigurationManager = getRunConfigurationManager( abstractMeta );
+    RunConfigurationService runConfigurationService = getRunConfigurationManager( abstractMeta );
 
     RunConfigurationManager embeddedRunConfigurationManager =
       EmbeddedRunConfigurationManager.build( embeddedMetaStore );
 
     List<RunConfiguration> runConfigurationList = embeddedRunConfigurationManager.load();
     List<String> runConfigurationNames = runConfigurationList.stream().map( RunConfiguration::getName ).collect( Collectors.toList() );
-    runConfigurationNames.addAll( runConfigurationManager.getNames() );
+    runConfigurationNames.addAll( runConfigurationService.getNames() );
     runConfigurationList.addAll( createSlaveServerRunConfigurations( runConfigurationNames, abstractMeta ) );
 
     for ( RunConfiguration runConfiguration : runConfigurationList ) {
-      if ( !runConfiguration.getName().equals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
-        runConfigurationManager.save( runConfiguration );
+      if ( !runConfiguration.getName().equals( RunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
+        runConfigurationService.save( runConfiguration );
       }
     }
   }
@@ -121,10 +122,15 @@ public class RunConfigurationImportExtensionPoint implements ExtensionPointInter
 
   @VisibleForTesting
   void setRunConfigurationManager( RunConfigurationManager runConfigurationManager ) {
-    this.rcmProvider = x -> runConfigurationManager;
+    this.runConfigurationManager = runConfigurationManager;
   }
 
-  private RunConfigurationManager getRunConfigurationManager( AbstractMeta meta) {
-    return rcmProvider.apply( meta );
+  private RunConfigurationService getRunConfigurationManager( AbstractMeta meta ) throws KettleException {
+    if ( runConfigurationManager != null ) {
+      return runConfigurationManager;
+    }
+
+    RunConfigurationProviderFactoryManagerImpl.getInstance();
+    return meta.getBowl().getManager( RunConfigurationService.class );
   }
 }

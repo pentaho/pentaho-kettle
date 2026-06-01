@@ -12,14 +12,17 @@
 
 package org.pentaho.di.trans.steps.pgbulkloader;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -41,8 +44,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -323,6 +328,198 @@ public class PGBulkLoaderHelperTest {
 
     // Method initially sets FAILURE but then overrides with SUCCESS
     assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( "actionStatus" ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_NullConnection() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, null );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "public" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
+    when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( "error" ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_BlankConnection() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "   " );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "public" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
+    when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( "error" ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_NullSchema() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, null );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    // environmentSubstitute(null) returns null by default from Mockito
+    when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( "error" ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_BlankSchema() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    when( transMeta.environmentSubstitute( "" ) ).thenReturn( "" );
+    when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( "error" ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_NullTable() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "public" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, null );
+    when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
+    // environmentSubstitute(null) returns null by default from Mockito
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( "error" ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_BlankTable() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "public" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "" );
+    when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
+    when( transMeta.environmentSubstitute( "" ) ).thenReturn( "" );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( "error" ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_DatabaseNotFound() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "missingConn" );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "public" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
+    when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
+    when( transMeta.findDatabase( "missingConn" ) ).thenReturn( null );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( "error" ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_Success_WithColumns() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "public" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
+    when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      RowMeta rowMeta = new RowMeta();
+      rowMeta.addValueMeta( new ValueMetaString( "id" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "name" ) );
+      doNothing().when( mock ).connect();
+      when( mock.getTableFieldsMeta( "public", "person_data" ) ).thenReturn( rowMeta );
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray columns = (JSONArray) response.get( "columns" );
+      assertNotNull( columns );
+      assertEquals( 2, columns.size() );
+      assertEquals( "id", ( (JSONObject) columns.get( 0 ) ).get( "columnName" ) );
+      assertEquals( "String", ( (JSONObject) columns.get( 0 ) ).get( "columnType" ) );
+      assertEquals( "name", ( (JSONObject) columns.get( 1 ) ).get( "columnName" ) );
+    }
+  }
+
+  @Test
+  public void testGetTableFieldAndType_Success_NullRowMeta() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "public" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
+    when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      doNothing().when( mock ).connect();
+      when( mock.getTableFieldsMeta( "public", "person_data" ) ).thenReturn( null );
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray columns = (JSONArray) response.get( "columns" );
+      assertNotNull( columns );
+      assertEquals( 0, columns.size() );
+    }
+  }
+
+  @Test
+  public void testGetTableFieldAndType_DBConnectionException() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "public" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
+    when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      doThrow( new RuntimeException( "Connection failed" ) ).when( mock ).connect();
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+      assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( response.get( "error" ) );
+    }
+  }
+
+  @Test
+  public void testHandleStepAction_GetTableFieldAndType_Routing() {
+    queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( PGBulkLoaderHelper.SCHEMA, "public" );
+    queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
+    when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      RowMeta rowMeta = new RowMeta();
+      rowMeta.addValueMeta( new ValueMetaString( "col1" ) );
+      doNothing().when( mock ).connect();
+      when( mock.getTableFieldsMeta( "public", "person_data" ) ).thenReturn( rowMeta );
+    } ) ) {
+      JSONObject response = helper.handleStepAction( "getTableFieldAndType", transMeta, queryParams );
+
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray columns = (JSONArray) response.get( "columns" );
+      assertNotNull( columns );
+      assertEquals( 1, columns.size() );
+    }
   }
 
   private RowMetaInterface validRowMeta() {

@@ -79,7 +79,7 @@ public class S3FileSystemTest {
     // test is still slow for little gain, but the region check was the slowest part
     fileSystem = new S3FileSystem( fileName, options ) {
       @Override
-      protected boolean isRegionSet() {
+      protected boolean isEnvRegionSet() {
         return false;
       }
     };

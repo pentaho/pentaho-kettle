@@ -159,7 +159,9 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
 
     String jobName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
+    String fetchJobConfigFromEntryStr = request.getParameter( "fetchJobConfigFromEntry" );
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean fetchJobConfigFromEntry = "Y".equalsIgnoreCase( fetchJobConfigFromEntryStr );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
@@ -264,7 +266,8 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
           // the new job in the job map
           //
           synchronized ( this ) {
-            JobConfiguration jobConfiguration = getJobMap().getConfiguration( jobName );
+            JobConfiguration jobConfiguration = fetchJobConfigFromEntry ? getJobMap().getConfiguration( entry ) :
+                getJobMap().getConfiguration( jobName );
 
             String carteObjectId = UUID.randomUUID().toString();
             Job newJob = BaseJobServlet.createJob( this, CONTEXT_PATH, carteObjectId, jobConfiguration );

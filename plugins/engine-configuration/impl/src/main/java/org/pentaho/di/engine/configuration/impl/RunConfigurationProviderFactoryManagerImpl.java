@@ -12,20 +12,21 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.pentaho.di.core.bowl.BowlManagerFactoryRegistry;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.engine.configuration.api.CheckedMetaStoreSupplier;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProviderFactory;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProviderFactoryManager;
+import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProviderFactory;
-import org.pentaho.di.metastore.MetaStoreConst;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The RunConfigurationProviderFactoryManager is used to manage the registration of RunConfiguration types and
@@ -52,6 +53,9 @@ public class RunConfigurationProviderFactoryManagerImpl implements RunConfigurat
   }
 
   private RunConfigurationProviderFactoryManagerImpl() {
+    BowlManagerFactoryRegistry.getInstance().registerManagerFactory( RunConfigurationService.class,
+      bowl -> new RunConfigurationManager( getInstance().generateProviders( bowl::getMetastore ) ) );
+
     factories = new ArrayList<>();
     factories.add( new DefaultRunConfigurationProviderFactory() );
 

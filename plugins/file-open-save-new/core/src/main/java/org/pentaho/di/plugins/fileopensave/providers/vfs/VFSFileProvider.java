@@ -315,6 +315,7 @@ public class VFSFileProvider extends BaseFileProvider<VFSFile> implements Update
 
     if ( fileName.isConnectionRoot() ) {
       VFSConnectionDetails details = getExistingDetails( bowl, fileName );
+      details.setSpace( space );
       if ( usesBuckets( details ) ) {
         return getBuckets( bowl, file, fileName, details );
       }
