@@ -72,6 +72,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -457,6 +458,18 @@ public class PanTest {
   }
 
   @Test
+  public void testLogDebugArgumentsSkipsLoggingWhenDebugDisabled() {
+    LogChannelInterface log = mock( LogChannelInterface.class );
+    when( log.isDebug() ).thenReturn( false );
+
+    Pan.logDebugArguments(
+      log,
+      new CommandLineOption[] { new CommandLineOption( "file", "desc", new StringBuilder( "sample.ktr" ) ) } );
+
+    verify( log, never() ).logDebug( anyString() );
+  }
+
+  @Test
   public void testGetPluginNamedParamsReturnsProviderParameters() throws DuplicateParamException {
     LogChannelInterface log = mock( LogChannelInterface.class );
     CommandLineOptionProvider provider = mock( CommandLineOptionProvider.class );
@@ -502,6 +515,22 @@ public class PanTest {
       log );
 
     assertEquals( "value", namedParams.getParameterValue( "pluginOption" ) );
+  }
+
+  @Test
+  public void testUpdateCommandlineOptionsLogsUnknownParameterFailures() throws Exception {
+    NamedParams namedParams = mock( NamedParams.class );
+    LogChannelInterface log = mock( LogChannelInterface.class );
+    when( namedParams.listParameters() ).thenReturn( new String[] { "pluginOption" } );
+    when( namedParams.getParameterDescription( "pluginOption" ) ).thenThrow( new UnknownParamException( "bad" ) );
+
+    List<CommandLineOption> options = Pan.updateCommandlineOptions(
+      new CommandLineOption[] { new CommandLineOption( "file", "desc", new StringBuilder() ) },
+      namedParams,
+      log );
+
+    assertEquals( 1, options.size() );
+    verify( log ).logError( eq( "Exception getting the additional parameters" ), any( UnknownParamException.class ) );
   }
 
   @Test

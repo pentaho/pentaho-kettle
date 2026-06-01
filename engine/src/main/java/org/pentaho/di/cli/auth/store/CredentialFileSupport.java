@@ -39,7 +39,7 @@ public final class CredentialFileSupport {
   public static void ensureParentDirectoryExists( File file ) throws IOException {
     File parent = file.getParentFile();
     if ( parent != null && !parent.exists() && !parent.mkdirs() ) {
-      throw new IOException( message( "CliFileSupport.CannotCreateDirectory", parent.getAbsolutePath() ) );
+      throw new IOException( message( "CredentialFileSupport.CannotCreateDirectory", parent.getAbsolutePath() ) );
     }
   }
 
@@ -61,17 +61,17 @@ public final class CredentialFileSupport {
       Files.setPosixFilePermissions( file.toPath(), permissions );
     } catch ( UnsupportedOperationException e ) {
       logIfPermissionChangeFailed( file.setReadable( false, false ), log,
-        message( "CliFileSupport.Operation.ClearWorldReadable" ), targetDescription );
+        message( "CredentialFileSupport.Operation.ClearWorldReadable" ), targetDescription );
       logIfPermissionChangeFailed( file.setWritable( false, false ), log,
-        message( "CliFileSupport.Operation.ClearWorldWritable" ), targetDescription );
+        message( "CredentialFileSupport.Operation.ClearWorldWritable" ), targetDescription );
       logIfPermissionChangeFailed( file.setExecutable( false, false ), log,
-        message( "CliFileSupport.Operation.ClearExecutable" ), targetDescription );
+        message( "CredentialFileSupport.Operation.ClearExecutable" ), targetDescription );
       logIfPermissionChangeFailed( file.setReadable( true, true ), log,
-        message( "CliFileSupport.Operation.SetOwnerReadable" ), targetDescription );
+        message( "CredentialFileSupport.Operation.SetOwnerReadable" ), targetDescription );
       logIfPermissionChangeFailed( file.setWritable( true, true ), log,
-        message( "CliFileSupport.Operation.SetOwnerWritable" ), targetDescription );
+        message( "CredentialFileSupport.Operation.SetOwnerWritable" ), targetDescription );
     } catch ( IOException e ) {
-      logDebug( log, message( "CliFileSupport.CouldNotSetRestrictivePermissions",
+      logDebug( log, message( "CredentialFileSupport.CouldNotSetRestrictivePermissions",
         targetDescription, e.getMessage() ) );
     }
   }
@@ -84,7 +84,7 @@ public final class CredentialFileSupport {
     try {
       Files.deleteIfExists( file.toPath() );
     } catch ( IOException e ) {
-      logDebug( log, message( "CliFileSupport.CouldNotDelete",
+      logDebug( log, message( "CredentialFileSupport.CouldNotDelete",
         targetDescription, e.getMessage() ) );
     }
   }
@@ -92,7 +92,7 @@ public final class CredentialFileSupport {
   private static void logIfPermissionChangeFailed( boolean changed, LogChannelInterface log,
                                                    String operation, String targetDescription ) {
     if ( !changed ) {
-      logDebug( log, message( "CliFileSupport.CouldNotApplyOperation", operation, targetDescription ) );
+      logDebug( log, message( "CredentialFileSupport.CouldNotApplyOperation", operation, targetDescription ) );
     }
   }
 

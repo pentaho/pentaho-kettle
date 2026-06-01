@@ -28,6 +28,7 @@ import org.pentaho.di.cli.auth.BrowserAuthSessionHolder;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
 import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.api.engine.IApplicationContext;
@@ -37,7 +38,6 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -181,7 +181,7 @@ public class PurRepositoryConnectorTest {
   }
 
   @Test
-  public void testConnectWithoutPasswordRequiresStoredCredential() throws Exception {
+  public void testConnectWithoutPasswordRequiresStoredCredential() {
     PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation location = mock( PurRepositoryLocation.class );
     when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
@@ -1054,12 +1054,8 @@ public class PurRepositoryConnectorTest {
     when( mockProvider.getAllowedActions( any() ) )
       .thenReturn( Arrays.asList( "org.pentaho.repository.read", "org.pentaho.repository.create" ) );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider,
-      org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION );
+    boolean result = connector.allowedActionsContains( mockProvider,
+      RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION );
 
     assertFalse( "Should return false when action is not in allowed actions", result );
   }
@@ -1073,17 +1069,12 @@ public class PurRepositoryConnectorTest {
     PurRepositoryConnector connector =
       new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
 
-    String adminAction =
-      org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION;
+    String adminAction = RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION;
     AbsSecurityProvider mockProvider = mock( AbsSecurityProvider.class );
     when( mockProvider.getAllowedActions( any() ) )
       .thenReturn( Arrays.asList( "org.pentaho.repository.read", adminAction ) );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider, adminAction );
+    boolean result = connector.allowedActionsContains( mockProvider, adminAction );
 
     assertTrue( "Should return true when action is in allowed actions", result );
   }
@@ -1101,11 +1092,7 @@ public class PurRepositoryConnectorTest {
     when( mockProvider.getAllowedActions( any() ) )
       .thenReturn( Arrays.asList( "org.pentaho.repository.read" ) );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider, (String) null );
+    boolean result = connector.allowedActionsContains( mockProvider, null );
 
     assertFalse( "Should return false when action is null", result );
   }
@@ -1122,12 +1109,8 @@ public class PurRepositoryConnectorTest {
     AbsSecurityProvider mockProvider = mock( AbsSecurityProvider.class );
     when( mockProvider.getAllowedActions( any() ) ).thenReturn( Collections.emptyList() );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider,
-      org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION );
+    boolean result = connector.allowedActionsContains( mockProvider,
+      RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION );
 
     assertFalse( "Should return false when allowed actions list is empty", result );
   }

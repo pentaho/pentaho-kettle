@@ -207,7 +207,8 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     }
   }
 
-  private void applyTrustedUserSetting( Params params ) {
+  @VisibleForTesting
+  void applyTrustedUserSetting( Params params ) {
     /*
      * if set, _trust_user_ needs to be considered. See pur-plugin's:
      *
@@ -376,7 +377,8 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     setResult( job.getResult() );
   }
 
-  private void cleanupRepositorySession( Repository repository, Params params ) {
+  @VisibleForTesting
+  void cleanupRepositorySession( Repository repository, Params params ) {
     disconnectRepository( repository );
     if ( isEnabled( params.getTrustRepoUser() ) ) {
       System.clearProperty( "pentaho.repository.client.attemptTrust" );

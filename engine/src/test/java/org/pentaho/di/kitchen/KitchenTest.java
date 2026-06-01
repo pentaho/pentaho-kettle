@@ -359,6 +359,8 @@ public class KitchenTest {
     doThrow( new RuntimeException( "boom" ) ).when( appender ).close();
 
     Kitchen.closeFileAppender( appender );
+
+    verify( appender ).close();
   }
 
   @Test

@@ -1012,6 +1012,30 @@ public class AbstractBaseCommandExecutorTest {
   }
 
   @Test
+  public void connectToRepositoryRethrowsNonAuthFailures() throws Exception {
+    AbstractBaseCommandExecutor utilityExecutor = newUtilityExecutor();
+    PluginRegistry pluginRegistry = mock( PluginRegistry.class );
+    Repository connectedRepository = mock( Repository.class );
+    LogChannelInterface repositoryLog = mock( LogChannelInterface.class );
+
+    when( connectedRepository.getLog() ).thenReturn( repositoryLog );
+
+    try ( MockedStatic<PluginRegistry> mockedPluginRegistry = mockStatic( PluginRegistry.class ) ) {
+      mockedPluginRegistry.when( PluginRegistry::getInstance ).thenReturn( pluginRegistry );
+      when( pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class ) )
+        .thenReturn( connectedRepository );
+      doThrow( new KettleException( "boom" ) ).when( connectedRepository ).connect( "alice", null );
+
+      try {
+        utilityExecutor.connectToRepository( repositoryMeta, "alice", null );
+        fail( "Expected repository connect failure" );
+      } catch ( KettleException e ) {
+        assertTrue( e.getMessage().contains( "boom" ) );
+      }
+    }
+  }
+
+  @Test
   public void getRepositoryServerUrlReturnsLocationUrlWhenPresent() {
     AbstractBaseCommandExecutor utilityExecutor = newUtilityExecutor();
     RepositoryMetaWithLocation repositoryMetaWithLocation = mock( RepositoryMetaWithLocation.class );

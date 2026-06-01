@@ -83,6 +83,12 @@ public class TokenCommandHandler {
   }
 
   public int execute( String[] args ) {
+    if ( args == null || args.length == 0 ) {
+      printError( message( "TokenCommandHandler.NoCommand" ) );
+      printUsage();
+      return 1;
+    }
+
     String command = null;
     for ( String arg : args ) {
       if ( arg != null && arg.toLowerCase().startsWith( TOKEN_PREFIX ) ) {

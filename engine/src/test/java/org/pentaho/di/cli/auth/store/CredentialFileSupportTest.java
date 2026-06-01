@@ -15,27 +15,42 @@ package org.pentaho.di.cli.auth.store;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.EnumSet;
+import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class CredentialFileSupportTest {
+
+  private static final String TARGET_DESCRIPTION = "encrypted credential file";
+  private static final String SESSION_FILE_DESCRIPTION = "session file";
+  private static final String NON_EMPTY_DIRECTORY_DESCRIPTION = "non-empty directory";
+  private static final Set<PosixFilePermission> OWNER_ONLY_PERMISSIONS = EnumSet.of(
+    PosixFilePermission.OWNER_READ,
+    PosixFilePermission.OWNER_WRITE );
 
   @Rule
   public TemporaryFolder tempDir = new TemporaryFolder();
@@ -65,8 +80,20 @@ public class CredentialFileSupportTest {
       CredentialFileSupport.ensureParentDirectoryExists( file );
       fail( "Expected directory creation failure" );
     } catch ( IOException e ) {
-      assertTrue( e.getMessage().contains( "CliFileSupport.CannotCreateDirectory" ) );
+      assertEquals(
+        message( "CredentialFileSupport.CannotCreateDirectory", parent.getAbsolutePath() ),
+        e.getMessage() );
     }
+  }
+
+  @Test
+  public void ensureParentDirectoryExistsNoopsWhenFileHasNoParent() throws IOException {
+    File file = new File( "session.properties" );
+
+    CredentialFileSupport.ensureParentDirectoryExists( file );
+
+    assertNull( file.getParent() );
+    assertFalse( file.exists() );
   }
 
   @Test
@@ -77,17 +104,36 @@ public class CredentialFileSupportTest {
     File file = tempDir.getRoot().toPath().resolve( "session.properties" ).toFile();
     Files.writeString( file.toPath(), "data" );
 
-    CredentialFileSupport.deleteIfExists( file, log, "session file" );
-    CredentialFileSupport.deleteIfExists( file, log, "session file" );
+    CredentialFileSupport.deleteIfExists( file, log, SESSION_FILE_DESCRIPTION );
+    CredentialFileSupport.deleteIfExists( file, log, SESSION_FILE_DESCRIPTION );
 
     assertFalse( file.exists() );
 
     Path nonEmptyDirectory = Files.createDirectory( tempDir.getRoot().toPath().resolve( "non-empty" ) );
     Files.writeString( nonEmptyDirectory.resolve( "child.txt" ), "child" );
 
-    CredentialFileSupport.deleteIfExists( nonEmptyDirectory.toFile(), log, "non-empty directory" );
+    CredentialFileSupport.deleteIfExists( nonEmptyDirectory.toFile(), log, NON_EMPTY_DIRECTORY_DESCRIPTION );
     assertTrue( Files.exists( nonEmptyDirectory ) );
-    verify( log, atLeastOnce() ).logDebug( contains( "CliFileSupport.CouldNotDelete" ) );
+    ArgumentCaptor<String> logMessage = ArgumentCaptor.forClass( String.class );
+    verify( log, atLeastOnce() ).logDebug( logMessage.capture() );
+    assertTrue( logMessage.getValue().startsWith(
+      message( "CredentialFileSupport.CouldNotDelete", NON_EMPTY_DIRECTORY_DESCRIPTION, "" ) ) );
+  }
+
+  @Test
+  public void deleteIfExistsWithoutLogSwallowsIoFailures() {
+    File file = tempDir.getRoot().toPath().resolve( "missing-without-log.properties" ).toFile();
+    assertFalse( file.exists() );
+
+    try ( MockedStatic<Files> files = mockStatic( Files.class ) ) {
+      files.when( () -> Files.deleteIfExists( file.toPath() ) ).thenThrow( new IOException( "boom" ) );
+
+      CredentialFileSupport.deleteIfExists( file, null, SESSION_FILE_DESCRIPTION );
+
+      files.verify( () -> Files.deleteIfExists( file.toPath() ) );
+    }
+
+    assertFalse( file.exists() );
   }
 
   @Test
@@ -97,26 +143,50 @@ public class CredentialFileSupportTest {
     File file = tempDir.getRoot().toPath().resolve( "encrypted.properties" ).toFile();
     Files.writeString( file.toPath(), "data" );
 
-    CredentialFileSupport.applyOwnerOnlyPermissions( file, log, "encrypted credential file" );
+    CredentialFileSupport.applyOwnerOnlyPermissions( file, log, TARGET_DESCRIPTION );
     assertTrue( file.exists() );
   }
 
   @Test
-  public void applyOwnerOnlyPermissionsLogsWhenPosixWriteFails() {
+  public void applyOwnerOnlyPermissionsLogsWhenPosixPermissionsCannotBeSet() throws IOException {
     LogChannelInterface log = mock( LogChannelInterface.class );
     when( log.isDebug() ).thenReturn( true );
-    File file = spy( tempDir.getRoot().toPath().resolve( "missing.properties" ).toFile() );
+    File file = tempDir.getRoot().toPath().resolve( "io-failure.properties" ).toFile();
+    Files.writeString( file.toPath(), "data" );
+
+    try ( MockedStatic<Files> files = mockStatic( Files.class ) ) {
+      files.when( () -> Files.setPosixFilePermissions( file.toPath(), OWNER_ONLY_PERMISSIONS ) )
+        .thenThrow( new IOException( "boom" ) );
+
+      CredentialFileSupport.applyOwnerOnlyPermissions( file, log, TARGET_DESCRIPTION );
+    }
+
+    verify( log ).logDebug( message( "CredentialFileSupport.CouldNotSetRestrictivePermissions",
+      TARGET_DESCRIPTION, "boom" ) );
+  }
+
+  @Test
+  public void applyOwnerOnlyPermissionsLogsFallbackOperationFailuresWhenPosixUnsupported() throws IOException {
+    LogChannelInterface log = mock( LogChannelInterface.class );
+    when( log.isDebug() ).thenReturn( true );
+    File file = spy( tempDir.getRoot().toPath().resolve( "fallback.properties" ).toFile() );
+    Files.writeString( file.toPath(), "data" );
     doReturn( false ).when( file ).setReadable( false, false );
     doReturn( false ).when( file ).setWritable( false, false );
     doReturn( false ).when( file ).setExecutable( false, false );
     doReturn( false ).when( file ).setReadable( true, true );
     doReturn( false ).when( file ).setWritable( true, true );
 
-    CredentialFileSupport.applyOwnerOnlyPermissions( file, log, "encrypted credential file" );
+    try ( MockedStatic<Files> files = mockStatic( Files.class ) ) {
+      files.when( () -> Files.setPosixFilePermissions( file.toPath(), OWNER_ONLY_PERMISSIONS ) )
+        .thenThrow( new UnsupportedOperationException( "no posix" ) );
 
-    assertFalse( file.exists() );
-    verify( log, atLeast( 1 ) ).logDebug( anyString() );
-    verify( log, atLeastOnce() ).logDebug( contains( "CliFileSupport.CouldNotApplyOperation" ) );
+      CredentialFileSupport.applyOwnerOnlyPermissions( file, log, TARGET_DESCRIPTION );
+    }
+
+    assertTrue( file.exists() );
+    verify( log, atLeast( 1 ) ).logDebug( message( "CredentialFileSupport.CouldNotApplyOperation",
+      message( "CredentialFileSupport.Operation.ClearWorldReadable" ), TARGET_DESCRIPTION ) );
   }
 
   @Test
@@ -128,8 +198,13 @@ public class CredentialFileSupportTest {
     doReturn( false ).when( file ).setReadable( true, true );
     doReturn( false ).when( file ).setWritable( true, true );
 
-    CredentialFileSupport.applyOwnerOnlyPermissions( file, "encrypted credential file" );
+    CredentialFileSupport.applyOwnerOnlyPermissions( file, TARGET_DESCRIPTION );
 
     assertFalse( file.exists() );
+    verify( file, never() ).setReadable( true, false );
+  }
+
+  private static String message( String key, String... tokens ) {
+    return BaseMessages.getString( CredentialFileSupport.class, key, tokens );
   }
 }

@@ -145,7 +145,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       try {
         initializeRepository( params );
       } catch ( KettleException e ) {
-        getLog().logError( "Repository Initialization failed" );
+        getLog().logError( "Repository Initialization failed", e );
         return false; // Repository initialization failed, cannot handle repo-based commands
       }
 

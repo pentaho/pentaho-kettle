@@ -40,11 +40,14 @@ public class CredentialHeaderFactoryTest {
 
   private static final String BASE_URL = "http://localhost:8080/pentaho";
   private static final String USERNAME = "alice";
-  private static final String PASSWORD = "secret";
+  private static final String BASIC_AUTH_CREDENTIAL = "test-basic-auth";
   private static final String ACCESS_TOKEN = "access-token";
   private static final String SESSION_COOKIE = "JSESSIONID=abc123";
   private static final String TRUST_PROPERTY = "pentaho.repository.client.attemptTrust";
   private static final String TRUST_HEADER = "_trust_user_";
+  private static final String AUTHORIZATION_HEADER = "Authorization";
+  private static final String COOKIE_HEADER = "Cookie";
+  private static final String BEARER_PREFIX = "Bearer ";
 
   @After
   public void tearDown() {
@@ -62,8 +65,8 @@ public class CredentialHeaderFactoryTest {
 
     Map<String, List<String>> headers = factory.forSoapRequest( BASE_URL, USERNAME );
 
-    assertEquals( List.of( "Bearer " + ACCESS_TOKEN ), headers.get( "Authorization" ) );
-    assertFalse( headers.containsKey( "Cookie" ) );
+    assertEquals( List.of( BEARER_PREFIX + ACCESS_TOKEN ), headers.get( AUTHORIZATION_HEADER ) );
+    assertFalse( headers.containsKey( COOKIE_HEADER ) );
     assertFalse( headers.containsKey( TRUST_HEADER ) );
   }
 
@@ -78,8 +81,8 @@ public class CredentialHeaderFactoryTest {
 
     Map<String, List<String>> headers = factory.forSoapRequest( BASE_URL, USERNAME );
 
-    assertEquals( List.of( SESSION_COOKIE ), headers.get( "Cookie" ) );
-    assertFalse( headers.containsKey( "Authorization" ) );
+    assertEquals( List.of( SESSION_COOKIE ), headers.get( COOKIE_HEADER ) );
+    assertFalse( headers.containsKey( AUTHORIZATION_HEADER ) );
     assertFalse( headers.containsKey( TRUST_HEADER ) );
   }
 
@@ -118,7 +121,7 @@ public class CredentialHeaderFactoryTest {
     Client client = mock( Client.class );
 
     CredentialHeaderFactory factory = new CredentialHeaderFactory( provider );
-    factory.registerJaxRsAuth( client, BASE_URL, USERNAME, PASSWORD );
+    factory.registerJaxRsAuth( client, BASE_URL, USERNAME, BASIC_AUTH_CREDENTIAL );
 
     ArgumentCaptor<ClientRequestFilter> filterCaptor = ArgumentCaptor.forClass( ClientRequestFilter.class );
     verify( client ).register( filterCaptor.capture() );
@@ -130,7 +133,7 @@ public class CredentialHeaderFactoryTest {
 
     filterCaptor.getValue().filter( requestContext );
 
-    assertEquals( "Bearer " + ACCESS_TOKEN, headers.getFirst( "Authorization" ) );
+    assertEquals( BEARER_PREFIX + ACCESS_TOKEN, headers.getFirst( AUTHORIZATION_HEADER ) );
   }
 
   @Test
@@ -141,7 +144,7 @@ public class CredentialHeaderFactoryTest {
     Client client = mock( Client.class );
 
     CredentialHeaderFactory factory = new CredentialHeaderFactory( provider );
-    factory.registerJaxRsAuth( client, BASE_URL, USERNAME, PASSWORD );
+    factory.registerJaxRsAuth( client, BASE_URL, USERNAME, BASIC_AUTH_CREDENTIAL );
 
     ArgumentCaptor<ClientRequestFilter> filterCaptor = ArgumentCaptor.forClass( ClientRequestFilter.class );
     verify( client ).register( filterCaptor.capture() );
@@ -152,7 +155,31 @@ public class CredentialHeaderFactoryTest {
 
     filterCaptor.getValue().filter( requestContext );
 
-    assertEquals( SESSION_COOKIE, headers.getFirst( "Cookie" ) );
+    assertEquals( SESSION_COOKIE, headers.getFirst( COOKIE_HEADER ) );
+  }
+
+  @Test
+  public void registerJaxRsAuthAddsTrustHeaderWhenNoNonBasicCredentialExists() throws Exception {
+    CredentialProvider provider = mock( CredentialProvider.class );
+    when( provider.findAccessToken( BASE_URL ) ).thenReturn( Optional.empty() );
+    when( provider.findSessionCookie( BASE_URL ) ).thenReturn( Optional.empty() );
+    System.setProperty( TRUST_PROPERTY, "true" );
+    Client client = mock( Client.class );
+
+    CredentialHeaderFactory factory = new CredentialHeaderFactory( provider );
+    factory.registerJaxRsAuth( client, BASE_URL, USERNAME, BASIC_AUTH_CREDENTIAL );
+
+    ArgumentCaptor<ClientRequestFilter> filterCaptor = ArgumentCaptor.forClass( ClientRequestFilter.class );
+    verify( client ).register( filterCaptor.capture() );
+    verify( client, never() ).register( any( HttpAuthenticationFeature.class ) );
+
+    ClientRequestContext requestContext = mock( ClientRequestContext.class );
+    MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    when( requestContext.getHeaders() ).thenReturn( headers );
+
+    filterCaptor.getValue().filter( requestContext );
+
+    assertEquals( USERNAME, headers.getFirst( TRUST_HEADER ) );
   }
 
   @Test
@@ -163,7 +190,7 @@ public class CredentialHeaderFactoryTest {
     Client client = mock( Client.class );
 
     CredentialHeaderFactory factory = new CredentialHeaderFactory( provider );
-    factory.registerJaxRsAuth( client, BASE_URL, USERNAME, PASSWORD );
+    factory.registerJaxRsAuth( client, BASE_URL, USERNAME, BASIC_AUTH_CREDENTIAL );
 
     verify( client ).register( any( HttpAuthenticationFeature.class ) );
     verify( client, never() ).register( any( ClientRequestFilter.class ) );

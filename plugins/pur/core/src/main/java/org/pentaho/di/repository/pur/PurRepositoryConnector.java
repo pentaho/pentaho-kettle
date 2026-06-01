@@ -12,6 +12,7 @@
 
 package org.pentaho.di.repository.pur;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.pentaho.di.services.PentahoDiPlugin;
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
 import com.pentaho.pdi.ws.RepositorySyncException;
@@ -75,7 +76,8 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     this.rootRef = rootRef;
   }
 
-  private boolean allowedActionsContains( AbsSecurityProvider provider, String action ) throws KettleException {
+  @VisibleForTesting
+  boolean allowedActionsContains( AbsSecurityProvider provider, String action ) throws KettleException {
     List<String> allowedActions = provider.getAllowedActions( RepositorySecurityProvider.NAMESPACE );
     for ( String actionName : allowedActions ) {
       if ( action != null && action.equals( actionName ) ) {
@@ -264,7 +266,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     result.setSuccess( true );
     result.getUser().setAdmin(
       PentahoSystem.get( IAuthorizationPolicy.class ).isAllowed(
-        IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION ) );
+        RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION ) );
     if ( log.isDebug() ) {
       log.logDebug( BaseMessages.getString(
         PKG, "PurRepositoryConnector.ConnectInProgress", name, result.getUnifiedRepository() ) );

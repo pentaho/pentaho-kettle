@@ -1,3 +1,15 @@
+/*! ******************************************************************************
+ *
+ * Pentaho
+ *
+ * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ *
+ * Use of this software is governed by the Business Source License included
+ * in the LICENSE.TXT file.
+ *
+ * Change Date: 2029-07-20
+ ******************************************************************************/
+
 package org.pentaho.di.repository.pur;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,22 +49,23 @@ public class RestAuthHelper {
 
   /**
    * Executes a REST request using the highest-priority available credential,
-   * falling back through the hierarchy until one succeeds.
+    * retrying lower-priority options when a prior attempt returns HTTP 401 or 403.
    * <p>
    * Priority: (1) OAuth Bearer → (2) session cookie → (3) trusted proxy → (4)
    * basic auth.
    * <p>
-   * Credentials are read from the injected {@link CredentialProvider}
-   * (expiry-checked, URL-matched) — never from {@code System.getProperty}.
+   * OAuth bearer tokens and session cookies are read from the injected
+   * {@link CredentialProvider} (expiry-checked, URL-matched). Trusted proxy is
+   * attempted only when {@code pentaho.repository.client.attemptTrust} is set.
    *
-   * @param method             The HTTP request (GET, POST, etc.)
-   * @param serverUrl          The Pentaho server URL — lookup key
-   * @param username           Username for basic auth fallback and trust header
-   * @param password           Password for basic auth fallback
-   * @param trustUser          Trust proxy header name
-   * @param credentialProvider credential source
-   * @return The response entity body as a String
-   * @throws IOException if all auth methods fail or an I/O error occurs
+   * @param method             the HTTP request (GET, POST, etc.)
+   * @param serverUrl          the Pentaho server URL used for credential lookup
+   * @param username           the username for basic auth fallback and trust header
+   * @param password           the password for basic auth fallback
+   * @param trustUser          the trusted proxy header name
+   * @param credentialProvider the credential source
+   * @return the response entity body as a String
+   * @throws IOException if an I/O error occurs or the final authentication attempt fails
    */
   public static String executeWithAuthFallback( ClassicHttpRequest method, String serverUrl, String username,
                                                 String password, String trustUser,
@@ -119,6 +132,9 @@ public class RestAuthHelper {
   private static String executeWith401Fallback( CloseableHttpClient client, ClassicHttpRequest method )
     throws IOException {
     return client.execute( method,
-      response -> response.getCode() == 401 ? null : EntityUtils.toString( response.getEntity() ) );
+      response -> {
+        int code = response.getCode();
+        return code == 401 || code == 403 ? null : EntityUtils.toString( response.getEntity() );
+      } );
   }
 }

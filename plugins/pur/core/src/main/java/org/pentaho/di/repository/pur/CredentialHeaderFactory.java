@@ -17,6 +17,7 @@ import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.handler.MessageContext;
 import org.apache.commons.lang.StringUtils;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.pentaho.di.cli.auth.CredentialProvider;
 
 import java.util.Collections;
@@ -44,7 +45,7 @@ public final class CredentialHeaderFactory {
   /**
    * Trust header name matching {@code ProxyTrustingFilter} on the server.
    */
-  private static final String TRUST_USER = "_trust_user_"; //$NON-NLS-1$
+  private static final String TRUST_USER = "_trust_user_";
 
   private final CredentialProvider credentialProvider;
 
@@ -104,14 +105,14 @@ public final class CredentialHeaderFactory {
 
   /**
    * Registers auth filters on a JAX-RS {@link Client} using the same priority:
-   * OAuth Bearer &gt; Session Cookie &gt; Basic auth.
+   * OAuth Bearer &gt; Session Cookie &gt; Trust header &gt; Basic auth.
    * <p>
    * For OAuth and session-cookie, filters read <b>fresh</b> from the holder on
    * every request — picks up any mid-session token refresh automatically.
    *
    * @param client   the JAX-RS client to register filters on
    * @param baseUrl  the Pentaho server base URL
-   * @param username username for basic auth fallback
+   * @param username username for trust-header/basic-auth fallback
    * @param password password for basic auth fallback
    */
   public void registerJaxRsAuth( Client client, String baseUrl,
@@ -141,10 +142,13 @@ public final class CredentialHeaderFactory {
       return;
     }
 
-    // Neither OAuth nor session cookie — fall back to basic auth.
-    org.glassfish.jersey.client.authentication.HttpAuthenticationFeature feature =
-      org.glassfish.jersey.client.authentication.HttpAuthenticationFeature
-        .basic( username, password );
+    if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
+      client.register( (ClientRequestFilter) ctx -> ctx.getHeaders().putSingle( TRUST_USER, username ) );
+      return;
+    }
+
+    // Neither OAuth, session cookie, nor trust header — fall back to basic auth.
+    HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic( username, password );
     client.register( feature );
   }
 }

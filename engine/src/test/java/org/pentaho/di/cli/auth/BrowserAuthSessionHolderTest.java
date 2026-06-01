@@ -265,6 +265,29 @@ public class BrowserAuthSessionHolderTest {
   }
 
   @Test
+  public void updateOAuthTokenReplacesRefreshTokenAndUsesRelativeExpiryWhenJwtExpMissing() {
+    TokenStore tokenStore = mock( TokenStore.class );
+    when( tokenStore.load() ).thenReturn( Optional.empty() );
+
+    BrowserAuthSessionHolder holder = new BrowserAuthSessionHolder( tokenStore );
+    holder.storeOAuthToken( new BrowserAuthSessionHolder.OAuthTokenData(
+      SERVER_URL,
+      ACCESS_TOKEN,
+      "refresh-token",
+      BEARER,
+      IDP_REGISTRATION_ID,
+      60,
+      0,
+      USERNAME ) );
+
+    holder.updateOAuthToken( SERVER_URL, "new-access-token", "replacement-refresh-token", 300, 0 );
+
+    assertEquals( "new-access-token", holder.getOAuthAccessToken( SERVER_URL ) );
+    assertEquals( "replacement-refresh-token", holder.getOAuthRefreshToken( SERVER_URL ) );
+    assertTrue( holder.hasValidOAuthToken( SERVER_URL ) );
+  }
+
+  @Test
   public void updateOAuthTokenWithoutSessionDoesNothing() {
     TokenStore tokenStore = mock( TokenStore.class );
     when( tokenStore.load() ).thenReturn( Optional.empty() );
@@ -372,5 +395,20 @@ public class BrowserAuthSessionHolderTest {
     assertTrue( holder.hasValidSession( SERVER_URL ) );
     assertEquals( SESSION_COOKIE, holder.findSessionCookie( SERVER_URL ).orElse( null ) );
     assertNotNull( holder.findSessionCookie( SERVER_URL ) );
+  }
+
+  @Test
+  public void constructorDeletesPersistedBrowserMetadataWithoutCookieOrToken() {
+    TokenStore tokenStore = mock( TokenStore.class );
+    when( tokenStore.load() ).thenReturn( Optional.of( StoredCredential.builder()
+      .serverUrl( SERVER_URL )
+      .username( USERNAME )
+      .build() ) );
+
+    BrowserAuthSessionHolder holder = new BrowserAuthSessionHolder( tokenStore );
+
+    assertFalse( holder.hasValidSession( SERVER_URL ) );
+    assertFalse( holder.findSessionCookie( SERVER_URL ).isPresent() );
+    verify( tokenStore ).delete();
   }
 }

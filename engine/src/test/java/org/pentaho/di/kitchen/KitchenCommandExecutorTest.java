@@ -593,6 +593,39 @@ public class KitchenCommandExecutorTest {
   }
 
   @Test
+  public void testApplyTrustedUserSettingSetsTrustPropertyOnlyWhenEnabled() {
+    KitchenCommandExecutor executor = new KitchenCommandExecutor( Kitchen.class );
+    System.clearProperty( TRUST_REPOSITORY_USER_PROPERTY );
+
+    try {
+      executor.applyTrustedUserSetting( new Params.Builder().trustRepoUser( "Y" ).build() );
+      assertEquals( "Y", System.getProperty( TRUST_REPOSITORY_USER_PROPERTY ) );
+
+      System.clearProperty( TRUST_REPOSITORY_USER_PROPERTY );
+      executor.applyTrustedUserSetting( new Params.Builder().trustRepoUser( "N" ).build() );
+      assertNull( System.getProperty( TRUST_REPOSITORY_USER_PROPERTY ) );
+    } finally {
+      System.clearProperty( TRUST_REPOSITORY_USER_PROPERTY );
+    }
+  }
+
+  @Test
+  public void testCleanupRepositorySessionDisconnectsRepositoryAndClearsTrustProperty() {
+    KitchenCommandExecutor executor = new KitchenCommandExecutor( Kitchen.class );
+    Repository repository = mock( Repository.class );
+    System.setProperty( TRUST_REPOSITORY_USER_PROPERTY, "Y" );
+
+    try {
+      executor.cleanupRepositorySession( repository, new Params.Builder().trustRepoUser( "Y" ).build() );
+
+      verify( repository ).disconnect();
+      assertNull( System.getProperty( TRUST_REPOSITORY_USER_PROPERTY ) );
+    } finally {
+      System.clearProperty( TRUST_REPOSITORY_USER_PROPERTY );
+    }
+  }
+
+  @Test
   public void testPrintJobParametersPrintsEveryParameter() throws Exception {
     LogChannelInterface testLog = mock( LogChannelInterface.class );
     KitchenCommandExecutor executor = spy( new KitchenCommandExecutor( Kitchen.class ) );

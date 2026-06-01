@@ -195,6 +195,15 @@ public class TokenCommandHandlerTest {
   }
 
   @Test
+  public void executeFailsWhenArgsAreNull() {
+    TokenCommandHandler handler = new TokenCommandHandler();
+
+    int result = handler.execute( null );
+
+    assertEquals( 1, result );
+  }
+
+  @Test
   public void executeFailsForUnknownTokenCommand() {
     TokenCommandHandler handler = new TokenCommandHandler();
 

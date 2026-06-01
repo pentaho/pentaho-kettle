@@ -30,7 +30,7 @@ import java.util.Properties;
  * <p>
  * Example:
  * Pan.bat -config:set auth.timeout.seconds 600
- * Pan.bat -config:set auth.strict.user.match true
+ * Pan.bat -config:set auth.preferred.idp keycloak
  */
 
 public class CliConfigCommandHandler {
@@ -257,6 +257,7 @@ public class CliConfigCommandHandler {
     print( "  " + CliConfig.KEY_TOKEN_STORE_BACKEND );
     print( "    Token storage backend to use for persisting OAuth tokens and sessions." );
     print( "    \"file\" - POSIX 600 plaintext file (~/.kettle/.kettle-sessions)" );
+    print( "    \"enc\"  - AES-256-GCM encrypted file (~/.kettle/.kettle-sessions-enc)" );
     print( "    Default: file" );
     print( "    Example: file" );
     print( "" );
@@ -279,7 +280,6 @@ public class CliConfigCommandHandler {
     print( "" );
     print( "Examples:" );
     print( "  Pan.bat -config:set auth.timeout.seconds 600" );
-    print( "  Pan.bat -config:set auth.strict.user.match true" );
     print( "  Pan.bat -config:set auth.preferred.idp keycloak" );
     print( "  Pan.bat -config:set token.store.backend file" );
     print( "  Pan.bat -config:list" );

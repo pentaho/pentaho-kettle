@@ -33,6 +33,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -45,11 +46,16 @@ public class RestAuthHelperTest {
   private static final String SERVER_URL = "http://localhost:8080/pentaho";
   private static final String REQUEST_URL = SERVER_URL + "/api/test";
   private static final String USERNAME = "alice";
-  private static final String PASSWORD = "secret";
+  private static final String BASIC_AUTH_CREDENTIAL = "test-basic-auth";
   private static final String TRUST_HEADER = "_trust_user_";
   private static final String TRUST_PROPERTY = "pentaho.repository.client.attemptTrust";
   private static final String ACCESS_TOKEN = "access-token";
   private static final String SESSION_COOKIE = "JSESSIONID=session-123";
+  private static final String AUTHORIZATION_HEADER = "Authorization";
+  private static final String COOKIE_HEADER = "Cookie";
+  private static final String BEARER_PREFIX = "Bearer ";
+  private static final String UNAUTHORIZED_BODY = "unauthorized";
+  private static final String FORBIDDEN_BODY = "forbidden";
 
   @After
   public void tearDown() {
@@ -60,13 +66,13 @@ public class RestAuthHelperTest {
   public void executeWithAuthFallbackReturnsBearerResponseWithoutFallback() throws Exception {
     CredentialProvider provider = provider( Optional.of( ACCESS_TOKEN ), Optional.of( SESSION_COOKIE ) );
     CloseableHttpClient oauthClient = mock( CloseableHttpClient.class );
-    stubExecute( oauthClient, 200, "oauth-ok", Map.of( "Authorization", "Bearer " + ACCESS_TOKEN ) );
+    stubExecute( oauthClient, 200, "oauth-ok", Map.of( AUTHORIZATION_HEADER, BEARER_PREFIX + ACCESS_TOKEN ) );
 
     try ( MockedStatic<HttpClients> httpClients = mockStatic( HttpClients.class ) ) {
       httpClients.when( HttpClients::createDefault ).thenReturn( oauthClient );
 
       String body = RestAuthHelper.executeWithAuthFallback(
-        new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, PASSWORD, TRUST_HEADER, provider );
+        new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, BASIC_AUTH_CREDENTIAL, TRUST_HEADER, provider );
 
       assertEquals( "oauth-ok", body );
     }
@@ -77,14 +83,32 @@ public class RestAuthHelperTest {
     CredentialProvider provider = provider( Optional.of( ACCESS_TOKEN ), Optional.of( SESSION_COOKIE ) );
     CloseableHttpClient oauthClient = mock( CloseableHttpClient.class );
     CloseableHttpClient sessionClient = mock( CloseableHttpClient.class );
-    stubExecute( oauthClient, 401, "unauthorized", Map.of( "Authorization", "Bearer " + ACCESS_TOKEN ) );
-    stubExecute( sessionClient, 200, "session-ok", Map.of( "Cookie", SESSION_COOKIE ), "Authorization" );
+    stubExecute( oauthClient, 401, UNAUTHORIZED_BODY, Map.of( AUTHORIZATION_HEADER, BEARER_PREFIX + ACCESS_TOKEN ) );
+    stubExecute( sessionClient, 200, "session-ok", Map.of( COOKIE_HEADER, SESSION_COOKIE ), AUTHORIZATION_HEADER );
 
     try ( MockedStatic<HttpClients> httpClients = mockStatic( HttpClients.class ) ) {
       httpClients.when( HttpClients::createDefault ).thenReturn( oauthClient, sessionClient );
 
       String body = RestAuthHelper.executeWithAuthFallback(
-        new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, PASSWORD, TRUST_HEADER, provider );
+        new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, BASIC_AUTH_CREDENTIAL, TRUST_HEADER, provider );
+
+      assertEquals( "session-ok", body );
+    }
+  }
+
+  @Test
+  public void executeWithAuthFallbackFallsBackFromBearerToSessionCookieOn403() throws Exception {
+    CredentialProvider provider = provider( Optional.of( ACCESS_TOKEN ), Optional.of( SESSION_COOKIE ) );
+    CloseableHttpClient oauthClient = mock( CloseableHttpClient.class );
+    CloseableHttpClient sessionClient = mock( CloseableHttpClient.class );
+    stubExecute( oauthClient, 403, FORBIDDEN_BODY, Map.of( AUTHORIZATION_HEADER, BEARER_PREFIX + ACCESS_TOKEN ) );
+    stubExecute( sessionClient, 200, "session-ok", Map.of( COOKIE_HEADER, SESSION_COOKIE ), AUTHORIZATION_HEADER );
+
+    try ( MockedStatic<HttpClients> httpClients = mockStatic( HttpClients.class ) ) {
+      httpClients.when( HttpClients::createDefault ).thenReturn( oauthClient, sessionClient );
+
+      String body = RestAuthHelper.executeWithAuthFallback(
+        new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, BASIC_AUTH_CREDENTIAL, TRUST_HEADER, provider );
 
       assertEquals( "session-ok", body );
     }
@@ -97,15 +121,15 @@ public class RestAuthHelperTest {
     CloseableHttpClient oauthClient = mock( CloseableHttpClient.class );
     CloseableHttpClient sessionClient = mock( CloseableHttpClient.class );
     CloseableHttpClient trustClient = mock( CloseableHttpClient.class );
-    stubExecute( oauthClient, 401, "unauthorized", Map.of( "Authorization", "Bearer " + ACCESS_TOKEN ) );
-    stubExecute( sessionClient, 401, "unauthorized", Map.of( "Cookie", SESSION_COOKIE ), "Authorization" );
-    stubExecute( trustClient, 200, "trust-ok", Map.of( TRUST_HEADER, USERNAME ), "Authorization", "Cookie" );
+    stubExecute( oauthClient, 401, UNAUTHORIZED_BODY, Map.of( AUTHORIZATION_HEADER, BEARER_PREFIX + ACCESS_TOKEN ) );
+    stubExecute( sessionClient, 401, UNAUTHORIZED_BODY, Map.of( COOKIE_HEADER, SESSION_COOKIE ), AUTHORIZATION_HEADER );
+    stubExecute( trustClient, 200, "trust-ok", Map.of( TRUST_HEADER, USERNAME ), AUTHORIZATION_HEADER, COOKIE_HEADER );
 
     try ( MockedStatic<HttpClients> httpClients = mockStatic( HttpClients.class ) ) {
       httpClients.when( HttpClients::createDefault ).thenReturn( oauthClient, sessionClient, trustClient );
 
       String body = RestAuthHelper.executeWithAuthFallback(
-        new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, PASSWORD, TRUST_HEADER, provider );
+        new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, BASIC_AUTH_CREDENTIAL, TRUST_HEADER, provider );
 
       assertEquals( "trust-ok", body );
     }
@@ -120,10 +144,10 @@ public class RestAuthHelperTest {
     CloseableHttpClient trustClient = mock( CloseableHttpClient.class );
     CloseableHttpClient basicClient = mock( CloseableHttpClient.class );
     HttpClientBuilder builder = mock( HttpClientBuilder.class );
-    stubExecute( oauthClient, 401, "unauthorized", Map.of( "Authorization", "Bearer " + ACCESS_TOKEN ) );
-    stubExecute( sessionClient, 401, "unauthorized", Map.of( "Cookie", SESSION_COOKIE ), "Authorization" );
-    stubExecute( trustClient, 401, "unauthorized", Map.of( TRUST_HEADER, USERNAME ), "Authorization", "Cookie" );
-    stubExecute( basicClient, 200, "basic-ok", Map.of(), "Authorization", "Cookie", TRUST_HEADER );
+    stubExecute( oauthClient, 401, UNAUTHORIZED_BODY, Map.of( AUTHORIZATION_HEADER, BEARER_PREFIX + ACCESS_TOKEN ) );
+    stubExecute( sessionClient, 401, UNAUTHORIZED_BODY, Map.of( COOKIE_HEADER, SESSION_COOKIE ), AUTHORIZATION_HEADER );
+    stubExecute( trustClient, 401, UNAUTHORIZED_BODY, Map.of( TRUST_HEADER, USERNAME ), AUTHORIZATION_HEADER, COOKIE_HEADER );
+    stubExecute( basicClient, 200, "basic-ok", Map.of(), AUTHORIZATION_HEADER, COOKIE_HEADER, TRUST_HEADER );
     when( builder.setDefaultCredentialsProvider( any( BasicCredentialsProvider.class ) ) ).thenReturn( builder );
     when( builder.build() ).thenReturn( basicClient );
 
@@ -133,10 +157,34 @@ public class RestAuthHelperTest {
       builderStatic.when( HttpClientBuilder::create ).thenReturn( builder );
 
       String body = RestAuthHelper.executeWithAuthFallback(
-        new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, PASSWORD, TRUST_HEADER, provider );
+        new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, BASIC_AUTH_CREDENTIAL, TRUST_HEADER, provider );
 
       assertEquals( "basic-ok", body );
       verify( builder ).setDefaultCredentialsProvider( any( BasicCredentialsProvider.class ) );
+    }
+  }
+
+  @Test
+  public void executeWithAuthFallbackThrowsWhenBasicAuthReturns403() throws Exception {
+    CredentialProvider provider = provider( Optional.empty(), Optional.empty() );
+    CloseableHttpClient basicClient = mock( CloseableHttpClient.class );
+    HttpClientBuilder builder = mock( HttpClientBuilder.class );
+    stubExecute( basicClient, 403, FORBIDDEN_BODY, Map.of(), AUTHORIZATION_HEADER, COOKIE_HEADER, TRUST_HEADER );
+    when( builder.setDefaultCredentialsProvider( any( BasicCredentialsProvider.class ) ) ).thenReturn( builder );
+    when( builder.build() ).thenReturn( basicClient );
+
+    try ( MockedStatic<HttpClientBuilder> builderStatic = mockStatic( HttpClientBuilder.class ) ) {
+      builderStatic.when( HttpClientBuilder::create ).thenReturn( builder );
+
+      try {
+        RestAuthHelper.executeWithAuthFallback(
+          new HttpGet( REQUEST_URL ), SERVER_URL, USERNAME, BASIC_AUTH_CREDENTIAL, TRUST_HEADER, provider );
+        fail( "Expected RestAuthException" );
+      } catch ( RestAuthHelper.RestAuthException e ) {
+        assertEquals(
+          "All authentication methods failed for " + SERVER_URL + " (last attempt: basic auth, HTTP 403)",
+          e.getMessage() );
+      }
     }
   }
 
