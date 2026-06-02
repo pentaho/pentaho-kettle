@@ -34,6 +34,10 @@
       <artifactId>pentaho-s3-vfs</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-iam</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
