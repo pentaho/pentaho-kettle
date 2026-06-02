@@ -10,7 +10,7 @@ jobs:
   resolve-version-and-build:
     runs-on: [ k8s ]
     container:
-      image: ${{ vars.PDIA_AC_CONTAINER_IMAGE }}
+      image: "one.hitachivantara.com/devops-docker-release/pentaho/actions-common:jdk21-20260413.227"
       credentials:
         username: ${{ secrets.PENTAHO_CICD_ONE_USER }}
         password: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
@@ -217,7 +217,7 @@ jobs:
         uses: lumada-common-services/gh-composite-actions@stable
         with:
             command: |
-              mvn clean deploy -Dmaven.test.skip=true -Daudit -Pcicd-release -Dbuild.name=${{ steps.prepare-build-namee.outputs.build_name }} -Dbuild.number=${{ needs.resolve-version.outputs.build_version}} -amd ${{ inputs.additional_snapshot_mvn_directives }} ${{ needs.resolve-version.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', needs.resolve-version.outputs.libraries_to_update, needs.resolve-version.outputs.build_version) || '' }}
+              mvn clean deploy -Dmaven.test.skip=true -Daudit -Pcicd-release -Dbuild.name=${{ steps.prepare-build-name.outputs.build_name }} -Dbuild.number=${{ steps.build-version.outputs.build_version }} -amd ${{ steps.resolve-libraries.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', steps.resolve-libraries.outputs.libraries_to_update, steps.build-version.outputs.build_version) || '' }}
         env:
             cmd_type: ${{ env.SET_CMD_TYPE }}
             unit_test_reporter: 'java-junit'
@@ -258,8 +258,8 @@ jobs:
         with:
           github-token: ${{ secrets.PENTAHO_BUILDGUY }}
           script: |
-            const version   = '${{ needs.resolve-version.outputs.build_version }}';
-            const artifacts = '${{ needs.resolve-version.outputs.artifacts }}';
+            const version   = '${{ needs.resolve-version-and-build.outputs.build_version }}';
+            const artifacts = '${{ needs.resolve-version-and-build.outputs.artifacts }}';
 
             const target = {
               owner: 'pentaho',
@@ -281,7 +281,7 @@ jobs:
                 inputs: {
                   version:   version,
                   artifacts: artifacts,
-                  libraries_to_update: '${{ needs.resolve-version.outputs.libraries_to_update }}'
+                  libraries_to_update: '${{ needs.resolve-version-and-build.outputs.libraries_to_update }}'
                 }
               });
               console.log(`Dispatched ${target.workflow_id} on ref '${target.ref}' successfully.`);
