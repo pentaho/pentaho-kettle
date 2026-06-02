@@ -39,6 +39,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
 
   // ~ Static fields/initializers ======================================================================================
 
+  private static final String CONNECTION_ID = "CONNECTION_ID";
   private static final String PROP_INDEX_TBS = "INDEX_TBS";
   private static final String PROP_DATA_TBS = "DATA_TBS";
   private static final String PROP_SERVERNAME = "SERVERNAME";
@@ -94,6 +95,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     rootNode.setProperty( PROP_SERVERNAME, databaseMeta.getServername() );
     rootNode.setProperty( PROP_DATA_TBS, databaseMeta.getDataTablespace() );
     rootNode.setProperty( PROP_INDEX_TBS, databaseMeta.getIndexTablespace() );
+    rootNode.setProperty( CONNECTION_ID, databaseMeta.getConnectionId() );
 
     rootNode.setProperty( PROP_CONNECT_SQL, setNull( databaseMeta.getConnectSQL() ) );
     rootNode.setProperty( PROP_INITIAL_POOL_SIZE, databaseMeta.getInitialPoolSize() );
@@ -159,6 +161,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     databaseMeta.setServername( getString( rootNode, PROP_SERVERNAME ) );
     databaseMeta.setDataTablespace( getString( rootNode, PROP_DATA_TBS ) );
     databaseMeta.setIndexTablespace( getString( rootNode, PROP_INDEX_TBS ) );
+    databaseMeta.setConnectionId( getString( rootNode, CONNECTION_ID ) );
 
     databaseMeta.setConnectSQL( getString( rootNode, PROP_CONNECT_SQL ) );
     databaseMeta.setInitialPoolSize( getInt( rootNode, PROP_INITIAL_POOL_SIZE ) );
