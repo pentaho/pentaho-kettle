@@ -49,6 +49,11 @@
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
     <maven-surefire-plugin.argLine>-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Duser.language=en -Duser.country=US -Djava.locale.providers=COMPAT,SPI</maven-surefire-plugin.argLine>
 
+    <!-- Java compiler version -->
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <maven.compiler.release>21</maven.compiler.release>
+
     <!-- License Configuration -->
     <license.licenseName>apache_v2</license.licenseName>
 
