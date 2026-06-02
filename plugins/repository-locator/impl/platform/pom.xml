@@ -35,7 +35,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.4-354</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

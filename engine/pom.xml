@@ -99,7 +99,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.4-354-CUST-311</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
@@ -131,7 +131,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.4-354</version>
     </dependency>
 
     <!-- Reporting dependencies -->
@@ -849,7 +849,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.4-354-CUST-311</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

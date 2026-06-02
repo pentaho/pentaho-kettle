@@ -339,9 +339,9 @@
         <module>engine-ext</module>
         <module>core</module>
         <module>engine</module>
-        <module>dbdialog</module>
-        <module>ui</module>
-        <module>utilities</module>
+<!--        <module>dbdialog</module>-->
+<!--        <module>ui</module>-->
+<!--        <module>utilities</module>-->
       </modules>
     </profile>
 

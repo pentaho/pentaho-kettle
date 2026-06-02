@@ -38,12 +38,12 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.4-354-CUST-311</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.4-354-CUST-311</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -144,14 +144,14 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.4-354-CUST-311</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.4-354-CUST-311</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

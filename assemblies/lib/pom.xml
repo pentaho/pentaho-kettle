@@ -71,12 +71,12 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>10.2.0.4-354</version>
+      <version>10.2.0.4-354-CUST-311</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>10.2.0.4-354</version>
+      <version>10.2.0.4-354-CUST-311</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
@@ -274,7 +274,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${platform.version}</version>
+      <version>10.2.0.4-354</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
