@@ -5,6 +5,12 @@ on:
     branches: [ "FUSE-184-dev-ops-prepare-github-action-for-kettle-core-and-pentaho-platform-1" ]
 
   workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip tests during build (-Dmaven.test.skip)'
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   resolve-version-and-build:
@@ -212,7 +218,7 @@ jobs:
         uses: lumada-common-services/gh-composite-actions@stable
         with:
             command: |
-              mvn clean deploy -Dmaven.test.skip=true -Daudit -Pcicd-release -Dbuild.name=${{ steps.prepare-build-name.outputs.build_name }} -Dbuild.number=${{ steps.build-version.outputs.build_version }} -amd ${{ steps.resolve-libraries.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', steps.resolve-libraries.outputs.libraries_to_update, steps.build-version.outputs.build_version) || '' }}
+              mvn clean deploy ${{ (github.event.inputs.skip_tests != 'false') && '-Dmaven.test.skip=true' || '' }} -Daudit -Pcicd-release -Dbuild.name=${{ steps.prepare-build-name.outputs.build_name }} -Dbuild.number=${{ steps.build-version.outputs.build_version }} -amd ${{ steps.resolve-libraries.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', steps.resolve-libraries.outputs.libraries_to_update, steps.build-version.outputs.build_version) || '' }}
         env:
             cmd_type: ${{ env.SET_CMD_TYPE }}
             unit_test_reporter: 'java-junit'
