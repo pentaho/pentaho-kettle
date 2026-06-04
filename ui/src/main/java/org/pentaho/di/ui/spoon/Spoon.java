@@ -5078,6 +5078,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     fileDialogOperation.setPath(userHomeDir);
     fileDialogOperation.setProvider(ProviderFilterType.LOCAL.toString());
   }
+
   public boolean saveAsNew( EngineMetaInterface meta, boolean export, String providerFilter
           , String fileFilterType, String command ) {
     FileDialogOperation fileDialogOperation =
@@ -5226,9 +5227,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // does the file exist? If not, show an error dialog
     boolean fileExists = false;
     boolean loaded = false;
-    clearBowlCaches();
-
-    if ( rep != null && !importFile && !forceLocalFile ) {
+    boolean loadFromRepository = rep != null && !importFile && !forceLocalFile;
+    if ( loadFromRepository ) {
       // load from the repository
       try {
         Path filePath = Paths.get( filename );
@@ -5257,6 +5257,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // nothing to do, not loaded will be handled below
       }
     } else {
+      // Repository opens refresh as part of loadObjectFromRepository, so pre-refresh only local/VFS/import paths.
+      forceRefreshTree();
+
       FileObject file = null;
       try {
         file = KettleVFS.getInstance( executionBowl ).getFileObject( filename, variableSpace );
@@ -6395,7 +6398,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     }
     // make sure we export the latest config
-    clearBowlCaches();
+    forceRefreshTree();
     RepositoryExportProgressDialog repd =
       new RepositoryExportProgressDialog( shell, rep, directoryToExport, filename, importRules );
     repd.open();
@@ -6474,8 +6477,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     }
 
-    // make sure any config import decisions are based on the latest state. 
-    clearBowlCaches();
+    // make sure any config import decisions are based on the latest state.
+    forceRefreshTree();
 
     String[] filenames = dialog.getFileNames();
     if ( filenames.length > 0 ) {
@@ -6752,6 +6755,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     if ( listener != null ) {
+      // update config and left hand tree so exported contents are up-to-date
+      forceRefreshTree();
       String sync = BasePropertyHandler.getProperty( SYNC_TRANS );
       if ( Boolean.parseBoolean( sync ) ) {
         listener.syncMetaName( meta, Const.createName( filename ) );

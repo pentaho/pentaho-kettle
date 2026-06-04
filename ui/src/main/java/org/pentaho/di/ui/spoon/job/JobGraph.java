@@ -3491,7 +3491,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             }
 
             JobMeta runJobMeta;
-            spoon.clearBowlCaches();
+            spoon.forceRefreshTree();
 
             if ( spoon.rep != null ) {
               runJobMeta = spoon.rep.loadJob( jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null );
