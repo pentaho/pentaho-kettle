@@ -93,6 +93,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public static final String ATTRIBUTE_DYNAMIC_DRIVER_ID = "dynamicDriverId";
   public static final String ATTRIBUTE_DYNAMIC_DRIVER_EXTRA_JAR_IDS = "dynamicDriverExtraJarIds";
 
+  /**
+   * Identifier of the connection profile owned by the Connection Management Service (CMS).
+   * Used as the {@code secretsRef} when the Fusion secrets-management flow is enabled — the
+   * plaintext credentials for the JDBC connection are fetched at connect time from
+   * {@code <SECRETS_MANAGEMENT_URL>/api/v1/secrets/{this id}}.
+   */
+  public static final String ATTRIBUTE_CONNECTION_ID = "connectionId";
+
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.DATABASE;
 
   private static final String DROP_TABLE_STATEMENT = "DROP TABLE IF EXISTS ";
