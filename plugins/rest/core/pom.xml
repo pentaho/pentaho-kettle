@@ -22,7 +22,7 @@
     <json-simple.version>1.1</json-simple.version>
     <junit.version>4.12</junit.version>
     <mockito.version>5.10.0</mockito.version>
-    <jface.version>3.3.0-I20070606-0010</jface.version>
+    <jface.version>3.31.0</jface.version>
     <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
     <argLine>
       --add-opens=java.base/java.lang=ALL-UNNAMED
@@ -244,8 +244,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse</groupId>
-      <artifactId>jface</artifactId>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.jface</artifactId>
       <version>${jface.version}</version>
       <exclusions>
         <exclusion>

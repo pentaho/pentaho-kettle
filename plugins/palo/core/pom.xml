@@ -38,8 +38,9 @@
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.eclipse</groupId>
-      <artifactId>jface</artifactId>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.jface</artifactId>
+      <version>${jface.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>

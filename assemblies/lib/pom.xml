@@ -44,7 +44,7 @@
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
     <databricks.version>4.0.0</databricks.version>
-    <jface.version>3.22.0</jface.version>
+    <jface.version>3.31.0</jface.version>
     <pentaho-metadata.version>11.1.0.0-SNAPSHOT</pentaho-metadata.version>
     <google-http-client.version>1.42.3</google-http-client.version>
     <pax-swissbox-core.version>1.8.2</pax-swissbox-core.version>
