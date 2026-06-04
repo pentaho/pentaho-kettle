@@ -755,6 +755,20 @@ public class BrowserAuthenticationServiceTest {
     assertEquals( "localhost", service.resolveCallbackHost( "http://localhost:8080/pentaho" ) );
   }
 
+  /**
+   * Regression test: even when the configured server URL points to a remote IP,
+   * resolveCallbackHost() must still return "localhost" so that the OAuth redirect
+   * targets the local PDI machine and not the remote server VM.
+   */
+  @Test
+  public void resolveCallbackHostReturnsLocalhostForRemoteServerUrl() {
+    assertEquals(
+      "resolveCallbackHost() must always return 'localhost' regardless of the server URL "
+        + "to prevent the OAuth redirect from targeting the remote server VM",
+      "localhost",
+      service.resolveCallbackHost( "http://192.168.1.50:8080/pentaho" ) );
+  }
+
   @Test
   public void resolveCallbackHostFallsBackToLocalhostForNullUrl() {
     assertEquals( "localhost", service.resolveCallbackHost( null ) );
