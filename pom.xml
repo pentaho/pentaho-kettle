@@ -70,6 +70,7 @@
     <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
     <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
     <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
+    <artifactory-maven-plugin.version>3.7.0</artifactory-maven-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -420,7 +421,48 @@
       </build>
       
     </profile>
-
+    <profile>
+      <id>cicd-release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jfrog.buildinfo</groupId>
+            <artifactId>artifactory-maven-plugin</artifactId>
+            <version>${artifactory-maven-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>build-info</id>
+                <goals>
+                  <goal>publish</goal>
+                </goals>
+                <configuration>
+                  <buildInfo>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <buildName>${build.name}</buildName>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <buildNumber>${build.number}</buildNumber>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <buildUrl>${env.JFROG_CLI_BUILD_URL}</buildUrl>
+                  </buildInfo>
+                  <publisher>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <contextUrl>${env.ARTIFACTORY_BASE_URL}/</contextUrl>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <username>${env.NEXUS_DEPLOY_USER}</username>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <repoKey>${env.PRIVATE_RELEASE_REPO}</repoKey>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <snapshotRepoKey>${env.PRIVATE_SNAPSHOT_REPO}</snapshotRepoKey>
+                  </publisher>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
 
