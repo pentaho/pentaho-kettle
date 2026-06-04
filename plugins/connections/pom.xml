@@ -64,7 +64,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-i18n-bundle</artifactId>
-        <version>${pentaho-i18n-bundle.version}</version>
+        <version>${pentaho-osgi-bundles.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
