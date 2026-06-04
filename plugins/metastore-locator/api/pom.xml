@@ -14,7 +14,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${project.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
