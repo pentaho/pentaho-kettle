@@ -179,7 +179,7 @@ public class RowGenerator extends BaseStep implements StepInterface {
   }
 
   @Override
-  public synchronized boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (RowGeneratorMeta) smi;
     data = (RowGeneratorData) sdi;
 
