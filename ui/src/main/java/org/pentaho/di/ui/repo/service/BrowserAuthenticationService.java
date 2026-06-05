@@ -243,8 +243,13 @@ public class BrowserAuthenticationService {
 
   /**
    * Builds the authentication URL that will be opened in the browser.
-   * The callback URL uses the machine's reachable IP address so the Pentaho
-   * server can reach the local callback server from any network location.
+   * The callback URL always uses {@code localhost} because the callback server
+   * runs locally on the PDI machine. Using the remote server's host/IP would
+   * cause the OAuth redirect to target the server VM instead of PDI when the
+   * two are on different machines.
+   *
+   * @param serverUrl the Pentaho server URL to authenticate against
+   * @return the full URL to open in the system browser
    */
   String buildAuthenticationUrl( String serverUrl ) {
     return buildAuthenticationUrl( serverUrl, null );
@@ -274,18 +279,25 @@ public class BrowserAuthenticationService {
     return finalUrl;
   }
   /**
-   * Resolves the host to use in the callback URL by extracting it from the
-   * server URL. This ensures the callback uses the same host the user
-   * configured — if the server URL is {@code localhost}, the callback uses
-   * {@code localhost}; if it is an IP like {@code 192.168.1.50}, the
-   * callback uses that same IP. Falls back to {@code localhost} when the
-   * host cannot be extracted.
+   * Returns the host to use in the OAuth callback URL.
+   * <p>
+   * Returns the host to use in the OAuth callback URL.
+   * <p>
+   * Uses {@link #getLocalCallbackHost()} (defaults to {@code localhost}) because
+   * the callback server runs locally on the PDI machine. Deriving the host
+   * from the configured server URL would direct the OAuth redirect to the
+   * remote server VM instead of back to PDI when the two are on different
+   * machines.
    *
-   * @param serverUrl the Pentaho server URL configured by the user
+   * @param serverUrl the Pentaho server URL (not used — present for API symmetry)
+   * @return the host to use for the local callback server (defaults to {@code localhost})
    */
   String resolveCallbackHost( String serverUrl ) {
-    String host = extractHostFromUrl( serverUrl );
-    return ( host != null && !host.isEmpty() ) ? host : getLocalCallbackHost();
+    // The callback server always runs locally on the PDI machine.
+    // Using the server's remote IP would send the OAuth redirect to the VM
+    // instead of back to PDI, breaking the flow when server and PDI are on
+    // different machines.
+    return getLocalCallbackHost();
   }
 
   /**
