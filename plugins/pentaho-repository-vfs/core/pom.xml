@@ -14,10 +14,6 @@
 
 	<name>Pentaho Repository VFS Plugin Core</name>
 
-	<properties>
-		<pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>pentaho-kettle</groupId>

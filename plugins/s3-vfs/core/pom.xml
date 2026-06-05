@@ -26,11 +26,6 @@
   </licenses>
 
   <properties>
-
-    <!-- pentaho dependencies -->
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <encryption-support.version>11.1.0.0-SNAPSHOT</encryption-support.version>
-
     <!-- License Configuration -->
     <license.licenseName>apache_v2</license.licenseName>
 

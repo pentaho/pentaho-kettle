@@ -13,10 +13,6 @@
   <packaging>pom</packaging>
   <name>PDI Core Plugins</name>
 
-  <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>

@@ -21,7 +21,6 @@
   </modules>
 
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <dependency.karaf.version>3.0.3</dependency.karaf.version>
     <dependency.osgi.version>4.3.1</dependency.osgi.version>
     <version.for.license>${project.version}</version.for.license>
@@ -52,7 +51,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-platform-extensions</artifactId>
-        <version>${project.version}</version>
+        <version>${platform.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -64,7 +63,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-i18n-bundle</artifactId>
-        <version>${project.version}</version>
+        <version>${pentaho-osgi-bundles.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>

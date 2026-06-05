@@ -15,10 +15,6 @@
     <version>11.1.0.0-SNAPSHOT</version>
   </parent>
 
-  <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-  </properties>
-
   <modules>
     <module>core</module>
     <module>assemblies</module>

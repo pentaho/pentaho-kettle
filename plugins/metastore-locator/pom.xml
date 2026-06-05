@@ -16,7 +16,6 @@
   <name>Pentaho Metastore Locator</name>
 
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <version.for.license>${project.version}</version.for.license>
   </properties>
 

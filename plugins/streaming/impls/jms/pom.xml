@@ -41,7 +41,6 @@
   <properties>
     <ibmmq.version>9.4.0.0</ibmmq.version>
     <jms.version>2.0.1</jms.version>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <artemis.version>2.33.0</artemis.version>
   </properties>
 
@@ -78,7 +77,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-metaverse-api</artifactId>
-      <version>${project.version}</version>
+      <version>${pentaho-metaverse.version}</version>
       <scope>provided</scope>
     </dependency>
 

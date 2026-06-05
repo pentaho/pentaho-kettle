@@ -13,10 +13,6 @@
   <artifactId>excel-plugins-core</artifactId>
   <name>PDI Excel Plugins Core</name>
 
-  <properties>
-    <platform.version>11.1.0.0-SNAPSHOT</platform.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -36,7 +32,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-metaverse-api</artifactId>
-      <version>${project.version}</version>
+      <version>${pentaho-metaverse.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

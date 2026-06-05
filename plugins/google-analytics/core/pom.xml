@@ -17,7 +17,6 @@
   <name>PDI Google Analytics Plugin Core</name>
 
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
     <build.revision>${project.version}</build.revision>
@@ -63,7 +62,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${project.version}</version>
+      <version>${metastore.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

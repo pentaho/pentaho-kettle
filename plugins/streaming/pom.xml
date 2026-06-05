@@ -15,11 +15,6 @@
 
   <name>Pentaho Streaming Plugins</name>
 
-  <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
-  </properties>
-
   <modules>
     <module>impls</module>
     <module>assemblies</module>

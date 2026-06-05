@@ -24,11 +24,7 @@
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
     <commons-database.version>11.1.0.0-SNAPSHOT</commons-database.version>
     <pentaho-registry.version>11.1.0.0-SNAPSHOT</pentaho-registry.version>
-    <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <pentaho-reporting.version>11.1.0.0-SNAPSHOT</pentaho-reporting.version>
-    <pdi-osgi-bridge.version>11.1.0.0-SNAPSHOT</pdi-osgi-bridge.version>
-    <pentaho-hadoop-shims.version>11.1.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
 
     <!-- third party -->
     <hsqldb.version>2.3.2</hsqldb.version>

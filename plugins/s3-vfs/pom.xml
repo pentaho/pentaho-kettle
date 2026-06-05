@@ -13,11 +13,6 @@
   <version>11.1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <pentaho-hadoop-shims.version>11.1.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
-  </properties>
-
   <name>PDI S3-VFS Plugin</name>
   <description>This plugin is for Pentaho Data Integration (ETL) a.k.a Kettle</description>
 

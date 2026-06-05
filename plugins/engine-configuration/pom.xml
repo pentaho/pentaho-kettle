@@ -17,7 +17,6 @@
   <name>PDI Engine Configuration Plugin</name>
 
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <mockito.version>4.0.0</mockito.version>
   </properties>
 
@@ -49,7 +48,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${pdi.version}</version>
+      <version>${metastore.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

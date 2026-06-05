@@ -54,7 +54,12 @@
 
     <!-- Pentaho dependencies -->
     <commons-xul.version>11.1.0.0-SNAPSHOT</commons-xul.version>
-    <pentaho-metastore.version>11.1.0.0-SNAPSHOT</pentaho-metastore.version>
+    <metastore.version>11.1.0.0-SNAPSHOT</metastore.version>
+    <platform.version>11.1.0.0-SNAPSHOT</platform.version>
+    <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
+    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
+    <encryption-support.version>11.1.0.0-SNAPSHOT</encryption-support.version>
+    <pentaho-hadoop-shims.version>11.1.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
@@ -98,7 +103,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
-        <version>${pentaho-metastore.version}</version>
+        <version>${metastore.version}</version>
       </dependency>
 
       <!-- Jetty dependencies PPP-5150 -->

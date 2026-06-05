@@ -26,7 +26,6 @@
     <!-- Pentaho dependencies -->
     <pentaho-reporting.version>11.1.0.0-SNAPSHOT</pentaho-reporting.version>
     <pentaho-registry.version>11.1.0.0-SNAPSHOT</pentaho-registry.version>
-    <pentaho-connections.version>11.1.0.0-SNAPSHOT</pentaho-connections.version>
     <mondrian.version>11.1.0.0-SNAPSHOT</mondrian.version>
 
     <!-- Third-party dependencies -->
@@ -112,7 +111,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>${platform.version}</version>
     </dependency>
 
     <!-- Reporting dependencies -->
@@ -872,7 +871,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${pentaho-metastore.version}</version>
+      <version>${metastore.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>

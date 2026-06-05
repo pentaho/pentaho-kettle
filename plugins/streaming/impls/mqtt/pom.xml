@@ -68,7 +68,6 @@
 
 
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <maven-bundle-plugin.version>2.4.0</maven-bundle-plugin.version>
     <junit.version>4.12</junit.version>
   </properties>
@@ -138,7 +137,7 @@
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pentaho-encryption-support</artifactId>
-      <version>${pdi.version}</version>
+      <version>${encryption-support.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -19,7 +19,6 @@
         <project.oauth.version>1.22.0</project.oauth.version>
         <!--project.build.sourceEncoding>UTF-8</project.build.sourceEncoding-->
         <project.junit.version>4.4</project.junit.version>
-        <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     </properties>
 
     <build>

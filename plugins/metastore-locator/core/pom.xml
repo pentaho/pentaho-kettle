@@ -34,7 +34,6 @@
     </developer>
   </developers>
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <hamcrest.version>1.3</hamcrest.version>
     <junit.version>4.12</junit.version>
   </properties>
@@ -52,7 +51,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${project.version}</version>
+      <version>${metastore.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>

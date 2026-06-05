@@ -16,7 +16,7 @@
     <name>PDI Repository VFS Plugin Server Driver</name>
 
     <properties>
-        <pentaho-platform.version>${pdi.version}</pentaho-platform.version>
+        <pentaho-platform.version>11.1.0.0-SNAPSHOT</pentaho-platform.version>
 
         <junit-jupiter.version>5.13.0-M2</junit-jupiter.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
@@ -34,7 +34,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -62,7 +62,7 @@
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pentaho-encryption-support</artifactId>
-      <version>${pdi.version}</version>
+      <version>${encryption-support.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
