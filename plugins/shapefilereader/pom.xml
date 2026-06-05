@@ -33,7 +33,7 @@
 
   <properties>
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
-    <jface.version>3.3.0-I20070606-0010</jface.version>
+    <jface.version>3.31.0</jface.version>
     <junit.version>4.13.2</junit.version>
     <ascsapjco3wrp.version>20100529</ascsapjco3wrp.version>
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
@@ -93,8 +93,8 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.eclipse</groupId>
-        <artifactId>jface</artifactId>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.jface</artifactId>
         <version>${jface.version}</version>
         <scope>provided</scope>
         <exclusions>
