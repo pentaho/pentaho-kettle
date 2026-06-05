@@ -44,7 +44,6 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.jface</artifactId>
-      <version>${jface.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sf.saxon</groupId>

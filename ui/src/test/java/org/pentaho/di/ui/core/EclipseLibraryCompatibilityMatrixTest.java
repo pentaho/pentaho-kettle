@@ -104,10 +104,8 @@ public class EclipseLibraryCompatibilityMatrixTest {
   @Test
   public void testCommandsCategories() {
     try {
-      commandManager.getCategory( "org.pentaho.di.category1" );
-      commandManager.getCategory( "org.pentaho.di.category2" );
-      
-      assertTrue( "Categories should be created", true );
+      assertNotNull( "Category 1 should be created", commandManager.getCategory( "org.pentaho.di.category1" ) );
+      assertNotNull( "Category 2 should be created", commandManager.getCategory( "org.pentaho.di.category2" ) );
     } catch ( Exception e ) {
       fail( "Commands categories test failed: " + e.getMessage() );
     }
@@ -213,24 +211,16 @@ public class EclipseLibraryCompatibilityMatrixTest {
   }
 
   @Test
-  public void testXXEVulnerabilityFixed() {
+  public void testDialogSettingsConstructorWorks() {
     try {
-      // CVE-2023-4218 XXE vulnerability test
-      // Verify DialogSettings can safely parse XML without XXE attacks
-      
-      // Create a simple XML filename to test
-      String xmlContent = "TestXXESection";
-      
-      // DialogSettings constructor with section name (safe)
-      DialogSettings settings = new DialogSettings( xmlContent );
-      
+      String sectionName = "TestSection";
+
+      DialogSettings settings = new DialogSettings( sectionName );
+
       assertNotNull( "Settings should be created", settings );
-      assertEquals( "Settings name should match", xmlContent, settings.getName() );
-      
-      // If we get here without XXE attack, CVE is fixed
-      assertTrue( "XXE vulnerability is fixed in JFace 3.31.0", true );
+      assertEquals( "Settings name should match", sectionName, settings.getName() );
     } catch ( Exception e ) {
-      fail( "XXE vulnerability test failed: " + e.getMessage() );
+      fail( "DialogSettings basic construction test failed: " + e.getMessage() );
     }
   }
 

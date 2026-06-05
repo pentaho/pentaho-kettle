@@ -25,7 +25,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.junit.Test;
 
 /**
- * Integration test for Eclipse JFace upgrade from 3.22.0 to 3.31.0
+ * Integration test for Eclipse JFace upgrade from 3.3.0-I20070606-0010 to 3.31.0
  * 
  * This test simulates real-world usage patterns from Pentaho Kettle UI
  * to ensure the upgraded library works correctly in the context of:

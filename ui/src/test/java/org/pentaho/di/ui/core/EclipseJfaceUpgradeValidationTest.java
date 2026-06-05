@@ -34,7 +34,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.junit.Test;
 
 /**
- * Validation test for Eclipse JFace library upgrade from 3.22.0 to 3.31.0
+ * Validation test for Eclipse JFace library upgrade from 3.3.0-I20070606-0010 to 3.31.0
  * 
  * This test validates that:
  * 1. All critical JFace classes are available and importable

@@ -111,22 +111,9 @@ public class EclipseEquinoxCommonUpgradeTest {
     }
   }
 
-  @Test
+  @Test( expected = IllegalArgumentException.class )
   public void testAssertionException() {
-    try {
-      // Test that Assert throws an exception for null
-      Object nullObj = null;
-      try {
-        Assert.isNotNull( nullObj, "Object must not be null" );
-        fail( "Assert should have thrown an exception" );
-      } catch ( IllegalArgumentException e ) {
-        // Expected behavior - Assert throws IllegalArgumentException
-        assertTrue( "Exception was properly thrown", true );
-      }
-    } catch ( Exception e ) {
-      // Also acceptable if other exception type is thrown
-      assertTrue( "Exception handling test passed", true );
-    }
+    Assert.isNotNull( null, "Object must not be null" );
   }
 
   @Test
