@@ -27,11 +27,15 @@ public interface AliasedFileObject {
   /**
    * Returns the original file object URI but swaps s3:// for s3a://
    * when needed
-   * @return
+   *
+   * @return URI string with the scheme adjusted to s3a://
+   * @deprecated As of 11.1.0.0, implement this logic per provider as needed. This method was added to support a
+   * specific use case in AEL that is no longer relevant for this class and method.
    */
+  @Deprecated( since = "11.1.0.0", forRemoval = true )
   String getAELSafeURIString();
 
-  public static boolean isAliasedFile( FileObject file) {
+  static boolean isAliasedFile( FileObject file ) {
     return AliasedFileObject.class.isAssignableFrom( file.getClass() );
   }
 

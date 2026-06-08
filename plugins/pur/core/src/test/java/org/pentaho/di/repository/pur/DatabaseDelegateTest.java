@@ -61,6 +61,7 @@ public class DatabaseDelegateTest {
     when( dbMeta.getServername() ).thenReturn( "as400.dot.com" );
     when( dbMeta.getDataTablespace() ).thenReturn( "tableSpace" );
     when( dbMeta.getIndexTablespace() ).thenReturn( "123" );
+    when( dbMeta.getConnectionId() ).thenReturn( "testConnectionId" );
 
     // Create an extra options that has an unsupported character like '/'
     Properties extraOptions = new Properties();

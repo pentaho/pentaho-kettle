@@ -610,6 +610,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     this.setServername( databaseMeta.getServername() );
     this.setDataTablespace( databaseMeta.getDataTablespace() );
     this.setIndexTablespace( databaseMeta.getIndexTablespace() );
+    this.setConnectionId( databaseMeta.getConnectionId() );
 
     this.databaseInterface = (DatabaseInterface) databaseMeta.databaseInterface.clone();
 
@@ -668,6 +669,25 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public void setValues( DatabaseMeta info ) {
     databaseInterface = (DatabaseInterface) info.databaseInterface.clone();
+  }
+
+  /**
+   * Sets the Id of the database connection from the connection management service.
+   *
+   * @param connectionId
+   *          The Id of the database connection.
+   */
+  public void setConnectionId( String connectionId ) {
+    databaseInterface.setConnectionId( connectionId );
+  }
+
+  /**
+   * Returns the Id of the database connection from the connection management service.
+   *
+   * @return The Id of the database connection.
+   */
+  public String getConnectionId() {
+    return databaseInterface.getConnectionId();
   }
 
   /**
@@ -1048,6 +1068,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     StringBuilder retval = new StringBuilder( 250 );
 
     retval.append( "  <" ).append( XML_TAG ).append( '>' ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "connection_id", getConnectionId() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "server", getHostname() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "type", getPluginId() ) );
