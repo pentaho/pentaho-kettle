@@ -386,41 +386,49 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
    * Adapted from KettleDatabaseRepositoryDatabaseDelegate.saveDatabaseMeta
    */
   protected boolean equals( DatabaseMeta databaseMeta, DatabaseMeta databaseMeta2 ) {
-    if ( !equals( databaseMeta.getName(), databaseMeta2.getName() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getPluginId(), databaseMeta2.getPluginId() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getAccessType(), databaseMeta2.getAccessType() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getHostname(), databaseMeta2.getHostname() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getDatabaseName(), databaseMeta2.getDatabaseName() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getDatabasePortNumberString(), databaseMeta2.getDatabasePortNumberString() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getUsername(), databaseMeta2.getUsername() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getPassword(), databaseMeta2.getPassword() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getServername(), databaseMeta2.getServername() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getDataTablespace(), databaseMeta2.getDataTablespace() ) ) {
-      return false;
-    } else if ( !equals( databaseMeta.getIndexTablespace(), databaseMeta2.getIndexTablespace() ) ) {
+    if ( !areDbMetaFieldsEqual( databaseMeta, databaseMeta2) ) {
       return false;
     }
-    Map<Object, Object> databaseMeta2Attributes = new HashMap<Object, Object>( databaseMeta2.getAttributes() );
-    for ( Entry<Object, Object> databaseMetaEntry : new HashMap<Object, Object>( databaseMeta.getAttributes() )
+    Map<Object, Object> databaseMeta2Attributes = new HashMap<>( databaseMeta2.getAttributes() );
+    for ( Entry<Object, Object> databaseMetaEntry : new HashMap<>( databaseMeta.getAttributes() )
         .entrySet() ) {
       Object value = databaseMeta2Attributes.remove( databaseMetaEntry.getKey() );
       if ( !equals( value, databaseMetaEntry.getValue() ) ) {
         return false;
       }
     }
-    if ( databaseMeta2Attributes.size() > 0 ) {
-      return false;
-    }
-    return true;
+
+    return databaseMeta2Attributes.isEmpty();
+  }
+
+  private boolean areDbMetaFieldsEqual( DatabaseMeta databaseMeta, DatabaseMeta databaseMeta2) {
+      if ( !equals( databaseMeta.getName(), databaseMeta2.getName() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getPluginId(), databaseMeta2.getPluginId() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getAccessType(), databaseMeta2.getAccessType() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getHostname(), databaseMeta2.getHostname() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getDatabaseName(), databaseMeta2.getDatabaseName() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getDatabasePortNumberString(), databaseMeta2.getDatabasePortNumberString() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getUsername(), databaseMeta2.getUsername() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getPassword(), databaseMeta2.getPassword() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getServername(), databaseMeta2.getServername() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getDataTablespace(), databaseMeta2.getDataTablespace() ) ) {
+          return false;
+      } else if ( !equals( databaseMeta.getIndexTablespace(), databaseMeta2.getIndexTablespace() ) ) {
+          return false;
+      } else if (!equals( databaseMeta.getConnectionId(), databaseMeta2.getConnectionId() ) ) {
+          return false;
+      }
+
+      return true;
   }
 
   protected boolean equals( SlaveServer slaveServer, SlaveServer slaveServer2 ) {

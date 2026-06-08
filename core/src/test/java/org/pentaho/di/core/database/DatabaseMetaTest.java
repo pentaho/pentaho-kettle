@@ -451,4 +451,35 @@ public class DatabaseMetaTest {
     verify( databaseInterface ).getSQLListOfSchemas( databaseMeta );
   }
 
+  @Test
+  public void testSetDatabaseType() {
+    DatabaseMeta dbmeta = new DatabaseMeta( "test", "Oracle", "JDBC", "localhost", "stuff", "5432", "jerry", null );
+    assertEquals( "Oracle", dbmeta.getDatabaseInterface().getPluginName() );
+
+    dbmeta.setDatabaseType( "Redshift" );
+
+    assertEquals( "Redshift", dbmeta.getDatabaseInterface().getPluginName() );
+    assertEquals( "test", dbmeta.getName() );
+    assertEquals( DatabaseMeta.getAccessType( "JDBC" ), dbmeta.getAccessType() );
+    assertEquals( "stuff", dbmeta.getDatabaseName() );
+    assertEquals( "localhost", dbmeta.getHostname() );
+    assertEquals( "5432", dbmeta.getDatabasePortNumberString() );
+    assertEquals( "jerry", dbmeta.getUsername() );
+  }
+
+  @Test
+  public void testReplaceMeta() {
+    DatabaseMeta origMeta = new DatabaseMeta( "test1", "Oracle", "JDBC", "localhost1", "stuff1", "0000", "Marry", null );
+    DatabaseMeta dbmeta = new DatabaseMeta( "test", "Redshift", "JDBC", "localhost", "stuff", "5432", "Jerry", null );
+
+    origMeta.replaceMeta( dbmeta, true );
+
+    assertEquals( "Redshift", origMeta.getDatabaseInterface().getPluginName() );
+    assertEquals( "test", origMeta.getName() );
+    assertEquals( DatabaseMeta.getAccessType( "JDBC" ), origMeta.getAccessType() );
+    assertEquals( "stuff", origMeta.getDatabaseName() );
+    assertEquals( "localhost", origMeta.getHostname() );
+    assertEquals( "5432", origMeta.getDatabasePortNumberString() );
+    assertEquals( "Jerry", origMeta.getUsername() );
+  }
 }

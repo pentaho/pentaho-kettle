@@ -99,6 +99,7 @@ public class RepositoriesMetaTest {
     String repositoriesXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Const.CR
       + "<repositories>" + Const.CR
       + "  <connection>" + Const.CR
+      + "    <connection_id/>" + Const.CR
       + "    <name>local postgres</name>" + Const.CR
       + "    <server>localhost</server>" + Const.CR
       + "    <type>POSTGRESQL</type>" + Const.CR

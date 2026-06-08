@@ -261,6 +261,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
 
   private static final String FIELDNAME_PROTECTOR = "_";
 
+  private String connectionId;
   private String name;
   private String displayName;
   private int accessType; // Database.TYPE_ODBC / NATIVE / OCI
@@ -363,6 +364,22 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   @Override
   public void setChanged( boolean changed ) {
     this.changed = changed;
+  }
+
+  /**
+   * @return Returns the connection Id from the connection management service.
+   */
+  @Override
+  public String getConnectionId() {
+    return connectionId;
+  }
+
+  /**
+   * @param connectionId
+   *      The connection Id from the connection management service to set.
+   */
+  public void setConnectionId( String connectionId ) {
+    this.connectionId = connectionId;
   }
 
   /**

@@ -201,6 +201,8 @@ public abstract class RepositoryTestBase extends RepositoryTestLazySupport {
 
   protected static final String EXP_DBMETA_INDEX_TABLESPACE = "indexTablespace";
 
+  protected static final String EXP_CONNECTION_ID = "connectionId";
+
   protected static final String EXP_SLAVE_NAME = "slave54545";
 
   protected static final String EXP_SLAVE_HOSTNAME = "slave98745";
@@ -1177,6 +1179,7 @@ public abstract class RepositoryTestBase extends RepositoryTestLazySupport {
     dbMeta.setServername( EXP_DBMETA_SERVERNAME );
     dbMeta.setDataTablespace( EXP_DBMETA_DATA_TABLESPACE );
     dbMeta.setIndexTablespace( EXP_DBMETA_INDEX_TABLESPACE );
+    dbMeta.setConnectionId( EXP_CONNECTION_ID );
     // Properties attrs = new Properties();
     // exposed mutable state; yikes
     dbMeta.getAttributes().put( EXP_DBMETA_ATTR1_KEY, EXP_DBMETA_ATTR1_VALUE );
@@ -1201,22 +1204,7 @@ public abstract class RepositoryTestBase extends RepositoryTestLazySupport {
     assertTrue( repository.exists( EXP_DBMETA_NAME, null, RepositoryObjectType.DATABASE ) );
 
     DatabaseMeta fetchedDatabase = repository.loadDatabaseMeta( dbMeta.getObjectId(), null );
-    assertEquals( EXP_DBMETA_NAME, fetchedDatabase.getName() );
-    assertEquals( EXP_DBMETA_HOSTNAME, fetchedDatabase.getHostname() );
-    assertEquals( EXP_DBMETA_TYPE, fetchedDatabase.getPluginId() );
-    assertEquals( EXP_DBMETA_ACCESS, fetchedDatabase.getAccessType() );
-    assertEquals( EXP_DBMETA_DBNAME, fetchedDatabase.getDatabaseName() );
-    assertEquals( EXP_DBMETA_PORT, fetchedDatabase.getDatabasePortNumberString() );
-    assertEquals( EXP_DBMETA_USERNAME, fetchedDatabase.getUsername() );
-    assertEquals( EXP_DBMETA_PASSWORD, fetchedDatabase.getPassword() );
-    assertEquals( EXP_DBMETA_SERVERNAME, fetchedDatabase.getServername() );
-    assertEquals( EXP_DBMETA_DATA_TABLESPACE, fetchedDatabase.getDataTablespace() );
-    assertEquals( EXP_DBMETA_INDEX_TABLESPACE, fetchedDatabase.getIndexTablespace() );
-
-    // 2 for the ones explicitly set and 1 for port (set behind the scenes) + 10 defaults
-    assertEquals( 2 + 1 + 10, fetchedDatabase.getAttributes().size() );
-    assertEquals( EXP_DBMETA_ATTR1_VALUE, fetchedDatabase.getAttributes().getProperty( EXP_DBMETA_ATTR1_KEY ) );
-    assertEquals( EXP_DBMETA_ATTR2_VALUE, fetchedDatabase.getAttributes().getProperty( EXP_DBMETA_ATTR2_KEY ) );
+    assertDbMetaCorrect( fetchedDatabase );
 
     dbMeta.setHostname( EXP_DBMETA_HOSTNAME_V2 );
     repository.save( dbMeta, VERSION_COMMENT_V2, null );
@@ -1250,6 +1238,26 @@ public abstract class RepositoryTestBase extends RepositoryTestLazySupport {
     assertEquals( 0, repository.getDatabaseNames( true ).length );
 
     assertEquals( 0, repository.readDatabases().size() );
+  }
+
+  private void assertDbMetaCorrect( DatabaseMeta meta) {
+    assertEquals( EXP_DBMETA_NAME, meta.getName() );
+    assertEquals( EXP_DBMETA_HOSTNAME, meta.getHostname() );
+    assertEquals( EXP_DBMETA_TYPE, meta.getPluginId() );
+    assertEquals( EXP_DBMETA_ACCESS, meta.getAccessType() );
+    assertEquals( EXP_DBMETA_DBNAME, meta.getDatabaseName() );
+    assertEquals( EXP_DBMETA_PORT, meta.getDatabasePortNumberString() );
+    assertEquals( EXP_DBMETA_USERNAME, meta.getUsername() );
+    assertEquals( EXP_DBMETA_PASSWORD, meta.getPassword() );
+    assertEquals( EXP_DBMETA_SERVERNAME, meta.getServername() );
+    assertEquals( EXP_DBMETA_DATA_TABLESPACE, meta.getDataTablespace() );
+    assertEquals( EXP_DBMETA_INDEX_TABLESPACE, meta.getIndexTablespace() );
+    assertEquals( EXP_CONNECTION_ID, meta.getConnectionId() );
+
+    // 2 for the ones explicitly set and 1 for port (set behind the scenes) + 10 defaults
+    assertEquals( 2 + 1 + 10, meta.getAttributes().size() );
+    assertEquals( EXP_DBMETA_ATTR1_VALUE, meta.getAttributes().getProperty( EXP_DBMETA_ATTR1_KEY ) );
+    assertEquals( EXP_DBMETA_ATTR2_VALUE, meta.getAttributes().getProperty( EXP_DBMETA_ATTR2_KEY ) );
   }
 
   protected boolean hasVersionWithComment( final RepositoryElementInterface element, final String comment )
