@@ -49,19 +49,12 @@
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
     <maven-surefire-plugin.argLine>-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Duser.language=en -Duser.country=US -Djava.locale.providers=COMPAT,SPI</maven-surefire-plugin.argLine>
 
-
     <!-- License Configuration -->
     <license.licenseName>apache_v2</license.licenseName>
 
     <!-- Pentaho dependencies -->
     <commons-xul.version>11.1.0.0-SNAPSHOT</commons-xul.version>
-    <metastore.version>11.1.0.0-SNAPSHOT</metastore.version>
-    <platform.version>11.1.0.0-SNAPSHOT</platform.version>
-    <pentaho-i18n-bundle.version>11.1.0.0-SNAPSHOT</pentaho-i18n-bundle.version>
-    <pentaho-capability-manager.version>11.1.0.0-SNAPSHOT</pentaho-capability-manager.version>
-    <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <teradata-tpt-plugin-package.version>11.1.0.0-SNAPSHOT</teradata-tpt-plugin-package.version>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
+    <pentaho-metastore.version>11.1.0.0-SNAPSHOT</pentaho-metastore.version>
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
@@ -77,7 +70,6 @@
     <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
     <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
     <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
-    <artifactory-maven-plugin.version>3.7.0</artifactory-maven-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -106,12 +98,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
-        <version>${metastore.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-platform-api</artifactId>
-        <version>${platform.version}</version>
+        <version>${pentaho-metastore.version}</version>
       </dependency>
 
       <!-- Jetty dependencies PPP-5150 -->
@@ -432,48 +419,6 @@
         </plugins>
       </build>
       
-    </profile>
-    <profile>
-      <id>cicd-release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.jfrog.buildinfo</groupId>
-            <artifactId>artifactory-maven-plugin</artifactId>
-            <version>${artifactory-maven-plugin.version}</version>
-            <executions>
-              <execution>
-                <id>build-info</id>
-                <goals>
-                  <goal>publish</goal>
-                </goals>
-                <configuration>
-                  <buildInfo>
-                    <!--suppress UnresolvedMavenProperty -->
-                    <buildName>${build.name}</buildName>
-                    <!--suppress UnresolvedMavenProperty -->
-                    <buildNumber>${build.number}</buildNumber>
-                    <!--suppress UnresolvedMavenProperty -->
-                    <buildUrl>${env.JFROG_CLI_BUILD_URL}</buildUrl>
-                  </buildInfo>
-                  <publisher>
-                    <!--suppress UnresolvedMavenProperty -->
-                    <contextUrl>${env.ARTIFACTORY_BASE_URL}/</contextUrl>
-                    <!--suppress UnresolvedMavenProperty -->
-                    <username>${env.NEXUS_DEPLOY_USER}</username>
-                    <!--suppress UnresolvedMavenProperty -->
-                    <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
-                    <!--suppress UnresolvedMavenProperty -->
-                    <repoKey>${env.PRIVATE_RELEASE_REPO}</repoKey>
-                    <!--suppress UnresolvedMavenProperty -->
-                    <snapshotRepoKey>${env.PRIVATE_SNAPSHOT_REPO}</snapshotRepoKey>
-                  </publisher>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
 
   </profiles>

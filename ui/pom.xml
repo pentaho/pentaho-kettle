@@ -22,6 +22,7 @@
 
     <!-- Pentaho dependencies -->
     <pentaho-vfs-browser.version>11.1.0.0-SNAPSHOT</pentaho-vfs-browser.version>
+    <pentaho-capability-manager.version>${project.version}</pentaho-capability-manager.version>
 
     <!-- Third-party dependencies -->
     <common.version>3.3.0-v20070426</common.version>
@@ -157,14 +158,14 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pdi.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pdi.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

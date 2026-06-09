@@ -35,6 +35,7 @@
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <junit.version>4.7</junit.version>
     <ascsapjco3wrp.version>20100529</ascsapjco3wrp.version>
+    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
   </properties>
 
 
@@ -49,7 +50,7 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${project.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -67,6 +68,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>

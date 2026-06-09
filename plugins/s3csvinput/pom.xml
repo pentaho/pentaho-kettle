@@ -47,7 +47,7 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${project.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -65,6 +65,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>

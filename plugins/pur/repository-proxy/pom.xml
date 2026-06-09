@@ -18,6 +18,8 @@
 
   <properties>
     <!-- Kettle dependencies -->
+    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
+    <metastore.version>11.1.0.0-SNAPSHOT</metastore.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <pentaho-osgi-bundles.version>11.1.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <pdi-pur-plugin.version>11.1.0.0-SNAPSHOT</pdi-pur-plugin.version>
@@ -28,7 +30,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -40,11 +42,13 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
+      <version>${metastore.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
+      <version>${platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

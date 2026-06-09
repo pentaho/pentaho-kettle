@@ -15,6 +15,7 @@
   <name>PDI Json Plugin Core</name>
 
   <properties>
+    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <commons-lang.version>2.6</commons-lang.version>
@@ -42,7 +43,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>${pdi.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -64,6 +65,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -85,6 +87,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
+      <version>${platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

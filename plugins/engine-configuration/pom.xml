@@ -49,12 +49,13 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-metastore-locator-api</artifactId>
-      <version>${project.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
 

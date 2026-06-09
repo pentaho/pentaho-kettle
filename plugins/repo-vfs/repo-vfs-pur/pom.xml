@@ -34,7 +34,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-        <version>${platform.version}</version>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -46,6 +46,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
     </dependency>
 

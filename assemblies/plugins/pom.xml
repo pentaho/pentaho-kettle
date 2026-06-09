@@ -47,7 +47,7 @@
     <mondrianinput-plugin.version>${project.version}</mondrianinput-plugin.version>
     <pdi-sap-plugin.version>11.1.0.0-SNAPSHOT</pdi-sap-plugin.version>
     <jms-streaming-plugin.version>${project.version}</jms-streaming-plugin.version>
-    <pdi-teradata-tpt-plugin-package.version>${teradata-tpt-plugin-package.version}</pdi-teradata-tpt-plugin-package.version>
+    <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
     <pdi-platform-utils-plugin.version>11.1.0.0-SNAPSHOT</pdi-platform-utils-plugin.version>
     <vertica-bulkloader-plugin.version>11.1.0.0-SNAPSHOT</vertica-bulkloader-plugin.version>
     <pdi-pur-plugin.version>11.1.0.0-SNAPSHOT</pdi-pur-plugin.version>

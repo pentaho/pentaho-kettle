@@ -63,6 +63,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

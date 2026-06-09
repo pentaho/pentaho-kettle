@@ -17,6 +17,7 @@
   <name>PDI Repository VFS Plugin Core</name>
 
   <properties>
+    <pentaho-platform.version>${pdi.version}</pentaho-platform.version>
     <!-- should be in sync with one from kettle-engine -->
     <junit-jupiter.version>5.13.0-M2</junit-jupiter.version>
     <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
@@ -29,24 +30,25 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-repository</artifactId>
-      <version>${platform.version}</version>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-      <version>${platform.version}</version>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${platform.version}</version>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
     </dependency>
 

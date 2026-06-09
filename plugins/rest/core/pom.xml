@@ -14,6 +14,7 @@
 
   <name>PDI Rest Plugin Core</name>
   <properties>
+    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <commons-xul.version>11.1.0.0-SNAPSHOT</commons-xul.version>
@@ -55,7 +56,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -176,7 +177,7 @@
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-metastore-locator-api</artifactId>
-      <version>${project.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -206,6 +207,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
+      <version>${platform.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>

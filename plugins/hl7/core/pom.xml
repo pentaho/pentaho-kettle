@@ -15,6 +15,7 @@
   <name>PDI HL7 Plugin Core</name>
 
   <properties>
+    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
@@ -30,7 +31,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>

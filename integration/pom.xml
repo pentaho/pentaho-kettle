@@ -17,6 +17,7 @@
   </parent>
 
   <properties>
+    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <mockito-all.version>1.10.19</mockito-all.version>
   </properties>
 
@@ -54,7 +55,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pdi.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>

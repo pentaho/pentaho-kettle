@@ -35,12 +35,13 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${platform.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <!-- Test Dependencies -->

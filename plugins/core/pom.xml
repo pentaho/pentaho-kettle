@@ -13,14 +13,16 @@
   <packaging>pom</packaging>
   <name>PDI Core Plugins</name>
 
-
+  <properties>
+    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${project.version}</version>
+        <version>${pdi.version}</version>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
