@@ -1,0 +1,89 @@
+pentaho-kettle:kettle-core:jar:11.1.0.0-SNAPSHOT
++- pentaho:metastore:jar:11.1.0.0-SNAPSHOT:compile
++- org.pentaho.di.plugins:pentaho-metastore-locator-api:jar:11.1.0.0-SNAPSHOT:compile
++- org.slf4j:slf4j-api:jar:2.0.12:compile
++- org.apache.logging.log4j:log4j-core:jar:2.25.4:provided
+|  \- org.apache.logging.log4j:log4j-api:jar:2.25.4:provided
++- commons-beanutils:commons-beanutils:jar:1.11.0:compile
++- commons-codec:commons-codec:jar:1.15:compile
++- commons-logging:commons-logging:jar:1.3.5:compile
++- com.google.guava:guava:jar:32.1.2-jre:compile
+|  +- com.google.guava:failureaccess:jar:1.0.1:compile
+|  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile
+|  +- com.google.code.findbugs:jsr305:jar:3.0.2:compile
+|  +- org.checkerframework:checker-qual:jar:3.33.0:compile
+|  +- com.google.errorprone:error_prone_annotations:jar:2.18.0:compile
+|  \- com.google.j2objc:j2objc-annotations:jar:2.8:compile
++- org.owasp.encoder:encoder:jar:1.2:compile
++- org.apache.xmlgraphics:batik-bridge:jar:1.17:compile
++- org.apache.xmlgraphics:batik-css:jar:1.17:compile
++- org.apache.xmlgraphics:batik-dom:jar:1.17:compile
++- org.apache.xmlgraphics:batik-gvt:jar:1.17:compile
++- org.apache.xmlgraphics:batik-svg-dom:jar:1.17:compile
++- org.apache.xmlgraphics:batik-transcoder:jar:1.17:compile
++- org.apache.xmlgraphics:batik-codec:jar:1.17:compile
++- org.apache.xmlgraphics:batik-util:jar:1.17:compile
++- org.apache.xmlgraphics:batik-ext:jar:1.17:compile
++- org.apache.xmlgraphics:batik-xml:jar:1.17:compile
++- org.apache.xmlgraphics:batik-anim:jar:1.17:compile
++- org.apache.xmlgraphics:batik-parser:jar:1.17:compile
++- org.apache.xmlgraphics:batik-script:jar:1.17:compile
++- org.apache.xmlgraphics:batik-awt-util:jar:1.17:compile
++- org.apache.xmlgraphics:batik-constants:jar:1.17:compile
++- org.apache.xmlgraphics:batik-i18n:jar:1.17:compile
++- xml-apis:xml-apis-ext:jar:1.3.04:compile
++- commons-collections:commons-collections:jar:3.2.2:compile
++- org.apache.commons:commons-lang3:jar:3.18.0:compile
++- org.apache.httpcomponents:httpclient:jar:4.5.14:compile
++- org.apache.httpcomponents:httpcore:jar:4.4.11:compile
++- org.apache.commons:commons-vfs2:jar:2.10.0:compile
++- org.apache.commons:commons-compress:jar:1.26.2:compile
++- org.apache.httpcomponents.core5:httpcore5:jar:5.3.4:compile
++- org.apache.httpcomponents.client5:httpclient5:jar:5.4.4:compile
+|  \- org.apache.httpcomponents.core5:httpcore5-h2:jar:5.3.4:compile
++- commons-io:commons-io:jar:2.16.1:compile
++- org.apache.commons:commons-dbcp2:jar:2.9.0:compile
++- org.apache.commons:commons-pool2:jar:2.11.1:compile
++- org.dom4j:dom4j:jar:2.1.4:compile
++- org.eclipse.jetty:jetty-util:jar:12.0.35:compile
++- jug-lgpl:jug-lgpl:jar:2.0.0:compile
++- com.github.mwiede:jsch:jar:0.2.9:compile
++- ognl:ognl:jar:2.6.9:compile
++- net.sf.scannotation:scannotation:jar:1.0.2:compile
++- com.wcohen:com.wcohen.secondstring:jar:0.1:compile
++- org.javassist:javassist:jar:3.20.0-GA:compile
++- org.samba.jcifs:jcifs:jar:1.3.3:compile
++- com.fasterxml.woodstox:woodstox-core:jar:6.6.2:provided
++- org.codehaus.woodstox:stax2-api:jar:4.2.2:provided
++- pentaho:simple-jndi:jar:1.0.13:compile
++- commons-net:commons-net:jar:3.9.0:compile
++- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:compile
+|  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:compile
++- org.springframework:spring-expression:jar:6.2.12:compile
++- joda-time:joda-time:jar:2.10.2:runtime
++- org.springframework:spring-mock:jar:2.0.8:test
++- org.hamcrest:java-hamcrest:jar:2.0.0.0:test
++- org.mockito:mockito-core:jar:5.10.0:test
+|  +- net.bytebuddy:byte-buddy:jar:1.14.11:test
+|  +- net.bytebuddy:byte-buddy-agent:jar:1.14.11:test
+|  \- org.objenesis:objenesis:jar:3.3:test
++- org.springframework:spring-test:jar:6.2.12:test
++- org.springframework:spring-core:jar:6.2.12:test
++- xmlunit:xmlunit:jar:1.5:test
++- org.apache.tomcat:tomcat-jdbc:jar:10.1.55:compile
+|  \- org.apache.tomcat:tomcat-juli:jar:10.1.55:compile
++- org.pentaho:pentaho-encryption-support:jar:11.1.0.0-SNAPSHOT:compile
++- com.github.spotbugs:spotbugs-annotations:jar:4.2.3:provided (optional) 
++- org.junit.jupiter:junit-jupiter:jar:5.10.2:test
+|  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.2:test
+|  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+|  |  +- org.junit.platform:junit-platform-commons:jar:1.10.2:test
+|  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+|  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.2:test
+|  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.2:test
+|     \- org.junit.platform:junit-platform-engine:jar:1.10.2:test
++- com.fasterxml.jackson.core:jackson-databind:jar:2.18.6:compile
+|  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.18.6:compile
+|  \- com.fasterxml.jackson.core:jackson-core:jar:2.18.6:compile
+\- junit:junit:jar:4.11:test
+   \- org.hamcrest:hamcrest-core:jar:1.3:test

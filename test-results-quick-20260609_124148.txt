@@ -1,0 +1,20 @@
+CVE-2025-48924 Quick Test Results
+Generated: Tue Jun  9 12:41:48 EDT 2026
+==================================
+
+[TEST] Compiling core and engine modules...
+[✓ PASS] Core and engine modules compiled successfully
+[TEST] Running ClassUtilsUpgradeTest (17 tests)...
+[✓ PASS] All 17 tests passed
+[TEST] Verifying StringBuilder replacement in Const.java...
+[✓ PASS] StringBuilder found (StrBuilder replacement verified)
+[TEST] Verifying escapeHtml4 usage...
+[✓ PASS] escapeHtml4 found (StringEscapeUtils API updated)
+[TEST] Verifying ExceptionUtils.getStackTrace usage...
+[✓ PASS] getStackTrace found (ExceptionUtils API updated)
+
+==================================
+TEST EXECUTION COMPLETE
+Report saved to: /Users/ramaizmansoor/Developer/pentaho-kettle/test-results-quick-20260609_124148.txt
+All critical tests completed!
+[✓ PASS] Test suite completed successfully

@@ -13,7 +13,7 @@
 
 package org.pentaho.di.core.logging;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.Const;
 
 import java.text.MessageFormat;

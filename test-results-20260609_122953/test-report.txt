@@ -1,0 +1,47 @@
+CVE-2025-48924 Test Suite Results
+Generated: Tue Jun  9 12:29:53 EDT 2026
+Project: /Users/ramaizmansoor/Developer/pentaho-kettle
+
+[✓ SUCCESS] Test environment ready
+========================================
+Phase 1: Dependency Verification
+========================================
+[✗ ERROR] commons-lang3:3.18.0 NOT found in dependencies
+[✓ SUCCESS] No old commons-lang 2.x found
+========================================
+Phase 2: Build Verification
+========================================
+[✓ SUCCESS] Engine module compiled successfully
+[✓ SUCCESS] UI module compiled successfully
+========================================
+Phase 3: Unit Tests Execution
+========================================
+[WARNING] ClassUtilsUpgradeTest: 0 run, 0 failures, 0 errors
+[✓ SUCCESS] ConstTest passed
+========================================
+Phase 4: CVE-2025-48924 Specific Validation
+========================================
+[✓ SUCCESS] CVE-specific test cases present and configured
+[WARNING] Could not fully verify ClassUtils compilation
+========================================
+Phase 8: Test Report Generation
+========================================
+
+==========================================
+TEST EXECUTION SUMMARY
+==========================================
+Date: Tue Jun  9 12:38:31 EDT 2026
+Duration: 518 seconds
+
+Total Tests: 9
+Passed: 6
+Failed: 1
+Success Rate: 66.66%
+
+OVERALL STATUS: ✗ 1 TEST(S) FAILED
+==========================================
+
+Report Location: /Users/ramaizmansoor/Developer/pentaho-kettle/test-results-20260609_122953/test-report.txt
+Log Files: /Users/ramaizmansoor/Developer/pentaho-kettle/test-results-20260609_122953
+[✓ SUCCESS] Test report generated: /Users/ramaizmansoor/Developer/pentaho-kettle/test-results-20260609_122953/test-report.txt
+[✗ ERROR] 1 test(s) failed - see report for details

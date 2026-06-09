@@ -27,7 +27,7 @@ import org.pentaho.di.core.util.EnvUtil;
 
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.pentaho.di.core.logging.LoggingObjectType.DATABASE;
 import static org.pentaho.di.core.logging.LoggingObjectType.TRANS;
 import static org.pentaho.di.core.logging.LoggingObjectType.STEP;

@@ -15,9 +15,9 @@
 
 package org.pentaho.di.core;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.UriParser;
@@ -3354,7 +3354,7 @@ public class Const {
     if ( firstIndex == lastIndex ) {
       return stringToSplit;
     }
-    StrBuilder strBuilder = new StrBuilder( stringToSplit );
+    StringBuilder strBuilder = new StringBuilder( stringToSplit );
     strBuilder.replace( firstIndex, enclosure.length() + firstIndex, "" );
     strBuilder.replace( lastIndex - enclosure.length(), lastIndex, "" );
 
@@ -3982,7 +3982,7 @@ public class Const {
     if ( Utils.isEmpty( content ) ) {
       return content;
     }
-    return StringEscapeUtils.escapeHtml( content );
+    return StringEscapeUtils.escapeHtml4( content );
   }
 
   /**
@@ -3996,7 +3996,7 @@ public class Const {
     if ( Utils.isEmpty( content ) ) {
       return content;
     }
-    return StringEscapeUtils.unescapeHtml( content );
+    return StringEscapeUtils.unescapeHtml4( content );
   }
 
   /**
@@ -4024,7 +4024,8 @@ public class Const {
     if ( Utils.isEmpty( content ) ) {
       return content;
     }
-    return StringEscapeUtils.escapeSql( content );
+    // SQL escaping: replace single quotes with two single quotes
+    return content.replace( "'", "''" );
   }
 
   /**
