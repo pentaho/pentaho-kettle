@@ -98,7 +98,10 @@ public class PurRepositoryImporter extends RepositoryImporter implements java.io
 
   @Override
   protected boolean equals( ClusterSchema clusterSchema, ClusterSchema clusterSchema2 ) {
-    return rep.getClusterTransformer().equals( clusterSchema, clusterSchema2 );
+    // Compare at the field level rather than using the Repository DataNode 
+    // representation so we can compare by Slave Server name instead of 
+    // object id, which might not have been set yet. 
+    return super.equals( clusterSchema, clusterSchema2 );
   }
 
   @Override
