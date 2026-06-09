@@ -90,7 +90,16 @@ public class CurrentDirectoryResolver {
       tmpSpace.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, directory.toString() );
     } else if ( filename != null ) {
       try {
-        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( filename, tmpSpace );
+        String resolvedFilename = tmpSpace.environmentSubstitute( filename );
+
+        // If the filename still contains unresolved variables after substitution, skip the file existence check.
+        // The remaining variables will be resolved in the proper child execution context later.
+        // Attempting to resolve them here using the current context would set wrong directory paths.
+        if ( resolvedFilename == null || resolvedFilename.contains( "${" ) || resolvedFilename.contains( "%%" ) ) {
+          return tmpSpace;
+        }
+
+        FileObject fileObject = KettleVFS.getInstance( bowl ).getFileObject( resolvedFilename, tmpSpace );
 
         if ( !fileObject.exists() ) {
           // don't set variables if the file doesn't exist
@@ -183,11 +192,13 @@ public class CurrentDirectoryResolver {
       realParent = (JobMeta) parentVariables;
       filename = realParent.getFilename();
     }
-    // If directory is null or root directory, fall back to using filename
-    // For vfs, though connected to repository, we have no directory info - fall back to filename
+    // If directory is null or root directory, fall back to using filename.
+    // For vfs, though connected to repository, we have no directory info - fall back to filename.
+    // Preserve an already provided child filename (FILENAME spec path) so Internal.Entry.Current.Directory
+    // resolves to the child directory instead of being forced to the parent job's location.
     if ( directory == null || "/".equals( directory.toString() ) ) {
       directory = null;
-      if ( job != null && job.getJobMeta() != null ) {
+      if ( filename == null && job != null && job.getJobMeta() != null ) {
         filename = job.getJobMeta().getFilename();
       }
     }
