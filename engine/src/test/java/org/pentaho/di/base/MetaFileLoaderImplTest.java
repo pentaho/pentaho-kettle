@@ -34,6 +34,7 @@ import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
 import java.io.File;
+import java.nio.file.Paths;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -356,6 +358,78 @@ public class MetaFileLoaderImplTest {
 
   private String getKey() {
     return specificationMethod + ":" + keyPath;
+  }
+
+  @Test
+  public void getMetaForEntry_WhenFilenameSpec_ThenRebasesToChildFileDirectory() throws Exception {
+    // Verifies that when loading a child transformation via FILENAME specification,
+    // Internal.Entry.Current.Directory on the loaded meta is set to the child file's directory,
+    // not the parent job's directory.
+    //
+    // The fix in MetaFileLoaderImpl.getMetaForEntry() FILENAME case re-bases tmpSpace:
+    //   tmpSpace = r.resolveCurrentDirectory( bowl, tmpSpace, null, realFilename );
+    // then reseedInternalDirectoryVars() propagates the re-based value onto the loaded meta.
+    // Removing that line would cause this assertion to fail.
+
+    setupJobEntryTrans();
+    specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+
+    MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<TransMeta>( jobEntryBase, specificationMethod );
+    TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store, space );
+
+    // The expected directory is the parent folder of the test resource file, in URI form
+    // (matching what KettleVFS FileName.getParent().getURI() returns)
+    String expectedDir = Paths.get( getClass().getResource( TRANS_FILE ).toURI() ).getParent().toUri().toString();
+    if ( expectedDir.endsWith( "/" ) ) {
+      expectedDir = expectedDir.substring( 0, expectedDir.length() - 1 );
+    }
+
+    assertEquals( expectedDir, transMeta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void getMetaForEntry_WhenFilenameSpecUsesParentDirectoryVariable_ThenDoesNotDoubleSubstitute()
+    throws Exception {
+    JobEntryTrans jobEntryTrans = new JobEntryTrans();
+    jobEntryBase = jobEntryTrans;
+
+    JobMeta parentJobMeta = spy( new JobMeta() );
+    LogChannelInterface logger = mock( LogChannelInterface.class );
+    metaFileCache = new MetaFileCacheImpl( logger );
+    parentJobMeta.setMetaFileCache( metaFileCache );
+    jobEntryTrans.setParentJobMeta( parentJobMeta );
+
+    Job job = new Job();
+    space = job;
+    jobEntryTrans.setParentJob( job );
+
+    String engineRoot = Paths.get( "" ).toAbsolutePath().toUri().toString();
+    if ( engineRoot.endsWith( "/" ) ) {
+      engineRoot = engineRoot.substring( 0, engineRoot.length() - 1 );
+    }
+    job.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, engineRoot );
+    job.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, engineRoot );
+    job.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, engineRoot );
+
+    String relativeFilename = "src/test/resources/org/pentaho/di/base/" + TRANS_FILE;
+    String variableizedFilename = "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + relativeFilename;
+    jobEntryTrans.setFileName( variableizedFilename );
+    jobEntryTrans.setTransname( TRANS_FILE );
+    jobEntryTrans.setTransObjectId( null );
+    specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+
+    MetaFileLoaderImpl<TransMeta> metaFileLoader = new MetaFileLoaderImpl<>( jobEntryBase, specificationMethod );
+    TransMeta transMeta = metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), null, store, space );
+
+    assertNotNull( transMeta );
+    validateMetaName( TRANS_FILE, transMeta );
+
+    String expectedDir = Paths.get( relativeFilename ).toAbsolutePath().getParent().toUri().toString();
+    if ( expectedDir.endsWith( "/" ) ) {
+      expectedDir = expectedDir.substring( 0, expectedDir.length() - 1 );
+    }
+
+    assertEquals( expectedDir, transMeta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
 
   @Test
