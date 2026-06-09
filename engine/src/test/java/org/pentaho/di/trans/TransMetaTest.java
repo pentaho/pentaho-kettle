@@ -978,4 +978,110 @@ public class TransMetaTest {
     assertTrue( "Null filename should result in null or empty after deserialization",
         deserializedTransMeta.getFilename() == null || deserializedTransMeta.getFilename().isEmpty() );
   }
+
+  /**
+   * getUsedDatabaseConnectionNames throws NullPointerException when a step returns a null DatabaseMeta
+   * in its getUsedDatabaseConnections array.
+   */
+  @Test
+  public void testGetUsedDatabaseConnectionNamesNullDbInStep() {
+    // Arrange: a step whose getUsedDatabaseConnections returns an array containing a null element
+    StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class );
+    when( stepMetaInterface.getUsedDatabaseConnections() ).thenReturn( new DatabaseMeta[] { null } );
+
+    StepMeta stepMeta = new StepMeta( "testStep", stepMetaInterface );
+    transMeta.addStep( stepMeta );
+
+    // Act & Assert: must not throw NullPointerException
+    java.util.Set<String> names = transMeta.getUsedDatabaseConnectionNames();
+    assertNotNull( names );
+  }
+
+  /**
+   * isDatabaseConnectionUsed must not throw when getUsedDatabaseConnections returns null.
+   */
+  @Test
+  public void testIsDatabaseConnectionUsedNullArray() {
+    StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class );
+    when( stepMetaInterface.getUsedDatabaseConnections() ).thenReturn( null );
+
+    transMeta.addStep( new StepMeta( "testStep", stepMetaInterface ) );
+
+    DatabaseMeta target = mock( DatabaseMeta.class );
+    assertFalse( transMeta.isDatabaseConnectionUsed( target ) );
+  }
+
+  /**
+   * isDatabaseConnectionUsed must not throw when getUsedDatabaseConnections returns an array with a null element.
+   */
+  @Test
+  public void testIsDatabaseConnectionUsedNullDbInArray() {
+    StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class );
+    when( stepMetaInterface.getUsedDatabaseConnections() ).thenReturn( new DatabaseMeta[] { null } );
+
+    transMeta.addStep( new StepMeta( "testStep", stepMetaInterface ) );
+
+    DatabaseMeta target = mock( DatabaseMeta.class );
+    assertFalse( transMeta.isDatabaseConnectionUsed( target ) );
+  }
+
+  /**
+   * databasesUpdated must not throw when getUsedDatabaseConnections returns an array with a null element.
+   */
+  @Test
+  public void testDatabasesUpdatedNullDbInArray() {
+    StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class );
+    when( stepMetaInterface.getUsedDatabaseConnections() ).thenReturn( new DatabaseMeta[] { null } );
+
+    transMeta.addStep( new StepMeta( "testStep", stepMetaInterface ) );
+
+    // Should not throw NullPointerException
+    transMeta.databasesUpdated( "someConnection", java.util.Optional.empty() );
+    assertTrue( true );
+  }
+
+  /**
+   * allDatabasesUpdated must not throw when getUsedDatabaseConnections returns an array with a null element.
+   */
+  @Test
+  public void testAllDatabasesUpdatedNullDbInArray() {
+    StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class );
+    when( stepMetaInterface.getUsedDatabaseConnections() ).thenReturn( new DatabaseMeta[] { null } );
+
+    transMeta.addStep( new StepMeta( "testStep", stepMetaInterface ) );
+
+    // Should not throw NullPointerException
+    transMeta.allDatabasesUpdated();
+    assertTrue( true );
+  }
+
+  /**
+   * getUsedDatabaseConnectionNames must not throw when getUsedDatabaseConnections returns null.
+   */
+  @Test
+  public void testGetUsedDatabaseConnectionNamesNullArray() {
+    StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class );
+    when( stepMetaInterface.getUsedDatabaseConnections() ).thenReturn( null );
+
+    transMeta.addStep( new StepMeta( "testStep", stepMetaInterface ) );
+
+    java.util.Set<String> names = transMeta.getUsedDatabaseConnectionNames();
+    assertNotNull( names );
+    assertTrue( names.isEmpty() );
+  }
+
+  /**
+   * allDatabasesUpdated must not throw when getUsedDatabaseConnections returns null.
+   */
+  @Test
+  public void testAllDatabasesUpdatedNullArray() {
+    StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class );
+    when( stepMetaInterface.getUsedDatabaseConnections() ).thenReturn( null );
+
+    transMeta.addStep( new StepMeta( "testStep", stepMetaInterface ) );
+
+    // Should not throw NullPointerException
+    transMeta.allDatabasesUpdated();
+    assertTrue( true );
+  }
 }
