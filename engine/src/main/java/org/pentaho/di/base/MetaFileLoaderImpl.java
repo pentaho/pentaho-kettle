@@ -159,7 +159,11 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       final String[] idContainer = new String[ 1 ]; //unigue portion of cache key passed though argument
       switch ( specificationMethod ) {
         case FILENAME:
-          String realFilename = tmpSpace.environmentSubstitute( filename );
+          VariableSpace filenameResolutionSpace = space != null ? space : tmpSpace;
+          String realFilename = filenameResolutionSpace.environmentSubstitute( filename );
+          // Once the child filename is fully resolved, rebase the temp variable space to that file.
+          // This ensures the loaded meta gets its own directory variables instead of the parent job's.
+          tmpSpace = r.resolveCurrentDirectory( bowl, tmpSpace, null, realFilename );
           try {
             theMeta = attemptLoadMeta( bowl, realFilename, rep, metaStore, tmpSpace, null, idContainer );
           } catch ( KettleException e ) {
