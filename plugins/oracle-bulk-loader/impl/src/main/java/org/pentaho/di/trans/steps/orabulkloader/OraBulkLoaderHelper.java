@@ -12,9 +12,15 @@
 
 package org.pentaho.di.trans.steps.orabulkloader;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -24,6 +30,7 @@ import org.pentaho.di.trans.step.StepMeta;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @SuppressWarnings( "unchecked" )
 public class OraBulkLoaderHelper extends BaseStepHelper {
@@ -31,8 +38,11 @@ public class OraBulkLoaderHelper extends BaseStepHelper {
   public static final String STEP_NAME = "stepName";
   public static final String DETAILS = "details";
   public static final String CONNECTION = "connection";
+  public static final String SCHEMA = "schema";
+  public static final String TABLE = "table";
 
   private static final String GET_SQL = "getSQL";
+  private static final String GET_TABLE_FIELD_AND_TYPE = "getTableFieldAndType";
   private static final Class<?> PKG = OraBulkLoaderHelper.class;
 
   public OraBulkLoaderHelper() {
@@ -45,12 +55,62 @@ public class OraBulkLoaderHelper extends BaseStepHelper {
     try { 
       if ( GET_SQL.equals( method ) ) {
         response = getSQLAction( transMeta, queryParams );
+      } else if ( GET_TABLE_FIELD_AND_TYPE.equals( method ) ) {
+        response = getTableFieldAndType( transMeta, queryParams );
       } else {
         response.put( ACTION_STATUS, FAILURE_METHOD_NOT_FOUND_RESPONSE );
       }
     } catch ( Exception ex ) {
       response.put( ACTION_STATUS, FAILURE_RESPONSE );
       response.put( DETAILS, ex.getMessage() );
+    }
+    return response;
+  }
+
+  public JSONObject getTableFieldAndType( TransMeta transMeta, Map<String, String> queryParams ) {
+    JSONObject response = new JSONObject();
+    response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
+
+    String connectionName = queryParams.get( CONNECTION );
+    String schemaRaw = queryParams.get( SCHEMA );
+    String schema = ( schemaRaw != null && !schemaRaw.isBlank() )
+        ? transMeta.environmentSubstitute( schemaRaw ) : null;
+    String table = transMeta.environmentSubstitute( queryParams.get( TABLE ) );
+
+    if ( connectionName == null || connectionName.isBlank()
+        || table == null || table.isBlank() ) {
+      response.put( "error", "Missing or invalid parameters: connection or table." );
+      return response;
+    }
+    try {
+      DatabaseMeta databaseMeta = Optional.ofNullable( transMeta.findDatabase( connectionName ) )
+          .orElseThrow( () -> new IllegalArgumentException( "Database connection not found: " + connectionName ) );
+
+      LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+          "OraBulkLoader Step", LoggingObjectType.STEP, null );
+
+      try ( Database db = new Database( loggingObject, databaseMeta ) ) {
+        db.connect();
+        RowMetaInterface rowMeta = db.getTableFieldsMeta( schema, table );
+
+        JSONArray columnsList = new JSONArray();
+        if ( rowMeta != null ) {
+          rowMeta.getValueMetaList()
+              .stream()
+              .map( valueMeta -> {
+                JSONObject col = new JSONObject();
+                col.put( "columnName", valueMeta.getName() );
+                col.put( "columnType", valueMeta.getTypeDesc() );
+                return col;
+              } )
+              .forEach( columnsList::add );
+        }
+        response.put( "columns", columnsList );
+        response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      }
+    } catch ( Exception e ) {
+      log.logError( "Error fetching table fields and types: " + e.getMessage(), e );
+      response.put( "error", "An unexpected error occurred." );
     }
     return response;
   }
