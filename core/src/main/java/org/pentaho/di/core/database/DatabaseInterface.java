@@ -82,13 +82,17 @@ public interface DatabaseInterface extends Cloneable {
   /**
    * @return Returns the connection Id from the connection management service.
    */
-  String getConnectionId();
+  default String getConnectionId() {
+    return null;
+  }
 
   /**
    * @param connectionId
    *      The connection Id from the connection management service to set.
    */
-  void setConnectionId( String connectionId );
+  default void setConnectionId( String connectionId ) {
+    // default implementation
+  }
 
   /**
    * @return Returns the connection Name.
