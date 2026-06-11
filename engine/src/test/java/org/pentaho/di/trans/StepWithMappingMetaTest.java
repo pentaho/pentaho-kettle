@@ -428,4 +428,28 @@ public class StepWithMappingMetaTest {
     Assert.assertEquals( variableChildOnly, ChildVariables.getVariable( variableChildOnly ) );
 
   }
+
+  @Test
+  public void addMissingVariables_WhenInternalVariable_ThenDoesNotCopyFromParent() {
+    // addMissingVariables(fromSpace, toSpace) copies variables present in toSpace but missing
+    // in fromSpace. The fix guards against copying internal variables, which are
+    // execution-context-specific and must not be inherited from the parent.
+    //
+    // Scenario: child (fromSpace) is empty; parent (toSpace) has both a custom var and
+    // Internal.Entry.Current.Directory. After the call, the child should receive the custom
+    // var but NOT the internal variable.
+
+    VariableSpace childSpace = new Variables(); // fromSpace – starts empty
+    VariableSpace parentSpace = new Variables(); // toSpace – source of variables
+    parentSpace.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "/parent/dir" );
+    parentSpace.setVariable( "customVar", "parentValue" );
+
+    StepWithMappingMeta.addMissingVariables( childSpace, parentSpace );
+
+    // Non-internal variable that was missing on child should be copied from parent
+    Assert.assertEquals( "parentValue", childSpace.getVariable( "customVar" ) );
+
+    // Internal variable must NOT be copied to child, even though it was missing there
+    Assert.assertNull( childSpace.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
 }

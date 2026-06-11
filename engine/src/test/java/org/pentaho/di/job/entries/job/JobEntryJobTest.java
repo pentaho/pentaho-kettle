@@ -147,9 +147,10 @@ public class JobEntryJobTest {
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
               doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
-                any( ObjectLocationSpecificationMethod.class ),
-                any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
-                nullable( String.class ) );
+                any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ),
+                nullable( Repository.class ), nullable( Job.class ), nullable( String.class ) );
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ), any( VariableSpace.class ),
+                nullable( RepositoryDirectoryInterface.class ), nullable( String.class ) );
             } ) ) {
       JobEntryJob jej = getJej();
       jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
@@ -187,8 +188,10 @@ public class JobEntryJobTest {
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
               doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
-                any( ObjectLocationSpecificationMethod.class ),
-                any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
+                any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ),
+                nullable( Repository.class ), nullable( Job.class ), nullable( String.class ) );
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ), any( VariableSpace.class ),
+                nullable( RepositoryDirectoryInterface.class ), nullable( String.class ) );
             } ) ) {
       JobEntryJob jej = getJej();
       jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
@@ -226,8 +229,10 @@ public class JobEntryJobTest {
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
               doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
-                any( ObjectLocationSpecificationMethod.class ),
-                any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
+                any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ),
+                nullable( Repository.class ), nullable( Job.class ), nullable( String.class ) );
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ), any( VariableSpace.class ),
+                nullable( RepositoryDirectoryInterface.class ), nullable( String.class ) );
             } ) ) {
       JobEntryJob jej = getJej();
       jej.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
@@ -343,8 +348,10 @@ public class JobEntryJobTest {
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
               doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
-                any( ObjectLocationSpecificationMethod.class ),
-                any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
+                any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ),
+                nullable( Repository.class ), nullable( Job.class ), nullable( String.class ) );
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ), any( VariableSpace.class ),
+                nullable( RepositoryDirectoryInterface.class ), nullable( String.class ) );
             } ) ) {
       JobEntryJob jej = getJej();
       jej.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
@@ -436,8 +443,10 @@ public class JobEntryJobTest {
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
               doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
-                any( ObjectLocationSpecificationMethod.class ),
-                any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
+                any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ),
+                nullable( Repository.class ), nullable( Job.class ), nullable( String.class ) );
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ), any( VariableSpace.class ),
+                nullable( RepositoryDirectoryInterface.class ), nullable( String.class ) );
             } ) ) {
       JobEntryJob jej = getJej();
       jej.setFileName( JOB_ENTRY_FILE_PATH );
@@ -564,8 +573,10 @@ public class JobEntryJobTest {
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
               doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
-                any( ObjectLocationSpecificationMethod.class ),
-                any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
+                any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ),
+                nullable( Repository.class ), nullable( Job.class ), nullable( String.class ) );
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ), any( VariableSpace.class ),
+                nullable( RepositoryDirectoryInterface.class ), nullable( String.class ) );
             } ) ) {
 
       doReturn( null ).when( myrepo ).getJobEntryAttributeString( any( ObjectId.class ), anyString() );
@@ -608,9 +619,10 @@ public class JobEntryJobTest {
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
               doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
-                any( ObjectLocationSpecificationMethod.class ),
-                any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ),
-                nullable( String.class ) );
+                any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ),
+                nullable( Repository.class ), nullable( Job.class ), nullable( String.class ) );
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ), any( VariableSpace.class ),
+                nullable( RepositoryDirectoryInterface.class ), nullable( String.class ) );
             } ) ) {
       doReturn( null ).when( myrepo ).getJobEntryAttributeString( any( ObjectId.class ), anyString() );
       doReturn( "rep_name" ).when( myrepo )
@@ -784,8 +796,10 @@ public class JobEntryJobTest {
             {
               doCallRealMethod().when( mock ).normalizeSlashes( anyString() );
               doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ),
-                any( ObjectLocationSpecificationMethod.class ),
-                any( VariableSpace.class ), nullable( Repository.class ), nullable( Job.class ), anyString() );
+                any( ObjectLocationSpecificationMethod.class ), any( VariableSpace.class ),
+                nullable( Repository.class ), nullable( Job.class ), nullable( String.class ) );
+              doReturn( space ).when( mock ).resolveCurrentDirectory( any( Bowl.class ), any( VariableSpace.class ),
+                nullable( RepositoryDirectoryInterface.class ), nullable( String.class ) );
             } ) ) {
       doReturn( null ).when( myrepo ).getJobEntryAttributeString( any( ObjectId.class ), anyString() );
       doReturn( JOB_ENTRY_FILE_PATH ).when( myrepo ).getJobEntryAttributeString( JOB_ENTRY_JOB_OBJECT_ID, "file_name" );
@@ -891,4 +905,5 @@ public class JobEntryJobTest {
     when( jej.getParentJobMeta().getBowl() ).thenReturn( DefaultBowl.getInstance() );
     return jej;
   }
+
 }
