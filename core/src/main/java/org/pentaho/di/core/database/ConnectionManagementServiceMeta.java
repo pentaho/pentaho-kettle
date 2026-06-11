@@ -1,15 +1,41 @@
 package org.pentaho.di.core.database;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.util.EntityUtils;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.SecretsManagementException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.HttpClientManager;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -177,9 +203,17 @@ public class ConnectionManagementServiceMeta extends BaseDatabaseMeta implements
         var requestUrl = System.getenv(SERVICE_URL_VAR) + this.getId();
         var request =new HttpGet( requestUrl );
 
-        var token = System.getenv(TOKEN_VAR);
         request.addHeader("Content-Type", "application/json");
-        request.addHeader("Authorization", "Bearer " + token);
+
+        try {
+            var token = CmsTokenProvider.getInstance().getToken();
+
+            if ( StringUtils.isNotBlank( token ) ) {
+                request.addHeader("Authorization", "Bearer " + token);
+            }
+        } catch (KettleDatabaseException e) {
+            throw new RuntimeException(e);
+        }
 
         return request;
     }
@@ -201,6 +235,7 @@ public class ConnectionManagementServiceMeta extends BaseDatabaseMeta implements
         var databaseConnection = connectionNode.path("databaseConnection");
         var detail = databaseConnection.path("detail");
         var type = detail.path("databaseType").path("shortName").asText();
+        var secretsRef = databaseConnection.path("credentials").path("secretReference").asText();
 
         try {
             this.delegate = DatabaseMeta.getDatabaseInterface(type);
@@ -211,11 +246,9 @@ public class ConnectionManagementServiceMeta extends BaseDatabaseMeta implements
             this.delegate.setDatabaseName(detail.path("databaseName").asText());
             this.delegate.setDatabasePortNumberString(detail.path("databasePort").asText());
 
-            // TODO: process credentials properly
-            // this.delegate.setUsername(databaseConnection.path("credentials").path("username").asText());
-            // this.delegate.setPassword(databaseConnection.path("credentials").path("password").asText());
-            this.delegate.setUsername("myuser");
-            this.delegate.setPassword("Encrypted ");
+            var credentials = fetchCredentials( secretsRef );
+            this.delegate.setUsername( credentials.get("username") );
+            this.delegate.setPassword( credentials.get("password") );
 
             this.delegate.setDataTablespace(detail.path("dataTablespace").asText());
             this.delegate.setIndexTablespace(detail.path("indexTablespace").asText());
@@ -227,9 +260,197 @@ public class ConnectionManagementServiceMeta extends BaseDatabaseMeta implements
         }
     }
 
+    private Map<String, String> fetchCredentials( String connectionId ) {
+        try {
+            var secrets = SecretsManagementClient.getInstance().getSecrets( connectionId );
+            var user = secrets.get( "username" );
+            var pass = secrets.get( "password" );
+
+            if ( user == null && pass == null ) {
+                throw new SecretsManagementException(
+                        SecretsManagementException.Reason.INVALID_RESPONSE,
+                        "Secret bundle for connection '" + connectionId + "' did not contain 'username' or 'password'" );
+            }
+
+            return secrets;
+        } catch (SecretsManagementException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private CloseableHttpClient getHttpClient() {
         return HttpClientManager.getInstance()
                 .createBuilder()
                 .build();
+    }
+}
+
+
+class SecretsManagementClient {
+
+    private static final String SECRETS_PATH = "/api/v1/secrets";
+
+    private static final int CONNECT_TIMEOUT_MS = 5_000;
+    private static final int SOCKET_TIMEOUT_MS = 10_000;
+
+    private static final SecretsManagementClient INSTANCE =
+            new SecretsManagementClient( HttpClientManager.getInstance().createBuilder().ignoreSsl(true).build() );
+
+
+    private final CloseableHttpClient httpClient;
+
+    public static SecretsManagementClient getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Package-private constructor for tests; production code uses {@link #getInstance()}.
+     */
+    SecretsManagementClient( CloseableHttpClient httpClient ) {
+        this.httpClient = InsecureSSLHttpClient.createInsecureHttpClient(); //httpClient;
+    }
+
+    public Map<String, String> getSecrets( String secretsRef ) throws SecretsManagementException {
+        if ( secretsRef == null || secretsRef.trim().isEmpty() ) {
+            throw new IllegalStateException( "secretsRef must be a non-blank reference" );
+        }
+        String baseUrl = Const.getSecretsManagementUrl();
+        if ( baseUrl == null || baseUrl.trim().isEmpty() ) {
+            throw new IllegalStateException(
+                    "SECRETS_MANAGEMENT_URL is not configured — cannot resolve secret '" + secretsRef + "'" );
+        }
+
+        String url = stripTrailingSlash( baseUrl ) + SECRETS_PATH + "/" + secretsRef;
+        HttpGet request = new HttpGet( url );
+        request.setConfig( RequestConfig.custom()
+                .setConnectTimeout( CONNECT_TIMEOUT_MS )
+                .setSocketTimeout( SOCKET_TIMEOUT_MS )
+                .build() );
+        request.setHeader( "Accept", "application/json" );
+
+        String bearerToken;
+        try {
+            bearerToken = CmsTokenProvider.getInstance().getToken();
+        } catch ( Exception e ) {
+            // Token-endpoint failure: treat as unauthorized so the caller gets the standard message.
+            throw new SecretsManagementException( SecretsManagementException.Reason.UNAUTHORIZED,
+                    "Secret unauthorized or expired", e );
+        }
+        if ( bearerToken != null ) {
+            request.setHeader( "Authorization", "Bearer " + bearerToken );
+        }
+
+        try ( CloseableHttpResponse response = httpClient.execute( request ) ) {
+            int status = response.getStatusLine().getStatusCode();
+            if ( status == 200 ) {
+                return parseBody( response.getEntity(), secretsRef );
+            }
+            throw mapStatus( status, secretsRef );
+        } catch ( SecretsManagementException e ) {
+            throw e;
+        } catch ( SocketTimeoutException e ) {
+            throw new SecretsManagementException( SecretsManagementException.Reason.UNAVAILABLE,
+                    "Secret store unavailable", e );
+        } catch ( IOException e ) {
+            throw new SecretsManagementException( SecretsManagementException.Reason.UNAVAILABLE,
+                    "Secret store unavailable", e );
+        }
+    }
+
+    private Map<String, String> parseBody(HttpEntity entity, String secretsRef ) throws SecretsManagementException {
+        if ( entity == null ) {
+            throw new SecretsManagementException( SecretsManagementException.Reason.INVALID_RESPONSE,
+                    "Secret response was empty for '" + secretsRef + "'" );
+        }
+        try {
+            byte[] body = EntityUtils.toByteArray( entity );
+            if ( body.length == 0 ) {
+                throw new SecretsManagementException( SecretsManagementException.Reason.INVALID_RESPONSE,
+                        "Secret response was empty for '" + secretsRef + "'" );
+            }
+            Map<String, String> parsed = new ObjectMapper().readValue( body,
+                    new TypeReference<Map<String, String>>() { } );
+            return parsed == null ? Collections.emptyMap() : parsed;
+        } catch ( SecretsManagementException e ) {
+            throw e;
+        } catch ( IOException e ) {
+            // Do not include the body in the message — it may contain plaintext secret material.
+            throw new SecretsManagementException( SecretsManagementException.Reason.INVALID_RESPONSE,
+                    "Secret response could not be parsed for '" + secretsRef + "'", e );
+        }
+    }
+
+    private SecretsManagementException mapStatus( int status, String secretsRef ) {
+        return switch (status) {
+            case 401, 403 -> new SecretsManagementException(SecretsManagementException.Reason.UNAUTHORIZED,
+                    "Secret unauthorized or expired");
+            case 404 -> new SecretsManagementException(SecretsManagementException.Reason.NOT_FOUND,
+                    "Secret not found: " + secretsRef);
+            default -> {
+                if (status >= 500) {
+                    yield new SecretsManagementException(SecretsManagementException.Reason.UNAVAILABLE,
+                            "Secret store unavailable");
+                }
+                yield new SecretsManagementException(SecretsManagementException.Reason.UNAVAILABLE,
+                        "Secret store returned unexpected HTTP " + status);
+            }
+        };
+    }
+
+    private static String stripTrailingSlash( String s ) {
+        return s.endsWith( "/" ) ? s.substring( 0, s.length() - 1 ) : s;
+    }
+
+    /** Test-only helper to avoid pulling in StandardCharsets from callers. */
+    static byte[] toBytes( String s ) {
+        return s.getBytes( StandardCharsets.UTF_8 );
+    }
+}
+
+class InsecureSSLHttpClient {
+
+    /**
+     * Creates an HttpClient that ignores SSL certificate validation.
+     * WARNING: This should only be used for development/testing.
+     * Never use in production environments.
+     *
+     * @return HttpClient configured to ignore SSL certificates
+     */
+    public static CloseableHttpClient createInsecureHttpClient() {
+        try {
+            return HttpClients.custom()
+                    .setSSLSocketFactory(new SSLConnectionSocketFactory(SSLContexts.custom()
+                                    .loadTrustMaterial(null, new TrustSelfSignedStrategy())
+                                    .build()
+                            )
+                    ).build();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create insecure HTTP client", e);
+        }
+    }
+
+    /**
+     * Alternative: Using lambda expression (Java 8+)
+     */
+    public static HttpClient createInsecureHttpClientLambda() {
+        try {
+            SSLContext sslContext = SSLContexts.custom()
+                    .loadTrustMaterial(null, (chain, authType) -> true)
+                    .build();
+
+            return HttpClients.custom()
+                    .setSSLContext(sslContext)
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create insecure HTTP client", e);
+        }
+    }
+
+    // Usage example
+    public static void main(String[] args) throws Exception {
+        HttpClient httpClient = createInsecureHttpClient();
+
+        // Use the client for HTTPS requests
+        // Example: execute requests without SSL certificate validation
     }
 }
