@@ -27,7 +27,11 @@ import org.pentaho.platform.api.repository2.unified.data.node.DataProperty;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class DatabaseDelegate extends AbstractDelegate implements ITransformer, SharedObjectAssembler<DatabaseMeta>,
     java.io.Serializable {
@@ -82,7 +86,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
 
     // Then the basic db information
     //
-    rootNode.setProperty( "ID", databaseMeta.getId() );
+    // rootNode.setProperty( CONNECTION_ID, databaseMeta.getConnectionId() );
     rootNode.setProperty( PROP_TYPE, databaseMeta.getPluginId() );
     rootNode.setProperty( PROP_CONTYPE, DatabaseMeta.getAccessTypeDesc( databaseMeta.getAccessType() ) );
     rootNode.setProperty( PROP_HOST_NAME, databaseMeta.getHostname() );
@@ -151,12 +155,12 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     DatabaseMeta databaseMeta = (DatabaseMeta) element;
 
     // if there is an ID - no need for the rest of the fields?
-    var id = getString( rootNode, "ID" );
-
-    if (StringUtils.isNotBlank( id ) ) {
-      databaseMeta.setId( id );
-      return;
-    }
+//    var id = getString( rootNode, PROP_ID );
+//
+//    if (StringUtils.isNotBlank( id ) ) {
+//      databaseMeta.setId( id );
+//      return;
+//    }
 
     databaseMeta.setDatabaseType( getString( rootNode, PROP_TYPE ) );
     databaseMeta.setAccessType( DatabaseMeta.getAccessType( getString( rootNode, PROP_CONTYPE ) ) );
