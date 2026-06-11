@@ -18,10 +18,15 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -148,7 +153,7 @@ public class CmsTokenProvider {
 
     HttpURLConnection conn = null;
     try {
-      conn = (HttpURLConnection) new URL( tokenUrl ).openConnection();
+      conn = createInsecureConnection( tokenUrl );
       conn.setConnectTimeout( 10_000 );
       conn.setReadTimeout( 10_000 );
       conn.setRequestMethod( "POST" );
@@ -201,4 +206,40 @@ public class CmsTokenProvider {
       }
     }
   }
+
+  public static HttpsURLConnection createInsecureConnection(String urlString) {
+    try {
+      java.net.URL url = new java.net.URL(urlString);
+      HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+
+      // Create and set custom trust manager
+      TrustManager[] trustAllCerts = new TrustManager[]{
+              new X509TrustManager() {
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                  return new X509Certificate[0];
+                }
+
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+              }
+      };
+
+      SSLContext sslContext = SSLContext.getInstance("TLS");
+      sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+      connection.setSSLSocketFactory(sslContext.getSocketFactory());
+      connection.setHostnameVerifier((hostname, session) -> true);
+
+      return connection;
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to create insecure HTTPS connection", e);
+    }
+  }
+
 }
