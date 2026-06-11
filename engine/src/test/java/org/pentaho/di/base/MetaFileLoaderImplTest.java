@@ -19,6 +19,7 @@ import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
@@ -362,23 +363,12 @@ public class MetaFileLoaderImplTest {
 
   @Test
   public void getMetaForEntry_WhenFilenameSpec_ThenRebasesToChildFileDirectory() throws Exception {
-    // Verifies that when loading a child transformation via FILENAME specification,
-    // Internal.Entry.Current.Directory on the loaded meta is set to the child file's directory,
-    // not the parent job's directory.
-    //
-    // The fix in MetaFileLoaderImpl.getMetaForEntry() FILENAME case re-bases tmpSpace:
-    //   tmpSpace = r.resolveCurrentDirectory( bowl, tmpSpace, null, realFilename );
-    // then reseedInternalDirectoryVars() propagates the re-based value onto the loaded meta.
-    // Removing that line would cause this assertion to fail.
-
     setupJobEntryTrans();
     specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
 
     MetaFileLoaderImpl metaFileLoader = new MetaFileLoaderImpl<TransMeta>( jobEntryBase, specificationMethod );
     TransMeta transMeta = (TransMeta) metaFileLoader.getMetaForEntry( DefaultBowl.getInstance(), repository, store, space );
 
-    // The expected directory is the parent folder of the test resource file, in URI form
-    // (matching what KettleVFS FileName.getParent().getURI() returns)
     String expectedDir = Paths.get( getClass().getResource( TRANS_FILE ).toURI() ).getParent().toUri().toString();
     if ( expectedDir.endsWith( "/" ) ) {
       expectedDir = expectedDir.substring( 0, expectedDir.length() - 1 );
@@ -430,6 +420,37 @@ public class MetaFileLoaderImplTest {
     }
 
     assertEquals( expectedDir, transMeta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void resolveFilenameForLoad_WhenPrimarySpaceLeavesInternalPlaceholderUnresolved_ThenFallsBackToTmpSpace() {
+    MetaFileLoaderImpl<TransMeta> metaFileLoader = new MetaFileLoaderImpl<>( mock( JobEntryTrans.class ),
+      ObjectLocationSpecificationMethod.FILENAME );
+
+    JobMeta primarySpace = new JobMeta();
+    Variables tmpSpace = new Variables();
+    tmpSpace.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "/home/user/project" );
+
+    String filename = "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/child.ktr";
+
+    assertEquals( "/home/user/project/child.ktr", metaFileLoader.resolveFilenameForLoad( primarySpace, tmpSpace,
+      filename ) );
+  }
+
+  @Test
+  public void resolveFilenameForLoad_WhenPrimarySpaceResolvesFilename_ThenDoesNotFallBackToTmpSpace() {
+    MetaFileLoaderImpl<TransMeta> metaFileLoader = new MetaFileLoaderImpl<>( mock( JobEntryTrans.class ),
+      ObjectLocationSpecificationMethod.FILENAME );
+
+    Variables primarySpace = new Variables();
+    Variables tmpSpace = new Variables();
+    primarySpace.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "/home/user/project" );
+    tmpSpace.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "/different/path" );
+
+    String filename = "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/child.ktr";
+
+    assertEquals( "/home/user/project/child.ktr", metaFileLoader.resolveFilenameForLoad( primarySpace, tmpSpace,
+      filename ) );
   }
 
   @Test
