@@ -147,12 +147,30 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.core.commands</artifactId>
-      <version>3.9.800</version>
+      <version></version>
+      <exclusions>
+        <!-- Prevent legacy coordinate pulls -->
+        <exclusion>
+          <groupId>org.eclipse.core</groupId>
+          <artifactId>commands</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.equinox.common</artifactId>
-      <version>3.14.0</version>
+      <version></version>
+      <exclusions>
+        <!-- Prevent legacy coordinate pulls -->
+        <exclusion>
+          <groupId>org.eclipse.equinox</groupId>
+          <artifactId>common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse</groupId>
+          <artifactId>equinox.common</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

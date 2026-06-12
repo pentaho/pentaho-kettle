@@ -25,9 +25,6 @@
     <pentaho-capability-manager.version>${project.version}</pentaho-capability-manager.version>
 
     <!-- Third-party dependencies -->
-    <common.version>3.3.0-v20070426</common.version>
-    <jface.version>3.3.0-I20070606-0010</jface.version>
-    <commands.version>3.3.0-I20070605-0010</commands.version>
     <jfreechart.version>1.0.13</jfreechart.version>
     <powermock.version>2.0.9</powermock.version>
   </properties>
@@ -94,8 +91,8 @@
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.equinox</groupId>
-      <artifactId>common</artifactId>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.equinox.common</artifactId>
       <version>${common.version}</version>
       <exclusions>
         <exclusion>
@@ -105,8 +102,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.eclipse</groupId>
-      <artifactId>jface</artifactId>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.jface</artifactId>
       <version>${jface.version}</version>
       <exclusions>
         <exclusion>
@@ -116,8 +113,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.core</groupId>
-      <artifactId>commands</artifactId>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.core.commands</artifactId>
       <version>${commands.version}</version>
       <exclusions>
         <exclusion>

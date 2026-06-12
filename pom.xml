@@ -60,7 +60,9 @@
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <encoder.version>1.2</encoder.version>
     <jsch.version>0.2.9</jsch.version>
-    <jface.version>3.3.0-I20070606-0010</jface.version>
+    <jface.version>3.31.0</jface.version>
+    <commands.version>3.11.100</commands.version>
+    <common.version>3.14.0</common.version>
     <monetdb-jdbc.version>2.8</monetdb-jdbc.version>
     <commons-configuration2.version>2.10.1</commons-configuration2.version>
 
@@ -168,17 +170,17 @@
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.jface</artifactId>
-        <version>3.22.0</version>
+        <version>${jface.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.commands</artifactId>
-        <version>3.9.800</version>
+        <version>${commands.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.equinox.common</artifactId>
-        <version>3.14.0</version>
+        <version>${common.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
