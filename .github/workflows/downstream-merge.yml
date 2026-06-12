@@ -23,7 +23,7 @@ jobs:
       volumes:
         - /home/runner/caches/pentaho/.m2:/root/.m2
     env:
-      # Pentaho settings.xml references ${env.RESOLVE_REPO_MIRROR} (and credentials).
+      ## Pentaho settings.xml references ${env.RESOLVE_REPO_MIRROR} (and credentials).
       # These must be exported so Maven can substitute them when resolving plugins/deps
       # that are not already present in the local .m2 cache.
       RESOLVE_REPO_MIRROR: ${{ format('{0}/{1}', vars.ARTIFACTORY_BASE_URL, inputs.resolve_repo || 'pnt-mvn') }}
