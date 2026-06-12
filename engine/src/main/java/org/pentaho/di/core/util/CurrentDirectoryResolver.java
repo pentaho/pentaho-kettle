@@ -172,10 +172,30 @@ public class CurrentDirectoryResolver {
     } else if ( job != null && repository == null
         && specificationMethod.equals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME ) ) {
       filename = job.getFilename();
-    } else if ( job != null && job.getJobMeta() != null && repository != null
-        && specificationMethod.equals( ObjectLocationSpecificationMethod.FILENAME ) ) {
-      // we're using FILENAME but we are connected to a repository
-      directory = job.getJobMeta().getRepositoryDirectory();
+    } else if ( repository != null && specificationMethod.equals( ObjectLocationSpecificationMethod.FILENAME )
+        && filename != null ) {
+      String resolvedFilename = parentVariables.environmentSubstitute( filename );
+      if ( resolvedFilename != null && !resolvedFilename.contains( "${" ) && !resolvedFilename.contains( "%%" )
+          && resolvedFilename.startsWith( "/" ) && !resolvedFilename.contains( "://" ) ) {
+        boolean repositoryLookupRequired = true;
+        try {
+          repositoryLookupRequired = !KettleVFS.getInstance( bowl ).fileExists( resolvedFilename, parentVariables );
+        } catch ( Exception e ) {
+          repositoryLookupRequired = true;
+        }
+
+        if ( repositoryLookupRequired ) {
+          int lastSeparator = resolvedFilename.lastIndexOf( '/' );
+          if ( lastSeparator > 0 ) {
+            String childDirectoryPath = resolvedFilename.substring( 0, lastSeparator );
+            try {
+              directory = repository.findDirectory( childDirectoryPath );
+            } catch ( Exception e ) {
+              // Fall through to filename-based resolution below.
+            }
+          }
+        }
+      }
     } else if ( job != null && filename == null ) {
       filename = job.getFilename();
     } else if ( repository != null && JobMeta.class.isAssignableFrom( parentVariables.getClass() ) ) {
