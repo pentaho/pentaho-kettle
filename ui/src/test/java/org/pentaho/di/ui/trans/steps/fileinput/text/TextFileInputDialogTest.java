@@ -27,7 +27,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

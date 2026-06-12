@@ -37,7 +37,6 @@ import org.antlr.runtime.TokenStream;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.AngleBracketTemplateLexer;
-import org.apache.commons.lang.StringEscapeUtils;
 
 @SuppressWarnings( { "all", "warnings", "unchecked" } )
 public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
@@ -131,8 +130,41 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
       txt = txt.replace( "??", "?" );
     }
 
-    // enocde XML entities
-    return StringEscapeUtils.escapeXml( txt );
+    // encode XML entities
+    return escapeXmlInternal( txt );
+  }
+
+  /**
+   * Internal method to escape XML content. Replaces: <, >, &, ", '
+   */
+  private String escapeXmlInternal( String input ) {
+    if ( input == null ) {
+      return input;
+    }
+    StringBuilder sb = new StringBuilder();
+    for ( int i = 0; i < input.length(); i++ ) {
+      char ch = input.charAt( i );
+      switch ( ch ) {
+        case '<':
+          sb.append( "&lt;" );
+          break;
+        case '>':
+          sb.append( "&gt;" );
+          break;
+        case '&':
+          sb.append( "&amp;" );
+          break;
+        case '"':
+          sb.append( "&quot;" );
+          break;
+        case '\'':
+          sb.append( "&apos;" );
+          break;
+        default:
+          sb.append( ch );
+      }
+    }
+    return sb.toString();
   }
 
   // assume about 8k for an edifact message

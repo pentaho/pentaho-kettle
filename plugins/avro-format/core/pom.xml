@@ -19,7 +19,6 @@
     <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
     <commons-lang.version>2.6</commons-lang.version>
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <jface.version>3.22.0</jface.version>
     <tukaani-xz.version>1.10</tukaani-xz.version>
     <zstd-jni.version>1.5.7-6</zstd-jni.version>
   </properties>
@@ -96,9 +95,9 @@
       <version>${commons-io.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>${commons-lang.version}</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -113,7 +112,6 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.jface</artifactId>
-      <version>${jface.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>

@@ -12,7 +12,7 @@
 
 package org.pentaho.di.plugins.fileopensave.api.overwrite;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.plugins.fileopensave.api.progress.FileCopyProgressDialog;
 

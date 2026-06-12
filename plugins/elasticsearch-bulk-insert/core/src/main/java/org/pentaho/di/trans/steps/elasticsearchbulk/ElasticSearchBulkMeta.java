@@ -13,7 +13,7 @@
 
 package org.pentaho.di.trans.steps.elasticsearchbulk;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;

@@ -18,7 +18,7 @@
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
-    <commons-lang.version>2.6</commons-lang.version>
+    <commons-lang.version>3.18.0</commons-lang.version>
     <encoder.version>1.2</encoder.version>
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
@@ -117,8 +117,8 @@
       <version>${commons-io.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
       <version>${commons-lang.version}</version>
     </dependency>
     <dependency>

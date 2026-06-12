@@ -16,7 +16,7 @@ package org.pentaho.di.connections;
 import com.google.common.annotations.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.connections.utils.EncryptUtils;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;

@@ -39,7 +39,7 @@ import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY;
 import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;

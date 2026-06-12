@@ -13,7 +13,7 @@
 
 package org.pentaho.di.ui.trans.steps.jsoninput.getfields;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
