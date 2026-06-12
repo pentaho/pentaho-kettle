@@ -19,7 +19,6 @@
     <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
     <commons-lang.version>2.6</commons-lang.version>
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <jface.version>3.22.0</jface.version>
     <tukaani-xz.version>1.10</tukaani-xz.version>
     <zstd-jni.version>1.5.7-6</zstd-jni.version>
   </properties>
