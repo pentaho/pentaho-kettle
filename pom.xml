@@ -57,7 +57,7 @@
     <metastore.version>11.1.0.0-SNAPSHOT</metastore.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>${project.version}</pdi.version>
     <encryption-support.version>11.1.0.0-SNAPSHOT</encryption-support.version>
     <pentaho-hadoop-shims.version>11.1.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
 
