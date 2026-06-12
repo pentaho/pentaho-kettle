@@ -301,7 +301,7 @@ public class CurrentDirectoryResolverTest {
   }
 
   @Test
-  public void resolveCurrentDirectory_WhenJobWithFilenameSpecification_ThenUsesRepositoryDirectory() {
+  public void resolveCurrentDirectory_WhenJobWithFilenameSpecificationAndRepository_ThenPreservesChildFilename() throws Exception {
     Job job = mock( Job.class );
     JobMeta jobMeta = mock( JobMeta.class );
     RepositoryDirectoryInterface repoDir = mock( RepositoryDirectoryInterface.class );
@@ -309,17 +309,86 @@ public class CurrentDirectoryResolverTest {
     when( job.getJobMeta() ).thenReturn( jobMeta );
     when( jobMeta.getRepositoryDirectory() ).thenReturn( repoDir );
     when( repoDir.toString() ).thenReturn( "/repo/job" );
+    when( jobMeta.getFilename() ).thenReturn( "file:///parent/dir/job.kjb" );
 
-    VariableSpace result = resolver.resolveCurrentDirectory(
+    String childFilename = "file:///parent/dir/subfolder/child.ktr";
+    when( parentVariables.environmentSubstitute( childFilename ) ).thenReturn( childFilename );
+
+    CurrentDirectoryResolver spyResolver = spy( resolver );
+
+    spyResolver.resolveCurrentDirectory(
       bowl,
       ObjectLocationSpecificationMethod.FILENAME,
       parentVariables,
       repository,
       job,
-      "/some/file.kjb"
+      childFilename
     );
 
-    assertNotNull( result );
+    verify( spyResolver ).resolveCurrentDirectory( bowl, parentVariables, null, childFilename );
+    verify( spyResolver, never() ).resolveCurrentDirectory( bowl, parentVariables, repoDir, childFilename );
+    verify( spyResolver, never() ).resolveCurrentDirectory( bowl, parentVariables, null, "file:///parent/dir/job.kjb" );
+    verify( repository, never() ).findDirectory( anyString() );
+  }
+
+  @Test
+  public void resolveCurrentDirectory_WhenJobWithFilenameSpecificationAndRepositoryChildPath_ThenUsesChildRepositoryDirectory() throws Exception {
+    Job job = mock( Job.class );
+    RepositoryDirectoryInterface childRepoDir = mock( RepositoryDirectoryInterface.class );
+
+    Variables variables = new Variables();
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "/public/InheritVariable" );
+
+    String childFilename = "${Internal.Entry.Current.Directory}/SubFolder/child.ktr";
+    String resolvedChildFilename = "/public/InheritVariable/SubFolder/child.ktr";
+    IKettleVFS kettleVFS = mock( IKettleVFS.class );
+
+    when( repository.findDirectory( "/public/InheritVariable/SubFolder" ) ).thenReturn( childRepoDir );
+
+    CurrentDirectoryResolver spyResolver = spy( resolver );
+
+    try ( MockedStatic<KettleVFS> mockedVFS = mockStatic( KettleVFS.class ) ) {
+      mockedVFS.when( () -> KettleVFS.getInstance( bowl ) ).thenReturn( kettleVFS );
+      when( kettleVFS.fileExists( resolvedChildFilename, variables ) ).thenReturn( false );
+
+      spyResolver.resolveCurrentDirectory(
+        bowl,
+        ObjectLocationSpecificationMethod.FILENAME,
+        variables,
+        repository,
+        job,
+        childFilename
+      );
+    }
+
+    verify( spyResolver ).resolveCurrentDirectory( bowl, variables, childRepoDir, childFilename );
+  }
+
+  @Test
+  public void resolveCurrentDirectory_WhenJobWithAbsoluteFilenameThatExistsAsVfsFile_ThenSkipsRepositoryLookup() throws Exception {
+    Job job = mock( Job.class );
+    String childFilename = "/tmp/child.ktr";
+    when( parentVariables.environmentSubstitute( childFilename ) ).thenReturn( childFilename );
+    IKettleVFS kettleVFS = mock( IKettleVFS.class );
+
+    CurrentDirectoryResolver spyResolver = spy( resolver );
+
+    try ( MockedStatic<KettleVFS> mockedVFS = mockStatic( KettleVFS.class ) ) {
+      mockedVFS.when( () -> KettleVFS.getInstance( bowl ) ).thenReturn( kettleVFS );
+      when( kettleVFS.fileExists( childFilename, parentVariables ) ).thenReturn( true );
+
+      spyResolver.resolveCurrentDirectory(
+        bowl,
+        ObjectLocationSpecificationMethod.FILENAME,
+        parentVariables,
+        repository,
+        job,
+        childFilename
+      );
+    }
+
+    verify( repository, never() ).findDirectory( anyString() );
+    verify( spyResolver ).resolveCurrentDirectory( bowl, parentVariables, null, childFilename );
   }
 
   @Test
