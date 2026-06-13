@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans.steps.mysqlbulkloader;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,9 +20,11 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -46,8 +49,10 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -293,5 +298,197 @@ public class MySQLBulkLoaderHelperTest {
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "col1" ) );
     return rowMeta;
+  }
+
+  @Test
+  public void testGetTableFieldAndType_NullQueryParams() {
+    JSONObject response = helper.getTableFieldAndType( transMeta, null );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( MySQLBulkLoaderHelper.ERROR ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_NullConnection() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, null );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "my_table" );
+    when( transMeta.environmentSubstitute( "my_table" ) ).thenReturn( "my_table" );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( MySQLBulkLoaderHelper.ERROR ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_BlankConnection() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "   " );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "my_table" );
+    when( transMeta.environmentSubstitute( "my_table" ) ).thenReturn( "my_table" );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( MySQLBulkLoaderHelper.ERROR ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_NullSchema() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( MySQLBulkLoaderHelper.SCHEMA, null );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "my_table" );
+    when( transMeta.environmentSubstitute( "my_table" ) ).thenReturn( "my_table" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      doNothing().when( mock ).connect();
+      when( mock.getTableFieldsMeta( null, "my_table" ) ).thenReturn( null );
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray columns = (JSONArray) response.get( "columns" );
+      assertNotNull( columns );
+      assertEquals( 0, columns.size() );
+    }
+  }
+
+  @Test
+  public void testGetTableFieldAndType_BlankSchema() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( MySQLBulkLoaderHelper.SCHEMA, "" );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "my_table" );
+    when( transMeta.environmentSubstitute( "my_table" ) ).thenReturn( "my_table" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      doNothing().when( mock ).connect();
+      when( mock.getTableFieldsMeta( null, "my_table" ) ).thenReturn( null );
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray columns = (JSONArray) response.get( "columns" );
+      assertNotNull( columns );
+      assertEquals( 0, columns.size() );
+    }
+  }
+
+  @Test
+  public void testGetTableFieldAndType_NullTable() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, null );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( MySQLBulkLoaderHelper.ERROR ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_BlankTable() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "" );
+    when( transMeta.environmentSubstitute( "" ) ).thenReturn( "" );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( MySQLBulkLoaderHelper.ERROR ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_DatabaseNotFound() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "missingConn" );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "my_table" );
+    when( transMeta.environmentSubstitute( "my_table" ) ).thenReturn( "my_table" );
+    when( transMeta.findDatabase( "missingConn" ) ).thenReturn( null );
+
+    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    assertNotNull( response.get( MySQLBulkLoaderHelper.ERROR ) );
+  }
+
+  @Test
+  public void testGetTableFieldAndType_Success_WithColumns() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( MySQLBulkLoaderHelper.SCHEMA, "mySchema" );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "my_table" );
+    when( transMeta.environmentSubstitute( "mySchema" ) ).thenReturn( "mySchema" );
+    when( transMeta.environmentSubstitute( "my_table" ) ).thenReturn( "my_table" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      RowMeta rowMeta = new RowMeta();
+      rowMeta.addValueMeta( new ValueMetaString( "id" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "name" ) );
+      doNothing().when( mock ).connect();
+      when( mock.getTableFieldsMeta( "mySchema", "my_table" ) ).thenReturn( rowMeta );
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray columns = (JSONArray) response.get( "columns" );
+      assertNotNull( columns );
+      assertEquals( 2, columns.size() );
+      assertEquals( "id", ( (JSONObject) columns.get( 0 ) ).get( "columnName" ) );
+      assertEquals( "String", ( (JSONObject) columns.get( 0 ) ).get( "columnType" ) );
+      assertEquals( "name", ( (JSONObject) columns.get( 1 ) ).get( "columnName" ) );
+    }
+  }
+
+  @Test
+  public void testGetTableFieldAndType_Success_NullRowMeta() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "my_table" );
+    when( transMeta.environmentSubstitute( "my_table" ) ).thenReturn( "my_table" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      doNothing().when( mock ).connect();
+      when( mock.getTableFieldsMeta( null, "my_table" ) ).thenReturn( null );
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray columns = (JSONArray) response.get( "columns" );
+      assertNotNull( columns );
+      assertEquals( 0, columns.size() );
+    }
+  }
+
+  @Test
+  public void testGetTableFieldAndType_DBConnectionException() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "my_table" );
+    when( transMeta.environmentSubstitute( "my_table" ) ).thenReturn( "my_table" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      doThrow( new RuntimeException( "Connection failed" ) ).when( mock ).connect();
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+
+      assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      assertNotNull( response.get( MySQLBulkLoaderHelper.ERROR ) );
+    }
+  }
+
+  @Test
+  public void testHandleStepAction_GetTableFieldAndType_Routing() {
+    queryParams.put( MySQLBulkLoaderHelper.CONNECTION, "conn" );
+    queryParams.put( MySQLBulkLoaderHelper.TABLE, "my_table" );
+    when( transMeta.environmentSubstitute( "my_table" ) ).thenReturn( "my_table" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      doNothing().when( mock ).connect();
+      when( mock.getTableFieldsMeta( null, "my_table" ) ).thenReturn( null );
+    } ) ) {
+      JSONObject response = helper.handleStepAction( "getTableFieldAndType", transMeta, queryParams );
+
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+    }
   }
 }
