@@ -10,7 +10,7 @@
  * Change Date: 2029-07-20
  ******************************************************************************/
 
-package org.pentaho.di.job.entries.zipfile;
+package org.pentaho.di.job.entries.unzip;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,33 +18,28 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.util.ZipUnzipHelper;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.job.entry.JobEntryHelperInterface.ACTION_STATUS;
-import static org.pentaho.di.job.entry.JobEntryHelperInterface.FAILURE_METHOD_NOT_FOUND_RESPONSE;
-import static org.pentaho.di.job.entry.JobEntryHelperInterface.FAILURE_RESPONSE;
-import static org.pentaho.di.job.entry.JobEntryHelperInterface.SUCCESS_RESPONSE;
+import static org.pentaho.di.job.entry.JobEntryHelperInterface.*;
 
-public class JobEntryZipFileHelperTest {
+public class JobEntryUnZipFileHelperTest {
 
-  private JobEntryZipFileHelper helper;
+  private JobEntryUnZipFileHelper helper;
   private JobMeta jobMeta;
-  private JobEntryZipFile jobEntryZipFile;
-    private static final Class<?> PKG = JobEntryZipFile.class;
+  private JobEntryUnZip jobEntryUnZipFile;
+    private static final Class<?> PKG = JobEntryUnZip.class;
 
 
     @Before
   public void setUp() {
     jobMeta = mock( JobMeta.class );
-    jobEntryZipFile = mock( JobEntryZipFile.class );
-    helper = new JobEntryZipFileHelper( jobEntryZipFile );
+    jobEntryUnZipFile = mock( JobEntryUnZip.class );
+    helper = new  JobEntryUnZipFileHelper( jobEntryUnZipFile );
   }
 
   @Test
@@ -57,9 +52,9 @@ public class JobEntryZipFileHelperTest {
     params.put( "date_time_format", "" );
 
     when( jobMeta.environmentSubstitute( "test" ) ).thenReturn( "test" );
-    when( jobEntryZipFile.getFullFilename( "test", true, true, false, "" ) ).thenReturn( "test_20251201_153045.zip" );
+    when( jobEntryUnZipFile.getFullFilename( "test", true, true, false, "" ) ).thenReturn( "test_20251201_153045.zip" );
 
-    JSONObject response = ZipUnzipHelper.showFileNameAction( jobMeta, params, jobEntryZipFile, PKG );
+    JSONObject response = ZipUnzipHelper.showFileNameAction( jobMeta, params, jobEntryUnZipFile, PKG );
 
     assertNotNull( response );
     assertEquals( SUCCESS_RESPONSE, response.get( ACTION_STATUS ) );
@@ -75,7 +70,7 @@ public class JobEntryZipFileHelperTest {
 
     when( jobMeta.environmentSubstitute( "" ) ).thenReturn( "" );
 
-    JSONObject response = ZipUnzipHelper.showFileNameAction( jobMeta, params, jobEntryZipFile, PKG );
+    JSONObject response = ZipUnzipHelper.showFileNameAction( jobMeta, params, jobEntryUnZipFile, PKG );
 
     assertNotNull( response );
     assertNotNull( response.get( "message" ) );
@@ -93,7 +88,7 @@ public class JobEntryZipFileHelperTest {
     params.put( "date_time_format", "" );
 
     when( jobMeta.environmentSubstitute( "test" ) ).thenReturn( "test" );
-    when( jobEntryZipFile.getFullFilename( "test", false, false, false, "" ) ).thenReturn( "test.zip" );
+    when( jobEntryUnZipFile.getFullFilename( "test", false, false, false, "" ) ).thenReturn( "test.zip" );
 
     JSONObject response = helper.handleJobEntryAction( "showFileName", jobMeta, params );
 
