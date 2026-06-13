@@ -27,11 +27,13 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.entry.JobEntryHelperInterface;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doNothing;
@@ -88,7 +90,7 @@ public class JobEntryColumnsExistTest {
   }
 
   @Test
-  public void jobFail_tableNameIsEmpty() throws KettleException {
+  public void jobFail_tableNameIsEmpty() {
     jobEntry.setTablename( null );
     final Result result = jobEntry.execute( new Result(), 0 );
     assertEquals( "Should be error", 1, result.getNrErrors() );
@@ -96,7 +98,7 @@ public class JobEntryColumnsExistTest {
   }
 
   @Test
-  public void jobFail_columnsArrayIsEmpty() throws KettleException {
+  public void jobFail_columnsArrayIsEmpty() {
     jobEntry.setArguments( null );
     final Result result = jobEntry.execute( new Result(), 0 );
     assertEquals( "Should be error", 1, result.getNrErrors() );
@@ -104,7 +106,7 @@ public class JobEntryColumnsExistTest {
   }
 
   @Test
-  public void jobFail_connectionIsNull() throws KettleException {
+  public void jobFail_connectionIsNull() {
     jobEntry.setDatabase( null );
     final Result result = jobEntry.execute( new Result(), 0 );
     assertEquals( "Should be error", 1, result.getNrErrors() );
@@ -146,5 +148,12 @@ public class JobEntryColumnsExistTest {
     assertTrue( "Result should be true", result.getResult() );
     assertEquals( "Lines written", COLUMNS.length, result.getNrLinesWritten() );
     verify( db, atLeastOnce() ).disconnect();
+  }
+
+  @Test
+  public void testGetJobEntryHelperInterface() {
+    JobEntryHelperInterface helper = jobEntry.getJobEntryHelperInterface();
+    assertNotNull( helper );
+    assertTrue( helper instanceof JobEntryColumnsExistHelper );
   }
 }

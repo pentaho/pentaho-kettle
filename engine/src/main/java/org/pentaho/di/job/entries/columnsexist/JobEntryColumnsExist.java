@@ -33,6 +33,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
+import org.pentaho.di.job.entry.JobEntryHelperInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -212,6 +213,11 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 
   public boolean isUnconditional() {
     return false;
+  }
+
+  @Override
+  public JobEntryHelperInterface getJobEntryHelperInterface() {
+    return new JobEntryColumnsExistHelper();
   }
 
   public Result execute( Result previousResult, int nr ) {
