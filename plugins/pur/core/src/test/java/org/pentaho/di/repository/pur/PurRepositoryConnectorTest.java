@@ -12,34 +12,36 @@
 
 package org.pentaho.di.repository.pur;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
+import org.pentaho.di.cli.auth.BrowserAuthSessionHolder;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
 import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.api.engine.IApplicationContext;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 
-import java.io.ByteArrayInputStream;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -50,6 +52,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -58,6 +61,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings( { "rawtypes", "unchecked", "removal" } )
 public class PurRepositoryConnectorTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
@@ -173,6 +177,54 @@ public class PurRepositoryConnectorTest {
       assertEquals( "sessionUser", result.getUser().getLogin() );
       // decryptedPassword should be empty when session auth is used, so password on user should be ""
       assertEquals( "", result.getUser().getPassword() );
+    }
+  }
+
+  @Test
+  public void testConnectWithoutPasswordRequiresStoredCredential() {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    BrowserAuthSessionHolder holder = mock( BrowserAuthSessionHolder.class );
+    when( holder.findAccessToken( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.empty() );
+    when( holder.findSessionCookie( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.empty() );
+
+    try ( MockedStatic<BrowserAuthSessionHolder> mockedHolder = mockStatic( BrowserAuthSessionHolder.class ) ) {
+      mockedHolder.when( BrowserAuthSessionHolder::getInstance ).thenReturn( holder );
+
+      try {
+        new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) )
+          .connect( "alice" );
+        Assert.fail( "Expected missing credential failure" );
+      } catch ( KettleException e ) {
+        assertTrue( e.getMessage().contains( "OAuth access token" ) );
+      }
+    }
+  }
+
+  @Test
+  public void testConnectWithoutPasswordDelegatesWithEmptyPasswordWhenCredentialExists() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector = spy(
+      new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) ) );
+    RepositoryConnectResult expected = mock( RepositoryConnectResult.class );
+    doReturn( expected ).when( connector ).connect( "alice", "" );
+
+    BrowserAuthSessionHolder holder = mock( BrowserAuthSessionHolder.class );
+    when( holder.findAccessToken( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.empty() );
+    when( holder.findSessionCookie( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.of( "JSESSIONID=1" ) );
+
+    try ( MockedStatic<BrowserAuthSessionHolder> mockedHolder = mockStatic( BrowserAuthSessionHolder.class ) ) {
+      mockedHolder.when( BrowserAuthSessionHolder::getInstance ).thenReturn( holder );
+
+      assertEquals( expected, connector.connect( "alice" ) );
+      verify( connector ).connect( "alice", "" );
     }
   }
 
@@ -482,7 +534,6 @@ public class PurRepositoryConnectorTest {
    * Helper: runs connect() with a capturing executor, returns all captured Callables.
    * The 4th callable is always the session-service callable.
    */
-  @SuppressWarnings( "unchecked" )
   private List<Callable> captureSessionCallable( PurRepositoryConnector connector,
       String username, String password ) throws Exception {
     ExecutorService service = mock( ExecutorService.class );
@@ -560,13 +611,13 @@ public class PurRepositoryConnectorTest {
     doReturn( mockBuilder ).when( mockBuilder ).setDefaultCredentialsProvider( any() );
     doReturn( mockHttpClient ).when( mockBuilder ).build();
 
-    CloseableHttpResponse mockResponse = mock( CloseableHttpResponse.class );
-    HttpEntity mockEntity = mock( HttpEntity.class );
-    when( mockEntity.getContent() ).thenReturn(
-      new ByteArrayInputStream( "admin".getBytes( StandardCharsets.UTF_8 ) ) );
-    when( mockEntity.getContentLength() ).thenReturn( (long) "admin".length() );
-    when( mockResponse.getEntity() ).thenReturn( mockEntity );
-    when( mockHttpClient.execute( any() ) ).thenReturn( mockResponse );
+    ClassicHttpResponse mockResponse = mock( ClassicHttpResponse.class );
+    when( mockResponse.getCode() ).thenReturn( 200 );
+    when( mockResponse.getEntity() ).thenReturn( new StringEntity( "admin" ) );
+    doAnswer( invocation -> {
+      HttpClientResponseHandler<?> handler = invocation.getArgument( 1 );
+      return handler.handleResponse( mockResponse );
+    } ).when( mockHttpClient ).execute( any( ClassicHttpRequest.class ), any( HttpClientResponseHandler.class ) );
 
     try ( MockedStatic<HttpClientBuilder> mockedBuilder = mockStatic( HttpClientBuilder.class ) ) {
       mockedBuilder.when( HttpClientBuilder::create ).thenReturn( mockBuilder );
@@ -598,7 +649,8 @@ public class PurRepositoryConnectorTest {
     doReturn( mockBuilder ).when( mockBuilder ).setDefaultCredentialsProvider( any() );
     CloseableHttpClient mockHttpClient = mock( CloseableHttpClient.class );
     doReturn( mockHttpClient ).when( mockBuilder ).build();
-    when( mockHttpClient.execute( any() ) ).thenThrow( new RuntimeException( "Connection refused" ) );
+    when( mockHttpClient.execute( any( ClassicHttpRequest.class ), any( HttpClientResponseHandler.class ) ) )
+      .thenThrow( new RuntimeException( "Connection refused" ) );
 
     try ( MockedStatic<HttpClientBuilder> mockedBuilder = mockStatic( HttpClientBuilder.class ) ) {
       mockedBuilder.when( HttpClientBuilder::create ).thenReturn( mockBuilder );
@@ -611,7 +663,6 @@ public class PurRepositoryConnectorTest {
    * Helper: sets up executor futures so the normal (non-in-process) connect path can run.
    * connect() may still throw from registerRepositoryServices; tests should catch it.
    */
-  @SuppressWarnings( "unchecked" )
   private void setupExecutorFutures( PurRepositoryConnector connector ) throws Exception {
     ExecutorService service = mock( ExecutorService.class );
     doReturn( service ).when( connector ).getExecutor();
@@ -903,7 +954,6 @@ public class PurRepositoryConnectorTest {
     assertNotNull( thrown.getMessage() );
   }
 
-  @SuppressWarnings( "unchecked" )
   @Test
   public void testConnect_InterruptedException_ClosesServiceManagerAndRestoresInterruptFlag() throws Exception {
     PurRepository mockPurRepository = mock( PurRepository.class );
@@ -948,7 +998,6 @@ public class PurRepositoryConnectorTest {
     assertTrue( "Interrupt flag should be restored", Thread.interrupted() ); // also clears it
   }
 
-  @SuppressWarnings( "unchecked" )
   @Test
   public void testConnect_GeneralException_ClosesServiceManagerAndThrowsKettleException() throws Exception {
     PurRepository mockPurRepository = mock( PurRepository.class );
@@ -1005,12 +1054,8 @@ public class PurRepositoryConnectorTest {
     when( mockProvider.getAllowedActions( any() ) )
       .thenReturn( Arrays.asList( "org.pentaho.repository.read", "org.pentaho.repository.create" ) );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider,
-      org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION );
+    boolean result = connector.allowedActionsContains( mockProvider,
+      RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION );
 
     assertFalse( "Should return false when action is not in allowed actions", result );
   }
@@ -1024,17 +1069,12 @@ public class PurRepositoryConnectorTest {
     PurRepositoryConnector connector =
       new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
 
-    String adminAction =
-      org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION;
+    String adminAction = RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION;
     AbsSecurityProvider mockProvider = mock( AbsSecurityProvider.class );
     when( mockProvider.getAllowedActions( any() ) )
       .thenReturn( Arrays.asList( "org.pentaho.repository.read", adminAction ) );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider, adminAction );
+    boolean result = connector.allowedActionsContains( mockProvider, adminAction );
 
     assertTrue( "Should return true when action is in allowed actions", result );
   }
@@ -1052,11 +1092,7 @@ public class PurRepositoryConnectorTest {
     when( mockProvider.getAllowedActions( any() ) )
       .thenReturn( Arrays.asList( "org.pentaho.repository.read" ) );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider, (String) null );
+    boolean result = connector.allowedActionsContains( mockProvider, null );
 
     assertFalse( "Should return false when action is null", result );
   }
@@ -1073,12 +1109,8 @@ public class PurRepositoryConnectorTest {
     AbsSecurityProvider mockProvider = mock( AbsSecurityProvider.class );
     when( mockProvider.getAllowedActions( any() ) ).thenReturn( Collections.emptyList() );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider,
-      org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION );
+    boolean result = connector.allowedActionsContains( mockProvider,
+      RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION );
 
     assertFalse( "Should return false when allowed actions list is empty", result );
   }

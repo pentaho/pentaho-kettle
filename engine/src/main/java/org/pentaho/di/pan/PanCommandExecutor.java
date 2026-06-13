@@ -53,6 +53,9 @@ import java.io.Serializable;
  */
 public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
+  private record RepositoryAuthOptions(boolean useBrowserAuth, boolean useDeviceCode, boolean useServiceAccount) {
+  }
+
   private PanTransformationDelegate transformationDelegate;
   private Repository repository;
 
@@ -142,6 +145,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       try {
         initializeRepository( params );
       } catch ( KettleException e ) {
+        getLog().logError( "Repository Initialization failed", e );
         return false; // Repository initialization failed, cannot handle repo-based commands
       }
 
@@ -286,18 +290,33 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
   /**
    * Initialize repository connection based on parameters.
-   * This method extracts the repository initialization logic from PanCommandExecutor.
+   * This method supports browser-based authentication when password is not
+   * provided.
+   * The authentication flow is:
+   * 1. If password is provided, use traditional username/password authentication
+   * 2. If password is not provided and browserAuth is enabled (or default),
+   * attempt browser-based authentication (opens browser for login)
+   * 3. If browser auth fails or is not available, prompt for password
+   * 4. Fall back to username/password authentication
    */
   public void initializeRepository( Params params ) throws KettleException {
+
+    // GUARD: Skip if repository is already initialized
+    if ( this.repository != null ) {
+      getLog().logDebug( "Repository already initialized, skipping re-initialization" );
+      return;
+    }
 
     // Check if repository parameters are provided
     if ( !Utils.isEmpty( params.getRepoName() ) && !isEnabled( params.getBlockRepoConns() ) ) {
 
-      /**
+      /*
        * if set, _trust_user_ needs to be considered. See pur-plugin's:
        *
-       * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/PurRepositoryConnector.java#L97-L101
-       * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
+       * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0
+       *       .0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/PurRepositoryConnector.java#L97-L101
+       * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0
+       *       .0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
        */
       if ( isEnabled( params.getTrustRepoUser() ) ) {
         System.setProperty( "pentaho.repository.client.attemptTrust", "Y" );
@@ -308,25 +327,63 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         params.getRepoName(),
         "Pan.Log.LoadingAvailableRep",
         "Pan.Error.NoRepsDefined",
-        "Pan.Log.FindingRep"
-      );
+        "Pan.Log.FindingRep" );
 
       if ( repositoryMeta == null ) {
         getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Error.CanNotConnectRep" ) );
         throw new KettleException( "Could not connect to repository: " + params.getRepoName() );
       }
 
-      // Establish repository connection
-      this.repository = establishRepositoryConnection(
+      RepositoryAuthOptions authOptions = resolveRepositoryAuthOptions( params );
+
+      // Establish repository connection with browser auth and device code support
+      this.repository = establishRepositoryConnectionWithBrowserAuth(
         repositoryMeta,
         params.getRepoUsername(),
         params.getRepoPassword(),
-        RepositoryOperation.EXECUTE_TRANSFORMATION
-      );
+        authOptions.useBrowserAuth(),
+        authOptions.useDeviceCode(),
+        authOptions.useServiceAccount(),
+        params.getPreferredIdp(),
+        RepositoryOperation.EXECUTE_TRANSFORMATION );
     } else {
       // No repository parameters provided, keep repository as null
       this.repository = null;
     }
+  }
+
+  // Determine if browser authentication should be used
+  // Browser auth is used when:
+  // 1. Password is not provided, OR
+  // 2. browserAuth flag is explicitly set to "Y"
+  private RepositoryAuthOptions resolveRepositoryAuthOptions( Params params ) {
+    boolean useBrowserAuth = Utils.isEmpty( params.getRepoPassword() ) || isEnabled( params.getBrowserAuth() );
+
+    // If password is provided, don't use browser auth unless explicitly requested
+    if ( !Utils.isEmpty( params.getRepoPassword() ) && !isEnabled( params.getBrowserAuth() ) ) {
+      useBrowserAuth = false;
+    }
+
+    // Determine if device code authentication is explicitly requested
+    boolean useDeviceCode = isEnabled( params.getDeviceCode() );
+
+    // --device-code implies a headless/non-browser flow (CI, server scripts).
+    // Suppress the automatic useBrowserAuth=true default so device code failure
+    // falls through to user:pass, not to a browser window.
+    // An explicit --browser-auth alongside --device-code can still override this.
+    if ( useDeviceCode && !isEnabled( params.getBrowserAuth() ) ) {
+      useBrowserAuth = false;
+    }
+
+    // --service-account: non-interactive client_credentials grant (RFC 6749 §4.4).
+    // Exclusive with browser/device-code flows — no human interaction is acceptable
+    // in service-account mode (avoids blocking a pipeline on a prompt).
+    boolean useServiceAccount = isEnabled( params.getServiceAccount() );
+    if ( useServiceAccount ) {
+      return new RepositoryAuthOptions( false, false, true );
+    }
+
+    return new RepositoryAuthOptions( useBrowserAuth, useDeviceCode, false );
   }
 
   public int printVersion() {
@@ -353,14 +410,15 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     } else if ( !Utils.isEmpty( exportRepo ) ) {
       // Export the repository
       getLog().logMinimal(
-        BaseMessages.getString( getPkgClazz(), "Pan.Log.ExportingObjectsRepToFile", "" + exportRepo ) );
+        BaseMessages.getString( getPkgClazz(), "Pan.Log.ExportingObjectsRepToFile", exportRepo ) );
       repository.getExporter().exportAllObjects( null, exportRepo, directory, "all" );
       getLog().logMinimal(
-        BaseMessages.getString( getPkgClazz(), "Pan.Log.FinishedExportObjectsRepToFile", "" + exportRepo ) );
+        BaseMessages.getString( getPkgClazz(), "Pan.Log.FinishedExportObjectsRepToFile", exportRepo ) );
     }
   }
 
-  public Trans loadTransFromRepository( Repository repository, String dirName, String transName ) throws KettleException {
+  public Trans loadTransFromRepository( Repository repository, String dirName, String transName )
+    throws KettleException {
 
     if ( Utils.isEmpty( transName ) ) {
       getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Error.NoTransNameSupplied" ) );
@@ -386,7 +444,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
   }
 
   public Trans loadTransFromFilesystem( String initialDir, String filename, String jarFilename,
-                                        Serializable base64Zip ) throws IOException, KettleMissingPluginsException, KettleXMLException {
+                                        Serializable base64Zip )
+    throws IOException, KettleMissingPluginsException, KettleXMLException {
 
     Trans trans = null;
 
@@ -400,13 +459,14 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     if ( !Utils.isEmpty( filename ) ) {
 
       String filepath = filename;
-      // If the filename starts with scheme like zip:, then isAbsolute() will return false even though the
-      // the path following the zip is absolute. Check for isAbsolute only if the fileName does not start with scheme
+      // If the filename starts with scheme like zip:, then isAbsolute() will return
+      // false even though the path following the zip is absolute. Check for isAbsolute only if the
+      // fileName does not start with scheme
       if ( !KettleVFS.startsWithScheme( filename ) && !FileUtil.isFullyQualified( filename ) ) {
         filepath = initialDir + filename;
       }
 
-      logDebug( "Pan.Log.LoadingTransXML", "" + filepath );
+      logDebug( "Pan.Log.LoadingTransXML", filepath );
       TransMeta transMeta = new TransMeta( getBowl(), filepath );
       trans = new Trans( transMeta );
     }
@@ -457,7 +517,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     trans.getTransMeta().setInternalKettleVariables( trans );
 
     // Map the command line named parameters to the actual named parameters.
-    // Skip for the moment any extra command line parameter not known in the transformation.
+    // Skip for the moment any extra command line parameter not known in the
+    // transformation.
     String[] transParams = trans.listParameters();
     for ( String param : transParams ) {
       String value = optionParams.getParameterValue( param );
@@ -467,7 +528,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       }
     }
 
-    // Put the parameters over the already defined variable space. Parameters get priority.
+    // Put the parameters over the already defined variable space. Parameters get
+    // priority.
     trans.activateParameters();
   }
 
@@ -510,11 +572,13 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       }
     }
   }
+
   protected Result exitWithStatus( final int exitStatus, Trans trans ) {
     try {
       ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.TransformationFinish.id, trans );
     } catch ( KettleException e ) {
-      getLog().logError( "A KettleException occurred when attempting to call TransformationFinish extension point", e );
+      getLog().logError( "A KettleException occurred when attempting to call TransformationFinish extension point",
+        e );
     }
     return exitWithStatus( exitStatus );
   }
