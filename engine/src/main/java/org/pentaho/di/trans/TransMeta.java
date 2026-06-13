@@ -5448,9 +5448,11 @@ public class TransMeta extends AbstractMeta
     for ( int i = 0; i < nrSteps(); i++ ) {
       StepMeta stepMeta = getStep( i );
       DatabaseMeta[] dbs = stepMeta.getStepMetaInterface().getUsedDatabaseConnections();
-      for ( int d = 0; d < dbs.length; d++ ) {
-        if ( dbs[d].equals( databaseMeta ) ) {
-          return true;
+      if ( dbs != null ) {
+        for ( int d = 0; d < dbs.length; d++ ) {
+          if ( dbs[d] != null && dbs[d].equals( databaseMeta ) ) {
+            return true;
+          }
         }
       }
     }
@@ -5464,8 +5466,12 @@ public class TransMeta extends AbstractMeta
     for ( int i = 0; i < nrSteps(); i++ ) {
       StepMeta stepMeta = getStep( i );
       DatabaseMeta[] dbs = stepMeta.getStepMetaInterface().getUsedDatabaseConnections();
-      for ( int d = 0; d < dbs.length; d++ ) {
-        dbNames.add( dbs[d].getName() );
+      if ( dbs != null ) {
+        for ( int d = 0; d < dbs.length; d++ ) {
+          if ( dbs[d] != null ) {
+            dbNames.add( dbs[d].getName() );
+          }
+        }
       }
     }
 
@@ -5485,7 +5491,7 @@ public class TransMeta extends AbstractMeta
       DatabaseMeta[] dbs = step.getStepMetaInterface().getUsedDatabaseConnections();
       if ( dbs != null ) {
         for ( DatabaseMeta db : dbs ) {
-          if ( db.getName().equalsIgnoreCase( name ) ) {
+          if ( db != null && db.getName().equalsIgnoreCase( name ) ) {
             updateFields( db, newDatabaseMeta );
           }
         }
@@ -5509,9 +5515,11 @@ public class TransMeta extends AbstractMeta
           DatabaseMeta[] dbs = stepMetaInterface.getUsedDatabaseConnections();
           if ( dbs != null ) {
             for ( DatabaseMeta db : dbs ) {
-              Optional<DatabaseMeta> newDatabaseMeta =
-                Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
-              updateFields( db, newDatabaseMeta );
+              if ( db != null ) {
+                Optional<DatabaseMeta> newDatabaseMeta =
+                  Optional.ofNullable( findMatchingDb( allDbs, db.getName() ) );
+                updateFields( db, newDatabaseMeta );
+              }
             }
           }
         }

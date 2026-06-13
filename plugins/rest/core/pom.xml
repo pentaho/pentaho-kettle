@@ -245,6 +245,7 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.jface</artifactId>
+      <version>${jface.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

@@ -506,6 +506,7 @@ public class RepositoryConnectMenuTest {
 
   @Test
   public void testOpenBrowserLogin_NonUserCancelledException_ShowsErrorDialog() throws Exception {
+    Assume.assumeTrue( "SWT Display unavailable in this environment; skipping", displayUsable );
     String serverUrl = "http://localhost:8080/pentaho";
 
     CompletableFuture<SessionInfo> failedFuture = new CompletableFuture<>();

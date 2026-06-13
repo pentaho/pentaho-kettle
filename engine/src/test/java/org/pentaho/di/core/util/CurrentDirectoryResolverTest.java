@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.vfs.IKettleVFS;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.Job;
@@ -36,8 +37,17 @@ import org.pentaho.di.trans.step.StepMeta;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import org.mockito.MockedStatic;
+import org.pentaho.di.core.vfs.KettleVFS;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class CurrentDirectoryResolverTest {
@@ -291,7 +301,7 @@ public class CurrentDirectoryResolverTest {
   }
 
   @Test
-  public void resolveCurrentDirectory_WhenJobWithFilenameSpecification_ThenUsesRepositoryDirectory() {
+  public void resolveCurrentDirectory_WhenJobWithFilenameSpecificationAndRepository_ThenPreservesChildFilename() throws Exception {
     Job job = mock( Job.class );
     JobMeta jobMeta = mock( JobMeta.class );
     RepositoryDirectoryInterface repoDir = mock( RepositoryDirectoryInterface.class );
@@ -299,17 +309,86 @@ public class CurrentDirectoryResolverTest {
     when( job.getJobMeta() ).thenReturn( jobMeta );
     when( jobMeta.getRepositoryDirectory() ).thenReturn( repoDir );
     when( repoDir.toString() ).thenReturn( "/repo/job" );
+    when( jobMeta.getFilename() ).thenReturn( "file:///parent/dir/job.kjb" );
 
-    VariableSpace result = resolver.resolveCurrentDirectory(
+    String childFilename = "file:///parent/dir/subfolder/child.ktr";
+    when( parentVariables.environmentSubstitute( childFilename ) ).thenReturn( childFilename );
+
+    CurrentDirectoryResolver spyResolver = spy( resolver );
+
+    spyResolver.resolveCurrentDirectory(
       bowl,
       ObjectLocationSpecificationMethod.FILENAME,
       parentVariables,
       repository,
       job,
-      "/some/file.kjb"
+      childFilename
     );
 
-    assertNotNull( result );
+    verify( spyResolver ).resolveCurrentDirectory( bowl, parentVariables, null, childFilename );
+    verify( spyResolver, never() ).resolveCurrentDirectory( bowl, parentVariables, repoDir, childFilename );
+    verify( spyResolver, never() ).resolveCurrentDirectory( bowl, parentVariables, null, "file:///parent/dir/job.kjb" );
+    verify( repository, never() ).findDirectory( anyString() );
+  }
+
+  @Test
+  public void resolveCurrentDirectory_WhenJobWithFilenameSpecificationAndRepositoryChildPath_ThenUsesChildRepositoryDirectory() throws Exception {
+    Job job = mock( Job.class );
+    RepositoryDirectoryInterface childRepoDir = mock( RepositoryDirectoryInterface.class );
+
+    Variables variables = new Variables();
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "/public/InheritVariable" );
+
+    String childFilename = "${Internal.Entry.Current.Directory}/SubFolder/child.ktr";
+    String resolvedChildFilename = "/public/InheritVariable/SubFolder/child.ktr";
+    IKettleVFS kettleVFS = mock( IKettleVFS.class );
+
+    when( repository.findDirectory( "/public/InheritVariable/SubFolder" ) ).thenReturn( childRepoDir );
+
+    CurrentDirectoryResolver spyResolver = spy( resolver );
+
+    try ( MockedStatic<KettleVFS> mockedVFS = mockStatic( KettleVFS.class ) ) {
+      mockedVFS.when( () -> KettleVFS.getInstance( bowl ) ).thenReturn( kettleVFS );
+      when( kettleVFS.fileExists( resolvedChildFilename, variables ) ).thenReturn( false );
+
+      spyResolver.resolveCurrentDirectory(
+        bowl,
+        ObjectLocationSpecificationMethod.FILENAME,
+        variables,
+        repository,
+        job,
+        childFilename
+      );
+    }
+
+    verify( spyResolver ).resolveCurrentDirectory( bowl, variables, childRepoDir, childFilename );
+  }
+
+  @Test
+  public void resolveCurrentDirectory_WhenJobWithAbsoluteFilenameThatExistsAsVfsFile_ThenSkipsRepositoryLookup() throws Exception {
+    Job job = mock( Job.class );
+    String childFilename = "/tmp/child.ktr";
+    when( parentVariables.environmentSubstitute( childFilename ) ).thenReturn( childFilename );
+    IKettleVFS kettleVFS = mock( IKettleVFS.class );
+
+    CurrentDirectoryResolver spyResolver = spy( resolver );
+
+    try ( MockedStatic<KettleVFS> mockedVFS = mockStatic( KettleVFS.class ) ) {
+      mockedVFS.when( () -> KettleVFS.getInstance( bowl ) ).thenReturn( kettleVFS );
+      when( kettleVFS.fileExists( childFilename, parentVariables ) ).thenReturn( true );
+
+      spyResolver.resolveCurrentDirectory(
+        bowl,
+        ObjectLocationSpecificationMethod.FILENAME,
+        parentVariables,
+        repository,
+        job,
+        childFilename
+      );
+    }
+
+    verify( repository, never() ).findDirectory( anyString() );
+    verify( spyResolver ).resolveCurrentDirectory( bowl, parentVariables, null, childFilename );
   }
 
   @Test
@@ -479,6 +558,101 @@ public class CurrentDirectoryResolverTest {
 
     assertNotNull( result );
     assertEquals( "test_value", result.getVariable( "TEST_VAR" ) );
+  }
+
+  /**
+   * Regression test for PDI-20828 / PR-10484 follow-up:
+   *
+   * When a job entry invokes a sub-transformation by FILENAME (no repository), the cleanup block in
+   * resolveCurrentDirectory(Job) must NOT overwrite the provided child filename with the parent
+   * job's filename.  Before the fix, this overwrote always, causing MetaFileLoaderImpl to seed the
+   * wrong Internal.Entry.Current.Directory (parent's directory instead of the child's directory)
+   * onto the loaded TransMeta.
+   */
+  @Test
+  public void resolveCurrentDirectory_WhenFilenameSpecAndNoRepository_ThenPreservesChildFilenameNotParentJobFilename() {
+    Job job = mock( Job.class );
+    JobMeta jobMeta = mock( JobMeta.class );
+
+    // Parent job lives in a different directory than the child transformation
+    when( job.getJobMeta() ).thenReturn( jobMeta );
+    when( jobMeta.getFilename() ).thenReturn( "file:///parent/dir/job.kjb" );
+
+    String childFilename = "file:///parent/dir/subfolder/child.ktr";
+
+    CurrentDirectoryResolver spyResolver = spy( resolver );
+
+    spyResolver.resolveCurrentDirectory(
+      bowl,
+      ObjectLocationSpecificationMethod.FILENAME,
+      parentVariables,
+      null,       // no repository
+      job,
+      childFilename
+    );
+
+    // The 4-arg inner method must be called with the child's filename so that VFS can extract the
+    // child's directory.  It must NOT be called with the parent job's filename.
+    verify( spyResolver ).resolveCurrentDirectory( bowl, parentVariables, null, childFilename );
+    verify( spyResolver, never() ).resolveCurrentDirectory( bowl, parentVariables, null, "file:///parent/dir/job.kjb" );
+  }
+
+  @Test
+  public void resolveCurrentDirectory_WhenFilenameHasUnresolvedVariables_ThenSkipsFileExistenceCheck() {
+    // Verifies that when a filename contains ${...} expressions (unresolved variables),
+    // KettleVFS.getInstance() is never invoked. The fix returns tmpSpace early before
+    // any VFS call, preventing premature directory resolution using the parent's context.
+
+    String filenameWithUnresolvedVar = "/parent/dir/${Internal.Entry.Current.Directory}/child.ktr";
+    Variables variables = new Variables();
+
+    try ( MockedStatic<KettleVFS> mockedVFS = mockStatic( KettleVFS.class ) ) {
+      VariableSpace result = resolver.resolveCurrentDirectory( bowl, variables, null, filenameWithUnresolvedVar );
+
+      assertNotNull( result );
+      // The core assertion: KettleVFS must never be touched when the filename has unresolved variables
+      mockedVFS.verify( () -> KettleVFS.getInstance( bowl ), never() );
+    }
+  }
+
+  @Test
+  public void resolveCurrentDirectory_WhenFilenameHasUnresolvedWindowsVariables_ThenSkipsFileExistenceCheck() {
+    String filenameWithUnresolvedVar = "/parent/dir/%%Internal.Entry.Current.Directory%%/child.ktr";
+    Variables variables = new Variables();
+
+    try ( MockedStatic<KettleVFS> mockedVFS = mockStatic( KettleVFS.class ) ) {
+      VariableSpace result = resolver.resolveCurrentDirectory( bowl, variables, null, filenameWithUnresolvedVar );
+
+      assertNotNull( result );
+      mockedVFS.verify( () -> KettleVFS.getInstance( bowl ), never() );
+    }
+  }
+
+  @Test
+  public void resolveCurrentDirectory_WhenFilenameVariablesResolve_ThenUsesResolvedFilename() throws Exception {
+    String filenameWithVariable = "${BASE_DIR}/child.ktr";
+    String resolvedFilename = "/home/user/project/child.ktr";
+    Variables variables = new Variables();
+    variables.setVariable( "BASE_DIR", "/home/user/project" );
+
+    IKettleVFS kettleVFS = mock( IKettleVFS.class );
+
+    when( fileObject.exists() ).thenReturn( true );
+    when( fileObject.getName() ).thenReturn( fileName );
+    when( fileName.getBaseName() ).thenReturn( "child.ktr" );
+    when( fileName.getParent() ).thenReturn( parentFileName );
+    when( parentFileName.getURI() ).thenReturn( "file:///home/user/project" );
+
+    try ( MockedStatic<KettleVFS> mockedVFS = mockStatic( KettleVFS.class ) ) {
+      mockedVFS.when( () -> KettleVFS.getInstance( bowl ) ).thenReturn( kettleVFS );
+      when( kettleVFS.getFileObject( eq( resolvedFilename ), any( VariableSpace.class ) ) ).thenReturn( fileObject );
+
+      VariableSpace result = resolver.resolveCurrentDirectory( bowl, variables, null, filenameWithVariable );
+
+      assertNotNull( result );
+      assertEquals( "file:///home/user/project", result.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+      verify( kettleVFS ).getFileObject( eq( resolvedFilename ), any( VariableSpace.class ) );
+    }
   }
 }
 
