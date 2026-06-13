@@ -42,30 +42,30 @@ import com.linuxense.javadbf.DBFReader;
  */
 
 public class XBase {
-  private LogChannelInterface log;
+  private final LogChannelInterface log;
 
   private String dbfFile;
   private DBFReader reader;
   private InputStream inputstream;
   private boolean error;
-  private byte[] datatype;
 
   private static final byte FIELD_TYPE_I = 73;
 
-  public XBase( LogChannelInterface log, String file_dbf ) {
+  public XBase ( LogChannelInterface log, String dbfFile ) {
     this.log = log;
-    this.dbfFile = file_dbf;
-    error = false;
-    reader = null;
-    inputstream = null;
+    this.dbfFile = dbfFile;
   }
 
-  public XBase( LogChannelInterface log, InputStream inputStream ) {
+  public XBase ( LogChannelInterface log, InputStream inputStream ) {
     this.log = log;
-    this.dbfFile = null;
-    this.error = false;
-    this.reader = null;
     this.inputstream = inputStream;
+  }
+
+  public XBase( LogChannelInterface log, String dbfFile, InputStream inputStream ) throws DBFException {
+    this.log = log;
+    this.dbfFile = dbfFile;
+    this.inputstream = inputStream;
+    this.reader = new DBFReader( inputStream );
   }
 
   public void open() throws KettleException {
@@ -90,9 +90,9 @@ public class XBase {
       // Fetch all field information
       //
       debug = "allocate data types";
-      datatype = new byte[reader.getFieldCount()];
+      int fieldCount = reader.getFieldCount();
 
-      for ( int i = 0; i < reader.getFieldCount(); i++ ) {
+      for ( int i = 0; i < fieldCount; i++ ) {
         if ( log.isDebug() ) {
           debug = "get field #" + i;
         }
@@ -100,11 +100,11 @@ public class XBase {
         DBFField field = reader.getField( i );
         ValueMetaInterface value = null;
 
-        datatype[i] = field.getDataType();
-        switch ( datatype[i] ) {
+        byte datatype = field.getDataType();
+        switch ( datatype ) {
           case DBFField.FIELD_TYPE_M: // Memo
             debug = "memo field";
-            if ( ( log != null ) && log.isDebug() ) {
+            if ( log.isDebug() ) {
               log.logDebug( "Field #" + i + " is a memo-field! (" + field.getName() + ")" );
             }
           case DBFField.FIELD_TYPE_C: // Character
@@ -131,8 +131,8 @@ public class XBase {
             value.setLength( -1, -1 );
             break;
           default:
-            if ( ( log != null ) && ( log.isDebug() ) ) {
-              log.logDebug( "Unknown Datatype" + datatype[i] );
+            if ( log.isDebug() ) {
+              log.logDebug( "Unknown Datatype" + datatype );
             }
         }
 
@@ -165,8 +165,9 @@ public class XBase {
 
       // Set the values in the row...
       //
-      for ( int i = 0; i < reader.getFieldCount(); i++ ) {
-        switch ( datatype[i] ) {
+      int fieldCount = reader.getFieldCount();
+      for ( int i = 0; i < fieldCount; i++ ) {
+        switch ( reader.getField( i ).getDataType() ) {
           case DBFField.FIELD_TYPE_M: // Memo
             if ( rowobj[i] != null ) {
               r[i] = rowobj[i];
@@ -261,17 +262,6 @@ public class XBase {
       return getClass().getName();
     }
   }
-
-  /*
-   * public String getVersionInfo() { return reader.getHeader().getSignatureDesc(); }
-   */
-
-  /*
-   * public boolean setMemo(String memo_file) { try { if (reader.hasMemo()) { RandomAccessFile raf = new
-   * RandomAccessFile(memo_file, "r"); reader.setMemoFile(raf);
-   *
-   * // System.out.println("Memo set! "); } return true; } catch(Exception e) { return false; } }
-   */
 
   /**
    * @return the dbfFile
