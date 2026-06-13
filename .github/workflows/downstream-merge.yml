@@ -1,0 +1,250 @@
+name: Downstream merge workflow
+
+on:
+  push:
+    branches: [ "FUSE-184-dev-ops-prepare-github-action-for-kettle-core-and-pentaho-platform" ]
+
+  workflow_dispatch:
+
+jobs:
+  resolve-version:
+    runs-on: [ k8s ]
+    container:
+      image: ${{ vars.PDIA_AC_CONTAINER_IMAGE }}
+      credentials:
+        username: ${{ secrets.PENTAHO_CICD_ONE_USER }}
+        password: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
+      volumes:
+        - /home/runner/caches/pentaho/.m2:/root/.m2
+    env:
+      # Pentaho settings.xml references ${env.RESOLVE_REPO_MIRROR} (and credentials).
+      # These must be exported so Maven can substitute them when resolving plugins/deps
+      # that are not already present in the local .m2 cache.
+      RESOLVE_REPO_MIRROR: ${{ format('{0}/{1}', vars.ARTIFACTORY_BASE_URL, inputs.resolve_repo || 'pnt-mvn') }}
+      RESOLVE_REPO_USER: ${{ secrets.PENTAHO_CICD_ONE_USER }}
+      RESOLVE_REPO_PASS: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
+    outputs:
+      build_version: ${{ steps.build-version.outputs.build_version }}
+      artifacts: ${{ steps.get-artifacts.outputs.artifacts }}
+      libraries_to_update: ${{ steps.resolve-libraries.outputs.libraries_to_update }}
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+
+      - name: Retrieve settings file
+        id: common-maven
+        uses: pentaho/actions-common@stable
+
+      - name: Copy settings.xml to .m2 directory
+        shell: sh
+        run: cp "${{ steps.common-maven.outputs.settings-file-path }}" /root/.m2
+
+      - name: Verify required Maven repo variables are configured
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          if [ -z "${RESOLVE_REPO_USER:-}" ]; then
+            echo "::error::Secret RESOLVE_REPO_USER (mapped from PENTAHO_CICD_ONE_USER) is empty."
+            missing=1
+          fi
+          if [ -z "${RESOLVE_REPO_PASS:-}" ]; then
+            echo "::error::Secret RESOLVE_REPO_PASS (mapped from PENTAHO_CICD_ONE_KEY) is empty."
+            missing=1
+          fi
+          [ "$missing" -eq 0 ] || exit 1
+          echo "All required Maven repo variables are present."
+
+      - name: Resolve libraries to update
+        id: resolve-libraries
+        shell: bash
+        env:
+          INPUT_LIBS: ${{ github.event.inputs.libraries_to_update }}
+          DEFAULT_LIBS: ${{ vars.LIBRARIES_TO_UPDATE }}
+        run: |
+          set -euo pipefail
+          libs="${INPUT_LIBS:-$DEFAULT_LIBS}"
+          libs="$(echo "$libs" | tr -d '[:space:]')"
+          echo "Libraries to update: ${libs:-<none>}"
+          echo "libraries_to_update=$libs" >> "$GITHUB_OUTPUT"
+
+      - name: Get current version from pom.xml
+        id: get-version
+        run: |
+          current_version=$(python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          NS = {"m": "http://maven.apache.org/POM/4.0.0"}
+          root = ET.parse("pom.xml").getroot()
+          version = root.find("m:version", NS)
+          print(version.text.strip())
+          PY
+          )
+          echo "Current version: $current_version"
+          echo "current_version=$current_version" >> $GITHUB_OUTPUT
+
+      - name: Build date-based version
+        id: build-version
+        shell: bash
+        run: |
+          current_version=${{ steps.get-version.outputs.current_version }}
+
+          # Remove the -SNAPSHOT suffix if present
+          build_version=${current_version%-SNAPSHOT}
+
+          # Replace the last version segment with current date+time (YYYYMMDD-HHmm)
+          # e.g. 11.1.0.0-SNAPSHOT → 11.1.0.20260423-1530-SNAPSHOT
+          date_segment=$(date -u +%Y%m%d-%H%M)
+          new_version=$(echo "$build_version" | sed "s/\.[^.]*$/.${date_segment}/")
+
+          # Reattach the -SNAPSHOT suffix if it was present
+          #          if [[ "$current_version" == *-SNAPSHOT ]]; then
+          #            new_version="$new_version-SNAPSHOT"
+          #          fi
+
+          echo "Base version: $build_version"
+          echo "New version:  $new_version"
+          echo "build_version=$new_version" >> $GITHUB_OUTPUT
+
+      - name: Apply virtual version to pom.xml files
+        # Version is set in-memory for this build only.
+        # Changes are NOT committed back to the repository — pom.xml files remain unchanged in main.
+        run: mvn versions:set -DnewVersion=${{ steps.build-version.outputs.build_version }} -DprocessAllModules=true -DgenerateBackupPoms=false
+
+      - name: Update upstream dependencies to computed version
+        if: steps.resolve-libraries.outputs.libraries_to_update != ''
+        run: >
+          mvn versions:use-dep-version
+          -Dincludes=${{ steps.resolve-libraries.outputs.libraries_to_update }}
+          -DdepVersion=${{ steps.build-version.outputs.build_version }}
+          -DforceVersion=true
+          -DprocessAllModules=true
+          -DgenerateBackupPoms=false
+
+      - name: Write build version to release-versions.properties
+        shell: bash
+        run: |
+          echo "build_version=${{ steps.build-version.outputs.build_version }}" > .github/release-versions.properties
+
+      - name: Collect built artifact names
+        id: get-artifacts
+        shell: bash
+        env:
+          build_version: ${{ steps.build-version.outputs.build_version }}
+        run: |
+          set -euo pipefail
+
+          # Collect full groupId:artifactId:version per module by parsing pom.xml files directly.
+          # We deliberately avoid `mvn exec:exec` here so this step does NOT require
+          # downloading exec-maven-plugin (which would fail in environments where the
+          # Maven mirror env vars are not configured). Since `versions:set` already
+          # aligned every module to the same version, we use $build_version as the version
+          # component and only extract groupId/artifactId per module.
+
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import os, sys, glob
+          import xml.etree.ElementTree as ET
+
+          NS = {"m": "http://maven.apache.org/POM/4.0.0"}
+          version = os.environ["build_version"]
+          results = []
+
+          for pom in sorted(glob.glob("**/pom.xml", recursive=True)):
+              # Skip anything under build output dirs
+              if "/target/" in pom or pom.startswith("target/"):
+                  continue
+              try:
+                  root = ET.parse(pom).getroot()
+              except ET.ParseError as e:
+                  print(f"WARN: cannot parse {pom}: {e}", file=sys.stderr)
+                  continue
+
+              def find(tag):
+                  el = root.find(f"m:{tag}", NS)
+                  if el is None:
+                      el = root.find(f"m:parent/m:{tag}", NS)
+                  return el.text.strip() if el is not None and el.text else None
+
+              gid = find("groupId")
+              aid = find("artifactId")
+              if gid and aid:
+                  results.append(f"{gid}:{aid}:{version}")
+                  print(f"  {pom} -> {gid}:{aid}:{version}", file=sys.stderr)
+
+          # de-duplicate while preserving order
+          seen = set()
+          uniq = [x for x in results if not (x in seen or seen.add(x))]
+          print("artifacts=" + ",".join(uniq))
+          PY
+
+          # Echo what we wrote (the heredoc already appended to GITHUB_OUTPUT)
+          echo "Collected artifacts:"
+          grep '^artifacts=' "$GITHUB_OUTPUT" | tail -n1
+
+  reusable-merge-workflow:
+    needs: resolve-version
+    uses: pentaho/actions-common/.github/workflows/merge.yml@stable
+    with:
+      modules_to_build: "."
+      base_version: ${{ needs.resolve-version.outputs.build_version }}
+      version: ${{ needs.resolve-version.outputs.build_version }}
+      run_snapshot: false
+      run_release_candidate: true
+      container_image: "one.hitachivantara.com/devops-docker-release/pentaho/actions-common:jdk21-20260413.227"
+      # Apply the virtual date-based version at build time so the reusable workflow's
+      # fresh checkout also uses the correct version without committing pom.xml changes.
+      additional_mvn_directives: >-
+         ${{ needs.resolve-version.outputs.libraries_to_update != '' && format('versions:use-dep-version -Dincludes={0} -DdepVersion={1} -DforceVersion=true -DprocessAllModules=true -DgenerateBackupPoms=false', needs.resolve-version.outputs.libraries_to_update, needs.resolve-version.outputs.build_version) || '' }}
+
+    secrets: inherit
+
+
+  trigger-downstream:
+    name: Trigger downstream pentaho-platform workflow
+    # Set repository variable TRIGGER_DOWNSTREAM_ENABLED=true to enable this job.
+    # Leave it unset or set to any other value to skip (safe default while the
+    # target workflow does not yet exist in pentaho/pentaho-platform).
+    runs-on: [ k8s ]
+    needs: [ resolve-version, reusable-merge-workflow ]
+    env:
+      DOWNSTREAM_REF: 'FUSE-184-dev-ops-prepare-github-action-for-kettle-core-and-pentaho-platform'
+    steps:
+      - name: Dispatch workflow in pentaho/pentaho-platform
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PENTAHO_BUILDGUY }}
+          script: |
+            const version   = '${{ needs.resolve-version.outputs.build_version }}';
+            const artifacts = '${{ needs.resolve-version.outputs.artifacts }}';
+
+            const target = {
+              owner: 'pentaho',
+              repo: 'pentaho-platform',
+              workflow_id: 'merge.yml',
+              ref: process.env.DOWNSTREAM_REF,
+            };
+
+            console.log(`Triggering downstream workflow`);
+            console.log(`  target:    ${target.owner}/${target.repo}`);
+            console.log(`  workflow:  ${target.workflow_id}`);
+            console.log(`  ref:       ${target.ref}`);
+            console.log(`  version:   ${version}`);
+            console.log(`  artifacts: ${artifacts}`);
+
+            try {
+              await github.rest.actions.createWorkflowDispatch({
+                ...target,
+                inputs: {
+                  version:   version,
+                  artifacts: artifacts,
+                  libraries_to_update: '${{ needs.resolve-version.outputs.libraries_to_update }}'
+                }
+              });
+              console.log(`Dispatched ${target.workflow_id} on ref '${target.ref}' successfully.`);
+            } catch (err) {
+              core.setFailed(
+                `Failed to dispatch ${target.owner}/${target.repo} ` +
+                `workflow '${target.workflow_id}' on ref '${target.ref}': ` +
+                `${err.status || ''} ${err.message}`
+              );
+            }
+
