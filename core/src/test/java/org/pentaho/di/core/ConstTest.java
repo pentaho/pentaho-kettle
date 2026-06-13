@@ -13,7 +13,7 @@
 
 package org.pentaho.di.core;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -2385,6 +2385,230 @@ public class ConstTest {
     for ( Const.ReleaseType type : Const.ReleaseType.values() ) {
       assertFalse( type.getMessage().isEmpty() );
     }
+  }
+
+  /**
+   * Comprehensive tests for XML escape/unescape methods with custom internal implementations
+   */
+  @Test
+  public void testXmlEscapeAllSpecialCharacters() {
+    // Test all special XML characters
+    String input = "<>&\"'";
+    String expected = "&lt;&gt;&amp;&quot;&apos;";
+    assertEquals( expected, Const.escapeXML( input ) );
+    assertEquals( expected, Const.escapeXml( input ) );
+  }
+
+  @Test
+  public void testXmlEscapeComplexContent() {
+    String input = "<tag attr=\"value\">content's & data</tag>";
+    String escaped = Const.escapeXML( input );
+    assertTrue( escaped.contains( "&lt;" ) );
+    assertTrue( escaped.contains( "&gt;" ) );
+    assertTrue( escaped.contains( "&quot;" ) );
+    assertTrue( escaped.contains( "&apos;" ) );
+    assertTrue( escaped.contains( "&amp;" ) );
+  }
+
+  @Test
+  public void testXmlUnescapeAllEntities() {
+    String input = "&lt;&gt;&amp;&quot;&apos;";
+    String expected = "<>&\"'";
+    assertEquals( expected, Const.unEscapeXml( input ) );
+  }
+
+  @Test
+  public void testXmlEscapeUnescapeRoundTrip() {
+    String[] testData = {
+        "<test>",
+        "attribute=\"value\"",
+        "single's quote",
+        "multiple & ampersands & more",
+        "<nested>\"attr\"='value'</nested>",
+        "mixed <tag> & \"quotes\" and 's"
+    };
+
+    for ( String original : testData ) {
+      String escaped = Const.escapeXML( original );
+      String unescaped = Const.unEscapeXml( escaped );
+      assertEquals( "Round-trip failed for: " + original, original, unescaped );
+    }
+  }
+
+  @Test
+  public void testXmlEscapeUnemptyString() {
+    String input = "text with no special chars";
+    assertEquals( input, Const.escapeXML( input ) );
+    assertEquals( input, Const.escapeXml( input ) );
+  }
+
+  @Test
+  public void testXmlEscapeEmptyString() {
+    assertEquals( "", Const.escapeXML( "" ) );
+    assertEquals( "", Const.escapeXml( "" ) );
+  }
+
+  @Test
+  public void testXmlUnescapeEmptyString() {
+    assertEquals( "", Const.unEscapeXml( "" ) );
+  }
+
+  @Test
+  public void testXmlEscapeNullString() {
+    assertNull( Const.escapeXML( null ) );
+    assertNull( Const.escapeXml( null ) );
+    assertNull( Const.unEscapeXml( null ) );
+  }
+
+  @Test
+  public void testHtmlEscapeAllSpecialCharacters() {
+    // HTML escaping should handle <, >, &, "
+    String input = "<>&\"";
+    String expected = "&lt;&gt;&amp;&quot;";
+    assertEquals( expected, Const.escapeHtml( input ) );
+  }
+
+  @Test
+  public void testHtmlEscapeSingleQuoteNotEscaped() {
+    // Single quotes don't need escaping in HTML
+    String input = "it's";
+    String escaped = Const.escapeHtml( input );
+    assertEquals( "it's", escaped );
+  }
+
+  @Test
+  public void testHtmlEscapeComplexContent() {
+    String input = "<div class=\"container\">HTML & content</div>";
+    String escaped = Const.escapeHtml( input );
+    assertTrue( escaped.contains( "&lt;" ) );
+    assertTrue( escaped.contains( "&gt;" ) );
+    assertTrue( escaped.contains( "&quot;" ) );
+    assertTrue( escaped.contains( "&amp;" ) );
+  }
+
+  @Test
+  public void testHtmlUnescapeAllEntities() {
+    String input = "&lt;&gt;&amp;&quot;";
+    String expected = "<>&\"";
+    assertEquals( expected, Const.unEscapeHtml( input ) );
+  }
+
+  @Test
+  public void testHtmlEscapeUnescapeRoundTrip() {
+    String[] testData = {
+        "<div>",
+        "class=\"myClass\"",
+        "HTML & more HTML",
+        "<tag attr=\"value\">content</tag>",
+        "text with <multiple> & \"special\" chars"
+    };
+
+    for ( String original : testData ) {
+      String escaped = Const.escapeHtml( original );
+      String unescaped = Const.unEscapeHtml( escaped );
+      assertEquals( "Round-trip failed for: " + original, original, unescaped );
+    }
+  }
+
+  @Test
+  public void testHtmlEscapeNormalText() {
+    String input = "just plain text";
+    assertEquals( input, Const.escapeHtml( input ) );
+  }
+
+  @Test
+  public void testHtmlEscapeEmptyString() {
+    assertEquals( "", Const.escapeHtml( "" ) );
+  }
+
+  @Test
+  public void testHtmlUnescapeEmptyString() {
+    assertEquals( "", Const.unEscapeHtml( "" ) );
+  }
+
+  @Test
+  public void testHtmlEscapeNullString() {
+    assertNull( Const.escapeHtml( null ) );
+    assertNull( Const.unEscapeHtml( null ) );
+  }
+
+  @Test
+  public void testEscapeSQLSpecialCharacters() {
+    // SQL escaping replaces single quotes with two single quotes
+    String input = "O'Reilly's library";
+    String expected = "O''Reilly''s library";
+    assertEquals( expected, Const.escapeSQL( input ) );
+  }
+
+  @Test
+  public void testEscapeSQLNoSpecialChars() {
+    String input = "SELECT * FROM table";
+    assertEquals( input, Const.escapeSQL( input ) );
+  }
+
+  @Test
+  public void testEscapeSQLEmptyString() {
+    assertEquals( "", Const.escapeSQL( "" ) );
+  }
+
+  @Test
+  public void testEscapeSQLNullString() {
+    assertNull( Const.escapeSQL( null ) );
+  }
+
+  @Test
+  public void testXmlUnescapeIncompleteEntity() {
+    // Test handling of incomplete entities (no closing semicolon)
+    String input = "text with &lt incomplete entity";
+    String result = Const.unEscapeXml( input );
+    assertTrue( result.contains( "&lt" ) ); // Should remain unchanged
+  }
+
+  @Test
+  public void testXmlUnescapeUnknownEntity() {
+    // Test handling of unknown entities
+    String input = "text with &unknown; entity";
+    String result = Const.unEscapeXml( input );
+    assertEquals( input, result ); // Should remain unchanged
+  }
+
+  @Test
+  public void testXmlEscapeMultipleConsecutiveSpecialChars() {
+    String input = "<<<>>>";
+    String expected = "&lt;&lt;&lt;&gt;&gt;&gt;";
+    assertEquals( expected, Const.escapeXML( input ) );
+  }
+
+  @Test
+  public void testHtmlUnescapeUnknownEntity() {
+    // Test handling of unknown HTML entities
+    String input = "text with &unknown; entity";
+    String result = Const.unEscapeHtml( input );
+    assertEquals( input, result ); // Should remain unchanged
+  }
+
+  @Test
+  public void testEscapeXmlWithAmpersandEntity() {
+    // Test that &amp; is handled correctly when already escaped
+    String input = "&amp;";
+    String escaped = Const.escapeXML( input );
+    // The & in &amp; should be escaped to &amp; resulting in &amp;amp;
+    assertEquals( "&amp;amp;", escaped );
+  }
+
+  @Test
+  public void testXmlPreservesLineBreaks() {
+    String input = "line1\nline2\rline3\r\nline4";
+    String escaped = Const.escapeXML( input );
+    assertTrue( escaped.contains( "\n" ) );
+    assertTrue( escaped.contains( "\r" ) );
+  }
+
+  @Test
+  public void testXmlPreservesNumbers() {
+    String input = "number 12345 and 67890";
+    String escaped = Const.escapeXML( input );
+    assertEquals( input, escaped );
   }
 
   private void doWithModifiedSystemProperty( final String key, final String value, Runnable action ) {

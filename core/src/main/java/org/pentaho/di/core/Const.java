@@ -15,9 +15,8 @@
 
 package org.pentaho.di.core;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.lang3.StringUtils;
+
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.UriParser;
@@ -179,6 +178,15 @@ public class Const {
    * An empty ("") String.
    */
   public static final String EMPTY_STRING = "";
+
+  /**
+   * XML/HTML entity constants for escaping
+   */
+  private static final String XML_AMP_ENTITY = "&amp;";
+  private static final String XML_QUOT_ENTITY = "&quot;";
+  private static final String XML_LT_ENTITY = "&lt;";
+  private static final String XML_GT_ENTITY = "&gt;";
+  private static final String XML_APOS_ENTITY = "&apos;";
 
   /**
    * The Java runtime version
@@ -3354,7 +3362,7 @@ public class Const {
     if ( firstIndex == lastIndex ) {
       return stringToSplit;
     }
-    StrBuilder strBuilder = new StrBuilder( stringToSplit );
+    StringBuilder strBuilder = new StringBuilder( stringToSplit );
     strBuilder.replace( firstIndex, enclosure.length() + firstIndex, "" );
     strBuilder.replace( lastIndex - enclosure.length(), lastIndex, "" );
 
@@ -3968,7 +3976,7 @@ public class Const {
     if ( Utils.isEmpty( content ) ) {
       return content;
     }
-    return StringEscapeUtils.escapeXml( content );
+    return escapeXmlInternal( content );
   }
 
   /**
@@ -3982,7 +3990,7 @@ public class Const {
     if ( Utils.isEmpty( content ) ) {
       return content;
     }
-    return StringEscapeUtils.escapeHtml( content );
+    return escapeHtmlInternal( content );
   }
 
   /**
@@ -3996,7 +4004,7 @@ public class Const {
     if ( Utils.isEmpty( content ) ) {
       return content;
     }
-    return StringEscapeUtils.unescapeHtml( content );
+    return unescapeHtmlInternal( content );
   }
 
   /**
@@ -4010,11 +4018,11 @@ public class Const {
     if ( Utils.isEmpty( content ) ) {
       return content;
     }
-    return StringEscapeUtils.unescapeXml( content );
+    return unescapeXmlInternal( content );
   }
 
   /**
-   * Escape SQL content. i.e. replace characters with &values;
+   * Escape SQL content. Escapes single quotes by replacing them with two single quotes.
    *
    * @param content
    *          content
@@ -4024,7 +4032,172 @@ public class Const {
     if ( Utils.isEmpty( content ) ) {
       return content;
     }
-    return StringEscapeUtils.escapeSql( content );
+    // SQL escaping: replace single quotes with two single quotes
+    return content.replace( "'", "''" );
+  }
+
+  /**
+   * Internal method to escape XML content using XML 1.1 rules.
+   * Replaces: <, >, &, ", '
+   */
+  private static String escapeXmlInternal( String input ) {
+    if ( input == null ) {
+      return input;
+    }
+    StringBuilder sb = new StringBuilder();
+    for ( int i = 0; i < input.length(); i++ ) {
+      char ch = input.charAt( i );
+      switch ( ch ) {
+        case '<':
+          sb.append( XML_LT_ENTITY );
+          break;
+        case '>':
+          sb.append( XML_GT_ENTITY );
+          break;
+        case '&':
+          sb.append( XML_AMP_ENTITY );
+          break;
+        case '"':
+          sb.append( XML_QUOT_ENTITY );
+          break;
+        case '\'':
+          sb.append( XML_APOS_ENTITY );
+          break;
+        default:
+          sb.append( ch );
+      }
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Internal method to unescape XML content.
+   * Replaces: &lt;, &gt;, &amp;, &quot;, &apos;
+   */
+  private static String unescapeXmlInternal( String input ) {
+    if ( input == null ) {
+      return input;
+    }
+    StringBuilder sb = new StringBuilder();
+    int i = 0;
+    while ( i < input.length() ) {
+      if ( input.charAt( i ) == '&' ) {
+        int endPos = input.indexOf( ';', i );
+        if ( endPos != -1 ) {
+          String entity = input.substring( i, endPos + 1 );
+          switch ( entity ) {
+            case XML_LT_ENTITY:
+              sb.append( '<' );
+              i = endPos + 1;
+              break;
+            case XML_GT_ENTITY:
+              sb.append( '>' );
+              i = endPos + 1;
+              break;
+            case XML_AMP_ENTITY:
+              sb.append( '&' );
+              i = endPos + 1;
+              break;
+            case XML_QUOT_ENTITY:
+              sb.append( '"' );
+              i = endPos + 1;
+              break;
+            case XML_APOS_ENTITY:
+              sb.append( '\'' );
+              i = endPos + 1;
+              break;
+            default:
+              sb.append( input.charAt( i ) );
+              i++;
+          }
+        } else {
+          sb.append( input.charAt( i ) );
+          i++;
+        }
+      } else {
+        sb.append( input.charAt( i ) );
+        i++;
+      }
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Internal method to escape HTML content using HTML 4 rules.
+   * Similar to XML escaping for basic special characters.
+   */
+  private static String escapeHtmlInternal( String input ) {
+    if ( input == null ) {
+      return input;
+    }
+    StringBuilder sb = new StringBuilder();
+    for ( int i = 0; i < input.length(); i++ ) {
+      char ch = input.charAt( i );
+      switch ( ch ) {
+        case '<':
+          sb.append( XML_LT_ENTITY );
+          break;
+        case '>':
+          sb.append( XML_GT_ENTITY );
+          break;
+        case '&':
+          sb.append( XML_AMP_ENTITY );
+          break;
+        case '"':
+          sb.append( XML_QUOT_ENTITY );
+          break;
+        default:
+          sb.append( ch );
+      }
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Internal method to unescape HTML content using HTML 4 rules.
+   */
+  private static String unescapeHtmlInternal( String input ) {
+    if ( input == null ) {
+      return input;
+    }
+    StringBuilder sb = new StringBuilder();
+    int i = 0;
+    while ( i < input.length() ) {
+      if ( input.charAt( i ) == '&' ) {
+        int endPos = input.indexOf( ';', i );
+        if ( endPos != -1 ) {
+          String entity = input.substring( i, endPos + 1 );
+          switch ( entity ) {
+            case XML_LT_ENTITY:
+              sb.append( '<' );
+              i = endPos + 1;
+              break;
+            case XML_GT_ENTITY:
+              sb.append( '>' );
+              i = endPos + 1;
+              break;
+            case XML_AMP_ENTITY:
+              sb.append( '&' );
+              i = endPos + 1;
+              break;
+            case XML_QUOT_ENTITY:
+              sb.append( '"' );
+              i = endPos + 1;
+              break;
+            default:
+              sb.append( input.charAt( i ) );
+              i++;
+          }
+        } else {
+          sb.append( input.charAt( i ) );
+          i++;
+        }
+      } else {
+        sb.append( input.charAt( i ) );
+        i++;
+      }
+    }
+    return sb.toString();
   }
 
   /**
@@ -4256,7 +4429,7 @@ public class Const {
     if ( Utils.isEmpty( content ) ) {
       return content;
     }
-    return StringEscapeUtils.escapeXml( content );
+    return escapeXmlInternal( content );
   }
 
 
