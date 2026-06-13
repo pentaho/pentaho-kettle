@@ -12,32 +12,27 @@
 
 package org.pentaho.di.repository.pur;
 
-import java.io.Closeable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
-import javax.xml.namespace.QName;
-
+import com.pentaho.di.services.PentahoDiPlugin;
+import com.pentaho.pdi.ws.IRepositorySyncWebService;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.developer.JAXWSProperties;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.Service;
 import jakarta.xml.ws.handler.MessageContext;
 import jakarta.xml.ws.soap.SOAPBinding;
 
-import org.apache.commons.lang.StringUtils;
-import org.pentaho.di.core.logging.KettleLogStore;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.ExecutorUtil;
+import org.pentaho.di.pan.auth.CredentialProvider;
+import org.pentaho.di.pan.auth.DefaultCredentialProvider;
 import org.pentaho.di.repository.pur.WebServiceSpecification.ServiceType;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
 import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
@@ -47,50 +42,58 @@ import org.pentaho.platform.security.policy.rolebased.ws.IRoleAuthorizationPolic
 import org.pentaho.platform.security.userrole.ws.IUserRoleListWebService;
 import org.pentaho.platform.security.userroledao.ws.IUserRoleWebService;
 
-import com.pentaho.di.services.PentahoDiPlugin;
-import com.pentaho.pdi.ws.IRepositorySyncWebService;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-
+import javax.xml.namespace.QName;
+import java.io.Closeable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.concurrent.CompletableFuture;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
- * Web service factory. Not a true factory in that the things that this factory can create are not configurable. But it
+ * Web service factory. Not a true factory in that the things that this factory
+ * can create are not configurable. But it
  * does cache the services.
- * 
+ *
  * @author mlowery
  */
 public class WebServiceManager implements ServiceManager {
 
-  /**
-   * Header name must match that specified in ProxyTrustingFilter. Note that an header has the following form: initial
-   * capital letter followed by all lowercase letters.
-   */
-  private static final String TRUST_USER = "_trust_user_"; //$NON-NLS-1$
+  private static final LogChannelInterface log = new LogChannel( WebServiceManager.class.getSimpleName() );
+
+  private static String message( String key, String... tokens ) {
+    return BaseMessages.getString( WebServiceManager.class, key, tokens );
+  }
 
   private static final String NAMESPACE_URI = "http://www.pentaho.org/ws/1.0"; //$NON-NLS-1$
-
-  private static final LogChannelInterface log =
-      KettleLogStore.getLogChannelInterfaceFactory().create( WebServiceManager.class );
-
+  private static final String WEBSERVICES_PATH = "webservices/";
+  private static final String PLUGIN_PATH = "/plugin";
   private static final ExecutorService executor = ExecutorUtil.getExecutor();
-
-  private final Map<String, Future<Object>> serviceCache = new HashMap<String, Future<Object>>();
-
+  private final Map<String, Future<Object>> serviceCache = new HashMap<>();
   private final Map<Class<?>, WebServiceSpecification> serviceNameMap;
-
   private final String baseUrl;
-
   private final String lastUsername;
-
+  private final CredentialHeaderFactory credentialHeaderFactory;
   private Map<Class<?>, WebServiceSpecification> tempServiceNameMap; // hold the map while building
 
-  public WebServiceManager( String baseUrl, String username ) {
+  /**
+   * Accepts a {@link CredentialProvider} to eliminate the static singleton dependency on
+   * {@code BrowserAuthSessionHolder}.
+   */
+  public WebServiceManager( String baseUrl, String username, CredentialProvider credentialProvider ) {
     this.baseUrl = baseUrl;
     this.lastUsername = username;
-    tempServiceNameMap = new HashMap<Class<?>, WebServiceSpecification>();
+    this.credentialHeaderFactory = new CredentialHeaderFactory( credentialProvider );
+    tempServiceNameMap = new HashMap<>();
     registerWsSpecification( IUnifiedRepositoryJaxwsWebService.class, "unifiedRepository" ); //$NON-NLS-1$
     registerWsSpecification( IRepositorySyncWebService.class, "repositorySync" ); //$NON-NLS-1$
     registerWsSpecification( IUserRoleListWebService.class, "userRoleListService" ); //$NON-NLS-1$
@@ -98,10 +101,15 @@ public class WebServiceManager implements ServiceManager {
     registerWsSpecification( IRoleAuthorizationPolicyRoleBindingDaoWebService.class, "roleBindingDao" ); //$NON-NLS-1$
     registerWsSpecification( IAuthorizationPolicyWebService.class, "authorizationPolicy" ); //$NON-NLS-1$
 
-    registerRestSpecification( PentahoDiPlugin.PurRepositoryPluginApiRevision.class, "purRepositoryPluginApiRevision" ); //$NON-NLS-1$
+    registerRestSpecification( PentahoDiPlugin.PurRepositoryPluginApiRevision.class,
+      "purRepositoryPluginApiRevision" ); //$NON-NLS-1$
 
     this.serviceNameMap = Collections.unmodifiableMap( tempServiceNameMap );
     tempServiceNameMap = null;
+  }
+
+  public WebServiceManager( String baseUrl, String username ) {
+    this( baseUrl, username, new DefaultCredentialProvider() );
   }
 
   @Override
@@ -110,145 +118,16 @@ public class WebServiceManager implements ServiceManager {
     throws MalformedURLException {
     synchronized ( serviceCache ) {
       validateRequest( username );
-
       final WebServiceSpecification webServiceSpecification = serviceNameMap.get( clazz );
+      if ( webServiceSpecification == null ) {
+        throw new IllegalStateException( message( "WebServiceManager.UnknownServiceClass", clazz.getName() ) );
+      }
       final String serviceName = webServiceSpecification.getServiceName();
       if ( serviceName == null ) {
         throw new IllegalStateException();
       }
-
-      final Future<Object> resultFuture = resolveServiceFuture( username, password, clazz,
-          webServiceSpecification, serviceName );
-
-      return unwrapFuture( resultFuture, clazz );
-    }
-  }
-
-  private void validateRequest( final String username ) {
-    // if this is true, a coder did not make sure that clearServices was called on disconnect
-    if ( lastUsername != null && !lastUsername.equals( username ) ) {
-      throw new IllegalStateException();
-    }
-  }
-
-  @SuppressWarnings( "unchecked" )
-  private <T> Future<Object> resolveServiceFuture( final String username, final String password,
-      final Class<T> clazz, final WebServiceSpecification webServiceSpecification,
-      final String serviceName ) throws MalformedURLException {
-    if ( webServiceSpecification.getServiceType().equals( ServiceType.JAX_WS ) ) {
-      return getOrCreateJaxWsFuture( username, password, clazz, serviceName );
-    } else if ( webServiceSpecification.getServiceType().equals( ServiceType.JAX_RS ) ) {
-      return getOrCreateJaxRsFuture( username, password, clazz, webServiceSpecification, serviceName );
-    }
-    throw new IllegalStateException( "Unknown service type: " + webServiceSpecification.getServiceType() );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  private <T> Future<Object> getOrCreateJaxWsFuture( final String username, final String password,
-      final Class<T> clazz, final String serviceName ) throws MalformedURLException {
-    // build the url handling whether or not baseUrl ends with a slash
-    final URL url =
-        new URL( baseUrl + ( baseUrl.endsWith( "/" ) ? "" : "/" ) + "webservices/" + serviceName + "?wsdl" ); //$NON-NLS-1$ //$NON-NLS-2$
-
-    String key = url.toString() + '_' + serviceName + '_' + clazz.getName();
-    return serviceCache.computeIfAbsent( key,
-        k -> executor.submit( () -> createJaxWsPort( username, password, clazz, serviceName, url ) ) );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  private <T> T createJaxWsPort( final String username, final String password, final Class<T> clazz,
-      final String serviceName, final URL url ) {
-    Service service = Service.create( url, new QName( NAMESPACE_URI, serviceName ) );
-    T port = service.getPort( clazz );
-    configureJaxWsAuthentication( (BindingProvider) port, username, password );
-    // accept cookies to maintain session on server
-    ( (BindingProvider) port ).getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
-    // support streaming binary data
-    // TODO mlowery this is not portable between JAX-WS implementations (uses com.sun)
-    ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192 );
-    SOAPBinding binding = (SOAPBinding) ( (BindingProvider) port ).getBinding();
-    binding.setMTOMEnabled( true );
-    return port;
-  }
-
-  private void configureJaxWsAuthentication( final BindingProvider bp, final String username,
-      final String password ) {
-    AuthenticationContext authContext = getValidAuthContext();
-    String sessionId = authContext != null ? authContext.getJSessionId() : null;
-    if ( authContext != null && sessionId != null && !sessionId.trim().isEmpty() ) {
-      // Use JSESSIONID cookie for authentication
-      Map<String, java.util.List<String>> headers = new HashMap<>();
-      headers.put( "Cookie", Collections.singletonList( "JSESSIONID=" + sessionId ) );
-      bp.getRequestContext().put( MessageContext.HTTP_REQUEST_HEADERS, headers );
-      bp.getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
-    } else if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
-      // add TRUST_USER if necessary
-      bp.getRequestContext().put( MessageContext.HTTP_REQUEST_HEADERS,
-          Collections.singletonMap( TRUST_USER, Collections.singletonList( username ) ) );
-      bp.getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
-    } else {
-      // http basic authentication
-      bp.getRequestContext().put( BindingProvider.USERNAME_PROPERTY, username );
-      bp.getRequestContext().put( BindingProvider.PASSWORD_PROPERTY, password );
-    }
-  }
-
-  @SuppressWarnings( "unchecked" )
-  private <T> Future<Object> getOrCreateJaxRsFuture( final String username, final String password,
-      final Class<T> clazz, final WebServiceSpecification webServiceSpecification,
-      final String serviceName ) {
-    String key = baseUrl + '_' + serviceName + '_' + clazz.getName();
-    return serviceCache.computeIfAbsent( key,
-        k -> executor.submit( () -> createJaxRsPort( username, password, webServiceSpecification ) ) );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  private <T> T createJaxRsPort( final String username, final String password,
-      final WebServiceSpecification webServiceSpecification )
-    throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, java.net.URISyntaxException,
-    IllegalAccessException {
-    ClientConfig clientConfig = new ClientConfig();
-    clientConfig.property( ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE );
-    Client client = ClientBuilder.newClient( clientConfig );
-    configureJaxRsAuthentication( client, username, password );
-
-    Class<?>[] parameterTypes = new Class<?>[] { Client.class, URI.class };
-    String factoryClassName = webServiceSpecification.getServiceClass().getName();
-    factoryClassName = factoryClassName.substring( 0, factoryClassName.lastIndexOf( "$" ) );
-    Class<?> factoryClass = Class.forName( factoryClassName );
-    Method method = factoryClass.getDeclaredMethod( webServiceSpecification.getServiceName(), parameterTypes );
-    return (T) method.invoke( (Object) null, client, new URI( baseUrl + "/plugin" ) );
-  }
-
-  private void configureJaxRsAuthentication( final Client client, final String username, final String password ) {
-    AuthenticationContext authContext = getValidAuthContext();
-    String sessionId = authContext != null ? authContext.getJSessionId() : null;
-    if ( authContext != null && sessionId != null && !sessionId.trim().isEmpty() ) {
-      // Use JSESSIONID cookie for REST authentication
-      client.register( (jakarta.ws.rs.client.ClientRequestFilter) requestContext ->
-          requestContext.getHeaders().add( "Cookie", "JSESSIONID=" + sessionId )
-      );
-    } else {
-      // Use basic authentication
-      client.register( HttpAuthenticationFeature.basic( username, password ) );
-    }
-  }
-
-  @SuppressWarnings( "unchecked" )
-  private <T> T unwrapFuture( final Future<Object> resultFuture, final Class<T> clazz ) throws MalformedURLException {
-    try {
-      T service = (T) resultFuture.get();
-      return clazz.isInterface() ? UnifiedRepositoryInvocationHandler.forObject( service, clazz ) : service;
-    } catch ( InterruptedException e ) {
-      throw new RuntimeException( e );
-    } catch ( ExecutionException e ) {
-      Throwable cause = e.getCause();
-      if ( cause instanceof RuntimeException ) {
-        throw (RuntimeException) cause;
-      } else if ( cause instanceof MalformedURLException ) {
-        throw (MalformedURLException) cause;
-      }
-      throw new RuntimeException( e );
+      return unwrapFuture( resolveServiceFuture( username, password, clazz, webServiceSpecification, serviceName ),
+        clazz );
     }
   }
 
@@ -262,27 +141,9 @@ public class WebServiceManager implements ServiceManager {
         if ( future.isDone() ) {
           try {
             Object service = future.get();
-            String className = key.substring( key.lastIndexOf( "_" ) + 1, key.length() );
+            String className = key.substring( key.lastIndexOf( "_" ) + 1 );
             Class<?> clazz = Class.forName( className );
-            // if the service has a logout method, call it
-            try {
-              Method[] methods = clazz.getMethods();
-              if ( null != methods && methods.length > 0 ) {
-                for ( Method method : methods ) {
-                  if ( "logout".equals( method.getName() ) ) {
-                    method.invoke( service );
-                    break;
-                  }
-                }
-              }
-            } catch ( InvocationTargetException e ) {
-              // Session expired errors during close are expected and can be ignored
-              if ( !isSessionExpiredException( e.getCause() ) ) {
-                log.logDebug( "Unexpected error invoking logout() during close", e.getCause() );
-              }
-            } catch ( Exception e ) {
-              e.printStackTrace();
-            }
+            invokeLogoutIfPresent( service, clazz );
             if ( service instanceof Closeable closeable ) {
               closeable.close();
             }
@@ -290,12 +151,189 @@ public class WebServiceManager implements ServiceManager {
             if ( e instanceof InterruptedException ) {
               Thread.currentThread().interrupt();
             }
-            e.printStackTrace();
+            log.logError( message( "WebServiceManager.CloseCachedServiceError" ), e );
           }
         }
       }
       serviceCache.clear();
     }
+  }
+
+  private void validateRequest( String username ) {
+    if ( lastUsername != null && !lastUsername.equals( username ) ) {
+      throw new IllegalStateException();
+    }
+  }
+
+  private Future<Object> immediateFuture( Callable<Object> callable ) {
+    try {
+      return CompletableFuture.completedFuture( callable.call() );
+    } catch ( Exception e ) {
+      return CompletableFuture.failedFuture( e );
+    }
+  }
+
+  private <T> T createJaxWsPort( URL url, String serviceName, Class<T> clazz,
+                                 String username, String password ) throws Exception {
+    Service service = Service.create( url, new QName( NAMESPACE_URI, serviceName ) );
+    T port = service.getPort( clazz );
+
+    Map<String, List<String>> authHeaders = credentialHeaderFactory.forSoapRequest( baseUrl, username );
+    if ( !authHeaders.isEmpty() ) {
+      ( (BindingProvider) port ).getRequestContext().put( MessageContext.HTTP_REQUEST_HEADERS, authHeaders );
+    } else {
+      ( (BindingProvider) port ).getRequestContext().put( BindingProvider.USERNAME_PROPERTY, username );
+      ( (BindingProvider) port ).getRequestContext().put( BindingProvider.PASSWORD_PROPERTY, password );
+    }
+    ( (BindingProvider) port ).getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
+    ( (BindingProvider) port ).getRequestContext().put( JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192 );
+    SOAPBinding binding = (SOAPBinding) ( (BindingProvider) port ).getBinding();
+    binding.setMTOMEnabled( true );
+    return port;
+  }
+
+  private AuthenticationContext getValidAuthContext() {
+    try {
+      AuthenticationContext authenticationContext = SpoonSessionManager.getInstance()
+        .getAuthenticationContext( baseUrl );
+      if ( authenticationContext == null || !authenticationContext.isAuthenticated() ) {
+        return null;
+      }
+      return authenticationContext.validateAndClearIfExpired() ? authenticationContext : null;
+    } catch ( RuntimeException e ) {
+      return null;
+    }
+  }
+
+  private void configureJaxWsAuthentication( BindingProvider bindingProvider, String username, String password ) {
+    Map<String, Object> requestContext = bindingProvider.getRequestContext();
+    AuthenticationContext authenticationContext = getValidAuthContext();
+    String sessionId = authenticationContext == null ? null : authenticationContext.getJSessionId();
+
+    if ( sessionId != null && !sessionId.trim().isEmpty() ) {
+      requestContext.put( MessageContext.HTTP_REQUEST_HEADERS,
+        Collections.singletonMap( "Cookie", Collections.singletonList( "JSESSIONID=" + sessionId ) ) );
+    } else if ( System.getProperty( "pentaho.repository.client.attemptTrust" ) != null
+      && !System.getProperty( "pentaho.repository.client.attemptTrust" ).trim().isEmpty() ) {
+      requestContext.put( MessageContext.HTTP_REQUEST_HEADERS,
+        Collections.singletonMap( "_trust_user_", Collections.singletonList( username ) ) );
+    } else {
+      requestContext.put( BindingProvider.USERNAME_PROPERTY, username );
+      requestContext.put( BindingProvider.PASSWORD_PROPERTY, password );
+    }
+
+    requestContext.put( BindingProvider.SESSION_MAINTAIN_PROPERTY, Boolean.TRUE );
+  }
+
+  private void configureJaxRsAuthentication( Client client, String username, String password ) {
+    AuthenticationContext authenticationContext = getValidAuthContext();
+    String sessionId = authenticationContext == null ? null : authenticationContext.getJSessionId();
+
+    if ( sessionId != null && !sessionId.trim().isEmpty() ) {
+      client.register(
+        (ClientRequestFilter) ctx -> ctx.getHeaders().putSingle( "Cookie", "JSESSIONID=" + sessionId ) );
+      return;
+    }
+
+    client.register( HttpAuthenticationFeature.basic( username, password ) );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private <T> T createJaxRsPort( String username, String password, WebServiceSpecification webServiceSpecification )
+    throws ReflectiveOperationException {
+    return (T) createJaxRsClientHolder( username, password, webServiceSpecification ).proxy();
+  }
+
+  private JaxRsClientHolder createJaxRsClientHolder( String username, String password,
+                                                     WebServiceSpecification webServiceSpecification )
+    throws ReflectiveOperationException {
+    ClientConfig clientConfig = new ClientConfig();
+    clientConfig.property( ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE );
+    Client client = ClientBuilder.newClient( clientConfig );
+    configureJaxRsAuthentication( client, username, password );
+
+    Class<?>[] parameterTypes = new Class<?>[] { Client.class, URI.class };
+    String factoryClassName = webServiceSpecification.getServiceClass().getName();
+    factoryClassName = factoryClassName.substring( 0, factoryClassName.lastIndexOf( "$" ) );
+    Class<?> factoryClass = Class.forName( factoryClassName );
+    Method method = factoryClass.getDeclaredMethod( webServiceSpecification.getServiceName(), parameterTypes );
+    Object port = method.invoke( null, new Object[] { client, URI.create( baseUrl + PLUGIN_PATH ) } );
+    return new JaxRsClientHolder( port, client );
+  }
+
+  private Future<Object> getOrCreateJaxWsFuture( String username, String password, Class<?> clazz, String serviceName )
+    throws MalformedURLException {
+    URL url = buildWsdlUrl( serviceName );
+    String key = url.toString() + '_' + serviceName + '_' + clazz.getName();
+    Callable<Object> soapCreation = () -> createJaxWsPort( url, serviceName, clazz, username, password );
+    return getOrCreateFuture( key, shouldCacheServices(), soapCreation );
+  }
+
+  private Future<Object> getOrCreateJaxRsFuture( String username, String password, Class<?> clazz,
+                                                 WebServiceSpecification webServiceSpecification,
+                                                 String serviceName ) {
+    String key = baseUrl + '_' + serviceName + '_' + clazz.getName();
+    Callable<Object> restCreation = () -> createJaxRsClientHolder( username, password, webServiceSpecification );
+    return getOrCreateFuture( key, shouldCacheServices(), restCreation );
+  }
+
+  private Future<Object> resolveServiceFuture( String username, String password, Class<?> clazz,
+                                               WebServiceSpecification webServiceSpecification,
+                                               String serviceName ) throws MalformedURLException {
+    if ( webServiceSpecification.getServiceType().equals( ServiceType.JAX_WS ) ) {
+      return getOrCreateJaxWsFuture( username, password, clazz, serviceName );
+    }
+    if ( webServiceSpecification.getServiceType().equals( ServiceType.JAX_RS ) ) {
+      return getOrCreateJaxRsFuture( username, password, clazz, webServiceSpecification, serviceName );
+    }
+    throw new IllegalStateException( message( "WebServiceManager.UnknownServiceType",
+      String.valueOf( webServiceSpecification.getServiceType() ) ) );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private <T> T unwrapFuture( Future<Object> resultFuture, Class<T> clazz ) throws MalformedURLException {
+    try {
+      Object raw = resultFuture.get();
+      Object service = raw instanceof JaxRsClientHolder ? ( (JaxRsClientHolder) raw ).proxy() : raw;
+      if ( clazz.isInterface() ) {
+        return UnifiedRepositoryInvocationHandler.forObject( (T) service, clazz );
+      }
+      return (T) service;
+    } catch ( InterruptedException e ) {
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException( message( "WebServiceManager.InterruptedCreatingService", clazz.getName() ),
+        e );
+    } catch ( ExecutionException e ) {
+      Throwable cause = e.getCause();
+      if ( cause != null ) {
+        if ( cause instanceof RuntimeException ) {
+          throw (RuntimeException) cause;
+        }
+        if ( cause instanceof MalformedURLException ) {
+          throw (MalformedURLException) cause;
+        }
+      }
+      throw new IllegalStateException( message( "WebServiceManager.UnableToCreateService", clazz.getName() ), e );
+    }
+  }
+
+  private boolean shouldCacheServices() {
+    return !credentialHeaderFactory.hasNonBasicCredential( baseUrl );
+  }
+
+  private Future<Object> getOrCreateFuture( String key, boolean useCache, Callable<Object> creationTask ) {
+    if ( useCache ) {
+      return serviceCache.computeIfAbsent( key, k -> executor.submit( creationTask ) );
+    }
+    return immediateFuture( creationTask );
+  }
+
+  private URL buildWsdlUrl( String serviceName ) throws MalformedURLException {
+    return URI.create( normalizeBaseUrl() + WEBSERVICES_PATH + serviceName + "?wsdl" ).toURL();
+  }
+
+  private String normalizeBaseUrl() {
+    return baseUrl.endsWith( "/" ) ? baseUrl : baseUrl + '/';
   }
 
   private void registerWsSpecification( Class<?> serviceClass, String serviceName ) {
@@ -305,12 +343,32 @@ public class WebServiceManager implements ServiceManager {
   private void registerRestSpecification( Class<?> serviceClass, String serviceName ) {
     try {
       registerSpecification( WebServiceSpecification.getRestServiceSpecification( serviceClass, serviceName ) );
-    } catch ( NoSuchMethodException e ) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch ( SecurityException e ) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch ( NoSuchMethodException | SecurityException e ) {
+      log.logError( message( "WebServiceManager.UnableToRegisterRestSpecification",
+        serviceClass.getName() ), e );
+    }
+  }
+
+  private void invokeLogoutIfPresent( Object service, Class<?> clazz ) {
+    try {
+      for ( Method method : clazz.getMethods() ) {
+        if ( "logout".equals( method.getName() ) ) {
+          invokeLogout( service, method );
+          break;
+        }
+      }
+    } catch ( Exception e ) {
+      log.logError( message( "WebServiceManager.ServiceLogoutError" ), e );
+    }
+  }
+
+  private void invokeLogout( Object service, Method method ) throws IllegalAccessException {
+    try {
+      method.invoke( service );
+    } catch ( InvocationTargetException ite ) {
+      if ( !isSessionExpiredException( ite.getCause() ) ) {
+        log.logDebug( message( "WebServiceManager.UnexpectedLogoutError" ), ite.getCause() );
+      }
     }
   }
 
@@ -320,18 +378,18 @@ public class WebServiceManager implements ServiceManager {
 
   /**
    * Check if an exception is related to session expiration (HTTP 401).
-   * This helps identify expected errors during logout when the session has already expired.
+   * Helps identify expected errors during logout when the session has already
+   * expired.
    *
-   * @param throwable The exception to check
-   * @return true if the exception indicates a 401/session expired error, false otherwise
+   * @param throwable the exception to check
+   * @return true if the exception indicates a 401/session-expired error, false
+   * otherwise
    */
   private boolean isSessionExpiredException( Throwable throwable ) {
-    // Check the exception chain for ClientTransportException with 401 status
     Throwable current = throwable;
     while ( current != null ) {
       if ( current instanceof ClientTransportException ) {
         String message = current.getMessage();
-        // Check if message contains "401" status code
         if ( message != null && message.contains( "401" ) ) {
           return true;
         }
@@ -342,23 +400,15 @@ public class WebServiceManager implements ServiceManager {
   }
 
   /**
-   * Get a valid AuthenticationContext if session-based authentication is available.
-   *
-   * @return AuthenticationContext if session auth is valid, null otherwise
+   * Wraps a JAX-RS proxy together with its underlying {@link Client} so that
+   * the client can be closed when the service cache is cleared.
    */
-  private AuthenticationContext getValidAuthContext() {
-    try {
-      AuthenticationContext authContext =
-        SpoonSessionManager.getInstance().getAuthenticationContext( baseUrl );
+  private record JaxRsClientHolder(Object proxy, Client jaxRsClient) implements Closeable {
 
-      if ( authContext != null && authContext.isAuthenticated()
-           && authContext.validateAndClearIfExpired() ) {
-        return authContext;
-      }
-    } catch ( Exception e ) {
-      // Session auth not available (e.g., running in headless mode)
+    @Override
+    public void close() {
+      jaxRsClient.close();
     }
-    return null;
   }
 
 }

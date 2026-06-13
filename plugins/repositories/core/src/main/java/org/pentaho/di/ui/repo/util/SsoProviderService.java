@@ -115,7 +115,7 @@ public class SsoProviderService {
   }
 
   public String buildProvidersUrl( String serverUrl ) {
-    return normalizeBaseUrl( serverUrl ) + "/plugin/login/api/v0/oauth-providers";
+    return normalizeBaseUrl( serverUrl ) + "/plugin/pentaho-oauth/api/providers";
   }
 
   private String normalizeBaseUrl( String serverUrl ) {

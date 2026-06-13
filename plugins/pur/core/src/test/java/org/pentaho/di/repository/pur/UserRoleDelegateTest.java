@@ -13,6 +13,7 @@
 package org.pentaho.di.repository.pur;
 
 import org.apache.commons.logging.Log;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,42 +21,29 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.pan.auth.CredentialProvider;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.pur.model.EERoleInfo;
 import org.pentaho.di.repository.pur.model.IRole;
 import org.pentaho.di.ui.repository.pur.services.IRoleSupportSecurityManager;
-import org.pentaho.di.ui.spoon.session.AuthenticationContext;
-import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.security.userrole.ws.IUserRoleListWebService;
 import org.pentaho.platform.security.userroledao.ws.IUserRoleWebService;
 import org.pentaho.platform.security.userroledao.ws.ProxyPentahoRole;
 import org.pentaho.platform.security.userroledao.ws.ProxyPentahoUser;
 import org.pentaho.platform.security.userroledao.ws.UserRoleSecurityInfo;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.ClientRequestContext;
-import jakarta.ws.rs.client.ClientRequestFilter;
-import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedHashMap;
-import jakarta.ws.rs.core.MultivaluedMap;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.ArgumentCaptor;
 import static org.pentaho.di.repository.pur.UserRoleHelper.convertToPentahoProxyRole;
 import static org.pentaho.di.repository.pur.UserRoleHelper.convertToPentahoProxyUser;
 
@@ -150,35 +138,23 @@ public class UserRoleDelegateTest {
     verify( roleWebService ).createRole( any( ProxyPentahoRole.class ) );
   }
 
-  private Client buildMockClient( String authProviderJson ) {
-    Client mockClient = mock( Client.class );
-    WebTarget mockWebTarget = mock( WebTarget.class );
-    Invocation.Builder mockBuilder = mock( Invocation.Builder.class );
-
-    when( mockClient.target( anyString() ) ).thenReturn( mockWebTarget );
-    when( mockWebTarget.request( any( MediaType.class ) ) ).thenReturn( mockBuilder );
-    when( mockBuilder.get( String.class ) ).thenReturn( authProviderJson );
-    when( mockBuilder.header( anyString(), any() ) ).thenReturn( mockBuilder );
-
-    return mockClient;
+  private ServiceManager buildServiceManager( IUserRoleListWebService roleListService,
+                                              IUserRoleWebService roleWebService ) throws Exception {
+    ServiceManager serviceManager = mock( ServiceManager.class );
+    when( serviceManager.createService( eq( "admin" ), eq( "password" ), eq( IUserRoleListWebService.class ) ) )
+      .thenReturn( roleListService );
+    when( serviceManager.createService( eq( "admin" ), eq( "password" ), eq( IUserRoleWebService.class ) ) )
+      .thenReturn( roleWebService );
+    return serviceManager;
   }
 
   @Test
-  public void testInitManaged_SessionAuth_ValidSession_RegistersCookieFilter() throws Exception {
+  public void testInitManaged_JackrabbitProvider_SetsManagedTrue() throws Exception {
     String serverUrl = "http://localhost:8080/pentaho";
-    String jsessionId = "VALID_SESSION_123";
-
-    SpoonSessionManager mockSessionMgr = mock( SpoonSessionManager.class );
-    AuthenticationContext mockAuthCtx = mock( AuthenticationContext.class );
-    when( mockSessionMgr.getAuthenticationContext( serverUrl ) ).thenReturn( mockAuthCtx );
-    when( mockAuthCtx.isAuthenticated() ).thenReturn( true );
-    when( mockAuthCtx.validateAndClearIfExpired() ).thenReturn( true );
-    when( mockAuthCtx.getJSessionId() ).thenReturn( jsessionId );
-
-    Client mockClient = buildMockClient( "{\"authenticationType\":\"jackrabbit\"}" );
 
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation mockLocation = mock( PurRepositoryLocation.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
     when( mockMeta.getRepositoryLocation() ).thenReturn( mockLocation );
     when( mockLocation.getUrl() ).thenReturn( serverUrl );
 
@@ -189,40 +165,35 @@ public class UserRoleDelegateTest {
     IUserRoleWebService mockRoleWebSvc = mock( IUserRoleWebService.class );
     when( mockRoleWebSvc.getUserRoleSecurityInfo() ).thenReturn( new UserRoleSecurityInfo() );
     IUserRoleListWebService mockRoleListSvc = mock( IUserRoleListWebService.class );
-    ServiceManager mockServiceManager = mock( ServiceManager.class );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleListWebService.class ) ) )
-      .thenReturn( mockRoleListSvc );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleWebService.class ) ) )
-      .thenReturn( mockRoleWebSvc );
+    ServiceManager mockServiceManager = buildServiceManager( mockRoleListSvc, mockRoleWebSvc );
     IRoleSupportSecurityManager mockRsm = mock( IRoleSupportSecurityManager.class );
 
-    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
-          MockedStatic<ClientBuilder> mockedCB = mockStatic( ClientBuilder.class ) ) {
+    try ( MockedStatic<RestAuthHelper> mockedRest = mockStatic( RestAuthHelper.class ) ) {
+      mockedRest.when( () -> RestAuthHelper.executeWithAuthFallback(
+        any( HttpGet.class ), eq( serverUrl ), eq( "admin" ), eq( "password" ), eq( "_trust_user_" ), any() ) )
+        .thenAnswer( invocation -> {
+          HttpGet request = invocation.getArgument( 0 );
+          assertEquals( serverUrl + "/api/system/authentication-provider", request.getUri().toString() );
+          assertEquals( "application/json", request.getFirstHeader( "Accept" ).getValue() );
+          return "{\"authenticationType\":\"jackrabbit\"}";
+        } );
 
-      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
-      mockedCB.when( ClientBuilder::newClient ).thenReturn( mockClient );
+      UserRoleDelegate initializedDelegate =
+        new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager, mockCredentialProvider );
 
-      new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager );
-
-      // A ClientRequestFilter (cookie filter) must be registered, NOT HttpAuthenticationFeature
-      verify( mockClient, times( 1 ) ).register( any( ClientRequestFilter.class ) );
-      verify( mockClient, never() ).register( any( HttpAuthenticationFeature.class ) );
+      assertTrue( initializedDelegate.isManaged() );
+      verify( mockRoleWebSvc ).getUserRoleSecurityInfo();
+      verify( mockRoleListSvc, never() ).getUserRoleInfo();
     }
   }
 
   @Test
-  public void testInitManaged_BasicAuth_NoSession_RegistersHttpAuthFeature() throws Exception {
+  public void testInitManaged_NonJackrabbitProvider_SetsManagedFalse() throws Exception {
     String serverUrl = "http://localhost:8080/pentaho";
-
-    SpoonSessionManager mockSessionMgr = mock( SpoonSessionManager.class );
-    AuthenticationContext mockAuthCtx = mock( AuthenticationContext.class );
-    when( mockSessionMgr.getAuthenticationContext( serverUrl ) ).thenReturn( mockAuthCtx );
-    when( mockAuthCtx.isAuthenticated() ).thenReturn( false ); // not authenticated
-
-    Client mockClient = buildMockClient( "{\"authenticationType\":\"jackrabbit\"}" );
 
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation mockLocation = mock( PurRepositoryLocation.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
     when( mockMeta.getRepositoryLocation() ).thenReturn( mockLocation );
     when( mockLocation.getUrl() ).thenReturn( serverUrl );
 
@@ -233,39 +204,31 @@ public class UserRoleDelegateTest {
     IUserRoleWebService mockRoleWebSvc = mock( IUserRoleWebService.class );
     when( mockRoleWebSvc.getUserRoleSecurityInfo() ).thenReturn( new UserRoleSecurityInfo() );
     IUserRoleListWebService mockRoleListSvc = mock( IUserRoleListWebService.class );
-    ServiceManager mockServiceManager = mock( ServiceManager.class );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleListWebService.class ) ) )
-      .thenReturn( mockRoleListSvc );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleWebService.class ) ) )
-      .thenReturn( mockRoleWebSvc );
+    when( mockRoleListSvc.getUserRoleInfo() ).thenReturn( mock( org.pentaho.platform.api.engine.security.userroledao.UserRoleInfo.class ) );
+    ServiceManager mockServiceManager = buildServiceManager( mockRoleListSvc, mockRoleWebSvc );
     IRoleSupportSecurityManager mockRsm = mock( IRoleSupportSecurityManager.class );
 
-    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
-          MockedStatic<ClientBuilder> mockedCB = mockStatic( ClientBuilder.class ) ) {
+    try ( MockedStatic<RestAuthHelper> mockedRest = mockStatic( RestAuthHelper.class ) ) {
+      mockedRest.when( () -> RestAuthHelper.executeWithAuthFallback(
+        any( HttpGet.class ), eq( serverUrl ), eq( "admin" ), eq( "password" ), eq( "_trust_user_" ), any() ) )
+        .thenReturn( "{\"authenticationType\":\"ldap\"}" );
 
-      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
-      mockedCB.when( ClientBuilder::newClient ).thenReturn( mockClient );
+      UserRoleDelegate initializedDelegate =
+        new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager, mockCredentialProvider );
 
-      new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager );
-
-      // HttpAuthenticationFeature must be registered, NOT a ClientRequestFilter
-      verify( mockClient, times( 1 ) ).register( any( HttpAuthenticationFeature.class ) );
-      verify( mockClient, never() ).register( any( ClientRequestFilter.class ) );
+      assertFalse( initializedDelegate.isManaged() );
+      verify( mockRoleListSvc ).getUserRoleInfo();
+      verify( mockRoleWebSvc, never() ).getUserRoleSecurityInfo();
     }
   }
 
   @Test
-  public void testInitManaged_BasicAuth_NullAuthContext_RegistersHttpAuthFeature() throws Exception {
+  public void testInitManaged_RestAuthFailure_IsSwallowedByConstructor() throws Exception {
     String serverUrl = "http://localhost:8080/pentaho";
-
-    SpoonSessionManager mockSessionMgr = mock( SpoonSessionManager.class );
-    // AuthenticationContext is null
-    when( mockSessionMgr.getAuthenticationContext( serverUrl ) ).thenReturn( null );
-
-    Client mockClient = buildMockClient( "{\"authenticationType\":\"jackrabbit\"}" );
 
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
     PurRepositoryLocation mockLocation = mock( PurRepositoryLocation.class );
+    CredentialProvider mockCredentialProvider = mock( CredentialProvider.class );
     when( mockMeta.getRepositoryLocation() ).thenReturn( mockLocation );
     when( mockLocation.getUrl() ).thenReturn( serverUrl );
 
@@ -276,263 +239,20 @@ public class UserRoleDelegateTest {
     IUserRoleWebService mockRoleWebSvc = mock( IUserRoleWebService.class );
     when( mockRoleWebSvc.getUserRoleSecurityInfo() ).thenReturn( new UserRoleSecurityInfo() );
     IUserRoleListWebService mockRoleListSvc = mock( IUserRoleListWebService.class );
-    ServiceManager mockServiceManager = mock( ServiceManager.class );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleListWebService.class ) ) )
-      .thenReturn( mockRoleListSvc );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleWebService.class ) ) )
-      .thenReturn( mockRoleWebSvc );
+    ServiceManager mockServiceManager = buildServiceManager( mockRoleListSvc, mockRoleWebSvc );
     IRoleSupportSecurityManager mockRsm = mock( IRoleSupportSecurityManager.class );
+    Log mockLogger = mock( Log.class );
 
-    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
-          MockedStatic<ClientBuilder> mockedCB = mockStatic( ClientBuilder.class ) ) {
+    try ( MockedStatic<RestAuthHelper> mockedRest = mockStatic( RestAuthHelper.class ) ) {
+      mockedRest.when( () -> RestAuthHelper.executeWithAuthFallback(
+        any( HttpGet.class ), eq( serverUrl ), eq( "admin" ), eq( "password" ), eq( "_trust_user_" ), any() ) )
+        .thenThrow( new java.io.IOException( "Connection refused" ) );
 
-      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
-      mockedCB.when( ClientBuilder::newClient ).thenReturn( mockClient );
+      UserRoleDelegate initializedDelegate =
+        new UserRoleDelegate( mockRsm, mockMeta, mockUser, mockLogger, mockServiceManager, mockCredentialProvider );
 
-      new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager );
-
-      verify( mockClient, times( 1 ) ).register( any( HttpAuthenticationFeature.class ) );
-      verify( mockClient, never() ).register( any( ClientRequestFilter.class ) );
-    }
-  }
-
-  @Test
-  public void testInitManaged_BasicAuth_SessionExpired_ValidateReturnsFalse_RegistersHttpAuthFeature()
-      throws Exception {
-    String serverUrl = "http://localhost:8080/pentaho";
-
-    SpoonSessionManager mockSessionMgr = mock( SpoonSessionManager.class );
-    AuthenticationContext mockAuthCtx = mock( AuthenticationContext.class );
-    when( mockSessionMgr.getAuthenticationContext( serverUrl ) ).thenReturn( mockAuthCtx );
-    when( mockAuthCtx.isAuthenticated() ).thenReturn( true );
-    when( mockAuthCtx.validateAndClearIfExpired() ).thenReturn( false ); // expired
-
-    Client mockClient = buildMockClient( "{\"authenticationType\":\"jackrabbit\"}" );
-
-    PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
-    PurRepositoryLocation mockLocation = mock( PurRepositoryLocation.class );
-    when( mockMeta.getRepositoryLocation() ).thenReturn( mockLocation );
-    when( mockLocation.getUrl() ).thenReturn( serverUrl );
-
-    IUser mockUser = mock( IUser.class );
-    when( mockUser.getLogin() ).thenReturn( "admin" );
-    when( mockUser.getPassword() ).thenReturn( "password" );
-
-    IUserRoleWebService mockRoleWebSvc = mock( IUserRoleWebService.class );
-    when( mockRoleWebSvc.getUserRoleSecurityInfo() ).thenReturn( new UserRoleSecurityInfo() );
-    IUserRoleListWebService mockRoleListSvc = mock( IUserRoleListWebService.class );
-    ServiceManager mockServiceManager = mock( ServiceManager.class );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleListWebService.class ) ) )
-      .thenReturn( mockRoleListSvc );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleWebService.class ) ) )
-      .thenReturn( mockRoleWebSvc );
-    IRoleSupportSecurityManager mockRsm = mock( IRoleSupportSecurityManager.class );
-
-    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
-          MockedStatic<ClientBuilder> mockedCB = mockStatic( ClientBuilder.class ) ) {
-
-      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
-      mockedCB.when( ClientBuilder::newClient ).thenReturn( mockClient );
-
-      new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager );
-
-      verify( mockClient, times( 1 ) ).register( any( HttpAuthenticationFeature.class ) );
-      verify( mockClient, never() ).register( any( ClientRequestFilter.class ) );
-    }
-  }
-
-  @Test
-  public void testInitManaged_BasicAuth_SessionAuth_BlankJSessionId_RegistersHttpAuthFeature()
-      throws Exception {
-    String serverUrl = "http://localhost:8080/pentaho";
-
-    SpoonSessionManager mockSessionMgr = mock( SpoonSessionManager.class );
-    AuthenticationContext mockAuthCtx = mock( AuthenticationContext.class );
-    when( mockSessionMgr.getAuthenticationContext( serverUrl ) ).thenReturn( mockAuthCtx );
-    when( mockAuthCtx.isAuthenticated() ).thenReturn( true );
-    when( mockAuthCtx.validateAndClearIfExpired() ).thenReturn( true );
-    when( mockAuthCtx.getJSessionId() ).thenReturn( "   " ); // blank
-
-    Client mockClient = buildMockClient( "{\"authenticationType\":\"jackrabbit\"}" );
-
-    PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
-    PurRepositoryLocation mockLocation = mock( PurRepositoryLocation.class );
-    when( mockMeta.getRepositoryLocation() ).thenReturn( mockLocation );
-    when( mockLocation.getUrl() ).thenReturn( serverUrl );
-
-    IUser mockUser = mock( IUser.class );
-    when( mockUser.getLogin() ).thenReturn( "admin" );
-    when( mockUser.getPassword() ).thenReturn( "password" );
-
-    IUserRoleWebService mockRoleWebSvc = mock( IUserRoleWebService.class );
-    when( mockRoleWebSvc.getUserRoleSecurityInfo() ).thenReturn( new UserRoleSecurityInfo() );
-    IUserRoleListWebService mockRoleListSvc = mock( IUserRoleListWebService.class );
-    ServiceManager mockServiceManager = mock( ServiceManager.class );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleListWebService.class ) ) )
-      .thenReturn( mockRoleListSvc );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleWebService.class ) ) )
-      .thenReturn( mockRoleWebSvc );
-    IRoleSupportSecurityManager mockRsm = mock( IRoleSupportSecurityManager.class );
-
-    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
-          MockedStatic<ClientBuilder> mockedCB = mockStatic( ClientBuilder.class ) ) {
-
-      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
-      mockedCB.when( ClientBuilder::newClient ).thenReturn( mockClient );
-
-      new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager );
-
-      verify( mockClient, times( 1 ) ).register( any( HttpAuthenticationFeature.class ) );
-      verify( mockClient, never() ).register( any( ClientRequestFilter.class ) );
-    }
-  }
-
-  @Test
-  public void testInitManaged_BasicAuth_SpoonSessionManagerThrows_FallsBackToBasicAuth()
-      throws Exception {
-    String serverUrl = "http://localhost:8080/pentaho";
-
-    SpoonSessionManager mockSessionMgr = mock( SpoonSessionManager.class );
-    when( mockSessionMgr.getAuthenticationContext( serverUrl ) )
-      .thenThrow( new RuntimeException( "headless mode" ) );
-
-    Client mockClient = buildMockClient( "{\"authenticationType\":\"jackrabbit\"}" );
-
-    PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
-    PurRepositoryLocation mockLocation = mock( PurRepositoryLocation.class );
-    when( mockMeta.getRepositoryLocation() ).thenReturn( mockLocation );
-    when( mockLocation.getUrl() ).thenReturn( serverUrl );
-
-    IUser mockUser = mock( IUser.class );
-    when( mockUser.getLogin() ).thenReturn( "admin" );
-    when( mockUser.getPassword() ).thenReturn( "password" );
-
-    IUserRoleWebService mockRoleWebSvc = mock( IUserRoleWebService.class );
-    when( mockRoleWebSvc.getUserRoleSecurityInfo() ).thenReturn( new UserRoleSecurityInfo() );
-    IUserRoleListWebService mockRoleListSvc = mock( IUserRoleListWebService.class );
-    ServiceManager mockServiceManager = mock( ServiceManager.class );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleListWebService.class ) ) )
-      .thenReturn( mockRoleListSvc );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleWebService.class ) ) )
-      .thenReturn( mockRoleWebSvc );
-    IRoleSupportSecurityManager mockRsm = mock( IRoleSupportSecurityManager.class );
-
-    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
-          MockedStatic<ClientBuilder> mockedCB = mockStatic( ClientBuilder.class ) ) {
-
-      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
-      mockedCB.when( ClientBuilder::newClient ).thenReturn( mockClient );
-
-      // Exception swallowed — constructor should complete normally
-      new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager );
-
-      verify( mockClient, times( 1 ) ).register( any( HttpAuthenticationFeature.class ) );
-      verify( mockClient, never() ).register( any( ClientRequestFilter.class ) );
-    }
-  }
-
-  @Test
-  public void testInitManaged_SessionAuth_FilterAddsJsessionIdCookieHeader() throws Exception {
-    String serverUrl = "http://localhost:8080/pentaho";
-    String jsessionId = "TEST_SESSION_ABC";
-
-    SpoonSessionManager mockSessionMgr = mock( SpoonSessionManager.class );
-    AuthenticationContext mockAuthCtx = mock( AuthenticationContext.class );
-    when( mockSessionMgr.getAuthenticationContext( serverUrl ) ).thenReturn( mockAuthCtx );
-    when( mockAuthCtx.isAuthenticated() ).thenReturn( true );
-    when( mockAuthCtx.validateAndClearIfExpired() ).thenReturn( true );
-    when( mockAuthCtx.getJSessionId() ).thenReturn( jsessionId );
-
-    Client mockClient = buildMockClient( "{\"authenticationType\":\"jackrabbit\"}" );
-
-    PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
-    PurRepositoryLocation mockLocation = mock( PurRepositoryLocation.class );
-    when( mockMeta.getRepositoryLocation() ).thenReturn( mockLocation );
-    when( mockLocation.getUrl() ).thenReturn( serverUrl );
-
-    IUser mockUser = mock( IUser.class );
-    when( mockUser.getLogin() ).thenReturn( "admin" );
-    when( mockUser.getPassword() ).thenReturn( "password" );
-
-    IUserRoleWebService mockRoleWebSvc = mock( IUserRoleWebService.class );
-    when( mockRoleWebSvc.getUserRoleSecurityInfo() ).thenReturn( new UserRoleSecurityInfo() );
-    IUserRoleListWebService mockRoleListSvc = mock( IUserRoleListWebService.class );
-    ServiceManager mockServiceManager = mock( ServiceManager.class );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleListWebService.class ) ) )
-      .thenReturn( mockRoleListSvc );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleWebService.class ) ) )
-      .thenReturn( mockRoleWebSvc );
-    IRoleSupportSecurityManager mockRsm = mock( IRoleSupportSecurityManager.class );
-
-    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
-          MockedStatic<ClientBuilder> mockedCB = mockStatic( ClientBuilder.class ) ) {
-
-      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
-      mockedCB.when( ClientBuilder::newClient ).thenReturn( mockClient );
-
-      new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager );
-
-      // Capture the registered ClientRequestFilter
-      ArgumentCaptor<ClientRequestFilter> filterCaptor = ArgumentCaptor.forClass( ClientRequestFilter.class );
-      verify( mockClient ).register( filterCaptor.capture() );
-      ClientRequestFilter capturedFilter = filterCaptor.getValue();
-
-      // Invoke the filter to execute the lambda body (lines 121-123)
-      ClientRequestContext requestContext = mock( ClientRequestContext.class );
-      MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-      when( requestContext.getHeaders() ).thenReturn( headers );
-
-      capturedFilter.filter( requestContext );
-
-      // Verify the Cookie header was added with the correct JSESSIONID
-      assertTrue( headers.containsKey( "Cookie" ) );
-      assertEquals( "JSESSIONID=TEST_SESSION_ABC", headers.getFirst( "Cookie" ) );
-    }
-  }
-
-  @Test
-  public void testInitManaged_SessionAuth_NullJSessionId_FallsBackToBasicAuth() throws Exception {
-    String serverUrl = "http://localhost:8080/pentaho";
-
-    SpoonSessionManager mockSessionMgr = mock( SpoonSessionManager.class );
-    AuthenticationContext mockAuthCtx = mock( AuthenticationContext.class );
-    when( mockSessionMgr.getAuthenticationContext( serverUrl ) ).thenReturn( mockAuthCtx );
-    when( mockAuthCtx.isAuthenticated() ).thenReturn( true );
-    when( mockAuthCtx.validateAndClearIfExpired() ).thenReturn( true );
-    when( mockAuthCtx.getJSessionId() ).thenReturn( null ); // null sessionId
-
-    Client mockClient = buildMockClient( "{\"authenticationType\":\"jackrabbit\"}" );
-
-    PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
-    PurRepositoryLocation mockLocation = mock( PurRepositoryLocation.class );
-    when( mockMeta.getRepositoryLocation() ).thenReturn( mockLocation );
-    when( mockLocation.getUrl() ).thenReturn( serverUrl );
-
-    IUser mockUser = mock( IUser.class );
-    when( mockUser.getLogin() ).thenReturn( "admin" );
-    when( mockUser.getPassword() ).thenReturn( "password" );
-
-    IUserRoleWebService mockRoleWebSvc = mock( IUserRoleWebService.class );
-    when( mockRoleWebSvc.getUserRoleSecurityInfo() ).thenReturn( new UserRoleSecurityInfo() );
-    IUserRoleListWebService mockRoleListSvc = mock( IUserRoleListWebService.class );
-    ServiceManager mockServiceManager = mock( ServiceManager.class );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleListWebService.class ) ) )
-      .thenReturn( mockRoleListSvc );
-    when( mockServiceManager.createService( anyString(), anyString(), eq( IUserRoleWebService.class ) ) )
-      .thenReturn( mockRoleWebSvc );
-    IRoleSupportSecurityManager mockRsm = mock( IRoleSupportSecurityManager.class );
-
-    try ( MockedStatic<SpoonSessionManager> mockedSM = mockStatic( SpoonSessionManager.class );
-          MockedStatic<ClientBuilder> mockedCB = mockStatic( ClientBuilder.class ) ) {
-
-      mockedSM.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionMgr );
-      mockedCB.when( ClientBuilder::newClient ).thenReturn( mockClient );
-
-      new UserRoleDelegate( mockRsm, mockMeta, mockUser, mock( Log.class ), mockServiceManager );
-
-      // sessionId is null so useSessionAuth is false — falls back to basic auth
-      verify( mockClient, times( 1 ) ).register( any( HttpAuthenticationFeature.class ) );
-      verify( mockClient, never() ).register( any( ClientRequestFilter.class ) );
+      assertNotNull( initializedDelegate );
+      verify( mockLogger ).error( any(), any( Exception.class ) );
     }
   }
 }
