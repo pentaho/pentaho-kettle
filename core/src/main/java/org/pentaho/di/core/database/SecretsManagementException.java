@@ -1,0 +1,57 @@
+/*! ******************************************************************************
+ *
+ * Pentaho
+ *
+ * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ *
+ * Use of this software is governed by the Business Source License included
+ * in the LICENSE.TXT file.
+ *
+ * Change Date: 2029-07-20
+ ******************************************************************************/
+
+package org.pentaho.di.core.database;
+
+import org.pentaho.di.core.exception.KettleDatabaseException;
+
+/**
+ * Thrown when the Fusion secrets-management service cannot return a usable secret
+ * during JDBC connection setup.
+ *
+ * <p>Carries a {@link Reason} so callers can map the failure to a stable, user-facing
+ * message without inspecting HTTP status codes or exception chains. The original cause
+ * is preserved via {@link #getCause()} for debugging in server logs, but the
+ * {@link #getMessage() message} returned to end users is intentionally short and
+ * contains no backend stack trace.
+ */
+public class SecretsManagementException extends KettleDatabaseException {
+
+  private static final long serialVersionUID = 1L;
+
+  public enum Reason {
+    /** 401 or 403 — caller's token is missing, malformed, expired, or lacks permission. */
+    UNAUTHORIZED,
+    /** 404 — no secret exists at the given reference. */
+    NOT_FOUND,
+    /** 5xx, network error, timeout — secret store reachable failure. */
+    UNAVAILABLE,
+    /** Response was empty / malformed / missing expected fields. */
+    INVALID_RESPONSE
+  }
+
+  private final Reason reason;
+
+  public SecretsManagementException( Reason reason, String message ) {
+    super( message );
+    this.reason = reason;
+  }
+
+  public SecretsManagementException( Reason reason, String message, Throwable cause ) {
+    super( message, cause );
+    this.reason = reason;
+  }
+
+  public Reason getReason() {
+    return reason;
+  }
+}

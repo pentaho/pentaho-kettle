@@ -626,6 +626,11 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         connection = DriverManager.getConnection( url, properties );
       }
       log.logDetailed( "JDBC connection acquired for database [" + databaseMeta.getName() + "] in " + ( System.currentTimeMillis() - startJdbc ) + " ms" );
+    } catch ( SecretsManagementException sme ) {
+      // Propagate the secrets-management message verbatim so users see e.g.
+      // "Secret unauthorized or expired" rather than a generic JDBC wrapper.
+      closeDynamicClassLoader();
+      throw sme;
     } catch ( SQLException sqlException ) {
       closeDynamicClassLoader();
       throw new KettleDatabaseException(
@@ -680,7 +685,8 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     return environmentSubstitute( databaseMeta.getURL() );
   }
 
-  private String[] resolveCredentials( String partitionId ) {
+  private String[] resolveCredentials( String partitionId ) throws KettleDatabaseException {
+    // Partition-level credentials win when explicitly set, regardless of CMS.
     if ( databaseMeta.isPartitioned() && !Utils.isEmpty( partitionId ) ) {
       PartitionDatabaseMeta partition = databaseMeta.getPartitionMeta( partitionId );
       if ( partition != null && !Utils.isEmpty( partition.getUsername() ) ) {
@@ -688,6 +694,26 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           Encr.decryptPasswordOptionallyEncrypted( partition.getPassword() ) };
       }
     }
+
+    // CMS path: when the connection is bound to a CMS connection ID and the secrets
+    // service is configured, fetch the plaintext just-in-time. The bundle stays in
+    // local scope and is never written back to DatabaseMeta or logged.
+    String connectionId = databaseMeta.getAttributes().getProperty( DatabaseMeta.ATTRIBUTE_CONNECTION_ID );
+    if ( Const.isFusionConnectionManagementEnabled()
+      && !Utils.isEmpty( connectionId )
+      && !Utils.isEmpty( Const.getSecretsManagementUrl() ) ) {
+      Map<String, String> secrets =
+        SecretsManagementClient.getInstance().getSecrets( connectionId );
+      String user = secrets.get( "username" );
+      String pass = secrets.get( "password" );
+      if ( user == null && pass == null ) {
+        throw new SecretsManagementException(
+          SecretsManagementException.Reason.INVALID_RESPONSE,
+          "Secret bundle for connection '" + connectionId + "' did not contain 'username' or 'password'" );
+      }
+      return new String[] { user, pass };
+    }
+
     return new String[] {
       environmentSubstitute( databaseMeta.getUsername() ),
       Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( databaseMeta.getPassword() ) ) };
