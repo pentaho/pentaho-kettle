@@ -13,6 +13,8 @@
 
 package org.pentaho.di.ui.core.dialog;
 
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
@@ -42,14 +44,19 @@ import org.pentaho.di.ui.core.widget.FieldDisabledListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -63,6 +70,7 @@ import java.util.Set;
  */
 public class KettlePropertiesFileDialog extends Dialog {
   private static Class<?> PKG = KettlePropertiesFileDialog.class; // for i18n purposes, needed by Translator2!!
+  public static final char DISABLED = '\0';
 
   private Label wlFields;
   private TableView wFields;
@@ -76,6 +84,7 @@ public class KettlePropertiesFileDialog extends Dialog {
 
   private Map<String, String> kettleProperties;
 
+  private PropertiesConfiguration properties = new PropertiesConfiguration();
   private Set<String> previousKettlePropertiesKeys;
 
   /**
@@ -209,7 +218,7 @@ public class KettlePropertiesFileDialog extends Dialog {
     try {
       // Load the Kettle properties file...
       //
-      Properties properties = EnvUtil.readProperties( getKettlePropertiesFilename() );
+      loadProperties();
 
       // These are the standard Kettle variables...
       //
@@ -218,18 +227,18 @@ public class KettlePropertiesFileDialog extends Dialog {
       // Add the standard variables to the properties if they are not in there already
       //
       for ( String key : variablesList.getDescriptionMap().keySet() ) {
-        if ( Utils.isEmpty( (String) properties.get( key ) ) ) {
+        if ( Utils.isEmpty( (String) properties.getString( key ) ) ) {
           String defaultValue = variablesList.getDefaultValueMap().get( key );
-          properties.put( key, Const.NVL( defaultValue, "" ) );
+          properties.setProperty( key, Const.NVL( defaultValue, "" ) );
         }
       }
 
       // Obtain and sort the list of keys...
       //
       List<String> keys = new ArrayList<String>();
-      Enumeration<Object> keysEnum = properties.keys();
-      while ( keysEnum.hasMoreElements() ) {
-        keys.add( (String) keysEnum.nextElement() );
+      Iterator<String> keysEnum = properties.getKeys();
+      while ( keysEnum.hasNext() ) {
+        keys.add( keysEnum.next() );
       }
       Collections.sort( keys );
 
@@ -237,7 +246,7 @@ public class KettlePropertiesFileDialog extends Dialog {
       //
       for ( int i = 0; i < keys.size(); i++ ) {
         String key = keys.get( i );
-        String value = properties.getProperty( key, "" );
+        String value = properties.getString( key, "" );
         String description = Const.NVL( variablesList.getDescriptionMap().get( key ), "" );
 
         TableItem item = new TableItem( wFields.table, SWT.NONE );
@@ -255,7 +264,7 @@ public class KettlePropertiesFileDialog extends Dialog {
 
       //saves the properties keys at the moment this method was called
       previousKettlePropertiesKeys = new HashSet<>();
-      previousKettlePropertiesKeys.addAll( Arrays.asList( properties.keySet().toArray( new String[ 0 ] ) ) );
+      properties.getKeys().forEachRemaining( previousKettlePropertiesKeys::add);
 
     } catch ( Exception e ) {
       new ErrorDialog( shell,
@@ -274,7 +283,6 @@ public class KettlePropertiesFileDialog extends Dialog {
   }
 
   private void ok() {
-    Properties properties = new Properties();
     kettleProperties = new HashMap<String, String>();
 
     int nr = wFields.nrNonEmpty();
@@ -285,30 +293,24 @@ public class KettlePropertiesFileDialog extends Dialog {
       String value = item.getText( pos++ );
 
       if ( !Utils.isEmpty( variable ) ) {
-        properties.put( variable, value );
+        properties.setProperty( variable, value );
         kettleProperties.put( variable, value );
       }
     }
 
+    // NOTE that the way the old file was laid out, the file header ended up attached to the first key
+    properties.getLayout().setHeaderComment( Const.getKettlePropertiesFileHeader() );
+    
     // Save the properties file...
     //
-    FileOutputStream out = null;
-    try {
-      out = new FileOutputStream( getKettlePropertiesFilename() );
-      properties.store( out, Const.getKettlePropertiesFileHeader() );
+    try ( FileOutputStream out = new FileOutputStream( getKettlePropertiesFilename() );
+          Writer writer = new OutputStreamWriter( out, "UTF-8" ) ) {
+      properties.write( writer );
     } catch ( Exception e ) {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Title" ),
         BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message" ), e );
-    } finally {
-      try {
-        out.close();
-      } catch ( IOException e ) {
-        LogChannel.GENERAL.logError( BaseMessages.getString(
-          PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message", Const.KETTLE_PROPERTIES,
-          getKettlePropertiesFilename() ), e );
-      }
-    }
+    } 
 
     if ( previousKettlePropertiesKeys != null ) {
       for ( String originalKey : previousKettlePropertiesKeys ) {
@@ -320,4 +322,15 @@ public class KettlePropertiesFileDialog extends Dialog {
 
     dispose();
   }
+
+  private void loadProperties() throws IOException {
+    String filename = getKettlePropertiesFilename();
+    try ( FileInputStream fis = new FileInputStream( filename );
+          InputStreamReader reader = new java.io.InputStreamReader( fis, "UTF-8" ) ) {
+      properties.read( reader );
+    } catch( ConfigurationException e ) {
+      throw new IOException( "Unable to load kettle properties from file: " + filename, e );
+    }
+  }
+
 }
