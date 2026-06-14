@@ -23,7 +23,6 @@
     <junit.version>4.12</junit.version>
     <mockito.version>5.10.0</mockito.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
-    <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
     <argLine>
       --add-opens=java.base/java.lang=ALL-UNNAMED
     </argLine>
@@ -253,12 +252,6 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.tinkerpop.blueprints</groupId>
-      <artifactId>blueprints-core</artifactId>
-      <version>${dependency.com.tinkerpop.blueprints.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
