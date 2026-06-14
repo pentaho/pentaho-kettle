@@ -655,6 +655,26 @@ public class JobMetaTest {
   }
 
   /**
+   * PDI - getUsedDatabaseConnectionNames throws NullPointerException when a job entry returns a null DatabaseMeta
+   * in its getUsedDatabaseConnections array.
+   */
+  @Test
+  public void testGetUsedDatabaseConnectionNamesNullDbInEntry() {
+    // Arrange: a job entry whose getUsedDatabaseConnections returns an array containing a null element
+    JobEntryInterface entry = mock( JobEntryInterface.class );
+    when( entry.getUsedDatabaseConnections() ).thenReturn( new org.pentaho.di.core.database.DatabaseMeta[] { null } );
+
+    JobEntryCopy copy = mock( JobEntryCopy.class );
+    when( copy.getEntry() ).thenReturn( entry );
+
+    jobMeta.addJobEntry( copy );
+
+    // Act & Assert: must not throw NullPointerException
+    java.util.Set<String> names = jobMeta.getUsedDatabaseConnectionNames();
+    assertNotNull( names );
+  }
+
+  /**
    * Tests that null filename doesn't cause issues in XML serialization.
    */
   @Test
@@ -680,6 +700,60 @@ public class JobMetaTest {
     // Filename should still be null/empty after deserialization
     assertTrue( "Null filename should result in null or empty after deserialization",
         deserializedJobMeta.getFilename() == null || deserializedJobMeta.getFilename().isEmpty() );
+  }
+
+  /**
+   * databasesUpdated must not throw when getUsedDatabaseConnections returns an array with a null element.
+   */
+  @Test
+  public void testDatabasesUpdatedNullDbInArray() {
+    JobEntryInterface entry = mock( JobEntryInterface.class );
+    when( entry.getUsedDatabaseConnections() ).thenReturn(
+        new org.pentaho.di.core.database.DatabaseMeta[] { null } );
+
+    JobEntryCopy copy = mock( JobEntryCopy.class );
+    when( copy.getEntry() ).thenReturn( entry );
+    jobMeta.addJobEntry( copy );
+
+    // Should not throw NullPointerException
+    jobMeta.databasesUpdated( "someConnection", java.util.Optional.empty() );
+    assertTrue( true );
+  }
+
+  /**
+   * allDatabasesUpdated must not throw when getUsedDatabaseConnections returns an array with a null element.
+   */
+  @Test
+  public void testAllDatabasesUpdatedNullDbInArray() {
+    JobEntryInterface entry = mock( JobEntryInterface.class );
+    when( entry.getUsedDatabaseConnections() ).thenReturn(
+        new org.pentaho.di.core.database.DatabaseMeta[] { null } );
+
+    JobEntryCopy copy = mock( JobEntryCopy.class );
+    when( copy.getEntry() ).thenReturn( entry );
+    jobMeta.addJobEntry( copy );
+
+    // Should not throw NullPointerException
+    jobMeta.allDatabasesUpdated();
+    assertTrue( true );
+  }
+
+  /**
+   * isDatabaseConnectionUsed (via getUsedDatabaseMetas) must not throw when getUsedDatabaseConnections
+   * returns an array with a null element.
+   */
+  @Test
+  public void testIsDatabaseConnectionUsedNullDbInArray() {
+    JobEntryInterface entry = mock( JobEntryInterface.class );
+    when( entry.getUsedDatabaseConnections() ).thenReturn(
+        new org.pentaho.di.core.database.DatabaseMeta[] { null } );
+
+    JobEntryCopy copy = mock( JobEntryCopy.class );
+    when( copy.getEntry() ).thenReturn( entry );
+    jobMeta.addJobEntry( copy );
+
+    org.pentaho.di.core.database.DatabaseMeta target = mock( org.pentaho.di.core.database.DatabaseMeta.class );
+    assertFalse( jobMeta.isDatabaseConnectionUsed( target ) );
   }
 
 }

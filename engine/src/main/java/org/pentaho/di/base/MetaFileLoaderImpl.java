@@ -159,7 +159,10 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       final String[] idContainer = new String[ 1 ]; //unigue portion of cache key passed though argument
       switch ( specificationMethod ) {
         case FILENAME:
-          String realFilename = tmpSpace.environmentSubstitute( filename );
+          String realFilename = resolveFilenameForLoad( space, tmpSpace, filename );
+          // Once the child filename is fully resolved, rebase the temp variable space to that file.
+          // This ensures the loaded meta gets its own directory variables instead of the parent job's.
+          tmpSpace = r.resolveCurrentDirectory( bowl, tmpSpace, null, realFilename );
           try {
             theMeta = attemptLoadMeta( bowl, realFilename, rep, metaStore, tmpSpace, null, idContainer );
           } catch ( KettleException e ) {
@@ -342,6 +345,21 @@ public class MetaFileLoaderImpl<T> implements IMetaFileLoader<T> {
       idContainer[ 0 ] = realFilename;  //only pass back the id used in the cache, if a cache entry should be created
     }
     return theMeta;
+  }
+
+  String resolveFilenameForLoad( VariableSpace space, VariableSpace tmpSpace, String filename ) {
+    VariableSpace primarySpace = space != null ? space : tmpSpace;
+    String realFilename = primarySpace.environmentSubstitute( filename );
+
+    if ( hasUnresolvedFilenamePlaceholders( realFilename ) && space != null && tmpSpace != null && space != tmpSpace ) {
+      realFilename = tmpSpace.environmentSubstitute( filename );
+    }
+
+    return realFilename;
+  }
+
+  boolean hasUnresolvedFilenamePlaceholders( String filename ) {
+    return filename != null && ( filename.contains( "${" ) || filename.contains( "%%" ) );
   }
 
   private T getMetaFromRepository( Bowl bowl, Repository rep, CurrentDirectoryResolver r, String metaPath, VariableSpace tmpSpace )
