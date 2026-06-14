@@ -12,14 +12,17 @@
 
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -44,8 +47,10 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -293,6 +298,169 @@ public class MonetDBBulkLoaderHelperTest {
 
         assertSame(sqlStatement, result);
         verify(meta).setDatabaseMeta(databaseMeta);
+    }
+
+    @Test
+    public void testGetTableFieldAndType_NullQueryParams() {
+        JSONObject response = helper.getTableFieldAndType(transMeta, null);
+
+        assertEquals(StepInterface.FAILURE_RESPONSE, response.get("actionStatus"));
+        assertEquals("Missing query parameters.", response.get("error"));
+    }
+
+    @Test
+    public void testGetTableFieldAndType_MissingConnection() {
+        queryParams.put(MonetDBBulkLoaderHelper.TABLE, "my_table");
+        when(transMeta.environmentSubstitute("my_table")).thenReturn("my_table");
+
+        JSONObject response = helper.getTableFieldAndType(transMeta, queryParams);
+
+        assertEquals(StepInterface.FAILURE_RESPONSE, response.get("actionStatus"));
+        assertNotNull(response.get("error"));
+    }
+
+    @Test
+    public void testGetTableFieldAndType_BlankConnection() {
+        queryParams.put(MonetDBBulkLoaderHelper.CONNECTION, "   ");
+        queryParams.put(MonetDBBulkLoaderHelper.TABLE, "my_table");
+        when(transMeta.environmentSubstitute("my_table")).thenReturn("my_table");
+
+        JSONObject response = helper.getTableFieldAndType(transMeta, queryParams);
+
+        assertEquals(StepInterface.FAILURE_RESPONSE, response.get("actionStatus"));
+        assertNotNull(response.get("error"));
+    }
+
+    @Test
+    public void testGetTableFieldAndType_MissingTable() {
+        queryParams.put(MonetDBBulkLoaderHelper.CONNECTION, "conn");
+
+        JSONObject response = helper.getTableFieldAndType(transMeta, queryParams);
+
+        assertEquals(StepInterface.FAILURE_RESPONSE, response.get("actionStatus"));
+        assertNotNull(response.get("error"));
+    }
+
+    @Test
+    public void testGetTableFieldAndType_NullSchema_ReturnsFailure() {
+        // MonetDB requires schema to build schema.table; absent schema → FAILURE.
+        queryParams.put(MonetDBBulkLoaderHelper.CONNECTION, "conn");
+        queryParams.put(MonetDBBulkLoaderHelper.TABLE, "my_table");
+        when(transMeta.environmentSubstitute("my_table")).thenReturn("my_table");
+
+        JSONObject response = helper.getTableFieldAndType(transMeta, queryParams);
+
+        assertEquals(StepInterface.FAILURE_RESPONSE, response.get("actionStatus"));
+        assertNotNull(response.get("error"));
+    }
+
+    @Test
+    public void testGetTableFieldAndType_BlankSchema_ReturnsFailure() {
+        // MonetDB requires schema; whitespace-only schema is treated as missing → FAILURE.
+        queryParams.put(MonetDBBulkLoaderHelper.CONNECTION, "conn");
+        queryParams.put(MonetDBBulkLoaderHelper.SCHEMA, "   ");
+        queryParams.put(MonetDBBulkLoaderHelper.TABLE, "my_table");
+        when(transMeta.environmentSubstitute("   ")).thenReturn("   ");
+        when(transMeta.environmentSubstitute("my_table")).thenReturn("my_table");
+
+        JSONObject response = helper.getTableFieldAndType(transMeta, queryParams);
+
+        assertEquals(StepInterface.FAILURE_RESPONSE, response.get("actionStatus"));
+        assertNotNull(response.get("error"));
+    }
+
+    @Test
+    public void testGetTableFieldAndType_DatabaseNotFound() {
+        queryParams.put(MonetDBBulkLoaderHelper.CONNECTION, "conn");
+        queryParams.put(MonetDBBulkLoaderHelper.SCHEMA, "public");
+        queryParams.put(MonetDBBulkLoaderHelper.TABLE, "my_table");
+        when(transMeta.environmentSubstitute("public")).thenReturn("public");
+        when(transMeta.environmentSubstitute("my_table")).thenReturn("my_table");
+        when(transMeta.findDatabase("conn")).thenReturn(null);
+
+        JSONObject response = helper.getTableFieldAndType(transMeta, queryParams);
+
+        assertEquals(StepInterface.FAILURE_RESPONSE, response.get("actionStatus"));
+        assertEquals("An unexpected error occurred.", response.get("error"));
+    }
+
+    @Test
+    public void testGetTableFieldAndType_Success_WithSchema() {
+        queryParams.put(MonetDBBulkLoaderHelper.CONNECTION, "conn");
+        queryParams.put(MonetDBBulkLoaderHelper.SCHEMA, "public");
+        queryParams.put(MonetDBBulkLoaderHelper.TABLE, "my_table");
+        when(transMeta.findDatabase("conn")).thenReturn(databaseMeta);
+        when(transMeta.environmentSubstitute("public")).thenReturn("public");
+        when(transMeta.environmentSubstitute("my_table")).thenReturn("my_table");
+
+        RowMeta rowMeta = new RowMeta();
+        rowMeta.addValueMeta(new ValueMetaString("id"));
+        rowMeta.addValueMeta(new ValueMetaString("name"));
+
+        try (MockedConstruction<Database> ignored = mockConstruction(Database.class,
+                (mockDb, context) -> {
+                    doNothing().when(mockDb).connect();
+                    when(mockDb.getTableFieldsMeta("public", "my_table")).thenReturn(rowMeta);
+                })) {
+            JSONObject response = helper.getTableFieldAndType(transMeta, queryParams);
+
+            assertEquals(StepInterface.SUCCESS_RESPONSE, response.get("actionStatus"));
+            JSONArray columns = (JSONArray) response.get("columns");
+            assertNotNull(columns);
+            assertEquals(2, columns.size());
+            assertEquals("id", ((JSONObject) columns.get(0)).get("columnName"));
+            assertEquals("name", ((JSONObject) columns.get(1)).get("columnName"));
+        }
+    }
+
+    @Test
+    public void testGetTableFieldAndType_Success_NullRowMeta() {
+        queryParams.put(MonetDBBulkLoaderHelper.CONNECTION, "conn");
+        queryParams.put(MonetDBBulkLoaderHelper.SCHEMA, "public");
+        queryParams.put(MonetDBBulkLoaderHelper.TABLE, "my_table");
+        when(transMeta.findDatabase("conn")).thenReturn(databaseMeta);
+        when(transMeta.environmentSubstitute("public")).thenReturn("public");
+        when(transMeta.environmentSubstitute("my_table")).thenReturn("my_table");
+
+        try (MockedConstruction<Database> ignored = mockConstruction(Database.class,
+                (mockDb, context) -> {
+                    doNothing().when(mockDb).connect();
+                    when(mockDb.getTableFieldsMeta("public", "my_table")).thenReturn(null);
+                })) {
+            JSONObject response = helper.getTableFieldAndType(transMeta, queryParams);
+
+            assertEquals(StepInterface.SUCCESS_RESPONSE, response.get("actionStatus"));
+            JSONArray columns = (JSONArray) response.get("columns");
+            assertNotNull(columns);
+            assertEquals(0, columns.size());
+        }
+    }
+
+    @Test
+    public void testGetTableFieldAndType_DatabaseException() {
+        queryParams.put(MonetDBBulkLoaderHelper.CONNECTION, "conn");
+        queryParams.put(MonetDBBulkLoaderHelper.SCHEMA, "public");
+        queryParams.put(MonetDBBulkLoaderHelper.TABLE, "my_table");
+        when(transMeta.findDatabase("conn")).thenReturn(databaseMeta);
+        when(transMeta.environmentSubstitute("public")).thenReturn("public");
+        when(transMeta.environmentSubstitute("my_table")).thenReturn("my_table");
+
+        try (MockedConstruction<Database> ignored = mockConstruction(Database.class,
+                (mockDb, context) ->
+                        doThrow(new Exception("DB connect failed")).when(mockDb).connect())) {
+            JSONObject response = helper.getTableFieldAndType(transMeta, queryParams);
+
+            assertEquals(StepInterface.FAILURE_RESPONSE, response.get("actionStatus"));
+            assertEquals("An unexpected error occurred.", response.get("error"));
+        }
+    }
+
+    @Test
+    public void testHandleStepAction_GetTableFieldAndType_Routing() {
+        JSONObject response = helper.handleStepAction("getTableFieldAndType", transMeta, null);
+
+        assertEquals(StepInterface.FAILURE_RESPONSE, response.get("actionStatus"));
+        assertEquals("Missing query parameters.", response.get("error"));
     }
 
     private RowMetaInterface validRowMeta() {
