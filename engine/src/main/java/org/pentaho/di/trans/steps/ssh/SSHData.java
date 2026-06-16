@@ -122,15 +122,16 @@ public class SSHData extends BaseStepData {
     SshConnection connection = null;
 
     try {
+      // PDI-20898: non-positive timeout means infinite (0), positive values are seconds converted to milliseconds.
       long timeoutMillis = params.getTimeOut() <= 0 ? 0L : params.getTimeOut() * 1000L;
 
-      // Build basic SSH configuration (PDI-20898: fix timeout=0 edge case)
+      // Build SSH configuration with the same timeout semantics for connect and command execution.
       SshConfig config = SshConfig.create()
           .host( params.getServer() )
           .port( params.getPort() )
           .username( params.getUsername() )
-          .commandTimeoutMillis( timeoutMillis ) // timeout<=0 means infinite
-          .connectTimeoutMillis( timeoutMillis ); // timeout<=0 means infinite
+          .commandTimeoutMillis( timeoutMillis )
+          .connectTimeoutMillis( timeoutMillis );
 
       // Set the log channel for debugging SSH connection issues
       if ( logChannel != null ) {
