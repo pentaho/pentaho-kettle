@@ -91,7 +91,7 @@
             <appender-ref ref="pdi-execution-appender"/>
         </Logger>
 
-        <Logger name="org.pentaho.hadoop.shim.DriverManager" level="INFO"/>
+        <Logger name="org.pentaho.hadoop.shim.drivermanager.DriverManager" level="INFO"/>
 
         <!-- ======================= -->
         <!-- Setup the Root category -->

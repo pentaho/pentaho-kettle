@@ -17,7 +17,7 @@
   <properties>
     <!-- plugins -->
     <pdi-core-plugin.version>10.2.0.4-354</pdi-core-plugin.version>
-    <big-data-plugin.version>10.2.0.4-354</big-data-plugin.version>
+    <big-data-plugin.version>10.2.0.4-354-CUST-311</big-data-plugin.version>
     <kettle-s3csvinput-plugin.version>10.2.0.4-354</kettle-s3csvinput-plugin.version>
     <kettle-shapefilereader-plugin.version>10.2.0.4-354</kettle-shapefilereader-plugin.version>
     <kettle-drools8-plugin.version>10.2.0.4-354</kettle-drools8-plugin.version>
