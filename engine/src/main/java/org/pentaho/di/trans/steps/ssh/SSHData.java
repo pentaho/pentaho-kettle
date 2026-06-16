@@ -122,13 +122,13 @@ public class SSHData extends BaseStepData {
     SshConnection connection = null;
 
     try {
-      // Build basic SSH configuration
+      // Build basic SSH configuration (PDI-20898: fix timeout=0 edge case)
       SshConfig config = SshConfig.create()
           .host( params.getServer() )
           .port( params.getPort() )
           .username( params.getUsername() )
-          .commandTimeoutMillis( params.getTimeOut() > 0 ? params.getTimeOut() * 1000 : 30000 )// Default 30 seconds
-          .connectTimeoutMillis( params.getTimeOut() > 0 ? params.getTimeOut() * 1000 : 30000 ); // Default 30 seconds
+          .commandTimeoutMillis( params.getTimeOut() <= 0 ? 0 : params.getTimeOut() * 1000 )// timeout=0 means infinite
+          .connectTimeoutMillis( params.getTimeOut() <= 0 ? 0 : params.getTimeOut() * 1000 ); // timeout=0 means infinite
 
       // Set the log channel for debugging SSH connection issues
       if ( logChannel != null ) {
