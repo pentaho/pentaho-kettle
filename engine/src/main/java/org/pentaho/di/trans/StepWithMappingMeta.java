@@ -308,7 +308,9 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
     }
     String[] variableNames = toSpace.listVariables();
     for ( String variable : variableNames ) {
-      if ( fromSpace.getVariable( variable ) == null ) {
+      // Internal variables are execution-context specific and must be resolved on the child object,
+      // not inherited from the parent variable space.
+      if ( fromSpace.getVariable( variable ) == null && !isInternalVariable( variable, "" ) ) {
         fromSpace.setVariable( variable, toSpace.getVariable( variable ) );
       }
     }
