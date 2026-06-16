@@ -19,6 +19,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.KafkaException;
+import java.time.Duration;
 import org.apache.kafka.common.TopicPartition;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -359,14 +360,14 @@ public class KafkaConsumerInputTest {
         records = new ConsumerRecords<>(messages);
         // provide some data when we try to poll for kafka messages
         when(consumer.poll(Duration.ofMillis(1000))).thenReturn(records)
-          .then(invocationOnMock -> {
-              while (trans.getSteps().get(0).step.getLinesWritten() < 4) {
-                  //noinspection UnnecessaryContinue
-                  continue;  //here to fool checkstyle
-              }
-              trans.stopAll();
-              return new ConsumerRecords<>(Collections.emptyMap());
-          });
+                .then(invocationOnMock -> {
+                    while (trans.getSteps().get(0).step.getLinesWritten() < 4) {
+                        //noinspection UnnecessaryContinue
+                        continue;  //here to fool checkstyle
+                    }
+                    trans.stopAll();
+                    return new ConsumerRecords<>(Collections.emptyMap());
+                });
         when(factory.consumer(eq(kafkaMeta), any(), eq(String), eq(String)))
           .thenReturn(consumer);
 
@@ -404,7 +405,7 @@ public class KafkaConsumerInputTest {
         records = new ConsumerRecords<>(messages);
         // provide some data when we try to poll for kafka messages
         when(consumer.poll(Duration.ofMillis(1000))).thenReturn(records)
-          .thenReturn(new ConsumerRecords<>(Collections.emptyMap()));
+                .thenReturn(new ConsumerRecords<>(Collections.emptyMap()));
         when(factory.consumer(eq(kafkaMeta), any(), eq(String), eq(String)))
           .thenReturn(consumer);
 
@@ -438,12 +439,12 @@ public class KafkaConsumerInputTest {
         CountDownLatch latch = new CountDownLatch(1);
         // provide some data when we try to poll for kafka messages
         when(consumer.poll(Duration.ofMillis(1000)))
-          .then(invocationOnMock -> {
-              trans.pauseRunning();
-              latch.countDown();
-              return records;
-          })
-          .thenReturn(new ConsumerRecords<>(Collections.emptyMap()));
+                .then(invocationOnMock -> {
+                    trans.pauseRunning();
+                    latch.countDown();
+                    return records;
+                })
+                .thenReturn(new ConsumerRecords<>(Collections.emptyMap()));
         when(factory.consumer(eq(kafkaMeta), any(), eq(String), eq(String)))
           .thenReturn(consumer);
 
@@ -525,14 +526,14 @@ public class KafkaConsumerInputTest {
         records = new ConsumerRecords<>(messages);
         // provide some data when we try to poll for kafka messages
         when(consumer.poll(Duration.ofMillis(1000)))
-          .thenReturn(records)
-          .then(invocationOnMock -> {
-              for (StepStatus stepStatus : trans.getSteps().get(0).step.subStatuses()) {
-                  assertEquals(BaseStepData.StepExecutionStatus.STATUS_RUNNING.getDescription(),
-                    stepStatus.getStatusDescription());
-              }
-              return new ConsumerRecords<>(Collections.emptyMap());
-          });
+                .thenReturn(records)
+                .then(invocationOnMock -> {
+                    for (StepStatus stepStatus : trans.getSteps().get(0).step.subStatuses()) {
+                        assertEquals(BaseStepData.StepExecutionStatus.STATUS_RUNNING.getDescription(),
+                                stepStatus.getStatusDescription());
+                    }
+                    return new ConsumerRecords<>(Collections.emptyMap());
+                });
         when(factory.consumer(eq(kafkaMeta), any(), eq(String), eq(String)))
           .thenReturn(consumer);
 

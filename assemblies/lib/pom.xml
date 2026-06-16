@@ -42,11 +42,11 @@
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
     <databricks.version>4.0.0</databricks.version>
-    <jface.version>3.22.0</jface.version>
     <pentaho-metadata.version>11.1.0.0-SNAPSHOT</pentaho-metadata.version>
     <google-http-client.version>1.42.3</google-http-client.version>
     <pax-swissbox-core.version>1.8.2</pax-swissbox-core.version>
     <javax.activation.version>1.1.1</javax.activation.version>
+    <!-- Eclipse library versions are defined in the parent pom.xml -->
   </properties>
 
   <dependencies>
@@ -143,15 +143,35 @@
       </exclusions>
     </dependency>
     <!-- needed to avoid pulling in Java 11 artifacts -->
+    <!-- Updated Eclipse Dependencies - CVE-2023-4218 remediation -->
+    <!-- Explicit versions to prevent Java 11+ artifact pulls from transitive deps -->
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.core.commands</artifactId>
-      <version>3.9.800</version>
+      <version>${commands.version}</version>
+      <exclusions>
+        <!-- Prevent legacy coordinate pulls -->
+        <exclusion>
+          <groupId>org.eclipse.core</groupId>
+          <artifactId>commands</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.equinox.common</artifactId>
-      <version>3.14.0</version>
+      <version>${common.version}</version>
+      <exclusions>
+        <!-- Prevent legacy coordinate pulls -->
+        <exclusion>
+          <groupId>org.eclipse.equinox</groupId>
+          <artifactId>common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse</groupId>
+          <artifactId>equinox.common</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

@@ -41,9 +41,8 @@
     <artifactId>junit</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.eclipse</groupId>
-      <artifactId>jface</artifactId>
-      <!--version>3.3.0-I20070606-0010</version-->
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.jface</artifactId>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
