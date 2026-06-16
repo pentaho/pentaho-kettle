@@ -188,6 +188,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
         return;
       }
 
+      clearBowlCache( slaveServerRepository );
       final JobMeta jobMeta = loadJob( slaveServerRepository, transOption, getPopulatedVariableSpaceFromRequest( request, new Variables() ) );
 
       // Set the servlet parameters as variables in the transformation
