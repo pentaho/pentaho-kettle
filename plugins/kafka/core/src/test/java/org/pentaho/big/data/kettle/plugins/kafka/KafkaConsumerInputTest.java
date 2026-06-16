@@ -52,6 +52,7 @@ import org.pentaho.di.trans.steps.abort.AbortMeta;
 import org.pentaho.hadoop.shim.api.cluster.NamedClusterService;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -114,13 +115,13 @@ public class KafkaConsumerInputTest {
             Props.init(0);
         }
         StepPluginType.getInstance().handlePluginAnnotation(
-                KafkaConsumerInputMeta.class,
-                KafkaConsumerInputMeta.class.getAnnotation(org.pentaho.di.core.annotations.Step.class),
-                Collections.emptyList(), false, null);
+          KafkaConsumerInputMeta.class,
+          KafkaConsumerInputMeta.class.getAnnotation(org.pentaho.di.core.annotations.Step.class),
+          Collections.emptyList(), false, null);
         StepPluginType.getInstance().handlePluginAnnotation(
-                AbortMeta.class,
-                AbortMeta.class.getAnnotation(org.pentaho.di.core.annotations.Step.class),
-                Collections.emptyList(), false, null);
+          AbortMeta.class,
+          AbortMeta.class.getAnnotation(org.pentaho.di.core.annotations.Step.class),
+          Collections.emptyList(), false, null);
     }
 
     @Before
@@ -172,14 +173,14 @@ public class KafkaConsumerInputTest {
         step = new KafkaConsumerInput(stepMeta, data, 1, transMeta, trans);
 
         when(factory.consumer(eq(meta), any(), eq(meta.getKeyField().getOutputType()),
-                eq(meta.getMessageField().getOutputType()))).thenReturn(consumer);
+          eq(meta.getMessageField().getOutputType()))).thenReturn(consumer);
 
         topicList = new ArrayList<>();
         topicList.add(topics.iterator().next());
         meta.setTopics(topicList);
 
-        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class), 
-                any(LogChannelInterface.class))).thenReturn(true);
+        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class),
+          any(LogChannelInterface.class))).thenReturn(true);
 
         step.init(meta, data);
 
@@ -201,10 +202,10 @@ public class KafkaConsumerInputTest {
         step = new KafkaConsumerInput(stepMeta, data, 1, transMeta, trans);
 
         when(factory.consumer(eq(meta), any(), eq(meta.getKeyField().getOutputType()),
-                eq(meta.getMessageField().getOutputType()))).thenReturn(consumer);
+          eq(meta.getMessageField().getOutputType()))).thenReturn(consumer);
 
-        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class), 
-                any(LogChannelInterface.class))).thenReturn(true);
+        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class),
+          any(LogChannelInterface.class))).thenReturn(true);
 
         topicList = new ArrayList<>();
         topicList.add(topics.iterator().next());
@@ -227,7 +228,7 @@ public class KafkaConsumerInputTest {
 
         assertFalse(step.init(meta, data));
         verify(logChannel).logError("The \"Number of records\" and \"Duration\" fields can’t both be set to 0. Please "
-                + "set a value of 1 or higher for one of the fields.");
+          + "set a value of 1 or higher for one of the fields.");
     }
 
     @Test
@@ -242,7 +243,7 @@ public class KafkaConsumerInputTest {
         assertFalse(step.init(meta, data));
         verify(logChannel).logError("The \"Duration\" field is using a non-numeric value. Please set a numeric value.");
         verify(logChannel)
-                .logError("The \"Number of records\" field is using a non-numeric value. Please set a numeric value.");
+          .logError("The \"Number of records\" field is using a non-numeric value. Please set a numeric value.");
     }
 
     @Test
@@ -276,17 +277,17 @@ public class KafkaConsumerInputTest {
         step = spy(new KafkaConsumerInput(stepMeta, data, 1, transMeta, trans));
         // we control the consumer creation since the usual constructor tries to connect to kafka
         when(factory.consumer(eq(meta), any(), eq(meta.getKeyField().getOutputType()),
-                eq(meta.getMessageField().getOutputType()))).thenReturn(consumer);
+          eq(meta.getMessageField().getOutputType()))).thenReturn(consumer);
 
-        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class), 
-                any(LogChannelInterface.class))).thenReturn(true);
+        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class),
+          any(LogChannelInterface.class))).thenReturn(true);
 
         int messageCount = 5;
         messages.put(topic, createRecords(topic.topic(), messageCount));
         records = new ConsumerRecords<>(messages);
         // provide some data when we try to poll for kafka messages
         CountDownLatch latch = new CountDownLatch(1);
-        when(consumer.poll(ArgumentMatchers.anyLong())).thenReturn(records).then(invocationOnMock -> {
+        when(consumer.poll(ArgumentMatchers.any(Duration.class))).thenReturn(records).then(invocationOnMock -> {
             latch.countDown();
             return Collections.emptyList();
         });
@@ -335,7 +336,7 @@ public class KafkaConsumerInputTest {
 
         for (int i = 0; i < count; i++) {
             ConsumerRecord<String, String> r
-                    = new ConsumerRecord<>(topic, 0, i, "key_" + i, "value_" + i);
+              = new ConsumerRecord<>(topic, 0, i, "key_" + i, "value_" + i);
             records.add(r);
         }
         return records;
@@ -347,7 +348,7 @@ public class KafkaConsumerInputTest {
         TransMeta consumerParent = new TransMeta(DefaultBowl.getInstance(), path, new Variables());
         Trans trans = new Trans(consumerParent);
         KafkaConsumerInputMeta kafkaMeta
-                = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
+          = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
         kafkaMeta.setTransformationPath(getClass().getResource("/consumerSub.ktr").getPath());
         kafkaMeta.setBatchSize("2");
         kafkaMeta.setKafkaFactory(factory);
@@ -357,20 +358,20 @@ public class KafkaConsumerInputTest {
         messages.put(topic, createRecords(topic.topic(), messageCount));
         records = new ConsumerRecords<>(messages);
         // provide some data when we try to poll for kafka messages
-        when(consumer.poll(1000)).thenReturn(records)
-                .then(invocationOnMock -> {
-                    while (trans.getSteps().get(0).step.getLinesWritten() < 4) {
-                        //noinspection UnnecessaryContinue
-                        continue;  //here to fool checkstyle
-                    }
-                    trans.stopAll();
-                    return new ConsumerRecords<>(Collections.emptyMap());
-                });
+        when(consumer.poll(Duration.ofMillis(1000))).thenReturn(records)
+          .then(invocationOnMock -> {
+              while (trans.getSteps().get(0).step.getLinesWritten() < 4) {
+                  //noinspection UnnecessaryContinue
+                  continue;  //here to fool checkstyle
+              }
+              trans.stopAll();
+              return new ConsumerRecords<>(Collections.emptyMap());
+          });
         when(factory.consumer(eq(kafkaMeta), any(), eq(String), eq(String)))
-                .thenReturn(consumer);
+          .thenReturn(consumer);
 
-        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class), 
-                any(LogChannelInterface.class))).thenReturn(true);
+        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class),
+          any(LogChannelInterface.class))).thenReturn(true);
 
         trans.prepareExecution(new String[]{});
         trans.startThreads();
@@ -393,7 +394,7 @@ public class KafkaConsumerInputTest {
         TransMeta consumerParent = new TransMeta(DefaultBowl.getInstance(), path, new Variables());
         Trans trans = new Trans(consumerParent);
         KafkaConsumerInputMeta kafkaMeta
-                = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
+          = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
         kafkaMeta.setTransformationPath(getClass().getResource("/consumerSub.ktr").getPath());
         kafkaMeta.setBatchSize("200");
         kafkaMeta.setBatchDuration("50");
@@ -402,13 +403,13 @@ public class KafkaConsumerInputTest {
         messages.put(topic, createRecords(topic.topic(), messageCount));
         records = new ConsumerRecords<>(messages);
         // provide some data when we try to poll for kafka messages
-        when(consumer.poll(1000)).thenReturn(records)
-                .thenReturn(new ConsumerRecords<>(Collections.emptyMap()));
+        when(consumer.poll(Duration.ofMillis(1000))).thenReturn(records)
+          .thenReturn(new ConsumerRecords<>(Collections.emptyMap()));
         when(factory.consumer(eq(kafkaMeta), any(), eq(String), eq(String)))
-                .thenReturn(consumer);
+          .thenReturn(consumer);
 
-        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class), 
-                any(LogChannelInterface.class))).thenReturn(true);
+        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class),
+          any(LogChannelInterface.class))).thenReturn(true);
 
         trans.prepareExecution(new String[]{});
         trans.startThreads();
@@ -426,7 +427,7 @@ public class KafkaConsumerInputTest {
         TransMeta consumerParent = new TransMeta(DefaultBowl.getInstance(), path, new Variables());
         Trans trans = new Trans(consumerParent);
         KafkaConsumerInputMeta kafkaMeta
-                = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
+          = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
         kafkaMeta.setTransformationPath(getClass().getResource("/consumerSub.ktr").getPath());
         kafkaMeta.setBatchSize("4");
         kafkaMeta.setBatchDuration("0");
@@ -436,18 +437,18 @@ public class KafkaConsumerInputTest {
         records = new ConsumerRecords<>(messages);
         CountDownLatch latch = new CountDownLatch(1);
         // provide some data when we try to poll for kafka messages
-        when(consumer.poll(1000))
-                .then(invocationOnMock -> {
-                    trans.pauseRunning();
-                    latch.countDown();
-                    return records;
-                })
-                .thenReturn(new ConsumerRecords<>(Collections.emptyMap()));
+        when(consumer.poll(Duration.ofMillis(1000)))
+          .then(invocationOnMock -> {
+              trans.pauseRunning();
+              latch.countDown();
+              return records;
+          })
+          .thenReturn(new ConsumerRecords<>(Collections.emptyMap()));
         when(factory.consumer(eq(kafkaMeta), any(), eq(String), eq(String)))
-                .thenReturn(consumer);
+          .thenReturn(consumer);
 
-        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class), 
-                any(LogChannelInterface.class))).thenReturn(true);
+        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class),
+          any(LogChannelInterface.class))).thenReturn(true);
 
         trans.prepareExecution(new String[]{});
         trans.startThreads();
@@ -476,28 +477,28 @@ public class KafkaConsumerInputTest {
         TransMeta consumerParent = new TransMeta(DefaultBowl.getInstance(), path, new Variables());
         Trans trans = new Trans(consumerParent);
         KafkaConsumerInputMeta kafkaMeta
-                = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
+          = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
         kafkaMeta.setTransformationPath(getClass().getResource("/abortSub.ktr").getPath());
         kafkaMeta.setKafkaFactory(factory);
         int messageCount = 4;
         messages.put(topic, createRecords(topic.topic(), messageCount));
         records = new ConsumerRecords<>(messages);
         // provide some data when we try to poll for kafka messages
-        when(consumer.poll(1000)).thenReturn(records);
+        when(consumer.poll(Duration.ofMillis(1000))).thenReturn(records);
         when(factory.consumer(eq(kafkaMeta), any(), eq(String), eq(String))).thenReturn(consumer);
-        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class), 
-                any(LogChannelInterface.class))).thenReturn(true);
+        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class),
+          any(LogChannelInterface.class))).thenReturn(true);
         trans.prepareExecution(new String[]{});
         trans.startThreads();
         trans.waitUntilFinished();
         StepInterface kafkaStep = trans.getSteps().get(0).step;
         Collection<StepStatus> stepStatuses = kafkaStep.subStatuses();
         StepStatus recordsFromStream
-                = stepStatuses.stream().filter(stepStatus -> stepStatus.getStepname().equals("Get records from stream"))
-                        .findFirst().orElseThrow(RuntimeException::new);
+          = stepStatuses.stream().filter(stepStatus -> stepStatus.getStepname().equals("Get records from stream"))
+          .findFirst().orElseThrow(RuntimeException::new);
         StepStatus abort
-                = stepStatuses.stream().filter(stepStatus -> stepStatus.getStepname().equals("Abort"))
-                        .findFirst().orElseThrow(RuntimeException::new);
+          = stepStatuses.stream().filter(stepStatus -> stepStatus.getStepname().equals("Abort"))
+          .findFirst().orElseThrow(RuntimeException::new);
         assertEquals(3, recordsFromStream.getLinesRead());
         assertEquals(2, abort.getLinesRead());
 
@@ -514,7 +515,7 @@ public class KafkaConsumerInputTest {
         TransMeta consumerParent = new TransMeta(DefaultBowl.getInstance(), path, new Variables());
         Trans trans = new Trans(consumerParent);
         KafkaConsumerInputMeta kafkaMeta
-                = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
+          = (KafkaConsumerInputMeta) consumerParent.getStep(0).getStepMetaInterface();
         kafkaMeta.setTransformationPath(getClass().getResource("/consumerSub.ktr").getPath());
         kafkaMeta.setBatchSize("4");
         kafkaMeta.setBatchDuration("0");
@@ -523,20 +524,20 @@ public class KafkaConsumerInputTest {
         messages.put(topic, createRecords(topic.topic(), messageCount));
         records = new ConsumerRecords<>(messages);
         // provide some data when we try to poll for kafka messages
-        when(consumer.poll(1000))
-                .thenReturn(records)
-                .then(invocationOnMock -> {
-                    for (StepStatus stepStatus : trans.getSteps().get(0).step.subStatuses()) {
-                        assertEquals(BaseStepData.StepExecutionStatus.STATUS_RUNNING.getDescription(),
-                                stepStatus.getStatusDescription());
-                    }
-                    return new ConsumerRecords<>(Collections.emptyMap());
-                });
+        when(consumer.poll(Duration.ofMillis(1000)))
+          .thenReturn(records)
+          .then(invocationOnMock -> {
+              for (StepStatus stepStatus : trans.getSteps().get(0).step.subStatuses()) {
+                  assertEquals(BaseStepData.StepExecutionStatus.STATUS_RUNNING.getDescription(),
+                    stepStatus.getStatusDescription());
+              }
+              return new ConsumerRecords<>(Collections.emptyMap());
+          });
         when(factory.consumer(eq(kafkaMeta), any(), eq(String), eq(String)))
-                .thenReturn(consumer);
+          .thenReturn(consumer);
 
-        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class), 
-                any(LogChannelInterface.class))).thenReturn(true);
+        when(factory.checkKafkaConnectionStatus(any(KafkaConsumerInputMeta.class), any(Variables.class),
+          any(LogChannelInterface.class))).thenReturn(true);
 
         trans.prepareExecution(new String[]{});
         KafkaConsumerInput kafkaStep = (KafkaConsumerInput) trans.getSteps().get(0).step;
@@ -547,21 +548,21 @@ public class KafkaConsumerInputTest {
         trans.stopAll();
         for (StepStatus stepStatus : trans.getSteps().get(0).step.subStatuses()) {
             assertEquals(BaseStepData.StepExecutionStatus.STATUS_STOPPED.getDescription(),
-                    stepStatus.getStatusDescription());
+              stepStatus.getStatusDescription());
         }
     }
 
     public void verifyRow(String key, String message, String offset, String lineNr, final VerificationMode mode) {
         verify(logChannel, mode).logBasic(
-                Const.CR
-                + "------------> Linenr " + lineNr + "------------------------------" + Const.CR
-                + "Key = " + key + Const.CR
-                + "Message = " + message + Const.CR
-                + "Topic = pentaho" + Const.CR
-                + "Partition = 0" + Const.CR
-                + "Offset = " + offset + Const.CR
-                + "Timestamp = -1" + Const.CR
-                + Const.CR
-                + "====================");
+          Const.CR
+            + "------------> Linenr " + lineNr + "------------------------------" + Const.CR
+            + "Key = " + key + Const.CR
+            + "Message = " + message + Const.CR
+            + "Topic = pentaho" + Const.CR
+            + "Partition = 0" + Const.CR
+            + "Offset = " + offset + Const.CR
+            + "Timestamp = -1" + Const.CR
+            + Const.CR
+            + "====================");
     }
 }

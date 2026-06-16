@@ -40,6 +40,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.time.Duration;
 
 import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
@@ -123,8 +124,7 @@ public class KafkaStreamSource extends BlockingQueueStreamSource<List<Object>> {
         while ( !closed.get() ) {
           commitOffsets();
           @SuppressWarnings( "unchecked" ) //should revisit generic type here
-          ConsumerRecords<String, String> records = consumer.poll( 1000 );
-
+          ConsumerRecords<String, String> records = consumer.poll( Duration.ofMillis( 1000 ) );
           List<List<Object>> rows = new ArrayList<>();
           for ( ConsumerRecord<String, String> record : records ) {
             rows.add( processMessageAsRow( record ) );
