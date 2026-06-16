@@ -1727,7 +1727,7 @@ public class Const {
   public static final String STRING_ONLY_USED_DB_TO_XML = "STRING_ONLY_USED_DB_TO_XML";
 
   /**
-   Value to Configure if we want to disable/grayed out internal variables, and remove from the new/edit schedule.
+   Value to Configure if we want to disable/gray out internal variables, and remove them from the new/edit schedule dialog.
    */
   public static final String HIDE_INTERNAL_VARIABLES = "PENTAHO_SCHEDULER_HIDE_INTERNAL_VARIABLES";
   public static final String HIDE_INTERNAL_VARIABLES_DEFAULT = "Y";

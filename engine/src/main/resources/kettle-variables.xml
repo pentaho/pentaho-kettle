@@ -697,4 +697,11 @@
     <default-value>N</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>Set this variable to Y to disable/gray out internal variables and remove them from the new/edit schedule dialog.
+      Set it to N to show internal variables in the new/edit schedule dialog.</description>
+    <variable>PENTAHO_SCHEDULER_HIDE_INTERNAL_VARIABLES</variable>
+    <default-value>Y</default-value>
+  </kettle-variable>
+
 </kettle-variables>
