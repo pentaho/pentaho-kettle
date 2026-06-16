@@ -243,27 +243,6 @@ public class SSHDataTest {
 
     SshConfig config = configCaptor.getValue();
     assertEquals( "PDI-20898: timeout=0 should be infinite (0ms), not default 30000ms", 0L, config.getConnectTimeoutMillis() );
-  }
-
-  @Test
-  public void testPasswordAuthentication_TimeoutZero_ShouldBeInfinite() throws Exception {
-    // PDI-20898: Regression test for timeout=0 edge case
-    SshConnectionParameters params = SshConnectionParameters.builder()
-        .bowl( DefaultBowl.getInstance() )
-        .server( server )
-        .port( port )
-        .username( username )
-        .password( password )
-        .useKey( false )
-        .timeOut( 0 )
-        .build();
-    SSHData.openSshConnection( params );
-
-    ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
-    verify( mockFactory ).open( configCaptor.capture() );
-
-    SshConfig config = configCaptor.getValue();
-    assertEquals( "PDI-20898: timeout=0 should map to 0 (infinite)", 0L, config.getConnectTimeoutMillis() );
     assertEquals( "PDI-20898: both timeouts should be synchronized", 0L, config.getCommandTimeoutMillis() );
   }
 
