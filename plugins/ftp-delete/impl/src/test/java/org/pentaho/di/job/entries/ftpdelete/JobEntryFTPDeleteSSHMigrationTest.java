@@ -12,6 +12,7 @@
 
 package org.pentaho.di.job.entries.ftpdelete;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,6 +28,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -284,6 +286,29 @@ public class JobEntryFTPDeleteSSHMigrationTest {
 
       // Verify configuration was applied
       verify( sshConnectionFactory ).open( any( SshConfig.class ) );
+    }
+  }
+
+  @Test
+  public void testTimeoutZeroMeansInfiniteForSSHProtocol() throws Exception {
+    // PDI-20894: timeout=0 must not translate to a finite timeout.
+    jobEntry.setTimeout( "0" );
+
+    try ( MockedStatic<SshConnectionFactory> mockedFactory = mockStatic( SshConnectionFactory.class ) ) {
+      mockedFactory.when( SshConnectionFactory::defaultFactory ).thenReturn( sshConnectionFactory );
+      when( sshConnectionFactory.open( any( SshConfig.class ) ) ).thenReturn( sshConnection );
+      when( sshConnection.openSftp() ).thenReturn( sftpSession );
+      when( sftpSession.list( anyString() ) ).thenReturn( Arrays.asList() );
+
+      Result result = new Result();
+      jobEntry.execute( result, 0 );
+
+      ArgumentCaptor<SshConfig> configCaptor = ArgumentCaptor.forClass( SshConfig.class );
+      verify( sshConnectionFactory ).open( configCaptor.capture() );
+
+      SshConfig config = configCaptor.getValue();
+      assertEquals( "timeout=0 should keep connect timeout infinite", 0L, config.getConnectTimeoutMillis() );
+      assertEquals( "timeout=0 should keep command timeout infinite", 0L, config.getCommandTimeoutMillis() );
     }
   }
 
