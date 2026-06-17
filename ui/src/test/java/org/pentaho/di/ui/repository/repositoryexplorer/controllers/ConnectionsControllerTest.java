@@ -13,7 +13,7 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;

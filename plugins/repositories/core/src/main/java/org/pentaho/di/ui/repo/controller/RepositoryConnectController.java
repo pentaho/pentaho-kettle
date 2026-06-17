@@ -14,7 +14,7 @@
 package org.pentaho.di.ui.repo.controller;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.json.simple.JSONArray;

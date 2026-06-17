@@ -16,7 +16,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
