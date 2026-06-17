@@ -37,6 +37,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.step.StepHelperInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -660,5 +661,10 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
 
   public boolean supportsErrorHandling() {
     return true;
+  }
+
+  @Override
+  public StepHelperInterface getStepHelperInterface() {
+    return new RegexEvalHelper( this );
   }
 }
