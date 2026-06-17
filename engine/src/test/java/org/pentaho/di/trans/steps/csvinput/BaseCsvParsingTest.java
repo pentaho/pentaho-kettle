@@ -13,7 +13,7 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.pentaho.di.core.bowl.DefaultBowl;

@@ -26,7 +26,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import jakarta.xml.soap.SOAPException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
