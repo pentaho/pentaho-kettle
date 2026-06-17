@@ -14,7 +14,7 @@
 package org.pentaho.di.trans.steps.metainject.analyzer;
 
 import com.tinkerpop.blueprints.Vertex;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
