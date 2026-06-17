@@ -239,8 +239,9 @@ public class MinaSshConnection implements SshConnection {
   }
 
   private void waitForConnection( ConnectFuture cf ) throws SshConnectionException {
-    // PDI-20898: In MINA SSHD 2.x await(0L) returns null immediately (non-blocking poll) rather
-    // than waiting indefinitely.  Use the no-argument await() for non-positive timeouts; it waits
+    // PDI-20898: In MINA SSHD 2.x await(0L) behaves like a non-blocking poll and can return
+    // immediately without waiting for connection completion. Use no-argument await() for
+    // non-positive timeouts; it waits
     // until the connection is established with no deadline imposed.
     long connectTimeout = config.getConnectTimeoutMillis();
     boolean connected;
@@ -256,7 +257,10 @@ public class MinaSshConnection implements SshConnection {
     }
 
     if ( !connected ) {
-      throw new SshTimeoutException( "SSH connection timed out after " + connectTimeout + "ms" );
+      if ( connectTimeout > 0 ) {
+        throw new SshTimeoutException( "SSH connection timed out after " + connectTimeout + "ms" );
+      }
+      throw new SshTimeoutException( "SSH connection failed while waiting with no configured timeout" );
     }
 
     if ( !cf.isConnected() ) {

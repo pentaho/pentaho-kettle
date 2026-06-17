@@ -291,7 +291,7 @@ public class JobEntryFTPDeleteSSHMigrationTest {
 
   @Test
   public void testTimeoutZeroMeansInfiniteForSSHProtocol() throws Exception {
-    // PDI-20894: timeout=0 must not translate to a finite timeout.
+    // PDI-20898: timeout=0 must not translate to a finite timeout.
     jobEntry.setTimeout( "0" );
 
     try ( MockedStatic<SshConnectionFactory> mockedFactory = mockStatic( SshConnectionFactory.class ) ) {
