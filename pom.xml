@@ -57,7 +57,6 @@
     <pentaho-metastore.version>11.1.0.0-SNAPSHOT</pentaho-metastore.version>
 
     <!-- Third-party dependencies -->
-    <commons-lang3.version>3.14.0</commons-lang3.version>
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <encoder.version>1.2</encoder.version>
     <jsch.version>0.2.9</jsch.version>
@@ -282,6 +281,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-configuration2</artifactId>
         <version>${commons-configuration2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>${commons-text.version}</version>
       </dependency>
 
       <!-- Test dependencies -->

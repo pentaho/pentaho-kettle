@@ -13,7 +13,7 @@
 
 package org.pentaho.di.core.injection;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * An extension to the {@link DefaultInjectionTypeConverter} that converts null and empty values to -1 for

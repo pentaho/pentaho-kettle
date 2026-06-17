@@ -26,7 +26,7 @@ import java.util.Set;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 
 public class LoginContextInvocationHandler<T> implements InvocationHandler {
   private final T delegate;

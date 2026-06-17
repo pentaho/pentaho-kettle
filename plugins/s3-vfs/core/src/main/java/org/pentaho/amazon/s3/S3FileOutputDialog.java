@@ -14,7 +14,7 @@
 package org.pentaho.amazon.s3;
 
 import com.amazonaws.auth.AWSCredentials;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
