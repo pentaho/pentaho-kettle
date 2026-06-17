@@ -15,7 +15,7 @@ package org.pentaho.di.trans.steps.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;

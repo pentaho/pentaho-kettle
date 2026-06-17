@@ -18,7 +18,6 @@
     <pdi.version>11.0.0.2-294</pdi.version>
     <pentaho-metaverse.version>11.0.0.2-294</pentaho-metaverse.version>
     <platform.version>11.0.0.2-294</platform.version>
-    <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
@@ -116,9 +115,9 @@
       <version>${commons-io.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>${commons-lang.version}</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
     </dependency>
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>

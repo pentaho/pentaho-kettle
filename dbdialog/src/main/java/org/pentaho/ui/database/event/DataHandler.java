@@ -28,7 +28,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Collections;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.BaseDatabaseMeta;

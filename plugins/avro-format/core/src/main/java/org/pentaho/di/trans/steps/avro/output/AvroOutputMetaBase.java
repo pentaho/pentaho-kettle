@@ -13,7 +13,7 @@
 
 package org.pentaho.di.trans.steps.avro.output;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.trans.steps.avro.AvroTypeConverter;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.bowl.Bowl;

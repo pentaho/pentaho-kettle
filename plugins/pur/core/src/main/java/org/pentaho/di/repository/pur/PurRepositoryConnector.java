@@ -14,8 +14,8 @@ package org.pentaho.di.repository.pur;
 
 import com.pentaho.pdi.ws.IRepositorySyncWebService;
 import com.pentaho.pdi.ws.RepositorySyncException;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;

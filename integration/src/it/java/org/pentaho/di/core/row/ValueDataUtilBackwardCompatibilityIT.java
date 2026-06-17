@@ -22,7 +22,7 @@ import java.util.Arrays;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;

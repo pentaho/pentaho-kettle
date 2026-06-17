@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.input.BoundedInputStream;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.cluster.SlaveServer;

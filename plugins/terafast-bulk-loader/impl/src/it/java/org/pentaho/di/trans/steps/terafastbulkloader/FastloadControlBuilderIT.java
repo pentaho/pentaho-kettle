@@ -13,7 +13,7 @@
 
 package org.pentaho.di.trans.steps.terafastbulkloader;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import junit.framework.TestCase;
 
