@@ -562,18 +562,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    *           when the type could not be found or referenced.
    */
   private static final DatabaseInterface findDatabaseInterface( String databaseTypeDesc ) throws KettleDatabaseException {
-    PluginRegistry registry = PluginRegistry.getInstance();
-    PluginInterface plugin = registry.getPlugin( DatabasePluginType.class, databaseTypeDesc );
-    if ( plugin == null ) {
-      plugin = registry.findPluginWithName( DatabasePluginType.class, databaseTypeDesc );
-    }
-
-    if ( plugin == null ) {
-      throw new KettleDatabaseException( "database type with plugin id ["
-        + databaseTypeDesc + "] couldn't be found!" );
-    }
-
-    return getDatabaseInterfacesMap().get( plugin.getIds()[0] );
+    return DatabaseInterfaceFactory.create( databaseTypeDesc );
   }
 
   /**
@@ -1003,6 +992,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       }
       
       setDefaultAttributesValues();
+
+      setConnectionId( XMLHandler.getTagValue( con, "connection_id" ) );
 
       String name = XMLHandler.getTagValue( con, "name" );
       if ( name == null ) {

@@ -200,7 +200,7 @@ public class ConnectionManagementServiceMeta extends BaseDatabaseMeta implements
     }
 
     private HttpGet prepareRequest() {
-        var requestUrl = System.getenv(SERVICE_URL_VAR) + this.getId();
+        var requestUrl = System.getenv(SERVICE_URL_VAR) + this.getConnectionId();
         var request =new HttpGet( requestUrl );
 
         request.addHeader("Content-Type", "application/json");
@@ -240,7 +240,7 @@ public class ConnectionManagementServiceMeta extends BaseDatabaseMeta implements
         try {
             this.delegate = DatabaseMeta.getDatabaseInterface(type);
 
-            this.delegate.setId(databaseConnection.path("id").asText());
+            this.delegate.setConnectionId(databaseConnection.path("id").asText());
             this.delegate.setName(databaseConnection.path("name").asText());
             this.delegate.setHostname(detail.path("hostname").asText() );
             this.delegate.setDatabaseName(detail.path("databaseName").asText());
