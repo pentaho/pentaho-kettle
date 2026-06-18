@@ -22,7 +22,6 @@ import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -38,7 +37,6 @@ import org.pentaho.di.trans.TransMeta;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.security.Permission;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -51,7 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PanTest {
-  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+  @ClassRule public static final RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String TEST_PARAM_NAME = "testParam";
   private static final String DEFAULT_PARAM_VALUE = "default value";
@@ -213,7 +211,7 @@ public class PanTest {
 
       Pan.setCommandExecutor( testPanCommandExecutor );
       // (case-insensitive) should accept either 'Y' (default) or 'true'
-      Pan.main( new String[] { "/listdir:true", "/rep:test-repo", "/level:Basic" } );
+      Pan.main( new String[] { "/listdir:true", "/rep:test-repo", "/preferredidp:keycloak", "/level:Basic" } );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -222,6 +220,7 @@ public class PanTest {
 
       assertTrue( sysOutContent.toString().contains( DUMMY_DIR_1 ) );
       assertTrue( sysOutContent.toString().contains( DUMMY_DIR_2 ) );
+      assertEquals( "keycloak", testPanCommandExecutor.getCapturedPreferredIdp() );
 
       Result result = Pan.getCommandExecutor().getResult();
       assertNotNull( result );
@@ -291,6 +290,7 @@ public class PanTest {
     private final Repository testRepository;
     private final RepositoryMeta testRepositoryMeta;
     private final RepositoriesMeta testRepositoriesMeta;
+    private String capturedPreferredIdp;
 
     public PanCommandExecutorForTesting( Repository testRepository, RepositoryMeta testRepositoryMeta,
                                          RepositoriesMeta testRepositoriesMeta ) {
@@ -314,8 +314,27 @@ public class PanTest {
 
     @Override
     public Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
-                                                     final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
+                                                     final RepositoryOperation... operations ) throws KettleException {
       return testRepository != null ? testRepository : super.establishRepositoryConnection( repositoryMeta, username, password, operations );
+    }
+
+    @Override
+    public Repository establishRepositoryConnectionWithBrowserAuth( RepositoryMeta repositoryMeta,
+                                                                    String username,
+                                                                    String password,
+                                                                    boolean useBrowserAuth,
+                                                                    boolean useDeviceCode,
+                                                                    boolean useServiceAccount,
+                                                                    String preferredIdp,
+                                                                    RepositoryOperation... operations ) throws KettleException {
+      capturedPreferredIdp = preferredIdp;
+      return testRepository != null ? testRepository : super.establishRepositoryConnectionWithBrowserAuth(
+        repositoryMeta, username, password, useBrowserAuth, useDeviceCode, useServiceAccount, preferredIdp,
+        operations );
+    }
+
+    private String getCapturedPreferredIdp() {
+      return capturedPreferredIdp;
     }
   }
 }

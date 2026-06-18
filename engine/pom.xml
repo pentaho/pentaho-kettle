@@ -87,6 +87,11 @@
       <artifactId>kettle-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.pentaho</groupId>
+      <artifactId>pentaho-oauth-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Pentaho dependencies -->
     <dependency>

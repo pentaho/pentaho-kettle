@@ -262,7 +262,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public void init( final RepositoryMeta repositoryMeta ) {
     this.log = new LogChannel( this.getClass().getSimpleName() );
     this.repositoryMeta = (PurRepositoryMeta) repositoryMeta;
-    purRepositoryConnector = new PurRepositoryConnector( this, this.repositoryMeta, rootRef );
+    purRepositoryConnector = new PurRepositoryConnector( this, this.repositoryMeta, rootRef  );
   }
 
   public void setPurRepositoryConnector( IRepositoryConnector purRepositoryConnector ) {

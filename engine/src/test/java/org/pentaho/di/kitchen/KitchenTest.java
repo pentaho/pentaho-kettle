@@ -28,21 +28,20 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.security.ExitInterceptor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.security.Permission;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.pentaho.di.security.ExitInterceptor;
 
 public class KitchenTest {
 
@@ -182,7 +181,7 @@ public class KitchenTest {
     when( mockRepository.getDirectoryNames( any() ) ).thenReturn( new String[]{ DUMMY_DIR_1, DUMMY_DIR_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    KitchenCommandExecutor testPanCommandExecutor = new KitchenCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
+    KitchenCommandExecutorForTesting testPanCommandExecutor = new KitchenCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
     origSysOut = System.out;
     origSysErr = System.err;
@@ -194,7 +193,7 @@ public class KitchenTest {
 
       Kitchen.setCommandExecutor( testPanCommandExecutor );
       // (case-insensitive) should accept either 'Y' (default) or 'true'
-      Kitchen.main( new String[] { "/listdir:true", "/rep:test-repo", "/level:Basic" } );
+      Kitchen.main( new String[] { "/listdir:true", "/rep:test-repo", "/preferredidp:keycloak", "/level:Basic" } );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -203,6 +202,7 @@ public class KitchenTest {
 
       assertTrue( sysOutContent.toString().contains( DUMMY_DIR_1 ) );
       assertTrue( sysOutContent.toString().contains( DUMMY_DIR_2 ) );
+      assertEquals( "keycloak", testPanCommandExecutor.getCapturedPreferredIdp() );
 
       Result result = Kitchen.getCommandExecutor().getResult();
       assertNotNull( result );
@@ -271,6 +271,7 @@ public class KitchenTest {
     private Repository testRepository;
     private RepositoryMeta testRepositoryMeta;
     private RepositoriesMeta testRepositoriesMeta;
+    private String capturedPreferredIdp;
 
     public KitchenCommandExecutorForTesting( Repository testRepository, RepositoryMeta testRepositoryMeta,
                                              RepositoriesMeta testRepositoriesMeta ) {
@@ -296,6 +297,25 @@ public class KitchenTest {
     public Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
                                                          final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
       return testRepository != null ? testRepository : super.establishRepositoryConnection( repositoryMeta, username, password, operations );
+    }
+
+    @Override
+    public Repository establishRepositoryConnectionWithBrowserAuth( RepositoryMeta repositoryMeta,
+                                                                    String username,
+                                                                    String password,
+                                                                    boolean useBrowserAuth,
+                                                                    boolean useDeviceCode,
+                                                                    boolean useServiceAccount,
+                                                                    String preferredIdp,
+                                                                    RepositoryOperation... operations ) throws KettleException {
+      capturedPreferredIdp = preferredIdp;
+      return testRepository != null ? testRepository : super.establishRepositoryConnectionWithBrowserAuth(
+        repositoryMeta, username, password, useBrowserAuth, useDeviceCode, useServiceAccount, preferredIdp,
+        operations );
+    }
+
+    private String getCapturedPreferredIdp() {
+      return capturedPreferredIdp;
     }
   }
 }
