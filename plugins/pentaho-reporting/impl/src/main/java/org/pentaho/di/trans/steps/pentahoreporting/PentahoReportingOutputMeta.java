@@ -18,18 +18,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.pentaho.di.core.annotations.Step;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.plugins.ParentFirst;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -56,6 +58,7 @@ import org.w3c.dom.Node;
         documentationUrl = "pdi-transformation-steps-reference-overview/pentaho-reporting-output",
         i18nPackageName = "org.pentaho.di.trans.steps.pentahoreporting" )
 @InjectionSupported( localizationPrefix = "PentahoReportingOutputMeta.Injection.", groups = { "PARAMETERS" } )
+@ParentFirst( patterns = { ".*" } )        
 public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = PentahoReportingOutput.class; // for i18n purposes, needed by Translator2!!
 
