@@ -12,7 +12,7 @@
 
 package org.pentaho.di.trans.steps.simplemapping;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.exception.KettleException;

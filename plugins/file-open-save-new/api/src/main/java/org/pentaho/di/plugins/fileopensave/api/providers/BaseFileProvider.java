@@ -22,7 +22,7 @@ import org.pentaho.di.ui.core.FileDialogOperation;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 public abstract class BaseFileProvider<T extends File> implements FileProvider<T> {
   @Override

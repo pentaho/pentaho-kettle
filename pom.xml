@@ -283,11 +283,6 @@
         <artifactId>commons-configuration2</artifactId>
         <version>${commons-configuration2.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-text</artifactId>
-        <version>${commons-text.version}</version>
-      </dependency>
 
       <!-- Test dependencies -->
       <dependency>

@@ -15,7 +15,7 @@ package org.pentaho.di.trans.steps.loadsave.validator;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 

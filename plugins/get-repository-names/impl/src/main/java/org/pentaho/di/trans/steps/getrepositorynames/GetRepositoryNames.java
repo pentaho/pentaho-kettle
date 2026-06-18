@@ -16,7 +16,7 @@ package org.pentaho.di.trans.steps.getrepositorynames;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;

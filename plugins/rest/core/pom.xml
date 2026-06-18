@@ -18,6 +18,7 @@
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <commons-xul.version>11.1.0.0-SNAPSHOT</commons-xul.version>
+    <commons-lang.version>2.6</commons-lang.version>
     <json-simple.version>1.1</json-simple.version>
     <junit.version>4.12</junit.version>
     <mockito.version>5.10.0</mockito.version>
@@ -215,9 +216,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${commons-lang3.version}</version>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>${commons-lang.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
