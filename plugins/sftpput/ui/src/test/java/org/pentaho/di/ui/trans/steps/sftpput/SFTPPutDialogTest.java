@@ -12,7 +12,7 @@
 
 package org.pentaho.di.ui.trans.steps.sftpput;
 
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

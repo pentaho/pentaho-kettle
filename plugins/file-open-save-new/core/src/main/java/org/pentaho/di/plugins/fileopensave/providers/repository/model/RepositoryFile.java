@@ -13,7 +13,7 @@
 
 package org.pentaho.di.plugins.fileopensave.providers.repository.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;

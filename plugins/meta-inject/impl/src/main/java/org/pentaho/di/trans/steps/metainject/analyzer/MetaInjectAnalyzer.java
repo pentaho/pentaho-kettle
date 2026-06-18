@@ -13,8 +13,8 @@
 
 package org.pentaho.di.trans.steps.metainject.analyzer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;

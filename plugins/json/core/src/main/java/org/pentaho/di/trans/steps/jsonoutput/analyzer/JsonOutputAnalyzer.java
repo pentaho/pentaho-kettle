@@ -13,7 +13,7 @@
 
 package org.pentaho.di.trans.steps.jsonoutput.analyzer;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.steps.jsonoutput.JsonOutputMeta;
 import org.pentaho.dictionary.DictionaryConst;
