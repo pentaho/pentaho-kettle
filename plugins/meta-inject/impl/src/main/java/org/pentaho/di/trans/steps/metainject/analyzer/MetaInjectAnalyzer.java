@@ -13,8 +13,8 @@
 
 package org.pentaho.di.trans.steps.metainject.analyzer;
 
-import com.tinkerpop.blueprints.Vertex;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
@@ -95,6 +95,10 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
     return targetFieldNames;
   }
 
+  private String getVertexProperty( final Vertex vertex, final String propertyName ) {
+    return vertex != null && vertex.property( propertyName ).isPresent() ? vertex.value( propertyName ) : null;
+  }
+
   @Override
   public void postAnalyze( final MetaInjectMeta meta )
     throws MetaverseAnalyzerException {
@@ -173,7 +177,7 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
         final Vertex targetTemplateStepVertex = findStepVertex( subTransMeta, targetTemplateStepName );
 
         final IMetaverseNode subTransPropertyNode = getNode( targetTemplateStepAttr.getAttributeKey(),
-          DictionaryConst.NODE_TYPE_STEP_PROPERTY, (String) targetTemplateStepVertex.getProperty(
+          DictionaryConst.NODE_TYPE_STEP_PROPERTY, getVertexProperty( targetTemplateStepVertex,
             DictionaryConst.PROPERTY_LOGICAL_ID ), targetTemplateStepName + ":"
             + targetTemplateStepAttr.getAttributeKey(), null );
         getMetaverseBuilder().addNode( subTransPropertyNode );
@@ -200,7 +204,7 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
         .append( sourceInjectorStepField.getField() ).append( " > [" ).append( subTransMeta.getName() ).append( "] " )
         .append( targetTemplateStepName ).append( ": " ).append( targetTemplateStepAttr.getAttributeKey() );
       verboseProperties.add( mappingKey );
-      stepVertex.setProperty( mappingKey, mapping.toString() );
+      stepVertex.property( mappingKey, mapping.toString() );
     }
 
     // if reading from a sub-transformation step directly, add "input" links from the source step fields to the root
@@ -211,15 +215,16 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
       for ( final Vertex sourceStepField : sourceStepFields ) {
         getMetaverseBuilder().addLink( sourceStepField, DictionaryConst.LINK_INPUTS, stepVertex );
         // find a field in this step with the same name as the source step field
-        final Vertex derivedField = findFieldVertex( parentTransMeta, stepVertex.getProperty(
-          DictionaryConst.PROPERTY_NAME ).toString(),
-          sourceStepField.getProperty( DictionaryConst.PROPERTY_NAME ).toString() );
+        final String stepVertexName = getVertexProperty( stepVertex, DictionaryConst.PROPERTY_NAME );
+        final String sourceStepFieldName = getVertexProperty( sourceStepField, DictionaryConst.PROPERTY_NAME );
+        final Vertex derivedField = stepVertexName == null || sourceStepFieldName == null ? null
+          : findFieldVertex( parentTransMeta, stepVertexName, sourceStepFieldName );
         if ( derivedField != null ) {
           getMetaverseBuilder().addLink( sourceStepField, DictionaryConst.LINK_DERIVES, derivedField );
         }
       }
     }
-    stepVertex.setProperty( DictionaryConst.PROPERTY_VERBOSE_DETAILS, StringUtils.join( verboseProperties, "," ) );
+    stepVertex.property( DictionaryConst.PROPERTY_VERBOSE_DETAILS, StringUtils.join( verboseProperties, "," ) );
   }
 
   @Override protected IClonableStepAnalyzer newInstance() {

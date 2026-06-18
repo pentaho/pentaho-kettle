@@ -57,6 +57,7 @@
     <pentaho-metastore.version>11.1.0.0-SNAPSHOT</pentaho-metastore.version>
 
     <!-- Third-party dependencies -->
+    <commons-lang3.version>3.14.0</commons-lang3.version>
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <encoder.version>1.2</encoder.version>
     <jsch.version>0.2.9</jsch.version>
@@ -67,6 +68,7 @@
     <commons-configuration2.version>2.10.1</commons-configuration2.version>
     <commons-lang3.version>3.18.0</commons-lang3.version>
     <commons-text.version>1.11.0</commons-text.version>
+    <tinkerpop.version>3.7.3</tinkerpop.version>
 
     <!-- Test dependencies -->
     <mockito.version>5.10.0</mockito.version>

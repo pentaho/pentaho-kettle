@@ -19,8 +19,6 @@
     <publish-sonar-phase>site</publish-sonar-phase>
     <!-- Dependency versions -->
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
-    <dependency.com.tinkerpop.frames.version>2.5.0</dependency.com.tinkerpop.frames.version>
-    <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
     <osgi.version>8.0.0</osgi.version>
   </properties>
   <dependencies>
@@ -110,15 +108,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.tinkerpop</groupId>
-      <artifactId>frames</artifactId>
-      <version>${dependency.com.tinkerpop.frames.version}</version>
+      <groupId>org.apache.tinkerpop</groupId>
+      <artifactId>gremlin-core</artifactId>
+      <version>${tinkerpop.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.tinkerpop.blueprints</groupId>
-      <artifactId>blueprints-core</artifactId>
-      <version>${dependency.com.tinkerpop.blueprints.version}</version>
+      <groupId>org.apache.tinkerpop</groupId>
+      <artifactId>tinkergraph-gremlin</artifactId>
+      <version>${tinkerpop.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
