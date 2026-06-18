@@ -1320,14 +1320,15 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       if ( conn == null ) { // Create a connection instance
         SshConfig config = SshConfig.create()
           .host( jobMeta.environmentSubstitute( wServerName.getText() ) )
-          .port( Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 22 ) );
+          .port( Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 22 ) )
+          .connectTimeoutMillis( 60000 );
 
         /* We want to connect through a HTTP proxy */
         if ( wuseProxy.getSelection() ) {
           /* Now connect */
           // if the proxy requires basic authentication:
           if ( !Utils.isEmpty( wProxyUsername.getText() ) ) {
-            config.proxy( jobMeta.environmentSubstitute( wProxyHost.getText() ), 
+            config.proxy( jobMeta.environmentSubstitute( wProxyHost.getText() ),
                          Const.toInt( wProxyPort.getText(), 22 ) )
               .proxyAuth( jobMeta.environmentSubstitute( wProxyUsername.getText() ),
                          Utils.resolvePassword( jobMeta, wProxyPassword.getText() ) );
