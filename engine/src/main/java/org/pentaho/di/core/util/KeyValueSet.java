@@ -23,9 +23,9 @@ import java.util.TreeMap;
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.TruePredicate;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>

@@ -48,7 +48,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.util.EnvUtil;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.bowl.Bowl;

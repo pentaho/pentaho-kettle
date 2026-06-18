@@ -72,11 +72,6 @@
       <artifactId>org.eclipse.core.resources</artifactId>
       <version>3.7.100</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${commons-lang3.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

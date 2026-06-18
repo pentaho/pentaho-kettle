@@ -15,7 +15,7 @@ package org.pentaho.di.trans.steps.jobexecutor;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -19,7 +19,7 @@ import org.apache.commons.codec.language.DoubleMetaphone;
 import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.RefinedSoundex;
 import org.apache.commons.codec.language.Soundex;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowSet;

@@ -16,7 +16,7 @@ package org.pentaho.di.job.entry.validator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.commons.validator.util.ValidatorUtils;
 import org.pentaho.di.core.CheckResult;

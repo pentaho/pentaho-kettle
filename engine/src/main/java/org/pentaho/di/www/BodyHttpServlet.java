@@ -13,7 +13,7 @@
 package org.pentaho.di.www;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -65,7 +65,7 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
       }
 
     } catch ( Exception e ) {
-      String st = ExceptionUtils.getStackTrace( e );
+      String st = ExceptionUtils.getFullStackTrace( e );
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, st ).getXML() );
       } else {

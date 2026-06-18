@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.base.BaseMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AttributesInterface;

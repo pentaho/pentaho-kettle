@@ -12,7 +12,7 @@
 
 package org.pentaho.di.www;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;

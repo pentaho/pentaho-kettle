@@ -33,7 +33,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;

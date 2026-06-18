@@ -15,7 +15,7 @@ package org.pentaho.di.ui.trans.steps.salesforceinput;
 import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.bind.XmlObject;
 import com.sforce.ws.wsdl.Constants;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.AfterClass;
 import org.junit.Before;

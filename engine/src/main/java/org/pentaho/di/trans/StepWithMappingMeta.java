@@ -13,7 +13,7 @@
 
 package org.pentaho.di.trans;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.base.IMetaFileLoader;
 import org.pentaho.di.base.MetaFileLoaderImpl;
 import org.pentaho.di.core.bowl.Bowl;

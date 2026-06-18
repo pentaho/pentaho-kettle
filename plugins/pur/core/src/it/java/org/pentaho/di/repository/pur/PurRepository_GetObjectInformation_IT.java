@@ -12,7 +12,7 @@
 
 package org.pentaho.di.repository.pur;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
