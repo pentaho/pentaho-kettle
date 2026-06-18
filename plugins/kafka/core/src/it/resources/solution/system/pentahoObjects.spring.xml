@@ -129,7 +129,7 @@
   <bean id="MetaverseGraphImplPrototype" class="org.pentaho.metaverse.graph.SynchronizedGraphFactory" scope="prototype">
     <constructor-arg>
       <map>
-        <entry key="blueprints.graph" value="com.tinkerpop.blueprints.impls.tg.TinkerGraph"/>
+        <entry key="tinkerpop.graph" value="org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph"/>
       </map>
     </constructor-arg>
   </bean>
