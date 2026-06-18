@@ -52,6 +52,11 @@
         <version>${platform.version}</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang3.version}</version>
+      </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>pentaho-kettle</groupId>

@@ -26,7 +26,6 @@ import org.pentaho.di.trans.streaming.common.BlockingQueueStreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -41,6 +40,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.time.Duration;
 
 import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
@@ -105,7 +105,6 @@ public class KafkaStreamSource extends BlockingQueueStreamSource<List<Object>> {
   }
 
   class KafkaConsumerCallable implements Callable<Void> {
-    private static final Duration POLL_DURATION = Duration.ofMillis( 1000 );
     private final AtomicBoolean closed = new AtomicBoolean( false );
     private final Consumer consumer;
     private Runnable onClose;
@@ -125,8 +124,7 @@ public class KafkaStreamSource extends BlockingQueueStreamSource<List<Object>> {
         while ( !closed.get() ) {
           commitOffsets();
           @SuppressWarnings( "unchecked" ) //should revisit generic type here
-          ConsumerRecords<String, String> records = consumer.poll( POLL_DURATION );
-
+          ConsumerRecords<String, String> records = consumer.poll( Duration.ofMillis( 1000 ) );
           List<List<Object>> rows = new ArrayList<>();
           for ( ConsumerRecord<String, String> record : records ) {
             rows.add( processMessageAsRow( record ) );
