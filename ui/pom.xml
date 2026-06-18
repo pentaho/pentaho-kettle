@@ -22,7 +22,6 @@
 
     <!-- Pentaho dependencies -->
     <pentaho-vfs-browser.version>11.1.0.0-SNAPSHOT</pentaho-vfs-browser.version>
-    <pentaho-capability-manager.version>${project.version}</pentaho-capability-manager.version>
 
     <!-- Third-party dependencies -->
     <jfreechart.version>1.0.13</jfreechart.version>

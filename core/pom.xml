@@ -42,6 +42,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
+      <version>${metastore.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>

@@ -97,6 +97,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
+      <version>${metastore.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -112,7 +113,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>${platform.version}</version>
     </dependency>
 
     <!-- Reporting dependencies -->
@@ -872,7 +873,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${pentaho-metastore.version}</version>
+      <version>${metastore.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>

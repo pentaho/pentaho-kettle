@@ -16,7 +16,6 @@
 
   <properties>
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>11.1.0.0-SNAPSHOT</platform.version>
     <encoder.version>1.2</encoder.version>
     <build.revision>${project.version}</build.revision>
@@ -64,7 +63,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${project.version}</version>
+      <version>${metastore.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
