@@ -13,7 +13,7 @@
 
 package org.pentaho.di.core.util;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.variables.VariableSpace;
 

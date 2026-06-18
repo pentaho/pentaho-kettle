@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 
 import java.sql.ResultSet;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.pentaho.di.core.Const;

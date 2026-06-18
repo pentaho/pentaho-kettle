@@ -34,7 +34,7 @@ import jakarta.xml.ws.Service;
 import jakarta.xml.ws.handler.MessageContext;
 import jakarta.xml.ws.soap.SOAPBinding;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.ExecutorUtil;

@@ -13,7 +13,7 @@
 
 package org.pentaho.di.trans.steps.dimensionlookup;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;

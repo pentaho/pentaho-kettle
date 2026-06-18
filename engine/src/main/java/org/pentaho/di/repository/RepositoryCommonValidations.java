@@ -14,7 +14,7 @@
 package org.pentaho.di.repository;
 
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Andrey Khayrutdinov

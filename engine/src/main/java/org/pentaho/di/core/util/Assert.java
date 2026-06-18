@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>

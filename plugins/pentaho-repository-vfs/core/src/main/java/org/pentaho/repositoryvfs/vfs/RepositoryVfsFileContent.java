@@ -19,7 +19,7 @@ import java.io.OutputStream;
 import java.security.cert.Certificate;
 import java.util.Map;
 
-import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileContentInfo;
 import org.apache.commons.vfs2.FileObject;

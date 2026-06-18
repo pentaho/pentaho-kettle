@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * https://docs.databricks.com/en/integrations/jdbc-odbc-bi.html#jdbc-driver

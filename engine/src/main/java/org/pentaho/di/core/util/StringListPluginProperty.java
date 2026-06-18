@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;

@@ -14,7 +14,7 @@
 package org.pentaho.di.trans.step.jms;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;

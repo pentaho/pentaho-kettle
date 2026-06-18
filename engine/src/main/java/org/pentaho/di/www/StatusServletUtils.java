@@ -13,7 +13,7 @@
 
 package org.pentaho.di.www;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.ui.xul.util.XmlParserFactoryProducer;
 import org.w3c.dom.Document;
