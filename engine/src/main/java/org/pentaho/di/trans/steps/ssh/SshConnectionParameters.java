@@ -128,7 +128,7 @@ public class SshConnectionParameters {
     private boolean useKey = false;
     private String keyFilename;
     private String passPhrase;
-    private int timeOut = 30000; // Default 30 seconds
+    private int timeOut = 0; // Default: 0 = infinite (non-positive values mean no timeout)
     private VariableSpace space;
     private String proxyhost;
     private int proxyport;
