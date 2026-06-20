@@ -62,13 +62,14 @@ public class RestClientStepAnalyzerTest {
 
   @Mock RestMeta meta;
   @Mock StepNodes stepNodes;
-  @Mock INamespace mockNamespace;
+  private INamespace mockNamespace;
 
   IComponentDescriptor descriptor;
   private static IMetaverseObjectFactory metaverseObjectFactory = new MetaverseObjectFactory();
 
   @Before
   public void setUp() throws Exception {
+    mockNamespace = mock( INamespace.class );
     analyzer = spy( new RestClientStepAnalyzer() );
     descriptor = new MetaverseComponentDescriptor( "test", DictionaryConst.NODE_TYPE_TRANS_STEP, mockNamespace );
     analyzer.setDescriptor( descriptor );
