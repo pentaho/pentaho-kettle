@@ -63,9 +63,7 @@ public class XMLOutputStepAnalyzerTest {
 
   @Mock
   IMetaverseNode node;
-  @Mock
-  IMetaverseBuilder mockBuilder;
-  @Mock
+  private IMetaverseBuilder mockBuilder;
   private INamespace mockNamespace;
   @Mock
   private StepMeta parentStepMeta;
@@ -78,6 +76,8 @@ public class XMLOutputStepAnalyzerTest {
 
   @Before
   public void setUp() throws Exception {
+    mockBuilder = mock( IMetaverseBuilder.class );
+    mockNamespace = mock( INamespace.class );
     analyzer = spy( new XMLOutputStepAnalyzer() );
     analyzer.setMetaverseBuilder( mockBuilder );
     analyzer.setBaseStepMeta( meta );

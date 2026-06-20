@@ -76,9 +76,9 @@ public class GetXMLDataStepAnalyzerTest {
   GetXMLDataStepAnalyzer analyzer;
 
   @Mock GetXMLDataMeta meta;
-  @Mock INamespace mockNamespace;
+  private INamespace mockNamespace;
   @Mock IMetaverseNode node;
-  @Mock IMetaverseBuilder builder;
+  private IMetaverseBuilder builder;
   @Mock TransMeta parentTransMeta;
   @Mock StepMeta parentStepMeta;
   @Mock RowMetaInterface rmi;
@@ -90,6 +90,8 @@ public class GetXMLDataStepAnalyzerTest {
 
   @Before
   public void setUp() throws Exception {
+    mockNamespace = mock( INamespace.class );
+    builder = mock( IMetaverseBuilder.class );
     when( mockNamespace.getParentNamespace() ).thenReturn( mockNamespace );
     descriptor = new MetaverseComponentDescriptor( "test", DictionaryConst.NODE_TYPE_TRANS_STEP, mockNamespace );
     analyzer = spy( new GetXMLDataStepAnalyzer() );
