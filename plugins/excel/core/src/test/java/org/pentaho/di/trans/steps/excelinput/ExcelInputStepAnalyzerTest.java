@@ -56,7 +56,7 @@ public class ExcelInputStepAnalyzerTest extends ClonableStepAnalyzerTest {
   private ExcelInputStepAnalyzer analyzer;
 
   @Mock ExcelInputMeta meta;
-  @Mock INamespace mockNamespace;
+  private INamespace mockNamespace;
   @Mock TransMeta transMeta;
   @Mock RowMetaInterface rmi;
   @Mock ExcelInput excelInput;
@@ -68,6 +68,7 @@ public class ExcelInputStepAnalyzerTest extends ClonableStepAnalyzerTest {
 
   @Before
   public void setUp() throws Exception {
+    mockNamespace = mock( INamespace.class );
     lenient().when( mockNamespace.getParentNamespace() ).thenReturn( mockNamespace );
     descriptor = new MetaverseComponentDescriptor( "test", DictionaryConst.NODE_TYPE_TRANS_STEP, mockNamespace );
     lenient().when( transMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );

@@ -61,7 +61,7 @@ public class ExcelOutputStepAnalyzerTest extends ClonableStepAnalyzerTest {
   @Mock ExcelOutputData data;
   @Mock ExcelOutput step;
   @Mock IMetaverseNode node;
-  @Mock INamespace mockNamespace;
+  private INamespace mockNamespace;
   @Mock TransMeta transMeta;
   @Mock RowMetaInterface rmi;
 
@@ -70,6 +70,7 @@ public class ExcelOutputStepAnalyzerTest extends ClonableStepAnalyzerTest {
 
   @Before
   public void setUp() throws Exception {
+    mockNamespace = mock( INamespace.class );
     when( mockNamespace.getParentNamespace() ).thenReturn( mockNamespace );
     descriptor = new MetaverseComponentDescriptor( "test", DictionaryConst.NODE_TYPE_TRANS_STEP, mockNamespace );
 

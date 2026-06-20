@@ -46,6 +46,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -64,9 +65,8 @@ public class JsonOutputAnalyzerTest {
   private TransMeta transMeta;
   @Mock
   private RowMetaInterface mockRowMetaInterface;
-  @Mock
+
   private IMetaverseBuilder mockBuilder;
-  @Mock
   private INamespace mockNamespace;
 
   private IMetaverseObjectFactory mockFactory;
@@ -79,6 +79,8 @@ public class JsonOutputAnalyzerTest {
   @Before
   public void setUp() throws Exception {
 
+    mockBuilder = mock( IMetaverseBuilder.class );
+    mockNamespace = mock( INamespace.class );
     mockFactory = new MetaverseObjectFactory();
     when( mockBuilder.getMetaverseObjectFactory() ).thenReturn( mockFactory );
     lenient().when( mockNamespace.getParentNamespace() ).thenReturn( mockNamespace );
