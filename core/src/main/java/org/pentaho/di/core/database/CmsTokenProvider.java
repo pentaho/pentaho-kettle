@@ -13,14 +13,14 @@
 package org.pentaho.di.core.database;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-
-import java.io.OutputStream;
+import org.pentaho.di.core.util.HttpClientManager;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -141,38 +141,33 @@ public class CmsTokenProvider {
 
     log.logDebug( "CmsTokenProvider: fetching bearer token from " + tokenUrl );
 
-    byte[] body = ( "grant_type=client_credentials"
+    String body = "grant_type=client_credentials"
       + "&client_id=" + clientId
-      + "&client_secret=" + clientSecret )
-      .getBytes( StandardCharsets.UTF_8 );
+      + "&client_secret=" + clientSecret;
 
-    HttpURLConnection conn = null;
-    try {
-      conn = (HttpURLConnection) new URL( tokenUrl ).openConnection();
-      conn.setConnectTimeout( 10_000 );
-      conn.setReadTimeout( 10_000 );
-      conn.setRequestMethod( "POST" );
-      conn.setDoOutput( true );
-      conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
-      conn.setRequestProperty( "Accept", "application/json" );
+    HttpClientManager manager = HttpClientManager.getInstance();
+    try ( var client = manager.createDefaultClient() ) {
+      var request = new HttpPost( tokenUrl );
 
-      try ( OutputStream os = conn.getOutputStream() ) {
-        os.write( body );
-      }
+      request.addHeader( "Content-Type", "application/x-www-form-urlencoded" );
+      request.addHeader( "Accept", "application/json" );
+      request.setEntity( new StringEntity( body, StandardCharsets.UTF_8 ) );
 
-      int status = conn.getResponseCode();
+      var response = client.execute( request );
+
+      int status = response.getStatusLine().getStatusCode();
       if ( status != HttpURLConnection.HTTP_OK ) {
         throw new KettleDatabaseException(
           "CmsTokenProvider: Keycloak token request failed — HTTP " + status
             + " from " + tokenUrl );
       }
 
-      Map<?, ?> response;
-      try ( java.io.InputStream is = conn.getInputStream() ) {
-        response = new ObjectMapper().readValue( is, Map.class );
+      Map<?, ?> responseBody;
+      try ( java.io.InputStream is = response.getEntity().getContent() ) {
+        responseBody = new ObjectMapper().readValue( is, Map.class );
       }
 
-      Object tokenObj = response.get( "access_token" );
+      Object tokenObj = responseBody.get( "access_token" );
       if ( tokenObj == null ) {
         throw new KettleDatabaseException(
           "CmsTokenProvider: Keycloak response did not contain 'access_token'" );
@@ -180,7 +175,7 @@ public class CmsTokenProvider {
       String accessToken = tokenObj.toString();
 
       long expiresInMs = 300_000L; // default 5 min if field is absent
-      Object expiresInObj = response.get( "expires_in" );
+      Object expiresInObj = responseBody.get( "expires_in" );
       if ( expiresInObj instanceof Number ) {
         expiresInMs = ( (Number) expiresInObj ).longValue() * 1000L;
       }
@@ -195,10 +190,6 @@ public class CmsTokenProvider {
     } catch ( Exception e ) {
       throw new KettleDatabaseException(
         "CmsTokenProvider: failed to fetch token from '" + tokenUrl + "': " + e.getMessage(), e );
-    } finally {
-      if ( conn != null ) {
-        conn.disconnect();
-      }
     }
   }
 }
