@@ -12,10 +12,22 @@
 
 package org.pentaho.di.trans.steps.mail;
 
+import jakarta.activation.DataHandler;
+import jakarta.activation.URLDataSource;
+import jakarta.mail.Message;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -30,13 +42,6 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.springframework.util.ReflectionUtils;
 
-import jakarta.activation.DataHandler;
-import jakarta.activation.URLDataSource;
-import jakarta.mail.Message;
-import jakarta.mail.Session;
-import jakarta.mail.internet.MimeBodyPart;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -44,12 +49,12 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -106,7 +111,7 @@ public class MailTest {
   @Before
   public void setup() {
     stepMockHelper =
-      new StepMockHelper<MailMeta, MailData>( "Test Mail", MailMeta.class, MailData.class );
+      new StepMockHelper<>( "Test Mail", MailMeta.class, MailData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
@@ -133,7 +138,7 @@ public class MailTest {
   /*
    * [PDI-13333] Testing the fix for special characters being sent in mail. Need to replicate the specific instance
    * that caused the problem. Replicating the basic functionality that occurs with the Mail step without dealing with
-   * the Transport protocol to setup a SMTP server and to test sending an email.
+   * the Transport protocol to setup an SMTP server and to test sending an email.
    */
   @Test
   public void verifyMimeCharsetTranslationTest() throws Exception {
@@ -150,7 +155,8 @@ public class MailTest {
     File tempFile = File.createTempFile( SPECIAL_CHARS, "test.txt" );
     Message message = createMimeMessage( SPECIAL_CHARS, tempFile );
     /*
-     * Before, if the mail.mime.charset was not set to UTF-8, the filename, subject, and content (when no encoding specified)
+     * Before, if the mail.mime.charset was not set to UTF-8, the filename, subject, and content (when no encoding
+     * specified)
      * in the bodypart would replace the special characters with %3F or ?, so when you retrieved the filename,
      * it would come back with ???? instead of the special characters. With the mail.mime.charset set, it will
      * decode the values back correctly to the original special characters.
@@ -160,10 +166,10 @@ public class MailTest {
 
   private void validateMimeCharacters( Message message, File tempFile ) throws Exception {
     assertEquals( SPECIAL_CHARS, message.getSubject() );
-    assertEquals( SPECIAL_CHARS_ENCODED, message.getHeader( "Subject" )[0] );
+    assertEquals( SPECIAL_CHARS_ENCODED, message.getHeader( "Subject" )[ 0 ] );
     assertEquals( tempFile.getName(), ( (MimeMultipart) message.getContent() ).getBodyPart( 0 ).getFileName() );
     assertTrue( ( (MimeMultipart) message.getContent() ).getBodyPart( 0 )
-      .getHeader( "Content-Disposition" )[0].contains( SPECIAL_CHARS_FILE_ENCODED ) );
+      .getHeader( "Content-Disposition" )[ 0 ].contains( SPECIAL_CHARS_FILE_ENCODED ) );
     assertEquals( SPECIAL_CHARS, ( (MimeMultipart) message.getContent() ).getBodyPart( 0 ).getContent() );
   }
 
@@ -193,13 +199,13 @@ public class MailTest {
 
   @Ignore
   @Test
-  public void testSendMailWithPlainPassword( ) throws Exception {
+  public void testSendMailWithPlainPassword() throws Exception {
     testSendMailWithPassword( SMTP_AUTH_PASSWORD_DECRYPTED_VALUE );
   }
 
   @Ignore
   @Test
-  public void testSendMailWithEncryptedPassword( ) throws Exception {
+  public void testSendMailWithEncryptedPassword() throws Exception {
     testSendMailWithPassword( SMTP_AUTH_PASSWORD_ENCRYPTED_VALUE );
   }
 
@@ -252,10 +258,15 @@ public class MailTest {
 
     MailData mailData = new MailData();
     // Make sure we don't send an email, while testing Mail step.
-    doNothing().when( step ).sendMail( any( Object[].class ), nullable( String.class ), anyInt(), nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ) );
+    doNothing().when( step )
+      .sendMail( any( Object[].class ), nullable( String.class ), anyInt(), nullable( String.class ),
+        nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ),
+        nullable( String.class ), nullable( String.class ), nullable( String.class ), nullable( String.class ),
+        nullable( String.class ), nullable( String.class ), nullable( String.class ) );
     step.processRow( stepMockHelper.processRowsStepMetaInterface, mailData );
     // Check if we call sendMail using the decrypted password.
-    verify( step ).sendMail( strings, SMTP_HOST_VALUE, -1, EMAIL_SENDER_NAME_VALUE, null, EMAIL_RECIPIENT_VALUE, null, null, null, null, EMAIL_SENDER_ADDRESS_VALUE, SMTP_AUTH_PASSWORD_DECRYPTED_VALUE, null, null, null );
+    verify( step ).sendMail( strings, SMTP_HOST_VALUE, -1, EMAIL_SENDER_NAME_VALUE, null, EMAIL_RECIPIENT_VALUE, null,
+      null, null, null, EMAIL_SENDER_ADDRESS_VALUE, SMTP_AUTH_PASSWORD_DECRYPTED_VALUE, null, null, null );
   }
 
   @Test
@@ -268,14 +279,16 @@ public class MailTest {
 
     RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isDynamicFilename() ).thenReturn( true );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ), stepMockHelper.initStepDataInterface, 0 );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ), stepMockHelper.initStepDataInterface, rowMetaMock );
+    when( stepMockHelper.initStepMetaInterface.isDynamicFilename() ).thenReturn( true );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ),
+      stepMockHelper.initStepDataInterface, 0 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ),
+      stepMockHelper.initStepDataInterface, rowMetaMock );
     when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 0 );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isDynamicFilename() ).thenReturn( false );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( stepMockHelper.initStepMetaInterface.isDynamicFilename() ).thenReturn( false );
+    when( stepMockHelper.initStepMetaInterface.getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( stepMockHelper.initStepMetaInterface.getSourceWildcard() ).thenReturn( "sourceWildcard" );
     when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
     when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
 
@@ -296,26 +309,29 @@ public class MailTest {
 
     RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isDynamicFilename() ).thenReturn( true );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ), stepMockHelper.initStepDataInterface, 0 );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ), stepMockHelper.initStepDataInterface, rowMetaMock );
+    when( stepMockHelper.initStepMetaInterface.isDynamicFilename() ).thenReturn( true );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ),
+      stepMockHelper.initStepDataInterface, 0 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ),
+      stepMockHelper.initStepDataInterface, rowMetaMock );
     when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 0 );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( stepMockHelper.initStepMetaInterface.getSourceWildcard() ).thenReturn( "sourceWildcard" );
     when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
     when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
 
     step.processAttachedFiles();
 
     assertEquals( 0, stepMockHelper.initStepDataInterface.indexOfSourceWildcard );
-    assertEquals( null, stepMockHelper.initStepDataInterface.realSourceFileFoldername );
-    assertEquals( null, stepMockHelper.initStepDataInterface.realSourceWildcard );
+    assertNull( stepMockHelper.initStepDataInterface.realSourceFileFoldername );
+    assertNull( stepMockHelper.initStepDataInterface.realSourceWildcard );
   }
 
   @Test
-  public void processAttachedFilesDynamicIndexOfSourceWildcardNotSetTest() throws KettleException, NoSuchFieldException {
+  public void processAttachedFilesDynamicIndexOfSourceWildcardNotSetTest()
+    throws KettleException, NoSuchFieldException {
     Mail step =
       spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans ) );
@@ -324,25 +340,28 @@ public class MailTest {
 
     RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isDynamicFilename() ).thenReturn( true );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ), stepMockHelper.initStepDataInterface, 0 );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ), stepMockHelper.initStepDataInterface, rowMetaMock );
+    when( stepMockHelper.initStepMetaInterface.isDynamicFilename() ).thenReturn( true );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ),
+      stepMockHelper.initStepDataInterface, 0 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ),
+      stepMockHelper.initStepDataInterface, rowMetaMock );
     //Index of Source Wildcard is not yet set (value is -1)
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ), stepMockHelper.initStepDataInterface, -1 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ),
+      stepMockHelper.initStepDataInterface, -1 );
     //Index that will be set in the dynamicWildcard
     when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( stepMockHelper.initStepMetaInterface.getSourceWildcard() ).thenReturn( "sourceWildcard" );
     when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
     when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
 
     step.processAttachedFiles();
 
     assertEquals( 3, stepMockHelper.initStepDataInterface.indexOfSourceWildcard );
-    assertEquals( null, stepMockHelper.initStepDataInterface.realSourceFileFoldername );
-    assertEquals( null, stepMockHelper.initStepDataInterface.realSourceWildcard );
+    assertNull( stepMockHelper.initStepDataInterface.realSourceFileFoldername );
+    assertNull( stepMockHelper.initStepDataInterface.realSourceWildcard );
   }
 
   @Test
@@ -351,7 +370,7 @@ public class MailTest {
       spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans ) );
 
-    Object[] p = new Object[1];
+    Object[] p = new Object[ 1 ];
 
 
     step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
@@ -359,23 +378,26 @@ public class MailTest {
 
     RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isDynamicFilename() ).thenReturn( true );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ), stepMockHelper.initStepDataInterface, 0 );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ), stepMockHelper.initStepDataInterface, rowMetaMock );
+    when( stepMockHelper.initStepMetaInterface.isDynamicFilename() ).thenReturn( true );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ),
+      stepMockHelper.initStepDataInterface, 0 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ),
+      stepMockHelper.initStepDataInterface, rowMetaMock );
     //Index of Source Wildcard is not yet set (value is -1)
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ), stepMockHelper.initStepDataInterface, -1 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ),
+      stepMockHelper.initStepDataInterface, -1 );
     //Index that will be set in the dynamicWildcard
     when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( stepMockHelper.initStepMetaInterface.getSourceWildcard() ).thenReturn( "sourceWildcard" );
     when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
     when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
 
     step.setAttachedFiles( stepMockHelper.initStepMetaInterface, p, null );
 
-    verify( step , times( 1 ) ).setAttachedFilesList( p, null );
+    verify( step, times( 1 ) ).setAttachedFilesList( p, null );
 
   }
 
@@ -385,7 +407,7 @@ public class MailTest {
       spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans ) );
 
-    Object[] p = new Object[1];
+    Object[] p = new Object[ 1 ];
 
 
     step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
@@ -393,23 +415,26 @@ public class MailTest {
 
     RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFilenameDynamic() ).thenReturn( true );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ), stepMockHelper.initStepDataInterface, 0 );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ), stepMockHelper.initStepDataInterface, rowMetaMock );
+    when( stepMockHelper.initStepMetaInterface.isZipFilenameDynamic() ).thenReturn( true );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ),
+      stepMockHelper.initStepDataInterface, 0 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ),
+      stepMockHelper.initStepDataInterface, rowMetaMock );
     //Index of Source Wildcard is not yet set (value is -1)
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ), stepMockHelper.initStepDataInterface, -1 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ),
+      stepMockHelper.initStepDataInterface, -1 );
     //Index that will be set in the dynamicWildcard
     when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( stepMockHelper.initStepMetaInterface.getSourceWildcard() ).thenReturn( "sourceWildcard" );
     when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
     when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
 
     step.setAttachedFiles( stepMockHelper.initStepMetaInterface, p, null );
 
-    verify( step , times( 1 ) ).setAttachedFilesList( p, null );
+    verify( step, times( 1 ) ).setAttachedFilesList( p, null );
 
   }
 
@@ -419,7 +444,7 @@ public class MailTest {
       spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans ) );
 
-    Object[] p = new Object[1];
+    Object[] p = new Object[ 1 ];
 
 
     step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
@@ -427,23 +452,26 @@ public class MailTest {
 
     RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isDynamicFilename() ).thenReturn( false );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ), stepMockHelper.initStepDataInterface, 0 );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ), stepMockHelper.initStepDataInterface, rowMetaMock );
+    when( stepMockHelper.initStepMetaInterface.isDynamicFilename() ).thenReturn( false );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ),
+      stepMockHelper.initStepDataInterface, 0 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ),
+      stepMockHelper.initStepDataInterface, rowMetaMock );
     //Index of Source Wildcard is not yet set (value is -1)
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ), stepMockHelper.initStepDataInterface, -1 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ),
+      stepMockHelper.initStepDataInterface, -1 );
     //Index that will be set in the dynamicWildcard
     when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( stepMockHelper.initStepMetaInterface.getSourceWildcard() ).thenReturn( "sourceWildcard" );
     when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
     when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
 
     step.setAttachedFiles( stepMockHelper.initStepMetaInterface, p, null );
 
-    verify( step , times( 1 ) ).setAttachedFilesList( null, null );
+    verify( step, times( 1 ) ).setAttachedFilesList( null, null );
 
   }
 
@@ -453,32 +481,31 @@ public class MailTest {
       spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans ) );
 
-    Object[] p = new Object[1];
-
-
     step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
     step.setParentVariableSpace( new Variables() );
 
     RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFiles() ).thenReturn( true );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getZipFilename() ).thenReturn( "" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFilenameDynamic() ).thenReturn( false );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ), stepMockHelper.initStepDataInterface, 0 );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ), stepMockHelper.initStepDataInterface, rowMetaMock );
+    when( stepMockHelper.initStepMetaInterface.isZipFiles() ).thenReturn( true );
+    when( stepMockHelper.initStepMetaInterface.getZipFilename() ).thenReturn( "" );
+    when( stepMockHelper.initStepMetaInterface.isZipFilenameDynamic() ).thenReturn( false );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ),
+      stepMockHelper.initStepDataInterface, 0 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ),
+      stepMockHelper.initStepDataInterface, rowMetaMock );
     //Index of Source Wildcard is not yet set (value is -1)
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ), stepMockHelper.initStepDataInterface, -1 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ),
+      stepMockHelper.initStepDataInterface, -1 );
     //Index that will be set in the dynamicWildcard
     when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( stepMockHelper.initStepMetaInterface.getSourceWildcard() ).thenReturn( "sourceWildcard" );
     when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
     when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
 
     step.validateZipFiles( stepMockHelper.initStepMetaInterface );
-
   }
 
   @Test
@@ -487,46 +514,87 @@ public class MailTest {
       spy( new Mail( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans ) );
 
-    Object[] p = new Object[1];
-
-
     step.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
     step.setParentVariableSpace( new Variables() );
 
     RowMetaInterface rowMetaMock = mock( RowMetaInterface.class );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFiles() ).thenReturn( true );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getZipFilename() ).thenReturn( "" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).isZipFilenameDynamic() ).thenReturn( true );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ), stepMockHelper.initStepDataInterface, 0 );
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ), stepMockHelper.initStepDataInterface, rowMetaMock );
+    when( stepMockHelper.initStepMetaInterface.isZipFiles() ).thenReturn( true );
+    when( stepMockHelper.initStepMetaInterface.getZipFilename() ).thenReturn( "" );
+    when( stepMockHelper.initStepMetaInterface.isZipFilenameDynamic() ).thenReturn( true );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceFilename" ),
+      stepMockHelper.initStepDataInterface, 0 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "previousRowMeta" ),
+      stepMockHelper.initStepDataInterface, rowMetaMock );
     //Index of Source Wildcard is not yet set (value is -1)
-    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ), stepMockHelper.initStepDataInterface, -1 );
+    ReflectionUtils.setField( stepMockHelper.initStepDataInterface.getClass().getField( "indexOfSourceWildcard" ),
+      stepMockHelper.initStepDataInterface, -1 );
     //Index that will be set in the dynamicWildcard
     when( rowMetaMock.indexOfValue( "dynamicWildcard" ) ).thenReturn( 3 );
 
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
-    when( ( (MailMeta) stepMockHelper.initStepMetaInterface ).getSourceWildcard() ).thenReturn( "sourceWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getDynamicWildcard() ).thenReturn( "dynamicWildcard" );
+    when( stepMockHelper.initStepMetaInterface.getSourceFileFoldername() ).thenReturn( "sourceFileFolderName" );
+    when( stepMockHelper.initStepMetaInterface.getSourceWildcard() ).thenReturn( "sourceWildcard" );
     when( step.environmentSubstitute( "sourceFileFolderName" ) ).thenReturn( "sourceFileFolderName" );
     when( step.environmentSubstitute( "sourceWildcard" ) ).thenReturn( "sourceWildcard" );
 
     step.validateZipFiles( stepMockHelper.initStepMetaInterface );
-
   }
 
   @Test
-  public void testIsAuthenticationBasic() {
-    MailMeta meta = new MailMeta();
-    meta.setUsingAuthentication( MailMeta.AUTENTICATION_BASIC );
-    Assert.assertEquals( MailMeta.AUTENTICATION_BASIC, meta.isUsingAuthentication() );
+  public void testAuthenticationTypeNull() {
+    MailMeta mailMeta = new MailMeta();
+    mailMeta.setUsingAuthentication( null );
+    assertEquals( MailMeta.AUTENTICATION_NONE, mailMeta.isUsingAuthentication() );
   }
 
   @Test
-  public void testIsAuthenticationOAuth() {
-    MailMeta meta = new MailMeta();
-    meta.setUsingAuthentication( MailMeta.AUTENTICATION_OAUTH );
-    Assert.assertEquals( MailMeta.AUTENTICATION_OAUTH, meta.isUsingAuthentication() );
+  public void testAuthenticationTypeEmpty() {
+    MailMeta mailMeta = new MailMeta();
+    mailMeta.setUsingAuthentication( "" );
+    assertEquals( MailMeta.AUTENTICATION_NONE, mailMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeOldOptionY() {
+    MailMeta mailMeta = new MailMeta();
+    mailMeta.setUsingAuthentication( "Y" );
+    assertEquals( MailMeta.AUTENTICATION_BASIC, mailMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeOldOptionN() {
+    MailMeta mailMeta = new MailMeta();
+    mailMeta.setUsingAuthentication( "N" );
+    assertEquals( MailMeta.AUTENTICATION_NONE, mailMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeUnrecognized() {
+    MailMeta mailMeta = new MailMeta();
+    mailMeta.setUsingAuthentication( "Unrecognized" );
+    assertEquals( MailMeta.AUTENTICATION_NONE, mailMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeNone() {
+    MailMeta mailMeta = new MailMeta();
+    mailMeta.setUsingAuthentication( MailMeta.AUTENTICATION_NONE );
+    assertEquals( MailMeta.AUTENTICATION_NONE, mailMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeBasic() {
+    MailMeta mailMeta = new MailMeta();
+    mailMeta.setUsingAuthentication( MailMeta.AUTENTICATION_BASIC );
+    assertEquals( MailMeta.AUTENTICATION_BASIC, mailMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeOAuth() {
+    MailMeta mailMeta = new MailMeta();
+    mailMeta.setUsingAuthentication( MailMeta.AUTENTICATION_OAUTH );
+    assertEquals( MailMeta.AUTENTICATION_OAUTH, mailMeta.isUsingAuthentication() );
   }
 
   @Test
@@ -549,6 +617,7 @@ public class MailTest {
     meta.setGrantType( MailMeta.GRANTTYPE_REFRESH_TOKEN );
     assertEquals( MailMeta.GRANTTYPE_REFRESH_TOKEN, meta.getGrantType() );
   }
+
   @Test( expected = RuntimeException.class )
   public void getOauthToken_withInvalidResponse_shouldThrowException() throws Exception {
     Mail mail = spy( new Mail( null, null, 0, null, null ) );
@@ -585,7 +654,7 @@ public class MailTest {
     metaField.setAccessible( true );
     metaField.set( mail, meta );
 
-    when( meta.getTokenUrl() ).thenReturn(  "http://token.url" );
+    when( meta.getTokenUrl() ).thenReturn( "http://token.url" );
     when( meta.getScope() ).thenReturn( "scope" );
     when( meta.getClientId() ).thenReturn( "client_id" );
     when( meta.getSecretKey() ).thenReturn( "client_secret" );
@@ -601,5 +670,4 @@ public class MailTest {
 
     mail.getOauthToken( "http://token.url" );
   }
-
 }

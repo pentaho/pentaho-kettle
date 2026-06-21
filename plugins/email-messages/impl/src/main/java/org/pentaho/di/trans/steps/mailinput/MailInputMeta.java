@@ -29,7 +29,6 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -43,6 +42,7 @@ import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -88,9 +88,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   protected VariableSpace variables = new Variables();
   public static String AUTENTICATION_OAUTH = "OAuth";
 
-  public static  String AUTENTICATION_BASIC = "Basic";
-
-  public static String AUTENTICATION_NONE= "No Auth";
+  public static String AUTENTICATION_BASIC = "Basic";
 
   public static String GRANTTYPE_CLIENTCREDENTIALS="client_credentials";
 
@@ -904,15 +902,11 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setUsingAuthentication( String usingAuthentication ) {
-
-    if ( usingAuthentication == null || usingAuthentication.isEmpty() || usingAuthentication.equalsIgnoreCase( AUTENTICATION_BASIC ) ) {
-      this.usingAuthentication = AUTENTICATION_BASIC;
-    } else if ( usingAuthentication.equalsIgnoreCase( AUTENTICATION_OAUTH ) ) {
+    if ( AUTENTICATION_OAUTH.equalsIgnoreCase( usingAuthentication ) ) {
       this.usingAuthentication = AUTENTICATION_OAUTH;
-    } else if ( usingAuthentication.equalsIgnoreCase( AUTENTICATION_NONE ) ) {
-      this.usingAuthentication = AUTENTICATION_NONE;
     } else {
-      this.usingAuthentication = usingAuthentication;
+      // All other cases: "Basic" (valid option), null/empty (old option) or unrecognized option
+      this.usingAuthentication = AUTENTICATION_BASIC;
     }
   }
 
@@ -1023,9 +1017,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
         }
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(EntityUtils.toString(response.getEntity()), EmailAuthenticationResponse.class);
-      } catch (HttpException e) {
-        throw new RuntimeException(e);
-      } catch (IOException e) {
+      } catch ( HttpException | IOException e) {
         throw new RuntimeException(e);
       }
     } catch (IOException e) {

@@ -14,8 +14,6 @@
 
 package org.pentaho.di.ui.job.entries.getpop;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import jakarta.mail.Folder;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
@@ -35,6 +33,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
@@ -45,9 +44,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.*;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
@@ -69,7 +68,9 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.core.annotations.PluginDialog;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * This dialog allows you to edit the Get POP job entry settings.
@@ -438,35 +439,39 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
   }
   protected void setUseAuth() {
     String selectedAuth = wUseAuth.getText();
-    if ( selectedAuth.equals( JobEntryGetPOP.AUTENTICATION_BASIC ) ) {
-       wAuthClientId.setEnabled( false );
+
+    if ( selectedAuth.equals( JobEntryGetPOP.AUTENTICATION_OAUTH ) ) {
+      wAuthClientId.setEnabled( true );
+      wAuthSecretKey.setEnabled( true );
+      wUserName.setEnabled( true );
+      wPassword.setEnabled( false );
+      wAuthScope.setEnabled( true );
+      wlGrantType.setEnabled( true );
+      grantType.setEnabled( true );
+    } else {
+      // JobEntryGetPOP.AUTENTICATION_BASIC
+      wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
       wUserName.setEnabled( true );
       wPassword.setEnabled( true );
       wAuthScope.setEnabled( false );
+      wlGrantType.setEnabled( false );
       grantType.setEnabled( false );
       wAuthTokenUrl.setEnabled( false );
       wAuthorizationCode.setEnabled( false );
       wRedirectUri.setEnabled( false );
       wAuthRefreshToken.setEnabled( false );
-    } else if ( selectedAuth.equals( JobEntryGetPOP.AUTENTICATION_OAUTH ) ) {
-      wUserName.setEnabled( true );
-      wPassword.setEnabled( false );
-      wAuthClientId.setEnabled( true );
-      wAuthSecretKey.setEnabled( true );
-      wAuthScope.setEnabled( true );
-      grantType.setEnabled( true );
     }
   }
-  protected void setUseGrantType() {
 
+  protected void setUseGrantType() {
     String selectedAuth = grantType.getText();
+
     if ( selectedAuth.equals( JobEntryGetPOP.GRANTTYPE_CLIENTCREDENTIALS ) ) {
       wAuthTokenUrl.setEnabled( true );
       wAuthorizationCode.setEnabled( false );
       wRedirectUri.setEnabled( false );
       wAuthRefreshToken.setEnabled( false );
-
     } else if ( selectedAuth.equals( JobEntryGetPOP.GRANTTYPE_REFRESH_TOKEN ) ) {
       wAuthTokenUrl.setEnabled( true );
       wAuthorizationCode.setEnabled( false );
@@ -477,10 +482,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       wAuthorizationCode.setEnabled( true );
       wRedirectUri.setEnabled( true );
       wAuthRefreshToken.setEnabled( false );
-
     }
-
-
   }
 
   public JobEntryInterface open() {
@@ -633,9 +635,10 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdlUseAuth.top = new FormAttachment( wlPort, 2 * margin );
     fdlUseAuth.right = new FormAttachment( middle, -margin );
     wlUseAuth.setLayoutData( fdlUseAuth );
-    wUseAuth = new Combo( wServerSettings, SWT.DROP_DOWN );
+    wUseAuth = new Combo( wServerSettings, SWT.DROP_DOWN | SWT.READ_ONLY);
     wUseAuth.add( JobEntryGetPOP.AUTENTICATION_BASIC );
     wUseAuth.add( JobEntryGetPOP.AUTENTICATION_OAUTH );
+    wUseAuth.select( wUseAuth.indexOf( JobEntryGetPOP.AUTENTICATION_BASIC ) );
     props.setLook( wUseAuth );
     wUseAuth.addModifyListener( lsMod );
     fdUseAuth = new FormData();
@@ -1787,7 +1790,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
             cal.set( Calendar.YEAR, calendarto.getYear() );
             cal.set( Calendar.MONTH, calendarto.getMonth() );
             cal.set( Calendar.DAY_OF_MONTH, calendarto.getDay() );
-
             cal.set( Calendar.HOUR_OF_DAY, timeto.getHours() );
             cal.set( Calendar.MINUTE, timeto.getMinutes() );
             cal.set( Calendar.SECOND, timeto.getSeconds() );
@@ -1926,6 +1928,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     getData();
     setUserProxy();
     chooseListMails();
+    setUseAuth();
     setUseGrantType();
     activeAttachmentFolder();
     refreshProtocol( false );
@@ -1987,7 +1990,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     }
 
     return ( mailConn.isConnected() );
-
   }
 
   private void test() {
@@ -2105,7 +2107,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
           }
         }
       }
-
     }
   }
 
