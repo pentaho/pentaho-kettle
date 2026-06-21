@@ -101,7 +101,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
   public static String AUTENTICATION_OAUTH = "OAUTH";
 
-  public static  String AUTENTICATION_BASIC = "Basic";
+  public static String AUTENTICATION_BASIC = "Basic";
 
   public static String AUTENTICATION_NONE= "No Auth";
 
@@ -768,12 +768,14 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
    *          The usingAuthentication to set.
    */
   public void setUsingAuthentication( String usingAuthentication ) {
-    if ( "Y".equalsIgnoreCase( usingAuthentication ) ) {
+    if ( AUTENTICATION_OAUTH.equalsIgnoreCase( usingAuthentication ) ) {
+      this.usingAuthentication = AUTENTICATION_OAUTH;
+    } else if ( AUTENTICATION_BASIC.equalsIgnoreCase( usingAuthentication )
+                  || "Y".equalsIgnoreCase( usingAuthentication ) ) {
       this.usingAuthentication = AUTENTICATION_BASIC;
-    } else if ( "N".equalsIgnoreCase( usingAuthentication ) ) {
-      this.usingAuthentication = AUTENTICATION_NONE;
     } else {
-      this.usingAuthentication = usingAuthentication;
+      // All other cases: "No Auth" (valid option), "N" (old option), null or unrecognized option
+      this.usingAuthentication = AUTENTICATION_NONE;
     }
   }
 
@@ -838,7 +840,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * @param secureconnectiontype
+   * @param replyToAddresses
    *          the replayToAddresses to set
    */
   public void setReplyToAddresses( String replyToAddresses ) {
@@ -932,7 +934,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         // javax.net.ssl.SSLException: Unsupported record version Unknown
         props.put( "mail.smtps.quitwait", "false" );
       }
-
     }
 
     props.put( "mail." + protocol + ".host", environmentSubstitute( server ) );
@@ -946,21 +947,13 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
     if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
       props.put( "mail." + protocol + ".auth", "true" );
-
-      /*
-       * authenticator = new Authenticator() { protected PasswordAuthentication getPasswordAuthentication() { return new
-       * PasswordAuthentication( StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")),
-       * StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, "")) ); } };
-       */
-    }
-
-    else if( usingAuthentication.equals(JobEntryMail.AUTENTICATION_OAUTH ) ) {
+    } else if ( usingAuthentication.equals( JobEntryMail.AUTENTICATION_OAUTH ) ) {
       token = getOauthToken( environmentSubstitute( tokenUrl ) );
-      props.put( "mail."+protocol+".auth.xoauth2.disable", "false" );
-      props.put( "mail."+protocol+".auth.mechanisms", "XOAUTH2" );
-      props.put( "mail.transport.protocol", "smtp");
-      props.put( "mail."+protocol+".auth.login.disable", "true" );
-      props.put( "mail."+protocol+".auth.plain.disable", "true" );
+      props.put( "mail." + protocol + ".auth.xoauth2.disable", "false" );
+      props.put( "mail." + protocol + ".auth.mechanisms", "XOAUTH2" );
+      props.put( "mail.transport.protocol", "smtp" );
+      props.put( "mail." + protocol + ".auth.login.disable", "true" );
+      props.put( "mail." + protocol + ".auth.plain.disable", "true" );
       props.setProperty( "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
     }
 
@@ -976,8 +969,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         String priority_int = "1";
         if ( priority.equals( "low" ) ) {
           priority_int = "3";
-        }
-        if ( priority.equals( "normal" ) ) {
+        } else if ( priority.equals( "normal" ) ) {
           priority_int = "2";
         }
 
@@ -1320,12 +1312,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       // put all parts together
       msg.setContent( parts );
 
-      Transport transport = null;
-      try {
-        transport = session.getTransport( protocol );
-        String authPass = getPassword( authenticationPassword );
-
+      try ( Transport transport = session.getTransport( protocol ) ) {
         if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
+          String authPass = getPassword( authenticationPassword );
+
           if ( !Utils.isEmpty( port ) ) {
             transport.connect(
               environmentSubstitute( Const.NVL( server, "" ) ),
@@ -1338,28 +1328,23 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
               environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
               authPass );
           }
-        }
-        else if( usingAuthentication.equals(  JobEntryMail.AUTENTICATION_OAUTH ) ) {
+        } else if ( usingAuthentication.equals( JobEntryMail.AUTENTICATION_OAUTH ) ) {
           if ( !Utils.isEmpty( port ) ) {
             transport.connect(
-                    environmentSubstitute( Const.NVL( server, "" ) ),
-                    Integer.parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ),
-                    environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
-                    this.token.getAccessToken() );
+              environmentSubstitute( Const.NVL( server, "" ) ),
+              Integer.parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ),
+              environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+              this.token.getAccessToken() );
           } else {
             transport.connect(
-                    environmentSubstitute( Const.NVL( server, "" ) ),
-                    environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
-                    this.token.getAccessToken() );
+              environmentSubstitute( Const.NVL( server, "" ) ),
+              environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+              this.token.getAccessToken() );
           }
         } else {
           transport.connect();
         }
         transport.sendMessage( msg, msg.getAllRecipients() );
-      } finally {
-        if ( transport != null ) {
-          transport.close();
-        }
       }
     } catch ( IOException e ) {
       logError( "Problem while sending message: " + e.toString() );
@@ -1525,9 +1510,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         }
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue( EntityUtils.toString( response.getEntity() ), EmailAuthenticationResponse.class );
-      } catch ( HttpException e ) {
-        throw new RuntimeException( e );
-      } catch ( IOException e ) {
+      } catch ( HttpException | IOException e ) {
         throw new RuntimeException( e );
       }
     } catch ( IOException e ) {
@@ -1566,12 +1549,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
     JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "port", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
-
   }
 
   public String getPassword( String authPassword ) {
     return Encr.decryptPasswordOptionallyEncrypted(
         environmentSubstitute( Const.NVL( authPassword, "" ) ) );
   }
-
 }
