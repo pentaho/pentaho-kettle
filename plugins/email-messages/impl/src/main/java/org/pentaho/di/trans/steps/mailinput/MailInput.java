@@ -454,8 +454,7 @@ public class MailInput extends BaseStep implements StepInterface {
       stopAll();
     }
     try {
-
-      if( meta.isUsingAuthentication().equals( meta.AUTENTICATION_OAUTH ) ) {
+      if( meta.isUsingAuthentication().equals( MailInputMeta.AUTENTICATION_OAUTH ) ) {
         realpassword = "Bearer " + meta.getOauthToken( meta.getTokenUrl(), meta.getScope(), meta.getClientId(),
                 meta.getSecretKey(), meta.getGrantType(), meta.getRefresh_token(), meta.getAuthorization_code(), meta.getRedirectUri()).getAccessToken();
       }

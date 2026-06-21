@@ -13,10 +13,6 @@
 
 package org.pentaho.di.ui.job.entries.mail;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Random;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -32,12 +28,24 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.PluginDialog;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.annotations.PluginDialog;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.mail.JobEntryMail;
@@ -53,6 +61,10 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Dialog that allows you to edit a JobEntryMail object.
@@ -546,10 +558,11 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     fdlUseAuth.top = new FormAttachment( wServerGroup, 2 * margin );
     fdlUseAuth.right = new FormAttachment( middle, -margin );
     wlUseAuth.setLayoutData( fdlUseAuth );
-    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN );
+    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN | SWT.READ_ONLY );
     wUseAuth.add( JobEntryMail.AUTENTICATION_NONE );
     wUseAuth.add( JobEntryMail.AUTENTICATION_BASIC );
     wUseAuth.add( JobEntryMail.AUTENTICATION_OAUTH );
+    wUseAuth.select( wUseAuth.indexOf( JobEntryMail.AUTENTICATION_NONE ) );
     props.setLook( wUseAuth );
     wUseAuth.addModifyListener( lsMod );
     fdUseAuth = new FormData();
@@ -1298,10 +1311,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     fdlFields.top = new FormAttachment( wContentID, margin );
     wlFields.setLayoutData( fdlFields );
 
-    int rows =
+    final int FieldsRows =
       jobEntry.embeddedimages == null ? 1 : ( jobEntry.embeddedimages.length == 0
         ? 0 : jobEntry.embeddedimages.length );
-    final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
       new ColumnInfo[] {
@@ -1406,7 +1418,6 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
     BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wCancel }, margin, wTabFolder );
-    // setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
     // Add listeners
     lsCancel = new Listener() {
@@ -1446,13 +1457,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
       }
     } );
 
-    // BaseStepDialog.setTraverseOrder(new Control[] {wName, wDestination, wServer, wUseAuth,
-    // wAuthUser, wAuthPass, wReply,
-    // wSubject, wAddDate, wIncludeFiles, wTypes, wZipFiles, wZipFilename, wPerson, wPhone,
-    // wComment, wOK, wCancel });
-
     getData();
-
     SetEnabledEncoding();
     activeUsePriority();
     setFlags();
@@ -1507,17 +1512,18 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wlZipFiles.setEnabled( wIncludeFiles.getSelection() );
     wZipFiles.setEnabled( wIncludeFiles.getSelection() );
     wZipFilename.setEnabled( wIncludeFiles.getSelection() && wZipFiles.getSelection() );
-
   }
 
   protected void setUseAuth() {
     String selectedAuth = wUseAuth.getText();
-    if (selectedAuth.equals( JobEntryMail.AUTENTICATION_NONE ) ) {
+
+    if ( JobEntryMail.AUTENTICATION_NONE.equals( selectedAuth ) ) {
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
       wAuthUser.setEnabled( false );
       wAuthPass.setEnabled( false );
       wAuthScope.setEnabled( false );
+      wlGrantType.setEnabled( false );
       grantType.setEnabled( false );
       wAuthTokenUrl.setEnabled( false );
       wAuthorizationCode.setEnabled( false );
@@ -1527,12 +1533,13 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
       wUseSecAuth.setEnabled( false );
       wlSecureConnectionType.setEnabled( false );
       wSecureConnectionType.setEnabled( false );
-    } else if ( selectedAuth.equals( JobEntryMail.AUTENTICATION_BASIC ) ) {
+    } else if ( JobEntryMail.AUTENTICATION_BASIC.equals( selectedAuth ) ) {
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
       wAuthUser.setEnabled( true );
       wAuthPass.setEnabled( true );
       wAuthScope.setEnabled( false );
+      wlGrantType.setEnabled( false );
       grantType.setEnabled( false );
       wAuthTokenUrl.setEnabled( false );
       wAuthorizationCode.setEnabled( false );
@@ -1541,31 +1548,30 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
       wlUseSecAuth.setEnabled( true );
       wUseSecAuth.setEnabled( true );
       setSecureConnectiontype();
-    } else if ( selectedAuth.equals( JobEntryMail.AUTENTICATION_OAUTH ) ) {
-      wAuthUser.setEnabled( true );
-      wAuthPass.setEnabled( false );
+    } else if ( JobEntryMail.AUTENTICATION_OAUTH.equals( selectedAuth ) ) {
       wAuthClientId.setEnabled( true );
       wAuthSecretKey.setEnabled( true );
+      wAuthUser.setEnabled( true );
+      wAuthPass.setEnabled( false );
       wAuthScope.setEnabled( true );
+      wlGrantType.setEnabled( true );
       grantType.setEnabled( true );
       wlUseSecAuth.setEnabled( true );
       wUseSecAuth.setEnabled( true );
       setSecureConnectiontype();
-    }
-    else {
+    } else {
       setSecureConnectiontype();
     }
-
   }
-  protected void setUseGrantType() {
 
+  protected void setUseGrantType() {
     String selectedAuth = grantType.getText();
+
     if ( selectedAuth.equals( JobEntryMail.GRANTTYPE_CLIENTCREDENTIALS ) ) {
       wAuthTokenUrl.setEnabled( true );
       wAuthorizationCode.setEnabled( false );
       wRedirectUri.setEnabled( false );
       wAuthRefreshToken.setEnabled( false );
-
     } else if ( selectedAuth.equals( JobEntryMail.GRANTTYPE_REFRESH_TOKEN ) ) {
       wAuthTokenUrl.setEnabled( true );
       wAuthorizationCode.setEnabled( false );
@@ -1576,17 +1582,13 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
       wAuthorizationCode.setEnabled( true );
       wRedirectUri.setEnabled( true );
       wAuthRefreshToken.setEnabled( false );
-
-    }
-    else {
+    } else {
       setSecureConnectiontype();
     }
-
   }
 
   public void dispose() {
-    WindowProperty winprop = new WindowProperty( shell );
-    props.setScreen( winprop );
+    props.setScreen( new WindowProperty( shell ) );
     shell.dispose();
   }
 
@@ -1615,7 +1617,6 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wZipFiles.setSelection( jobEntry.isZipFiles() );
     wZipFilename.setText( Const.nullToEmpty( jobEntry.getZipFilename() ) );
 
-
     wUseSecAuth.setSelection( jobEntry.isUsingSecureAuthentication() );
     wAuthUser.setText( Const.nullToEmpty( jobEntry.getAuthenticationUser() ) );
     wAuthPass.setText( Const.nullToEmpty( jobEntry.getAuthenticationPassword() ) );
@@ -1635,7 +1636,6 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     if ( jobEntry.getEncoding() != null ) {
       wEncoding.setText( "" + jobEntry.getEncoding() );
     } else {
-
       wEncoding.setText( "UTF-8" );
     }
 
@@ -1654,10 +1654,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         wPriority.select( 0 ); // Low
       } else if ( jobEntry.getPriority().equals( "normal" ) ) {
         wPriority.select( 1 ); // Normal
-
       } else {
         wPriority.select( 2 ); // Default High
-
       }
     } else {
       wPriority.select( 3 ); // Default High
@@ -1669,10 +1667,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         wImportance.select( 0 ); // Low
       } else if ( jobEntry.getImportance().equals( "normal" ) ) {
         wImportance.select( 1 ); // Normal
-
       } else {
         wImportance.select( 2 ); // Default High
-
       }
     } else {
       wImportance.select( 3 ); // Default High
@@ -1832,7 +1828,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
       gotEncodings = true;
 
       wEncoding.removeAll();
-      java.util.List<Charset> values = new ArrayList<Charset>( Charset.availableCharsets().values() );
+      java.util.List<Charset> values = new ArrayList<>( Charset.availableCharsets().values() );
       for ( Charset charSet : values ) {
         wEncoding.add( charSet.displayName() );
       }
