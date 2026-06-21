@@ -12,11 +12,6 @@
 
 
 package org.pentaho.di.ui.trans.steps.mailinput;
-import org.eclipse.swt.widgets.*;
-import org.pentaho.di.core.annotations.PluginDialog;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import javax.mail.Folder;
 
@@ -38,12 +33,27 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.getpop.MailConnection;
 import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
@@ -52,7 +62,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.mailinput.MailInput;
 import org.pentaho.di.trans.steps.mailinput.MailInputField;
 import org.pentaho.di.trans.steps.mailinput.MailInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
@@ -61,10 +70,17 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.*;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.entries.getpop.SelectFolderDialog;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 @PluginDialog( id = "MailInput", image = "GETPOP.svg", pluginType = PluginDialog.PluginType.STEP,
         documentationUrl = "http://wiki.pentaho.com/display/EAI/Email+Messages+Input" )
@@ -72,7 +88,6 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MailInputMeta input;
-  private MailInput mailInput;
   private Label wlServerName;
   private TextVar wServerName;
   private FormData fdlServerName, fdServerName;
@@ -428,10 +443,10 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdlUseAuth.top = new FormAttachment( wServerSettings, margin );
     fdlUseAuth.right = new FormAttachment( middle, -2 * margin );
     wlUseAuth.setLayoutData( fdlUseAuth );
-    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN );
-    wUseAuth.add( MailInputMeta.AUTENTICATION_NONE );
+    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN | SWT.READ_ONLY );
     wUseAuth.add( MailInputMeta.AUTENTICATION_BASIC );
     wUseAuth.add( MailInputMeta.AUTENTICATION_OAUTH );
+    wUseAuth.select( wUseAuth.indexOf( MailInputMeta.AUTENTICATION_BASIC ) );
     props.setLook( wUseAuth );
     wUseAuth.addModifyListener( lsMod );
     fdUseAuth = new FormData();
@@ -439,6 +454,12 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdUseAuth.top = new FormAttachment( wServerSettings, margin );
     fdUseAuth.right = new FormAttachment( 100, 0 );
     wUseAuth.setLayoutData( fdUseAuth );
+    wUseAuth.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        setUseAuth();
+      }
+    } );
+
     // UserName line
     wlUserName = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlUserName.setText( BaseMessages.getString( PKG, "MailInput.Username.Label" ) );
@@ -475,11 +496,6 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-    wUseAuth.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        setUseAuth();
-      }
-    } );
     // AuthSecretKey line
     wAuthSecretKey = new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "MailInput.AuthenticationSecretKey.Label" ),
@@ -2079,39 +2095,34 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fData.right = new FormAttachment( Const.MIDDLE_PCT, -Const.MARGIN );
     label.setLayoutData( fData );
   }
+
   protected void setUseAuth() {
     String selectedAuth = wUseAuth.getText();
-    if (selectedAuth.equals( MailInputMeta.AUTENTICATION_NONE ) ) {
-      wAuthClientId.setEnabled( false );
-      wAuthSecretKey.setEnabled( false );
-      wUserName.setEnabled( false );
+
+    if ( MailInputMeta.AUTENTICATION_OAUTH.equals( selectedAuth ) ) {
+      wAuthClientId.setEnabled( true );
+      wAuthSecretKey.setEnabled( true );
+      wUserName.setEnabled( true );
       wPassword.setEnabled( false );
-      wAuthScope.setEnabled( false );
-      grantType.setEnabled( false );
-      wAuthTokenUrl.setEnabled( false );
-      wAuthorizationCode.setEnabled( false );
-      wRedirectUri.setEnabled( false );
-      wAuthRefreshToken.setEnabled( false );
-    } else if ( selectedAuth.equals( MailInputMeta.AUTENTICATION_BASIC ) ) {
+      wAuthScope.setEnabled( true );
+      wlGrantType.setEnabled( true );
+      grantType.setEnabled( true );
+    } else {
+      // MailInputMeta.AUTENTICATION_BASIC
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
       wUserName.setEnabled( true );
       wPassword.setEnabled( true );
       wAuthScope.setEnabled( false );
+      wlGrantType.setEnabled( false );
       grantType.setEnabled( false );
       wAuthTokenUrl.setEnabled( false );
       wAuthorizationCode.setEnabled( false );
       wRedirectUri.setEnabled( false );
       wAuthRefreshToken.setEnabled( false );
-    } else if ( selectedAuth.equals( MailInputMeta.AUTENTICATION_OAUTH ) ) {
-      wUserName.setEnabled( true );
-      wPassword.setEnabled( false );
-      wAuthClientId.setEnabled( true );
-      wAuthSecretKey.setEnabled( true );
-      wAuthScope.setEnabled( true );
-      grantType.setEnabled( true );
     }
   }
+
   protected void setUseGrantType() {
     String selectedAuth = grantType.getText();
     if (selectedAuth.equals(MailInputMeta.GRANTTYPE_CLIENTCREDENTIALS)) {
@@ -2152,5 +2163,4 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       return null;
     }
   }
-
 }

@@ -75,7 +75,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   public static String AUTENTICATION_OAUTH = "OAuth";
 
-  public static  String AUTENTICATION_BASIC = "Basic";
+  public static String AUTENTICATION_BASIC = "Basic";
 
   public static String AUTENTICATION_NONE= "No Auth";
 
@@ -189,8 +189,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public Object clone() {
-    Object retval = super.clone();
-    return retval;
+    return super.clone();
   }
 
   public void allocate( int value ) {
@@ -340,11 +339,11 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "only_comment", this.onlySendComment ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_HTML", this.useHTML ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_Priority", this.usePriority ) );
-    retval.append( "    " + XMLHandler.addTagValue( "encoding", this.encoding ) );
-    retval.append( "    " + XMLHandler.addTagValue( "priority", this.priority ) );
-    retval.append( "    " + XMLHandler.addTagValue( "importance", this.importance ) );
-    retval.append( "    " + XMLHandler.addTagValue( "sensitivity", this.sensitivity ) );
-    retval.append( "    " + XMLHandler.addTagValue( "secureconnectiontype", this.secureconnectiontype ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", this.encoding ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "priority", this.priority ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "importance", this.importance ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "sensitivity", this.sensitivity ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "secureconnectiontype", this.secureconnectiontype ) );
 
     retval.append( "      <embeddedimages>" ).append( Const.CR );
     if ( embeddedimages != null ) {
@@ -640,13 +639,14 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
    *          The usingAuthentication to set.
    */
   public void setUsingAuthentication( String usingAuthentication ) {
-
-    if ( "Y".equalsIgnoreCase( usingAuthentication ) ) {
+    if ( AUTENTICATION_OAUTH.equalsIgnoreCase( usingAuthentication ) ) {
+      this.usingAuthentication = AUTENTICATION_OAUTH;
+    } else if ( AUTENTICATION_BASIC.equalsIgnoreCase( usingAuthentication )
+                  || "Y".equalsIgnoreCase( usingAuthentication ) ) {
       this.usingAuthentication = AUTENTICATION_BASIC;
-    } else if ( "N".equalsIgnoreCase( usingAuthentication ) ) {
-      this.usingAuthentication = AUTENTICATION_NONE;
     } else {
-      this.usingAuthentication = usingAuthentication;
+      // All other cases: "No Auth" (valid option), "N" (old option), null or unrecognized option
+      this.usingAuthentication = AUTENTICATION_NONE;
     }
   }
 

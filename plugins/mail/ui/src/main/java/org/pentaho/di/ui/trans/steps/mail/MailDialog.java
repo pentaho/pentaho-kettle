@@ -42,11 +42,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.PluginDialog;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -79,9 +79,6 @@ import java.util.Random;
         documentationUrl = "http://wiki.pentaho.com/display/EAI/Mail+%28step%29" )
 public class MailDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = MailMeta.class; // for i18n purposes, needed by Translator2!!
-
-  private static final String[] FILETYPES =
-    new String[] { BaseMessages.getString( PKG, "MailDialog.Filetype.All" ) };
 
   private static final String[] IMAGES_FILE_TYPES = new String[] {
     BaseMessages.getString( PKG, "MailDialog.Filetype.Png" ),
@@ -842,10 +839,11 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdlUseAuth.top = new FormAttachment( wServerGroup, margin );
     fdlUseAuth.right = new FormAttachment( middle, -2 * margin );
     wlUseAuth.setLayoutData( fdlUseAuth );
-    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN );
+    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN | SWT.READ_ONLY );
     wUseAuth.add( MailMeta.AUTENTICATION_NONE );
     wUseAuth.add( MailMeta.AUTENTICATION_BASIC );
     wUseAuth.add( MailMeta.AUTENTICATION_OAUTH );
+    wUseAuth.select( wUseAuth.indexOf( MailMeta.AUTENTICATION_NONE ) );
     props.setLook( wUseAuth );
     wUseAuth.addModifyListener( lsMod );
     fdUseAuth = new FormData();
@@ -943,7 +941,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdAuthScope.top = new FormAttachment( wAuthPass, margin );
     fdAuthScope.right = new FormAttachment( 100, 0 );
     wAuthScope.setLayoutData( fdAuthScope);
-// Grant Type
+    // Grant Type
     wlGrantType = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlGrantType.setText(BaseMessages.getString( PKG, "Mail.GrantType.Label" ) );
     props.setLook( wlGrantType );
@@ -1042,7 +1040,6 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       public void widgetSelected( SelectionEvent e ) {
         setSecureConnectiontype();
         input.setChanged();
-
       }
     } );
 
@@ -1070,7 +1067,6 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       public void widgetSelected( SelectionEvent e ) {
         setSecureConnectiontype();
         input.setChanged();
-
       }
     } );
 
@@ -2038,10 +2034,9 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdlFields.top = new FormAttachment( wContentID, margin );
     wlFields.setLayoutData( fdlFields );
 
-    int rows =
+    final int FieldsRows =
       input.getEmbeddedImages() == null ? 1 : ( input.getEmbeddedImages().length == 0 ? 0 : input
         .getEmbeddedImages().length );
-    final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
       new ColumnInfo[] {
@@ -2356,8 +2351,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
           wReplyToAddresses.setItems( fieldnames );
           wattachContentField.setItems( fieldnames );
           wattachContentFileNameField.setItems( fieldnames );
-
         }
+
         if ( destination != null ) {
           wDestination.setText( destination );
         }
@@ -2416,7 +2411,6 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
           wattachContentFileNameField.setText( attachcontentfilename );
         }
       }
-
     } catch ( KettleException ke ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "MailDialog.FailedToGetFields.DialogTitle" ), BaseMessages
@@ -2447,7 +2441,6 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wbeImageFilename.setEnabled( wUseHTML.getSelection() );
     wlFields.setEnabled( wUseHTML.getSelection() );
     wFields.setEnabled( wUseHTML.getSelection() );
-
   }
 
   protected void setSecureConnectiontype() {
@@ -2461,7 +2454,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       gotEncodings = true;
 
       wEncoding.removeAll();
-      ArrayList<Charset> values = new ArrayList<Charset>( Charset.availableCharsets().values() );
+      ArrayList<Charset> values = new ArrayList<>( Charset.availableCharsets().values() );
       for ( int i = 0; i < values.size(); i++ ) {
         Charset charSet = values.get( i );
         wEncoding.add( charSet.displayName() );
@@ -2478,7 +2471,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
 
   protected void setUseAuth() {
     String selectedAuth = wUseAuth.getText();
-    if (selectedAuth.equals( MailMeta.AUTENTICATION_NONE ) ) {
+
+    if ( MailMeta.AUTENTICATION_NONE.equals( selectedAuth ) ) {
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
       wlAuthUser.setEnabled( false );
@@ -2486,6 +2480,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wlAuthPass.setEnabled( false );
       wAuthPass.setEnabled( false );
       wAuthScope.setEnabled( false );
+      wlGrantType.setEnabled( false );
       grantType.setEnabled( false );
       wAuthTokenUrl.setEnabled( false );
       wAuthorizationCode.setEnabled( false );
@@ -2495,7 +2490,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wUseSecAuth.setEnabled( false );
       wlSecureConnectionType.setEnabled( false );
       wSecureConnectionType.setEnabled( false );
-    } else if ( selectedAuth.equals( MailMeta.AUTENTICATION_BASIC ) ) {
+    } else if ( MailMeta.AUTENTICATION_BASIC.equals( selectedAuth ) ) {
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
       wlAuthUser.setEnabled( true );
@@ -2503,6 +2498,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wlAuthPass.setEnabled( true );
       wAuthPass.setEnabled( true );
       wAuthScope.setEnabled( false );
+      wlGrantType.setEnabled( false );
       grantType.setEnabled( false );
       wAuthTokenUrl.setEnabled( false );
       wAuthorizationCode.setEnabled( false );
@@ -2511,25 +2507,27 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wlUseSecAuth.setEnabled( true );
       wUseSecAuth.setEnabled( true );
       setSecureConnectiontype();
-    } else if ( selectedAuth.equals( MailMeta.AUTENTICATION_OAUTH ) ) {
+    } else if ( MailMeta.AUTENTICATION_OAUTH.equals( selectedAuth ) ) {
+      wAuthClientId.setEnabled( true );
+      wAuthSecretKey.setEnabled( true );
       wlAuthUser.setEnabled( true );
       wAuthUser.setEnabled( true );
       wlAuthPass.setEnabled( false );
       wAuthPass.setEnabled( false );
-      wAuthClientId.setEnabled( true );
-      wAuthSecretKey.setEnabled( true );
       wAuthScope.setEnabled( true );
+      wlGrantType.setEnabled( true );
       grantType.setEnabled( true );
       wlUseSecAuth.setEnabled( true );
       wUseSecAuth.setEnabled( true );
       setUseGrantType();
-    }
-    else {
+    } else {
       setSecureConnectiontype();
     }
   }
+
   protected void setUseGrantType() {
     String selectedAuth = grantType.getText();
+
     if ( selectedAuth.equals( MailMeta.GRANTTYPE_CLIENTCREDENTIALS ) ) {
       wAuthTokenUrl.setEnabled( true );
       wAuthorizationCode.setEnabled( false );
@@ -2545,11 +2543,9 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wAuthorizationCode.setEnabled( true );
       wRedirectUri.setEnabled( true );
       wAuthRefreshToken.setEnabled( false );
-    }
-    else {
+    } else {
       setSecureConnectiontype();
     }
-
   }
 
   /**

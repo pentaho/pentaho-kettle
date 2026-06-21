@@ -102,7 +102,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   private String username;
   private String password;
   public static String AUTENTICATION_OAUTH = "OAUTH";
-  public static  String AUTENTICATION_BASIC = "Basic";
+  public static String AUTENTICATION_BASIC = "Basic";
   public static String GRANTTYPE_CLIENTCREDENTIALS="client_credentials";
   public static String GRANTTYPE_AUTHORIZATION_CODE="authorization_code";
   public static String GRANTTYPE_REFRESH_TOKEN="refresh_token";
@@ -546,11 +546,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
    *          The usingAuthentication to set.
    */
   public void setUsingAuthentication( String usingAuthentication ) {
-    if ( usingAuthentication == null || usingAuthentication.isEmpty() || usingAuthentication.equalsIgnoreCase(
-      AUTENTICATION_BASIC ) ) {
-      this.usingAuthentication = AUTENTICATION_BASIC;
-    } else {
+    if ( AUTENTICATION_OAUTH.equalsIgnoreCase( usingAuthentication ) ) {
       this.usingAuthentication = AUTENTICATION_OAUTH;
+    } else {
+      // All other cases: "Basic" (valid option), null/empty (old option) or unrecognized option
+      this.usingAuthentication = AUTENTICATION_BASIC;
     }
   }
 
