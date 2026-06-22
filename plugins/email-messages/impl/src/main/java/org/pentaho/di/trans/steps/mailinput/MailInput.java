@@ -13,23 +13,15 @@
 
 package org.pentaho.di.trans.steps.mailinput;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-
 import jakarta.mail.Header;
 import jakarta.mail.Message;
-import java.util.Properties;
-
 import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.getpop.IEmailAuthenticationResponse;
 import org.pentaho.di.job.entries.getpop.MailConnection;
@@ -41,6 +33,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Read data from POP3/IMAP server and input data to the next steps.
@@ -57,7 +56,7 @@ public class MailInput extends BaseStep implements StepInterface {
 
   Properties props = new Properties();
 
-  private MessageParser instance = new MessageParser();
+  private final MessageParser instance = new MessageParser();
 
   private IEmailAuthenticationResponse token;
   public MailInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
@@ -72,7 +71,6 @@ public class MailInput extends BaseStep implements StepInterface {
     Object[] outputRowData = getOneRow();
 
     if ( outputRowData == null ) { // no more input to be expected...
-
       setOutputDone();
       return false;
     }
@@ -127,10 +125,10 @@ public class MailInput extends BaseStep implements StepInterface {
       // apply FROM
       data.mailConn.setSenderTerm( realSearchSender, meta.isNotTermSenderSearch() );
     }
-    String realSearchReceipient = environmentSubstitute( meta.getRecipientSearch() );
-    if ( !Utils.isEmpty( realSearchReceipient ) ) {
+    String realSearchRecipient = environmentSubstitute( meta.getRecipientSearch() );
+    if ( !Utils.isEmpty( realSearchRecipient ) ) {
       // apply TO
-      data.mailConn.setReceipientTerm( realSearchReceipient );
+      data.mailConn.setReceipientTerm( realSearchRecipient );
     }
     String realSearchSubject = environmentSubstitute( meta.getSubjectSearch() );
     if ( !Utils.isEmpty( realSearchSubject ) ) {
@@ -420,11 +418,13 @@ public class MailInput extends BaseStep implements StepInterface {
     // check search terms
     // Received Date
     try {
+      String realBeginDate;
+
       switch ( meta.getConditionOnReceivedDate() ) {
         case MailConnectionMeta.CONDITION_DATE_EQUAL:
         case MailConnectionMeta.CONDITION_DATE_GREATER:
         case MailConnectionMeta.CONDITION_DATE_SMALLER:
-          String realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
+          realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
           if ( Utils.isEmpty( realBeginDate ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "MailInput.Error.ReceivedDateSearchTermEmpty" ) );
@@ -605,7 +605,7 @@ public class MailInput extends BaseStep implements StepInterface {
                 r[index] = "";
                 break;
               }
-              List<String> headers = new ArrayList<String>();
+              List<String> headers = new ArrayList<>();
               while ( en.hasMoreElements() ) {
                 Header next = Header.class.cast( en.nextElement() );
                 headers.add( next.getValue() );
@@ -628,5 +628,4 @@ public class MailInput extends BaseStep implements StepInterface {
       return r;
     }
   }
-
 }

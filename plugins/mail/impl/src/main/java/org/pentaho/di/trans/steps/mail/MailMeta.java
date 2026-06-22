@@ -93,15 +93,13 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   private String tokenUrl;
 
-  private String authorization_code;
+  private String authorizationCode;
 
   private String redirectUri;
 
-  private String refresh_token;
+  private String refreshToken;
 
-  private String grant_type;
-
-  private IEmailAuthenticationResponse token;
+  private String grantType;
 
   private boolean includeDate;
 
@@ -111,15 +109,15 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   private boolean isFilenameDynamic;
 
-  private String dynamicFieldname;
+  private String dynamicFieldName;
 
   private String dynamicWildcard;
 
   private String dynamicZipFilename;
 
-  private String sourcefilefoldername;
+  private String sourceFileFolderName;
 
-  private String sourcewildcard;
+  private String sourceWildcard;
 
   private String contactPerson;
 
@@ -133,7 +131,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   private String zipFilename;
 
-  private String ziplimitsize;
+  private String zipLimitSize;
 
   private String usingAuthentication;
 
@@ -157,7 +155,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   private String sensitivity;
 
-  private String secureconnectiontype;
+  private String secureConnectionType;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
   private String encoding;
@@ -165,9 +163,9 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
   /** The reply to addresses */
   private String replyToAddresses;
 
-  private String[] embeddedimages;
+  private String[] embeddedImages;
 
-  private String[] contentids;
+  private String[] contentIds;
 
   /** Flag : attach file from content defined in a field **/
   private boolean attachContentFromField;
@@ -193,8 +191,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void allocate( int value ) {
-    this.embeddedimages = new String[value];
-    this.contentids = new String[value];
+    this.embeddedImages = new String[value];
+    this.contentIds = new String[value];
   }
 
   private void readData( Node stepnode ) {
@@ -259,25 +257,25 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     for ( int i = 0; i < nrImages; i++ ) {
       Node fnode = XMLHandler.getSubNodeByNr( images, "embeddedimage", i );
 
-      embeddedimages[i] = XMLHandler.getTagValue( fnode, "image_name" );
-      contentids[i] = XMLHandler.getTagValue( fnode, "content_id" );
+      embeddedImages[i] = XMLHandler.getTagValue( fnode, "image_name" );
+      contentIds[i] = XMLHandler.getTagValue( fnode, "content_id" );
     }
   }
 
   public void setEmbeddedImage( int i, String value ) {
-    embeddedimages[i] = value;
+    embeddedImages[i] = value;
   }
 
   public void setEmbeddedImages( String[] value ) {
-    this.embeddedimages = value;
+    this.embeddedImages = value;
   }
 
   public void setContentIds( int i, String value ) {
-    contentids[i] = value;
+    contentIds[i] = value;
   }
 
   public void setContentIds( String[] value ) {
-    this.contentids = value;
+    this.contentIds = value;
   }
 
   @Override
@@ -309,20 +307,20 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "attachContentFileNameField", this.attachContentFileNameField ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "dynamicFieldname", this.dynamicFieldname ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "dynamicFieldname", this.dynamicFieldName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "dynamicWildcard", this.dynamicWildcard ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "dynamicZipFilename", this.dynamicZipFilename ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "sourcefilefoldername", this.sourcefilefoldername ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "sourcewildcard", this.sourcewildcard ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "sourcefilefoldername", this.sourceFileFolderName ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "sourcewildcard", this.sourceWildcard ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "contact_person", this.contactPerson ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "contact_phone", this.contactPhone ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "comment", this.comment ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "include_files", this.includingFiles ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "zip_files", this.zipFiles ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "zip_name", this.zipFilename ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "zip_limit_size", this.ziplimitsize ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "zip_limit_size", this.zipLimitSize ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_auth", this.usingAuthentication ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_grantType", grant_type) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "use_grantType", grantType ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_secure_auth", this.usingSecureAuthentication ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "auth_user", this.authenticationUser ) );
     retval.append( "      " ).append(
@@ -333,9 +331,9 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       XMLHandler.addTagValue( "auth_secretKey",  Encr.encryptPasswordIfNotUsingVariables( secretKey) )  );
     retval.append( "      " ).append( XMLHandler.addTagValue( "auth_scope", scope ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "auth_tokenUrl", tokenUrl ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_authorizationCode", authorization_code ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_authorizationCode", authorizationCode ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "redirectURI", redirectUri ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshToken", refresh_token) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshToken", refreshToken ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "only_comment", this.onlySendComment ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_HTML", this.useHTML ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_Priority", this.usePriority ) );
@@ -343,14 +341,14 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "priority", this.priority ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "importance", this.importance ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "sensitivity", this.sensitivity ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "secureconnectiontype", this.secureconnectiontype ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "secureconnectiontype", this.secureConnectionType ) );
 
     retval.append( "      <embeddedimages>" ).append( Const.CR );
-    if ( embeddedimages != null ) {
-      for ( int i = 0; i < embeddedimages.length; i++ ) {
+    if ( embeddedImages != null ) {
+      for ( int i = 0; i < embeddedImages.length; i++ ) {
         retval.append( "        <embeddedimage>" ).append( Const.CR );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "image_name", embeddedimages[i] ) );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "content_id", contentids[i] ) );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "image_name", embeddedImages[i] ) );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "content_id", contentIds[i] ) );
         retval.append( "        </embeddedimage>" ).append( Const.CR );
       }
     }
@@ -429,11 +427,11 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String[] getEmbeddedImages() {
-    return embeddedimages;
+    return embeddedImages;
   }
 
   public String[] getContentIds() {
-    return contentids;
+    return contentIds;
   }
 
   public boolean isZipFilenameDynamic() {
@@ -477,27 +475,27 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setSourceFileFoldername( String sourcefile ) {
-    this.sourcefilefoldername = sourcefile;
+    this.sourceFileFolderName = sourcefile;
   }
 
   public String getSourceFileFoldername() {
-    return this.sourcefilefoldername;
+    return this.sourceFileFolderName;
   }
 
   public void setSourceWildcard( String wildcard ) {
-    this.sourcewildcard = wildcard;
+    this.sourceWildcard = wildcard;
   }
 
   public String getSourceWildcard() {
-    return this.sourcewildcard;
+    return this.sourceWildcard;
   }
 
   public void setDynamicFieldname( String dynamicfield ) {
-    this.dynamicFieldname = dynamicfield;
+    this.dynamicFieldName = dynamicfield;
   }
 
   public String getDynamicFieldname() {
-    return this.dynamicFieldname;
+    return this.dynamicFieldName;
   }
 
   public boolean getIncludeDate() {
@@ -563,7 +561,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
    * @return Returns the ziplimitsize.
    */
   public String getZipLimitSize() {
-    return this.ziplimitsize;
+    return this.zipLimitSize;
   }
 
   /**
@@ -571,7 +569,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
    *          The ziplimitsize to set.
    */
   public void setZipLimitSize( String ziplimitsize ) {
-    this.ziplimitsize = ziplimitsize;
+    this.zipLimitSize = ziplimitsize;
   }
 
   /**
@@ -676,8 +674,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
    * @param useHTML
    *          the useHTML to set
    */
-  public void setUseHTML( boolean UseHTML ) {
-    this.useHTML = UseHTML;
+  public void setUseHTML( boolean useHTML ) {
+    this.useHTML = useHTML;
   }
 
   /**
@@ -691,23 +689,23 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
    * @return the secure connection type
    */
   public String getSecureConnectionType() {
-    return this.secureconnectiontype;
+    return this.secureConnectionType;
   }
 
   /**
-   * @param secureconnectiontype
-   *          the secureconnectiontype to set
+   * @param secureConnectionType
+   *          the secure connection type to set
    */
-  public void setSecureConnectionType( String secureconnectiontypein ) {
-    this.secureconnectiontype = secureconnectiontypein;
+  public void setSecureConnectionType( String secureConnectionType ) {
+    this.secureConnectionType = secureConnectionType;
   }
 
   /**
    * @param replyToAddresses
    *          the replyToAddresses to set
    */
-  public void setReplyToAddresses( String replytoaddresses ) {
-    this.replyToAddresses = replytoaddresses;
+  public void setReplyToAddresses( String replyToAddresses ) {
+    this.replyToAddresses = replyToAddresses;
   }
 
   /**
@@ -759,8 +757,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
    * @param usePriority
    *          the usePriority to set
    */
-  public void setUsePriority( boolean usePriorityin ) {
-    this.usePriority = usePriorityin;
+  public void setUsePriority( boolean usePriority ) {
+    this.usePriority = usePriority;
   }
 
   /**
@@ -781,8 +779,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
    * @param importance
    *          the importance to set
    */
-  public void setImportance( String importancein ) {
-    this.importance = importancein;
+  public void setImportance( String importance ) {
+    this.importance = importance;
   }
 
   /**
@@ -793,11 +791,11 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setGrant_type( String grant_type ) {
-    this.grant_type = grant_type;
+    this.grantType = grant_type;
   }
 
   public String getGrant_type() {
-    return grant_type;
+    return grantType;
   }
 
   public void setClientId( String clientId ) {
@@ -828,11 +826,11 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setGrantType(String grant_type)
   {
-    this.grant_type=grant_type;
+    this.grantType =grant_type;
   }
   public String getGrantType()
   {
-    return grant_type;
+    return grantType;
   }
 
   public void setTokenUrl(String tokenUrl)
@@ -847,12 +845,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setAuthorization_code(String authorization_code)
   {
-    this.authorization_code=authorization_code;
+    this.authorizationCode =authorization_code;
   }
 
   public String getAuthorization_code()
   {
-    return authorization_code;
+    return authorizationCode;
   }
 
   public void setRedirectUri(String redirectUri)
@@ -867,12 +865,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setRefresh_token(String refresh_token)
   {
-    this.refresh_token=refresh_token;
+    this.refreshToken =refresh_token;
   }
 
   public String getRefresh_token()
   {
-    return refresh_token;
+    return refreshToken;
   }
 
   public String getSensitivity() {
@@ -887,8 +885,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
    * @param priority
    *          the priority to set
    */
-  public void setPriority( String priorityin ) {
-    this.priority = priorityin;
+  public void setPriority( String priority ) {
+    this.priority = priority;
   }
 
   @Override
@@ -917,12 +915,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       this.attachContentFileNameField = rep.getStepAttributeString( id_step, "attachContentFileNameField" );
 
       this.isFilenameDynamic = rep.getStepAttributeBoolean( id_step, "isFilenameDynamic" );
-      this.dynamicFieldname = rep.getStepAttributeString( id_step, "dynamicFieldname" );
+      this.dynamicFieldName = rep.getStepAttributeString( id_step, "dynamicFieldname" );
       this.dynamicWildcard = rep.getStepAttributeString( id_step, "dynamicWildcard" );
       this.dynamicZipFilename = rep.getStepAttributeString( id_step, "dynamicZipFilename" );
 
-      this.sourcefilefoldername = rep.getStepAttributeString( id_step, "sourcefilefoldername" );
-      this.sourcewildcard = rep.getStepAttributeString( id_step, "sourcewildcard" );
+      this.sourceFileFolderName = rep.getStepAttributeString( id_step, "sourcefilefoldername" );
+      this.sourceWildcard = rep.getStepAttributeString( id_step, "sourcewildcard" );
 
       this.contactPerson = rep.getStepAttributeString( id_step, "contact_person" );
       this.contactPhone = rep.getStepAttributeString( id_step, "contact_phone" );
@@ -935,7 +933,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       this.includingFiles = rep.getStepAttributeBoolean( id_step, "include_files" );
 
       this.usingAuthentication = rep.getStepAttributeString( id_step, "use_auth" );
-      this.grant_type = rep.getStepAttributeString( id_step, "use_grantType" );
+      this.grantType = rep.getStepAttributeString( id_step, "use_grantType" );
       this.usingSecureAuthentication = rep.getStepAttributeBoolean( id_step, "use_secure_auth" );
       this.authenticationUser = rep.getStepAttributeString( id_step, "auth_user" );
       this.authenticationPassword =
@@ -946,17 +944,17 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
               Encr.decryptPasswordOptionallyEncrypted(  rep.getStepAttributeString( id_step, "auth_secretKey" ) ) ;
       this.scope = rep.getStepAttributeString( id_step, "auth_scope" );
       this.tokenUrl = rep.getStepAttributeString( id_step, "auth_tokenUrl" );
-      this.authorization_code = rep.getStepAttributeString( id_step, "auth_authorizationCode" );
+      this.authorizationCode = rep.getStepAttributeString( id_step, "auth_authorizationCode" );
       this.redirectUri= rep.getStepAttributeString( id_step, "redirectURI" );
-      this.refresh_token = rep.getStepAttributeString( id_step, "refreshToken" );
+      this.refreshToken = rep.getStepAttributeString( id_step, "refreshToken" );
       this.onlySendComment = rep.getStepAttributeBoolean( id_step, "only_comment" );
       this.useHTML = rep.getStepAttributeBoolean( id_step, "use_HTML" );
       this.usePriority = rep.getStepAttributeBoolean( id_step, "use_Priority" );
-      this.secureconnectiontype = rep.getStepAttributeString( id_step, "secureconnectiontype" );
+      this.secureConnectionType = rep.getStepAttributeString( id_step, "secureconnectiontype" );
 
       this.zipFiles = rep.getStepAttributeBoolean( id_step, "zip_files" );
       this.zipFilename = rep.getStepAttributeString( id_step, "zip_name" );
-      this.ziplimitsize = rep.getStepAttributeString( id_step, "zip_limit_size" );
+      this.zipLimitSize = rep.getStepAttributeString( id_step, "zip_limit_size" );
 
       // How many arguments?
       int imagesnr = rep.countNrStepAttributes( id_step, "embeddedimage" );
@@ -965,8 +963,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
       // Read them all...
       for ( int a = 0; a < imagesnr; a++ ) {
-        embeddedimages[a] = rep.getStepAttributeString( id_step, a, "embeddedimage" );
-        contentids[a] = rep.getStepAttributeString( id_step, a, "contentid" );
+        embeddedImages[a] = rep.getStepAttributeString( id_step, a, "embeddedimage" );
+        contentIds[a] = rep.getStepAttributeString( id_step, a, "contentid" );
       }
 
     } catch ( KettleDatabaseException dbe ) {
@@ -999,12 +997,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
         id_transformation, id_step, "attachContentFileNameField", this.attachContentFileNameField );
 
       rep.saveStepAttribute( id_transformation, id_step, "isFilenameDynamic", isFilenameDynamic );
-      rep.saveStepAttribute( id_transformation, id_step, "dynamicFieldname", dynamicFieldname );
+      rep.saveStepAttribute( id_transformation, id_step, "dynamicFieldname", dynamicFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "dynamicWildcard", dynamicWildcard );
       rep.saveStepAttribute( id_transformation, id_step, "dynamicZipFilename", dynamicZipFilename );
 
-      rep.saveStepAttribute( id_transformation, id_step, "sourcefilefoldername", sourcefilefoldername );
-      rep.saveStepAttribute( id_transformation, id_step, "sourcewildcard", sourcewildcard );
+      rep.saveStepAttribute( id_transformation, id_step, "sourcefilefoldername", sourceFileFolderName );
+      rep.saveStepAttribute( id_transformation, id_step, "sourcewildcard", sourceWildcard );
 
       rep.saveStepAttribute( id_transformation, id_step, "contact_person", contactPerson );
       rep.saveStepAttribute( id_transformation, id_step, "contact_phone", contactPhone );
@@ -1026,24 +1024,24 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
               .encryptPasswordIfNotUsingVariables( secretKey ) );
       rep.saveStepAttribute( id_transformation, id_step, "auth_scope", scope );
       rep.saveStepAttribute( id_transformation, id_step, "auth_tokenUrl", tokenUrl );
-      rep.saveStepAttribute( id_transformation, id_step, "auth_authorizationCode", authorization_code );
+      rep.saveStepAttribute( id_transformation, id_step, "auth_authorizationCode", authorizationCode );
       rep.saveStepAttribute( id_transformation, id_step, "redirectURI", redirectUri );
-      rep.saveStepAttribute( id_transformation, id_step, "refreshToken", refresh_token );
-      rep.saveStepAttribute( id_transformation, id_step, "use_grantType", grant_type );
+      rep.saveStepAttribute( id_transformation, id_step, "refreshToken", refreshToken );
+      rep.saveStepAttribute( id_transformation, id_step, "use_grantType", grantType );
       rep.saveStepAttribute( id_transformation, id_step, "only_comment", onlySendComment );
       rep.saveStepAttribute( id_transformation, id_step, "use_HTML", useHTML );
       rep.saveStepAttribute( id_transformation, id_step, "use_Priority", usePriority );
-      rep.saveStepAttribute( id_transformation, id_step, "secureconnectiontype", secureconnectiontype );
+      rep.saveStepAttribute( id_transformation, id_step, "secureconnectiontype", secureConnectionType );
 
       rep.saveStepAttribute( id_transformation, id_step, "zip_files", zipFiles );
       rep.saveStepAttribute( id_transformation, id_step, "zip_name", zipFilename );
-      rep.saveStepAttribute( id_transformation, id_step, "zip_limit_size", ziplimitsize );
+      rep.saveStepAttribute( id_transformation, id_step, "zip_limit_size", zipLimitSize );
 
       // save the arguments...
-      if ( embeddedimages != null ) {
-        for ( int i = 0; i < embeddedimages.length; i++ ) {
-          rep.saveStepAttribute( id_transformation, id_step, i, "embeddedimage", embeddedimages[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "contentid", contentids[i] );
+      if ( embeddedImages != null ) {
+        for ( int i = 0; i < embeddedImages.length; i++ ) {
+          rep.saveStepAttribute( id_transformation, id_step, i, "embeddedimage", embeddedImages[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "contentid", contentIds[i] );
         }
       }
     } catch ( KettleDatabaseException dbe ) {
@@ -1162,7 +1160,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( isFilenameDynamic ) {
       // Dynamic Filename field
-      if ( Utils.isEmpty( dynamicFieldname ) ) {
+      if ( Utils.isEmpty( dynamicFieldName ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "MailMeta.CheckResult.DynamicFilenameFieldEmpty" ), stepMeta );
@@ -1175,7 +1173,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
     } else {
       // static filename
-      if ( Utils.isEmpty( sourcefilefoldername ) ) {
+      if ( Utils.isEmpty( sourceFileFolderName ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "MailMeta.CheckResult.SourceFilenameEmpty" ), stepMeta );

@@ -71,7 +71,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
- * This defines an get pop job entry.
+ * This defines a get pop job entry.
  *
  * @author Samatar
  * @since 01-03-2007
@@ -83,7 +83,6 @@ import org.w3c.dom.Node;
         categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Mail",
         image = "ui/images/GETPOP.svg",
         documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+Mails+from+POP" )
-
 public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!
 
@@ -527,7 +526,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       throw new KettleException( "Unable to save job entry of type 'get pop' to the repository for id_job="
         + id_job, dbe );
     }
-
   }
 
   public String getPort() {
@@ -1017,7 +1015,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     SimpleDateFormat df = new SimpleDateFormat( DATE_PATTERN );
 
     try {
-
       boolean usePOP3 = getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 );
       boolean moveafter = false;
       int nbrmailtoretrieve =
@@ -1084,6 +1081,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
      if( usingAuthentication.equals( JobEntryGetPOP.AUTENTICATION_OAUTH ) ) {
         realpassword = "Bearer " + getOauthToken(environmentSubstitute( getTokenUrl() ) ).getAccessToken();
       }
+
       mailConn =
         new MailConnection(
           parentJobMeta.getBowl(), log, MailConnectionMeta.getProtocolFromString( getProtocol(),
@@ -1312,8 +1310,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
               // Get next message
               mailConn.fetchNext();
               int messagenumber = mailConn.getMessage().getMessageNumber();
-              boolean okPOP3 = usePOP3 ? true : false; // (mailConn.getMessagesCounter()<nbrmailtoretrieve &&
-                                                       // retrievemails==2)||(retrievemails!=2):false;
+              boolean okPOP3 = usePOP3;
               boolean okIMAP = !usePOP3;
 
               if ( okPOP3 || okIMAP ) {
@@ -1389,7 +1386,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                     default:
                   }
                 }
-
               }
             }
             break;
@@ -1409,8 +1405,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     localfilename_message = localfilename_message.replaceAll( FILENAME_ID_PATTERN, "" + ( idfile + 1 ) );
     localfilename_message =
       substituteDate( localfilename_message, FILENAME_SYS_DATE_OPEN, FILENAME_SYS_DATE_CLOSE, new Date() );
-    return localfilename_message;
 
+    return localfilename_message;
   }
 
   private String substituteDate( String aString, String open, String close, Date datetime ) {
@@ -1499,9 +1495,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         String responseBody = EntityUtils.toString( response.getEntity() );
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue( responseBody, EmailAuthenticationResponse.class );
-      } catch ( HttpException e ) {
-        throw new RuntimeException( e );
-      } catch ( IOException e ) {
+      } catch ( HttpException | IOException e ) {
         throw new RuntimeException( e );
       }
     } catch ( IOException e ) {
