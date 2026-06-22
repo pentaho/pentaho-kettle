@@ -1,28 +1,19 @@
-/*! ******************************************************************************
- *
- * Pentaho
- *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
- *
- * Use of this software is governed by the Business Source License included
- * in the LICENSE.TXT file.
- *
- * Change Date: 2029-07-20
- ******************************************************************************/
-
 package org.pentaho.di.core.exception;
 
 import org.junit.Test;
 
+import java.io.Serializable;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class SecretsManagementExceptionTest {
 
-  private String errorMessage = "Secret retrieval failed";
-  private String causeExceptionMessage = "Network timeout";
-  private Throwable cause = new RuntimeException( causeExceptionMessage );
+  private final String errorMessage = "Secret retrieval failed";
+  private final String causeExceptionMessage = "Network timeout";
+  private final Throwable cause = new RuntimeException( causeExceptionMessage );
 
   @Test
   public void testConstructorWithReasonAndMessage() {
@@ -127,7 +118,7 @@ public class SecretsManagementExceptionTest {
     try {
       throw new SecretsManagementException( SecretsManagementException.Reason.UNAUTHORIZED, errorMessage );
     } catch ( SecretsManagementException e ) {
-      assertEquals( true, e instanceof java.io.Serializable );
+      assertTrue( e instanceof Serializable );
     }
   }
 
@@ -136,7 +127,7 @@ public class SecretsManagementExceptionTest {
     try {
       throw new SecretsManagementException( SecretsManagementException.Reason.UNAUTHORIZED, errorMessage );
     } catch ( KettleDatabaseException e ) {
-      assertEquals( true, e instanceof SecretsManagementException );
+      assertTrue( e instanceof SecretsManagementException );
     }
   }
 

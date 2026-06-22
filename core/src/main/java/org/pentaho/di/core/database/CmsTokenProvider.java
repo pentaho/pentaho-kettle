@@ -12,14 +12,15 @@
 
 package org.pentaho.di.core.database;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.HttpClientManager;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -54,32 +55,17 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CmsTokenProvider {
 
   private static final CmsTokenProvider INSTANCE = new CmsTokenProvider();
-
-  private CmsTokenProvider() { }
-
   private static final LogChannelInterface log = LogChannel.GENERAL;
-
   /**
    * Seconds before the token's stated expiry time at which we proactively refresh.
    * Prevents using a token that expires mid-request due to clock skew or network latency.
    */
   private static final long EXPIRY_BUFFER_MS = 30_000;
-
-  /**
-   * Holds the cached access token and the absolute time (epoch ms) at which it should
-   * be considered expired for our purposes ({@code issued_at + expires_in_ms - buffer}).
-   */
-  private static final class TokenEntry {
-    final String accessToken;
-    final long validUntilMs;
-
-    TokenEntry( String accessToken, long validUntilMs ) {
-      this.accessToken = accessToken;
-      this.validUntilMs = validUntilMs;
-    }
-  }
-
   private final AtomicReference<TokenEntry> cached = new AtomicReference<>();
+
+  private CmsTokenProvider() {
+    // Prevents instantiation.
+  }
 
   /**
    * Returns the singleton instance.
@@ -114,15 +100,15 @@ public class CmsTokenProvider {
     return fetchAndCache();
   }
 
-  // ---------------------------------------------------------------------------
-  // Internal helpers
-  // ---------------------------------------------------------------------------
-
   private boolean isConfigured() {
     return Const.getCmsTokenUrl() != null
       && Const.getCmsClientId() != null
       && Const.getCmsClientSecret() != null;
   }
+
+  // ---------------------------------------------------------------------------
+  // Internal helpers
+  // ---------------------------------------------------------------------------
 
   /**
    * Fetches a fresh token from Keycloak. Synchronized to ensure only one thread issues
@@ -190,6 +176,20 @@ public class CmsTokenProvider {
     } catch ( Exception e ) {
       throw new KettleDatabaseException(
         "CmsTokenProvider: failed to fetch token from '" + tokenUrl + "': " + e.getMessage(), e );
+    }
+  }
+
+  /**
+   * Holds the cached access token and the absolute time (epoch ms) at which it should
+   * be considered expired for our purposes ({@code issued_at + expires_in_ms - buffer}).
+   */
+  private static final class TokenEntry {
+    final String accessToken;
+    final long validUntilMs;
+
+    TokenEntry( String accessToken, long validUntilMs ) {
+      this.accessToken = accessToken;
+      this.validUntilMs = validUntilMs;
     }
   }
 }

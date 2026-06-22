@@ -1,23 +1,13 @@
-/*! ******************************************************************************
- *
- * Pentaho
- *
- * Copyright (C) 2026 by Hitachi Vantara, LLC : http://www.pentaho.com
- *
- * Use of this software is governed by the Business Source License included
- * in the LICENSE.TXT file.
- *
- * Change Date: 2029-07-20
- ******************************************************************************/
-
 package org.pentaho.di.core.database;
+
+import org.pentaho.di.core.exception.KettleDatabaseException;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Test;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertNotNull;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class ConnectionManagementServiceMetaTest {
 
@@ -39,8 +29,8 @@ public class ConnectionManagementServiceMetaTest {
 
   @Test
   public void testGetAccessTypeListThrowsNotImplementedException() {
-      int[] accessTypeList = meta.getAccessTypeList();
-      assertEquals(0, accessTypeList.length);
+    int[] accessTypeList = meta.getAccessTypeList();
+    assertEquals( 0, accessTypeList.length );
   }
 
   @Test

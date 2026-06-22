@@ -1,15 +1,8 @@
-/*! ******************************************************************************
- *
- * Pentaho
- *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
- *
- * Use of this software is governed by the Business Source License included
- * in the LICENSE.TXT file.
- *
- * Change Date: 2029-07-20
- ******************************************************************************/
 package org.pentaho.di.core.database;
+
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.util.HttpClientManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
@@ -27,20 +20,25 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.util.HttpClientManager;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
 public class CmsTokenProviderTest {
@@ -247,7 +245,7 @@ public class CmsTokenProviderTest {
   }
 
   private void setupHttpClientMocks( MockedStatic<HttpClientManager> mockManager,
-                                      int httpStatus ) throws Exception {
+                                     int httpStatus ) throws Exception {
     Map<String, Object> response = new HashMap<>();
     response.put( "access_token", VALID_TOKEN );
     response.put( "expires_in", 300 );
@@ -255,8 +253,8 @@ public class CmsTokenProviderTest {
   }
 
   private void setupHttpClientMocks( MockedStatic<HttpClientManager> mockManager,
-                                      int httpStatus,
-                                      Map<String, Object> responseBody ) throws Exception {
+                                     int httpStatus,
+                                     Map<String, Object> responseBody ) throws Exception {
     HttpClientManager manager = mock( HttpClientManager.class );
     mockManager.when( HttpClientManager::getInstance ).thenReturn( manager );
     when( manager.createDefaultClient() ).thenReturn( mockHttpClient );
@@ -268,7 +266,7 @@ public class CmsTokenProviderTest {
     when( mockResponse.getStatusLine() ).thenReturn( statusLine );
 
     String json = new ObjectMapper().writeValueAsString( responseBody );
-    InputStream is = new ByteArrayInputStream( json.getBytes( "UTF-8" ) );
+    InputStream is = new ByteArrayInputStream( json.getBytes( StandardCharsets.UTF_8 ) );
     when( mockHttpEntity.getContent() ).thenReturn( is );
     when( mockResponse.getEntity() ).thenReturn( mockHttpEntity );
 
