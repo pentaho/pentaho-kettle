@@ -2661,6 +2661,25 @@ public class Const {
   }
 
   /**
+   * Returns the base URL of the Fusion secrets-management service
+   * (e.g. {@code https://secrets.example.com}). The full secret-retrieval
+   * URL is {@code <base>/api/v1/secrets/{secretsRef}}.
+   *
+   * <p>Resolution order (first non-blank value wins):
+   * <ol>
+   *   <li>OS environment variable {@code SECRETS_MANAGEMENT_URL}</li>
+   *   <li>JVM system property {@code SECRETS_MANAGEMENT_URL}</li>
+   *   <li>{@code null} — secret resolution via the vault is disabled.</li>
+   * </ol>
+   *
+   * @return the secrets-management service base URL (no trailing slash), or {@code null} if not configured
+   */
+  public static String getSecretsManagementUrl() {
+    return NVL( System.getenv( "SECRETS_MANAGEMENT_URL" ),
+      System.getProperty( "SECRETS_MANAGEMENT_URL" ) );
+  }
+
+  /**
    * Indicates whether the Fusion connection-management service flow is enabled.
    *
    * <p>Resolution order (first non-blank value wins):
