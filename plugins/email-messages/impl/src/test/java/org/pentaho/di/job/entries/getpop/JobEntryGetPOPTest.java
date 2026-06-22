@@ -239,7 +239,7 @@ public class JobEntryGetPOPTest {
         assertEquals( "Output Folder should not be created",
           BaseMessages.getString( JobEntryGetPOP.class,
             "JobGetMailsFromPOP.Error.OutputFolderNotExist", outputDir.getAbsolutePath() ),
-          Const.trim( e.getMessage() ) ); ;
+          Const.trim( e.getMessage() ) );
       } else {
         fail( "Output Folder should not have been created: " + e.getLocalizedMessage() );
       }

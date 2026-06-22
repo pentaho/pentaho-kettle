@@ -14,6 +14,10 @@
 package org.pentaho.di.job.entries.getpop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.mail.Flags.Flag;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileType;
 import org.apache.http.Consts;
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
@@ -24,36 +28,18 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.pentaho.di.core.annotations.JobEntry;
-import org.pentaho.di.core.util.HttpClientManager;
-import org.pentaho.di.job.entry.validator.AbstractFileValidator;
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
-
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Pattern;
-
-import jakarta.mail.Flags.Flag;
-
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -61,6 +47,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -70,8 +59,16 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Pattern;
+
 /**
- * This defines an get pop job entry.
+ * This defines a get pop job entry.
  *
  * @author Samatar
  * @since 01-03-2007
@@ -83,9 +80,60 @@ import org.w3c.dom.Node;
         categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Mail",
         image = "ui/images/GETPOP.svg",
         documentationUrl = "http://wiki.pentaho.com/display/EAI/Get+Mails+from+POP" )
-
 public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!
+
+  private static final String TAG_SERVERNAME = "servername";
+  private static final String TAG_USERNAME = "username";
+  private static final String TAG_PASSWORD = "password";
+  private static final String TAG_USE_SSL = "usessl";
+  private static final String TAG_SSL_PORT = "sslport";
+  private static final String TAG_OUTPUT_DIRECTORY = "outputdirectory";
+  private static final String TAG_FILENAME_PATTERN = "filenamepattern";
+  private static final String TAG_RETRIEVE_MAILS = "retrievemails";
+  private static final String TAG_FIRST_MAILS = "firstmails";
+  private static final String TAG_DELETE = "delete";
+  private static final String TAG_SAVE_MESSAGE = "savemessage";
+  private static final String TAG_SAVE_ATTACHMENT = "saveattachment";
+  private static final String TAG_USE_DIFFERENT_FOLDER_FOR_ATTACHMENT = "usedifferentfolderforattachment";
+  private static final String TAG_PROTOCOL = "protocol";
+  private static final String TAG_ATTACHMENT_FOLDER = "attachmentfolder";
+  private static final String TAG_ATTACHMENT_WILDCARD = "attachmentwildcard";
+  private static final String TAG_VALUE_IMAP_LIST = "valueimaplist";
+  private static final String TAG_IMAP_FIRST_MAILS = "imapfirstmails";
+  private static final String TAG_IMAP_FOLDER = "imapfolder";
+  private static final String TAG_SENDER_SEARCH = "sendersearch";
+  private static final String TAG_NOT_TERM_SENDER_SEARCH = "nottermsendersearch";
+  private static final String TAG_RECIPIENT_SEARCH = "receipientsearch";
+  private static final String TAG_NOT_TERM_RECIPIENT_SEARCH = "nottermreceipientsearch";
+  private static final String TAG_SUBJECT_SEARCH = "subjectsearch";
+  private static final String TAG_NOT_TERM_SUBJECT_SEARCH = "nottermsubjectsearch";
+  private static final String TAG_BODY_SEARCH = "bodysearch";
+  private static final String TAG_NOT_TERM_BODY_SEARCH = "nottermbodysearch";
+  private static final String TAG_CONDITION_RECEIVED_DATE = "conditionreceiveddate";
+  private static final String TAG_NOT_TERM_RECEIVED_DATE_SEARCH = "nottermreceiveddatesearch";
+  private static final String TAG_RECEIVED_DATE_1 = "receiveddate1";
+  private static final String TAG_RECEIVED_DATE_2 = "receiveddate2";
+  private static final String TAG_ACTION_TYPE = "actiontype";
+  private static final String TAG_MOVE_TO_IMAP_FOLDER = "movetoimapfolder";
+  private static final String TAG_CREATE_MOVE_TO_FOLDER = "createmovetofolder";
+  private static final String TAG_CREATE_LOCAL_FOLDER = "createlocalfolder";
+  private static final String TAG_AFTER_GET_IMAP = "aftergetimap";
+  private static final String TAG_INCLUDE_SUBFOLDERS = "includesubfolders";
+  private static final String TAG_USE_PROXY = "useproxy";
+  private static final String TAG_PROXY_USER_NAME = "proxyusername";
+  private static final String TAG_USE_AUTH = "use_auth";
+  private static final String TAG_USE_GRANT_TYPE = "use_grantType";
+  private static final String TAG_AUTH_CLIENT_ID = "auth_clientId";
+  private static final String TAG_AUTH_SECRET_KEY = "auth_secretKey";
+  private static final String TAG_AUTH_SCOPE = "auth_scope";
+  private static final String TAG_AUTH_TOKEN_URL = "auth_tokenUrl";
+  private static final String TAG_AUTH_AUTHORIZATION_CODE = "auth_authorizationCode";
+  private static final String TAG_REDIRECT_URI = "redirectURI";
+  private static final String TAG_REFRESH_TOKEN = "refreshToken";
+
+  private static final String STR_6_SPACES = "      ";
+  private static final String STR_Y = "Y";
 
   static final int FOLDER_OUTPUT = 0;
   static final int FOLDER_ATTACHMENTS = 1;
@@ -98,57 +146,56 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public int aftergetimap;
 
-  private String servername;
-  private String username;
+  private String serverName;
+  private String userName;
   private String password;
   public static String AUTENTICATION_OAUTH = "OAUTH";
   public static String AUTENTICATION_BASIC = "Basic";
-  public static String GRANTTYPE_CLIENTCREDENTIALS="client_credentials";
-  public static String GRANTTYPE_AUTHORIZATION_CODE="authorization_code";
-  public static String GRANTTYPE_REFRESH_TOKEN="refresh_token";
+  public static String GRANTTYPE_CLIENTCREDENTIALS = "client_credentials";
+  public static String GRANTTYPE_AUTHORIZATION_CODE = "authorization_code";
+  public static String GRANTTYPE_REFRESH_TOKEN = "refresh_token";
   private String clientId;
   private String secretKey;
   private String scope;
   private String tokenUrl;
-  private String authorization_code;
+  private String authorizationCode;
   private String redirectUri;
-  private String refresh_token;
-  private String grant_type;
+  private String refreshToken;
+  private String grantType;
   private String usingAuthentication;
-  private IEmailAuthenticationResponse token;
-  private boolean usessl;
-  private String sslport;
-  private boolean useproxy;
-  private String proxyusername;
-  private String outputdirectory;
-  private String filenamepattern;
-  private String firstmails;
-  public int retrievemails;
+  private boolean useSsl;
+  private String sslPort;
+  private boolean useProxy;
+  private String proxyUserName;
+  private String outputDirectory;
+  private String filenamePattern;
+  private String firstMails;
+  public int retrieveMails;
   private boolean delete;
   private String protocol;
-  private boolean saveattachment;
-  private boolean savemessage;
-  private boolean usedifferentfolderforattachment;
-  private String attachmentfolder;
-  private String attachmentwildcard;
-  private String imapfirstmails;
-  private String imapfolder;
+  private boolean saveAttachment;
+  private boolean saveMessage;
+  private boolean useDifferentFolderForAttachment;
+  private String attachmentFolder;
+  private String attachmentWildcard;
+  private String imapFirstMails;
+  private String imapFolder;
   // search term
   private String senderSearch;
   private boolean notTermSenderSearch;
-  private String receipientSearch;
+  private String recipientSearch;
   private String subjectSearch;
   private String bodySearch;
   private boolean notTermBodySearch;
   private String receivedDate1;
   private String receivedDate2;
   private boolean notTermSubjectSearch;
-  private boolean notTermReceipientSearch;
+  private boolean notTermRecipientSearch;
   private boolean notTermReceivedDateSearch;
-  private boolean includesubfolders;
+  private boolean includeSubfolders;
   private String moveToIMAPFolder;
-  private boolean createmovetofolder;
-  private boolean createlocalfolder;
+  private boolean createMoveToFolder;
+  private boolean createLocalFolder;
 
   private static final String DEFAULT_FILE_NAME_PATTERN = "name_{SYS|hhmmss_MMddyyyy|}_#IdFile#.mail";
 
@@ -161,206 +208,206 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public JobEntryGetPOP( String n ) {
     super( n, "" );
-    servername = null;
-    username = null;
+    serverName = null;
+    userName = null;
     password = null;
-    usessl = false;
-    sslport = null;
-    useproxy = false;
-    proxyusername = null;
-    outputdirectory = null;
-    filenamepattern = DEFAULT_FILE_NAME_PATTERN;
-    retrievemails = 0;
-    firstmails = null;
+    useSsl = false;
+    sslPort = null;
+    useProxy = false;
+    proxyUserName = null;
+    outputDirectory = null;
+    filenamePattern = DEFAULT_FILE_NAME_PATTERN;
+    retrieveMails = 0;
+    firstMails = null;
     delete = false;
     protocol = MailConnectionMeta.PROTOCOL_STRING_POP3;
-    saveattachment = true;
-    savemessage = true;
-    usedifferentfolderforattachment = false;
-    attachmentfolder = null;
-    attachmentwildcard = null;
-    imapfirstmails = "0";
+    saveAttachment = true;
+    saveMessage = true;
+    useDifferentFolderForAttachment = false;
+    attachmentFolder = null;
+    attachmentWildcard = null;
+    imapFirstMails = "0";
     valueimaplist = MailConnectionMeta.VALUE_IMAP_LIST_ALL;
-    imapfolder = null;
+    imapFolder = null;
     // search term
     senderSearch = null;
     notTermSenderSearch = false;
-    notTermReceipientSearch = false;
+    notTermRecipientSearch = false;
     notTermSubjectSearch = false;
     bodySearch = null;
     notTermBodySearch = false;
     receivedDate1 = null;
     receivedDate2 = null;
     notTermReceivedDateSearch = false;
-    receipientSearch = null;
+    recipientSearch = null;
     subjectSearch = null;
     actiontype = MailConnectionMeta.ACTION_TYPE_GET;
     moveToIMAPFolder = null;
-    createmovetofolder = false;
-    createlocalfolder = false;
+    createMoveToFolder = false;
+    createLocalFolder = false;
     aftergetimap = MailConnectionMeta.AFTER_GET_IMAP_NOTHING;
-    includesubfolders = false;
+    includeSubfolders = false;
   }
 
   public JobEntryGetPOP() {
     this( "" );
   }
 
+  @Override
   public Object clone() {
-    JobEntryGetPOP je = (JobEntryGetPOP) super.clone();
-    return je;
+    return super.clone();
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 550 );
+
     retval.append( super.getXML() );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "servername", servername ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "username", username ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "usessl", usessl ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "sslport", sslport ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "outputdirectory", outputdirectory ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "filenamepattern", filenamepattern ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "retrievemails", retrievemails ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "firstmails", firstmails ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "delete", delete ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "savemessage", savemessage ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "saveattachment", saveattachment ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "usedifferentfolderforattachment", usedifferentfolderforattachment ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "protocol", protocol ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "attachmentfolder", attachmentfolder ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "attachmentwildcard", attachmentwildcard ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "valueimaplist", MailConnectionMeta.getValueImapListCode( valueimaplist ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "imapfirstmails", imapfirstmails ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "imapfolder", imapfolder ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SERVERNAME, serverName ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USERNAME, userName ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_PASSWORD,
+        Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_SSL, useSsl ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SSL_PORT, sslPort ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_OUTPUT_DIRECTORY, outputDirectory ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_FILENAME_PATTERN, filenamePattern ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_RETRIEVE_MAILS, retrieveMails ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_FIRST_MAILS, firstMails ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_DELETE, delete ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SAVE_MESSAGE, saveMessage ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SAVE_ATTACHMENT, saveAttachment ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_DIFFERENT_FOLDER_FOR_ATTACHMENT,
+        useDifferentFolderForAttachment ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_PROTOCOL, protocol ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_ATTACHMENT_FOLDER, attachmentFolder ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_ATTACHMENT_WILDCARD, attachmentWildcard ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_VALUE_IMAP_LIST,
+        MailConnectionMeta.getValueImapListCode( valueimaplist ) ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_IMAP_FIRST_MAILS, imapFirstMails ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_IMAP_FOLDER, imapFolder ) );
     // search term
-    retval.append( "      " ).append( XMLHandler.addTagValue( "sendersearch", senderSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nottermsendersearch", notTermSenderSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SENDER_SEARCH, senderSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_NOT_TERM_SENDER_SEARCH, notTermSenderSearch ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "receipientsearch", receipientSearch ) );
-    retval
-      .append( "      " ).append( XMLHandler.addTagValue( "nottermreceipientsearch", notTermReceipientSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "subjectsearch", subjectSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nottermsubjectsearch", notTermSubjectSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "bodysearch", bodySearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nottermbodysearch", notTermBodySearch ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "conditionreceiveddate", MailConnectionMeta
-        .getConditionDateCode( conditionReceivedDate ) ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "nottermreceiveddatesearch", notTermReceivedDateSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "receiveddate1", receivedDate1 ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "receiveddate2", receivedDate2 ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "actiontype", MailConnectionMeta.getActionTypeCode( actiontype ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "movetoimapfolder", moveToIMAPFolder ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_RECIPIENT_SEARCH, recipientSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_NOT_TERM_RECIPIENT_SEARCH,
+          notTermRecipientSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SUBJECT_SEARCH, subjectSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_NOT_TERM_SUBJECT_SEARCH, notTermSubjectSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_BODY_SEARCH, bodySearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_NOT_TERM_BODY_SEARCH, notTermBodySearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_CONDITION_RECEIVED_DATE,
+        MailConnectionMeta.getConditionDateCode( conditionReceivedDate ) ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_NOT_TERM_RECEIVED_DATE_SEARCH,
+        notTermReceivedDateSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_RECEIVED_DATE_1, receivedDate1 ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_RECEIVED_DATE_2, receivedDate2 ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_ACTION_TYPE,
+        MailConnectionMeta.getActionTypeCode( actiontype ) ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_MOVE_TO_IMAP_FOLDER, moveToIMAPFolder ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "createmovetofolder", createmovetofolder ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "createlocalfolder", createlocalfolder ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "aftergetimap", MailConnectionMeta.getAfterGetIMAPCode( aftergetimap ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "includesubfolders", includesubfolders ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "useproxy", useproxy ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "proxyusername", proxyusername ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_auth", usingAuthentication ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_grantType", grant_type) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_clientId", clientId ) );
-    retval.append( "      " ).append(
-            XMLHandler
-                    .addTagValue( "auth_secretKey",  secretKey)  );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_scope", scope ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_tokenUrl", tokenUrl ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_authorizationCode", authorization_code ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "redirectURI", redirectUri ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshToken", refresh_token) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_CREATE_MOVE_TO_FOLDER, createMoveToFolder ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_CREATE_LOCAL_FOLDER, createLocalFolder ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AFTER_GET_IMAP,
+        MailConnectionMeta.getAfterGetIMAPCode( aftergetimap ) ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_INCLUDE_SUBFOLDERS, includeSubfolders ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_PROXY, useProxy ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_PROXY_USER_NAME, proxyUserName ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_AUTH, usingAuthentication ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_GRANT_TYPE, grantType ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_CLIENT_ID, clientId ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_SECRET_KEY, secretKey)  );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_SCOPE, scope ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_TOKEN_URL, tokenUrl ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_AUTHORIZATION_CODE, authorizationCode ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_REDIRECT_URI, redirectUri ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_REFRESH_TOKEN, refreshToken ) );
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
-      servername = XMLHandler.getTagValue( entrynode, "servername" );
-      username = XMLHandler.getTagValue( entrynode, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "password" ) );
-      usessl = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "usessl" ) );
-      sslport = XMLHandler.getTagValue( entrynode, "sslport" );
-      outputdirectory = XMLHandler.getTagValue( entrynode, "outputdirectory" );
-      filenamepattern = XMLHandler.getTagValue( entrynode, "filenamepattern" );
-      if ( Utils.isEmpty( filenamepattern ) ) {
-        filenamepattern = DEFAULT_FILE_NAME_PATTERN;
+      serverName = XMLHandler.getTagValue( entrynode, TAG_SERVERNAME );
+      userName = XMLHandler.getTagValue( entrynode, TAG_USERNAME );
+      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, TAG_PASSWORD ) );
+      useSsl = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_USE_SSL ) );
+      sslPort = XMLHandler.getTagValue( entrynode, TAG_SSL_PORT );
+      outputDirectory = XMLHandler.getTagValue( entrynode, TAG_OUTPUT_DIRECTORY );
+      filenamePattern = XMLHandler.getTagValue( entrynode, TAG_FILENAME_PATTERN );
+      if ( Utils.isEmpty( filenamePattern ) ) {
+        filenamePattern = DEFAULT_FILE_NAME_PATTERN;
       }
-      retrievemails = Const.toInt( XMLHandler.getTagValue( entrynode, "retrievemails" ), -1 );
-      firstmails = XMLHandler.getTagValue( entrynode, "firstmails" );
-      delete = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "delete" ) );
+      retrieveMails = Const.toInt( XMLHandler.getTagValue( entrynode, TAG_RETRIEVE_MAILS ), -1 );
+      firstMails = XMLHandler.getTagValue( entrynode, TAG_FIRST_MAILS );
+      delete = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_DELETE ) );
 
       protocol =
-        Const.NVL( XMLHandler.getTagValue( entrynode, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
+        Const.NVL( XMLHandler.getTagValue( entrynode, TAG_PROTOCOL ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
-      String sm = XMLHandler.getTagValue( entrynode, "savemessage" );
+      String sm = XMLHandler.getTagValue( entrynode, TAG_SAVE_MESSAGE );
       if ( Utils.isEmpty( sm ) ) {
-        savemessage = true;
+        saveMessage = true;
       } else {
-        savemessage = "Y".equalsIgnoreCase( sm );
+        saveMessage = STR_Y.equalsIgnoreCase( sm );
       }
 
-      String sa = XMLHandler.getTagValue( entrynode, "saveattachment" );
+      String sa = XMLHandler.getTagValue( entrynode, TAG_SAVE_ATTACHMENT );
       if ( Utils.isEmpty( sa ) ) {
-        saveattachment = true;
+        saveAttachment = true;
       } else {
-        saveattachment = "Y".equalsIgnoreCase( sa );
+        saveAttachment = STR_Y.equalsIgnoreCase( sa );
       }
 
-      usedifferentfolderforattachment =
-        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "usedifferentfolderforattachment" ) );
-      attachmentfolder = XMLHandler.getTagValue( entrynode, "attachmentfolder" );
-      attachmentwildcard = XMLHandler.getTagValue( entrynode, "attachmentwildcard" );
+      useDifferentFolderForAttachment =
+        STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_USE_DIFFERENT_FOLDER_FOR_ATTACHMENT ) );
+      attachmentFolder = XMLHandler.getTagValue( entrynode, TAG_ATTACHMENT_FOLDER );
+      attachmentWildcard = XMLHandler.getTagValue( entrynode, TAG_ATTACHMENT_WILDCARD );
       valueimaplist =
         MailConnectionMeta.getValueImapListByCode( Const.NVL( XMLHandler
-          .getTagValue( entrynode, "valueimaplist" ), "" ) );
-      imapfirstmails = XMLHandler.getTagValue( entrynode, "imapfirstmails" );
-      imapfolder = XMLHandler.getTagValue( entrynode, "imapfolder" );
+          .getTagValue( entrynode, TAG_VALUE_IMAP_LIST ), "" ) );
+      imapFirstMails = XMLHandler.getTagValue( entrynode, TAG_IMAP_FIRST_MAILS );
+      imapFolder = XMLHandler.getTagValue( entrynode, TAG_IMAP_FOLDER );
       // search term
-      senderSearch = XMLHandler.getTagValue( entrynode, "sendersearch" );
-      notTermSenderSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermsendersearch" ) );
-      receipientSearch = XMLHandler.getTagValue( entrynode, "receipientsearch" );
-      notTermReceipientSearch =
-        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermreceipientsearch" ) );
-      subjectSearch = XMLHandler.getTagValue( entrynode, "subjectsearch" );
-      notTermSubjectSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermsubjectsearch" ) );
-      bodySearch = XMLHandler.getTagValue( entrynode, "bodysearch" );
-      notTermBodySearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermbodysearch" ) );
+      senderSearch = XMLHandler.getTagValue( entrynode, TAG_SENDER_SEARCH );
+      notTermSenderSearch = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_NOT_TERM_SENDER_SEARCH ) );
+      recipientSearch = XMLHandler.getTagValue( entrynode, TAG_RECIPIENT_SEARCH );
+      notTermRecipientSearch =
+        STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_NOT_TERM_RECIPIENT_SEARCH ) );
+      subjectSearch = XMLHandler.getTagValue( entrynode, TAG_SUBJECT_SEARCH );
+      notTermSubjectSearch = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_NOT_TERM_SUBJECT_SEARCH ) );
+      bodySearch = XMLHandler.getTagValue( entrynode, TAG_BODY_SEARCH );
+      notTermBodySearch = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_NOT_TERM_BODY_SEARCH ) );
       conditionReceivedDate =
         MailConnectionMeta.getConditionByCode( Const.NVL( XMLHandler.getTagValue(
-          entrynode, "conditionreceiveddate" ), "" ) );
+          entrynode, TAG_CONDITION_RECEIVED_DATE ), "" ) );
       notTermReceivedDateSearch =
-        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermreceiveddatesearch" ) );
+        STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_NOT_TERM_RECEIVED_DATE_SEARCH ) );
       receivedDate1 = XMLHandler.getTagValue( entrynode, "receivedDate1" );
       receivedDate2 = XMLHandler.getTagValue( entrynode, "receivedDate2" );
       actiontype =
         MailConnectionMeta.getActionTypeByCode( Const
-          .NVL( XMLHandler.getTagValue( entrynode, "actiontype" ), "" ) );
-      moveToIMAPFolder = XMLHandler.getTagValue( entrynode, "movetoimapfolder" );
-      createmovetofolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "createmovetofolder" ) );
-      createlocalfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "createlocalfolder" ) );
+          .NVL( XMLHandler.getTagValue( entrynode, TAG_ACTION_TYPE ), "" ) );
+      moveToIMAPFolder = XMLHandler.getTagValue( entrynode, TAG_MOVE_TO_IMAP_FOLDER );
+      createMoveToFolder = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_CREATE_MOVE_TO_FOLDER ) );
+      createLocalFolder = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_CREATE_LOCAL_FOLDER ) );
       aftergetimap =
         MailConnectionMeta.getAfterGetIMAPByCode( Const.NVL(
-          XMLHandler.getTagValue( entrynode, "aftergetimap" ), "" ) );
-      includesubfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "includesubfolders" ) );
-      useproxy = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "useproxy" ) );
-      proxyusername = XMLHandler.getTagValue( entrynode, "proxyusername" );
-      setUsingAuthentication( XMLHandler.getTagValue( entrynode, "use_auth" ) );
-      setClientId( XMLHandler.getTagValue( entrynode, "auth_clientId" ) );
-      setSecretKey( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "auth_secretKey" ) ) );
-      setScope( XMLHandler.getTagValue( entrynode, "auth_scope" ) );
-      setTokenUrl( XMLHandler.getTagValue( entrynode, "auth_tokenUrl" ) );
-      setAuthorization_code( XMLHandler.getTagValue( entrynode, "auth_authorizationCode" ) );
-      setRedirectUri( XMLHandler.getTagValue( entrynode, "redirectURI" ) );
-      setRefresh_token( XMLHandler.getTagValue( entrynode, "refreshToken" ) );
-      setGrant_type( XMLHandler.getTagValue( entrynode, "use_grantType" ) );
+          XMLHandler.getTagValue( entrynode, TAG_AFTER_GET_IMAP ), "" ) );
+      includeSubfolders = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_INCLUDE_SUBFOLDERS ) );
+      useProxy = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_USE_PROXY ) );
+      proxyUserName = XMLHandler.getTagValue( entrynode, TAG_PROXY_USER_NAME );
+      setUsingAuthentication( XMLHandler.getTagValue( entrynode, TAG_USE_AUTH ) );
+      setClientId( XMLHandler.getTagValue( entrynode, TAG_AUTH_CLIENT_ID ) );
+      setSecretKey( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, TAG_AUTH_SECRET_KEY ) ) );
+      setScope( XMLHandler.getTagValue( entrynode, TAG_AUTH_SCOPE ) );
+      setTokenUrl( XMLHandler.getTagValue( entrynode, TAG_AUTH_TOKEN_URL ) );
+      setAuthorization_code( XMLHandler.getTagValue( entrynode, TAG_AUTH_AUTHORIZATION_CODE ) );
+      setRedirectUri( XMLHandler.getTagValue( entrynode, TAG_REDIRECT_URI ) );
+      setRefresh_token( XMLHandler.getTagValue( entrynode, TAG_REFRESH_TOKEN ) );
+      setGrant_type( XMLHandler.getTagValue( entrynode, TAG_USE_GRANT_TYPE ) );
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( "Unable to load job entry of type 'get pop' from XML node", xe );
     }
@@ -374,164 +421,159 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     this.valueimaplist = value;
   }
 
-  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+  @Override
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId idJobEntry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
-      servername = rep.getJobEntryAttributeString( id_jobentry, "servername" );
-      username = rep.getJobEntryAttributeString( id_jobentry, "username" );
-      password =
-        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
-      grant_type = rep.getJobEntryAttributeString( id_jobentry, "use_grantType" );
-      usingAuthentication = rep.getJobEntryAttributeString( id_jobentry, "use_auth" );
-      clientId = rep.getJobEntryAttributeString( id_jobentry, "auth_clientId" );
-      secretKey =
-              Encr.decryptPasswordOptionallyEncrypted(  rep.getJobEntryAttributeString( id_jobentry, "auth_secretKey" ) ) ;
-      scope = rep.getJobEntryAttributeString( id_jobentry, "auth_scope" );
-      tokenUrl = rep.getJobEntryAttributeString( id_jobentry, "auth_tokenUrl" );
-      authorization_code = rep.getJobEntryAttributeString( id_jobentry, "auth_authorizationCode" );
-      redirectUri= rep.getJobEntryAttributeString( id_jobentry, "redirectURI" );
-      refresh_token = rep.getJobEntryAttributeString( id_jobentry, "refreshToken" );
-      usessl = rep.getJobEntryAttributeBoolean( id_jobentry, "usessl" );
-      sslport = rep.getJobEntryAttributeString( id_jobentry, "sslport" ); // backward compatible.
-      outputdirectory = rep.getJobEntryAttributeString( id_jobentry, "outputdirectory" );
-      filenamepattern = rep.getJobEntryAttributeString( id_jobentry, "filenamepattern" );
-      if ( Utils.isEmpty( filenamepattern ) ) {
-        filenamepattern = DEFAULT_FILE_NAME_PATTERN;
+      serverName = rep.getJobEntryAttributeString( idJobEntry, TAG_SERVERNAME );
+      userName = rep.getJobEntryAttributeString( idJobEntry, TAG_USERNAME );
+      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( idJobEntry, TAG_PASSWORD ) );
+      grantType = rep.getJobEntryAttributeString( idJobEntry, TAG_USE_GRANT_TYPE );
+      usingAuthentication = rep.getJobEntryAttributeString( idJobEntry, TAG_USE_AUTH );
+      clientId = rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_CLIENT_ID );
+      secretKey = Encr.decryptPasswordOptionallyEncrypted(  rep.getJobEntryAttributeString( idJobEntry,
+          TAG_AUTH_SECRET_KEY ) ) ;
+      scope = rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_SCOPE );
+      tokenUrl = rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_TOKEN_URL );
+      authorizationCode = rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_AUTHORIZATION_CODE );
+      redirectUri= rep.getJobEntryAttributeString( idJobEntry, TAG_REDIRECT_URI );
+      refreshToken = rep.getJobEntryAttributeString( idJobEntry, TAG_REFRESH_TOKEN );
+      useSsl = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_USE_SSL );
+      sslPort = rep.getJobEntryAttributeString( idJobEntry, TAG_SSL_PORT ); // backward compatible.
+      outputDirectory = rep.getJobEntryAttributeString( idJobEntry, TAG_OUTPUT_DIRECTORY );
+      filenamePattern = rep.getJobEntryAttributeString( idJobEntry, TAG_FILENAME_PATTERN );
+      if ( Utils.isEmpty( filenamePattern ) ) {
+        filenamePattern = DEFAULT_FILE_NAME_PATTERN;
       }
-      retrievemails = (int) rep.getJobEntryAttributeInteger( id_jobentry, "retrievemails" );
-      firstmails = rep.getJobEntryAttributeString( id_jobentry, "firstmails" );
-      delete = rep.getJobEntryAttributeBoolean( id_jobentry, "delete" );
+      retrieveMails = (int) rep.getJobEntryAttributeInteger( idJobEntry, TAG_RETRIEVE_MAILS );
+      firstMails = rep.getJobEntryAttributeString( idJobEntry, TAG_FIRST_MAILS );
+      delete = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_DELETE );
 
       protocol =
         Const.NVL(
-          rep.getJobEntryAttributeString( id_jobentry, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
+          rep.getJobEntryAttributeString( idJobEntry, TAG_PROTOCOL ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
-      String sv = rep.getJobEntryAttributeString( id_jobentry, "savemessage" );
+      String sv = rep.getJobEntryAttributeString( idJobEntry, TAG_SAVE_MESSAGE );
       if ( Utils.isEmpty( sv ) ) {
-        savemessage = true;
+        saveMessage = true;
       } else {
-        savemessage = rep.getJobEntryAttributeBoolean( id_jobentry, "savemessage" );
+        saveMessage = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_SAVE_MESSAGE );
       }
 
-      String sa = rep.getJobEntryAttributeString( id_jobentry, "saveattachment" );
+      String sa = rep.getJobEntryAttributeString( idJobEntry, TAG_SAVE_ATTACHMENT );
       if ( Utils.isEmpty( sa ) ) {
-        saveattachment = true;
+        saveAttachment = true;
       } else {
-        saveattachment = rep.getJobEntryAttributeBoolean( id_jobentry, "saveattachment" );
+        saveAttachment = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_SAVE_ATTACHMENT );
       }
 
-      usedifferentfolderforattachment =
-        rep.getJobEntryAttributeBoolean( id_jobentry, "usedifferentfolderforattachment" );
-      attachmentfolder = rep.getJobEntryAttributeString( id_jobentry, "attachmentfolder" );
-      attachmentwildcard = rep.getJobEntryAttributeString( id_jobentry, "attachmentwildcard" );
-      valueimaplist =
-        MailConnectionMeta.getValueListImapListByCode( Const.NVL( rep.getJobEntryAttributeString(
-          id_jobentry, "valueimaplist" ), "" ) );
-      imapfirstmails = rep.getJobEntryAttributeString( id_jobentry, "imapfirstmails" );
-      imapfolder = rep.getJobEntryAttributeString( id_jobentry, "imapfolder" );
+      useDifferentFolderForAttachment = rep.getJobEntryAttributeBoolean( idJobEntry,
+          TAG_USE_DIFFERENT_FOLDER_FOR_ATTACHMENT );
+      attachmentFolder = rep.getJobEntryAttributeString( idJobEntry, TAG_ATTACHMENT_FOLDER );
+      attachmentWildcard = rep.getJobEntryAttributeString( idJobEntry, TAG_ATTACHMENT_WILDCARD );
+      valueimaplist = MailConnectionMeta.getValueListImapListByCode( Const.NVL( rep.getJobEntryAttributeString(
+          idJobEntry, TAG_VALUE_IMAP_LIST ), "" ) );
+      imapFirstMails = rep.getJobEntryAttributeString( idJobEntry, TAG_IMAP_FIRST_MAILS );
+      imapFolder = rep.getJobEntryAttributeString( idJobEntry, TAG_IMAP_FOLDER );
       // search term
-      senderSearch = rep.getJobEntryAttributeString( id_jobentry, "sendersearch" );
-      notTermSenderSearch = rep.getJobEntryAttributeBoolean( id_jobentry, "nottermsendersearch" );
-      receipientSearch = rep.getJobEntryAttributeString( id_jobentry, "receipientsearch" );
-      notTermReceipientSearch = rep.getJobEntryAttributeBoolean( id_jobentry, "nottermreceipientsearch" );
-      subjectSearch = rep.getJobEntryAttributeString( id_jobentry, "subjectsearch" );
-      notTermSubjectSearch = rep.getJobEntryAttributeBoolean( id_jobentry, "nottermsubjectsearch" );
-      bodySearch = rep.getJobEntryAttributeString( id_jobentry, "bodysearch" );
-      notTermBodySearch = rep.getJobEntryAttributeBoolean( id_jobentry, "nottermbodysearch" );
-      conditionReceivedDate =
-        MailConnectionMeta.getConditionByCode( Const.NVL( rep.getJobEntryAttributeString(
-          id_jobentry, "conditionreceiveddate" ), "" ) );
-      notTermReceivedDateSearch = rep.getJobEntryAttributeBoolean( id_jobentry, "nottermreceiveddatesearch" );
-      receivedDate1 = rep.getJobEntryAttributeString( id_jobentry, "receiveddate1" );
-      receivedDate2 = rep.getJobEntryAttributeString( id_jobentry, "receiveddate2" );
-      actiontype =
-        MailConnectionMeta.getActionTypeByCode( Const.NVL( rep.getJobEntryAttributeString(
-          id_jobentry, "actiontype" ), "" ) );
-      moveToIMAPFolder = rep.getJobEntryAttributeString( id_jobentry, "movetoimapfolder" );
-      createmovetofolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createmovetofolder" );
-      createlocalfolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createlocalfolder" );
-      aftergetimap =
-        MailConnectionMeta.getAfterGetIMAPByCode( Const.NVL( rep.getJobEntryAttributeString(
-          id_jobentry, "aftergetimap" ), "" ) );
-      includesubfolders = rep.getJobEntryAttributeBoolean( id_jobentry, "includesubfolders" );
-      useproxy = rep.getJobEntryAttributeBoolean( id_jobentry, "useproxy" );
-      proxyusername = rep.getJobEntryAttributeString( id_jobentry, "proxyusername" );
+      senderSearch = rep.getJobEntryAttributeString( idJobEntry, TAG_SENDER_SEARCH );
+      notTermSenderSearch = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_NOT_TERM_SENDER_SEARCH );
+      recipientSearch = rep.getJobEntryAttributeString( idJobEntry, TAG_RECIPIENT_SEARCH );
+      notTermRecipientSearch = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_NOT_TERM_RECIPIENT_SEARCH );
+      subjectSearch = rep.getJobEntryAttributeString( idJobEntry, TAG_SUBJECT_SEARCH );
+      notTermSubjectSearch = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_NOT_TERM_SUBJECT_SEARCH );
+      bodySearch = rep.getJobEntryAttributeString( idJobEntry, TAG_BODY_SEARCH );
+      notTermBodySearch = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_NOT_TERM_BODY_SEARCH );
+      conditionReceivedDate = MailConnectionMeta.getConditionByCode( Const.NVL( rep.getJobEntryAttributeString(
+          idJobEntry, TAG_CONDITION_RECEIVED_DATE ), "" ) );
+      notTermReceivedDateSearch = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_NOT_TERM_RECEIVED_DATE_SEARCH );
+      receivedDate1 = rep.getJobEntryAttributeString( idJobEntry, TAG_RECEIVED_DATE_1 );
+      receivedDate2 = rep.getJobEntryAttributeString( idJobEntry, TAG_RECEIVED_DATE_2 );
+      actiontype = MailConnectionMeta.getActionTypeByCode( Const.NVL( rep.getJobEntryAttributeString(
+          idJobEntry, TAG_ACTION_TYPE ), "" ) );
+      moveToIMAPFolder = rep.getJobEntryAttributeString( idJobEntry, TAG_MOVE_TO_IMAP_FOLDER );
+      createMoveToFolder = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_CREATE_MOVE_TO_FOLDER );
+      createLocalFolder = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_CREATE_LOCAL_FOLDER );
+      aftergetimap = MailConnectionMeta.getAfterGetIMAPByCode( Const.NVL( rep.getJobEntryAttributeString(
+          idJobEntry, TAG_AFTER_GET_IMAP ), "" ) );
+      includeSubfolders = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_INCLUDE_SUBFOLDERS );
+      useProxy = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_USE_PROXY );
+      proxyUserName = rep.getJobEntryAttributeString( idJobEntry, TAG_PROXY_USER_NAME );
     } catch ( KettleException dbe ) {
       throw new KettleException(
-        "Unable to load job entry of type 'get pop' exists from the repository for id_jobentry=" + id_jobentry,
+        "Unable to load job entry of type 'get pop' exists from the repository for idJobEntry=" + idJobEntry,
         dbe );
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SERVERNAME, serverName );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_USERNAME, userName );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_PASSWORD,
+        Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_USE_SSL, useSsl );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SSL_PORT, sslPort );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_OUTPUT_DIRECTORY, outputDirectory );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_FILENAME_PATTERN, filenamePattern );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_RETRIEVE_MAILS, retrieveMails );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_FIRST_MAILS, firstMails );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_DELETE, delete );
 
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", servername );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "username", username );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr
-        .encryptPasswordIfNotUsingVariables( password ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "usessl", usessl );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "sslport", sslport );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "outputdirectory", outputdirectory );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "filenamepattern", filenamepattern );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "retrievemails", retrievemails );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "firstmails", firstmails );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "delete", delete );
-
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "protocol", protocol );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "use_auth", usingAuthentication );
-      rep.saveJobEntryAttribute( id_job,getObjectId(),"use_grantType",grant_type );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_clientId", clientId );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_secretKey", Encr
-              .encryptPasswordIfNotUsingVariables( secretKey ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_scope", scope );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_tokenUrl", tokenUrl );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_authorizationCode", authorization_code );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "redirectURI",  redirectUri );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "refreshToken", refresh_token );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "savemessage", savemessage );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "saveattachment", saveattachment );
-      rep.saveJobEntryAttribute(
-        id_job, getObjectId(), "usedifferentfolderforattachment", usedifferentfolderforattachment );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "attachmentfolder", attachmentfolder );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "attachmentwildcard", attachmentwildcard );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "valueimaplist", MailConnectionMeta
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_PROTOCOL, protocol );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_USE_AUTH, usingAuthentication );
+      rep.saveJobEntryAttribute( id_job,getObjectId(), TAG_USE_GRANT_TYPE, grantType );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_CLIENT_ID, clientId );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_SECRET_KEY,
+        Encr.encryptPasswordIfNotUsingVariables( secretKey ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_SCOPE, scope );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_TOKEN_URL, tokenUrl );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_AUTHORIZATION_CODE, authorizationCode );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_REDIRECT_URI,  redirectUri );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_REFRESH_TOKEN, refreshToken );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SAVE_MESSAGE, saveMessage );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SAVE_ATTACHMENT, saveAttachment );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_USE_DIFFERENT_FOLDER_FOR_ATTACHMENT,
+        useDifferentFolderForAttachment );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_ATTACHMENT_FOLDER, attachmentFolder );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_ATTACHMENT_WILDCARD, attachmentWildcard );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_VALUE_IMAP_LIST, MailConnectionMeta
         .getValueImapListCode( valueimaplist ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "imapfirstmails", imapfirstmails );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "imapfolder", imapfolder );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_IMAP_FIRST_MAILS, imapFirstMails );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_IMAP_FOLDER, imapFolder );
       // search term
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "sendersearch", senderSearch );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "nottermsendersearch", notTermSenderSearch );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "receipientsearch", receipientSearch );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "nottermreceipientsearch", notTermReceipientSearch );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "subjectsearch", subjectSearch );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "nottermsubjectsearch", notTermSubjectSearch );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "bodysearch", bodySearch );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "nottermbodysearch", notTermBodySearch );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "conditionreceiveddate", MailConnectionMeta
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SENDER_SEARCH, senderSearch );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_NOT_TERM_SENDER_SEARCH, notTermSenderSearch );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_RECIPIENT_SEARCH, recipientSearch );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_NOT_TERM_RECIPIENT_SEARCH, notTermRecipientSearch );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SUBJECT_SEARCH, subjectSearch );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_NOT_TERM_SUBJECT_SEARCH, notTermSubjectSearch );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_BODY_SEARCH, bodySearch );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_NOT_TERM_BODY_SEARCH, notTermBodySearch );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_CONDITION_RECEIVED_DATE, MailConnectionMeta
         .getConditionDateCode( conditionReceivedDate ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "nottermreceiveddatesearch", notTermReceivedDateSearch );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "receiveddate1", receivedDate1 );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "receiveddate2", receivedDate2 );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "actiontype", MailConnectionMeta
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_NOT_TERM_RECEIVED_DATE_SEARCH, notTermReceivedDateSearch );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_RECEIVED_DATE_1, receivedDate1 );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_RECEIVED_DATE_2, receivedDate2 );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_ACTION_TYPE, MailConnectionMeta
         .getActionTypeCode( actiontype ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "movetoimapfolder", moveToIMAPFolder );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "createmovetofolder", createmovetofolder );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "createlocalfolder", createlocalfolder );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "aftergetimap", MailConnectionMeta
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_MOVE_TO_IMAP_FOLDER, moveToIMAPFolder );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_CREATE_MOVE_TO_FOLDER, createMoveToFolder );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_CREATE_LOCAL_FOLDER, createLocalFolder );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AFTER_GET_IMAP, MailConnectionMeta
         .getAfterGetIMAPCode( aftergetimap ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "includesubfolders", includesubfolders );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "useproxy", useproxy );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyusername", proxyusername );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_INCLUDE_SUBFOLDERS, includeSubfolders );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_USE_PROXY, useProxy );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_PROXY_USER_NAME, proxyUserName );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'get pop' to the repository for id_job="
         + id_job, dbe );
     }
-
   }
 
   public String getPort() {
-    return sslport;
+    return sslPort;
   }
 
   /**
@@ -590,14 +632,14 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     return environmentSubstitute( tokenUrl );
   }
 
-  public void setAuthorization_code(String authorization_code)
+  public void setAuthorization_code(String authorizationCode )
   {
-    this.authorization_code=authorization_code;
+    this.authorizationCode = authorizationCode;
   }
 
   public String getAuthorization_code()
   {
-    return environmentSubstitute( authorization_code );
+    return environmentSubstitute( authorizationCode );
   }
 
   public void setRedirectUri(String redirectUri)
@@ -610,55 +652,54 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     return environmentSubstitute( redirectUri );
   }
 
-  public void setRefresh_token(String refresh_token)
+  public void setRefresh_token(String refreshToken )
   {
-    this.refresh_token=refresh_token;
+    this.refreshToken = refreshToken;
   }
 
   public String getRefresh_token()
   {
-    return environmentSubstitute( refresh_token );
+    return environmentSubstitute( refreshToken );
   }
 
-  public void setGrant_type( String grant_type ) {
-    this.grant_type = grant_type;
+  public void setGrant_type( String grantType ) {
+    this.grantType = grantType;
   }
 
   public String getGrant_type() {
-    return environmentSubstitute( grant_type );
+    return environmentSubstitute( grantType );
   }
-
 
   public String getRealPort() {
     return environmentSubstitute( getPort() );
   }
 
-  public void setPort( String sslport ) {
-    this.sslport = sslport;
+  public void setPort( String sslPort ) {
+    this.sslPort = sslPort;
   }
 
-  public void setFirstMails( String firstmails ) {
-    this.firstmails = firstmails;
+  public void setFirstMails( String firstMails ) {
+    this.firstMails = firstMails;
   }
 
   public String getFirstMails() {
-    return firstmails;
+    return firstMails;
   }
 
   public boolean isIncludeSubFolders() {
-    return includesubfolders;
+    return includeSubfolders;
   }
 
-  public void setIncludeSubFolders( boolean includesubfolders ) {
-    this.includesubfolders = includesubfolders;
+  public void setIncludeSubFolders( boolean includeSubfolders ) {
+    this.includeSubfolders = includeSubfolders;
   }
 
-  public void setFirstIMAPMails( String firstmails ) {
-    this.imapfirstmails = firstmails;
+  public void setFirstIMAPMails( String firstMails ) {
+    this.imapFirstMails = firstMails;
   }
 
   public String getFirstIMAPMails() {
-    return imapfirstmails;
+    return imapFirstMails;
   }
 
   public void setSenderSearchTerm( String senderSearch ) {
@@ -701,28 +742,28 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     return this.notTermReceivedDateSearch;
   }
 
-  public void setNotTermReceipientSearch( boolean notTermReceipientSearch ) {
-    this.notTermReceipientSearch = notTermReceipientSearch;
+  public void setNotTermReceipientSearch( boolean notTermRecipientSearch ) {
+    this.notTermRecipientSearch = notTermRecipientSearch;
   }
 
   public boolean isNotTermReceipientSearch() {
-    return this.notTermReceipientSearch;
+    return this.notTermRecipientSearch;
   }
 
-  public void setCreateMoveToFolder( boolean createfolder ) {
-    this.createmovetofolder = createfolder;
+  public void setCreateMoveToFolder( boolean createFolder ) {
+    this.createMoveToFolder = createFolder;
   }
 
   public boolean isCreateMoveToFolder() {
-    return this.createmovetofolder;
+    return this.createMoveToFolder;
   }
 
-  public void setReceipientSearch( String receipientSearch ) {
-    this.receipientSearch = receipientSearch;
+  public void setReceipientSearch( String recipientSearch ) {
+    this.recipientSearch = recipientSearch;
   }
 
   public String getReceipientSearch() {
-    return this.receipientSearch;
+    return this.recipientSearch;
   }
 
   public void setSubjectSearch( String subjectSearch ) {
@@ -757,20 +798,20 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     this.receivedDate2 = inputDate;
   }
 
-  public void setMoveToIMAPFolder( String foldername ) {
-    this.moveToIMAPFolder = foldername;
+  public void setMoveToIMAPFolder( String folderName ) {
+    this.moveToIMAPFolder = folderName;
   }
 
   public String getMoveToIMAPFolder() {
     return this.moveToIMAPFolder;
   }
 
-  public void setCreateLocalFolder( boolean createfolder ) {
-    this.createlocalfolder = createfolder;
+  public void setCreateLocalFolder( boolean createFolder ) {
+    this.createLocalFolder = createFolder;
   }
 
   public boolean isCreateLocalFolder() {
-    return this.createlocalfolder;
+    return this.createLocalFolder;
   }
 
   public void setConditionOnReceivedDate( int conditionReceivedDate ) {
@@ -781,16 +822,16 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     return this.conditionReceivedDate;
   }
 
-  public void setActionType( int actiontype ) {
-    this.actiontype = actiontype;
+  public void setActionType( int actionType ) {
+    this.actiontype = actionType;
   }
 
   public int getActionType() {
     return this.actiontype;
   }
 
-  public void setAfterGetIMAP( int afterget ) {
-    this.aftergetimap = afterget;
+  public void setAfterGetIMAP( int afterGet ) {
+    this.aftergetimap = afterGet;
   }
 
   public int getAfterGetIMAP() {
@@ -802,27 +843,27 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public void setServerName( String servername ) {
-    this.servername = servername;
+    this.serverName = servername;
   }
 
   public String getServerName() {
-    return servername;
+    return serverName;
   }
 
   public void setUserName( String username ) {
-    this.username = username;
+    this.userName = username;
   }
 
   public String getUserName() {
-    return username;
+    return userName;
   }
 
-  public void setOutputDirectory( String outputdirectory ) {
-    this.outputdirectory = outputdirectory;
+  public void setOutputDirectory( String outputDirectory ) {
+    this.outputDirectory = outputDirectory;
   }
 
-  public void setFilenamePattern( String filenamepattern ) {
-    this.filenamepattern = filenamepattern;
+  public void setFilenamePattern( String fileNamePattern ) {
+    this.filenamePattern = fileNamePattern;
   }
 
   /**
@@ -832,19 +873,19 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
    * @see {@link #setValueImapList(int)}
    */
   public void setRetrievemails( int nr ) {
-    retrievemails = nr;
+    retrieveMails = nr;
   }
 
   public int getRetrievemails() {
-    return this.retrievemails;
+    return this.retrieveMails;
   }
 
   public String getFilenamePattern() {
-    return filenamepattern;
+    return filenamePattern;
   }
 
   public String getOutputDirectory() {
-    return outputdirectory;
+    return outputDirectory;
   }
 
   public String getRealOutputDirectory() {
@@ -868,7 +909,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public String geProxyUsername() {
-    return this.proxyusername;
+    return this.proxyUserName;
   }
 
   /**
@@ -888,15 +929,15 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public String getAttachmentFolder() {
-    return attachmentfolder;
+    return attachmentFolder;
   }
 
   public String getRealAttachmentFolder() {
     return environmentSubstitute( getAttachmentFolder() );
   }
 
-  public void setAttachmentFolder( String foldername ) {
-    this.attachmentfolder = foldername;
+  public void setAttachmentFolder( String folderName ) {
+    this.attachmentFolder = folderName;
   }
 
   /**
@@ -923,77 +964,77 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public String getIMAPFolder() {
-    return imapfolder;
+    return imapFolder;
   }
 
   public void setIMAPFolder( String folder ) {
-    this.imapfolder = folder;
+    this.imapFolder = folder;
   }
 
   public void setAttachmentWildcard( String wildcard ) {
-    attachmentwildcard = wildcard;
+    attachmentWildcard = wildcard;
   }
 
   public String getAttachmentWildcard() {
-    return attachmentwildcard;
+    return attachmentWildcard;
   }
 
   /**
-   * @param usessl
-   *          The usessl to set.
+   * @param useSsl
+   *          The useSsl to set.
    */
-  public void setUseSSL( boolean usessl ) {
-    this.usessl = usessl;
+  public void setUseSSL( boolean useSsl ) {
+    this.useSsl = useSsl;
   }
 
   /**
-   * @return Returns the usessl.
+   * @return Returns the useSsl.
    */
   public boolean isUseSSL() {
-    return this.usessl;
+    return this.useSsl;
   }
 
   /**
-   * @return Returns the useproxy.
+   * @return Returns the useProxy.
    */
   public boolean isUseProxy() {
-    return this.useproxy;
+    return this.useProxy;
   }
 
-  public void setUseProxy( boolean useprox ) {
-    this.useproxy = useprox;
+  public void setUseProxy( boolean useProxy ) {
+    this.useProxy = useProxy;
   }
 
   public boolean isSaveAttachment() {
-    return saveattachment;
+    return saveAttachment;
   }
 
   public void setProxyUsername( String username ) {
-    this.proxyusername = username;
+    this.proxyUserName = username;
   }
 
   public String getProxyUsername() {
-    return this.proxyusername;
+    return this.proxyUserName;
   }
 
-  public void setSaveAttachment( boolean saveattachment ) {
-    this.saveattachment = saveattachment;
+  public void setSaveAttachment( boolean saveAttachment ) {
+    this.saveAttachment = saveAttachment;
   }
 
   public boolean isSaveMessage() {
-    return savemessage;
+    return saveMessage;
   }
 
-  public void setSaveMessage( boolean savemessage ) {
-    this.savemessage = savemessage;
+  public void setSaveMessage( boolean saveMessage ) {
+    this.saveMessage = saveMessage;
   }
 
-  public void setDifferentFolderForAttachment( boolean usedifferentfolder ) {
-    this.usedifferentfolderforattachment = usedifferentfolder;
+  public void setDifferentFolderForAttachment( boolean useDifferentFolder ) {
+    this.useDifferentFolderForAttachment = useDifferentFolder;
   }
 
   public boolean isDifferentFolderForAttachment() {
-    return this.usedifferentfolderforattachment;
+    return this.useDifferentFolderForAttachment;
   }
 
   /**
@@ -1004,12 +1045,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     this.password = password;
   }
 
+  @Override
   public Result execute( Result previousResult, int nr ) throws KettleException {
     Result result = previousResult;
-    Properties props = new Properties();
     result.setResult( false );
 
-    //FileObject fileObject = null;
     MailConnection mailConn = null;
     Date beginDate = null;
     Date endDate = null;
@@ -1017,10 +1057,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     SimpleDateFormat df = new SimpleDateFormat( DATE_PATTERN );
 
     try {
-
       boolean usePOP3 = getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 );
-      boolean moveafter = false;
-      int nbrmailtoretrieve =
+      boolean moveAfter = false;
+      int nbrMailToRetrieve =
         usePOP3 ? ( getRetrievemails() == 2 ? Const.toInt( getFirstMails(), 0 ) : 0 ) : Const.toInt(
           getFirstIMAPMails(), 0 );
 
@@ -1034,18 +1073,18 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         || ( getActionType() == MailConnectionMeta.ACTION_TYPE_GET
         && getAfterGetIMAP() == MailConnectionMeta.AFTER_GET_IMAP_MOVE ) ) {
         if ( Utils.isEmpty( realMoveToIMAPFolder ) ) {
-          throw new KettleException( BaseMessages
-            .getString( PKG, "JobGetMailsFromPOP.Error.MoveToIMAPFolderEmpty" ) );
+          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.MoveToIMAPFolderEmpty" ) );
         }
-        moveafter = true;
+        moveAfter = true;
       }
       // check search terms
       // Received Date
+      String realBeginDate;
       switch ( getConditionOnReceivedDate() ) {
         case MailConnectionMeta.CONDITION_DATE_EQUAL:
         case MailConnectionMeta.CONDITION_DATE_GREATER:
         case MailConnectionMeta.CONDITION_DATE_SMALLER:
-          String realBeginDate = environmentSubstitute( getReceivedDate1() );
+          realBeginDate = environmentSubstitute( getReceivedDate1() );
           if ( Utils.isEmpty( realBeginDate ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "JobGetMailsFromPOP.Error.ReceivedDateSearchTermEmpty" ) );
@@ -1070,29 +1109,30 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
           break;
       }
 
-      String realserver = getRealServername();
-      String realusername = getRealUsername();
-      String realpassword = getRealPassword( getPassword() );
+      String realServer = getRealServername();
+      String realUsername = getRealUsername();
+      String realPassword = getRealPassword( getPassword() );
       String realFilenamePattern = getRealFilenamePattern();
-      int realport = Const.toInt( environmentSubstitute( sslport ), -1 );
+      int realPort = Const.toInt( environmentSubstitute( sslPort ), -1 );
       String realIMAPFolder = environmentSubstitute( getIMAPFolder() );
       String realProxyUsername = getRealProxyUsername();
 
       initVariables();
       // create a mail connection object
 
-     if( usingAuthentication.equals( JobEntryGetPOP.AUTENTICATION_OAUTH ) ) {
-        realpassword = "Bearer " + getOauthToken(environmentSubstitute( getTokenUrl() ) ).getAccessToken();
+     if( JobEntryGetPOP.AUTENTICATION_OAUTH.equals( usingAuthentication ) ) {
+        realPassword = "Bearer " + getOauthToken(environmentSubstitute( getTokenUrl() ) ).getAccessToken();
       }
+
       mailConn =
         new MailConnection(
           parentJobMeta.getBowl(), log, MailConnectionMeta.getProtocolFromString( getProtocol(),
-          MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realusername, realpassword, isUseSSL(),
+          MailConnectionMeta.PROTOCOL_IMAP ), realServer, realPort, realUsername, realPassword, isUseSSL(),
           isUseProxy(), realProxyUsername );
       // connect
       mailConn.connect();
 
-      if ( moveafter ) {
+      if ( moveAfter ) {
         // Set destination folder
         // Check if folder exists
         mailConn.setDestinationFolder( realMoveToIMAPFolder, isCreateMoveToFolder() );
@@ -1104,10 +1144,10 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         // apply FROM
         mailConn.setSenderTerm( realSearchSender, isNotTermSenderSearch() );
       }
-      String realSearchReceipient = environmentSubstitute( getReceipientSearch() );
-      if ( !Utils.isEmpty( realSearchReceipient ) ) {
+      String realSearchRecipient = environmentSubstitute( getReceipientSearch() );
+      if ( !Utils.isEmpty( realSearchRecipient ) ) {
         // apply TO
-        mailConn.setReceipientTerm( realSearchReceipient );
+        mailConn.setReceipientTerm( realSearchRecipient );
       }
       String realSearchSubject = environmentSubstitute( getSubjectSearch() );
       if ( !Utils.isEmpty( realSearchSubject ) ) {
@@ -1175,9 +1215,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         }
       }
       // open folder and retrieve messages
-      fetchOneFolder(
-        mailConn, usePOP3, realIMAPFolder, realOutputFolder, targetAttachmentFolder, realMoveToIMAPFolder,
-        realFilenamePattern, nbrmailtoretrieve, df );
+      fetchOneFolder( mailConn, usePOP3, realIMAPFolder, realOutputFolder, targetAttachmentFolder, realMoveToIMAPFolder,
+        realFilenamePattern, nbrMailToRetrieve, df );
 
       if ( isIncludeSubFolders() ) {
         // Fetch also sub folders?
@@ -1190,10 +1229,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
             logDebug( BaseMessages.getString( PKG, "JobGetPOP.NoSubFolders" ) );
           }
         } else {
-          for ( int i = 0; i < subfolders.length; i++ ) {
-            fetchOneFolder(
-              mailConn, usePOP3, subfolders[i], realOutputFolder, targetAttachmentFolder, realMoveToIMAPFolder,
-              realFilenamePattern, nbrmailtoretrieve, df );
+          for ( String subfolder : subfolders ) {
+            fetchOneFolder( mailConn, usePOP3, subfolder, realOutputFolder, targetAttachmentFolder,
+              realMoveToIMAPFolder, realFilenamePattern, nbrMailToRetrieve, df );
           }
         }
       }
@@ -1237,7 +1275,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   void fetchOneFolder( MailConnection mailConn, boolean usePOP3, String realIMAPFolder,
     String realOutputFolder, String targetAttachmentFolder, String realMoveToIMAPFolder,
-    String realFilenamePattern, int nbrmailtoretrieve, SimpleDateFormat df ) throws KettleException {
+    String realFilenamePattern, int nbrMailToRetrieve, SimpleDateFormat df ) throws KettleException {
     try {
       // if it is not pop3 and we have non-default imap folder...
       if ( !usePOP3 && !Utils.isEmpty( realIMAPFolder ) ) {
@@ -1256,15 +1294,15 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       }
 
       messagesCount =
-        nbrmailtoretrieve > 0
-          ? ( nbrmailtoretrieve > messagesCount ? messagesCount : nbrmailtoretrieve ) : messagesCount;
+        nbrMailToRetrieve > 0
+          ? ( nbrMailToRetrieve > messagesCount ? messagesCount : nbrMailToRetrieve ) : messagesCount;
 
       if ( messagesCount > 0 ) {
         switch ( getActionType() ) {
           case MailConnectionMeta.ACTION_TYPE_DELETE:
-            if ( nbrmailtoretrieve > 0 ) {
+            if ( nbrMailToRetrieve > 0 ) {
               // We need to fetch all messages in order to retrieve
-              // only the first nbrmailtoretrieve ...
+              // only the first nbrMailToRetrieve ...
               for ( int i = 0; i < messagesCount && !parentJob.isStopped(); i++ ) {
                 // Get next message
                 mailConn.fetchNext();
@@ -1283,9 +1321,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
             }
             break;
           case MailConnectionMeta.ACTION_TYPE_MOVE:
-            if ( nbrmailtoretrieve > 0 ) {
+            if ( nbrMailToRetrieve > 0 ) {
               // We need to fetch all messages in order to retrieve
-              // only the first nbrmailtoretrieve ...
+              // only the first nbrMailToRetrieve ...
               for ( int i = 0; i < messagesCount && !parentJob.isStopped(); i++ ) {
                 // Get next message
                 mailConn.fetchNext();
@@ -1311,9 +1349,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
             for ( int i = 0; i < messagesCount && !parentJob.isStopped(); i++ ) {
               // Get next message
               mailConn.fetchNext();
-              int messagenumber = mailConn.getMessage().getMessageNumber();
-              boolean okPOP3 = usePOP3 ? true : false; // (mailConn.getMessagesCounter()<nbrmailtoretrieve &&
-                                                       // retrievemails==2)||(retrievemails!=2):false;
+              int messageNumber = mailConn.getMessage().getMessageNumber();
+              boolean okPOP3 = usePOP3;
               boolean okIMAP = !usePOP3;
 
               if ( okPOP3 || okIMAP ) {
@@ -1322,7 +1359,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                 if ( isDebug() && mailConn.getMessage() != null ) {
                   logDebug( "--------------------------------------------------" );
                   logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageNumber.Label", ""
-                    + messagenumber ) );
+                    + messageNumber ) );
                   if ( mailConn.getMessage().getReceivedDate() != null ) {
                     logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.ReceivedDate.Label", df
                       .format( mailConn.getMessage().getReceivedDate() ) ) );
@@ -1336,21 +1373,21 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                 }
                 if ( isSaveMessage() ) {
                   // get local message filename
-                  String localfilename_message = replaceTokens( realFilenamePattern, i );
+                  String localFilenameMessage = replaceTokens( realFilenamePattern, i );
 
                   if ( isDebug() ) {
                     logDebug( BaseMessages.getString(
-                      PKG, "JobGetMailsFromPOP.LocalFilename.Label", localfilename_message ) );
+                      PKG, "JobGetMailsFromPOP.LocalFilename.Label", localFilenameMessage ) );
                   }
 
                   // save message content in the file
-                  mailConn.saveMessageContentToFile( localfilename_message, realOutputFolder );
+                  mailConn.saveMessageContentToFile( localFilenameMessage, realOutputFolder );
                   // PDI-10942 explicitly set message as read
                   mailConn.getMessage().setFlag( Flag.SEEN, true );
 
                   if ( isDetailed() ) {
                     logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageSaved.Label", ""
-                      + messagenumber, localfilename_message, realOutputFolder ) );
+                      + messageNumber, localFilenameMessage, realOutputFolder ) );
                   }
                 }
 
@@ -1365,7 +1402,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                     mailConn.deleteMessage();
                     if ( isDebug() ) {
                       logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageDeleted", ""
-                        + messagenumber ) );
+                        + messageNumber ) );
                     }
                   }
                 } else {
@@ -1375,7 +1412,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                       mailConn.deleteMessage();
                       if ( isDebug() ) {
                         logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageDeleted", ""
-                          + messagenumber ) );
+                          + messageNumber ) );
                       }
                       break;
                     case MailConnectionMeta.AFTER_GET_IMAP_MOVE:
@@ -1383,13 +1420,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                       mailConn.moveMessage();
                       if ( isDebug() ) {
                         logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageMoved", ""
-                          + messagenumber, realMoveToIMAPFolder ) );
+                          + messageNumber, realMoveToIMAPFolder ) );
                       }
                       break;
                     default:
                   }
                 }
-
               }
             }
             break;
@@ -1400,17 +1436,17 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
 
-  private String replaceTokens( String aString, int idfile ) {
-    String localfilename_message = aString;
-    localfilename_message = localfilename_message.replaceAll( FILENAME_ID_PATTERN, "" + ( idfile + 1 ) );
-    localfilename_message =
-      substituteDate( localfilename_message, FILENAME_SYS_DATE_OPEN, FILENAME_SYS_DATE_CLOSE, new Date() );
-    return localfilename_message;
+  private String replaceTokens( String aString, int idFile ) {
+    String localFilenameMessage = aString.replace( FILENAME_ID_PATTERN, "" + ( idFile + 1 ) );
+    localFilenameMessage =
+      substituteDate( localFilenameMessage, FILENAME_SYS_DATE_OPEN, FILENAME_SYS_DATE_CLOSE, new Date() );
 
+    return localFilenameMessage;
   }
 
   private String substituteDate( String aString, String open, String close, Date datetime ) {
@@ -1454,13 +1490,14 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
     JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "serverName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "userName", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
-    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "password", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, TAG_PASSWORD, remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     ValidatorContext ctx = new ValidatorContext();
@@ -1499,9 +1536,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         String responseBody = EntityUtils.toString( response.getEntity() );
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue( responseBody, EmailAuthenticationResponse.class );
-      } catch ( HttpException e ) {
-        throw new RuntimeException( e );
-      } catch ( IOException e ) {
+      } catch ( HttpException | IOException e ) {
         throw new RuntimeException( e );
       }
     } catch ( IOException e ) {
@@ -1509,10 +1544,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
+  @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Utils.isEmpty( servername ) ) {
-      String realServername = jobMeta.environmentSubstitute( servername );
+    if ( !Utils.isEmpty( serverName ) ) {
+      String realServername = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServername, ResourceType.SERVER ) );
       references.add( reference );
@@ -1540,11 +1576,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     if ( Utils.isEmpty( folderName ) ) {
       switch ( folderType ) {
         case JobEntryGetPOP.FOLDER_OUTPUT:
-          throw new KettleException( BaseMessages
-            .getString( PKG, "JobGetMailsFromPOP.Error.OutputFolderEmpty" ) );
+          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OutputFolderEmpty" ) );
         case JobEntryGetPOP.FOLDER_ATTACHMENTS:
-          throw new KettleException( BaseMessages
-            .getString( PKG, "JobGetMailsFromPOP.Error.AttachmentFolderEmpty" ) );
+          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.AttachmentFolderEmpty" ) );
       }
     }
     FileObject folder = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( folderName, this );
