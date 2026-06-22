@@ -13,23 +13,15 @@
 
 package org.pentaho.di.trans.steps.mailinput;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-
 import jakarta.mail.Header;
 import jakarta.mail.Message;
-import java.util.Properties;
-
 import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.getpop.IEmailAuthenticationResponse;
 import org.pentaho.di.job.entries.getpop.MailConnection;
@@ -41,6 +33,12 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Read data from POP3/IMAP server and input data to the next steps.
@@ -55,9 +53,7 @@ public class MailInput extends BaseStep implements StepInterface {
   private MailInputMeta meta;
   private MailInputData data;
 
-  Properties props = new Properties();
-
-  private MessageParser instance = new MessageParser();
+  private final MessageParser instance = new MessageParser();
 
   private IEmailAuthenticationResponse token;
   public MailInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
@@ -65,6 +61,7 @@ public class MailInput extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (MailInputMeta) smi;
     data = (MailInputData) sdi;
@@ -72,7 +69,6 @@ public class MailInput extends BaseStep implements StepInterface {
     Object[] outputRowData = getOneRow();
 
     if ( outputRowData == null ) { // no more input to be expected...
-
       setOutputDone();
       return false;
     }
@@ -127,10 +123,10 @@ public class MailInput extends BaseStep implements StepInterface {
       // apply FROM
       data.mailConn.setSenderTerm( realSearchSender, meta.isNotTermSenderSearch() );
     }
-    String realSearchReceipient = environmentSubstitute( meta.getRecipientSearch() );
-    if ( !Utils.isEmpty( realSearchReceipient ) ) {
+    String realSearchRecipient = environmentSubstitute( meta.getRecipientSearch() );
+    if ( !Utils.isEmpty( realSearchRecipient ) ) {
       // apply TO
-      data.mailConn.setReceipientTerm( realSearchReceipient );
+      data.mailConn.setReceipientTerm( realSearchRecipient );
     }
     String realSearchSubject = environmentSubstitute( meta.getSubjectSearch() );
     if ( !Utils.isEmpty( realSearchSubject ) ) {
@@ -194,20 +190,17 @@ public class MailInput extends BaseStep implements StepInterface {
    *
    * @return
    */
-
   private Object[] buildEmptyRow() {
-    Object[] rowData = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
-
-    return rowData;
+    return RowDataUtil.allocateRowData( data.outputRowMeta.size() );
   }
 
-  private boolean isFolderExausted() {
+  private boolean isFolderExhausted() {
     return data.folder == null || !data.folderIterator.hasNext();
   }
 
   private Object[] getOneRow() throws KettleException {
 
-    while ( isFolderExausted() ) {
+    while ( isFolderExhausted() ) {
       if ( !openNextFolder() ) {
         return null;
       }
@@ -219,7 +212,6 @@ public class MailInput extends BaseStep implements StepInterface {
     }
 
     try {
-
       Message message = data.folderIterator.next();
 
       if ( isDebug() ) {
@@ -239,7 +231,6 @@ public class MailInput extends BaseStep implements StepInterface {
 
       incrementLinesInput();
       data.rownr++;
-
     } catch ( Exception e ) {
       throw new KettleException( "Error adding values to row!", e );
     }
@@ -247,7 +238,6 @@ public class MailInput extends BaseStep implements StepInterface {
     return r;
   }
 
-  @SuppressWarnings( "unchecked" )
   private boolean openNextFolder() {
     try {
       if ( !meta.isDynamicFolder() ) {
@@ -298,12 +288,12 @@ public class MailInput extends BaseStep implements StepInterface {
           }
 
           // get folder
-          String foldername = data.inputRowMeta.getString( data.readrow, data.indexOfFolderField );
+          String folderName = data.inputRowMeta.getString( data.readrow, data.indexOfFolderField );
           if ( isDebug() ) {
             logDebug( BaseMessages.getString(
-              PKG, "MailInput.Log.FoldernameInStream", meta.getFolderField(), foldername ) );
+              PKG, "MailInput.Log.FoldernameInStream", meta.getFolderField(), folderName ) );
           }
-          data.folders = getFolders( foldername );
+          data.folders = getFolders( folderName );
         } // end if first
 
         if ( data.folderenr >= data.folders.length ) {
@@ -317,8 +307,7 @@ public class MailInput extends BaseStep implements StepInterface {
             return false;
           }
           // get folder
-          String foldername = data.inputRowMeta.getString( data.readrow, data.indexOfFolderField );
-          data.folders = getFolders( foldername );
+          data.folders = getFolders( data.inputRowMeta.getString( data.readrow, data.indexOfFolderField ) );
         }
       }
 
@@ -359,7 +348,6 @@ public class MailInput extends BaseStep implements StepInterface {
       if ( isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "MailInput.Log.MessagesInFolder", data.folder, data.messagesCount ) );
       }
-
     } catch ( Exception e ) {
       logError( "Error opening folder " + data.folderenr + " " + data.folder + ": " + e.toString() );
       logError( Const.getStackTracker( e ) );
@@ -370,6 +358,7 @@ public class MailInput extends BaseStep implements StepInterface {
     return true;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MailInputMeta) smi;
     data = (MailInputData) sdi;
@@ -393,20 +382,20 @@ public class MailInput extends BaseStep implements StepInterface {
     }
     data.usePOP = meta.getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
-    String realserver = environmentSubstitute( meta.getServerName() );
+    String realServer = environmentSubstitute( meta.getServerName() );
     if ( meta.getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_MBOX )
-      && StringUtils.startsWith( realserver, "file://" ) ) {
-      realserver = StringUtils.remove( realserver, "file://" );
+      && StringUtils.startsWith( realServer, "file://" ) ) {
+      realServer = StringUtils.remove( realServer, "file://" );
     }
 
-    String realusername = environmentSubstitute( meta.getUserName() );
-    String realpassword = Utils.resolvePassword( variables, meta.getPassword() );
-    int realport = Const.toInt( environmentSubstitute( meta.getPort() ), -1 );
+    String realUserName = environmentSubstitute( meta.getUserName() );
+    String realPassword = Utils.resolvePassword( variables, meta.getPassword() );
+    int realPort = Const.toInt( environmentSubstitute( meta.getPort() ), -1 );
     String realProxyUsername = environmentSubstitute( meta.getProxyUsername() );
     if ( !meta.isDynamicFolder() ) {
       //Limit field has absolute priority
-      String reallimitrow = environmentSubstitute( meta.getRowLimit() );
-      int limit = Const.toInt( reallimitrow, 0 );
+      String realLimitRow = environmentSubstitute( meta.getRowLimit() );
+      int limit = Const.toInt( realLimitRow, 0 );
       //Limit field has absolute priority
       if ( limit == 0 ) {
         limit = getReadFirst( meta.getProtocol() );
@@ -420,11 +409,13 @@ public class MailInput extends BaseStep implements StepInterface {
     // check search terms
     // Received Date
     try {
+      String realBeginDate;
+
       switch ( meta.getConditionOnReceivedDate() ) {
         case MailConnectionMeta.CONDITION_DATE_EQUAL:
         case MailConnectionMeta.CONDITION_DATE_GREATER:
         case MailConnectionMeta.CONDITION_DATE_SMALLER:
-          String realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
+          realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
           if ( Utils.isEmpty( realBeginDate ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "MailInput.Error.ReceivedDateSearchTermEmpty" ) );
@@ -454,16 +445,16 @@ public class MailInput extends BaseStep implements StepInterface {
       stopAll();
     }
     try {
-      if( meta.isUsingAuthentication().equals( MailInputMeta.AUTENTICATION_OAUTH ) ) {
-        realpassword = "Bearer " + meta.getOauthToken( meta.getTokenUrl(), meta.getScope(), meta.getClientId(),
+      if( MailInputMeta.AUTENTICATION_OAUTH.equals( meta.isUsingAuthentication() ) ) {
+        realPassword = "Bearer " + meta.getOauthToken( meta.getTokenUrl(), meta.getScope(), meta.getClientId(),
                 meta.getSecretKey(), meta.getGrantType(), meta.getRefresh_token(), meta.getAuthorization_code(), meta.getRedirectUri()).getAccessToken();
       }
       // create a mail connection object
       data.mailConn =
         new MailConnection(
           getTransMeta().getBowl(), log, MailConnectionMeta.getProtocolFromString(
-            meta.getProtocol(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realusername,
-          realpassword, meta.isUseSSL(), meta.isUseProxy(), realProxyUsername );
+            meta.getProtocol(), MailConnectionMeta.PROTOCOL_IMAP ), realServer, realPort, realUserName,
+          realPassword, meta.isUseSSL(), meta.isUseProxy(), realProxyUsername );
       // connect
       data.mailConn.connect();
       // Need to apply search filters?
@@ -497,6 +488,7 @@ public class MailInput extends BaseStep implements StepInterface {
     return 0;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MailInputMeta) smi;
     data = (MailInputData) sdi;
@@ -537,7 +529,6 @@ public class MailInput extends BaseStep implements StepInterface {
         int index = data.totalpreviousfields + i;
 
         try {
-
           switch ( meta.getInputFields()[i].getColumn() ) {
             case MailInputField.COLUMN_MESSAGE_NR:
               r[index] = new Long( message.getMessageNumber() );
@@ -605,7 +596,7 @@ public class MailInput extends BaseStep implements StepInterface {
                 r[index] = "";
                 break;
               }
-              List<String> headers = new ArrayList<String>();
+              List<String> headers = new ArrayList<>();
               while ( en.hasMoreElements() ) {
                 Header next = Header.class.cast( en.nextElement() );
                 headers.add( next.getValue() );
@@ -617,7 +608,6 @@ public class MailInput extends BaseStep implements StepInterface {
               r[index] = data.mailConn.getMessageBodyContentType( message );
               break;
             default:
-
               break;
           }
         } catch ( Exception e ) {
@@ -628,5 +618,4 @@ public class MailInput extends BaseStep implements StepInterface {
       return r;
     }
   }
-
 }
