@@ -688,6 +688,13 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           Encr.decryptPasswordOptionallyEncrypted( partition.getPassword() ) };
       }
     }
+
+    if ( databaseMeta.isConnectionManagementServiceConnection() ) {
+      return new String[] {
+        environmentSubstitute( databaseMeta.getUsername() ),
+        environmentSubstitute( databaseMeta.getPassword() ) };
+    }
+
     return new String[] {
       environmentSubstitute( databaseMeta.getUsername() ),
       Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( databaseMeta.getPassword() ) ) };

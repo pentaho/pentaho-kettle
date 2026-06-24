@@ -157,7 +157,13 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     databaseMeta.setDBName( getString( rootNode, PROP_DATABASE_NAME ) );
     databaseMeta.setDBPort( getString( rootNode, PROP_PORT ) );
     databaseMeta.setUsername( getString( rootNode, PROP_USERNAME ) );
-    databaseMeta.setPassword( Encr.decryptPasswordOptionallyEncrypted( getString( rootNode, PROP_PASSWORD ) ) );
+
+    if ( databaseMeta.isConnectionManagementServiceConnection() ) {
+      databaseMeta.setPassword( getString( rootNode, PROP_PASSWORD ) );
+    } else {
+      databaseMeta.setPassword( Encr.decryptPasswordOptionallyEncrypted( getString( rootNode, PROP_PASSWORD ) ) );
+    }
+
     databaseMeta.setServername( getString( rootNode, PROP_SERVERNAME ) );
     databaseMeta.setDataTablespace( getString( rootNode, PROP_DATA_TBS ) );
     databaseMeta.setIndexTablespace( getString( rootNode, PROP_INDEX_TBS ) );
@@ -177,13 +183,15 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     // Also, load all the properties we can find...
 
     DataNode attrNode = rootNode.getNode( NODE_ATTRIBUTES );
-    for ( DataProperty property : attrNode.getProperties() ) {
-      String code = property.getName();
-      String attribute = property.getString();
+    if (attrNode != null) {
+      for ( DataProperty property : attrNode.getProperties() ) {
+        String code = property.getName();
+        String attribute = property.getString();
 
-      // We need to unescape the code as it was escaped to handle characters that JCR does not handle
-      String unescapeCode = RepositoryFilenameUtils.unescape( code );
-      databaseMeta.getAttributes().put( unescapeCode, Const.NVL( attribute, "" ) );
+        // We need to unescape the code as it was escaped to handle characters that JCR does not handle
+        String unescapeCode = RepositoryFilenameUtils.unescape( code );
+        databaseMeta.getAttributes().put( unescapeCode, Const.NVL( attribute, "" ) );
+      }
     }
 
     // Also, load any pooling params

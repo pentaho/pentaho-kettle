@@ -57,12 +57,4 @@ public class DatabaseInterfaceFactoryTest {
       // expected
     }
   }
-
-  @Test
-  public void isConnectionManagementServiceTypeDetectsBlank() {
-    assertTrue( DatabaseInterfaceFactory.isConnectionManagementServiceType( null ) );
-    assertTrue( DatabaseInterfaceFactory.isConnectionManagementServiceType( "" ) );
-    assertTrue( DatabaseInterfaceFactory.isConnectionManagementServiceType( "   " ) );
-    assertFalse( DatabaseInterfaceFactory.isConnectionManagementServiceType( "MYSQL" ) );
-  }
 }

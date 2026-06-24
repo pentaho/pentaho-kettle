@@ -2627,6 +2627,16 @@ public class Const {
   }
 
   /**
+   * Returns the URL of the connection-management-service connections endpoint.
+   *
+   * @return the connections endpoint URL, or {@code null} if not configured.
+   */
+  public static String getCmsConnectionsUrl() {
+    return NVL( System.getenv( "CMS_CONNECTIONS_URL" ),
+      System.getProperty( "CMS_CONNECTIONS_URL" ) );
+  }
+
+  /**
    * Returns the Keycloak client ID for the PDI service account.
    *
    * <p>Resolution order (first non-blank value wins):
