@@ -12,7 +12,7 @@
 
 package org.pentaho.big.data.kettle.plugins.kafka;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.json.simple.JSONObject;
