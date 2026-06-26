@@ -36,6 +36,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.hadoop.shim.api.cluster.NamedClusterService;
 import org.pentaho.metastore.locator.api.MetastoreLocator;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,11 +45,45 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 import static org.pentaho.big.data.kettle.plugins.kafka.KafkaConsumerInputMeta.ConnectionType.CLUSTER;
 import static org.pentaho.big.data.kettle.plugins.kafka.KafkaConsumerInputMeta.ConnectionType.DIRECT;
 
 public class KafkaDialogHelper {
+
+  /**
+   * An {@link Executor} that submits tasks to {@link ForkJoinPool#commonPool()} while
+   * ensuring each task runs with the kafka-clients classloader as the thread context
+   * classloader.
+   *
+   * <p>Kafka 4.x's {@code ConsumerConfig} and {@code ProducerConfig} static initializers
+   * call {@code ConfigDef.parseType()} → {@code Utils.loadClass()} using the <em>thread
+   * context classloader</em> to validate CLASS-type config defaults (e.g.
+   * {@code DefaultJwtRetriever}).  {@link ForkJoinPool#commonPool()} worker threads inherit
+   * the <em>system</em> classloader, not the PDI plugin classloader, so those lookups fail
+   * with a {@link NoClassDefFoundError} and leave the Kafka config classes permanently
+   * broken ({@link ExceptionInInitializerError}).
+   *
+   * <p>By routing all async Kafka work through this executor every submitted task is
+   * guaranteed to run with the correct classloader, regardless of which pool thread is used.
+   */
+  private static final Executor KAFKA_CLASSLOADER_EXECUTOR;
+
+  static {
+    ClassLoader kafkaClassLoader = KafkaConsumer.class.getClassLoader();
+    KAFKA_CLASSLOADER_EXECUTOR = task -> ForkJoinPool.commonPool().execute( () -> {
+      Thread current = Thread.currentThread();
+      ClassLoader original = current.getContextClassLoader();
+      current.setContextClassLoader( kafkaClassLoader );
+      try {
+        task.run();
+      } finally {
+        current.setContextClassLoader( original );
+      }
+    } );
+  }
   protected ComboVar wTopic;
   protected ComboVar wClusterName;
   protected Button wbCluster;
@@ -94,7 +130,7 @@ public class KafkaDialogHelper {
     }
 
     CompletableFuture
-      .supplyAsync( () -> listTopics( clusterName, isCluster, directBootstrapServers, config ) )
+      .supplyAsync( () -> listTopics( clusterName, isCluster, directBootstrapServers, config ), KAFKA_CLASSLOADER_EXECUTOR )
       .thenAccept( topicMap -> Display.getDefault().syncExec( () -> populateTopics( topicMap, current ) ) );
   }
 
@@ -123,6 +159,7 @@ public class KafkaDialogHelper {
       localMeta.setConnectionType( isCluster ? CLUSTER : DIRECT );
       localMeta.setClusterName( clusterName );
       localMeta.setDirectBootstrapServers( directBootstrapServers );
+      localMeta.setConsumerGroup( "kettle-topic-listing-temp" );
       localMeta.setConfig( config );
       localMeta.setParentStepMeta( parentMeta );
       kafkaConsumer = kafkaFactory.consumer( localMeta, Function.identity() );
