@@ -80,6 +80,12 @@
 		<version>${org.apache.avro.version}</version>
 		<scope>compile</scope>
 	</dependency>
+	<dependency>
+		<groupId>org.apache.avro</groupId>
+		<artifactId>avro-compiler</artifactId>
+		<version>${org.apache.avro.version}</version>
+		<scope>test</scope>
+	</dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-vfs2</artifactId>
