@@ -12,25 +12,16 @@
 
 
 package org.pentaho.di.ui.trans.steps.mailinput;
-import org.eclipse.swt.widgets.*;
-import org.pentaho.di.core.annotations.PluginDialog;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import jakarta.mail.Folder;
-
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -38,12 +29,26 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.getpop.MailConnection;
 import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
@@ -52,7 +57,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.mailinput.MailInput;
 import org.pentaho.di.trans.steps.mailinput.MailInputField;
 import org.pentaho.di.trans.steps.mailinput.MailInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
@@ -61,10 +65,17 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.*;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.entries.getpop.SelectFolderDialog;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 @PluginDialog( id = "MailInput", image = "GETPOP.svg", pluginType = PluginDialog.PluginType.STEP,
         documentationUrl = "http://wiki.pentaho.com/display/EAI/Email+Messages+Input" )
@@ -72,192 +83,123 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MailInputMeta input;
-  private MailInput mailInput;
-  private Label wlServerName;
   private TextVar wServerName;
-  private FormData fdlServerName, fdServerName;
 
-  private Label wlSender;
   private TextVar wSender;
-  private FormData fdlSender, fdSender;
 
-  private Label wlReceipient;
-  private TextVar wReceipient;
-  private FormData fdlReceipient, fdReceipient;
+  private TextVar wRecipient;
 
-  private Label wlSubject;
   private TextVar wSubject;
-  private FormData fdlSubject, fdSubject;
-
-  private Label wlUseAuth;
 
   private Combo wUseAuth;
-
-  private FormData fdlUseAuth, fdUseAuth;
 
   private Label wlGrantType;
 
   private Combo grantType;
 
-  private FormData fdlGrantType,fdGrantType;
-
   private LabelTextVar wAuthClientId;
-
-  private FormData fdAuthClientId;
 
   private LabelTextVar wAuthSecretKey;
 
-  private FormData fdAuthSecretKey;
-
   private LabelTextVar wAuthScope;
-
-  private FormData fdAuthScope;
 
   private LabelTextVar wAuthTokenUrl;
 
-  private FormData fdAuthTokenUrl;
-
   private LabelTextVar wAuthorizationCode;
-
-  private FormData fdAuthorizationCode;
 
   private LabelTextVar wRedirectUri;
 
-  private FormData fdRedirectUri;
-
   private LabelTextVar wAuthRefreshToken;
-
-  private FormData fdAuthRefreshToken;
 
   private Label wlUserName;
   private TextVar wUserName;
-  private FormData fdlUserName, fdUserName;
 
   private Label wlIMAPFolder;
   private TextVar wIMAPFolder;
-  private FormData fdlIMAPFolder, fdIMAPFolder;
 
   private Label wlPassword;
   private TextVar wPassword;
-  private FormData fdlPassword, fdPassword;
 
   private Label wlUseProxy;
   private Button wUseProxy;
-  private FormData fdlUseProxy, fdUseProxy;
 
   private Label wlProxyUsername;
   private TextVar wProxyUsername;
 
-  private Label wlListmails;
-  private CCombo wListmails;
-  private FormData fdlListmails, fdListmails;
+  private Label wlListMails;
+  private CCombo wListMails;
 
-  private Label wlIMAPListmails;
-  private CCombo wIMAPListmails;
-  private FormData fdlIMAPListmails, fdIMAPListmails;
+  private Label wlIMAPListMails;
+  private CCombo wIMAPListMails;
 
-  private Label wlFirstmails;
-  private TextVar wFirstmails;
-  private FormData fdlFirstmails, fdFirstmails;
+  private Label wlFirstMails;
+  private TextVar wFirstMails;
 
-  private Label wlIMAPFirstmails;
-  private TextVar wIMAPFirstmails;
-  private FormData fdlIMAPFirstmails, fdIMAPFirstmails;
+  private Label wlIMAPFirstMails;
+  private TextVar wIMAPFirstMails;
 
   private Label wlPort;
   private TextVar wPort;
-  private FormData fdlPort, fdPort;
 
   private Label wlUseSSL;
   private Button wUseSSL;
-  private FormData fdlUseSSL, fdUseSSL;
 
   private Label wlIncludeSubFolders;
   private Button wIncludeSubFolders;
-  private FormData fdlIncludeSubFolders, fdIncludeSubFolders;
 
   private Button wNegateSender;
-  private FormData fdNegateSender;
 
-  private Button wNegateReceipient;
-  private FormData fdNegateReceipient;
+  private Button wNegateRecipient;
 
   private Button wNegateSubject;
-  private FormData fdNegateSubject;
 
   private Button wNegateReceivedDate;
-  private FormData fdNegateReceivedDate;
 
   private Label wlPOP3Message;
-  private FormData fdlPOP3Message;
-
-  private CTabFolder wTabFolder;
-  private Composite wGeneralComp, wSettingsComp, wSearchComp, wFieldsComp;
-  private CTabItem wGeneralTab, wSettingsTab, wSearchTab, wFieldsTab;
-  private FormData fdGeneralComp, fdSettingsComp, fdSearchComp, fdFieldsComp;
-  private FormData fdTabFolder;
-
-  private Group wServerSettings, wPOP3Settings, wIMAPSettings, wReceivedDate, wHeader,wAuthentificationGroup;
-  private FormData fdServerSettings, fdPOP3Settings, fdIMAPSettings, fdReceivedDate, fdHeader;
 
   private Label wlLimit;
   private Text wLimit;
-  private FormData fdlLimit, fdLimit;
 
   private Label wlReadFrom;
   private TextVar wReadFrom;
-  private FormData fdlReadFrom, fdReadFrom;
   private Button open;
 
   private Label wlConditionOnReceivedDate;
   private CCombo wConditionOnReceivedDate;
-  private FormData fdlConditionOnReceivedDate, fdConditionOnReceivedDate;
 
   private Label wlReadTo;
   private TextVar wReadTo;
-  private FormData fdlReadTo, fdReadTo;
-  private Button opento;
+  private Button openTo;
 
-  private Label wlProtocol;
   private CCombo wProtocol;
 
-  private Button wTest;
-  private FormData fdTest;
-  private Listener lsTest;
-
   private Button wTestIMAPFolder;
-  private FormData fdTestIMAPFolder;
-  private Listener lsTestIMAPFolder;
 
   private Button wSelectFolder;
-  private FormData fdSelectFolder;
-  private Listener lsSelectFolder;
 
-  private Label wlFolderField, wldynamicFolder;
-  private FormData fdldynamicFolder, fddynamicFolder, fdlFolderField, fdFolderField;
+  private Label wlFolderField;
+  private Label wlDynamicFolder;
   private CCombo wFolderField;
-  private Button wdynamicFolder;
+  private Button wDynamicFolder;
 
   private TableView wFields;
-  private FormData fdFields;
 
   private MailConnection mailConn = null;
 
-  private boolean gotPreviousfields = false;
+  private boolean gotPreviousFields = false;
 
   private Button wUseBatch;
-  private Group wBatchSettingsGroup;
   private Text wBatchSize;
   private TextVar wStartMessage;
   private TextVar wEndMessage;
-  private Label wlIgnoreFieldErrors;
   private Button wIgnoreFieldErrors;
 
-  public MailInputDialog( Shell parent, Object in, TransMeta tr, String sname ) {
-    super( parent, (BaseStepMeta) in, tr, sname );
+  public MailInputDialog( Shell parent, Object in, TransMeta tr, String sName ) {
+    super( parent, (BaseStepMeta) in, tr, sName );
     input = (MailInputMeta) in;
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -266,19 +208,11 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( shell );
     setShellImage( shell, input );
 
-    ModifyListener lsMod = new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        closeMailConnection();
-        input.setChanged();
-      }
+    ModifyListener lsMod = e -> {
+      closeMailConnection();
+      input.setChanged();
     };
 
-    SelectionListener lsSelection = new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
-        closeMailConnection();
-      }
-    };
     changed = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -310,16 +244,16 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdStepname.right = new FormAttachment( 100, 0 );
     wStepname.setLayoutData( fdStepname );
 
-    wTabFolder = new CTabFolder( shell, SWT.BORDER );
+    CTabFolder wTabFolder = new CTabFolder( shell, SWT.BORDER );
     props.setLook( wTabFolder, Props.WIDGET_STYLE_TAB );
 
     // ////////////////////////
     // START OF GENERAL TAB ///
     // ////////////////////////
 
-    wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
     wGeneralTab.setText( BaseMessages.getString( PKG, "MailInput.Tab.General.Label" ) );
-    wGeneralComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wGeneralComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wGeneralComp );
     FormLayout generalLayout = new FormLayout();
     generalLayout.marginWidth = 3;
@@ -327,22 +261,22 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wGeneralComp.setLayout( generalLayout );
 
     // ////////////////////////
-    // START OF SERVER SETTINGS GROUP///
-    // /
-    wServerSettings = new Group( wGeneralComp, SWT.SHADOW_NONE );
+    // START OF SERVER SETTINGS GROUP
+    // ////////////////////////
+    Group wServerSettings = new Group( wGeneralComp, SWT.SHADOW_NONE );
     props.setLook( wServerSettings );
     wServerSettings.setText( BaseMessages.getString( PKG, "MailInput.ServerSettings.Group.Label" ) );
 
-    FormLayout ServerSettingsgroupLayout = new FormLayout();
-    ServerSettingsgroupLayout.marginWidth = 10;
-    ServerSettingsgroupLayout.marginHeight = 10;
-    wServerSettings.setLayout( ServerSettingsgroupLayout );
+    FormLayout serverSettingsGroupLayout = new FormLayout();
+    serverSettingsGroupLayout.marginWidth = 10;
+    serverSettingsGroupLayout.marginHeight = 10;
+    wServerSettings.setLayout( serverSettingsGroupLayout );
 
     // ServerName line
-    wlServerName = new Label( wServerSettings, SWT.RIGHT );
+    Label wlServerName = new Label( wServerSettings, SWT.RIGHT );
     wlServerName.setText( BaseMessages.getString( PKG, "MailInput.Server.Label" ) );
     props.setLook( wlServerName );
-    fdlServerName = new FormData();
+    FormData fdlServerName = new FormData();
     fdlServerName.left = new FormAttachment( 0, 0 );
     fdlServerName.top = new FormAttachment( 0, 2 * margin );
     fdlServerName.right = new FormAttachment( middle, -margin );
@@ -350,7 +284,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wServerName = new TextVar( transMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
-    fdServerName = new FormData();
+    FormData fdServerName = new FormData();
     fdServerName.left = new FormAttachment( middle, 0 );
     fdServerName.top = new FormAttachment( 0, 2 * margin );
     fdServerName.right = new FormAttachment( 100, 0 );
@@ -360,14 +294,14 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlUseSSL = new Label( wServerSettings, SWT.RIGHT );
     wlUseSSL.setText( BaseMessages.getString( PKG, "MailInput.UseSSLMails.Label" ) );
     props.setLook( wlUseSSL );
-    fdlUseSSL = new FormData();
+    FormData fdlUseSSL = new FormData();
     fdlUseSSL.left = new FormAttachment( 0, 0 );
     fdlUseSSL.top = new FormAttachment( wServerName, margin );
     fdlUseSSL.right = new FormAttachment( middle, -margin );
     wlUseSSL.setLayoutData( fdlUseSSL );
     wUseSSL = new Button( wServerSettings, SWT.CHECK );
     props.setLook( wUseSSL );
-    fdUseSSL = new FormData();
+    FormData fdUseSSL = new FormData();
     wUseSSL.setToolTipText( BaseMessages.getString( PKG, "MailInput.UseSSLMails.Tooltip" ) );
     fdUseSSL.left = new FormAttachment( middle, 0 );
     fdUseSSL.top = new FormAttachment( wServerName, margin );
@@ -375,6 +309,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wUseSSL.setLayoutData( fdUseSSL );
 
     wUseSSL.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         closeMailConnection();
         refreshPort( true );
@@ -385,7 +320,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlPort = new Label( wServerSettings, SWT.RIGHT );
     wlPort.setText( BaseMessages.getString( PKG, "MailInput.SSLPort.Label" ) );
     props.setLook( wlPort );
-    fdlPort = new FormData();
+    FormData fdlPort = new FormData();
     fdlPort.left = new FormAttachment( 0, 0 );
     fdlPort.top = new FormAttachment( wUseSSL, margin );
     fdlPort.right = new FormAttachment( middle, -margin );
@@ -394,13 +329,13 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wPort );
     wPort.setToolTipText( BaseMessages.getString( PKG, "MailInput.SSLPort.Tooltip" ) );
     wPort.addModifyListener( lsMod );
-    fdPort = new FormData();
+    FormData fdPort = new FormData();
     fdPort.left = new FormAttachment( middle, 0 );
     fdPort.top = new FormAttachment( wUseSSL, margin );
     fdPort.right = new FormAttachment( 100, 0 );
     wPort.setLayoutData( fdPort );
 
-    fdServerSettings = new FormData();
+    FormData fdServerSettings = new FormData();
     fdServerSettings.left = new FormAttachment( 0, margin );
     fdServerSettings.top = new FormAttachment( wProtocol, margin );
     fdServerSettings.right = new FormAttachment( 100, -margin );
@@ -410,40 +345,47 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     // START OF AUTHENTIFICATION GROUP
     // ////////////////////////////////////
 
-    wAuthentificationGroup = new Group( wGeneralComp, SWT.SHADOW_NONE );
+    Group wAuthentificationGroup = new Group( wGeneralComp, SWT.SHADOW_NONE );
     props.setLook( wAuthentificationGroup );
     wAuthentificationGroup.setText( BaseMessages.getString( PKG, "MailInput.Group.Authentification.Label" ) );
 
-    FormLayout authentificationgroupLayout = new FormLayout();
-    authentificationgroupLayout.marginWidth = 10;
-    authentificationgroupLayout.marginHeight = 10;
-    wAuthentificationGroup.setLayout( authentificationgroupLayout );
+    FormLayout authentificationGroupLayout = new FormLayout();
+    authentificationGroupLayout.marginWidth = 10;
+    authentificationGroupLayout.marginHeight = 10;
+    wAuthentificationGroup.setLayout( authentificationGroupLayout );
 
     // Authentication?
-    wlUseAuth = new Label( wAuthentificationGroup, SWT.RIGHT );
+    Label wlUseAuth = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlUseAuth.setText( BaseMessages.getString( PKG, "MailInput.UseAuthentication.Label" ) );
     props.setLook( wlUseAuth );
-    fdlUseAuth = new FormData();
+    FormData fdlUseAuth = new FormData();
     fdlUseAuth.left = new FormAttachment( 0, 0 );
     fdlUseAuth.top = new FormAttachment( wServerSettings, margin );
     fdlUseAuth.right = new FormAttachment( middle, -2 * margin );
     wlUseAuth.setLayoutData( fdlUseAuth );
-    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN );
-    wUseAuth.add( MailInputMeta.AUTENTICATION_NONE );
+    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN | SWT.READ_ONLY );
     wUseAuth.add( MailInputMeta.AUTENTICATION_BASIC );
     wUseAuth.add( MailInputMeta.AUTENTICATION_OAUTH );
+    wUseAuth.select( wUseAuth.indexOf( MailInputMeta.AUTENTICATION_BASIC ) );
     props.setLook( wUseAuth );
     wUseAuth.addModifyListener( lsMod );
-    fdUseAuth = new FormData();
+    FormData fdUseAuth = new FormData();
     fdUseAuth.left = new FormAttachment( middle, -margin );
     fdUseAuth.top = new FormAttachment( wServerSettings, margin );
     fdUseAuth.right = new FormAttachment( 100, 0 );
     wUseAuth.setLayoutData( fdUseAuth );
+    wUseAuth.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        setUseAuth();
+      }
+    } );
+
     // UserName line
     wlUserName = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlUserName.setText( BaseMessages.getString( PKG, "MailInput.Username.Label" ) );
     props.setLook( wlUserName );
-    fdlUserName = new FormData();
+    FormData fdlUserName = new FormData();
     fdlUserName.left = new FormAttachment( 0, 0 );
     fdlUserName.top = new FormAttachment( wUseAuth, margin );
     fdlUserName.right = new FormAttachment( middle, -margin );
@@ -452,7 +394,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wUserName );
     wUserName.setToolTipText( BaseMessages.getString( PKG, "MailInput.Username.Tooltip" ) );
     wUserName.addModifyListener( lsMod );
-    fdUserName = new FormData();
+    FormData fdUserName = new FormData();
     fdUserName.left = new FormAttachment( middle, 0 );
     fdUserName.top = new FormAttachment( wUseAuth, margin );
     fdUserName.right = new FormAttachment( 100, 0 );
@@ -462,7 +404,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlPassword = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlPassword.setText( BaseMessages.getString( PKG, "MailInput.Password.Label" ) );
     props.setLook( wlPassword );
-    fdlPassword = new FormData();
+    FormData fdlPassword = new FormData();
     fdlPassword.left = new FormAttachment( 0, 0 );
     fdlPassword.top = new FormAttachment( wUserName, margin );
     fdlPassword.right = new FormAttachment( middle, -margin );
@@ -470,53 +412,48 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wPassword = new PasswordTextVar( transMeta, wAuthentificationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPassword );
     wPassword.addModifyListener( lsMod );
-    fdPassword = new FormData();
+    FormData fdPassword = new FormData();
     fdPassword.left = new FormAttachment( middle, 0 );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-    wUseAuth.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        setUseAuth();
-      }
-    } );
     // AuthSecretKey line
     wAuthSecretKey = new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "MailInput.AuthenticationSecretKey.Label" ),
             BaseMessages.getString( PKG, "MailInput.AuthenticationSecretKey.Tooltip" ), true );
     wAuthSecretKey.addModifyListener( lsMod );
-    fdAuthSecretKey= new FormData();
+    FormData fdAuthSecretKey = new FormData();
     fdAuthSecretKey.left = new FormAttachment( 0, 0 );
     fdAuthSecretKey.top = new FormAttachment( wPassword, margin );
     fdAuthSecretKey.right = new FormAttachment( 100, 0 );
-    wAuthSecretKey.setLayoutData( fdAuthSecretKey);
+    wAuthSecretKey.setLayoutData( fdAuthSecretKey );
 
     // AuthClientId line
     wAuthClientId = new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "MailInput.AuthenticationClientId.Label" ),
             BaseMessages.getString( PKG, "MailInput.AuthenticationClientId.Tooltip" ));
     wAuthClientId.addModifyListener( lsMod );
-    fdAuthClientId = new FormData();
+    FormData fdAuthClientId = new FormData();
     fdAuthClientId.left = new FormAttachment( 0, 0 );
     fdAuthClientId.top = new FormAttachment( wAuthSecretKey, margin );
     fdAuthClientId.right = new FormAttachment( 100, 0 );
-    wAuthClientId.setLayoutData( fdAuthClientId);
+    wAuthClientId.setLayoutData( fdAuthClientId );
 
     //Scope line
     wAuthScope = new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "MailInput.AuthenticationScope.Label" ),
             BaseMessages.getString( PKG, "MailInput.AuthenticationScope.Tooltip" ));
     wAuthScope.addModifyListener( lsMod );
-    fdAuthScope= new FormData();
+    FormData fdAuthScope = new FormData();
     fdAuthScope.left = new FormAttachment( 0, 0 );
     fdAuthScope.top = new FormAttachment( wAuthClientId, margin );
     fdAuthScope.right = new FormAttachment( 100, 0 );
-    wAuthScope.setLayoutData( fdAuthScope);
-// Grant Type
+    wAuthScope.setLayoutData( fdAuthScope );
+    // Grant Type
     wlGrantType = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlGrantType.setText(BaseMessages.getString( PKG, "MailInput.GrantType.Label" ) );
     props.setLook( wlGrantType );
-    fdlGrantType = new FormData();
+    FormData fdlGrantType = new FormData();
     fdlGrantType.left = new FormAttachment( 0, 0 );
     fdlGrantType.top = new FormAttachment( wAuthScope, 2*margin );
     fdlGrantType.right = new FormAttachment( middle, -margin );
@@ -527,12 +464,13 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     grantType.add( MailInputMeta.GRANTTYPE_REFRESH_TOKEN );
     props.setLook( grantType );
     grantType.addModifyListener( lsMod );
-    fdGrantType = new FormData();
+    FormData fdGrantType = new FormData();
     fdGrantType.left = new FormAttachment( middle, margin );
     fdGrantType.top = new FormAttachment( wAuthScope, 2*margin );
     fdGrantType.right = new FormAttachment( 100, 0 );
     grantType.setLayoutData( fdGrantType );
     grantType.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setUseGrantType();
       }
@@ -542,56 +480,54 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
             BaseMessages.getString( PKG, "MailInput.AuthenticationTokenUrl.Label" ),
             BaseMessages.getString( PKG, "MailInput.AuthenticationTokenUrl.Tooltip" ));
     wAuthTokenUrl.addModifyListener( lsMod );
-    fdAuthTokenUrl= new FormData();
+    FormData fdAuthTokenUrl = new FormData();
     fdAuthTokenUrl.left = new FormAttachment( 0, 0 );
     fdAuthTokenUrl.top = new FormAttachment( grantType, margin );
     fdAuthTokenUrl.right = new FormAttachment( 100, 0 );
-    wAuthTokenUrl.setLayoutData( fdAuthTokenUrl);
+    wAuthTokenUrl.setLayoutData( fdAuthTokenUrl );
     //AuthorizationCode
     wAuthorizationCode= new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "MailInput.AuthorizationCode.Label" ),
             BaseMessages.getString( PKG, "MailInput.AuthorizationCode.Tooltip" ));
     wAuthorizationCode.addModifyListener( lsMod );
-    fdAuthorizationCode= new FormData();
+    FormData fdAuthorizationCode = new FormData();
     fdAuthorizationCode.left = new FormAttachment( 0, 0 );
     fdAuthorizationCode.top = new FormAttachment( wAuthTokenUrl, margin );
     fdAuthorizationCode.right = new FormAttachment( 100, 0 );
-    wAuthorizationCode.setLayoutData( fdAuthorizationCode);
+    wAuthorizationCode.setLayoutData( fdAuthorizationCode );
     //Redirect Uri
     wRedirectUri= new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "MailInput.RedirectURI.Label" ),
             BaseMessages.getString( PKG, "MailInput.RedirectURI.Tooltip" ));
     wRedirectUri.addModifyListener( lsMod );
-    fdRedirectUri= new FormData();
+    FormData fdRedirectUri = new FormData();
     fdRedirectUri.left = new FormAttachment( 0, 0 );
     fdRedirectUri.top = new FormAttachment(wAuthorizationCode, margin );
     fdRedirectUri.right = new FormAttachment( 100, 0 );
-    wRedirectUri.setLayoutData( fdRedirectUri);
+    wRedirectUri.setLayoutData( fdRedirectUri );
     //Refresh Token
     wAuthRefreshToken= new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "MailInput.RefreshToken.Label" ),
             BaseMessages.getString( PKG, "MailInput.RefreshToken.Tooltip" ));
     wAuthRefreshToken.addModifyListener( lsMod );
-    fdAuthRefreshToken= new FormData();
+    FormData fdAuthRefreshToken = new FormData();
     fdAuthRefreshToken.left = new FormAttachment( 0, 0 );
     fdAuthRefreshToken.top = new FormAttachment(wRedirectUri, margin );
     fdAuthRefreshToken.right = new FormAttachment( 100, 0 );
-    wAuthRefreshToken.setLayoutData( fdAuthRefreshToken);
-
-
+    wAuthRefreshToken.setLayoutData( fdAuthRefreshToken );
 
     // USE proxy
     wlUseProxy = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlUseProxy.setText( BaseMessages.getString( PKG, "MailInput.UseProxyMails.Label" ) );
     props.setLook( wlUseProxy );
-    fdlUseProxy = new FormData();
+    FormData fdlUseProxy = new FormData();
     fdlUseProxy.left = new FormAttachment( 0, 0 );
     fdlUseProxy.top = new FormAttachment( wAuthRefreshToken, 2 * margin );
     fdlUseProxy.right = new FormAttachment( middle, -margin );
     wlUseProxy.setLayoutData( fdlUseProxy );
     wUseProxy = new Button( wAuthentificationGroup, SWT.CHECK );
     props.setLook( wUseProxy );
-    fdUseProxy = new FormData();
+    FormData fdUseProxy = new FormData();
     wUseProxy.setToolTipText( BaseMessages.getString( PKG, "MailInput.UseProxyMails.Tooltip" ) );
     fdUseProxy.left = new FormAttachment( middle, 0 );
     fdUseProxy.top = new FormAttachment( wAuthRefreshToken, 2 * margin );
@@ -599,6 +535,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wUseProxy.setLayoutData( fdUseProxy );
 
     wUseProxy.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setUserProxy();
         input.setChanged();
@@ -619,37 +556,38 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wUseBatch = new Button( wAuthentificationGroup, SWT.CHECK );
     wUseBatch.setToolTipText( BaseMessages.getString( PKG, "MailInputDialog.UseBatch.Tooltip" ) );
     wUseBatch.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setBatchSettingsEnabled();
       }
     } );
     addLabelInputPairBelow( wlUseBatch, wUseBatch, wProxyUsername );
     // ignore field errors
-    wlIgnoreFieldErrors = new Label( wAuthentificationGroup, SWT.RIGHT );
+    Label wlIgnoreFieldErrors = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlIgnoreFieldErrors.setText( BaseMessages.getString( PKG, "MailInput.IgnoreFieldErrors.Label" ) );
     wIgnoreFieldErrors = new Button( wAuthentificationGroup, SWT.CHECK );
     wIgnoreFieldErrors.setToolTipText( BaseMessages.getString( PKG, "MailInput.IgnoreFieldErrors.Tooltip" ) );
     addLabelInputPairBelow( wlIgnoreFieldErrors, wIgnoreFieldErrors, wUseBatch );
 
     // Protocol
-    wlProtocol = new Label( wAuthentificationGroup, SWT.RIGHT );
+    Label wlProtocol = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlProtocol.setText( BaseMessages.getString( PKG, "MailInput.Protocol.Label" ) );
     wProtocol = new CCombo( wAuthentificationGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wProtocol.setItems( MailConnectionMeta.protocolCodes );
     wProtocol.select( 0 );
     wProtocol.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         refreshProtocol( true );
-
       }
     } );
     addLabelInputPairBelow( wlProtocol, wProtocol, wIgnoreFieldErrors );
 
     // Test connection button
-    wTest = new Button( wAuthentificationGroup, SWT.PUSH );
+    Button wTest = new Button( wAuthentificationGroup, SWT.PUSH );
     wTest.setText( BaseMessages.getString( PKG, "MailInput.TestConnection.Label" ) );
     props.setLook( wTest );
-    fdTest = new FormData();
+    FormData fdTest = new FormData();
     wTest.setToolTipText( BaseMessages.getString( PKG, "MailInput.TestConnection.Tooltip" ) );
     fdTest.top = new FormAttachment( wProtocol, margin );
     fdTest.right = new FormAttachment( 100, 0 );
@@ -663,9 +601,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wAuthentificationGroup.setLayoutData( fdAuthentificationGroup );
 
     // //////////////////////////////////////
-    // / END OF AUTHENTIFICATION GROUP
-    // ///////////////////////////////////////
-    fdGeneralComp = new FormData();
+    // END OF AUTHENTIFICATION GROUP
+    // //////////////////////////////////////
+    FormData fdGeneralComp = new FormData();
     fdGeneralComp.left = new FormAttachment( 0, 0 );
     fdGeneralComp.top = new FormAttachment( wStepname, 0 );
     fdGeneralComp.right = new FormAttachment( 100, 0 );
@@ -677,16 +615,16 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wGeneralComp );
 
     // ///////////////////////////////////////////////////////////
-    // / END OF GENERAL TAB
+    // END OF GENERAL TAB
     // ///////////////////////////////////////////////////////////
 
     // ////////////////////////
-    // START OF SETTINGS TAB ///
+    // START OF SETTINGS TAB
     // ////////////////////////
 
-    wSettingsTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wSettingsTab = new CTabItem( wTabFolder, SWT.NONE );
     wSettingsTab.setText( BaseMessages.getString( PKG, "MailInput.Tab.Pop.Label" ) );
-    wSettingsComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wSettingsComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wSettingsComp );
     FormLayout PopLayout = new FormLayout();
     PopLayout.marginWidth = 3;
@@ -697,127 +635,127 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlPOP3Message = new Label( wSettingsComp, SWT.RIGHT );
     wlPOP3Message.setText( BaseMessages.getString( PKG, "MailInput.POP3Message.Label" ) );
     props.setLook( wlPOP3Message );
-    fdlPOP3Message = new FormData();
+    FormData fdlPOP3Message = new FormData();
     fdlPOP3Message.left = new FormAttachment( 0, margin );
     fdlPOP3Message.top = new FormAttachment( 0, 3 * margin );
     wlPOP3Message.setLayoutData( fdlPOP3Message );
     wlPOP3Message.setForeground( GUIResource.getInstance().getColorOrange() );
 
     // ////////////////////////
-    // START OF POP3 Settings GROUP///
-    // /
-    wPOP3Settings = new Group( wSettingsComp, SWT.SHADOW_NONE );
+    // START OF POP3 Settings GROUP
+    // ////////////////////////
+    Group wPOP3Settings = new Group( wSettingsComp, SWT.SHADOW_NONE );
     props.setLook( wPOP3Settings );
     wPOP3Settings.setText( BaseMessages.getString( PKG, "MailInput.POP3Settings.Group.Label" ) );
 
-    FormLayout POP3SettingsgroupLayout = new FormLayout();
-    POP3SettingsgroupLayout.marginWidth = 10;
-    POP3SettingsgroupLayout.marginHeight = 10;
-    wPOP3Settings.setLayout( POP3SettingsgroupLayout );
+    FormLayout pop3SettingsGroupLayout = new FormLayout();
+    pop3SettingsGroupLayout.marginWidth = 10;
+    pop3SettingsGroupLayout.marginHeight = 10;
+    wPOP3Settings.setLayout( pop3SettingsGroupLayout );
 
     // List of mails of retrieve
-    wlListmails = new Label( wPOP3Settings, SWT.RIGHT );
-    wlListmails.setText( BaseMessages.getString( PKG, "MailInput.Listmails.Label" ) );
-    props.setLook( wlListmails );
-    fdlListmails = new FormData();
-    fdlListmails.left = new FormAttachment( 0, 0 );
-    fdlListmails.right = new FormAttachment( middle, 0 );
-    fdlListmails.top = new FormAttachment( wlPOP3Message, 2 * margin );
-    wlListmails.setLayoutData( fdlListmails );
-    wListmails = new CCombo( wPOP3Settings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
-    wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveAllMails.Label" ) );
-    // [PDI-7241] pop3 does not support retrive unread option
-    // wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveUnreadMails.Label" ) );
-    wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveFirstMails.Label" ) );
-    wListmails.select( 0 ); // +1: starts at -1
+    wlListMails = new Label( wPOP3Settings, SWT.RIGHT );
+    wlListMails.setText( BaseMessages.getString( PKG, "MailInput.Listmails.Label" ) );
+    props.setLook( wlListMails );
+    FormData fdlListMails = new FormData();
+    fdlListMails.left = new FormAttachment( 0, 0 );
+    fdlListMails.right = new FormAttachment( middle, 0 );
+    fdlListMails.top = new FormAttachment( wlPOP3Message, 2 * margin );
+    wlListMails.setLayoutData( fdlListMails );
+    wListMails = new CCombo( wPOP3Settings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
+    wListMails.add( BaseMessages.getString( PKG, "MailInput.RetrieveAllMails.Label" ) );
+    // [PDI-7241] pop3 does not support retrieve unread option
+    wListMails.add( BaseMessages.getString( PKG, "MailInput.RetrieveFirstMails.Label" ) );
+    wListMails.select( 0 ); // +1: starts at -1
 
-    props.setLook( wListmails );
-    fdListmails = new FormData();
-    fdListmails.left = new FormAttachment( middle, 0 );
-    fdListmails.top = new FormAttachment( wlPOP3Message, 2 * margin );
-    fdListmails.right = new FormAttachment( 100, 0 );
-    wListmails.setLayoutData( fdListmails );
+    props.setLook( wListMails );
+    FormData fdListMails = new FormData();
+    fdListMails.left = new FormAttachment( middle, 0 );
+    fdListMails.top = new FormAttachment( wlPOP3Message, 2 * margin );
+    fdListMails.right = new FormAttachment( 100, 0 );
+    wListMails.setLayoutData( fdListMails );
 
-    wListmails.addSelectionListener( new SelectionAdapter() {
+    wListMails.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         chooseListMails();
-
       }
     } );
 
     // Retrieve the first ... mails
-    wlFirstmails = new Label( wPOP3Settings, SWT.RIGHT );
-    wlFirstmails.setText( BaseMessages.getString( PKG, "MailInput.Firstmails.Label" ) );
-    props.setLook( wlFirstmails );
-    fdlFirstmails = new FormData();
-    fdlFirstmails.left = new FormAttachment( 0, 0 );
-    fdlFirstmails.right = new FormAttachment( middle, -margin );
-    fdlFirstmails.top = new FormAttachment( wListmails, margin );
-    wlFirstmails.setLayoutData( fdlFirstmails );
+    wlFirstMails = new Label( wPOP3Settings, SWT.RIGHT );
+    wlFirstMails.setText( BaseMessages.getString( PKG, "MailInput.Firstmails.Label" ) );
+    props.setLook( wlFirstMails );
+    FormData fdlFirstMails = new FormData();
+    fdlFirstMails.left = new FormAttachment( 0, 0 );
+    fdlFirstMails.right = new FormAttachment( middle, -margin );
+    fdlFirstMails.top = new FormAttachment( wListMails, margin );
+    wlFirstMails.setLayoutData( fdlFirstMails );
 
-    wFirstmails = new TextVar( transMeta, wPOP3Settings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wFirstmails );
-    wFirstmails.addModifyListener( lsMod );
-    fdFirstmails = new FormData();
-    fdFirstmails.left = new FormAttachment( middle, 0 );
-    fdFirstmails.top = new FormAttachment( wListmails, margin );
-    fdFirstmails.right = new FormAttachment( 100, 0 );
-    wFirstmails.setLayoutData( fdFirstmails );
+    wFirstMails = new TextVar( transMeta, wPOP3Settings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wFirstMails );
+    wFirstMails.addModifyListener( lsMod );
+    FormData fdFirstMails = new FormData();
+    fdFirstMails.left = new FormAttachment( middle, 0 );
+    fdFirstMails.top = new FormAttachment( wListMails, margin );
+    fdFirstMails.right = new FormAttachment( 100, 0 );
+    wFirstMails.setLayoutData( fdFirstMails );
 
-    fdPOP3Settings = new FormData();
+    FormData fdPOP3Settings = new FormData();
     fdPOP3Settings.left = new FormAttachment( 0, margin );
     fdPOP3Settings.top = new FormAttachment( wlPOP3Message, 2 * margin );
     fdPOP3Settings.right = new FormAttachment( 100, -margin );
     wPOP3Settings.setLayoutData( fdPOP3Settings );
     // ///////////////////////////////////////////////////////////
-    // / END OF POP3 SETTINGS GROUP
+    // END OF POP3 SETTINGS GROUP
     // ///////////////////////////////////////////////////////////
 
     // ////////////////////////
-    // START OF IMAP Settings GROUP///
-    // /
-    wIMAPSettings = new Group( wSettingsComp, SWT.SHADOW_NONE );
+    // START OF IMAP Settings GROUP
+    // ////////////////////////
+    Group wIMAPSettings = new Group( wSettingsComp, SWT.SHADOW_NONE );
     props.setLook( wIMAPSettings );
     wIMAPSettings.setText( BaseMessages.getString( PKG, "MailInput.IMAPSettings.Groupp.Label" ) );
 
-    FormLayout IMAPSettingsgroupLayout = new FormLayout();
-    IMAPSettingsgroupLayout.marginWidth = 10;
-    IMAPSettingsgroupLayout.marginHeight = 10;
-    wIMAPSettings.setLayout( IMAPSettingsgroupLayout );
+    FormLayout imapSettingsGroupLayout = new FormLayout();
+    imapSettingsGroupLayout.marginWidth = 10;
+    imapSettingsGroupLayout.marginHeight = 10;
+    wIMAPSettings.setLayout( imapSettingsGroupLayout );
 
     // Is folder name defined in a Field
-    wldynamicFolder = new Label( wIMAPSettings, SWT.RIGHT );
-    wldynamicFolder.setText( BaseMessages.getString( PKG, "MailInput.dynamicFolder.Label" ) );
-    props.setLook( wldynamicFolder );
-    fdldynamicFolder = new FormData();
-    fdldynamicFolder.left = new FormAttachment( 0, 0 );
-    fdldynamicFolder.top = new FormAttachment( 0, margin );
-    fdldynamicFolder.right = new FormAttachment( middle, -margin );
-    wldynamicFolder.setLayoutData( fdldynamicFolder );
+    wlDynamicFolder = new Label( wIMAPSettings, SWT.RIGHT );
+    wlDynamicFolder.setText( BaseMessages.getString( PKG, "MailInput.dynamicFolder.Label" ) );
+    props.setLook( wlDynamicFolder );
+    FormData fdlDynamicFolder = new FormData();
+    fdlDynamicFolder.left = new FormAttachment( 0, 0 );
+    fdlDynamicFolder.top = new FormAttachment( 0, margin );
+    fdlDynamicFolder.right = new FormAttachment( middle, -margin );
+    wlDynamicFolder.setLayoutData( fdlDynamicFolder );
 
-    wdynamicFolder = new Button( wIMAPSettings, SWT.CHECK );
-    props.setLook( wdynamicFolder );
-    wdynamicFolder.setToolTipText( BaseMessages.getString( PKG, "MailInput.dynamicFolder.Tooltip" ) );
-    fddynamicFolder = new FormData();
-    fddynamicFolder.left = new FormAttachment( middle, 0 );
-    fddynamicFolder.top = new FormAttachment( 0, margin );
-    wdynamicFolder.setLayoutData( fddynamicFolder );
-    SelectionAdapter lsxmlstream = new SelectionAdapter() {
+    wDynamicFolder = new Button( wIMAPSettings, SWT.CHECK );
+    props.setLook( wDynamicFolder );
+    wDynamicFolder.setToolTipText( BaseMessages.getString( PKG, "MailInput.dynamicFolder.Tooltip" ) );
+    FormData fdDynamicFolder = new FormData();
+    fdDynamicFolder.left = new FormAttachment( middle, 0 );
+    fdDynamicFolder.top = new FormAttachment( 0, margin );
+    wDynamicFolder.setLayoutData( fdDynamicFolder );
+    SelectionAdapter lsXmlStream = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
-        activedynamicFolder();
+        activeDynamicFolder();
         input.setChanged();
       }
     };
-    wdynamicFolder.addSelectionListener( lsxmlstream );
+    wDynamicFolder.addSelectionListener( lsXmlStream );
 
     // Folder field
     wlFolderField = new Label( wIMAPSettings, SWT.RIGHT );
     wlFolderField.setText( BaseMessages.getString( PKG, "MailInput.wlFolderField.Label" ) );
     props.setLook( wlFolderField );
-    fdlFolderField = new FormData();
+    FormData fdlFolderField = new FormData();
     fdlFolderField.left = new FormAttachment( 0, 0 );
-    fdlFolderField.top = new FormAttachment( wdynamicFolder, margin );
+    fdlFolderField.top = new FormAttachment( wDynamicFolder, margin );
     fdlFolderField.right = new FormAttachment( middle, -margin );
     wlFolderField.setLayoutData( fdlFolderField );
 
@@ -825,15 +763,17 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wFolderField.setEditable( true );
     props.setLook( wFolderField );
     wFolderField.addModifyListener( lsMod );
-    fdFolderField = new FormData();
+    FormData fdFolderField = new FormData();
     fdFolderField.left = new FormAttachment( middle, 0 );
-    fdFolderField.top = new FormAttachment( wdynamicFolder, margin );
+    fdFolderField.top = new FormAttachment( wDynamicFolder, margin );
     fdFolderField.right = new FormAttachment( 100, -margin );
     wFolderField.setLayoutData( fdFolderField );
     wFolderField.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         setFolderField();
       }
@@ -844,7 +784,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wSelectFolder.setImage( GUIResource.getInstance().getImageBol() );
     wSelectFolder.setToolTipText( BaseMessages.getString( PKG, "MailInput.SelectFolderConnection.Label" ) );
     props.setLook( wSelectFolder );
-    fdSelectFolder = new FormData();
+    FormData fdSelectFolder = new FormData();
     wSelectFolder.setToolTipText( BaseMessages.getString( PKG, "MailInput.SelectFolderConnection.Tooltip" ) );
     fdSelectFolder.top = new FormAttachment( wFolderField, margin );
     fdSelectFolder.right = new FormAttachment( 100, 0 );
@@ -854,7 +794,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wTestIMAPFolder = new Button( wIMAPSettings, SWT.PUSH );
     wTestIMAPFolder.setText( BaseMessages.getString( PKG, "MailInput.TestIMAPFolderConnection.Label" ) );
     props.setLook( wTestIMAPFolder );
-    fdTestIMAPFolder = new FormData();
+    FormData fdTestIMAPFolder = new FormData();
     wTestIMAPFolder.setToolTipText( BaseMessages.getString( PKG, "MailInput.TestIMAPFolderConnection.Tooltip" ) );
     fdTestIMAPFolder.top = new FormAttachment( wFolderField, margin );
     fdTestIMAPFolder.right = new FormAttachment( wSelectFolder, -margin );
@@ -864,7 +804,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlIMAPFolder = new Label( wIMAPSettings, SWT.RIGHT );
     wlIMAPFolder.setText( BaseMessages.getString( PKG, "MailInput.IMAPFolder.Label" ) );
     props.setLook( wlIMAPFolder );
-    fdlIMAPFolder = new FormData();
+    FormData fdlIMAPFolder = new FormData();
     fdlIMAPFolder.left = new FormAttachment( 0, 0 );
     fdlIMAPFolder.top = new FormAttachment( wFolderField, margin );
     fdlIMAPFolder.right = new FormAttachment( middle, -margin );
@@ -873,7 +813,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wIMAPFolder );
     wIMAPFolder.setToolTipText( BaseMessages.getString( PKG, "MailInput.IMAPFolder.Tooltip" ) );
     wIMAPFolder.addModifyListener( lsMod );
-    fdIMAPFolder = new FormData();
+    FormData fdIMAPFolder = new FormData();
     fdIMAPFolder.left = new FormAttachment( middle, 0 );
     fdIMAPFolder.top = new FormAttachment( wFolderField, margin );
     fdIMAPFolder.right = new FormAttachment( wTestIMAPFolder, -margin );
@@ -883,82 +823,87 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlIncludeSubFolders = new Label( wIMAPSettings, SWT.RIGHT );
     wlIncludeSubFolders.setText( BaseMessages.getString( PKG, "MailInput.IncludeSubFoldersMails.Label" ) );
     props.setLook( wlIncludeSubFolders );
-    fdlIncludeSubFolders = new FormData();
+    FormData fdlIncludeSubFolders = new FormData();
     fdlIncludeSubFolders.left = new FormAttachment( 0, 0 );
     fdlIncludeSubFolders.top = new FormAttachment( wIMAPFolder, margin );
     fdlIncludeSubFolders.right = new FormAttachment( middle, -margin );
     wlIncludeSubFolders.setLayoutData( fdlIncludeSubFolders );
     wIncludeSubFolders = new Button( wIMAPSettings, SWT.CHECK );
     props.setLook( wIncludeSubFolders );
-    fdIncludeSubFolders = new FormData();
+    FormData fdIncludeSubFolders = new FormData();
     wIncludeSubFolders.setToolTipText( BaseMessages.getString( PKG, "MailInput.IncludeSubFoldersMails.Tooltip" ) );
     fdIncludeSubFolders.left = new FormAttachment( middle, 0 );
     fdIncludeSubFolders.top = new FormAttachment( wIMAPFolder, margin );
     fdIncludeSubFolders.right = new FormAttachment( 100, 0 );
     wIncludeSubFolders.setLayoutData( fdIncludeSubFolders );
-    wIncludeSubFolders.addSelectionListener( lsSelection );
+    wIncludeSubFolders.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e1 ) {
+        input.setChanged();
+        closeMailConnection();
+      }
+    } );
 
     // List of mails of retrieve
-    wlIMAPListmails = new Label( wIMAPSettings, SWT.RIGHT );
-    wlIMAPListmails.setText( BaseMessages.getString( PKG, "MailInput.IMAPListmails.Label" ) );
-    props.setLook( wlIMAPListmails );
-    fdlIMAPListmails = new FormData();
-    fdlIMAPListmails.left = new FormAttachment( 0, 0 );
-    fdlIMAPListmails.right = new FormAttachment( middle, -margin );
-    fdlIMAPListmails.top = new FormAttachment( wIncludeSubFolders, margin );
-    wlIMAPListmails.setLayoutData( fdlIMAPListmails );
-    wIMAPListmails = new CCombo( wIMAPSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
-    wIMAPListmails.setItems( MailConnectionMeta.valueIMAPListDesc );
-    wIMAPListmails.select( 0 ); // +1: starts at -1
+    wlIMAPListMails = new Label( wIMAPSettings, SWT.RIGHT );
+    wlIMAPListMails.setText( BaseMessages.getString( PKG, "MailInput.IMAPListmails.Label" ) );
+    props.setLook( wlIMAPListMails );
+    FormData fdlIMAPListMails = new FormData();
+    fdlIMAPListMails.left = new FormAttachment( 0, 0 );
+    fdlIMAPListMails.right = new FormAttachment( middle, -margin );
+    fdlIMAPListMails.top = new FormAttachment( wIncludeSubFolders, margin );
+    wlIMAPListMails.setLayoutData( fdlIMAPListMails );
+    wIMAPListMails = new CCombo( wIMAPSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
+    wIMAPListMails.setItems( MailConnectionMeta.valueIMAPListDesc );
+    wIMAPListMails.select( 0 ); // +1: starts at -1
 
-    props.setLook( wIMAPListmails );
-    fdIMAPListmails = new FormData();
-    fdIMAPListmails.left = new FormAttachment( middle, 0 );
-    fdIMAPListmails.top = new FormAttachment( wIncludeSubFolders, margin );
-    fdIMAPListmails.right = new FormAttachment( 100, 0 );
-    wIMAPListmails.setLayoutData( fdIMAPListmails );
+    props.setLook( wIMAPListMails );
+    FormData fdIMAPListMails = new FormData();
+    fdIMAPListMails.left = new FormAttachment( middle, 0 );
+    fdIMAPListMails.top = new FormAttachment( wIncludeSubFolders, margin );
+    fdIMAPListMails.right = new FormAttachment( 100, 0 );
+    wIMAPListMails.setLayoutData( fdIMAPListMails );
 
-    wIMAPListmails.addSelectionListener( new SelectionAdapter() {
+    wIMAPListMails.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         // ChooseIMAPListmails();
-
       }
     } );
 
     // Retrieve the first ... mails
-    wlIMAPFirstmails = new Label( wIMAPSettings, SWT.RIGHT );
-    wlIMAPFirstmails.setText( BaseMessages.getString( PKG, "MailInput.IMAPFirstmails.Label" ) );
-    props.setLook( wlIMAPFirstmails );
-    fdlIMAPFirstmails = new FormData();
-    fdlIMAPFirstmails.left = new FormAttachment( 0, 0 );
-    fdlIMAPFirstmails.right = new FormAttachment( middle, -margin );
-    fdlIMAPFirstmails.top = new FormAttachment( wIMAPListmails, margin );
-    wlIMAPFirstmails.setLayoutData( fdlIMAPFirstmails );
+    wlIMAPFirstMails = new Label( wIMAPSettings, SWT.RIGHT );
+    wlIMAPFirstMails.setText( BaseMessages.getString( PKG, "MailInput.IMAPFirstmails.Label" ) );
+    props.setLook( wlIMAPFirstMails );
+    FormData fdlIMAPFirstMails = new FormData();
+    fdlIMAPFirstMails.left = new FormAttachment( 0, 0 );
+    fdlIMAPFirstMails.right = new FormAttachment( middle, -margin );
+    fdlIMAPFirstMails.top = new FormAttachment( wIMAPListMails, margin );
+    wlIMAPFirstMails.setLayoutData( fdlIMAPFirstMails );
 
-    wIMAPFirstmails = new TextVar( transMeta, wIMAPSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wIMAPFirstmails );
-    wIMAPFirstmails.addModifyListener( lsMod );
-    fdIMAPFirstmails = new FormData();
-    fdIMAPFirstmails.left = new FormAttachment( middle, 0 );
-    fdIMAPFirstmails.top = new FormAttachment( wIMAPListmails, margin );
-    fdIMAPFirstmails.right = new FormAttachment( 100, 0 );
-    wIMAPFirstmails.setLayoutData( fdIMAPFirstmails );
+    wIMAPFirstMails = new TextVar( transMeta, wIMAPSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wIMAPFirstMails );
+    wIMAPFirstMails.addModifyListener( lsMod );
+    FormData fdIMAPFirstMails = new FormData();
+    fdIMAPFirstMails.left = new FormAttachment( middle, 0 );
+    fdIMAPFirstMails.top = new FormAttachment( wIMAPListMails, margin );
+    fdIMAPFirstMails.right = new FormAttachment( 100, 0 );
+    wIMAPFirstMails.setLayoutData( fdIMAPFirstMails );
 
-    fdIMAPSettings = new FormData();
+    FormData fdIMAPSettings = new FormData();
     fdIMAPSettings.left = new FormAttachment( 0, margin );
     fdIMAPSettings.top = new FormAttachment( wPOP3Settings, 2 * margin );
     fdIMAPSettings.right = new FormAttachment( 100, -margin );
     wIMAPSettings.setLayoutData( fdIMAPSettings );
     // ///////////////////////////////////////////////////////////
-    // / END OF IMAP SETTINGS GROUP
+    // END OF IMAP SETTINGS GROUP
     // ///////////////////////////////////////////////////////////
 
     // ////////////////////////////////
-    // START OF Batch Settings GROUP///
-    //
-    wBatchSettingsGroup =
-      createGroup( wSettingsComp, wIMAPSettings, BaseMessages.getString(
-        PKG, "MailInputDialog.BatchSettingsGroup.Label" ) );
+    // START OF Batch Settings GROUP
+    // ////////////////////////////////
+    Group wBatchSettingsGroup = createGroup( wSettingsComp, wIMAPSettings, BaseMessages.getString(
+      PKG, "MailInputDialog.BatchSettingsGroup.Label" ) );
 
     // Batch size
     Label wlBatchSize = new Label( wBatchSettingsGroup, SWT.RIGHT );
@@ -978,11 +923,11 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wEndMessage = new TextVar( transMeta, wBatchSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     addLabelInputPairBelow( wlEndMessage, wEndMessage, wStartMessage );
 
-    //
-    // / END OF Batch Settings GROUP
+    // ///////////////////////////////
+    // END OF Batch Settings GROUP
     // ///////////////////////////////
 
-    fdSettingsComp = new FormData();
+    FormData fdSettingsComp = new FormData();
     fdSettingsComp.left = new FormAttachment( 0, 0 );
     fdSettingsComp.top = new FormAttachment( wStepname, 0 );
     fdSettingsComp.right = new FormAttachment( 100, 0 );
@@ -994,16 +939,16 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wSettingsComp );
 
     // ///////////////////////////////////////////////////////////
-    // / END OF Pop TAB
+    // END OF Pop TAB
     // ///////////////////////////////////////////////////////////
 
     // ////////////////////////
-    // START OF SEARCH TAB ///
+    // START OF SEARCH TAB
     // ////////////////////////
 
-    wSearchTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wSearchTab = new CTabItem( wTabFolder, SWT.NONE );
     wSearchTab.setText( BaseMessages.getString( PKG, "MailInput.Tab.Search.Label" ) );
-    wSearchComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wSearchComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wSearchComp );
     FormLayout searchLayout = new FormLayout();
     searchLayout.marginWidth = 3;
@@ -1011,30 +956,30 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wSearchComp.setLayout( searchLayout );
 
     // ////////////////////////
-    // START OF HEADER ROUP///
-    // /
-    wHeader = new Group( wSearchComp, SWT.SHADOW_NONE );
+    // START OF HEADER GROUP
+    // ////////////////////////
+    Group wHeader = new Group( wSearchComp, SWT.SHADOW_NONE );
     props.setLook( wHeader );
     wHeader.setText( BaseMessages.getString( PKG, "MailInput.Header.Group.Label" ) );
 
-    FormLayout HeadergroupLayout = new FormLayout();
-    HeadergroupLayout.marginWidth = 10;
-    HeadergroupLayout.marginHeight = 10;
-    wHeader.setLayout( HeadergroupLayout );
+    FormLayout headerGroupLayout = new FormLayout();
+    headerGroupLayout.marginWidth = 10;
+    headerGroupLayout.marginHeight = 10;
+    wHeader.setLayout( headerGroupLayout );
 
     wNegateSender = new Button( wHeader, SWT.CHECK );
     props.setLook( wNegateSender );
-    fdNegateSender = new FormData();
+    FormData fdNegateSender = new FormData();
     wNegateSender.setToolTipText( BaseMessages.getString( PKG, "MailInput.NegateSender.Tooltip" ) );
     fdNegateSender.top = new FormAttachment( 0, margin );
     fdNegateSender.right = new FormAttachment( 100, -margin );
     wNegateSender.setLayoutData( fdNegateSender );
 
     // From line
-    wlSender = new Label( wHeader, SWT.RIGHT );
+    Label wlSender = new Label( wHeader, SWT.RIGHT );
     wlSender.setText( BaseMessages.getString( PKG, "MailInput.wSender.Label" ) );
     props.setLook( wlSender );
-    fdlSender = new FormData();
+    FormData fdlSender = new FormData();
     fdlSender.left = new FormAttachment( 0, 0 );
     fdlSender.top = new FormAttachment( 0, margin );
     fdlSender.right = new FormAttachment( middle, -margin );
@@ -1042,88 +987,88 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wSender = new TextVar( transMeta, wHeader, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wSender );
     wSender.addModifyListener( lsMod );
-    fdSender = new FormData();
+    FormData fdSender = new FormData();
     fdSender.left = new FormAttachment( middle, 0 );
     fdSender.top = new FormAttachment( 0, margin );
     fdSender.right = new FormAttachment( wNegateSender, -margin );
     wSender.setLayoutData( fdSender );
 
-    wNegateReceipient = new Button( wHeader, SWT.CHECK );
-    props.setLook( wNegateReceipient );
-    fdNegateReceipient = new FormData();
-    wNegateReceipient.setToolTipText( BaseMessages.getString( PKG, "MailInput.NegateReceipient.Tooltip" ) );
-    fdNegateReceipient.top = new FormAttachment( wSender, margin );
-    fdNegateReceipient.right = new FormAttachment( 100, -margin );
-    wNegateReceipient.setLayoutData( fdNegateReceipient );
+    wNegateRecipient = new Button( wHeader, SWT.CHECK );
+    props.setLook( wNegateRecipient );
+    FormData fdNegateRecipient = new FormData();
+    wNegateRecipient.setToolTipText( BaseMessages.getString( PKG, "MailInput.NegateReceipient.Tooltip" ) );
+    fdNegateRecipient.top = new FormAttachment( wSender, margin );
+    fdNegateRecipient.right = new FormAttachment( 100, -margin );
+    wNegateRecipient.setLayoutData( fdNegateRecipient );
 
-    // Receipient line
-    wlReceipient = new Label( wHeader, SWT.RIGHT );
-    wlReceipient.setText( BaseMessages.getString( PKG, "MailInput.Receipient.Label" ) );
-    props.setLook( wlReceipient );
-    fdlReceipient = new FormData();
-    fdlReceipient.left = new FormAttachment( 0, 0 );
-    fdlReceipient.top = new FormAttachment( wSender, margin );
-    fdlReceipient.right = new FormAttachment( middle, -margin );
-    wlReceipient.setLayoutData( fdlReceipient );
-    wReceipient = new TextVar( transMeta, wHeader, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wReceipient );
-    wReceipient.addModifyListener( lsMod );
-    fdReceipient = new FormData();
-    fdReceipient.left = new FormAttachment( middle, 0 );
-    fdReceipient.top = new FormAttachment( wSender, margin );
-    fdReceipient.right = new FormAttachment( wNegateReceipient, -margin );
-    wReceipient.setLayoutData( fdReceipient );
+    // Recipient line
+    Label wlRecipient = new Label( wHeader, SWT.RIGHT );
+    wlRecipient.setText( BaseMessages.getString( PKG, "MailInput.Receipient.Label" ) );
+    props.setLook( wlRecipient );
+    FormData fdlRecipient = new FormData();
+    fdlRecipient.left = new FormAttachment( 0, 0 );
+    fdlRecipient.top = new FormAttachment( wSender, margin );
+    fdlRecipient.right = new FormAttachment( middle, -margin );
+    wlRecipient.setLayoutData( fdlRecipient );
+    wRecipient = new TextVar( transMeta, wHeader, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wRecipient );
+    wRecipient.addModifyListener( lsMod );
+    FormData fdRecipient = new FormData();
+    fdRecipient.left = new FormAttachment( middle, 0 );
+    fdRecipient.top = new FormAttachment( wSender, margin );
+    fdRecipient.right = new FormAttachment( wNegateRecipient, -margin );
+    wRecipient.setLayoutData( fdRecipient );
 
     wNegateSubject = new Button( wHeader, SWT.CHECK );
     props.setLook( wNegateSubject );
-    fdNegateSubject = new FormData();
+    FormData fdNegateSubject = new FormData();
     wNegateSubject.setToolTipText( BaseMessages.getString( PKG, "MailInput.NegateSubject.Tooltip" ) );
-    fdNegateSubject.top = new FormAttachment( wReceipient, margin );
+    fdNegateSubject.top = new FormAttachment( wRecipient, margin );
     fdNegateSubject.right = new FormAttachment( 100, -margin );
     wNegateSubject.setLayoutData( fdNegateSubject );
 
     // Subject line
-    wlSubject = new Label( wHeader, SWT.RIGHT );
+    Label wlSubject = new Label( wHeader, SWT.RIGHT );
     wlSubject.setText( BaseMessages.getString( PKG, "MailInput.Subject.Label" ) );
     props.setLook( wlSubject );
-    fdlSubject = new FormData();
+    FormData fdlSubject = new FormData();
     fdlSubject.left = new FormAttachment( 0, 0 );
-    fdlSubject.top = new FormAttachment( wReceipient, margin );
+    fdlSubject.top = new FormAttachment( wRecipient, margin );
     fdlSubject.right = new FormAttachment( middle, -margin );
     wlSubject.setLayoutData( fdlSubject );
     wSubject = new TextVar( transMeta, wHeader, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wSubject );
     wSubject.addModifyListener( lsMod );
-    fdSubject = new FormData();
+    FormData fdSubject = new FormData();
     fdSubject.left = new FormAttachment( middle, 0 );
-    fdSubject.top = new FormAttachment( wReceipient, margin );
+    fdSubject.top = new FormAttachment( wRecipient, margin );
     fdSubject.right = new FormAttachment( wNegateSubject, -margin );
     wSubject.setLayoutData( fdSubject );
 
-    fdHeader = new FormData();
+    FormData fdHeader = new FormData();
     fdHeader.left = new FormAttachment( 0, margin );
-    fdHeader.top = new FormAttachment( wReceipient, 2 * margin );
+    fdHeader.top = new FormAttachment( wRecipient, 2 * margin );
     fdHeader.right = new FormAttachment( 100, -margin );
     wHeader.setLayoutData( fdHeader );
     // ///////////////////////////////////////////////////////////
-    // / END OF HEADER GROUP
+    // END OF HEADER GROUP
     // ///////////////////////////////////////////////////////////
 
     // ////////////////////////
-    // START OF RECEIVED DATE ROUP///
-    // /
-    wReceivedDate = new Group( wSearchComp, SWT.SHADOW_NONE );
+    // START OF RECEIVED DATE GROUP
+    // ////////////////////////
+    Group wReceivedDate = new Group( wSearchComp, SWT.SHADOW_NONE );
     props.setLook( wReceivedDate );
     wReceivedDate.setText( BaseMessages.getString( PKG, "MailInput.ReceivedDate.Group.Label" ) );
 
-    FormLayout ReceivedDategroupLayout = new FormLayout();
-    ReceivedDategroupLayout.marginWidth = 10;
-    ReceivedDategroupLayout.marginHeight = 10;
-    wReceivedDate.setLayout( ReceivedDategroupLayout );
+    FormLayout receivedDateGroupLayout = new FormLayout();
+    receivedDateGroupLayout.marginWidth = 10;
+    receivedDateGroupLayout.marginHeight = 10;
+    wReceivedDate.setLayout( receivedDateGroupLayout );
 
     wNegateReceivedDate = new Button( wReceivedDate, SWT.CHECK );
     props.setLook( wNegateReceivedDate );
-    fdNegateReceivedDate = new FormData();
+    FormData fdNegateReceivedDate = new FormData();
     wNegateReceivedDate.setToolTipText( BaseMessages.getString( PKG, "MailInput.NegateReceivedDate.Tooltip" ) );
     fdNegateReceivedDate.top = new FormAttachment( wHeader, margin );
     fdNegateReceivedDate.right = new FormAttachment( 100, -margin );
@@ -1133,7 +1078,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlConditionOnReceivedDate = new Label( wReceivedDate, SWT.RIGHT );
     wlConditionOnReceivedDate.setText( BaseMessages.getString( PKG, "MailInput.ConditionOnReceivedDate.Label" ) );
     props.setLook( wlConditionOnReceivedDate );
-    fdlConditionOnReceivedDate = new FormData();
+    FormData fdlConditionOnReceivedDate = new FormData();
     fdlConditionOnReceivedDate.left = new FormAttachment( 0, 0 );
     fdlConditionOnReceivedDate.right = new FormAttachment( middle, -margin );
     fdlConditionOnReceivedDate.top = new FormAttachment( wHeader, margin );
@@ -1144,17 +1089,21 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wConditionOnReceivedDate.select( 0 ); // +1: starts at -1
 
     props.setLook( wConditionOnReceivedDate );
-    fdConditionOnReceivedDate = new FormData();
+    FormData fdConditionOnReceivedDate = new FormData();
     fdConditionOnReceivedDate.left = new FormAttachment( middle, 0 );
     fdConditionOnReceivedDate.top = new FormAttachment( wHeader, margin );
     fdConditionOnReceivedDate.right = new FormAttachment( wNegateReceivedDate, -margin );
     wConditionOnReceivedDate.setLayoutData( fdConditionOnReceivedDate );
     wConditionOnReceivedDate.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         conditionReceivedDate();
         input.setChanged();
       }
     } );
+
+    // This string is used multiple times
+    String systemButtonOkText = BaseMessages.getString( PKG, "System.Button.OK" );
 
     open = new Button( wReceivedDate, SWT.PUSH );
     open.setImage( GUIResource.getInstance().getImageCalendar() );
@@ -1164,6 +1113,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdlButton.right = new FormAttachment( 100, 0 );
     open.setLayoutData( fdlButton );
     open.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         final Shell dialog = new Shell( shell, SWT.DIALOG_TRIM );
         dialog.setText( BaseMessages.getString( PKG, "MailInput.SelectDate" ) );
@@ -1171,14 +1121,15 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
         dialog.setLayout( new GridLayout( 3, false ) );
 
         final DateTime calendar = new DateTime( dialog, SWT.CALENDAR );
-        final DateTime time = new DateTime( dialog, SWT.TIME | SWT.TIME );
+        final DateTime time = new DateTime( dialog, SWT.TIME );
         new Label( dialog, SWT.NONE );
         new Label( dialog, SWT.NONE );
 
         Button ok = new Button( dialog, SWT.PUSH );
-        ok.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+        ok.setText( systemButtonOkText );
         ok.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, false, false ) );
         ok.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             Calendar cal = Calendar.getInstance();
             cal.set( Calendar.YEAR, calendar.getYear() );
@@ -1203,7 +1154,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlReadFrom = new Label( wReceivedDate, SWT.RIGHT );
     wlReadFrom.setText( BaseMessages.getString( PKG, "MailInput.ReadFrom.Label" ) );
     props.setLook( wlReadFrom );
-    fdlReadFrom = new FormData();
+    FormData fdlReadFrom = new FormData();
     fdlReadFrom.left = new FormAttachment( 0, 0 );
     fdlReadFrom.top = new FormAttachment( wConditionOnReceivedDate, margin );
     fdlReadFrom.right = new FormAttachment( middle, -margin );
@@ -1212,59 +1163,61 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wReadFrom.setToolTipText( BaseMessages.getString( PKG, "MailInput.ReadFrom.Tooltip" ) );
     props.setLook( wReadFrom );
     wReadFrom.addModifyListener( lsMod );
-    fdReadFrom = new FormData();
+    FormData fdReadFrom = new FormData();
     fdReadFrom.left = new FormAttachment( middle, 0 );
     fdReadFrom.top = new FormAttachment( wConditionOnReceivedDate, margin );
     fdReadFrom.right = new FormAttachment( open, -margin );
     wReadFrom.setLayoutData( fdReadFrom );
 
-    opento = new Button( wReceivedDate, SWT.PUSH );
-    opento.setImage( GUIResource.getInstance().getImageCalendar() );
-    opento.setToolTipText( BaseMessages.getString( PKG, "MailInput.OpenCalendar" ) );
-    FormData fdlButtonto = new FormData();
-    fdlButtonto.top = new FormAttachment( wReadFrom, 2 * margin );
-    fdlButtonto.right = new FormAttachment( 100, 0 );
-    opento.setLayoutData( fdlButtonto );
-    opento.addSelectionListener( new SelectionAdapter() {
+    openTo = new Button( wReceivedDate, SWT.PUSH );
+    openTo.setImage( GUIResource.getInstance().getImageCalendar() );
+    openTo.setToolTipText( BaseMessages.getString( PKG, "MailInput.OpenCalendar" ) );
+    FormData fdlButtonTo = new FormData();
+    fdlButtonTo.top = new FormAttachment( wReadFrom, 2 * margin );
+    fdlButtonTo.right = new FormAttachment( 100, 0 );
+    openTo.setLayoutData( fdlButtonTo );
+    openTo.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
-        final Shell dialogto = new Shell( shell, SWT.DIALOG_TRIM );
-        dialogto.setText( BaseMessages.getString( PKG, "MailInput.SelectDate" ) );
-        dialogto.setImage( GUIResource.getInstance().getImageSpoon() );
-        dialogto.setLayout( new GridLayout( 3, false ) );
+        final Shell dialogTo = new Shell( shell, SWT.DIALOG_TRIM );
+        dialogTo.setText( BaseMessages.getString( PKG, "MailInput.SelectDate" ) );
+        dialogTo.setImage( GUIResource.getInstance().getImageSpoon() );
+        dialogTo.setLayout( new GridLayout( 3, false ) );
 
-        final DateTime calendarto = new DateTime( dialogto, SWT.CALENDAR | SWT.BORDER );
-        final DateTime timeto = new DateTime( dialogto, SWT.TIME | SWT.TIME );
-        new Label( dialogto, SWT.NONE );
-        new Label( dialogto, SWT.NONE );
-        Button okto = new Button( dialogto, SWT.PUSH );
-        okto.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
-        okto.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, false, false ) );
-        okto.addSelectionListener( new SelectionAdapter() {
+        final DateTime calendarTo = new DateTime( dialogTo, SWT.CALENDAR | SWT.BORDER );
+        final DateTime timeTo = new DateTime( dialogTo, SWT.TIME );
+        new Label( dialogTo, SWT.NONE );
+        new Label( dialogTo, SWT.NONE );
+        Button okTo = new Button( dialogTo, SWT.PUSH );
+        okTo.setText( systemButtonOkText );
+        okTo.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, false, false ) );
+        okTo.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             Calendar cal = Calendar.getInstance();
-            cal.set( Calendar.YEAR, calendarto.getYear() );
-            cal.set( Calendar.MONTH, calendarto.getMonth() );
-            cal.set( Calendar.DAY_OF_MONTH, calendarto.getDay() );
+            cal.set( Calendar.YEAR, calendarTo.getYear() );
+            cal.set( Calendar.MONTH, calendarTo.getMonth() );
+            cal.set( Calendar.DAY_OF_MONTH, calendarTo.getDay() );
 
-            cal.set( Calendar.HOUR_OF_DAY, timeto.getHours() );
-            cal.set( Calendar.MINUTE, timeto.getMinutes() );
-            cal.set( Calendar.SECOND, timeto.getSeconds() );
+            cal.set( Calendar.HOUR_OF_DAY, timeTo.getHours() );
+            cal.set( Calendar.MINUTE, timeTo.getMinutes() );
+            cal.set( Calendar.SECOND, timeTo.getSeconds() );
 
             wReadTo.setText( new SimpleDateFormat( MailInputMeta.DATE_PATTERN ).format( cal.getTime() ) );
 
-            dialogto.close();
+            dialogTo.close();
           }
         } );
-        dialogto.setDefaultButton( okto );
-        dialogto.pack();
-        dialogto.open();
+        dialogTo.setDefaultButton( okTo );
+        dialogTo.pack();
+        dialogTo.open();
       }
     } );
 
     wlReadTo = new Label( wReceivedDate, SWT.RIGHT );
     wlReadTo.setText( BaseMessages.getString( PKG, "MailInput.ReadTo.Label" ) );
     props.setLook( wlReadTo );
-    fdlReadTo = new FormData();
+    FormData fdlReadTo = new FormData();
     fdlReadTo.left = new FormAttachment( 0, 0 );
     fdlReadTo.top = new FormAttachment( wReadFrom, 2 * margin );
     fdlReadTo.right = new FormAttachment( middle, -margin );
@@ -1273,25 +1226,25 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wReadTo.setToolTipText( BaseMessages.getString( PKG, "MailInput.ReadTo.Tooltip" ) );
     props.setLook( wReadTo );
     wReadTo.addModifyListener( lsMod );
-    fdReadTo = new FormData();
+    FormData fdReadTo = new FormData();
     fdReadTo.left = new FormAttachment( middle, 0 );
     fdReadTo.top = new FormAttachment( wReadFrom, 2 * margin );
-    fdReadTo.right = new FormAttachment( opento, -margin );
+    fdReadTo.right = new FormAttachment( openTo, -margin );
     wReadTo.setLayoutData( fdReadTo );
 
-    fdReceivedDate = new FormData();
+    FormData fdReceivedDate = new FormData();
     fdReceivedDate.left = new FormAttachment( 0, margin );
     fdReceivedDate.top = new FormAttachment( wHeader, margin );
     fdReceivedDate.right = new FormAttachment( 100, -margin );
     wReceivedDate.setLayoutData( fdReceivedDate );
     // ///////////////////////////////////////////////////////////
-    // / END OF RECEIVED DATE GROUP
+    // END OF RECEIVED DATE GROUP
     // ///////////////////////////////////////////////////////////
 
     wlLimit = new Label( wSearchComp, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "MailInput.Limit.Label" ) );
     props.setLook( wlLimit );
-    fdlLimit = new FormData();
+    FormData fdlLimit = new FormData();
     fdlLimit.left = new FormAttachment( 0, 0 );
     fdlLimit.top = new FormAttachment( wReceivedDate, 2 * margin );
     fdlLimit.right = new FormAttachment( middle, -margin );
@@ -1299,13 +1252,13 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wLimit = new Text( wSearchComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wLimit );
     wLimit.addModifyListener( lsMod );
-    fdLimit = new FormData();
+    FormData fdLimit = new FormData();
     fdLimit.left = new FormAttachment( middle, 0 );
     fdLimit.top = new FormAttachment( wReceivedDate, 2 * margin );
     fdLimit.right = new FormAttachment( 100, 0 );
     wLimit.setLayoutData( fdLimit );
 
-    fdSearchComp = new FormData();
+    FormData fdSearchComp = new FormData();
     fdSearchComp.left = new FormAttachment( 0, 0 );
     fdSearchComp.top = new FormAttachment( wStepname, 0 );
     fdSearchComp.right = new FormAttachment( 100, 0 );
@@ -1317,19 +1270,19 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wSearchComp );
 
     // ////////////////////////////////
-    // / END OF SEARCH TAB
+    // END OF SEARCH TAB
     // ////////////////////////////////
 
     // Fields tab...
     //
-    wFieldsTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wFieldsTab = new CTabItem( wTabFolder, SWT.NONE );
     wFieldsTab.setText( BaseMessages.getString( PKG, "MailInputdialog.Fields.Tab" ) );
 
     FormLayout fieldsLayout = new FormLayout();
     fieldsLayout.marginWidth = Const.FORM_MARGIN;
     fieldsLayout.marginHeight = Const.FORM_MARGIN;
 
-    wFieldsComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wFieldsComp = new Composite( wTabFolder, SWT.NONE );
     wFieldsComp.setLayout( fieldsLayout );
     props.setLook( wFieldsComp );
 
@@ -1342,7 +1295,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     final int FieldsRows = input.getInputFields().length;
 
-    ColumnInfo[] colinf =
+    ColumnInfo[] colInf =
       new ColumnInfo[] {
         new ColumnInfo(
           BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Name.Column" ),
@@ -1351,21 +1304,21 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
           BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Column.Column" ),
           ColumnInfo.COLUMN_TYPE_CCOMBO, MailInputField.ColumnDesc, true ), };
 
-    colinf[0].setUsingVariables( true );
-    colinf[0].setToolTip( BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Name.Column.Tooltip" ) );
-    colinf[1].setToolTip( BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Column.Column.Tooltip" ) );
+    colInf[ 0 ].setUsingVariables( true );
+    colInf[ 0 ].setToolTip( BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Name.Column.Tooltip" ) );
+    colInf[ 1 ].setToolTip( BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Column.Column.Tooltip" ) );
 
     wFields =
-      new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colInf, FieldsRows, lsMod, props );
 
-    fdFields = new FormData();
+    FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( 0, 0 );
     fdFields.right = new FormAttachment( 100, 0 );
     fdFields.bottom = new FormAttachment( wGet, -margin );
     wFields.setLayoutData( fdFields );
 
-    fdFieldsComp = new FormData();
+    FormData fdFieldsComp = new FormData();
     fdFieldsComp.left = new FormAttachment( 0, 0 );
     fdFieldsComp.top = new FormAttachment( 0, 0 );
     fdFieldsComp.right = new FormAttachment( 100, 0 );
@@ -1375,7 +1328,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wFieldsComp.layout();
     wFieldsTab.setControl( wFieldsComp );
 
-    fdTabFolder = new FormData();
+    FormData fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
     fdTabFolder.top = new FormAttachment( wStepname, margin );
     fdTabFolder.right = new FormAttachment( 100, 0 );
@@ -1383,7 +1336,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wTabFolder.setLayoutData( fdTabFolder );
 
     wOK = new Button( shell, SWT.PUSH );
-    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wOK.setText( systemButtonOkText );
     wCancel = new Button( shell, SWT.PUSH );
     wPreview = new Button( shell, SWT.PUSH );
     wPreview.setText( BaseMessages.getString( PKG, "MailInputDialog.Preview" ) );
@@ -1391,62 +1344,35 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
     BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder );
-    lsGet = new Listener() {
-      public void handleEvent( Event e ) {
-        getFields();
-      }
-    };
     // Add listeners
-    lsCancel = new Listener() {
-      public void handleEvent( Event e ) {
-        cancel();
-      }
-    };
-    lsOK = new Listener() {
-      public void handleEvent( Event e ) {
-        ok();
-      }
-    };
-    lsPreview = new Listener() {
-      public void handleEvent( Event e ) {
-        preview();
-      }
-    };
+    lsGet = e -> getFields();
+    lsCancel = e -> cancel();
+    lsOK = e -> ok();
+    lsPreview = e -> preview();
     wCancel.addListener( SWT.Selection, lsCancel );
     wOK.addListener( SWT.Selection, lsOK );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
     };
-    lsTest = new Listener() {
-      public void handleEvent( Event e ) {
-        test();
-      }
-    };
+    Listener lsTest = e -> test();
     wTest.addListener( SWT.Selection, lsTest );
     wPreview.addListener( SWT.Selection, lsPreview );
     wGet.addListener( SWT.Selection, lsGet );
-    lsTestIMAPFolder = new Listener() {
-      public void handleEvent( Event e ) {
-        checkFolder( transMeta.environmentSubstitute( wIMAPFolder.getText() ) );
-      }
-    };
-    wTestIMAPFolder.addListener( SWT.Selection, lsTestIMAPFolder );
+    wTestIMAPFolder.addListener( SWT.Selection,
+      e1 -> checkFolder( transMeta.environmentSubstitute( wIMAPFolder.getText() ) ) );
 
-    lsSelectFolder = new Listener() {
-      public void handleEvent( Event e ) {
-        selectFolder( wIMAPFolder );
-      }
-    };
-    wSelectFolder.addListener( SWT.Selection, lsSelectFolder );
+    wSelectFolder.addListener( SWT.Selection, e -> selectFolder( wIMAPFolder ) );
 
     wStepname.addSelectionListener( lsDef );
     wServerName.addSelectionListener( lsDef );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -1473,22 +1399,22 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     return stepname;
   }
 
-  private void activedynamicFolder() {
-    wlFolderField.setEnabled( wdynamicFolder.getSelection() );
-    wFolderField.setEnabled( wdynamicFolder.getSelection() );
-    wlIMAPFolder.setEnabled( !wdynamicFolder.getSelection() );
-    wIMAPFolder.setEnabled( !wdynamicFolder.getSelection() );
-    wPreview.setEnabled( !wdynamicFolder.getSelection() );
-    if ( wdynamicFolder.getSelection() ) {
+  private void activeDynamicFolder() {
+    wlFolderField.setEnabled( wDynamicFolder.getSelection() );
+    wFolderField.setEnabled( wDynamicFolder.getSelection() );
+    wlIMAPFolder.setEnabled( !wDynamicFolder.getSelection() );
+    wIMAPFolder.setEnabled( !wDynamicFolder.getSelection() );
+    wPreview.setEnabled( !wDynamicFolder.getSelection() );
+    if ( wDynamicFolder.getSelection() ) {
       wLimit.setText( "0" );
     }
-    wlLimit.setEnabled( !wdynamicFolder.getSelection() );
-    wLimit.setEnabled( !wdynamicFolder.getSelection() );
+    wlLimit.setEnabled( !wDynamicFolder.getSelection() );
+    wLimit.setEnabled( !wDynamicFolder.getSelection() );
     boolean activePOP3 = wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 );
-    wlIMAPFolder.setEnabled( !wdynamicFolder.getSelection() && !activePOP3 );
-    wIMAPFolder.setEnabled( !wdynamicFolder.getSelection() && !activePOP3 );
-    wTestIMAPFolder.setEnabled( !wdynamicFolder.getSelection() && !activePOP3 );
-    wSelectFolder.setEnabled( !wdynamicFolder.getSelection() && !activePOP3 );
+    wlIMAPFolder.setEnabled( !wDynamicFolder.getSelection() && !activePOP3 );
+    wIMAPFolder.setEnabled( !wDynamicFolder.getSelection() && !activePOP3 );
+    wTestIMAPFolder.setEnabled( !wDynamicFolder.getSelection() && !activePOP3 );
+    wSelectFolder.setEnabled( !wDynamicFolder.getSelection() && !activePOP3 );
   }
 
   /**
@@ -1510,40 +1436,38 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( input.getPort() != null ) {
       wPort.setText( input.getPort() );
     }
-    if( input.isUsingAuthentication() !=null) {
-      wUseAuth.setText(input.isUsingAuthentication());
+    if ( input.isUsingAuthentication() != null ) {
+      wUseAuth.setText( input.isUsingAuthentication() );
     }
 
-    if( input.getClientId()!= null ) {
+    if ( input.getClientId() != null ) {
       wAuthClientId.setText( input.getClientId() );
     }
-    if( input.getSecretKey()!= null ) {
+    if ( input.getSecretKey() != null ) {
       wAuthSecretKey.setText( input.getSecretKey() );
     }
-    if( input.getScope()!= null ) {
+    if ( input.getScope() != null ) {
       wAuthScope.setText( input.getScope() );
     }
-    if( input.getTokenUrl()!= null ) {
+    if ( input.getTokenUrl() != null ) {
       wAuthTokenUrl.setText( input.getTokenUrl() );
     }
-    if( input.getAuthorization_code()!= null ) {
+    if ( input.getAuthorization_code() != null ) {
       wAuthorizationCode.setText( input.getAuthorization_code() );
     }
-    if( input.getRedirectUri()!= null ) {
+    if ( input.getRedirectUri() != null ) {
       wRedirectUri.setText( input.getRedirectUri() );
     }
-    if( input.getRefresh_token()!= null ) {
+    if ( input.getRefresh_token() != null ) {
       wAuthRefreshToken.setText( input.getRefresh_token() );
     }
-    if( input.getGrant_type()!= null ) {
+    if ( input.getGrant_type() != null ) {
       grantType.setText( input.getGrant_type() );
     }
 
-
-
     String protocol = input.getProtocol();
 
-    boolean isPop3 = StringUtils.equals( protocol, MailConnectionMeta.PROTOCOL_STRING_POP3 );
+    boolean isPop3 = MailConnectionMeta.PROTOCOL_STRING_POP3.equals( protocol );
     wProtocol.setText( protocol );
     int iRet = input.getRetrievemails();
 
@@ -1552,21 +1476,21 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     // now they realize that all this time it was 'retrieve all mails'.
     if ( iRet > 0 ) {
       if ( isPop3 ) {
-        wListmails.select( iRet - 1 );
+        wListMails.select( iRet - 1 );
       } else {
-        wListmails.select( iRet );
+        wListMails.select( iRet );
       }
     } else {
-      wListmails.select( 0 ); // Retrieve All Mails
+      wListMails.select( 0 ); // Retrieve All Mails
     }
 
     if ( input.getFirstMails() != null ) {
-      wFirstmails.setText( input.getFirstMails() );
+      wFirstMails.setText( input.getFirstMails() );
     }
 
-    wIMAPListmails.setText( MailConnectionMeta.getValueImapListDesc( input.getValueImapList() ) );
+    wIMAPListMails.setText( MailConnectionMeta.getValueImapListDesc( input.getValueImapList() ) );
     if ( input.getFirstIMAPMails() != null ) {
-      wIMAPFirstmails.setText( input.getFirstIMAPMails() );
+      wIMAPFirstMails.setText( input.getFirstIMAPMails() );
     }
     if ( input.getIMAPFolder() != null ) {
       wIMAPFolder.setText( input.getIMAPFolder() );
@@ -1577,9 +1501,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     }
     wNegateSender.setSelection( input.isNotTermSenderSearch() );
     if ( input.getRecipientSearch() != null ) {
-      wReceipient.setText( input.getRecipientSearch() );
+      wRecipient.setText( input.getRecipientSearch() );
     }
-    wNegateReceipient.setSelection( input.isNotTermRecipientSearch() );
+    wNegateRecipient.setSelection( input.isNotTermRecipientSearch() );
     if ( input.getSubjectSearch() != null ) {
       wSubject.setText( input.getSubjectSearch() );
     }
@@ -1598,13 +1522,13 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( input.getProxyUsername() != null ) {
       wProxyUsername.setText( input.getProxyUsername() );
     }
-    wdynamicFolder.setSelection( input.isDynamicFolder() );
+    wDynamicFolder.setSelection( input.isDynamicFolder() );
     if ( input.getFolderField() != null ) {
       wFolderField.setText( input.getFolderField() );
     }
     wLimit.setText( Const.NVL( input.getRowLimit(), "0" ) );
     for ( int i = 0; i < input.getInputFields().length; i++ ) {
-      MailInputField field = input.getInputFields()[i];
+      MailInputField field = input.getInputFields()[ i ];
 
       if ( field != null ) {
         TableItem item = wFields.table.getItem( i );
@@ -1628,8 +1552,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       input.getBatchSize() == null
         ? String.valueOf( MailInputMeta.DEFAULT_BATCH_SIZE )
         : input.getBatchSize().toString() );
-    wStartMessage.setText( input.getStart() == null ? "" : input.getStart().toString() );
-    wEndMessage.setText( input.getEnd() == null ? "" : input.getEnd().toString() );
+    wStartMessage.setText( Const.NVL( input.getStart(), "" ) );
+    wEndMessage.setText( Const.NVL( input.getEnd(), "" ) );
     wIgnoreFieldErrors.setSelection( input.isStopOnError() );
     setBatchSettingsEnabled();
 
@@ -1678,22 +1602,22 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // [PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
     // for backward compatibility: 0 is 'retrieve all', 2 is 'retrieve first...'
-    int actualIndex = wListmails.getSelectionIndex();
+    int actualIndex = wListMails.getSelectionIndex();
     in.setRetrievemails( actualIndex > 0 ? 2 : 0 );
 
     //Set first... emails for POP3
-    in.setFirstMails( wFirstmails.getText() );
+    in.setFirstMails( wFirstMails.getText() );
     in.setProtocol( wProtocol.getText() );
-    in.setValueImapList( MailConnectionMeta.getValueImapListByDesc( wIMAPListmails.getText() ) );
+    in.setValueImapList( MailConnectionMeta.getValueImapListByDesc( wIMAPListMails.getText() ) );
     //Set first... emails for IMAP
-    in.setFirstIMAPMails( wIMAPFirstmails.getText() );
+    in.setFirstIMAPMails( wIMAPFirstMails.getText() );
     in.setIMAPFolder( wIMAPFolder.getText() );
     // search term
     in.setSenderSearchTerm( wSender.getText() );
     in.setNotTermSenderSearch( wNegateSender.getSelection() );
 
-    in.setRecipientSearch( wReceipient.getText() );
-    in.setNotTermRecipientSearch( wNegateReceipient.getSelection() );
+    in.setRecipientSearch( wRecipient.getText() );
+    in.setNotTermRecipientSearch( wNegateRecipient.getSelection() );
     in.setSubjectSearch( wSubject.getText() );
     in.setNotTermSubjectSearch( wNegateSubject.getSelection() );
     in.setConditionOnReceivedDate( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() ) );
@@ -1703,7 +1627,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setIncludeSubFolders( wIncludeSubFolders.getSelection() );
     in.setUseProxy( wUseProxy.getSelection() );
     in.setProxyUsername( wProxyUsername.getText() );
-    in.setDynamicFolder( wdynamicFolder.getSelection() );
+    in.setDynamicFolder( wDynamicFolder.getSelection() );
     in.setFolderField( wFolderField.getText() );
     in.setRowLimit( wLimit.getText() );
     int nrFields = wFields.nrNonEmpty();
@@ -1715,20 +1639,19 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
       field.setName( item.getText( 1 ) );
       field.setColumn( MailInputField.getColumnByDesc( item.getText( 2 ) ) );
-      //CHECKSTYLE:Indentation:OFF
-      in.getInputFields()[i] = field;
+      in.getInputFields()[ i ] = field;
     }
 
     in.setUseBatch( wUseBatch.getSelection() );
     Integer batchSize = getInteger( wBatchSize.getText() );
-    in.setBatchSize( batchSize == null ? MailInputMeta.DEFAULT_BATCH_SIZE : batchSize );
+    in.setBatchSize( Const.NVL( batchSize, MailInputMeta.DEFAULT_BATCH_SIZE ) );
     in.setStart( wStartMessage.getText() );
     in.setEnd( wEndMessage.getText() );
     in.setStopOnError( wIgnoreFieldErrors.getSelection() );
   }
 
   private void setFolderField() {
-    if ( !gotPreviousfields ) {
+    if ( !gotPreviousFields ) {
       try {
         String field = wFolderField.getText();
         wFolderField.removeAll();
@@ -1745,7 +1668,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
           shell, BaseMessages.getString( PKG, "MailInput.FailedToGetFields.DialogTitle" ), BaseMessages
             .getString( PKG, "MailInput.FailedToGetFields.DialogMessage" ), ke );
       }
-      gotPreviousfields = true;
+      gotPreviousFields = true;
     }
   }
 
@@ -1771,7 +1694,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     open.setVisible( activeReceivedDate );
     wlReadTo.setVisible( activeReceivedDate && useBetween );
     wReadTo.setVisible( activeReceivedDate && useBetween );
-    opento.setVisible( activeReceivedDate && useBetween );
+    openTo.setVisible( activeReceivedDate && useBetween );
     if ( !activeReceivedDate ) {
       wReadFrom.setText( "" );
       wReadTo.setText( "" );
@@ -1779,8 +1702,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     }
   }
 
-  private void refreshPort( boolean refreshport ) {
-    if ( refreshport ) {
+  private void refreshPort( boolean refreshPort ) {
+    if ( refreshPort ) {
       if ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) ) {
         if ( wUseSSL.getSelection() ) {
           if ( Utils.isEmpty( wPort.getText() )
@@ -1788,7 +1711,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT );
           }
         } else {
-          if ( Utils.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_IMAP_PORT ) ) {
+          if ( Utils.isEmpty( wPort.getText() ) || wPort.getText()
+            .equals( "" + MailConnectionMeta.DEFAULT_IMAP_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_POP3_PORT );
           }
         }
@@ -1799,7 +1723,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
           }
         } else {
-          if ( Utils.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_POP3_PORT ) ) {
+          if ( Utils.isEmpty( wPort.getText() ) || wPort.getText()
+            .equals( "" + MailConnectionMeta.DEFAULT_POP3_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_IMAP_PORT );
           }
         }
@@ -1809,27 +1734,27 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     }
   }
 
-  private void refreshProtocol( boolean refreshport ) {
-    boolean activePOP3 = wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 );
-    boolean activeIMAP = wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP );
+  private void refreshProtocol( boolean refreshPort ) {
+    boolean activePOP3 = MailConnectionMeta.PROTOCOL_STRING_POP3.equals( wProtocol.getText() );
+    boolean activeIMAP = MailConnectionMeta.PROTOCOL_STRING_IMAP.equals( wProtocol.getText() );
 
     wlPOP3Message.setEnabled( activePOP3 );
-    wlListmails.setEnabled( activePOP3 );
-    wListmails.setEnabled( activePOP3 );
-    wlFirstmails.setEnabled( activePOP3 );
+    wlListMails.setEnabled( activePOP3 );
+    wListMails.setEnabled( activePOP3 );
+    wlFirstMails.setEnabled( activePOP3 );
 
-    wlIMAPFirstmails.setEnabled( activeIMAP );
-    wIMAPFirstmails.setEnabled( activeIMAP );
+    wlIMAPFirstMails.setEnabled( activeIMAP );
+    wIMAPFirstMails.setEnabled( activeIMAP );
 
     wlIncludeSubFolders.setEnabled( !activePOP3 );
     wIncludeSubFolders.setEnabled( !activePOP3 );
-    wlIMAPListmails.setEnabled( activeIMAP );
-    wIMAPListmails.setEnabled( activeIMAP );
-    if ( activePOP3 && wdynamicFolder.getSelection() ) {
-      wdynamicFolder.setSelection( false );
+    wlIMAPListMails.setEnabled( activeIMAP );
+    wIMAPListMails.setEnabled( activeIMAP );
+    if ( activePOP3 && wDynamicFolder.getSelection() ) {
+      wDynamicFolder.setSelection( false );
     }
-    wldynamicFolder.setEnabled( !activePOP3 );
-    wdynamicFolder.setEnabled( !activePOP3 );
+    wlDynamicFolder.setEnabled( !activePOP3 );
+    wDynamicFolder.setEnabled( !activePOP3 );
 
     if ( activePOP3 ) {
       // clear out selections
@@ -1843,9 +1768,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     setRemoteOptionsEnabled( activePOP3 || activeIMAP );
 
-    activedynamicFolder();
+    activeDynamicFolder();
     chooseListMails();
-    refreshPort( refreshport );
+    refreshPort( refreshPort );
   }
 
   private void setRemoteOptionsEnabled( boolean enableRemoteOpts ) {
@@ -1865,18 +1790,19 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlUseSSL.setEnabled( enableRemoteOpts );
   }
 
+  @Override
   public void dispose() {
     closeMailConnection();
-    WindowProperty winprop = new WindowProperty( shell );
-    props.setScreen( winprop );
+    props.setScreen( new WindowProperty( shell ) );
     shell.dispose();
   }
 
   public void chooseListMails() {
     boolean ok =
-      ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 1 );
-    wlFirstmails.setEnabled( ok );
-    wFirstmails.setEnabled( ok );
+      ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListMails.getSelectionIndex() == 1 );
+
+    wlFirstMails.setEnabled( ok );
+    wFirstMails.setEnabled( ok );
   }
 
   private void selectFolder( TextVar input ) {
@@ -1884,9 +1810,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       try {
         Folder folder = mailConn.getStore().getDefaultFolder();
         SelectFolderDialog s = new SelectFolderDialog( shell, SWT.NONE, folder );
-        String foldername = s.open();
-        if ( foldername != null ) {
-          input.setText( foldername );
+        String folderName = s.open();
+        if ( folderName != null ) {
+          input.setText( folderName );
         }
       } catch ( Exception e ) {
         // Ignore errors
@@ -1895,18 +1821,18 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   private boolean connect() {
-    String errordescription = null;
+    String errorDescription = null;
     boolean retval = false;
     if ( mailConn != null && mailConn.isConnected() ) {
       retval = mailConn.isConnected();
     }
 
     if ( !retval ) {
-      String realserver = transMeta.environmentSubstitute( wServerName.getText() );
-      String realuser = transMeta.environmentSubstitute( wUserName.getText() );
-      String realpass = transMeta.environmentSubstitute( wPassword.getText() );
+      String realServer = transMeta.environmentSubstitute( wServerName.getText() );
+      String realUser = transMeta.environmentSubstitute( wUserName.getText() );
+      String realPass = transMeta.environmentSubstitute( wPassword.getText() );
       String realProxyUsername = transMeta.environmentSubstitute( wProxyUsername.getText() );
-      int realport = Const.toInt( transMeta.environmentSubstitute( wPort.getText() ), -1 );
+      int realPort = Const.toInt( transMeta.environmentSubstitute( wPort.getText() ), -1 );
 
       String tokenUrl = transMeta.environmentSubstitute( wAuthTokenUrl.getText() );
       String scope = transMeta.environmentSubstitute( wAuthScope.getText() );
@@ -1918,7 +1844,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       String redirectUri = transMeta.environmentSubstitute( wRedirectUri.getText() );
 
       if( wUseAuth.getText().equals( MailInputMeta.AUTENTICATION_OAUTH ) ){
-        realpass = "Bearer "+ input.getOauthToken(tokenUrl,scope,clientId,secretKey,
+        realPass = "Bearer "+ input.getOauthToken(tokenUrl,scope,clientId,secretKey,
                 grantType, refreshToken, authorizationCode, redirectUri).getAccessToken();
       }
 
@@ -1926,26 +1852,25 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
         mailConn =
           new MailConnection( transMeta.getBowl(),
             LogChannel.UI, MailConnectionMeta.getProtocolFromString(
-              wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser,
-            realpass, wUseSSL.getSelection(), wUseProxy.getSelection(), realProxyUsername );
+              wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realServer, realPort, realUser,
+            realPass, wUseSSL.getSelection(), wUseProxy.getSelection(), realProxyUsername );
         mailConn.connect();
 
         retval = true;
       } catch ( Exception e ) {
-        errordescription = e.getMessage();
+        errorDescription = e.getMessage();
       }
     }
 
     if ( !retval ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "MailInput.Connected.NOK.ConnectionBad", wServerName.getText() )
-        + Const.CR + Const.NVL( errordescription, "" ) );
+        + Const.CR + Const.NVL( errorDescription, "" ) );
       mb.setText( BaseMessages.getString( PKG, "MailInput.Connected.Title.Bad" ) );
       mb.open();
     }
 
     return ( mailConn.isConnected() );
-
   }
 
   private void test() {
@@ -1957,22 +1882,20 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     }
   }
 
-  private void checkFolder( String foldername ) {
-    if ( !Utils.isEmpty( foldername ) ) {
-      if ( connect() ) {
-        // check folder
-        if ( mailConn.folderExists( foldername ) ) {
-          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-          mb.setMessage( BaseMessages.getString( PKG, "MailInput.IMAPFolderExists.OK", foldername ) + Const.CR );
-          mb.setText( BaseMessages.getString( PKG, "MailInput.IMAPFolderExists.Title.Ok" ) );
-          mb.open();
-        } else {
-          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-          mb.setMessage( BaseMessages.getString( PKG, "MailInput.Connected.NOK.IMAPFolderExists", foldername )
-            + Const.CR );
-          mb.setText( BaseMessages.getString( PKG, "MailInput.IMAPFolderExists.Title.Bad" ) );
-          mb.open();
-        }
+  private void checkFolder( String folderName ) {
+    if ( !Utils.isEmpty( folderName ) && connect() ) {
+      // check folder
+      if ( mailConn.folderExists( folderName ) ) {
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
+        mb.setMessage( BaseMessages.getString( PKG, "MailInput.IMAPFolderExists.OK", folderName ) + Const.CR );
+        mb.setText( BaseMessages.getString( PKG, "MailInput.IMAPFolderExists.Title.Ok" ) );
+        mb.open();
+      } else {
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+        mb.setMessage( BaseMessages.getString( PKG, "MailInput.Connected.NOK.IMAPFolderExists", folderName )
+          + Const.CR );
+        mb.setText( BaseMessages.getString( PKG, "MailInput.IMAPFolderExists.Title.Bad" ) );
+        mb.open();
       }
     }
   }
@@ -2013,7 +1936,6 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
               shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
                 .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
-
         }
       }
     } catch ( KettleException e ) {
@@ -2029,11 +1951,10 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   private void getFields() {
-
     // Clear Fields Grid
     wFields.removeAll();
     for ( int i = 0; i < MailInputField.ColumnDesc.length; i++ ) {
-      wFields.add( new String[] { MailInputField.ColumnDesc[i], MailInputField.ColumnDesc[i] } );
+      wFields.add( MailInputField.ColumnDesc[ i ], MailInputField.ColumnDesc[ i ] );
     }
 
     wFields.removeEmptyRows();
@@ -2079,56 +2000,52 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fData.right = new FormAttachment( Const.MIDDLE_PCT, -Const.MARGIN );
     label.setLayoutData( fData );
   }
+
   protected void setUseAuth() {
     String selectedAuth = wUseAuth.getText();
-    if (selectedAuth.equals( MailInputMeta.AUTENTICATION_NONE ) ) {
-      wAuthClientId.setEnabled( false );
-      wAuthSecretKey.setEnabled( false );
-      wUserName.setEnabled( false );
+
+    if ( MailInputMeta.AUTENTICATION_OAUTH.equals( selectedAuth ) ) {
+      wAuthClientId.setEnabled( true );
+      wAuthSecretKey.setEnabled( true );
+      wUserName.setEnabled( true );
       wPassword.setEnabled( false );
-      wAuthScope.setEnabled( false );
-      grantType.setEnabled( false );
-      wAuthTokenUrl.setEnabled( false );
-      wAuthorizationCode.setEnabled( false );
-      wRedirectUri.setEnabled( false );
-      wAuthRefreshToken.setEnabled( false );
-    } else if ( selectedAuth.equals( MailInputMeta.AUTENTICATION_BASIC ) ) {
+      wAuthScope.setEnabled( true );
+      wlGrantType.setEnabled( true );
+      grantType.setEnabled( true );
+    } else {
+      // MailInputMeta.AUTENTICATION_BASIC
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
       wUserName.setEnabled( true );
       wPassword.setEnabled( true );
       wAuthScope.setEnabled( false );
+      wlGrantType.setEnabled( false );
       grantType.setEnabled( false );
       wAuthTokenUrl.setEnabled( false );
       wAuthorizationCode.setEnabled( false );
       wRedirectUri.setEnabled( false );
       wAuthRefreshToken.setEnabled( false );
-    } else if ( selectedAuth.equals( MailInputMeta.AUTENTICATION_OAUTH ) ) {
-      wUserName.setEnabled( true );
-      wPassword.setEnabled( false );
-      wAuthClientId.setEnabled( true );
-      wAuthSecretKey.setEnabled( true );
-      wAuthScope.setEnabled( true );
-      grantType.setEnabled( true );
     }
   }
+
   protected void setUseGrantType() {
     String selectedAuth = grantType.getText();
-    if (selectedAuth.equals(MailInputMeta.GRANTTYPE_CLIENTCREDENTIALS)) {
-      wAuthTokenUrl.setEnabled(true);
-      wAuthorizationCode.setEnabled(false);
-      wRedirectUri.setEnabled(false);
-      wAuthRefreshToken.setEnabled(false);
-    } else if (selectedAuth.equals(MailInputMeta.GRANTTYPE_REFRESH_TOKEN)) {
-      wAuthTokenUrl.setEnabled(true);
-      wAuthorizationCode.setEnabled(false);
-      wRedirectUri.setEnabled(false);
-      wAuthRefreshToken.setEnabled(true);
-    } else if (selectedAuth.equals(MailInputMeta.GRANTTYPE_AUTHORIZATION_CODE)) {
-      wAuthTokenUrl.setEnabled(true);
-      wAuthorizationCode.setEnabled(true);
-      wRedirectUri.setEnabled(true);
-      wAuthRefreshToken.setEnabled(false);
+
+    if ( selectedAuth.equals( MailInputMeta.GRANTTYPE_CLIENTCREDENTIALS ) ) {
+      wAuthTokenUrl.setEnabled( true );
+      wAuthorizationCode.setEnabled( false );
+      wRedirectUri.setEnabled( false );
+      wAuthRefreshToken.setEnabled( false );
+    } else if ( selectedAuth.equals( MailInputMeta.GRANTTYPE_REFRESH_TOKEN ) ) {
+      wAuthTokenUrl.setEnabled( true );
+      wAuthorizationCode.setEnabled( false );
+      wRedirectUri.setEnabled( false );
+      wAuthRefreshToken.setEnabled( true );
+    } else if ( selectedAuth.equals( MailInputMeta.GRANTTYPE_AUTHORIZATION_CODE ) ) {
+      wAuthTokenUrl.setEnabled( true );
+      wAuthorizationCode.setEnabled( true );
+      wRedirectUri.setEnabled( true );
+      wAuthRefreshToken.setEnabled( false );
     }
   }
 
@@ -2147,10 +2064,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     }
 
     try {
-      return new Integer( toParse );
+      return Integer.valueOf( toParse );
     } catch ( NumberFormatException e ) {
       return null;
     }
   }
-
 }

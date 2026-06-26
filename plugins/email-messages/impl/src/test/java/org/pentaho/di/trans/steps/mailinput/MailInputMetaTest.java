@@ -19,14 +19,6 @@ package org.pentaho.di.trans.steps.mailinput;
  * @author Marc Batchelor - removed useless test case, added load/save tests
  * @see MailInputMeta
  */
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.http.HttpStatus;
@@ -52,7 +44,16 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -79,29 +80,30 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
     PluginRegistry.init( false );
     when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
     List<String> attributes =
-        Arrays.asList( "conditionReceivedDate", "valueimaplist", "serverName", "userName", "password", "useSSL", "port",
-            "firstMails", "retrievemails", "delete", "protocol", "firstIMAPMails", "IMAPFolder", "senderSearchTerm",
-            "notTermSenderSearch", "recipientSearch", "subjectSearch", "receivedDate1", "receivedDate2",
-            "notTermSubjectSearch", "notTermRecipientSearch", "notTermReceivedDateSearch", "includeSubFolders", "useProxy",
-            "proxyUsername", "folderField", "dynamicFolder", "rowLimit", "useBatch", "start", "end", "batchSize",
-            "stopOnError", "inputFields" );
+      Arrays.asList( "conditionReceivedDate", "valueimaplist", "serverName", "userName", "password", "useSSL", "port",
+        "firstMails", "retrievemails", "delete", "protocol", "firstIMAPMails", "IMAPFolder", "senderSearchTerm",
+        "notTermSenderSearch", "recipientSearch", "subjectSearch", "receivedDate1", "receivedDate2",
+        "notTermSubjectSearch", "notTermRecipientSearch", "notTermReceivedDateSearch", "includeSubFolders", "useProxy",
+        "proxyUsername", "folderField", "dynamicFolder", "rowLimit", "useBatch", "start", "end", "batchSize",
+        "stopOnError", "inputFields" );
 
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
+    Map<String, String> getterMap = new HashMap<>();
+    Map<String, String> setterMap = new HashMap<>();
 
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<>();
     attrValidatorMap.put( "inputFields",
-        new ArrayLoadSaveValidator<MailInputField>( new MailInputFieldLoadSaveValidator(), 5 ) );
+      new ArrayLoadSaveValidator<>( new MailInputFieldLoadSaveValidator(), 5 ) );
     attrValidatorMap.put( "batchSize", new IntLoadSaveValidator( 1000 ) );
-    attrValidatorMap.put( "conditionReceivedDate", new IntLoadSaveValidator( MailConnectionMeta.conditionDateCode.length ) );
+    attrValidatorMap.put( "conditionReceivedDate",
+      new IntLoadSaveValidator( MailConnectionMeta.conditionDateCode.length ) );
     attrValidatorMap.put( "valueimaplist", new IntLoadSaveValidator( MailConnectionMeta.valueIMAPListCode.length ) );
     attrValidatorMap.put( "port", new StringIntLoadSaveValidator( 65534 ) );
 
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+      new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+        getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
@@ -126,9 +128,21 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
   }
 
   @Test
-  public void testAuthenticationTypeNone() {
-    mailInputMeta.setUsingAuthentication( MailInputMeta.AUTENTICATION_NONE );
-    assertEquals( MailInputMeta.AUTENTICATION_NONE, mailInputMeta.isUsingAuthentication() );
+  public void testAuthenticationTypeNull() {
+    mailInputMeta.setUsingAuthentication( null );
+    assertEquals( MailInputMeta.AUTENTICATION_BASIC, mailInputMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeEmpty() {
+    mailInputMeta.setUsingAuthentication( "" );
+    assertEquals( MailInputMeta.AUTENTICATION_BASIC, mailInputMeta.isUsingAuthentication() );
+  }
+
+  @Test
+  public void testAuthenticationTypeUnrecognized() {
+    mailInputMeta.setUsingAuthentication( "Unrecognized" );
+    assertEquals( MailInputMeta.AUTENTICATION_BASIC, mailInputMeta.isUsingAuthentication() );
   }
 
   @Test
@@ -162,10 +176,11 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
     String redirectUri = "redirectUri";
 
     when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
-    when( mockHttpClient.execute( any( HttpPost.class) ) ).thenReturn( mockResponse );
+    when( mockHttpClient.execute( any( HttpPost.class ) ) ).thenReturn( mockResponse );
     when( mockResponse.getStatusLine().getStatusCode() ).thenReturn( HttpStatus.SC_BAD_REQUEST );
 
-    mailInputMeta.getOauthToken( tokenUrl, scope, clientId, secretKey, grantType, null, authorizationCode, redirectUri );
+    mailInputMeta.getOauthToken( tokenUrl, scope, clientId, secretKey, grantType, null, authorizationCode,
+      redirectUri );
   }
 
   @Test( expected = RuntimeException.class )
@@ -181,11 +196,12 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
     when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
     when( mockHttpClient.execute( any( HttpPost.class ) ) ).thenThrow( new IOException( "IO error" ) );
 
-    mailInputMeta.getOauthToken( tokenUrl, scope, clientId, secretKey, grantType, null, authorizationCode, redirectUri );
+    mailInputMeta.getOauthToken( tokenUrl, scope, clientId, secretKey, grantType, null, authorizationCode,
+      redirectUri );
   }
 
   @Test( expected = RuntimeException.class )
-  public void getOauthToken_invalidGrantType_throwsRuntimeException() throws Exception {
+  public void getOauthToken_invalidGrantType_throwsRuntimeException() {
     String tokenUrl = "http://example.com/token";
     String scope = "scope";
     String clientId = "clientId";
@@ -196,7 +212,8 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
 
     when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
 
-    mailInputMeta.getOauthToken( tokenUrl, scope, clientId, secretKey, grantType, null, authorizationCode, redirectUri );
+    mailInputMeta.getOauthToken( tokenUrl, scope, clientId, secretKey, grantType, null, authorizationCode,
+      redirectUri );
   }
 
   @Test
@@ -209,8 +226,8 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
   @Test
   public void testGrantTypeRefreshToken() {
     MailInputMeta mailInputMeta = new MailInputMeta();
-    mailInputMeta.setGrantType(MailInputMeta.GRANTTYPE_REFRESH_TOKEN);
-    assertEquals(MailInputMeta.GRANTTYPE_REFRESH_TOKEN, mailInputMeta.getGrantType());
+    mailInputMeta.setGrantType( MailInputMeta.GRANTTYPE_REFRESH_TOKEN );
+    assertEquals( MailInputMeta.GRANTTYPE_REFRESH_TOKEN, mailInputMeta.getGrantType() );
   }
 
   @Test
@@ -232,11 +249,13 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
 
     Mockito.when( httpClientManager.createDefaultClient() ).thenReturn( mockHttpClient );
     Mockito.when( mockHttpClient.execute( any( HttpPost.class ) ) ).thenThrow( new IOException() );
-    mailInputMeta.getOauthToken("token", "scope", "clientId", "secretKey", "authorization_code", null, "authCode", "redirectUri");
+    mailInputMeta.getOauthToken( "token", "scope", "clientId", "secretKey", "authorization_code", null, "authCode",
+      "redirectUri" );
   }
 
   public class MailInputFieldLoadSaveValidator implements FieldLoadSaveValidator<MailInputField> {
     final Random rand = new Random();
+
     @Override
     public MailInputField getTestObject() {
       MailInputField rtn = new MailInputField();
@@ -252,9 +271,9 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
       }
       MailInputField another = (MailInputField) actual;
       return new EqualsBuilder()
-          .append( testObject.getName(), another.getName() )
-          .append( testObject.getColumn(), another.getColumn() )
-      .isEquals();
+        .append( testObject.getName(), another.getName() )
+        .append( testObject.getColumn(), another.getColumn() )
+        .isEquals();
     }
   }
 
@@ -262,7 +281,7 @@ public class MailInputMetaTest implements InitializerInterface<StepMetaInterface
     final Random rand = new Random();
     int intBound;
 
-    public StringIntLoadSaveValidator( ) {
+    public StringIntLoadSaveValidator() {
       intBound = 0;
     }
 

@@ -13,20 +13,8 @@
 
 package org.pentaho.di.trans.steps.mail;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.activation.DataHandler;
 import jakarta.activation.URLDataSource;
 import jakarta.mail.Message;
@@ -38,9 +26,6 @@ import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.util.ByteArrayDataSource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
@@ -56,10 +41,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.HttpClientManager;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -71,6 +56,18 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.pentaho.di.trans.steps.mail.MailMeta.AUTENTICATION_BASIC;
 
@@ -80,7 +77,6 @@ import static org.pentaho.di.trans.steps.mail.MailMeta.AUTENTICATION_BASIC;
  * @author Samatar
  * @since 28-07-2008
  */
-
 public class Mail extends BaseStep implements StepInterface {
   private static Class<?> PKG = MailMeta.class; // for i18n purposes, needed by Translator2!!
   private static final String MAIL_CHARSET_KEY = "mail.mime.charset";
@@ -95,6 +91,7 @@ public class Mail extends BaseStep implements StepInterface {
     setMailMimeCharsetProperty();
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (MailMeta) smi;
     data = (MailData) sdi;
@@ -117,50 +114,46 @@ public class Mail extends BaseStep implements StepInterface {
       cacheFieldsPosition( meta, data );
 
       checkEmbeddedImages( meta, data );
-
     } // end if first
-
-    boolean sendToErrorRow = false;
-    String errorMessage = null;
 
     try {
       // get values
-      String maildestination = data.previousRowMeta.getString( r, data.indexOfDestination );
-      if ( Utils.isEmpty( maildestination ) ) {
+      String mailDestination = data.previousRowMeta.getString( r, data.indexOfDestination );
+      if ( Utils.isEmpty( mailDestination ) ) {
         throw new KettleException( "Mail.Error.MailDestinationEmpty" );
       }
-      String maildestinationCc = null;
+      String mailDestinationCc = null;
       if ( data.indexOfDestinationCc > -1 ) {
-        maildestinationCc = data.previousRowMeta.getString( r, data.indexOfDestinationCc );
+        mailDestinationCc = data.previousRowMeta.getString( r, data.indexOfDestinationCc );
       }
-      String maildestinationBCc = null;
+      String mailDestinationBCc = null;
       if ( data.indexOfDestinationBCc > -1 ) {
-        maildestinationBCc = data.previousRowMeta.getString( r, data.indexOfDestinationBCc );
+        mailDestinationBCc = data.previousRowMeta.getString( r, data.indexOfDestinationBCc );
       }
 
-      String mailsendername = null;
+      String mailSenderName = null;
       if ( data.indexOfSenderName > -1 ) {
-        mailsendername = data.previousRowMeta.getString( r, data.indexOfSenderName );
+        mailSenderName = data.previousRowMeta.getString( r, data.indexOfSenderName );
       }
-      String mailsenderaddress = data.previousRowMeta.getString( r, data.indexOfSenderAddress );
+      String mailSenderAddress = data.previousRowMeta.getString( r, data.indexOfSenderAddress );
 
       // reply addresses
-      String mailreplyToAddresses = null;
+      String mailReplyToAddresses = null;
       if ( data.indexOfReplyToAddresses > -1 ) {
-        mailreplyToAddresses = data.previousRowMeta.getString( r, data.indexOfReplyToAddresses );
+        mailReplyToAddresses = data.previousRowMeta.getString( r, data.indexOfReplyToAddresses );
       }
 
-      String contactperson = null;
+      String contactPerson = null;
       if ( data.indexOfContactPerson > -1 ) {
-        contactperson = data.previousRowMeta.getString( r, data.indexOfContactPerson );
+        contactPerson = data.previousRowMeta.getString( r, data.indexOfContactPerson );
       }
-      String contactphone = null;
+      String contactPhone = null;
       if ( data.indexOfContactPhone > -1 ) {
-        contactphone = data.previousRowMeta.getString( r, data.indexOfContactPhone );
+        contactPhone = data.previousRowMeta.getString( r, data.indexOfContactPhone );
       }
 
-      String servername = data.previousRowMeta.getString( r, data.indexOfServer );
-      if ( Utils.isEmpty( servername ) ) {
+      String serverName = data.previousRowMeta.getString( r, data.indexOfServer );
+      if ( Utils.isEmpty( serverName ) ) {
         throw new KettleException( "Mail.Error.MailServerEmpty" );
       }
       int port = -1;
@@ -168,13 +161,13 @@ public class Mail extends BaseStep implements StepInterface {
         port = Const.toInt( "" + data.previousRowMeta.getInteger( r, data.indexOfPort ), -1 );
       }
 
-      String authuser = null;
+      String authUser = null;
       if ( data.indexOfAuthenticationUser > -1 ) {
-        authuser = data.previousRowMeta.getString( r, data.indexOfAuthenticationUser );
+        authUser = data.previousRowMeta.getString( r, data.indexOfAuthenticationUser );
       }
-      String authpass = null;
+      String authPass = null;
       if ( data.indexOfAuthenticationPass > -1 ) {
-        authpass = Utils.resolvePassword( getParentVariableSpace(), data.previousRowMeta.getString( r, data.indexOfAuthenticationPass ) );
+        authPass = Utils.resolvePassword( getParentVariableSpace(), data.previousRowMeta.getString( r, data.indexOfAuthenticationPass ) );
       }
 
       String subject = null;
@@ -188,28 +181,21 @@ public class Mail extends BaseStep implements StepInterface {
       }
 
       // send email...
-      sendMail(
-        r, servername, port, mailsenderaddress, mailsendername, maildestination, maildestinationCc,
-        maildestinationBCc, contactperson, contactphone, authuser, authpass, subject, comment,
-        mailreplyToAddresses );
+      sendMail( r, serverName, port, mailSenderAddress, mailSenderName, mailDestination, mailDestinationCc,
+        mailDestinationBCc, contactPerson, contactPhone, authUser, authPass, subject, comment, mailReplyToAddresses );
 
-      putRow( getInputRowMeta(), r ); // copy row to possible alternate rowset(s).); // copy row to output rowset(s);
+      putRow( getInputRowMeta(), r );
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "Mail.Log.LineNumber", getLinesRead()
           + " : " + getInputRowMeta().getString( r ) ) );
       }
-
     } catch ( Exception e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {
-        sendToErrorRow = true;
-        errorMessage = e.toString();
+        // Simply add this row to the error row
+        putError( getInputRowMeta(), r, 1, e.toString(), null, "MAIL001" );
       } else {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Error.General" ), e );
-      }
-      if ( sendToErrorRow ) {
-        // Simply add this row to the error row
-        putError( getInputRowMeta(), r, 1, errorMessage, null, "MAIL001" );
       }
     }
 
@@ -219,13 +205,12 @@ public class Mail extends BaseStep implements StepInterface {
   private void checkEmbeddedImages( MailMeta meta, MailData data ) {
     if ( meta.getEmbeddedImages() != null && meta.getEmbeddedImages().length > 0 ) {
       FileObject image = null;
-      data.embeddedMimePart = new HashSet<MimeBodyPart>();
+      data.embeddedMimePart = new HashSet<>();
       try {
         for ( int i = 0; i < meta.getEmbeddedImages().length; i++ ) {
           String imageFile = environmentSubstitute( meta.getEmbeddedImages()[i] );
           String contentID = environmentSubstitute( meta.getContentIds()[i] );
-          image = KettleVFS.getInstance( getTransMeta().getBowl() )
-            .getFileObject( imageFile );
+          image = KettleVFS.getInstance( getTransMeta().getBowl() ).getFileObject( imageFile );
 
           if ( image.exists() && image.getType() == FileType.FILE ) {
             // Create part for the image
@@ -238,7 +223,6 @@ public class Mail extends BaseStep implements StepInterface {
             // keep this part for further user
             data.embeddedMimePart.add( imagePart );
             logBasic( BaseMessages.getString( PKG, "Mail.Log.ImageAdded", imageFile ) );
-
           } else {
             logError( BaseMessages.getString( PKG, "Mail.Log.WrongImage", imageFile ) );
           }
@@ -259,11 +243,11 @@ public class Mail extends BaseStep implements StepInterface {
   private void cacheFieldsPosition( MailMeta meta, MailData data ) throws KettleException {
     // cache the position of the destination field
     if ( data.indexOfDestination < 0 ) {
-      String realDestinationFieldname = meta.getDestination();
-      data.indexOfDestination = data.previousRowMeta.indexOfValue( realDestinationFieldname );
+      String realDestinationFieldName = meta.getDestination();
+      data.indexOfDestination = data.previousRowMeta.indexOfValue( realDestinationFieldName );
       if ( data.indexOfDestination < 0 ) {
         throw new KettleException( BaseMessages.getString(
-          PKG, "Mail.Exception.CouldnotFindDestinationField", realDestinationFieldname ) );
+          PKG, "Mail.Exception.CouldnotFindDestinationField", realDestinationFieldName ) );
       }
     }
 
@@ -367,13 +351,12 @@ public class Mail extends BaseStep implements StepInterface {
         String realPort = meta.getPort();
         data.indexOfPort = data.previousRowMeta.indexOfValue( realPort );
         if ( data.indexOfPort < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Mail.Exception.CouldnotFindPortField", realPort ) );
+          throw new KettleException( BaseMessages.getString( PKG, "Mail.Exception.CouldnotFindPortField", realPort ) );
         }
       }
     }
     // Authentication
-    if ( meta.isUsingAuthentication().equals( meta.AUTENTICATION_BASIC ) ) {
+    if ( meta.isUsingAuthentication().equals( MailMeta.AUTENTICATION_BASIC ) ) {
       // cache the position of the Authentication password field
       if ( data.indexOfAuthenticationPass < 0 ) {
         String realAuthenticationPassword = Utils.resolvePassword( variables, meta.getAuthenticationPassword() );
@@ -445,7 +428,6 @@ public class Mail extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString(
           PKG, "Mail.Exception.CouldnotFindAttachedContentFileNameField", attachedContentFileNameField ) );
       }
-
     } else {
 
       // Dynamic Zipfilename
@@ -492,7 +474,7 @@ public class Mail extends BaseStep implements StepInterface {
 
     // Check Attached filenames when dynamic
     if ( meta.isDynamicFilename() && Utils.isEmpty( meta.getDynamicFieldname() ) ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DynamicFilenameFielddEmpty" ) );
+      throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DynamicFilenameFieldEmpty" ) );
     }
 
     // Check Attached zipfilename when dynamic
@@ -540,11 +522,11 @@ public class Mail extends BaseStep implements StepInterface {
   private void cacheWildCardField() throws KettleException {
     if ( !Utils.isEmpty( meta.getDynamicWildcard() ) ) {
       if ( data.indexOfSourceWildcard < 0 ) {
-        String realSourceattachedWildcard = meta.getDynamicWildcard();
-        data.indexOfSourceWildcard = data.previousRowMeta.indexOfValue( realSourceattachedWildcard );
+        String realSourceAttachedWildcard = meta.getDynamicWildcard();
+        data.indexOfSourceWildcard = data.previousRowMeta.indexOfValue( realSourceAttachedWildcard );
         if ( data.indexOfSourceWildcard < 0 ) {
           throw new KettleException( BaseMessages.getString(
-            PKG, "Mail.Exception.CouldnotSourceAttachedWildcard", realSourceattachedWildcard ) );
+            PKG, "Mail.Exception.CouldnotSourceAttachedWildcard", realSourceAttachedWildcard ) );
         }
       }
     }
@@ -552,18 +534,18 @@ public class Mail extends BaseStep implements StepInterface {
 
   private void cacheSourceFileNameField() throws KettleException {
     if ( data.indexOfSourceFilename < 0 ) {
-      String realSourceattachedFilename = meta.getDynamicFieldname();
-      data.indexOfSourceFilename = data.previousRowMeta.indexOfValue( realSourceattachedFilename );
+      String realSourceAttachedFilename = meta.getDynamicFieldname();
+      data.indexOfSourceFilename = data.previousRowMeta.indexOfValue( realSourceAttachedFilename );
       if ( data.indexOfSourceFilename < 0 ) {
         throw new KettleException( BaseMessages.getString(
-          PKG, "Mail.Exception.CouldnotSourceAttachedFilenameField", realSourceattachedFilename ) );
+          PKG, "Mail.Exception.CouldnotSourceAttachedFilenameField", realSourceAttachedFilename ) );
       }
     }
   }
 
   public void sendMail( Object[] r, String server, int port, String senderAddress, String senderName,
     String destination, String destinationCc, String destinationBCc, String contactPerson, String contactPhone,
-    String authenticationUser, String authenticationPassword, String mailsubject, String comment,
+    String authenticationUser, String authenticationPassword, String mailSubject, String comment,
     String replyToAddresses ) throws Exception {
 
     // Send an e-mail...
@@ -577,7 +559,7 @@ public class Mail extends BaseStep implements StepInterface {
         data.props.put( "mail.smtp.starttls.enable", "true" );
       } else {
         protocol = "smtps";
-        // required to get rid of a SSL exception :
+        // required to get rid of an SSL exception :
         // nested exception is:
         // javax.net.ssl.SSLException: Unsupported record version Unknown
         data.props.put( "mail.smtps.quitwait", "false" );
@@ -592,16 +574,15 @@ public class Mail extends BaseStep implements StepInterface {
       data.props.put( "mail.debug", "true" );
     }
 
-    if ( meta.isUsingAuthentication().equals( meta.AUTENTICATION_BASIC ) ) {
+    if ( meta.isUsingAuthentication().equals( MailMeta.AUTENTICATION_BASIC ) ) {
       data.props.put( "mail." + protocol + ".auth", "true" );
-    }
-    else if( meta.isUsingAuthentication().equals( meta.AUTENTICATION_OAUTH ) ) {
-      token= getOauthToken( meta.getTokenUrl() );
-      data.props.put( "mail."+protocol+".auth.xoauth2.disable", "false" );
-      data.props.put( "mail."+protocol+".auth.mechanisms", "XOAUTH2" );
-      data.props.put( "mail.transport.protocol", "smtp");
-      data.props.put( "mail."+protocol+".auth.login.disable", "true" );
-      data.props.put( "mail."+protocol+".auth.plain.disable", "true" );
+    } else if ( meta.isUsingAuthentication().equals( MailMeta.AUTENTICATION_OAUTH ) ) {
+      token = getOauthToken( meta.getTokenUrl() );
+      data.props.put( "mail." + protocol + ".auth.xoauth2.disable", "false" );
+      data.props.put( "mail." + protocol + ".auth.mechanisms", "XOAUTH2" );
+      data.props.put( "mail.transport.protocol", "smtp" );
+      data.props.put( "mail." + protocol + ".auth.login.disable", "true" );
+      data.props.put( "mail." + protocol + ".auth.plain.disable", "true" );
       data.props.setProperty( "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
     }
 
@@ -613,15 +594,14 @@ public class Mail extends BaseStep implements StepInterface {
 
     // set message priority
     if ( meta.isUsePriority() ) {
-      String priority_int = "1";
+      String priorityAsInt = "1";
       if ( meta.getPriority().equals( "low" ) ) {
-        priority_int = "3";
-      }
-      if ( meta.getPriority().equals( "normal" ) ) {
-        priority_int = "2";
+        priorityAsInt = "3";
+      } else if ( meta.getPriority().equals( "normal" ) ) {
+        priorityAsInt = "2";
       }
 
-      msg.setHeader( "X-Priority", priority_int ); // (String)int between 1= high and 3 = low.
+      msg.setHeader( "X-Priority", priorityAsInt ); // (String)int between 1= high and 3 = low.
       msg.setHeader( "Importance", meta.getImportance() );
       // seems to be needed for MS Outlook.
       // where it returns a string of high /normal /low.
@@ -630,13 +610,13 @@ public class Mail extends BaseStep implements StepInterface {
     }
 
     // set Email sender
-    String email_address = senderAddress;
-    if ( !Utils.isEmpty( email_address ) ) {
+    String emailAddress = senderAddress;
+    if ( !Utils.isEmpty( emailAddress ) ) {
       // get sender name
       if ( !Utils.isEmpty( senderName ) ) {
-        email_address = senderName + '<' + email_address + '>';
+        emailAddress = senderName + '<' + emailAddress + '>';
       }
-      msg.setFrom( new InternetAddress( email_address ) );
+      msg.setFrom( new InternetAddress( emailAddress ) );
     } else {
       throw new MessagingException( BaseMessages.getString( PKG, "Mail.Error.ReplyEmailNotFilled" ) );
     }
@@ -665,10 +645,9 @@ public class Mail extends BaseStep implements StepInterface {
 
     msg.setRecipients( Message.RecipientType.TO, address );
 
-    String realdestinationCc = destinationCc;
-    if ( !Utils.isEmpty( realdestinationCc ) ) {
+    if ( !Utils.isEmpty( destinationCc ) ) {
       // Split the mail-address Cc: space separated
-      String[] destinationsCc = realdestinationCc.split( " " );
+      String[] destinationsCc = destinationCc.split( " " );
       InternetAddress[] addressCc = new InternetAddress[destinationsCc.length];
       for ( int i = 0; i < destinationsCc.length; i++ ) {
         addressCc[i] = new InternetAddress( destinationsCc[i] );
@@ -677,10 +656,9 @@ public class Mail extends BaseStep implements StepInterface {
       msg.setRecipients( Message.RecipientType.CC, addressCc );
     }
 
-    String realdestinationBCc = destinationBCc;
-    if ( !Utils.isEmpty( realdestinationBCc ) ) {
+    if ( !Utils.isEmpty( destinationBCc ) ) {
       // Split the mail-address BCc: space separated
-      String[] destinationsBCc = realdestinationBCc.split( " " );
+      String[] destinationsBCc = destinationBCc.split( " " );
       InternetAddress[] addressBCc = new InternetAddress[destinationsBCc.length];
       for ( int i = 0; i < destinationsBCc.length; i++ ) {
         addressBCc[i] = new InternetAddress( destinationsBCc[i] );
@@ -689,8 +667,8 @@ public class Mail extends BaseStep implements StepInterface {
       msg.setRecipients( Message.RecipientType.BCC, addressBCc );
     }
 
-    if ( mailsubject != null ) {
-      msg.setSubject( mailsubject );
+    if ( mailSubject != null ) {
+      msg.setSubject( mailSubject );
     }
 
     msg.setSentDate( new Date() );
@@ -701,24 +679,22 @@ public class Mail extends BaseStep implements StepInterface {
     }
 
     if ( meta.getIncludeDate() ) {
-      messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.MsgDate" ) + ": " ).append(
-        XMLHandler.date2string( new Date() ) ).append( Const.CR ).append( Const.CR );
+      messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.MsgDate" ) ).append( ": " )
+        .append( XMLHandler.date2string( new Date() ) ).append( Const.CR ).append( Const.CR );
     }
 
     if ( !meta.isOnlySendComment() && ( !Utils.isEmpty( contactPerson ) || !Utils.isEmpty( contactPhone ) ) ) {
-      messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.ContactInfo" ) + " :" ).append( Const.CR );
-      messageText.append( "---------------------" ).append( Const.CR );
+      messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.ContactInfo" ) ).append( " :" )
+        .append( Const.CR ).append( "---------------------" ).append( Const.CR );
 
       if ( !Utils.isEmpty( contactPerson ) ) {
-        messageText
-          .append( BaseMessages.getString( PKG, "Mail.Log.Comment.PersonToContact" ) + " : " ).append( contactPerson )
-          .append( Const.CR );
+        messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.PersonToContact" ) ).append( " : " )
+          .append( contactPerson ).append( Const.CR );
       }
 
       if ( !Utils.isEmpty( contactPhone ) ) {
-        messageText
-          .append( BaseMessages.getString( PKG, "Mail.Log.Comment.Tel" ) + "  : " ).append( contactPhone )
-          .append( Const.CR );
+        messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.Tel" ) ).append( "  : " )
+          .append( contactPhone ).append( Const.CR );
       }
 
       messageText.append( Const.CR );
@@ -741,7 +717,7 @@ public class Mail extends BaseStep implements StepInterface {
     data.parts.addBodyPart( part1 );
 
     if ( meta.isAttachContentFromField() ) {
-      // attache file content
+      // attach file content
       addAttachedContent( data.previousRowMeta.getString( r, data.IndexOfAttachedFilename ), data.previousRowMeta
         .getString( r, data.indexOfAttachedContent ) );
     } else {
@@ -752,7 +728,7 @@ public class Mail extends BaseStep implements StepInterface {
     addImagePart();
 
     if ( data.nrEmbeddedImages > 0 && data.nrattachedFiles == 0 ) {
-      // If we need to embedd images...
+      // If we need to embed images...
       // We need to create a "multipart/related" message.
       // otherwise image will appear as attached file
       data.parts.setSubType( "related" );
@@ -760,10 +736,8 @@ public class Mail extends BaseStep implements StepInterface {
 
     msg.setContent( data.parts );
 
-    Transport transport = null;
-    try {
-      transport = session.getTransport( protocol );
-      if ( meta.isUsingAuthentication().equals( meta.AUTENTICATION_BASIC ) ) {
+    try ( Transport transport = session.getTransport( protocol ) ) {
+      if ( meta.isUsingAuthentication().equals( MailMeta.AUTENTICATION_BASIC ) ) {
         if ( port != -1 ) {
           transport.connect( Const.NVL( server, "" ), port, Const.NVL( authenticationUser, "" ), Const.NVL(
             authenticationPassword, "" ) );
@@ -772,7 +746,7 @@ public class Mail extends BaseStep implements StepInterface {
             authenticationPassword, "" ) );
         }
       }
-      else if( meta.isUsingAuthentication().equals(  meta.AUTENTICATION_OAUTH ) ) {
+      else if( meta.isUsingAuthentication().equals(  MailMeta.AUTENTICATION_OAUTH ) ) {
         if ( !Utils.isEmpty( meta.getPort() ) ) {
           transport.connect(
                   environmentSubstitute( Const.NVL( server, "" ) ),
@@ -789,13 +763,9 @@ public class Mail extends BaseStep implements StepInterface {
         transport.connect();
       }
       transport.sendMessage( msg, msg.getAllRecipients() );
-    } finally {
-      if ( transport != null ) {
-        transport.close();
-      }
     }
-
   }
+
   IEmailAuthenticationResponse getOauthToken(String tokenUrl) {
     try ( CloseableHttpClient client = HttpClientManager.getInstance().createDefaultClient() ) {
       tokenUrl = environmentSubstitute( meta.getTokenUrl() );
@@ -805,10 +775,10 @@ public class Mail extends BaseStep implements StepInterface {
       form.add( new BasicNameValuePair( "client_id", environmentSubstitute( meta.getClientId() ) ) );
       form.add( new BasicNameValuePair( "client_secret", environmentSubstitute( meta.getSecretKey() ) ) );
       form.add( new BasicNameValuePair( "grant_type", environmentSubstitute( meta.getGrant_type() ) ) );
-      if ( meta.getGrant_type().equals( meta.GRANTTYPE_REFRESH_TOKEN ) ) {
-        form.add( new BasicNameValuePair( meta.GRANTTYPE_REFRESH_TOKEN, environmentSubstitute( meta.getRefresh_token() ) ) );
+      if ( meta.getGrant_type().equals( MailMeta.GRANTTYPE_REFRESH_TOKEN ) ) {
+        form.add( new BasicNameValuePair( MailMeta.GRANTTYPE_REFRESH_TOKEN, environmentSubstitute( meta.getRefresh_token() ) ) );
       }
-      if ( meta.getGrant_type().equals( meta.GRANTTYPE_AUTHORIZATION_CODE ) ) {
+      if ( meta.getGrant_type().equals( MailMeta.GRANTTYPE_AUTHORIZATION_CODE ) ) {
         form.add( new BasicNameValuePair( "code", environmentSubstitute( meta.getAuthorization_code() ) ) );
         form.add( new BasicNameValuePair( "redirect_uri", environmentSubstitute( meta.getRedirectUri() ) ) );
       }
@@ -820,9 +790,7 @@ public class Mail extends BaseStep implements StepInterface {
         }
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue( EntityUtils.toString( response.getEntity() ), EmailAuthenticationResponse.class );
-      } catch ( HttpException e ) {
-        throw new RuntimeException( e );
-      } catch ( IOException e ) {
+      } catch ( HttpException | IOException e ) {
         throw new RuntimeException( e );
       }
     } catch ( IOException e ) {
@@ -860,7 +828,6 @@ public class Mail extends BaseStep implements StepInterface {
     }
 
     try {
-
       if ( meta.isDynamicFilename() ) {
         // dynamic attached filenames
         if ( data.indexOfSourceFilename > -1 ) {
@@ -870,7 +837,6 @@ public class Mail extends BaseStep implements StepInterface {
         if ( data.indexOfSourceWildcard > -1 ) {
           realSourceWildcard = data.previousRowMeta.getString( r, data.indexOfSourceWildcard );
         }
-
       } else {
         // static attached filenames
         realSourceFileFoldername = data.realSourceFileFoldername;
@@ -882,15 +848,15 @@ public class Mail extends BaseStep implements StepInterface {
           .getFileObject( realSourceFileFoldername, getTransMeta() );
         if ( sourcefile.exists() ) {
           long FileSize = 0;
-          FileObject[] list = null;
+          FileObject[] list;
           if ( sourcefile.getType() == FileType.FILE ) {
             list = new FileObject[1];
             list[0] = sourcefile;
           } else {
             list = sourcefile.findFiles( new TextFileSelector( sourcefile.toString(), realSourceWildcard ) );
           }
-          if ( list.length > 0 ) {
 
+          if ( list.length > 0 ) {
             boolean zipFiles = meta.isZipFiles();
             if ( zipFiles && data.zipFileLimit == 0 ) {
               masterZipfile =
@@ -899,13 +865,11 @@ public class Mail extends BaseStep implements StepInterface {
               zipOutputStream = new ZipOutputStream( new FileOutputStream( masterZipfile ) );
             }
 
-            for ( int i = 0; i < list.length; i++ ) {
-
+            for ( FileObject fileObject : list ) {
               file = KettleVFS.getInstance( getTransMeta().getBowl() )
-                .getFileObject( KettleVFS.getFilename( list[i] ), getTransMeta() );
+                .getFileObject( KettleVFS.getFilename( fileObject ), getTransMeta() );
 
               if ( zipFiles ) {
-
                 if ( data.zipFileLimit == 0 ) {
                   ZipEntry zipEntry = new ZipEntry( file.getName().getBaseName() );
                   zipOutputStream.putNextEntry( zipEntry );
@@ -934,16 +898,14 @@ public class Mail extends BaseStep implements StepInterface {
               }
 
               if ( data.zipFileLimit > 0 && FileSize > data.zipFileLimit ) {
-
                 masterZipfile =
                   new File( System.getProperty( "java.io.tmpdir" ) + Const.FILE_SEPARATOR + data.ZipFilename );
 
                 zipOutputStream = new ZipOutputStream( new FileOutputStream( masterZipfile ) );
 
-                for ( int i = 0; i < list.length; i++ ) {
-
+                for ( FileObject fileObject : list ) {
                   file = KettleVFS.getInstance( getTransMeta().getBowl() )
-                    .getFileObject( KettleVFS.getFilename( list[i] ), getTransMeta() );
+                    .getFileObject( KettleVFS.getFilename( fileObject ), getTransMeta() );
 
                   ZipEntry zipEntry = new ZipEntry( file.getName().getBaseName() );
                   zipOutputStream.putNextEntry( zipEntry );
@@ -956,9 +918,7 @@ public class Mail extends BaseStep implements StepInterface {
                   }
                   inputStream.close();
                   zipOutputStream.closeEntry();
-
                 }
-
               }
               if ( data.zipFileLimit > 0 && FileSize > data.zipFileLimit || data.zipFileLimit == 0 ) {
                 file = KettleVFS.getInstance( getTransMeta().getBowl() )
@@ -994,11 +954,10 @@ public class Mail extends BaseStep implements StepInterface {
           zipOutputStream.finish();
           zipOutputStream.close();
         } catch ( IOException e ) {
-          logError( "Unable to close attachement zip file archive : " + e.toString() );
+          logError( "Unable to close attachment zip file archive : " + e.toString() );
         }
       }
     }
-
   }
 
   private void addAttachedFilePart( FileObject file ) throws Exception {
@@ -1018,7 +977,6 @@ public class Mail extends BaseStep implements StepInterface {
     if ( isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "Mail.Log.AttachedFile", fds.getName() ) );
     }
-
   }
 
   private void addAttachedContent( String filename, String fileContent ) throws Exception {
@@ -1031,14 +989,12 @@ public class Mail extends BaseStep implements StepInterface {
     mbp.setFileName( filename );
     // add the part with the file in the BodyPart();
     data.parts.addBodyPart( mbp );
-
   }
 
   private void addImagePart() throws Exception {
     data.nrEmbeddedImages = 0;
-    if ( data.embeddedMimePart != null && data.embeddedMimePart.size() > 0 ) {
-      for ( Iterator<MimeBodyPart> i = data.embeddedMimePart.iterator(); i.hasNext(); ) {
-        MimeBodyPart part = i.next();
+    if ( data.embeddedMimePart != null && !data.embeddedMimePart.isEmpty() ) {
+      for ( MimeBodyPart part : data.embeddedMimePart ) {
         data.parts.addBodyPart( part );
         data.nrEmbeddedImages++;
       }
@@ -1049,40 +1005,40 @@ public class Mail extends BaseStep implements StepInterface {
     String fileWildcard = null;
     String sourceFolder = null;
 
-    public TextFileSelector( String sourcefolderin, String filewildcard ) {
-      if ( !Utils.isEmpty( sourcefolderin ) ) {
-        sourceFolder = sourcefolderin;
+    public TextFileSelector( String sourceFolder, String fileWildcard ) {
+      if ( !Utils.isEmpty( sourceFolder ) ) {
+        this.sourceFolder = sourceFolder;
       }
 
-      if ( !Utils.isEmpty( filewildcard ) ) {
-        fileWildcard = filewildcard;
+      if ( !Utils.isEmpty( fileWildcard ) ) {
+        this.fileWildcard = fileWildcard;
       }
     }
 
+    @Override
     public boolean includeFile( FileSelectInfo info ) {
-      boolean returncode = false;
+      boolean returnCode = false;
       try {
         if ( !info.getFile().toString().equals( sourceFolder ) ) {
           // Pass over the Base folder itself
-          String short_filename = info.getFile().getName().getBaseName();
+          if ( info.getFile().getParent().equals( info.getBaseFolder() ) || meta.isIncludeSubFolders() ) {
+            String shortFilename = info.getFile().getName().getBaseName();
 
-          if ( info.getFile().getParent().equals( info.getBaseFolder() )
-            || ( ( !info.getFile().getParent().equals( info.getBaseFolder() ) && meta.isIncludeSubFolders() ) ) ) {
-            if ( ( info.getFile().getType() == FileType.FILE && fileWildcard == null )
-              || ( info.getFile().getType() == FileType.FILE && fileWildcard != null && GetFileWildcard(
-                short_filename, fileWildcard ) ) ) {
-              returncode = true;
+            if ( ( info.getFile().getType() == FileType.FILE ) && ( ( fileWildcard == null )
+              || getFileWildcard( shortFilename, fileWildcard ) ) ) {
+              returnCode = true;
             }
           }
         }
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "Mail.Error.FindingFiles", info.getFile().toString(), e
           .getMessage() ) );
-        returncode = false;
+        returnCode = false;
       }
-      return returncode;
+      return returnCode;
     }
 
+    @Override
     public boolean traverseDescendents( FileSelectInfo info ) {
       return true;
     }
@@ -1090,37 +1046,23 @@ public class Mail extends BaseStep implements StepInterface {
 
   /**********************************************************
    *
-   * @param selectedfile
-   * @param wildcard
-   * @return True if the selectedfile matches the wildcard
+   * @param selectedFile the file to check
+   * @param wildcard the wildcard to be used
+   * @return True if no wildcard is specified or the selectedFile matches the wildcard
    **********************************************************/
-  private boolean GetFileWildcard( String selectedfile, String wildcard ) {
-    Pattern pattern = null;
-    boolean getIt = true;
-
-    if ( !Utils.isEmpty( wildcard ) ) {
-      pattern = Pattern.compile( wildcard );
-      // First see if the file matches the regular expression!
-      if ( pattern != null ) {
-        Matcher matcher = pattern.matcher( selectedfile );
-        getIt = matcher.matches();
-      }
-    }
-
-    return getIt;
+  private boolean getFileWildcard( String selectedFile, String wildcard ) {
+    return Utils.isEmpty( wildcard ) || Pattern.matches( wildcard, selectedFile );
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MailMeta) smi;
     data = (MailData) sdi;
 
-    if ( super.init( smi, sdi ) ) {
-      // Add init code here.
-      return true;
-    }
-    return false;
+    return super.init( smi, sdi );
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MailMeta) smi;
     data = (MailData) sdi;
@@ -1131,5 +1073,4 @@ public class Mail extends BaseStep implements StepInterface {
     data.parts = null;
     super.dispose( meta, data );
   }
-
 }
