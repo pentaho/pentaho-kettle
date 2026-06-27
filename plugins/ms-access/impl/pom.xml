@@ -14,6 +14,7 @@
   <name>PDI MS Access Plugins Impl</name>
 
   <dependencies>
+    <!-- Compile dependencies -->
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
@@ -29,14 +30,22 @@
       <artifactId>jackcess</artifactId>
       <scope>compile</scope>
     </dependency>
-
-    <!-- Test dependencies -->
+    <!-- commons-lang3 for CVE-2025-48924 fix in our code -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.18.0</version>
-      <scope>test</scope>
+      <version>${commons-lang3.version}</version>
+      <scope>compile</scope>
     </dependency>
+    <!-- commons-lang 2.6 for jackcess compatibility (jackcess 1.2.6 requires it) -->
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Test dependencies -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
