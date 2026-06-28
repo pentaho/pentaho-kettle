@@ -363,13 +363,25 @@ public class PGBulkLoaderHelperTest {
     queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
     queryParams.put( PGBulkLoaderHelper.SCHEMA, null );
     queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
-    // environmentSubstitute(null) returns null by default from Mockito
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
     when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
 
-    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      RowMeta rowMeta = new RowMeta();
+      rowMeta.addValueMeta( new ValueMetaString( "id" ) );
+      doNothing().when( mock ).connect();
+      when( databaseMeta.getQuotedSchemaTableCombination( isNull(), eq( "person_data" ) ) )
+          .thenReturn( "person_data" );
+      when( mock.getTableFields( "person_data" ) ).thenReturn( rowMeta );
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
 
-    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-    assertNotNull( response.get( "error" ) );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray columns = (JSONArray) response.get( "columns" );
+      assertNotNull( columns );
+      assertEquals( 1, columns.size() );
+      assertEquals( "id", ( (JSONObject) columns.get( 0 ) ).get( "columnName" ) );
+    }
   }
 
   @Test
@@ -377,13 +389,26 @@ public class PGBulkLoaderHelperTest {
     queryParams.put( PGBulkLoaderHelper.CONNECTION, "conn" );
     queryParams.put( PGBulkLoaderHelper.SCHEMA, "" );
     queryParams.put( PGBulkLoaderHelper.TABLE, "person_data" );
+    when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
     when( transMeta.environmentSubstitute( "" ) ).thenReturn( "" );
     when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
 
-    JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
+    try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
+      RowMeta rowMeta = new RowMeta();
+      rowMeta.addValueMeta( new ValueMetaString( "id" ) );
+      doNothing().when( mock ).connect();
+      when( databaseMeta.getQuotedSchemaTableCombination( isNull(), eq( "person_data" ) ) )
+          .thenReturn( "person_data" );
+      when( mock.getTableFields( "person_data" ) ).thenReturn( rowMeta );
+    } ) ) {
+      JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
 
-    assertEquals( StepInterface.FAILURE_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
-    assertNotNull( response.get( "error" ) );
+      assertEquals( StepInterface.SUCCESS_RESPONSE, response.get( StepInterface.ACTION_STATUS ) );
+      JSONArray columns = (JSONArray) response.get( "columns" );
+      assertNotNull( columns );
+      assertEquals( 1, columns.size() );
+      assertEquals( "id", ( (JSONObject) columns.get( 0 ) ).get( "columnName" ) );
+    }
   }
 
   @Test
@@ -437,13 +462,15 @@ public class PGBulkLoaderHelperTest {
     when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
     when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
     when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+    when( databaseMeta.getQuotedSchemaTableCombination( "public", "person_data" ) )
+        .thenReturn( "\"public\".\"person_data\"" );
 
     try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
       RowMeta rowMeta = new RowMeta();
       rowMeta.addValueMeta( new ValueMetaString( "id" ) );
       rowMeta.addValueMeta( new ValueMetaString( "name" ) );
       doNothing().when( mock ).connect();
-      when( mock.getTableFieldsMeta( "public", "person_data" ) ).thenReturn( rowMeta );
+      when( mock.getTableFields( "\"public\".\"person_data\"" ) ).thenReturn( rowMeta );
     } ) ) {
       JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
 
@@ -465,10 +492,12 @@ public class PGBulkLoaderHelperTest {
     when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
     when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
     when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+    when( databaseMeta.getQuotedSchemaTableCombination( "public", "person_data" ) )
+        .thenReturn( "\"public\".\"person_data\"" );
 
     try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
       doNothing().when( mock ).connect();
-      when( mock.getTableFieldsMeta( "public", "person_data" ) ).thenReturn( null );
+      when( mock.getTableFields( "\"public\".\"person_data\"" ) ).thenReturn( null );
     } ) ) {
       JSONObject response = helper.getTableFieldAndType( transMeta, queryParams );
 
@@ -506,12 +535,14 @@ public class PGBulkLoaderHelperTest {
     when( transMeta.environmentSubstitute( "public" ) ).thenReturn( "public" );
     when( transMeta.environmentSubstitute( "person_data" ) ).thenReturn( "person_data" );
     when( transMeta.findDatabase( "conn" ) ).thenReturn( databaseMeta );
+    when( databaseMeta.getQuotedSchemaTableCombination( "public", "person_data" ) )
+        .thenReturn( "\"public\".\"person_data\"" );
 
     try ( MockedConstruction<Database> ignored = mockConstruction( Database.class, ( mock, context ) -> {
       RowMeta rowMeta = new RowMeta();
       rowMeta.addValueMeta( new ValueMetaString( "col1" ) );
       doNothing().when( mock ).connect();
-      when( mock.getTableFieldsMeta( "public", "person_data" ) ).thenReturn( rowMeta );
+      when( mock.getTableFields( "\"public\".\"person_data\"" ) ).thenReturn( rowMeta );
     } ) ) {
       JSONObject response = helper.handleStepAction( "getTableFieldAndType", transMeta, queryParams );
 
