@@ -7,11 +7,14 @@
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
  *
+ *
  * Change Date: 2029-07-20
  ******************************************************************************/
 
 
 package org.pentaho.di.engine.api.remote;
+
+import java.util.Objects;
 
 /**
  * Used for requesting to stop execution and for informing the sessionKilled of the stop operation.
@@ -25,19 +28,32 @@ package org.pentaho.di.engine.api.remote;
  * Created by ccaspanello on
  * 7/25/17.
  */
-@SuppressWarnings ( "unused" )
+@SuppressWarnings( "unused" )
 public class StopMessage implements Message {
 
+
+  /**
+   * The result of stop operation.
+   */
   public enum Status {
-    SESSION_KILLED, // spark session was killed
-    SUCCESS, //Stop execution was successful
-    FAILED //failed to stop execution
+    /**
+     * The session was killed by the stop request.
+     */
+    SESSION_KILLED,
+    /**
+     * The stop request was successful.
+     */
+    SUCCESS,
+    /**
+     * The stop request failed.
+     */
+    FAILED
   }
 
-  private static final long serialVersionUID = 8842623444691045346L;
-  private String reasonPhrase;
-  private String requestUUID;
-  private Status result;
+  private static final long serialVersionUID = 1641758282148544010L;
+  private final String reasonPhrase;
+  private final String requestUUID;
+  private final Status status;
   private final boolean safeStop;
 
 
@@ -64,10 +80,10 @@ public class StopMessage implements Message {
    * Constructor used by driver to send back to daemon server the sessionKilled of the stop operation
    *
    * @param reasonPhrase returns back the reason presented by daemon server for the stop request
-   * @param result       stop operation result: SUCCESS, FAILED, SESSION_KILLED;
+   * @param status       stop operation status: {@link StopMessage.Status}
    */
-  public StopMessage( String reasonPhrase, Status result ) {
-    this( null, reasonPhrase, result, false );
+  public StopMessage( String reasonPhrase, Status status ) {
+    this( null, reasonPhrase, status, false );
   }
 
   /**
@@ -75,16 +91,24 @@ public class StopMessage implements Message {
    *
    * @param requestUUID  request/execution ID to stop or stopped
    * @param reasonPhrase returns back the reason presented by daemon server for the stop request
-   * @param result       stop operation result: SUCCESS, FAILED, SESSION_KILLED;
+   * @param status       stop operation status: {@link StopMessage.Status}
    */
-  public StopMessage( String requestUUID, String reasonPhrase, Status result ) {
-    this( requestUUID, reasonPhrase, result, false );
+  public StopMessage( String requestUUID, String reasonPhrase, Status status ) {
+    this( requestUUID, reasonPhrase, status, false );
   }
 
-  private StopMessage( String requestUUID, String reasonPhrase, Status result, boolean safeStop ) {
+  /**
+   * Constructor used by driver to send back to daemon server the sessionKilled of the stop operation
+   *
+   * @param requestUUID  request/execution ID to stop or stopped
+   * @param reasonPhrase returns back the reason presented by daemon server for the stop request
+   * @param status       stop operation status: {@link StopMessage.Status}
+   * @param safeStop     true if the stop should be "graceful".
+   */
+  private StopMessage( String requestUUID, String reasonPhrase, Status status, boolean safeStop ) {
     this.requestUUID = requestUUID;
     this.reasonPhrase = reasonPhrase;
-    this.result = result;
+    this.status = status;
     this.safeStop = safeStop;
   }
 
@@ -98,15 +122,6 @@ public class StopMessage implements Message {
   }
 
   /**
-   * Sets the stop reason phrase
-   *
-   * @param reasonPhrase stop reason phrase
-   */
-  public void setReasonPhrase( String reasonPhrase ) {
-    this.reasonPhrase = reasonPhrase;
-  }
-
-  /**
    * Returns the stop reason.
    *
    * @return stop reason;
@@ -116,32 +131,46 @@ public class StopMessage implements Message {
   }
 
   /**
+   * Returns the status.
+   *
+   * @return
+   */
+  public Status getStatus() {
+    return status;
+  }
+
+  /**
    * True if the execution was stop with success, false otherwise.
    *
    * @return true if failed to stop the execution, false otherwise;
+   * @deprecated As of 11.1.0.0, use {@link #getStatus()} instead.
    */
+  @Deprecated( since = "11.1.0.0", forRemoval = true )
   public boolean operationSuccessful() {
-    return this.result == Status.SUCCESS;
+    return this.status == Status.SUCCESS;
   }
 
   /**
    * True if failed to stop the execution, false otherwise.
    *
    * @return true if failed to stop the execution, false otherwise;
+   * @deprecated As of 11.1.0.0, use {@link #getStatus()} instead.
    */
+  @Deprecated( since = "11.1.0.0", forRemoval = true )
   public boolean operationFailed() {
-    return this.result == Status.FAILED;
+    return this.status == Status.FAILED;
   }
 
   /**
    * True if the session was killed, false otherwise.
    *
    * @return true if the session was killed, false otherwise;
+   * @deprecated As of 11.1.0.0, use {@link #getStatus()} instead.
    */
+  @Deprecated( since = "11.1.0.0", forRemoval = true )
   public boolean sessionWasKilled() {
-    return this.result == Status.SESSION_KILLED;
+    return this.status == Status.SESSION_KILLED;
   }
-
 
   /**
    * True if the stop should be "graceful".  I.e. should finish any work currently
@@ -151,6 +180,38 @@ public class StopMessage implements Message {
     return safeStop;
   }
 
+  @Override
+  public String toString() {
+    return "StopMessage{"
+      + "reasonPhrase='" + reasonPhrase + '\''
+      + ", requestUUID='" + requestUUID + '\''
+      + ", status=" + status
+      + ", safeStop=" + safeStop
+      + '}';
+  }
+
+  @Override
+  public boolean equals( Object o ) {
+    if ( this == o ) {
+      return true;
+    }
+    if ( o == null || getClass() != o.getClass() ) {
+      return false;
+    }
+
+    StopMessage that = (StopMessage) o;
+
+    return Objects.equals( requestUUID, that.requestUUID )
+      && Objects.equals( reasonPhrase, that.reasonPhrase )
+      && status == that.status
+      && safeStop == that.safeStop;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( requestUUID, reasonPhrase, status, safeStop );
+  }
+
   public static Builder builder() {
     return new Builder();
   }
@@ -158,7 +219,7 @@ public class StopMessage implements Message {
   public static class Builder {
     private String reasonPhrase;
     private String requestUUID;
-    private Status result;
+    private Status status;
     private boolean safeStop = false;
 
     public Builder reasonPhrase( String reasonPhrase ) {
@@ -171,8 +232,8 @@ public class StopMessage implements Message {
       return this;
     }
 
-    public Builder result( Status result ) {
-      this.result = result;
+    public Builder status( Status status ) {
+      this.status = status;
       return this;
     }
 
@@ -182,7 +243,7 @@ public class StopMessage implements Message {
     }
 
     public StopMessage build() {
-      return new StopMessage( requestUUID, reasonPhrase, result, safeStop );
+      return new StopMessage( requestUUID, reasonPhrase, status, safeStop );
     }
   }
 
