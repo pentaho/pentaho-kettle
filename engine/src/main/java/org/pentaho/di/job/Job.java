@@ -1739,9 +1739,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             .createTempFile( "jobExport", ".zip", System.getProperty( "java.io.tmpdir" ), jobMeta ) ) {
             // Use tempFile within this block
         
-
+          Bowl globalBowl = repository != null ? repository.getBowl() : DefaultBowl.getInstance();
           TopLevelResource topLevelResource =
-              ResourceUtil.serializeResourceExportInterface( jobMeta.getBowl(), null, tempFile.getName().toString(),
+              ResourceUtil.serializeResourceExportInterface( jobMeta.getBowl(), globalBowl, tempFile.getName().toString(),
                 jobMeta, jobMeta, repository, metaStore, executionConfiguration.getXML(),
                  CONFIGURATION_IN_EXPORT_FILENAME );
 
