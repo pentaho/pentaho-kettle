@@ -786,16 +786,19 @@
             </goals>
             <configuration>
               <target>
-                <apply executable="zip" failonerror="false" relative="false">
-                  <arg value="-q"/>
-                  <arg value="-d"/>
-                  <srcfile/>
-                  <arg value="META-INF/maven/com.fasterxml.jackson.core*"/>
-                  <arg value="META-INF/versions/*/com/fasterxml*"/>
-                  <fileset dir="${assembly.dir}">
-                    <include name="gremlin-shaded-*.jar"/>
-                  </fileset>
-                </apply>
+                <!-- Rewrite the gremlin-shaded jar in-process using Ant's own zip task
+                     so the build does not depend on an external 'zip' binary (absent on
+                     some CI agents). Removes the Jackson Maven provenance metadata and any
+                     unrelocated multi-release Jackson classes, while preserving the
+                     functional relocated org.apache.tinkerpop.shaded.jackson classes. -->
+                <pathconvert property="gremlin.shaded.jar" setonempty="false">
+                  <fileset dir="${assembly.dir}" includes="gremlin-shaded-*.jar"/>
+                </pathconvert>
+                <zip destfile="${gremlin.shaded.jar}.stripped">
+                  <zipfileset src="${gremlin.shaded.jar}"
+                              excludes="META-INF/maven/com.fasterxml.jackson.core/**,META-INF/versions/*/com/fasterxml/**"/>
+                </zip>
+                <move file="${gremlin.shaded.jar}.stripped" tofile="${gremlin.shaded.jar}" overwrite="true"/>
               </target>
             </configuration>
           </execution>
