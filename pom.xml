@@ -59,7 +59,9 @@
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <encoder.version>1.2</encoder.version>
-    <!-- jsch.version is inherited from pentaho-parent-pom (centralized for CVE-2023-48795) -->
+    <!-- jsch.version is inherited via the parent POM chain (direct parent
+         pentaho-ce-jar-parent-pom -> ... -> org.pentaho:pentaho-parent-pom, which
+         defines it); centralized for CVE-2023-48795. Requires maven-parent-poms PR #902. -->
     <jface.version>3.31.0</jface.version>
     <commands.version>3.12.100</commands.version>
     <common.version>3.18.0</common.version>
