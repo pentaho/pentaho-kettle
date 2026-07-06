@@ -706,6 +706,44 @@
           </execution>
         </executions>
       </plugin>
+      <!--
+        gremlin-shaded relocates Jackson to org.apache.tinkerpop.shaded.jackson, but the jar
+        still ships Maven provenance metadata (META-INF/maven/com.fasterxml.jackson.core/**)
+        declaring jackson-databind 2.15.2, which security scanners flag (CVE-2023-35116 etc.).
+        Strip that metadata (and any leftover un-relocated multi-release classes) from the
+        copied jar after copy-dependencies (generate-resources) and before it is zipped by the
+        assembly plugin (package). Safe at runtime: the metadata is purely informational and
+        MRJAR class variants fall back to the base relocated classes when absent.
+      -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>strip-gremlin-shaded-jackson-metadata</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <!-- Rewrite the gremlin-shaded jar in-process using Ant's own zip task
+                     so the build does not depend on an external 'zip' binary (absent on
+                     some CI agents). Removes the Jackson Maven provenance metadata and any
+                     unrelocated multi-release Jackson classes, while preserving the
+                     functional relocated org.apache.tinkerpop.shaded.jackson classes. -->
+                <pathconvert property="gremlin.shaded.jar" setonempty="false">
+                  <fileset dir="${assembly.dir}" includes="gremlin-shaded-*.jar"/>
+                </pathconvert>
+                <zip destfile="${gremlin.shaded.jar}.stripped">
+                  <zipfileset src="${gremlin.shaded.jar}"
+                              excludes="META-INF/maven/com.fasterxml.jackson.core/**,META-INF/versions/*/com/fasterxml/**"/>
+                </zip>
+                <move file="${gremlin.shaded.jar}.stripped" tofile="${gremlin.shaded.jar}" overwrite="true"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
