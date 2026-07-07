@@ -73,11 +73,6 @@
          maven-antrun-plugin 'strip-gremlin-shaded-jackson-metadata' execution in
          assemblies/lib/pom.xml) to fully clear scanners. -->
     <tinkerpop.version>3.7.6</tinkerpop.version>
-    <commons-configuration2.version>2.15.0</commons-configuration2.version>
-    <!-- commons-configuration2 2.15.0 calls commons-io IOSupplier.getUnchecked() (added in commons-io 2.17.0).
-         Override the parent's 2.16.1 so FileHandler-based callers (e.g. the PropertyInput step) don't hit
-         NoSuchMethodError at runtime. Not a CVE fix; compatibility requirement of cfg2 2.15.0. -->
-    <commons-io.version>2.18.0</commons-io.version>
 
     <!-- Test dependencies -->
     <mockito.version>5.10.0</mockito.version>
