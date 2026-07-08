@@ -790,19 +790,42 @@
                      so the build does not depend on an external 'zip' binary (absent on
                      some CI agents). Removes the Jackson Maven provenance metadata and any
                      unrelocated multi-release Jackson classes, while preserving the
-                     functional relocated org.apache.tinkerpop.shaded.jackson classes. -->
-                <pathconvert property="gremlin.shaded.jar" setonempty="false">
-                  <fileset dir="${assembly.dir}" includes="gremlin-shaded-*.jar"/>
-                </pathconvert>
-                <zip destfile="${gremlin.shaded.jar}.stripped">
-                  <zipfileset src="${gremlin.shaded.jar}"
-                              excludes="META-INF/maven/com.fasterxml.jackson.core/**,META-INF/versions/*/com/fasterxml/**"/>
-                </zip>
-                <move file="${gremlin.shaded.jar}.stripped" tofile="${gremlin.shaded.jar}" overwrite="true"/>
+                     functional relocated org.apache.tinkerpop.shaded.jackson classes.
+                     The ant-contrib <for> loop iterates the matched jar(s) and no-ops
+                     gracefully when the gremlin-shaded jar is absent (e.g. when the
+                     copy-dependencies step did not run in the active profile), instead of
+                     failing on an unresolved property. -->
+                <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask" classpathref="maven.plugin.classpath"/>
+                <for param="gremlin.shaded.jar">
+                  <path>
+                    <fileset dir="${assembly.dir}" includes="gremlin-shaded-*.jar"/>
+                  </path>
+                  <sequential>
+                    <echo message="Stripping Jackson provenance/MRJAR metadata from @{gremlin.shaded.jar}"/>
+                    <zip destfile="@{gremlin.shaded.jar}.stripped">
+                      <zipfileset src="@{gremlin.shaded.jar}"
+                                  excludes="META-INF/maven/com.fasterxml.jackson.core/**,META-INF/versions/*/com/fasterxml/**"/>
+                    </zip>
+                    <move file="@{gremlin.shaded.jar}.stripped" tofile="@{gremlin.shaded.jar}" overwrite="true"/>
+                  </sequential>
+                </for>
               </target>
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b3</version>
+            <exclusions>
+              <exclusion>
+                <groupId>ant</groupId>
+                <artifactId>ant</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
