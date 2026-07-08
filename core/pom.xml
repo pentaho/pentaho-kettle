@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
 
   <name>PDI Core</name>
-
+<!--   -->
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
