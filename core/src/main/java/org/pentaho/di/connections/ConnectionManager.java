@@ -124,6 +124,7 @@ public class ConnectionManager implements CachingManager {
           if ( provider.isStorageManaged() ) {
             MetaStoreFactory<? extends ConnectionDetails> factory =
               getMetaStoreFactory( metaStoreSupplier.get(), provider.getClassType() );
+            factory.getMetaStore().refresh();
             names = new ArrayList<>();
             for ( ConnectionDetails details : factory.getElements() ) {
               String name = details.getName();
