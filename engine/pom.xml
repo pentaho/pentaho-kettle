@@ -802,7 +802,9 @@
     <dependency>
       <groupId>com.cronutils</groupId>
       <artifactId>cron-utils</artifactId>
-      <version>9.1.6</version>
+      <!-- Version managed centrally in org.pentaho:pentaho-parent-pom (cronutils.version).
+           9.1.7+ pulls the fixed org.glassfish:jakarta.el 3.0.4 in place of the vulnerable
+           org.glassfish:javax.el 3.0.0 (CVE-2021-28170). -->
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
