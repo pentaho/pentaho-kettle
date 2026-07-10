@@ -304,7 +304,7 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   public String getSQLListOfProcedures( String schemaName ) {
     return "SELECT RDB$PROCEDURE_NAME "
-      + "FROM RDB$PROCEDURES " + "WHERE RDB$OWNER_NAME = '" + getUsername().toUpperCase() + "' ";
+      + "FROM RDB$PROCEDURES " + "WHERE RDB$OWNER_NAME = '" + Const.NVL( getUsername(), "").toUpperCase() + "' ";
   }
 
   /**

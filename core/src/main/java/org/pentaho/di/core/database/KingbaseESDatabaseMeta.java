@@ -302,7 +302,7 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
   public String getSQLListOfProcedures( String schemaName ) {
     return "select proname "
       + "from sys_proc, sys_user " + "where sys_user.usesysid = sys_proc.proowner "
-      + "and upper(sys_user.usename) = '" + getUsername().toUpperCase() + "'";
+      + "and upper(sys_user.usename) = '" + Const.NVL( getUsername(), "").toUpperCase() + "'";
   }
 
   /*
