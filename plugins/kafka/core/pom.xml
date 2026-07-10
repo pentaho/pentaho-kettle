@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>kafka-plugin-core</artifactId>
-  <version>11.0.0.2-294</version>
+  <version>11.0.0.2-294-CUST-316</version>
   <packaging>jar</packaging>
 
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>

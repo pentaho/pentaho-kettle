@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>meta-inject-plugins-impl</artifactId>
+  <version>11.0.0.2-294-CUST-316</version>
   <name>PDI Metadata Injection Plugins Impl</name>
 
   <properties>
@@ -43,7 +44,7 @@
       <dependency>
           <groupId>pentaho</groupId>
           <artifactId>pentaho-metaverse-api</artifactId>
-          <version>${pentaho-metaverse.version}</version>
+          <version>11.0.0.2-294-CUST-316</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
