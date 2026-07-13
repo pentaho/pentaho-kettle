@@ -18,24 +18,22 @@ import java.awt.geom.Rectangle2D;
 
 import org.jfree.ui.Drawable;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.reporting.engine.classic.core.DataRow;
 
 public class TransJobDrawable implements Drawable {
 
-  private DataRow dataRow;
+  private ReportSubjectLocation location;
   private boolean pixelateImages;
   private Bowl bowl;
 
-  public TransJobDrawable( Bowl bowl, DataRow dataRow, boolean pixelateImages ) {
+  public TransJobDrawable( Bowl bowl, ReportSubjectLocation location, boolean pixelateImages ) {
     this.bowl = bowl;
-    this.dataRow = dataRow;
+    this.location = location;
     this.pixelateImages = pixelateImages;
   }
 
   @Override
   public void draw( Graphics2D graphics2D, Rectangle2D rectangle2D ) {
     try {
-      ReportSubjectLocation location = (ReportSubjectLocation) dataRow.get( "location" );
       if ( location.isTransformation() ) {
         TransformationInformation ti = TransformationInformation.getInstance();
         ti.drawImage( bowl, graphics2D, rectangle2D, location, pixelateImages );
@@ -46,21 +44,6 @@ public class TransJobDrawable implements Drawable {
     } catch ( Exception e ) {
       throw new RuntimeException( "Unable to draw image onto report", e );
     }
-  }
-
-  /**
-   * @return the dataRow
-   */
-  public DataRow getDataRow() {
-    return dataRow;
-  }
-
-  /**
-   * @param dataRow
-   *          the dataRow to set
-   */
-  public void setDataRow( DataRow dataRow ) {
-    this.dataRow = dataRow;
   }
 
   /**
