@@ -56,7 +56,7 @@
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>pdi-libs</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294-CUST-316</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

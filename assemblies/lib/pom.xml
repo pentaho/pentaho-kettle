@@ -14,14 +14,16 @@
     <version>11.0.0.2-294</version>
   </parent>
 
+  <version>11.0.0.2-294-CUST-316</version>
+
   <properties>
-    <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
+    <pdi-engine-spark.version>11.0.0.2-294</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
     <pentaho-mongodb-plugin.version>11.0.0.2-294</pentaho-mongodb-plugin.version>
     <big-data-plugin.version>11.0.0.2-294</big-data-plugin.version>
 
     <pentaho-json.version>11.0.0.2-294</pentaho-json.version>
-    <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
+    <pdi-spark-driver.version>11.0.0.2-294</pdi-spark-driver.version>
     <commons-database.version>11.0.0.2-294</commons-database.version>
     <pentaho-registry.version>11.0.0.2-294</pentaho-registry.version>
     <pentaho-metaverse.version>11.0.0.2-294-CUST-316</pentaho-metaverse.version>
@@ -42,7 +44,6 @@
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
     <databricks.version>4.0.0</databricks.version>
-    <jface.version>3.22.0</jface.version>
     <pentaho-metadata.version>11.0.0.2-294</pentaho-metadata.version>
     <google-http-client.version>1.42.3</google-http-client.version>
     <pax-swissbox-core.version>1.8.2</pax-swissbox-core.version>
@@ -63,12 +64,12 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
@@ -79,7 +80,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-dbdialog</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
@@ -94,7 +95,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
@@ -285,22 +286,22 @@
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-metastore-locator-api</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-kettle-repository-locator-api</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>file-open-save-new-api</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-engine-configuration-api</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294</version>
     </dependency>
 
     <!--  Pentaho reporting dependencies -->
