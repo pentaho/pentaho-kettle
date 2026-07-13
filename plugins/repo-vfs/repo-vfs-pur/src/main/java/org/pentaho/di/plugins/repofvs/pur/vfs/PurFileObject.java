@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
@@ -157,7 +158,7 @@ public class PurFileObject extends AbstractFileObject<PurFileSystem> {
   }
 
   private Optional<RepositoryFile> getRepoParent() {
-    String path = StringUtils.chomp( file.getPath(), "/" );
+    String path = Strings.CS.removeEnd( file.getPath(), "/" );
     if ( StringUtils.isEmpty( path ) ) {
       // i am root
       return Optional.empty();
@@ -244,6 +245,8 @@ public class PurFileObject extends AbstractFileObject<PurFileSystem> {
 
   @Override
   public void refresh() throws FileSystemException {
+    // super called to clear children name cache from getChildren
+    super.refresh();
     RepositoryFile newFile = pur.getFile( getName().getPath() );
     if ( newFile != null ) {
       this.file = newFile;
