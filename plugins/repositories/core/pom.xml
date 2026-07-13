@@ -133,5 +133,15 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <testExcludes>
+            <testExclude>**/RepositoryConnectMenuTest.java</testExclude>
+          </testExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

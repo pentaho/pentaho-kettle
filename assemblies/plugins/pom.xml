@@ -64,7 +64,7 @@
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
     <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
     <mail-plugin.version>${project.version}</mail-plugin.version>
-    <pentaho-metaverse.version>11.0.0.2-294</pentaho-metaverse.version>
+    <pentaho-metaverse.version>11.0.0.2-294-CUST-316</pentaho-metaverse.version>
     <pdi-xml-plugin.version>11.0.0.2-294</pdi-xml-plugin.version>
     <pdi-json-plugin.version>11.0.0.2-294</pdi-json-plugin.version>
     <pdi-rest-plugin.version>11.0.0.2-294</pdi-rest-plugin.version>

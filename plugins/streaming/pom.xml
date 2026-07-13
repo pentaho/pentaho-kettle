@@ -17,7 +17,7 @@
 
   <properties>
     <pdi.version>11.0.0.2-294</pdi.version>
-    <pentaho-metaverse.version>11.0.0.2-294</pentaho-metaverse.version>
+    <pentaho-metaverse.version>11.0.0.2-294-CUST-316</pentaho-metaverse.version>
   </properties>
 
   <modules>

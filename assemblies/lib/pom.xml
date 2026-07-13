@@ -24,7 +24,7 @@
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
     <commons-database.version>11.0.0.2-294</commons-database.version>
     <pentaho-registry.version>11.0.0.2-294</pentaho-registry.version>
-    <pentaho-metaverse.version>11.0.0.2-294</pentaho-metaverse.version>
+    <pentaho-metaverse.version>11.0.0.2-294-CUST-316</pentaho-metaverse.version>
     <platform.version>11.0.0.2-294</platform.version>
     <pentaho-reporting.version>11.0.0.2-294</pentaho-reporting.version>
     <pdi-osgi-bridge.version>11.0.0.2-294</pdi-osgi-bridge.version>
@@ -145,7 +145,7 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.core.commands</artifactId>
-      <version></version>
+      <version>${commands.version}</version>
       <exclusions>
         <!-- Prevent legacy coordinate pulls -->
         <exclusion>
@@ -157,7 +157,7 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.equinox.common</artifactId>
-      <version></version>
+      <version>${common.version}</version>
       <exclusions>
         <!-- Prevent legacy coordinate pulls -->
         <exclusion>

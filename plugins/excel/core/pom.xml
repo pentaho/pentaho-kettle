@@ -36,7 +36,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-metaverse-api</artifactId>
-      <version>${project.version}</version>
+      <version>11.0.0.2-294-CUST-316</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

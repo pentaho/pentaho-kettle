@@ -15,7 +15,7 @@
   <name>PDI Rest Plugin Core</name>
   <properties>
     <pdi.version>11.0.0.2-294</pdi.version>
-    <pentaho-metaverse.version>11.0.0.2-294</pentaho-metaverse.version>
+    <pentaho-metaverse.version>11.0.0.2-294-CUST-316</pentaho-metaverse.version>
     <platform.version>11.0.0.2-294</platform.version>
     <commons-xul.version>11.0.0.2-294</commons-xul.version>
     <commons-lang.version>2.6</commons-lang.version>
