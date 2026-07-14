@@ -85,7 +85,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-metaverse-api</artifactId>
-        <version>11.0.0.2-294-CUST-316</version>
+        <version>11.0.0.2-294</version>
         <scope>provided</scope>
       </dependency>
       <dependency>

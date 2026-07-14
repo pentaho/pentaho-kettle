@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>meta-inject-plugins</artifactId>
-  <version>11.0.0.2-294-CUST-316</version>
+  <version>11.0.0.2-294</version>
   <packaging>pom</packaging>
 
   <name>PDI Metadata Injection Plugins Distribution</name>
