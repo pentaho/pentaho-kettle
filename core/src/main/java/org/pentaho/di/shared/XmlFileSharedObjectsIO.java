@@ -46,28 +46,39 @@ public abstract class XmlFileSharedObjectsIO implements SharedObjectsIO {
    */
   protected abstract void loadSharedObjectsNodeMap() throws KettleXMLException;
 
-    /**
+  /**
    * Save shared objects to file
    * @throws KettleXMLException
    */
   protected abstract void saveToFile() throws KettleException;
 
+
   /**
-   * Return the Map of names and the corresponding nodes for the given shared object type.
-   * The parsing of shared.xml happens when this method is called.
-   *
-   * @param type
-   * @return Map<String, Node>
-   * @throws KettleXMLException
+   * Initialize the shared objects by loading them from the XML file if not already initialized.
+   * <p>
+   * NOTE: must hold the lock when calling this. It calls checkLock().
+   * @throws KettleXMLException if there is an error loading the shared objects.
    */
-  @Override
-  public Map<String, Node> getSharedObjects( String type ) throws KettleXMLException {
+  private void initialize() throws KettleXMLException {
     checkLock();
     if ( !isInitialized ) {
       // Load the shared.xml file
       loadSharedObjectsNodeMap();
       isInitialized = true;
     }
+  }
+
+  /**
+   * Return the map of names and corresponding nodes for the given shared object type.
+   * If this instance has not been initialized yet, shared.xml is loaded before returning the map.
+   *
+   * @param type shared object type
+   * @return map of object name to object node
+   * @throws KettleXMLException if loading shared.xml fails or the type is invalid
+   */
+  @Override
+  public Map<String, Node> getSharedObjects( String type ) throws KettleXMLException {
+    initialize();
     return getNodesMapForType( type );
   }
 
@@ -133,17 +144,18 @@ public abstract class XmlFileSharedObjectsIO implements SharedObjectsIO {
   }
 
   /**
-   * Save the name and the node for the given Shared Object Type in the file. If the SharedObject name exist but in a
-   * different case, the existing entry will be deleted and the new entry will be saved with provided name
+   * Save or update the shared object node for the given type and name.
+   * If this instance has not been initialized yet, shared.xml is loaded before applying the update.
+   * The name comparison is case-insensitive, and an existing entry with a different case is replaced.
    *
-   * @param type The SharedObject type
-   * @param name The name of the SharedObject for a given type
-   * @param node The xml node that containing the details of the SharedObject
-   * @throws KettleException
+   * @param type shared object type
+   * @param name shared object name
+   * @param node XML node containing shared object details
+   * @throws KettleException if loading or writing shared.xml fails, or the type is invalid
    */
   @Override
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
-    checkLock();
+    initialize();
     // Get the map for the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
 
@@ -185,35 +197,37 @@ public abstract class XmlFileSharedObjectsIO implements SharedObjectsIO {
   }
 
   /**
-   * Return the node for the given SharedObject type and name. The lookup for the SharedObject
-   * using the name will be case-insensitive
-   * 
-   * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and
-   *             clusterschema"
-   * @param name The name is the name of the sharedObject
-   * @return
-   * @throws KettleXMLException
+   * Return the node for the given shared object type and name.
+   * If this instance has not been initialized yet, shared.xml is loaded before lookup.
+   * The lookup is case-insensitive by name.
+   *
+   * @param type shared object type
+   * @param name shared object name
+   * @return matching node, or null if not found
+   * @throws KettleException if loading shared.xml fails or the type is invalid
    */
   @Override
   public Node getSharedObject( String type, String name ) throws KettleException {
-    checkLock();
+    initialize();
     // Get the Map using the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
     return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() ) );
   }
 
   /**
-   * Delete the SharedObject for the given type and name. The delete operation will be case-insensitive.
-   * 
-   * @param type The type is shared object type for example, "connection", "slaveserver", "partitionschema" and
-   *             clusterschema"
-   * @param name The name is the name of the sharedObject
-   * @throws KettleException
+   * Delete the shared object for the given type and name.
+   * If this instance has not been initialized yet, shared.xml is loaded before the delete is applied.
+   * The delete is case-insensitive by name.
+   *
+   * @param type shared object type
+   * @param name shared object name
+   * @throws KettleException if loading or writing shared.xml fails, or the type is invalid
    */
   @Override
   public void delete( String type, String name ) throws KettleException {
     try {
       lock();
+      initialize();
       // Get the nodeMap for the type
       Map<String, Node> nodeTypeMap = getNodesMapForType( type );
       String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeTypeMap.keySet() );
@@ -226,10 +240,19 @@ public abstract class XmlFileSharedObjectsIO implements SharedObjectsIO {
     }
   }
 
+  /**
+   * Delete all SharedObjects for the given type and persist the resulting empty set for that type.
+   * <p>
+   * If this instance has not been initialized yet, shared.xml is loaded before clearing.
+   *
+   * @param type The shared object type to clear.
+   * @throws KettleException
+   */
   @Override
   public void clear( String type ) throws KettleException {
     try {
       lock();
+      initialize();
       switch ( SharedObjectType.valueOf( type.toUpperCase() ) ) {
         case CONNECTION:
           connectionsNodes.clear();
