@@ -284,10 +284,6 @@
       <version>${commons-lang3.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>*</groupId>
           <artifactId>*</artifactId>
         </exclusion>
@@ -453,12 +449,6 @@
       <groupId>pentaho</groupId>
       <artifactId>simple-jndi</artifactId>
       <version>${simple-jndi.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency> <!-- included only to provide FTP file providers; not used by code -->
       <groupId>commons-net</groupId>

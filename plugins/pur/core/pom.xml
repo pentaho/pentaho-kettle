@@ -76,10 +76,6 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>com.ibm.icu</groupId>
           <artifactId>icu4j</artifactId>
         </exclusion>

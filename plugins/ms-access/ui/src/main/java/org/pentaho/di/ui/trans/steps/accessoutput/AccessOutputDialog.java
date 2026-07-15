@@ -53,6 +53,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
 import org.pentaho.di.ui.util.DialogHelper;
 
 @PluginDialog( id = "AccessOutput", image = "ACO.svg", pluginType = PluginDialog.PluginType.STEP,
@@ -456,8 +457,6 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
   private void getTableName() {
     AccessOutputMeta meta = new AccessOutputMeta();
     getInfo( meta );
-
-    Database database = null;
     // New class: SelectTableDialog
     try {
       String realFilename = transMeta.environmentSubstitute( meta.getFilename() );
@@ -469,30 +468,22 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
           PKG, "AccessOutputMeta.Exception.FileDoesNotExist", realFilename ) );
       }
 
-      database = Database.open( file );
-      Set<String> set = database.getTableNames();
-      String[] tablenames = set.toArray( new String[set.size()] );
-      EnterSelectionDialog dialog =
-        new EnterSelectionDialog( shell, tablenames,
-          BaseMessages.getString( PKG, "AccessOutputDialog.Dialog.SelectATable.Title" ),
-          BaseMessages.getString( PKG, "AccessOutputDialog.Dialog.SelectATable.Message" ) );
-      String tablename = dialog.open();
-      if ( tablename != null ) {
-        wTablename.setText( tablename );
+      try ( Database database = new DatabaseBuilder( file ).setReadOnly( true ).open() ) {
+        Set<String> set = database.getTableNames();
+        String[] tablenames = set.toArray( new String[set.size()] );
+        EnterSelectionDialog dialog =
+          new EnterSelectionDialog( shell, tablenames,
+            BaseMessages.getString( PKG, "AccessOutputDialog.Dialog.SelectATable.Title" ),
+            BaseMessages.getString( PKG, "AccessOutputDialog.Dialog.SelectATable.Message" ) );
+        String tablename = dialog.open();
+        if ( tablename != null ) {
+          wTablename.setText( tablename );
+        }
       }
     } catch ( Throwable e ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Title" ), BaseMessages
           .getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Message" ), e );
-    } finally {
-      // Don't forget to close the bugger.
-      try {
-        if ( database != null ) {
-          database.close();
-        }
-      } catch ( Exception e ) {
-        // Ignore close errors
-      }
     }
   }
 }
