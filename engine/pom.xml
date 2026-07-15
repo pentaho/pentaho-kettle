@@ -33,7 +33,6 @@
     <antlr-complete.version>3.5.2</antlr-complete.version>
     <commons-validator.version>1.3.1</commons-validator.version>
     <edtftpj.version>2.1.0</edtftpj.version>
-    <jsendnsca.version>2.0.1</jsendnsca.version>
     <feed4j.version>1.0</feed4j.version>
     <ftp4che.version>0.7.1</ftp4che.version>
     <infobright-core.version>3.4</infobright-core.version>
@@ -199,7 +198,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.googlecode.jsendnsca</groupId>
+      <groupId>com.github.jsendnsca</groupId>
       <artifactId>jsendnsca</artifactId>
       <version>${jsendnsca.version}</version>
       <exclusions>
@@ -501,6 +500,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <!-- Apache SSHD -->
     <dependency>
       <groupId>org.apache.sshd</groupId>
