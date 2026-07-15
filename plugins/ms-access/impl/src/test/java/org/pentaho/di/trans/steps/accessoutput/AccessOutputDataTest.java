@@ -81,6 +81,24 @@ public class AccessOutputDataTest {
   }
 
   @Test
+  public void testOpenDatabaseOpensExistingDatabase() throws IOException {
+    data.createDatabase( mdbFile );
+    data.createTable( "existingTable", generateRowMeta() );
+    data.addRowToTable( generateRowData( 1 ).get( 0 ) );
+    data.closeDatabase();
+
+    AccessOutputData reopenedData = new AccessOutputData();
+    reopenedData.openDatabase( mdbFile );
+    reopenedData.table = reopenedData.db.getTable( "existingTable" );
+
+    assertNotNull( reopenedData.db );
+    assertNotNull( reopenedData.table );
+    assertEquals( 1, reopenedData.table.getRowCount() );
+
+    reopenedData.closeDatabase();
+  }
+
+  @Test
   public void testTruncateTable() throws IOException {
     data.createDatabase( mdbFile );
     data.createTable( "TruncatingThisTable", generateRowMeta() );

@@ -77,6 +77,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Table;
 import org.pentaho.di.ui.util.DialogHelper;
 
@@ -1112,26 +1113,28 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
       if ( inputList.getFiles().size() > 0 ) {
         // Open the file (only first file)...
+        try ( Database d = new DatabaseBuilder( new File( AccessInputMeta.getFilename( inputList.getFile( 0 ) ) ) )
+          .setReadOnly( true )
+          .open() ) {
+          String realTableName = transMeta.environmentSubstitute( meta.getTableName() );
 
-        Database d = Database.open( new File( AccessInputMeta.getFilename( inputList.getFile( 0 ) ) ), true );
-        String realTableName = transMeta.environmentSubstitute( meta.getTableName() );
+          Table t = null;
+          if ( realTableName.startsWith( AccessInputMeta.PREFIX_SYSTEM ) ) {
+            t = d.getSystemTable( realTableName );
+          } else {
+            t = d.getTable( realTableName );
+          }
 
-        Table t = null;
-        if ( realTableName.startsWith( AccessInputMeta.PREFIX_SYSTEM ) ) {
-          t = d.getSystemTable( realTableName );
-        } else {
-          t = d.getTable( realTableName );
-        }
+          // Get the list of columns
+          List<? extends Column> col = t.getColumns();
+          int nr = col.size();
+          for ( int i = 0; i < nr; i++ ) {
+            Column c = col.get( i );
 
-        // Get the list of columns
-        List<Column> col = t.getColumns();
-        int nr = col.size();
-        for ( int i = 0; i < nr; i++ ) {
-          Column c = col.get( i );
-
-          ValueMetaInterface field = AccessInputMeta.getValueMeta( c );
-          if ( field != null && fields.indexOfValue( field.getName() ) < 0 ) {
-            fields.addValueMeta( field );
+            ValueMetaInterface field = AccessInputMeta.getValueMeta( c );
+            if ( field != null && fields.indexOfValue( field.getName() ) < 0 ) {
+              fields.addValueMeta( field );
+            }
           }
         }
       }
@@ -1514,7 +1517,9 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
           // Open the file (only first file) in readOnly ...
           //
           accessDatabase =
-            Database.open( new File( AccessInputMeta.getFilename( fileInputList.getFile( 0 ) ) ), true );
+            new DatabaseBuilder( new File( AccessInputMeta.getFilename( fileInputList.getFile( 0 ) ) ) )
+              .setReadOnly( true )
+              .open();
 
           // Get user tables
           //

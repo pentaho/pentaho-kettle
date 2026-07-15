@@ -37,13 +37,6 @@
       <version>${commons-lang3.version}</version>
       <scope>compile</scope>
     </dependency>
-    <!-- commons-lang 2.6 for jackcess compatibility (jackcess 1.2.6 requires it) -->
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
-      <scope>compile</scope>
-    </dependency>
 
     <!-- Test dependencies -->
     <dependency>

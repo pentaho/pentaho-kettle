@@ -20,18 +20,20 @@ import java.util.List;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
 
-import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.ColumnBuilder;
 import com.healthmarketscience.jackcess.Cursor;
 import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
+import com.healthmarketscience.jackcess.CursorBuilder;
 import com.healthmarketscience.jackcess.Table;
+import com.healthmarketscience.jackcess.TableBuilder;
 
 /**
  * @author Matt
  * @since 24-jan-2005
  */
-public class AccessOutputData extends BaseStepData implements StepDataInterface {
+public class AccessOutputData extends BaseStepData {
   public Database db;
   public Table table;
   public List<Object[]> rows;
@@ -40,16 +42,16 @@ public class AccessOutputData extends BaseStepData implements StepDataInterface 
 
   public AccessOutputData() {
     super();
-    rows = new ArrayList<Object[]>();
+    rows = new ArrayList<>();
     oneFileOpened = false;
   }
 
   void createDatabase( File databaseFile ) throws IOException {
-    db = Database.create( databaseFile );
+    db = new DatabaseBuilder( databaseFile ).setFileFormat( Database.FileFormat.V2000 ).create();
   }
 
   void openDatabase( File databaseFile ) throws IOException {
-    db = Database.open( databaseFile );
+    db = DatabaseBuilder.open( databaseFile );
   }
 
   void closeDatabase() throws IOException {
@@ -57,9 +59,8 @@ public class AccessOutputData extends BaseStepData implements StepDataInterface 
   }
 
   void createTable( String tableName, RowMetaInterface rowMeta ) throws IOException {
-    List<Column> columns = AccessOutputMeta.getColumns( rowMeta );
-    db.createTable( tableName, columns );
-    table = db.getTable( tableName );
+    List<ColumnBuilder> columns = AccessOutputMeta.getColumns( rowMeta );
+    table = new TableBuilder( tableName ).addColumns( columns ).toTable( db );
   }
 
   void addRowToTable( Object... row ) throws IOException {
@@ -74,7 +75,7 @@ public class AccessOutputData extends BaseStepData implements StepDataInterface 
     if ( table == null ) {
       return;
     }
-    Cursor tableRows = Cursor.createCursor( table );
+    Cursor tableRows = CursorBuilder.createCursor( table );
     while ( tableRows.moveToNextRow() ) {
       tableRows.deleteCurrentRow();
     }
