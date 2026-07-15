@@ -91,12 +91,6 @@
       <groupId>org.pentaho</groupId>
       <artifactId>pentaho-registry</artifactId>
       <version>${pentaho-registry.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -112,12 +106,6 @@
       <groupId>pentaho</groupId>
       <artifactId>mondrian</artifactId>
       <version>${mondrian.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>

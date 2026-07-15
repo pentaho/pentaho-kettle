@@ -93,12 +93,6 @@
         <groupId>org.pentaho</groupId>
         <artifactId>commons-xul-core</artifactId>
         <version>${commons-xul.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.pentaho</groupId>

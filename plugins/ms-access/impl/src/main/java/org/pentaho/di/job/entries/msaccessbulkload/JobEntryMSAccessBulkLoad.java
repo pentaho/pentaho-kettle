@@ -50,6 +50,8 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
+import com.healthmarketscience.jackcess.util.ImportUtil;
 
 /**
  * This defines a 'MS Access Bulk Load' job entry. It will compare to load data from files into Microsoft Access files
@@ -383,28 +385,25 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 
       File sourceDataFile = new File( sourceFilename );
       File targetDbFile = new File( targetFilename );
+      boolean dbAlreadyExists = targetDbFile.exists();
 
-      // create database if needed
-      if ( !targetDbFile.exists() ) {
-        Database.create( targetDbFile );
-        logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.DbCreated", targetFilename ) );
-      } else {
-        // Database exists
-        Database db = Database.open( targetDbFile );
-        logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.DbOpened", targetFilename ) );
-        // Let's check table
-        if ( db.getTable( tablename ) != null ) {
-          logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.TableExists", tablename ) );
+      try ( Database db = dbAlreadyExists ? DatabaseBuilder.open( targetDbFile )
+        : new DatabaseBuilder( targetDbFile ).setFileFormat( Database.FileFormat.V2000 ).create() ) {
+        if ( !dbAlreadyExists ) {
+          logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.DbCreated", targetFilename ) );
+        } else {
+          // Database exists
+          logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.DbOpened", targetFilename ) );
+          // Let's check table
+          if ( db.getTable( tablename ) != null ) {
+            logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.TableExists", tablename ) );
+          }
         }
 
-        // close database
-        if ( db != null ) {
-          db.close();
-        }
-        logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.DbCosed", targetFilename ) );
+        ImportUtil.importFile( sourceDataFile, db, tablename, delimiter );
       }
-      // load data from file
-      Database.open( targetDbFile ).importFile( tablename, sourceDataFile, delimiter );
+
+      logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.DbClosed", targetFilename ) );
 
       logBasic( BaseMessages.getString(
         PKG, "JobEntryMSAccessBulkLoad.Log.FileImported", sourceFilename, tablename, targetFilename ) );

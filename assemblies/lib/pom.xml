@@ -55,12 +55,6 @@
       <groupId>org.pentaho</groupId>
       <artifactId>pentaho-metadata</artifactId>
       <version>${pentaho-metadata.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>

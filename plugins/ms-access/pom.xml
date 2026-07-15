@@ -104,7 +104,7 @@
       <dependency>
         <groupId>com.healthmarketscience.jackcess</groupId>
         <artifactId>jackcess</artifactId>
-        <version>1.2.6</version>
+        <version>4.0.11</version>
         <scope>compile</scope>
         <exclusions>
           <exclusion>

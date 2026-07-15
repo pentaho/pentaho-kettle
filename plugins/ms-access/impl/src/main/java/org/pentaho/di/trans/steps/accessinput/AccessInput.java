@@ -41,6 +41,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
 
 /**
  * Read all Access files, convert them to rows and writes these to one or more output streams.
@@ -333,7 +334,7 @@ public class AccessInput extends BaseStep implements StepInterface {
       // Read mdb file
       data.file.getName().getPathDecoded();
 
-      data.d = Database.open( new File( AccessInputMeta.getFilename( data.file ) ), true ); // Read-only
+      data.d = new DatabaseBuilder( new File( AccessInputMeta.getFilename( data.file ) ) ).setReadOnly( true ).open();
 
       // Get table
       if ( data.isTableSystem ) {
