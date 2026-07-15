@@ -14,22 +14,6 @@
 
 package org.pentaho.di.trans.steps.autodoc;
 
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.logging.LogStatus;
-import org.pentaho.di.core.logging.LogTableInterface;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.trans.TransMeta;
-
 import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.Iterator;
@@ -39,13 +23,29 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 import org.jfree.ui.Drawable;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.trans.TransMeta;
 
 public class KettleFileTableModel implements TableModel {
 
   public enum Field {
     location( ReportSubjectLocation.class ), filename( String.class ), name( String.class ), description(
       String.class ), extended_description( String.class ), logging( String.class ), creation( String.class ),
-      modification( String.class ), last_exec_result( String.class ), image( Drawable.class );
+      modification( String.class ), last_exec_result( String.class ), image( BufferedImage.class ),
+      pdf_image( Drawable.class );
 
     private Class<?> clazz;
 
@@ -121,6 +121,8 @@ public class KettleFileTableModel implements TableModel {
           return getLastExecutionResult( bowl, log, parentObject, location );
         case image:
           return getImage( bowl, location );
+        case pdf_image:
+          return new TransJobDrawable( bowl, location, true );
         default:
           throw new RuntimeException( "Unhandled field type: " + field + " in function getValueAt()" );
       }
