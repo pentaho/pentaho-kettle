@@ -4314,7 +4314,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         if ( includeSchema ) {
           res.add( databaseMeta.getQuotedSchemaTableCombination( schema, view ) );
         } else {
-          res.add( view );
+          res.add( databaseMeta.getQuotedSchemaTableCombination( null, view ) );
         }
       }
     }

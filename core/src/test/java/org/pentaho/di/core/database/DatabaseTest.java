@@ -187,7 +187,8 @@ public class DatabaseTest {
     String columnType = "Integer";
     int columnSize = 15;
 
-    when( dbMetaData.getColumns( anyString(), anyString(), or( anyString(), eq( null ) ), or( anyString(), eq( null ) ) ) ).thenReturn( rs );
+    when( dbMetaData.getColumns( anyString(), anyString(), or( anyString(), eq( null ) ),
+      or( anyString(), eq( null ) ) ) ).thenReturn( rs );
     when( rs.next() ).thenReturn( true ).thenReturn( false );
     when( rs.getString( "COLUMN_NAME" ) ).thenReturn( columnName );
     when( rs.getString( "SOURCE_DATA_TYPE" ) ).thenReturn( columnType );
@@ -658,7 +659,8 @@ public class DatabaseTest {
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
     when( provider.getNamedDataSource( anyString(), any( DataSourceProviderInterface.DatasourceType.class ) ) )
       .thenReturn( ds );
-    when( provider.getPooledDataSourceFromMeta( any( DatabaseMeta.class ), any( DataSourceProviderInterface.DatasourceType.class ) ) )
+    when( provider.getPooledDataSourceFromMeta( any( DatabaseMeta.class ),
+      any( DataSourceProviderInterface.DatasourceType.class ) ) )
       .thenReturn( ds );
 
     Database db = new Database( log, meta );
@@ -698,7 +700,8 @@ public class DatabaseTest {
     when( meta.getMaximumPoolSize() ).thenReturn( 1 );
 
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
-    doThrow( new UnsupportedOperationException() ).when( provider ).getPooledDataSourceFromMeta( meta, DatasourceType.POOLED );
+    doThrow( new UnsupportedOperationException() ).when( provider )
+      .getPooledDataSourceFromMeta( meta, DatasourceType.POOLED );
     Database db = new Database( log, meta );
     final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
     try {
@@ -730,7 +733,8 @@ public class DatabaseTest {
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
     DataSource dataSource = mock( DataSource.class );
     Connection connection = mock( Connection.class );
-    doThrow( new UnsupportedOperationException() ).when( provider ).getPooledDataSourceFromMeta( meta, DatasourceType.POOLED );
+    doThrow( new UnsupportedOperationException() ).when( provider )
+      .getPooledDataSourceFromMeta( meta, DatasourceType.POOLED );
     when( dataSource.getConnection() ).thenReturn( connection );
     Database db = new Database( log, meta );
     final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
@@ -760,7 +764,8 @@ public class DatabaseTest {
     when( meta.isNeedUpdate() ).thenReturn( false );
 
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
-    doThrow( new UnsupportedOperationException() ).when( provider ).getPooledDataSourceFromMeta( meta, DatasourceType.POOLED );
+    doThrow( new UnsupportedOperationException() ).when( provider )
+      .getPooledDataSourceFromMeta( meta, DatasourceType.POOLED );
     Database db = new Database( log, meta );
     final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
     try {
@@ -833,6 +838,26 @@ public class DatabaseTest {
 
     String[] tableNames = db.getTablenames();
     assertEquals( tableNames.length, 1 );
+  }
+
+  @Test
+  public void testGetViewsWithSpacesReturnsQuoted() throws Exception {
+    String viewNameWithSpaces = "View with spaces";
+    String quotedViewNameWithSpaces = "\"View with spaces\"";
+    when( dbMetaMock.supportsViews() ).thenReturn( true );
+    when( rs.next() ).thenReturn( true, false );
+    when( rs.getString( "TABLE_NAME" ) ).thenReturn( viewNameWithSpaces );
+    when( dbMetaMock.getTables(
+      same( dbMetaDataMock ), or( anyString(), eq( null ) ), or( anyString(), eq( null ) ), any() ) ).thenReturn( rs );
+    Database db = new Database( log, dbMetaMock );
+    db.setConnection( mockConnection( dbMetaDataMock ) );
+    when( dbMetaMock.getQuotedSchemaTableCombination( null, viewNameWithSpaces ) ).thenReturn(
+      quotedViewNameWithSpaces );
+
+    String[] viewNames = db.getViews();
+
+    assertEquals( 1, viewNames.length );
+    assertEquals( quotedViewNameWithSpaces, viewNames[ 0 ] );
   }
 
   @Test
