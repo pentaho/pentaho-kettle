@@ -62,12 +62,12 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>11.0.0.2-294</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>11.0.0.2-294</version>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
@@ -78,7 +78,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-dbdialog</artifactId>
-      <version>11.0.0.2-294</version>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
@@ -93,7 +93,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>11.0.0.2-294</version>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
@@ -284,22 +284,22 @@
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-metastore-locator-api</artifactId>
-      <version>11.0.0.2-294</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-kettle-repository-locator-api</artifactId>
-      <version>11.0.0.2-294</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>file-open-save-new-api</artifactId>
-      <version>11.0.0.2-294</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-engine-configuration-api</artifactId>
-      <version>11.0.0.2-294</version>
+      <version>${project.version}</version>
     </dependency>
 
     <!--  Pentaho reporting dependencies -->
