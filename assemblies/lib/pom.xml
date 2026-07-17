@@ -14,8 +14,6 @@
     <version>11.0.0.2-294</version>
   </parent>
 
-  <version>11.0.0.2-294</version>
-
   <properties>
     <pdi-engine-spark.version>11.0.0.2-294</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
