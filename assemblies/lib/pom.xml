@@ -14,8 +14,6 @@
     <version>11.0.0.2-294</version>
   </parent>
 
-  <version>11.0.0.2-294-CUST-316</version>
-
   <properties>
     <pdi-engine-spark.version>11.0.0.2-294</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
@@ -146,7 +144,7 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.core.commands</artifactId>
-      <version></version>
+      <version>${commands.version}</version>
       <exclusions>
         <!-- Prevent legacy coordinate pulls -->
         <exclusion>
@@ -158,7 +156,7 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.equinox.common</artifactId>
-      <version></version>
+      <version>${common.version}</version>
       <exclusions>
         <!-- Prevent legacy coordinate pulls -->
         <exclusion>
