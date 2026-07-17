@@ -15,6 +15,8 @@ package org.pentaho.di.repository.pur;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.cli.auth.BrowserAuthSessionHolder;
+import org.pentaho.di.cli.auth.CredentialProvider;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
@@ -41,8 +43,14 @@ public class PurRepositorySecurityManager implements IRoleSupportSecurityManager
 
   public PurRepositorySecurityManager( PurRepository repository, PurRepositoryMeta repositoryMeta, IUser user,
       ServiceManager serviceManager ) {
+    this( repository, repositoryMeta, user, serviceManager, BrowserAuthSessionHolder.getInstance() );
+  }
+
+  public PurRepositorySecurityManager( PurRepository repository, PurRepositoryMeta repositoryMeta, IUser user,
+      ServiceManager serviceManager, CredentialProvider credentialProvider ) {
     this.repository = repository;
-    this.userRoleDelegate = new UserRoleDelegate( this, repositoryMeta, user, logger, serviceManager );
+    this.userRoleDelegate = new UserRoleDelegate( this, repositoryMeta, user, logger, serviceManager,
+      credentialProvider );
     userRoleDelegate.addUserRoleListChangeListener( this );
     this.setUserRoleDelegate( userRoleDelegate );
   }

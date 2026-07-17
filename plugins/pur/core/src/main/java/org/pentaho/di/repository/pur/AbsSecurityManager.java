@@ -12,6 +12,9 @@
 
 package org.pentaho.di.repository.pur;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.pentaho.di.cli.auth.CredentialProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +41,23 @@ public class AbsSecurityManager extends PurRepositorySecurityManager implements 
 
   private RoleBindingStruct roleBindingStruct = null;
 
-  private final transient ServiceManager serviceManager;
+  private transient ServiceManager serviceManager;
 
   public AbsSecurityManager( PurRepository repository, PurRepositoryMeta repositoryMeta, IUser userInfo,
       ServiceManager serviceManager ) {
-    super( repository, repositoryMeta, userInfo, serviceManager );
+    this( repository, repositoryMeta, userInfo, serviceManager, null );
+  }
+
+  public AbsSecurityManager( PurRepository repository, PurRepositoryMeta repositoryMeta, IUser userInfo,
+      ServiceManager serviceManager, CredentialProvider credentialProvider ) {
+    super( repository, repositoryMeta, userInfo, serviceManager, credentialProvider );
     this.serviceManager = serviceManager;
     createAuthorizationPolicyService( userInfo );
+  }
+
+  @VisibleForTesting
+  void setServiceManagerForTesting( ServiceManager serviceManager ) {
+    this.serviceManager = serviceManager;
   }
 
   /**

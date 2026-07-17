@@ -20,7 +20,9 @@ import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.Service;
 import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.soap.SOAPBinding;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.Before;
@@ -29,16 +31,21 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.pentaho.di.cli.auth.CredentialProvider;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
 import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
+import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
 
+import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
@@ -56,6 +63,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @RunWith( MockitoJUnitRunner.class )
 public class WebServiceManagerTest {
@@ -759,6 +767,81 @@ public class WebServiceManagerTest {
         assertTrue( "Cause must be NoSuchMethodException",
           e.getCause() instanceof NoSuchMethodException );
       }
+    }
+  }
+
+  @Test
+  @SuppressWarnings( "unchecked" )
+  public void testCreateService_InjectedCredentialProviderAddsBearerSoapHeader() throws Exception {
+    CredentialProvider credentialProvider = new CredentialProvider() {
+      @Override
+      public Optional<String> findAccessToken( String serverUrl ) {
+        return BASE_URL.equals( serverUrl ) ? Optional.of( "access-token" ) : Optional.empty();
+      }
+
+      @Override
+      public Optional<String> findSessionCookie( String serverUrl ) {
+        return Optional.empty();
+      }
+    };
+
+    WebServiceManager credentialAwareManager = new WebServiceManager( BASE_URL, USERNAME, credentialProvider );
+    Service service = mock( Service.class );
+    IUnifiedRepositoryJaxwsWebService port = mock( IUnifiedRepositoryJaxwsWebService.class,
+      withSettings().extraInterfaces( BindingProvider.class ) );
+    BindingProvider bindingProvider = (BindingProvider) port;
+    SOAPBinding binding = mock( SOAPBinding.class );
+    Map<String, Object> ctx = bindingProviderContext( bindingProvider );
+    when( bindingProvider.getBinding() ).thenReturn( binding );
+    when( service.getPort( IUnifiedRepositoryJaxwsWebService.class ) ).thenReturn( port );
+
+    try ( MockedStatic<Service> mockedService = mockStatic( Service.class ) ) {
+      mockedService.when( () -> Service.create( any( URL.class ), any( QName.class ) ) ).thenReturn( service );
+
+      Object created = credentialAwareManager.createService( USERNAME, PASSWORD, IUnifiedRepositoryJaxwsWebService.class );
+
+      assertNotNull( created );
+    }
+
+    Map<String, List<String>> headers =
+      (Map<String, List<String>>) ctx.get( MessageContext.HTTP_REQUEST_HEADERS );
+    assertNotNull( headers );
+    assertEquals( "Bearer access-token", headers.get( "Authorization" ).get( 0 ) );
+    assertFalse( ctx.containsKey( BindingProvider.USERNAME_PROPERTY ) );
+    assertFalse( ctx.containsKey( BindingProvider.PASSWORD_PROPERTY ) );
+    verify( binding ).setMTOMEnabled( true );
+  }
+
+  @Test
+  public void testCreateService_InjectedNonBasicCredentialBypassesSoapCache() throws Exception {
+    CredentialProvider credentialProvider = new CredentialProvider() {
+      @Override
+      public Optional<String> findAccessToken( String serverUrl ) {
+        return BASE_URL.equals( serverUrl ) ? Optional.of( "access-token" ) : java.util.Optional.empty();
+      }
+
+      @Override
+      public Optional<String> findSessionCookie( String serverUrl ) {
+        return Optional.empty();
+      }
+    };
+
+    WebServiceManager credentialAwareManager = new WebServiceManager( BASE_URL, USERNAME, credentialProvider );
+    Service service = mock( Service.class );
+    IUnifiedRepositoryJaxwsWebService port = mock( IUnifiedRepositoryJaxwsWebService.class,
+      withSettings().extraInterfaces( BindingProvider.class ) );
+    BindingProvider bindingProvider = (BindingProvider) port;
+    when( bindingProvider.getBinding() ).thenReturn( mock( SOAPBinding.class ) );
+    bindingProviderContext( bindingProvider );
+    when( service.getPort( IUnifiedRepositoryJaxwsWebService.class ) ).thenReturn( port );
+
+    try ( MockedStatic<Service> mockedService = mockStatic( Service.class ) ) {
+      mockedService.when( () -> Service.create( any( URL.class ), any( QName.class ) ) ).thenReturn( service );
+
+      credentialAwareManager.createService( USERNAME, PASSWORD, IUnifiedRepositoryJaxwsWebService.class );
+      credentialAwareManager.createService( USERNAME, PASSWORD, IUnifiedRepositoryJaxwsWebService.class );
+
+      mockedService.verify( () -> Service.create( any( URL.class ), any( QName.class ) ), times( 2 ) );
     }
   }
 

@@ -12,34 +12,44 @@
 
 package org.pentaho.di.repository.pur;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import com.pentaho.pdi.ws.IRepositorySyncWebService;
+import com.pentaho.pdi.ws.RepositorySyncException;
+import jakarta.xml.ws.WebServiceException;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
+import org.pentaho.di.cli.auth.BrowserAuthSessionHolder;
+import org.pentaho.di.cli.auth.CredentialProvider;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.pur.model.EEUserInfo;
 import org.pentaho.di.ui.spoon.session.AuthenticationContext;
 import org.pentaho.di.ui.spoon.session.SpoonSessionManager;
 import org.pentaho.platform.api.engine.IApplicationContext;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
 
-import java.io.ByteArrayInputStream;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -48,8 +58,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -58,6 +71,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings( { "rawtypes", "unchecked", "removal" } )
 public class PurRepositoryConnectorTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
@@ -77,6 +91,7 @@ public class PurRepositoryConnectorTest {
       new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
     purRepositoryConnector.disconnect();
     purRepositoryConnector.disconnect();
+    assertNull( purRepositoryConnector.getServiceManager() );
   }
 
   @Test
@@ -173,6 +188,54 @@ public class PurRepositoryConnectorTest {
       assertEquals( "sessionUser", result.getUser().getLogin() );
       // decryptedPassword should be empty when session auth is used, so password on user should be ""
       assertEquals( "", result.getUser().getPassword() );
+    }
+  }
+
+  @Test
+  public void testConnectWithoutPasswordRequiresStoredCredential() {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    BrowserAuthSessionHolder holder = mock( BrowserAuthSessionHolder.class );
+    when( holder.findAccessToken( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.empty() );
+    when( holder.findSessionCookie( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.empty() );
+
+    try ( MockedStatic<BrowserAuthSessionHolder> mockedHolder = mockStatic( BrowserAuthSessionHolder.class ) ) {
+      mockedHolder.when( BrowserAuthSessionHolder::getInstance ).thenReturn( holder );
+
+      try {
+        new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) )
+          .connect( "alice" );
+        Assert.fail( "Expected missing credential failure" );
+      } catch ( KettleException e ) {
+        assertTrue( e.getMessage().contains( "OAuth access token" ) );
+      }
+    }
+  }
+
+  @Test
+  public void testConnectWithoutPasswordDelegatesWithEmptyPasswordWhenCredentialExists() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector = spy(
+      new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) ) );
+    RepositoryConnectResult expected = mock( RepositoryConnectResult.class );
+    doReturn( expected ).when( connector ).connect( "alice", "" );
+
+    BrowserAuthSessionHolder holder = mock( BrowserAuthSessionHolder.class );
+    when( holder.findAccessToken( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.empty() );
+    when( holder.findSessionCookie( "http://localhost:8080/pentaho" ) ).thenReturn( Optional.of( "JSESSIONID=1" ) );
+
+    try ( MockedStatic<BrowserAuthSessionHolder> mockedHolder = mockStatic( BrowserAuthSessionHolder.class ) ) {
+      mockedHolder.when( BrowserAuthSessionHolder::getInstance ).thenReturn( holder );
+
+      assertEquals( expected, connector.connect( "alice" ) );
+      verify( connector ).connect( "alice", "" );
     }
   }
 
@@ -478,11 +541,53 @@ public class PurRepositoryConnectorTest {
       assertEquals( "", result.getUser().getPassword() );
     }
   }
+
+  @Test
+  public void testCreateAuthorizationTask_UsesSessionCredentialProviderForSecurityManager() throws Exception {
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    RootRef mockRootRef = mock( RootRef.class );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+    connector.setServiceManagerForTesting( mock( ServiceManager.class ) );
+
+    CredentialProvider sessionProvider = new SpoonCredentialProvider( "http://localhost:8080/pentaho" );
+    connector.setCredentialProviderForTesting( sessionProvider );
+
+    AbsSecurityProvider securityProvider = mock( AbsSecurityProvider.class );
+    when( securityProvider.getAllowedActions( RepositorySecurityProvider.NAMESPACE ) )
+      .thenReturn( Collections.singletonList( RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION ) );
+
+    PurRepositorySecurityManager securityManager = mock( PurRepositorySecurityManager.class );
+    when( securityManager.getUserRoleDelegate() ).thenReturn( mock( UserRoleDelegate.class ) );
+
+    doReturn( securityProvider ).when( connector ).createSecurityProvider( any() );
+    doAnswer( invocation -> {
+      assertTrue( connector.getCredentialProvider() instanceof SpoonCredentialProvider );
+      assertSame( connector.getCredentialProvider(), sessionProvider );
+      return securityManager;
+    } ).when( connector ).createSecurityManager( any() );
+
+    RepositoryConnectResult result = new RepositoryConnectResult( new RepositoryServiceRegistry() );
+    EEUserInfo user = new EEUserInfo();
+    user.setLogin( "browserUser" );
+    user.setName( "browserUser" );
+    user.setPassword( "" );
+    result.setUser( user );
+
+    assertTrue( connector.createAuthorizationTask( result ).call() );
+    assertEquals( securityProvider, result.getSecurityProvider() );
+    assertEquals( securityManager, result.getSecurityManager() );
+    verify( connector ).createSecurityProvider( same( user ) );
+    verify( connector ).createSecurityManager( same( user ) );
+    verify( securityProvider ).setUserRoleDelegate( any( UserRoleDelegate.class ) );
+  }
+
   /**
    * Helper: runs connect() with a capturing executor, returns all captured Callables.
    * The 4th callable is always the session-service callable.
    */
-  @SuppressWarnings( "unchecked" )
   private List<Callable> captureSessionCallable( PurRepositoryConnector connector,
       String username, String password ) throws Exception {
     ExecutorService service = mock( ExecutorService.class );
@@ -560,15 +665,60 @@ public class PurRepositoryConnectorTest {
     doReturn( mockBuilder ).when( mockBuilder ).setDefaultCredentialsProvider( any() );
     doReturn( mockHttpClient ).when( mockBuilder ).build();
 
-    CloseableHttpResponse mockResponse = mock( CloseableHttpResponse.class );
-    HttpEntity mockEntity = mock( HttpEntity.class );
-    when( mockEntity.getContent() ).thenReturn(
-      new ByteArrayInputStream( "admin".getBytes( StandardCharsets.UTF_8 ) ) );
-    when( mockEntity.getContentLength() ).thenReturn( (long) "admin".length() );
-    when( mockResponse.getEntity() ).thenReturn( mockEntity );
-    when( mockHttpClient.execute( any() ) ).thenReturn( mockResponse );
+    ClassicHttpResponse mockResponse = mock( ClassicHttpResponse.class );
+    when( mockResponse.getCode() ).thenReturn( 200 );
+    when( mockResponse.getEntity() ).thenReturn( new StringEntity( "admin" ) );
+    doAnswer( invocation -> {
+      HttpClientResponseHandler<?> handler = invocation.getArgument( 1 );
+      return handler.handleResponse( mockResponse );
+    } ).when( mockHttpClient ).execute( any( ClassicHttpRequest.class ), any( HttpClientResponseHandler.class ) );
 
     try ( MockedStatic<HttpClientBuilder> mockedBuilder = mockStatic( HttpClientBuilder.class ) ) {
+      mockedBuilder.when( HttpClientBuilder::create ).thenReturn( mockBuilder );
+
+      String result = (String) sessionCallable.call();
+      assertEquals( "admin", result );
+    }
+  }
+
+  @Test
+  public void testResolveSessionUsername_BasicAuth_IgnoresStaleBrowserCredentials() throws Exception {
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "" ).when( location ).getUrl();
+
+    List<Callable> capturedCallables = captureSessionCallable( connector, "admin", "password" );
+    Callable sessionCallable = capturedCallables.get( 3 );
+
+    BrowserAuthSessionHolder holder = mock( BrowserAuthSessionHolder.class );
+    when( holder.findAccessToken( "" ) ).thenReturn( Optional.empty() );
+    when( holder.findSessionCookie( "" ) ).thenReturn( Optional.of( "JSESSIONID=STALE" ) );
+
+    CloseableHttpClient mockHttpClient = mock( CloseableHttpClient.class );
+    HttpClientBuilder mockBuilder = mock( HttpClientBuilder.class );
+    doReturn( mockBuilder ).when( mockBuilder ).setDefaultCredentialsProvider( any() );
+    doReturn( mockHttpClient ).when( mockBuilder ).build();
+
+    ClassicHttpResponse mockResponse = mock( ClassicHttpResponse.class );
+    when( mockResponse.getCode() ).thenReturn( 200 );
+    when( mockResponse.getEntity() ).thenReturn( new StringEntity( "admin" ) );
+    doAnswer( invocation -> {
+      HttpClientResponseHandler<?> handler = invocation.getArgument( 1 );
+      return handler.handleResponse( mockResponse );
+    } ).when( mockHttpClient ).execute( any( ClassicHttpRequest.class ), any( HttpClientResponseHandler.class ) );
+
+    try ( MockedStatic<BrowserAuthSessionHolder> mockedHolder = mockStatic( BrowserAuthSessionHolder.class );
+          MockedStatic<HttpClients> mockedClients = mockStatic( HttpClients.class );
+          MockedStatic<HttpClientBuilder> mockedBuilder = mockStatic( HttpClientBuilder.class ) ) {
+      mockedHolder.when( BrowserAuthSessionHolder::getInstance ).thenReturn( holder );
+      mockedClients.when( HttpClients::createDefault )
+        .thenThrow( new AssertionError( "Explicit password auth must not use stale browser credentials" ) );
       mockedBuilder.when( HttpClientBuilder::create ).thenReturn( mockBuilder );
 
       String result = (String) sessionCallable.call();
@@ -598,7 +748,8 @@ public class PurRepositoryConnectorTest {
     doReturn( mockBuilder ).when( mockBuilder ).setDefaultCredentialsProvider( any() );
     CloseableHttpClient mockHttpClient = mock( CloseableHttpClient.class );
     doReturn( mockHttpClient ).when( mockBuilder ).build();
-    when( mockHttpClient.execute( any() ) ).thenThrow( new RuntimeException( "Connection refused" ) );
+    when( mockHttpClient.execute( any( ClassicHttpRequest.class ), any( HttpClientResponseHandler.class ) ) )
+      .thenThrow( new RuntimeException( "Connection refused" ) );
 
     try ( MockedStatic<HttpClientBuilder> mockedBuilder = mockStatic( HttpClientBuilder.class ) ) {
       mockedBuilder.when( HttpClientBuilder::create ).thenReturn( mockBuilder );
@@ -607,11 +758,269 @@ public class PurRepositoryConnectorTest {
       assertNull( "fetchUsernameFromSessionService should return null on exception", result );
     }
   }
+
+  @Test
+  public void testConnectWithRegularPassword_SelectsExplicitBasicAuthCredentialProvider() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) ) );
+    setupExecutorFutures( connector );
+
+    try {
+      connector.connect( "admin", "password" );
+    } catch ( KettleException ignored ) {
+      // Provider selection happens before downstream service registration.
+    }
+
+    assertSame( ExplicitBasicAuthCredentialProvider.getInstance(), connector.getCredentialProvider() );
+  }
+
+  @Test
+  public void testConnectWithEmptyPassword_SelectsBrowserCredentialProvider() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) ) );
+    setupExecutorFutures( connector );
+
+    BrowserAuthSessionHolder holder = mock( BrowserAuthSessionHolder.class );
+    try ( MockedStatic<BrowserAuthSessionHolder> mockedHolder = mockStatic( BrowserAuthSessionHolder.class ) ) {
+      mockedHolder.when( BrowserAuthSessionHolder::getInstance ).thenReturn( holder );
+
+      try {
+        connector.connect( "admin", "" );
+      } catch ( KettleException ignored ) {
+        // Provider selection happens before downstream service registration.
+      }
+    }
+
+    assertSame( holder, connector.getCredentialProvider() );
+  }
+
+  @Test
+  public void testConnectWithNullPassword_SelectsBrowserCredentialProvider() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) ) );
+    setupExecutorFutures( connector );
+
+    BrowserAuthSessionHolder holder = mock( BrowserAuthSessionHolder.class );
+    try ( MockedStatic<BrowserAuthSessionHolder> mockedHolder = mockStatic( BrowserAuthSessionHolder.class ) ) {
+      mockedHolder.when( BrowserAuthSessionHolder::getInstance ).thenReturn( holder );
+
+      try {
+        connector.connect( "admin", null );
+      } catch ( KettleException ignored ) {
+        // Provider selection happens before downstream service registration.
+      }
+    }
+
+    assertSame( holder, connector.getCredentialProvider() );
+  }
+
+  @Test
+  public void testRepoWebServiceCallable_Success_CreatesUnifiedRepositoryAdapter() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta,
+        mock( RootRef.class ) ) );
+
+    List<Callable> capturedCallables = captureSessionCallable( connector, "admin", "password" );
+    Callable repoCallable = capturedCallables.get( 1 );
+
+    ServiceManager serviceManager = mock( ServiceManager.class );
+    IUnifiedRepositoryJaxwsWebService repoWebService = mock( IUnifiedRepositoryJaxwsWebService.class );
+    when( serviceManager.createService( "admin", "password", IUnifiedRepositoryJaxwsWebService.class ) )
+      .thenReturn( repoWebService );
+    connector.setServiceManagerForTesting( serviceManager );
+
+    assertNull( repoCallable.call() );
+    verify( serviceManager ).createService( "admin", "password", IUnifiedRepositoryJaxwsWebService.class );
+  }
+
+  @Test
+  public void testRepoWebServiceCallable_WebServiceException_ReturnsException() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta,
+        mock( RootRef.class ) ) );
+
+    List<Callable> capturedCallables = captureSessionCallable( connector, "admin", "password" );
+    Callable repoCallable = capturedCallables.get( 1 );
+
+    ServiceManager serviceManager = mock( ServiceManager.class );
+    WebServiceException expected = new WebServiceException( "401 Unauthorized" );
+    when( serviceManager.createService( "admin", "password", IUnifiedRepositoryJaxwsWebService.class ) )
+      .thenThrow( expected );
+    connector.setServiceManagerForTesting( serviceManager );
+
+    assertSame( expected, repoCallable.call() );
+  }
+
+  @Test
+  public void testSyncWebServiceCallable_Success_InvokesSync() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( repositoryMeta.getName() ).thenReturn( "repo" );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) ) );
+
+    List<Callable> capturedCallables = captureSessionCallable( connector, "admin", "password" );
+    Callable syncCallable = capturedCallables.get( 2 );
+
+    ServiceManager serviceManager = mock( ServiceManager.class );
+    IRepositorySyncWebService syncWebService = mock( IRepositorySyncWebService.class );
+    when( serviceManager.createService( "admin", "password", IRepositorySyncWebService.class ) )
+      .thenReturn( syncWebService );
+    connector.setServiceManagerForTesting( serviceManager );
+
+    assertNull( syncCallable.call() );
+    verify( syncWebService ).sync( "repo", "http://localhost:8080/pentaho" );
+  }
+
+  @Test
+  public void testSyncWebServiceCallable_RepositorySyncException_ReturnsNull() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( repositoryMeta.getName() ).thenReturn( "repo" );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) ) );
+
+    List<Callable> capturedCallables = captureSessionCallable( connector, "admin", "password" );
+    Callable syncCallable = capturedCallables.get( 2 );
+
+    ServiceManager serviceManager = mock( ServiceManager.class );
+    IRepositorySyncWebService syncWebService = mock( IRepositorySyncWebService.class );
+    doAnswer( invocation -> {
+      throw new RepositorySyncException( "sync failed" );
+    } ).when( syncWebService ).sync( "repo", "http://localhost:8080/pentaho" );
+    when( serviceManager.createService( "admin", "password", IRepositorySyncWebService.class ) )
+      .thenReturn( syncWebService );
+    connector.setServiceManagerForTesting( serviceManager );
+
+    assertNull( syncCallable.call() );
+  }
+
+  @Test
+  public void testSyncWebServiceCallable_WebServiceException_ReturnsBaServerException() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( repositoryMeta.getName() ).thenReturn( "repo" );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) ) );
+
+    List<Callable> capturedCallables = captureSessionCallable( connector, "admin", "password" );
+    Callable syncCallable = capturedCallables.get( 2 );
+
+    ServiceManager serviceManager = mock( ServiceManager.class );
+    WebServiceException expected = new WebServiceException( "401 Unauthorized" );
+    when( serviceManager.createService( "admin", "password", IRepositorySyncWebService.class ) )
+      .thenThrow( expected );
+    connector.setServiceManagerForTesting( serviceManager );
+
+    Exception result = (Exception) syncCallable.call();
+    assertNotNull( result );
+    assertSame( expected, result.getCause() );
+  }
+
+  @Test
+  public void testCreateSecurityProvider_ReturnsAbsSecurityProvider() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) );
+    ServiceManager serviceManager = mock( ServiceManager.class );
+    doAnswer( invocation -> mock( (Class<?>) invocation.getArgument( 2 ) ) ).when( serviceManager )
+      .createService( any(), any(), any() );
+    connector.setServiceManagerForTesting( serviceManager );
+
+    EEUserInfo user = new EEUserInfo();
+    user.setLogin( "admin" );
+    user.setPassword( "password" );
+
+    assertTrue( connector.createSecurityProvider( user ) instanceof AbsSecurityProvider );
+  }
+
+  @Test
+  public void testCreateSecurityManager_ReturnsAbsSecurityManager() throws Exception {
+    PurRepositoryMeta repositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    when( repositoryMeta.getRepositoryLocation() ).thenReturn( location );
+    when( location.getUrl() ).thenReturn( "http://localhost:8080/pentaho" );
+
+    PurRepositoryConnector connector =
+      new PurRepositoryConnector( mock( PurRepository.class ), repositoryMeta, mock( RootRef.class ) );
+    ServiceManager serviceManager = mock( ServiceManager.class );
+    doAnswer( invocation -> mock( (Class<?>) invocation.getArgument( 2 ) ) ).when( serviceManager )
+      .createService( any(), any(), any() );
+    connector.setServiceManagerForTesting( serviceManager );
+    connector.setCredentialProviderForTesting( ExplicitBasicAuthCredentialProvider.getInstance() );
+
+    EEUserInfo user = new EEUserInfo();
+    user.setLogin( "admin" );
+    user.setPassword( "password" );
+
+    assertTrue( connector.createSecurityManager( user ) instanceof AbsSecurityManager );
+  }
+
+  @Test
+  public void testCreateAuthorizationTask_NonAdminUser_DoesNotCreateSecurityManager() throws Exception {
+    PurRepositoryConnector connector = spy( new PurRepositoryConnector(
+      mock( PurRepository.class ), mock( PurRepositoryMeta.class ), mock( RootRef.class ) ) );
+    connector.setServiceManagerForTesting( mock( ServiceManager.class ) );
+
+    AbsSecurityProvider securityProvider = mock( AbsSecurityProvider.class );
+    when( securityProvider.getAllowedActions( RepositorySecurityProvider.NAMESPACE ) )
+      .thenReturn( Collections.singletonList( "org.pentaho.repository.read" ) );
+    doReturn( securityProvider ).when( connector ).createSecurityProvider( any() );
+
+    RepositoryConnectResult result = new RepositoryConnectResult( new RepositoryServiceRegistry() );
+    EEUserInfo user = new EEUserInfo();
+    user.setLogin( "reader" );
+    user.setPassword( "password" );
+    result.setUser( user );
+
+    assertFalse( connector.createAuthorizationTask( result ).call() );
+    assertSame( securityProvider, result.getSecurityProvider() );
+    assertNull( result.getSecurityManager() );
+    verify( connector, never() ).createSecurityManager( any() );
+  }
+
   /**
    * Helper: sets up executor futures so the normal (non-in-process) connect path can run.
    * connect() may still throw from registerRepositoryServices; tests should catch it.
    */
-  @SuppressWarnings( "unchecked" )
   private void setupExecutorFutures( PurRepositoryConnector connector ) throws Exception {
     ExecutorService service = mock( ExecutorService.class );
     doReturn( service ).when( connector ).getExecutor();
@@ -903,7 +1312,6 @@ public class PurRepositoryConnectorTest {
     assertNotNull( thrown.getMessage() );
   }
 
-  @SuppressWarnings( "unchecked" )
   @Test
   public void testConnect_InterruptedException_ClosesServiceManagerAndRestoresInterruptFlag() throws Exception {
     PurRepository mockPurRepository = mock( PurRepository.class );
@@ -948,7 +1356,6 @@ public class PurRepositoryConnectorTest {
     assertTrue( "Interrupt flag should be restored", Thread.interrupted() ); // also clears it
   }
 
-  @SuppressWarnings( "unchecked" )
   @Test
   public void testConnect_GeneralException_ClosesServiceManagerAndThrowsKettleException() throws Exception {
     PurRepository mockPurRepository = mock( PurRepository.class );
@@ -991,6 +1398,91 @@ public class PurRepositoryConnectorTest {
     assertNotNull( "Expected KettleException for general Exception", thrown );
     assertTrue( thrown.getCause() instanceof java.util.concurrent.ExecutionException );
   }
+
+  @Test
+  public void testConnect_AuthenticationFailure_ThrowsFailedLoginMessage() throws Exception {
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
+
+    ExecutorService service = mock( ExecutorService.class );
+    doReturn( service ).when( connector ).getExecutor();
+
+    Future futureAuth = mock( Future.class );
+    doReturn( false ).when( futureAuth ).get();
+    Future futureRepo = mock( Future.class );
+    doReturn( new WebServiceException( "401 Unauthorized" ) ).when( futureRepo ).get();
+    Future futureSync = mock( Future.class );
+    doReturn( null ).when( futureSync ).get();
+    Future futureSession = mock( Future.class );
+    doReturn( "user" ).when( futureSession ).get();
+
+    when( service.submit( any( Callable.class ) ) )
+      .thenReturn( futureAuth )
+      .thenReturn( futureRepo )
+      .thenReturn( futureSync )
+      .thenReturn( futureSession );
+
+    KettleException thrown = null;
+    try {
+      connector.connect( "user", "password" );
+    } catch ( KettleException e ) {
+      thrown = e;
+    }
+
+    assertNotNull( "Expected failed login KettleException", thrown );
+    assertEquals( BaseMessages.getString( PurRepository.class,
+      PurRepositoryConnector.PUR_REPOSITORY_FAILED_LOGIN_MESSAGE ).trim(), thrown.getMessage().trim() );
+  }
+
+  @Test
+  public void testConnect_AuthenticationFailureByMessage_ThrowsFailedLoginMessage() throws Exception {
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+
+    PurRepositoryConnector connector =
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
+
+    ExecutorService service = mock( ExecutorService.class );
+    doReturn( service ).when( connector ).getExecutor();
+
+    Future futureAuth = mock( Future.class );
+    doReturn( false ).when( futureAuth ).get();
+    Future futureRepo = mock( Future.class );
+    when( futureRepo.get() ).thenThrow(
+      new java.util.concurrent.ExecutionException( new RuntimeException( "401 Unauthorized" ) ) );
+    Future futureSync = mock( Future.class );
+    doReturn( null ).when( futureSync ).get();
+    Future futureSession = mock( Future.class );
+    doReturn( "user" ).when( futureSession ).get();
+
+    when( service.submit( any( Callable.class ) ) )
+      .thenReturn( futureAuth )
+      .thenReturn( futureRepo )
+      .thenReturn( futureSync )
+      .thenReturn( futureSession );
+
+    KettleException thrown = null;
+    try {
+      connector.connect( "user", "password" );
+    } catch ( KettleException e ) {
+      thrown = e;
+    }
+
+    assertNotNull( "Expected failed login KettleException", thrown );
+    assertEquals( BaseMessages.getString( PurRepository.class,
+      PurRepositoryConnector.PUR_REPOSITORY_FAILED_LOGIN_MESSAGE ).trim(), thrown.getMessage().trim() );
+  }
   @Test
   public void testAllowedActionsContains_ActionNotPresent_ReturnsFalse() throws Exception {
     // Covers lines 234-238: user does NOT have ADMINISTER_SECURITY_ACTION → returns false
@@ -1005,12 +1497,8 @@ public class PurRepositoryConnectorTest {
     when( mockProvider.getAllowedActions( any() ) )
       .thenReturn( Arrays.asList( "org.pentaho.repository.read", "org.pentaho.repository.create" ) );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider,
-      org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION );
+    boolean result = connector.allowedActionsContains( mockProvider,
+      RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION );
 
     assertFalse( "Should return false when action is not in allowed actions", result );
   }
@@ -1024,17 +1512,12 @@ public class PurRepositoryConnectorTest {
     PurRepositoryConnector connector =
       new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
 
-    String adminAction =
-      org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION;
+    String adminAction = RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION;
     AbsSecurityProvider mockProvider = mock( AbsSecurityProvider.class );
     when( mockProvider.getAllowedActions( any() ) )
       .thenReturn( Arrays.asList( "org.pentaho.repository.read", adminAction ) );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider, adminAction );
+    boolean result = connector.allowedActionsContains( mockProvider, adminAction );
 
     assertTrue( "Should return true when action is in allowed actions", result );
   }
@@ -1052,11 +1535,7 @@ public class PurRepositoryConnectorTest {
     when( mockProvider.getAllowedActions( any() ) )
       .thenReturn( Arrays.asList( "org.pentaho.repository.read" ) );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider, (String) null );
+    boolean result = connector.allowedActionsContains( mockProvider, null );
 
     assertFalse( "Should return false when action is null", result );
   }
@@ -1073,12 +1552,8 @@ public class PurRepositoryConnectorTest {
     AbsSecurityProvider mockProvider = mock( AbsSecurityProvider.class );
     when( mockProvider.getAllowedActions( any() ) ).thenReturn( Collections.emptyList() );
 
-    Method m = PurRepositoryConnector.class.getDeclaredMethod(
-      "allowedActionsContains", AbsSecurityProvider.class, String.class );
-    m.setAccessible( true );
-
-    boolean result = (boolean) m.invoke( connector, mockProvider,
-      org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION );
+    boolean result = connector.allowedActionsContains( mockProvider,
+      RepositorySecurityProvider.ADMINISTER_SECURITY_ACTION );
 
     assertFalse( "Should return false when allowed actions list is empty", result );
   }

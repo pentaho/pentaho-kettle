@@ -107,6 +107,6 @@ public class AuthenticationStrategyFactory {
 
     String normalizedType = authType.trim().toUpperCase();
     strategyRegistry.put( normalizedType, strategy );
-    log.logBasic( "Registered authentication strategy: " + normalizedType );
+    log.logDebug( "Registered authentication strategy: " + normalizedType );
   }
 }
