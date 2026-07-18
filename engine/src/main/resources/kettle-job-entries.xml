@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ******************************************************************************
+ *
+ * Pentaho
+ *
+ * Copyright (C) 2026 by Pentaho Canada Inc. : http://www.pentaho.com
+ *
+ * Use of this software is governed by the Business Source License included
+ * in the LICENSE.TXT file.
+ *
+ * Change Date: 2030-06-15
+ ******************************************************************************* -->
 <job-entries>
  <job-entry id="TRANS"> <description>i18n:org.pentaho.di.job.entry:JobEntry.Trans.TypeDesc</description> <classname>org.pentaho.di.job.entries.trans.JobEntryTrans</classname> <category>i18n:org.pentaho.di.job:JobCategory.Category.General</category> <tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Trans.Tooltip</tooltip> <iconfile>ui/images/TRN.svg</iconfile> <documentation_url>pdi-job-entries-reference-overview/transformation-job-entry-cp</documentation_url> <cases_url>https://jira.pentaho.com/browse/PDI</cases_url> <forum_url>https://community.hds.com/community/products-and-solutions/pentaho/data-integration</forum_url> </job-entry>
  <job-entry id="JOB"> <description>i18n:org.pentaho.di.job.entry:JobEntry.Job.TypeDesc</description> <classname>org.pentaho.di.job.entries.job.JobEntryJob</classname> <category>i18n:org.pentaho.di.job:JobCategory.Category.General</category> <tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Job.Tooltip</tooltip> <iconfile>ui/images/JOB.svg</iconfile> <documentation_url>pdi-job-entries-reference-overview/job-job-entry</documentation_url> <cases_url>https://jira.pentaho.com/browse/PDI</cases_url> <forum_url>https://community.hds.com/community/products-and-solutions/pentaho/data-integration</forum_url> </job-entry>
