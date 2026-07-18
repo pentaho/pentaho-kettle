@@ -2,13 +2,14 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2024 - 2026 by Pentaho Canada Inc. : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
  *
- * Change Date: 2029-07-20
+ * Change Date: 2030-06-15
  ******************************************************************************/
+
 
 
 package org.pentaho.di.trans.steps.salesforce;
@@ -125,7 +126,7 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
     if ( ValueMetaInterface.TYPE_INTEGER == valueMeta.getType() ) {
       // Salesforce integer values can be only http://www.w3.org/2001/XMLSchema:int
       // see org.pentaho.di.ui.trans.steps.salesforceinput.SalesforceInputDialog#addFieldToTable
-      // So we need convert Hitachi Vantara integer (real java Long value) to real int.
+      // So we need convert Pentaho integer (real java Long value) to real int.
       // It will be sent correct as http://www.w3.org/2001/XMLSchema:int
 
       // use checked cast for prevent losing data

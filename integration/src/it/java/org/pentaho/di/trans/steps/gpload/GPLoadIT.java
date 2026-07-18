@@ -2,13 +2,14 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2024 - 2026 by Pentaho Canada Inc. : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
  *
- * Change Date: 2029-07-20
+ * Change Date: 2030-06-15
  ******************************************************************************/
+
 
 
 package org.pentaho.di.trans.steps.gpload;
@@ -36,8 +37,8 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 
-/* Copyright (c) 2007 - 2017 Hitachi Vantara.  All rights reserved. 
- * This software was developed by Hitachi Vantara and is provided under the terms 
+/* Copyright (c) 2007 - 2026 Pentaho.  All rights reserved. 
+ * This software was developed by Pentaho and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
  * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 

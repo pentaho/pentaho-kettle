@@ -2,13 +2,14 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2024 - 2026 by Pentaho Canada Inc. : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
  *
- * Change Date: 2029-07-20
+ * Change Date: 2030-06-15
  ******************************************************************************/
+
 
 
 package org.pentaho.di.ui.trans.steps.monetdbbulkloader;
@@ -230,7 +231,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     shell.setText( BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.Shell.Title" ) );
 
     // The right side of all the labels is available as a user-defined percentage: props.getMiddlePct()
-    // Page 610 - Hitachi Vantara Kettle Solutions
+    // Page 610 - Pentaho Kettle Solutions
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN; // Default 4 pixel margin around components.
 

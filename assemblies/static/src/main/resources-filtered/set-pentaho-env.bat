@@ -2,14 +2,13 @@ REM ****************************************************************************
 REM
 REM Pentaho
 REM
-REM Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+REM Copyright (C) 2024 - 2026 by Pentaho Canada Inc. : http://www.pentaho.com
 REM
 REM Use of this software is governed by the Business Source License included
 REM in the LICENSE.TXT file.
 REM
-REM Change Date: 2029-07-20
+REM Change Date: 2030-06-15
 REM ******************************************************************************
-
 ::remove any existing quotes from PENTAHO_JAVA, PENTAHO_JAVA_HOME and JAVA_HOME env vars if present
 for /f "delims=" %%G IN ("%PENTAHO_JAVA%") DO SET "PENTAHO_JAVA=%%~G"
 for /f "delims=" %%G IN ("%PENTAHO_JAVA_HOME%") DO SET "PENTAHO_JAVA_HOME=%%~G"
