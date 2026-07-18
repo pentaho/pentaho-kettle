@@ -2,13 +2,14 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2024 - 2026 by Pentaho Canada Inc. : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
  *
- * Change Date: 2029-07-20
+ * Change Date: 2030-06-15
  ******************************************************************************/
+
 
 
 package org.pentaho.di.trans.steps.selectvalues;
@@ -376,7 +377,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  // Not called anywhere else in Hitachi Vantara. It's important to call the method below passing in the VariableSpace
+  // Not called anywhere else in Pentaho. It's important to call the method below passing in the VariableSpace
   @Deprecated
   public void getMetadataFields( RowMetaInterface inputRowMeta, String name ) throws KettlePluginException {
     getMetadataFields( inputRowMeta, name, null );

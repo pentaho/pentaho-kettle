@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ******************************************************************************
+ *
+ * Pentaho
+ *
+ * Copyright (C) 2026 by Pentaho Canada Inc. : http://www.pentaho.com
+ *
+ * Use of this software is governed by the Business Source License included
+ * in the LICENSE.TXT file.
+ *
+ * Change Date: 2030-06-15
+ ******************************************************************************* -->
 <!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Sebastien Michon (OECD) -->
 <xsd:schema xmlns:stf="urn:oecd:ties:stf:v4" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:oecd:ties:stf:v4" elementFormDefault="qualified" attributeFormDefault="unqualified" version="4.0">
 	<!--+++++++++++++++++++++++  Reusable Simple types ++++++++++++++++++++++++++++++++++++++ -->

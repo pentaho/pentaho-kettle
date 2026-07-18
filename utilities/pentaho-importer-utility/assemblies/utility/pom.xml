@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ******************************************************************************
+ *
+ * Pentaho
+ *
+ * Copyright (C) 2026 by Pentaho Canada Inc. : http://www.pentaho.com
+ *
+ * Use of this software is governed by the Business Source License included
+ * in the LICENSE.TXT file.
+ *
+ * Change Date: 2030-06-15
+ ******************************************************************************* -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">

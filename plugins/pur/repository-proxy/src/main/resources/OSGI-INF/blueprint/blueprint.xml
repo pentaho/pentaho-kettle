@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ******************************************************************************
+ *
+ * Pentaho
+ *
+ * Copyright (C) 2026 by Pentaho Canada Inc. : http://www.pentaho.com
+ *
+ * Use of this software is governed by the Business Source License included
+ * in the LICENSE.TXT file.
+ *
+ * Change Date: 2030-06-15
+ ******************************************************************************* -->
 <blueprint            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
                       xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"

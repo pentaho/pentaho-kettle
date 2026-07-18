@@ -1,4 +1,15 @@
 <?xml version="1.0"?>
+<!-- ******************************************************************************
+ *
+ * Pentaho
+ *
+ * Copyright (C) 2026 by Pentaho Canada Inc. : http://www.pentaho.com
+ *
+ * Use of this software is governed by the Business Source License included
+ * in the LICENSE.TXT file.
+ *
+ * Change Date: 2030-06-15
+ ******************************************************************************* -->
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
   <!--  ###############################################################################   -->
   <!--     REPOSITORY LOGIN DIALOG: Dialog to login to the repository                     -->

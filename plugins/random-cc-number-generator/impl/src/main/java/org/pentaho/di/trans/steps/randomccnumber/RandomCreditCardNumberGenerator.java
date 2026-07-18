@@ -2,18 +2,19 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
+ * Copyright (C) 2024 - 2026 by Pentaho Canada Inc. : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
  *
- * Change Date: 2029-07-20
+ * Change Date: 2030-06-15
  ******************************************************************************/
 
 
+
 /******************************************************************************
- * Copyright (c) 2006 Graham King and 2007 Hitachi Vantara.  All rights reserved.
- * This software was developed by Hitachi Vantara and is provided under the terms
+ * Copyright (c) 2006 - 2026 Graham King and 2007 Pentaho.  All rights reserved.
+ * This software was developed by Pentaho and is provided under the terms
  * of the GNU Lesser General Public License, Version 2.1. You may not use
  * this file except in compliance with the license. If you need a copy of the license,
  * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho
@@ -51,7 +52,7 @@ public class RandomCreditCardNumberGenerator {
    * www.darkcoding.net
    *
    * From : Graham King <graham (at) gkgk dot org> To : samatar hassan <sahass78 (at) yahoo dot fr> Envoye le : Mer 8
-   * decembre 2010, 22h 30min 55s Objet : Re: CreditCardNumberGenerator LGPL grant - Hitachi Vantara data Integration Hi
+   * decembre 2010, 22h 30min 55s Objet : Re: CreditCardNumberGenerator LGPL grant - Pentaho data Integration Hi
    * Samatar, Thanks for getting in touch. Yes, I am happy to grant Pentaho Data Integration an LGPL exception, meaning
    * that solely for inclusion in Pentaho Data Integration, the credit card code hosted at darkcoding.net can be
    * considered LGPL licensed. All the best, Graham
