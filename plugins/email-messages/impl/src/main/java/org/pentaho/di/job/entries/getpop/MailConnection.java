@@ -839,7 +839,8 @@ public class MailConnection {
     if ( ( ext.length() == 1 ) ) { // only a "."
       ext = "";
     }
-    String rtn = "", base = concatTargetPath( folderName, fileNameRoot );
+    String rtn = ""; 
+    String base = concatTargetPath( folderName, fileNameRoot );
     int baseSz = base.length();
     StringBuilder build = new StringBuilder( baseSz ).append( base );
     int i = -1;
