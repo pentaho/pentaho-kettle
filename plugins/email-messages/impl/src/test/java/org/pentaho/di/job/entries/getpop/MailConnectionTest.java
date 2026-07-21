@@ -12,6 +12,7 @@
 
 package org.pentaho.di.job.entries.getpop;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -151,6 +152,25 @@ public class MailConnectionTest {
   public void folderExistsTest() {
     boolean actual = conn.folderExists( "a/b" );
     Assert.assertTrue( "Folder B exists", actual );
+  }
+
+  @Test
+  public void concatTargetPathPreservesUriSchemesTest() {
+    Assert.assertEquals( "pvfs://AWS_automation/tatooine-testing/ritamendes/wookiees/PDI-20925-attachment.txt",
+      MailConnection.concatTargetPath( "pvfs://AWS_automation/tatooine-testing/ritamendes/wookiees",
+        "PDI-20925-attachment.txt" ) );
+  }
+
+  @Test
+  public void concatTargetPathSupportsLocalFolderTest() {
+    Assert.assertEquals( FilenameUtils.concat( "/tmp/mail", "attachment.txt" ),
+      MailConnection.concatTargetPath( "/tmp/mail", "attachment.txt" ) );
+  }
+
+  @Test
+  public void concatTargetPathSupportsWindowsFolderTest() {
+    Assert.assertEquals( FilenameUtils.concat( "C:\\tmp\\mail", "attachment.txt" ),
+      MailConnection.concatTargetPath( "C:\\tmp\\mail", "attachment.txt" ) );
   }
 
   private static void makeAFile( String path ) throws IOException {
