@@ -19,7 +19,6 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -33,20 +32,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.PluginDialog;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -65,8 +62,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Send mail step. based on Mail job entry
@@ -80,9 +77,6 @@ import java.util.Random;
 public class MailDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = MailMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] FILETYPES =
-    new String[] { BaseMessages.getString( PKG, "MailDialog.Filetype.All" ) };
-
   private static final String[] IMAGES_FILE_TYPES = new String[] {
     BaseMessages.getString( PKG, "MailDialog.Filetype.Png" ),
     BaseMessages.getString( PKG, "MailDialog.Filetype.Jpeg" ),
@@ -91,152 +85,75 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
 
   private boolean gotEncodings = false;
 
-  private Group wOriginFiles, wZipGroup, wAttachedContent;
+  private Group wOriginFiles;
+  private Group wZipGroup;
 
-  private Button wisFileDynamic, wisattachContentField;
+  private Button wIsFileDynamic;
+  private Button wIsAttachContentField;
 
-  private Label wlisFileDynamic, wlDynamicFilenameField, wlisattachContentField;
-  private Label wlattachContentField, wlattachContentFileNameField;
-  private CCombo wDynamicFilenameField, wattachContentField, wattachContentFileNameField;
+  private Label wlDynamicFilenameField;
+  private Label wlAttachContentField;
+  private Label wlAttachContentFileNameField;
+  private CCombo wDynamicFilenameField;
+  private CCombo wAttachContentField;
+  private CCombo wAttachContentFileNameField;
 
   private Label wlDynamicWildcardField;
   private CCombo wDynamicWildcardField;
 
-  private CTabFolder wTabFolder;
-  private Composite wGeneralComp, wContentComp, wAttachedComp, wMessageComp, wembeddedComp;
-  private CTabItem wGeneralTab, wContentTab, wAttachedTab, wMessageTab, wembeddedTab;
-  private FormData fdGeneralComp, fdContentComp, fdAttachedComp, fdMessageComp, fdembeddedComp;
-  private FormData fdTabFolder;
+  private Label wlIsZipFileDynamic;
 
-  private Label wlisZipFileDynamic;
-
-  private Label wlReplyToAddresses;
-  private FormData fdReplyToAddresses;
   private CCombo wReplyToAddresses;
-  private FormData fdlReplyToAddresses;
-
-  private Group wDestinationGroup, wReplyGroup, wServerGroup, wAuthentificationGroup;
-  private Group wMessageSettingsGroup, wMessageGroup;
 
   private LabelText wName;
 
-  private FormData fdlDestination, fdlDestinationBCc;
-
   private CCombo wDestination;
 
-  private Label wlDestination;
-
-  private CCombo wDestinationCc, wDestinationBCc;
-
-  private Label wlDestinationCc, wlDestinationBCc;
-
-  private FormData fdlDestinationCc;
-
-  private FormData fdDestination;
-
-  private FormData fdDestinationCc;
-
-  private FormData fdDestinationBCc;
+  private CCombo wDestinationCc;
+  private CCombo wDestinationBcc;
 
   private CCombo wServer;
 
-  private Label wlServer;
-
-  private FormData fdlServer;
-
-  private FormData fdServer;
-
   private CCombo wPort;
 
-  private Label wlPort;
-
-  private FormData fdlPort;
-
-  private FormData fdPort;
-
-  private Label wlUseAuth;
-
   private Combo wUseAuth;
-
-  private FormData fdlUseAuth, fdUseAuth;
 
   private Label wlGrantType;
 
   private Combo grantType;
 
-  private FormData fdlGrantType,fdGrantType;
-
   private LabelTextVar wAuthClientId;
-
-  private FormData fdAuthClientId;
 
   private LabelTextVar wAuthSecretKey;
 
-  private FormData fdAuthSecretKey;
-
   private LabelTextVar wAuthScope;
-
-  private FormData fdAuthScope;
 
   private LabelTextVar wAuthTokenUrl;
 
-  private FormData fdAuthTokenUrl;
-
   private LabelTextVar wAuthorizationCode;
-
-  private FormData fdAuthorizationCode;
 
   private LabelTextVar wRedirectUri;
 
-  private FormData fdRedirectUri;
-
   private LabelTextVar wAuthRefreshToken;
-
-  private FormData fdAuthRefreshToken;
 
   private Label wlUseSecAuth;
 
   private Button wUseSecAuth;
 
-  private FormData fdlUseSecAuth, fdUseSecAuth;
-
   private CCombo wAuthUser;
 
   private Label wlAuthUser;
-
-  private FormData fdAuthUser;
 
   private CCombo wAuthPass;
 
   private Label wlAuthPass;
 
-  private FormData fdlAuthPass;
-
-  private FormData fdAuthPass;
-
-  private CCombo wReply, wReplyName;
-
-  private FormData fdReply, fdReplyName;
+  private CCombo wReply;
+  private CCombo wReplyName;
 
   private CCombo wSubject;
 
-  private Label wlSubject;
-
-  private FormData fdlSubject;
-
-  private FormData fdSubject;
-
-  private Label wlAddDate;
-
   private Button wAddDate;
-
-  private FormData fdlAddDate, fdAddDate;
-
-  private Label wlReply, wlReplyName;
-
-  private FormData fdlReply, fdlReplyName;
-
-  private FormData fdlAuthUser;
 
   private CCombo wPerson;
 
@@ -244,100 +161,67 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
 
   private TextVar wWildcard;
 
-  private FormData fdlWildcard;
-
-  private FormData fdWildcard;
-
-  private Label wlPerson, wlPhone;
-
-  private FormData fdlPerson, fdlPhone;
-
-  private FormData fdPerson;
-
   private CCombo wPhone;
-
-  private FormData fdPhone;
 
   private CCombo wComment;
 
-  private Label wlComment;
+  private Label wlSourceFileFolderName;
+  private Button wbFileFolderName;
+  private Button wbSourceFolder;
+  private TextVar wSourceFileFolderName;
 
-  private Label wlSourceFileFoldername;
-  private Button wbFileFoldername, wbSourceFolder;
-  private TextVar wSourceFileFoldername;
-  private FormData fdlSourceFileFoldername, fdbSourceFileFoldername, fdSourceFileFoldername, fdbSourceFolder;
+  private Button wIncludeSubFolders;
 
-  private Label wlincludeSubFolders;
-  private Button wincludeSubFolders;
-  private FormData fdlincludeSubFolders, fdincludeSubFolders;
-
-  private FormData fdlComment, fdComment;
-
-  private Label wlOnlyComment, wlUseHTML, wlUsePriority;
-
-  private Button wOnlyComment, wUseHTML, wUsePriority;
-
-  private FormData fdlOnlyComment, fdOnlyComment, fdlUseHTML, fdUseHTML, fdUsePriority;
+  private Button wOnlyComment;
+  private Button wUseHTML;
+  private Button wUsePriority;
 
   private Label wlEncoding;
   private CCombo wEncoding;
-  private FormData fdlEncoding, fdEncoding;
 
   private Label wlSecureConnectionType;
   private CCombo wSecureConnectionType;
-  private FormData fdlSecureConnectionType, fdSecureConnectionType;
 
   private Label wlPriority;
   private CCombo wPriority;
-  private FormData fdlPriority, fdPriority;
 
   private Label wlImportance;
   private CCombo wImportance;
-  private FormData fdlImportance, fdImportance;
 
   private Label wlSensitivity;
   private CCombo wSensitivity;
-  private FormData fdlSensitivity, fdSensitivity;
-
-  private Label wlZipFiles;
-
-  private FormData fdlisZipFileDynamic;
 
   private Label wlDynamicZipFileField;
 
   private CCombo wDynamicZipFileField;
 
-  private FormData fdlDynamicZipFileField;
-
-  private FormData fdDynamicZipFileField;
-
-  private FormData fdisZipFileDynamic;
-
   private Button wisZipFileDynamic;
 
   private Button wZipFiles;
-
-  private FormData fdlZipFiles, fdZipFiles;
 
   private LabelTextVar wZipFilename;
 
   private LabelTextVar wZipSizeCondition;
 
-  private FormData fdZipFilename;
-
-  private FormData fdZipSizeCondition;
-
-  private Label wlImageFilename, wlContentID, wlFields;
-  private Button wbImageFilename, wbaImageFilename, wbdImageFilename, wbeImageFilename;
-  private TextVar wImageFilename, wContentID;
+  private Label wlImageFilename;
+  private Label wlContentID;
+  private Label wlFields;
+  private Button wbImageFilename;
+  private Button wbAddImageFilename;
+  private Button wbDeleteImageFilename;
+  private Button wbEditImageFilename;
+  private TextVar wImageFilename;
+  private TextVar wContentID;
   private TableView wFields;
 
-  private boolean getpreviousFields = false;
+  private boolean getPreviousFields = false;
 
   private MailMeta input;
 
-  public MailDialog( Shell parent, Object in, TransMeta tr, String sname ) {
-    super( parent, (BaseStepMeta) in, tr, sname );
+  private final SecureRandom secureRandom = new SecureRandom();
+
+  public MailDialog( Shell parent, Object in, TransMeta tr, String sName ) {
+    super( parent, (BaseStepMeta) in, tr, sName );
     input = (MailMeta) in;
   }
 
@@ -349,11 +233,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( shell );
     setShellImage( shell, input );
 
-    ModifyListener lsMod = new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        input.setChanged();
-      }
-    };
+    ModifyListener lsMod = e -> input.setChanged();
     changed = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -385,17 +265,17 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdStepname.right = new FormAttachment( 100, 0 );
     wStepname.setLayoutData( fdStepname );
 
-    wTabFolder = new CTabFolder( shell, SWT.BORDER );
+    CTabFolder wTabFolder = new CTabFolder( shell, SWT.BORDER );
     props.setLook( wTabFolder, Props.WIDGET_STYLE_TAB );
 
     // ////////////////////////
     // START OF GENERAL TAB ///
     // ////////////////////////
 
-    wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
     wGeneralTab.setText( BaseMessages.getString( PKG, "Mail.Tab.General.Label" ) );
 
-    wGeneralComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wGeneralComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wGeneralComp );
 
     FormLayout generalLayout = new FormLayout();
@@ -407,20 +287,20 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF Destination Settings GROUP
     // ////////////////////////
 
-    wDestinationGroup = new Group( wGeneralComp, SWT.SHADOW_NONE );
+    Group wDestinationGroup = new Group( wGeneralComp, SWT.SHADOW_NONE );
     props.setLook( wDestinationGroup );
     wDestinationGroup.setText( BaseMessages.getString( PKG, "Mail.Group.DestinationAddress.Label" ) );
 
-    FormLayout destinationgroupLayout = new FormLayout();
-    destinationgroupLayout.marginWidth = 10;
-    destinationgroupLayout.marginHeight = 10;
-    wDestinationGroup.setLayout( destinationgroupLayout );
+    FormLayout destinationGroupLayout = new FormLayout();
+    destinationGroupLayout.marginWidth = 10;
+    destinationGroupLayout.marginHeight = 10;
+    wDestinationGroup.setLayout( destinationGroupLayout );
 
     // Destination
-    wlDestination = new Label( wDestinationGroup, SWT.RIGHT );
+    Label wlDestination = new Label( wDestinationGroup, SWT.RIGHT );
     wlDestination.setText( BaseMessages.getString( PKG, "Mail.DestinationAddress.Label" ) );
     props.setLook( wlDestination );
-    fdlDestination = new FormData();
+    FormData fdlDestination = new FormData();
     fdlDestination.left = new FormAttachment( 0, -margin );
     fdlDestination.top = new FormAttachment( wStepname, margin );
     fdlDestination.right = new FormAttachment( middle, -2 * margin );
@@ -430,7 +310,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wDestination.setEditable( true );
     props.setLook( wDestination );
     wDestination.addModifyListener( lsMod );
-    fdDestination = new FormData();
+    FormData fdDestination = new FormData();
     fdDestination.left = new FormAttachment( middle, -margin );
     fdDestination.top = new FormAttachment( wStepname, margin );
     fdDestination.right = new FormAttachment( 100, -margin );
@@ -449,10 +329,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // DestinationCcCc
-    wlDestinationCc = new Label( wDestinationGroup, SWT.RIGHT );
+    Label wlDestinationCc = new Label( wDestinationGroup, SWT.RIGHT );
     wlDestinationCc.setText( BaseMessages.getString( PKG, "Mail.DestinationAddressCc.Label" ) );
     props.setLook( wlDestinationCc );
-    fdlDestinationCc = new FormData();
+    FormData fdlDestinationCc = new FormData();
     fdlDestinationCc.left = new FormAttachment( 0, -margin );
     fdlDestinationCc.top = new FormAttachment( wDestination, margin );
     fdlDestinationCc.right = new FormAttachment( middle, -2 * margin );
@@ -462,7 +342,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wDestinationCc.setEditable( true );
     props.setLook( wDestinationCc );
     wDestinationCc.addModifyListener( lsMod );
-    fdDestinationCc = new FormData();
+    FormData fdDestinationCc = new FormData();
     fdDestinationCc.left = new FormAttachment( middle, -margin );
     fdDestinationCc.top = new FormAttachment( wDestination, margin );
     fdDestinationCc.right = new FormAttachment( 100, -margin );
@@ -480,25 +360,25 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       }
     } );
     // DestinationBCc
-    wlDestinationBCc = new Label( wDestinationGroup, SWT.RIGHT );
+    Label wlDestinationBCc = new Label( wDestinationGroup, SWT.RIGHT );
     wlDestinationBCc.setText( BaseMessages.getString( PKG, "Mail.DestinationAddressBCc.Label" ) );
     props.setLook( wlDestinationBCc );
-    fdlDestinationBCc = new FormData();
+    FormData fdlDestinationBCc = new FormData();
     fdlDestinationBCc.left = new FormAttachment( 0, -margin );
     fdlDestinationBCc.top = new FormAttachment( wDestinationCc, margin );
     fdlDestinationBCc.right = new FormAttachment( middle, -2 * margin );
     wlDestinationBCc.setLayoutData( fdlDestinationBCc );
 
-    wDestinationBCc = new CCombo( wDestinationGroup, SWT.BORDER | SWT.READ_ONLY );
-    wDestinationBCc.setEditable( true );
-    props.setLook( wDestinationBCc );
-    wDestinationBCc.addModifyListener( lsMod );
-    fdDestinationBCc = new FormData();
+    wDestinationBcc = new CCombo( wDestinationGroup, SWT.BORDER | SWT.READ_ONLY );
+    wDestinationBcc.setEditable( true );
+    props.setLook( wDestinationBcc );
+    wDestinationBcc.addModifyListener( lsMod );
+    FormData fdDestinationBCc = new FormData();
     fdDestinationBCc.left = new FormAttachment( middle, -margin );
     fdDestinationBCc.top = new FormAttachment( wDestinationCc, margin );
     fdDestinationBCc.right = new FormAttachment( 100, -margin );
-    wDestinationBCc.setLayoutData( fdDestinationBCc );
-    wDestinationBCc.addFocusListener( new FocusListener() {
+    wDestinationBcc.setLayoutData( fdDestinationBCc );
+    wDestinationBcc.addFocusListener( new FocusListener() {
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
       }
 
@@ -525,20 +405,20 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF Reply Settings GROUP
     // ////////////////////////
 
-    wReplyGroup = new Group( wGeneralComp, SWT.SHADOW_NONE );
+    Group wReplyGroup = new Group( wGeneralComp, SWT.SHADOW_NONE );
     props.setLook( wReplyGroup );
     wReplyGroup.setText( BaseMessages.getString( PKG, "MailDialog.Group.Reply.Label" ) );
 
-    FormLayout replygroupLayout = new FormLayout();
-    replygroupLayout.marginWidth = 10;
-    replygroupLayout.marginHeight = 10;
-    wReplyGroup.setLayout( replygroupLayout );
+    FormLayout replyGroupLayout = new FormLayout();
+    replyGroupLayout.marginWidth = 10;
+    replyGroupLayout.marginHeight = 10;
+    wReplyGroup.setLayout( replyGroupLayout );
 
     // ReplyName
-    wlReplyName = new Label( wReplyGroup, SWT.RIGHT );
+    Label wlReplyName = new Label( wReplyGroup, SWT.RIGHT );
     wlReplyName.setText( BaseMessages.getString( PKG, "Mail.ReplyName.Label" ) );
     props.setLook( wlReplyName );
-    fdlReplyName = new FormData();
+    FormData fdlReplyName = new FormData();
     fdlReplyName.left = new FormAttachment( 0, -margin );
     fdlReplyName.top = new FormAttachment( wDestinationGroup, margin );
     fdlReplyName.right = new FormAttachment( middle, -2 * margin );
@@ -548,7 +428,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wReplyName.setEditable( true );
     props.setLook( wReplyName );
     wReplyName.addModifyListener( lsMod );
-    fdReplyName = new FormData();
+    FormData fdReplyName = new FormData();
     fdReplyName.left = new FormAttachment( middle, -margin );
     fdReplyName.top = new FormAttachment( wDestinationGroup, margin );
     fdReplyName.right = new FormAttachment( 100, -margin );
@@ -567,10 +447,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // Reply
-    wlReply = new Label( wReplyGroup, SWT.RIGHT );
+    Label wlReply = new Label( wReplyGroup, SWT.RIGHT );
     wlReply.setText( BaseMessages.getString( PKG, "Mail.ReplyAddress.Label" ) );
     props.setLook( wlReply );
-    fdlReply = new FormData();
+    FormData fdlReply = new FormData();
     fdlReply.left = new FormAttachment( 0, -margin );
     fdlReply.top = new FormAttachment( wReplyName, margin );
     fdlReply.right = new FormAttachment( middle, -2 * margin );
@@ -580,7 +460,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wReply.setEditable( true );
     props.setLook( wReply );
     wReply.addModifyListener( lsMod );
-    fdReply = new FormData();
+    FormData fdReply = new FormData();
     fdReply.left = new FormAttachment( middle, -margin );
     fdReply.top = new FormAttachment( wReplyName, margin );
     fdReply.right = new FormAttachment( 100, -margin );
@@ -608,10 +488,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // ///////////////////////////////////////////////////////////
 
     // Reply to addresses
-    wlReplyToAddresses = new Label( wGeneralComp, SWT.RIGHT );
+    Label wlReplyToAddresses = new Label( wGeneralComp, SWT.RIGHT );
     wlReplyToAddresses.setText( BaseMessages.getString( PKG, "MailDialog.ReplyToAddresses.Label" ) );
     props.setLook( wlReplyToAddresses );
-    fdlReplyToAddresses = new FormData();
+    FormData fdlReplyToAddresses = new FormData();
     fdlReplyToAddresses.left = new FormAttachment( 0, -margin );
     fdlReplyToAddresses.top = new FormAttachment( wReplyGroup, 2 * margin );
     fdlReplyToAddresses.right = new FormAttachment( middle, -2 * margin );
@@ -621,7 +501,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wReplyToAddresses.setEditable( true );
     props.setLook( wReplyToAddresses );
     wReplyToAddresses.addModifyListener( lsMod );
-    fdReplyToAddresses = new FormData();
+    FormData fdReplyToAddresses = new FormData();
     fdReplyToAddresses.left = new FormAttachment( middle, -margin );
     fdReplyToAddresses.top = new FormAttachment( wReplyGroup, 2 * margin );
     fdReplyToAddresses.right = new FormAttachment( 100, -margin );
@@ -640,10 +520,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // Person
-    wlPerson = new Label( wGeneralComp, SWT.RIGHT );
+    Label wlPerson = new Label( wGeneralComp, SWT.RIGHT );
     wlPerson.setText( BaseMessages.getString( PKG, "Mail.Contact.Label" ) );
     props.setLook( wlPerson );
-    fdlPerson = new FormData();
+    FormData fdlPerson = new FormData();
     fdlPerson.left = new FormAttachment( 0, -margin );
     fdlPerson.top = new FormAttachment( wReplyToAddresses, 2 * margin );
     fdlPerson.right = new FormAttachment( middle, -2 * margin );
@@ -653,7 +533,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wPerson.setEditable( true );
     props.setLook( wPerson );
     wPerson.addModifyListener( lsMod );
-    fdPerson = new FormData();
+    FormData fdPerson = new FormData();
     fdPerson.left = new FormAttachment( middle, -margin );
     fdPerson.top = new FormAttachment( wReplyToAddresses, 2 * margin );
     fdPerson.right = new FormAttachment( 100, -margin );
@@ -672,10 +552,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // Phone line
-    wlPhone = new Label( wGeneralComp, SWT.RIGHT );
+    Label wlPhone = new Label( wGeneralComp, SWT.RIGHT );
     wlPhone.setText( BaseMessages.getString( PKG, "Mail.ContactPhone.Label" ) );
     props.setLook( wlPhone );
-    fdlPhone = new FormData();
+    FormData fdlPhone = new FormData();
     fdlPhone.left = new FormAttachment( 0, -margin );
     fdlPhone.top = new FormAttachment( wPerson, margin );
     fdlPhone.right = new FormAttachment( middle, -2 * margin );
@@ -685,7 +565,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wPhone.setEditable( true );
     props.setLook( wPhone );
     wPhone.addModifyListener( lsMod );
-    fdPhone = new FormData();
+    FormData fdPhone = new FormData();
     fdPhone.left = new FormAttachment( middle, -margin );
     fdPhone.top = new FormAttachment( wPerson, margin );
     fdPhone.right = new FormAttachment( 100, -margin );
@@ -703,7 +583,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       }
     } );
 
-    fdGeneralComp = new FormData();
+    FormData fdGeneralComp = new FormData();
     fdGeneralComp.left = new FormAttachment( 0, 0 );
     fdGeneralComp.top = new FormAttachment( 0, 0 );
     fdGeneralComp.right = new FormAttachment( 100, 0 );
@@ -722,14 +602,14 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF SERVER TAB ///
     // ///////////////////////////////////
 
-    wContentTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wContentTab = new CTabItem( wTabFolder, SWT.NONE );
     wContentTab.setText( BaseMessages.getString( PKG, "MailDialog.Server.Label" ) );
 
     FormLayout contentLayout = new FormLayout();
     contentLayout.marginWidth = 3;
     contentLayout.marginHeight = 3;
 
-    wContentComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wContentComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wContentComp );
     wContentComp.setLayout( contentLayout );
 
@@ -737,20 +617,20 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF SERVER GROUP
     // /////////////////////////
 
-    wServerGroup = new Group( wContentComp, SWT.SHADOW_NONE );
+    Group wServerGroup = new Group( wContentComp, SWT.SHADOW_NONE );
     props.setLook( wServerGroup );
     wServerGroup.setText( BaseMessages.getString( PKG, "Mail.Group.SMTPServer.Label" ) );
 
-    FormLayout servergroupLayout = new FormLayout();
-    servergroupLayout.marginWidth = 10;
-    servergroupLayout.marginHeight = 10;
-    wServerGroup.setLayout( servergroupLayout );
+    FormLayout serverGroupLayout = new FormLayout();
+    serverGroupLayout.marginWidth = 10;
+    serverGroupLayout.marginHeight = 10;
+    wServerGroup.setLayout( serverGroupLayout );
 
     // Server
-    wlServer = new Label( wServerGroup, SWT.RIGHT );
+    Label wlServer = new Label( wServerGroup, SWT.RIGHT );
     wlServer.setText( BaseMessages.getString( PKG, "Mail.SMTPServer.Label" ) );
     props.setLook( wlServer );
-    fdlServer = new FormData();
+    FormData fdlServer = new FormData();
     fdlServer.left = new FormAttachment( 0, -margin );
     fdlServer.top = new FormAttachment( 0, margin );
     fdlServer.right = new FormAttachment( middle, -2 * margin );
@@ -760,7 +640,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wServer.setEditable( true );
     props.setLook( wServer );
     wServer.addModifyListener( lsMod );
-    fdServer = new FormData();
+    FormData fdServer = new FormData();
     fdServer.left = new FormAttachment( middle, -margin );
     fdServer.top = new FormAttachment( 0, margin );
     fdServer.right = new FormAttachment( 100, -margin );
@@ -779,10 +659,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // Port
-    wlPort = new Label( wServerGroup, SWT.RIGHT );
+    Label wlPort = new Label( wServerGroup, SWT.RIGHT );
     wlPort.setText( BaseMessages.getString( PKG, "Mail.Port.Label" ) );
     props.setLook( wlPort );
-    fdlPort = new FormData();
+    FormData fdlPort = new FormData();
     fdlPort.left = new FormAttachment( 0, -margin );
     fdlPort.top = new FormAttachment( wServer, margin );
     fdlPort.right = new FormAttachment( middle, -2 * margin );
@@ -792,7 +672,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wPort.setEditable( true );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
-    fdPort = new FormData();
+    FormData fdPort = new FormData();
     fdPort.left = new FormAttachment( middle, -margin );
     fdPort.top = new FormAttachment( wServer, margin );
     fdPort.right = new FormAttachment( 100, -margin );
@@ -824,31 +704,32 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF AUTHENTIFICATION GROUP
     // ////////////////////////////////////
 
-    wAuthentificationGroup = new Group( wContentComp, SWT.SHADOW_NONE );
+    Group wAuthentificationGroup = new Group( wContentComp, SWT.SHADOW_NONE );
     props.setLook( wAuthentificationGroup );
     wAuthentificationGroup.setText( BaseMessages.getString( PKG, "Mail.Group.Authentification.Label" ) );
 
-    FormLayout authentificationgroupLayout = new FormLayout();
-    authentificationgroupLayout.marginWidth = 10;
-    authentificationgroupLayout.marginHeight = 10;
-    wAuthentificationGroup.setLayout( authentificationgroupLayout );
+    FormLayout authentificationGroupLayout = new FormLayout();
+    authentificationGroupLayout.marginWidth = 10;
+    authentificationGroupLayout.marginHeight = 10;
+    wAuthentificationGroup.setLayout( authentificationGroupLayout );
 
     // Authentication?
-    wlUseAuth = new Label( wAuthentificationGroup, SWT.RIGHT );
+    Label wlUseAuth = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlUseAuth.setText( BaseMessages.getString( PKG, "Mail.UseAuthentication.Label" ) );
     props.setLook( wlUseAuth );
-    fdlUseAuth = new FormData();
+    FormData fdlUseAuth = new FormData();
     fdlUseAuth.left = new FormAttachment( 0, 0 );
     fdlUseAuth.top = new FormAttachment( wServerGroup, margin );
     fdlUseAuth.right = new FormAttachment( middle, -2 * margin );
     wlUseAuth.setLayoutData( fdlUseAuth );
-    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN );
+    wUseAuth = new Combo( wAuthentificationGroup, SWT.DROP_DOWN | SWT.READ_ONLY );
     wUseAuth.add( MailMeta.AUTENTICATION_NONE );
     wUseAuth.add( MailMeta.AUTENTICATION_BASIC );
     wUseAuth.add( MailMeta.AUTENTICATION_OAUTH );
+    wUseAuth.select( wUseAuth.indexOf( MailMeta.AUTENTICATION_NONE ) );
     props.setLook( wUseAuth );
     wUseAuth.addModifyListener( lsMod );
-    fdUseAuth = new FormData();
+    FormData fdUseAuth = new FormData();
     fdUseAuth.left = new FormAttachment( middle, -margin );
     fdUseAuth.top = new FormAttachment( wServerGroup, margin );
     fdUseAuth.right = new FormAttachment( 100, 0 );
@@ -864,28 +745,28 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
             BaseMessages.getString( PKG, "Mail.AuthenticationSecretKey.Label" ),
             BaseMessages.getString( PKG, "Mail.AuthenticationSecretKey.Tooltip" ), true );
     wAuthSecretKey.addModifyListener( lsMod );
-    fdAuthSecretKey= new FormData();
+    FormData fdAuthSecretKey = new FormData();
     fdAuthSecretKey.left = new FormAttachment( 0, 0 );
     fdAuthSecretKey.top = new FormAttachment( wUseAuth, margin );
     fdAuthSecretKey.right = new FormAttachment( 100, 0 );
-    wAuthSecretKey.setLayoutData( fdAuthSecretKey);
+    wAuthSecretKey.setLayoutData( fdAuthSecretKey );
 
     // AuthClientId line
     wAuthClientId = new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "Mail.AuthenticationClientId.Label" ),
             BaseMessages.getString( PKG, "Mail.AuthenticationClientId.Tooltip" ));
     wAuthClientId.addModifyListener( lsMod );
-    fdAuthClientId = new FormData();
+    FormData fdAuthClientId = new FormData();
     fdAuthClientId.left = new FormAttachment( 0, 0 );
     fdAuthClientId.top = new FormAttachment( wAuthSecretKey, margin );
     fdAuthClientId.right = new FormAttachment( 100, 0 );
-    wAuthClientId.setLayoutData( fdAuthClientId);
+    wAuthClientId.setLayoutData( fdAuthClientId );
 
     // AuthUser line
     wlAuthUser = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlAuthUser.setText( BaseMessages.getString( PKG, "Mail.AuthenticationUser.Label" ) );
     props.setLook( wlAuthUser );
-    fdlAuthUser = new FormData();
+    FormData fdlAuthUser = new FormData();
     fdlAuthUser.left = new FormAttachment( 0, -margin );
     fdlAuthUser.top = new FormAttachment( wAuthClientId, margin );
     fdlAuthUser.right = new FormAttachment( middle, -2 * margin );
@@ -895,7 +776,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wAuthUser.setEditable( true );
     props.setLook( wAuthUser );
     wAuthUser.addModifyListener( lsMod );
-    fdAuthUser = new FormData();
+    FormData fdAuthUser = new FormData();
     fdAuthUser.left = new FormAttachment( middle, -margin );
     fdAuthUser.top = new FormAttachment( wAuthClientId, margin );
     fdAuthUser.right = new FormAttachment( 100, -margin );
@@ -917,7 +798,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlAuthPass = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlAuthPass.setText( BaseMessages.getString( PKG, "Mail.AuthenticationPassword.Label" ) );
     props.setLook( wlAuthPass );
-    fdlAuthPass = new FormData();
+    FormData fdlAuthPass = new FormData();
     fdlAuthPass.left = new FormAttachment( 0, -margin );
     fdlAuthPass.top = new FormAttachment( wAuthUser, margin );
     fdlAuthPass.right = new FormAttachment( middle, -2 * margin );
@@ -927,7 +808,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wAuthPass.setEditable( true );
     props.setLook( wAuthPass );
     wAuthPass.addModifyListener( lsMod );
-    fdAuthPass = new FormData();
+    FormData fdAuthPass = new FormData();
     fdAuthPass.left = new FormAttachment( middle, -margin );
     fdAuthPass.top = new FormAttachment( wAuthUser, margin );
     fdAuthPass.right = new FormAttachment( 100, -margin );
@@ -938,16 +819,16 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
             BaseMessages.getString( PKG, "Mail.AuthenticationScope.Label" ),
             BaseMessages.getString( PKG, "Mail.AuthenticationScope.Tooltip" ));
     wAuthScope.addModifyListener( lsMod );
-    fdAuthScope= new FormData();
+    FormData fdAuthScope = new FormData();
     fdAuthScope.left = new FormAttachment( 0, 0 );
     fdAuthScope.top = new FormAttachment( wAuthPass, margin );
     fdAuthScope.right = new FormAttachment( 100, 0 );
-    wAuthScope.setLayoutData( fdAuthScope);
-// Grant Type
+    wAuthScope.setLayoutData( fdAuthScope );
+    // Grant Type
     wlGrantType = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlGrantType.setText(BaseMessages.getString( PKG, "Mail.GrantType.Label" ) );
     props.setLook( wlGrantType );
-    fdlGrantType = new FormData();
+    FormData fdlGrantType = new FormData();
     fdlGrantType.left = new FormAttachment( 0, 0 );
     fdlGrantType.top = new FormAttachment( wAuthScope, 2*margin );
     fdlGrantType.right = new FormAttachment( middle, -margin );
@@ -958,7 +839,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     grantType.add( MailMeta.GRANTTYPE_REFRESH_TOKEN );
     props.setLook( grantType );
     grantType.addModifyListener( lsMod );
-    fdGrantType = new FormData();
+    FormData fdGrantType = new FormData();
     fdGrantType.left = new FormAttachment( middle, margin );
     fdGrantType.top = new FormAttachment( wAuthScope, 2*margin );
     fdGrantType.right = new FormAttachment( 100, 0 );
@@ -973,41 +854,41 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
             BaseMessages.getString( PKG, "Mail.AuthenticationTokenUrl.Label" ),
             BaseMessages.getString( PKG, "Mail.AuthenticationTokenUrl.Tooltip" ));
     wAuthTokenUrl.addModifyListener( lsMod );
-    fdAuthTokenUrl= new FormData();
+    FormData fdAuthTokenUrl = new FormData();
     fdAuthTokenUrl.left = new FormAttachment( 0, 0 );
     fdAuthTokenUrl.top = new FormAttachment( grantType, margin );
     fdAuthTokenUrl.right = new FormAttachment( 100, 0 );
-    wAuthTokenUrl.setLayoutData( fdAuthTokenUrl);
+    wAuthTokenUrl.setLayoutData( fdAuthTokenUrl );
     //AuthorizationCode
     wAuthorizationCode= new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "Mail.AuthorizationCode.Label" ),
             BaseMessages.getString( PKG, "Mail.AuthorizationCode.Tooltip" ));
     wAuthorizationCode.addModifyListener( lsMod );
-    fdAuthorizationCode= new FormData();
+    FormData fdAuthorizationCode = new FormData();
     fdAuthorizationCode.left = new FormAttachment( 0, 0 );
     fdAuthorizationCode.top = new FormAttachment( wAuthTokenUrl, margin );
     fdAuthorizationCode.right = new FormAttachment( 100, 0 );
-    wAuthorizationCode.setLayoutData( fdAuthorizationCode);
+    wAuthorizationCode.setLayoutData( fdAuthorizationCode );
     //Redirect Uri
     wRedirectUri= new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "Mail.RedirectURI.Label" ),
             BaseMessages.getString( PKG, "Mail.RedirectURI.Tooltip" ));
     wRedirectUri.addModifyListener( lsMod );
-    fdRedirectUri= new FormData();
+    FormData fdRedirectUri = new FormData();
     fdRedirectUri.left = new FormAttachment( 0, 0 );
     fdRedirectUri.top = new FormAttachment(wAuthorizationCode, margin );
     fdRedirectUri.right = new FormAttachment( 100, 0 );
-    wRedirectUri.setLayoutData( fdRedirectUri);
+    wRedirectUri.setLayoutData( fdRedirectUri );
     //Refresh Token
     wAuthRefreshToken= new LabelTextVar( transMeta, wAuthentificationGroup,
             BaseMessages.getString( PKG, "Mail.RefreshToken.Label" ),
             BaseMessages.getString( PKG, "Mail.RefreshToken.Tooltip" ));
     wAuthRefreshToken.addModifyListener( lsMod );
-    fdAuthRefreshToken= new FormData();
+    FormData fdAuthRefreshToken = new FormData();
     fdAuthRefreshToken.left = new FormAttachment( 0, 0 );
     fdAuthRefreshToken.top = new FormAttachment(wRedirectUri, margin );
     fdAuthRefreshToken.right = new FormAttachment( 100, 0 );
-    wAuthRefreshToken.setLayoutData( fdAuthRefreshToken);
+    wAuthRefreshToken.setLayoutData( fdAuthRefreshToken );
 
     wAuthPass.addFocusListener( new FocusListener() {
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
@@ -1026,14 +907,14 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlUseSecAuth = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlUseSecAuth.setText( BaseMessages.getString( PKG, "Mail.UseSecAuthentication.Label" ) );
     props.setLook( wlUseSecAuth );
-    fdlUseSecAuth = new FormData();
+    FormData fdlUseSecAuth = new FormData();
     fdlUseSecAuth.left = new FormAttachment( 0, 0 );
     fdlUseSecAuth.top = new FormAttachment( wAuthRefreshToken, margin );
     fdlUseSecAuth.right = new FormAttachment( middle, -2 * margin );
     wlUseSecAuth.setLayoutData( fdlUseSecAuth );
     wUseSecAuth = new Button( wAuthentificationGroup, SWT.CHECK );
     props.setLook( wUseSecAuth );
-    fdUseSecAuth = new FormData();
+    FormData fdUseSecAuth = new FormData();
     fdUseSecAuth.left = new FormAttachment( middle, -margin );
     fdUseSecAuth.top = new FormAttachment( wAuthRefreshToken, margin );
     fdUseSecAuth.right = new FormAttachment( 100, 0 );
@@ -1042,7 +923,6 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       public void widgetSelected( SelectionEvent e ) {
         setSecureConnectiontype();
         input.setChanged();
-
       }
     } );
 
@@ -1050,7 +930,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlSecureConnectionType = new Label( wAuthentificationGroup, SWT.RIGHT );
     wlSecureConnectionType.setText( BaseMessages.getString( PKG, "Mail.SecureConnectionType.Label" ) );
     props.setLook( wlSecureConnectionType );
-    fdlSecureConnectionType = new FormData();
+    FormData fdlSecureConnectionType = new FormData();
     fdlSecureConnectionType.left = new FormAttachment( 0, 0 );
     fdlSecureConnectionType.top = new FormAttachment( wUseSecAuth, margin );
     fdlSecureConnectionType.right = new FormAttachment( middle, -2 * margin );
@@ -1059,7 +939,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wSecureConnectionType.setEditable( true );
     props.setLook( wSecureConnectionType );
     wSecureConnectionType.addModifyListener( lsMod );
-    fdSecureConnectionType = new FormData();
+    FormData fdSecureConnectionType = new FormData();
     fdSecureConnectionType.left = new FormAttachment( middle, -margin );
     fdSecureConnectionType.top = new FormAttachment( wUseSecAuth, margin );
     fdSecureConnectionType.right = new FormAttachment( 100, 0 );
@@ -1070,7 +950,6 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       public void widgetSelected( SelectionEvent e ) {
         setSecureConnectiontype();
         input.setChanged();
-
       }
     } );
 
@@ -1085,7 +964,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // / END OF AUTHENTIFICATION GROUP
     // ///////////////////////////////////////
 
-    fdContentComp = new FormData();
+    FormData fdContentComp = new FormData();
     fdContentComp.left = new FormAttachment( 0, 0 );
     fdContentComp.top = new FormAttachment( 0, 0 );
     fdContentComp.right = new FormAttachment( 100, 0 );
@@ -1103,14 +982,14 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF MESSAGE TAB ///
     // ///////////////////////////////////
 
-    wMessageTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wMessageTab = new CTabItem( wTabFolder, SWT.NONE );
     wMessageTab.setText( BaseMessages.getString( PKG, "Mail.Tab.Message.Label" ) );
 
     FormLayout messageLayout = new FormLayout();
     messageLayout.marginWidth = 3;
     messageLayout.marginHeight = 3;
 
-    wMessageComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wMessageComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wMessageComp );
     wMessageComp.setLayout( contentLayout );
 
@@ -1118,27 +997,27 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF MESSAGE SETTINGS GROUP
     // ////////////////////////////////////
 
-    wMessageSettingsGroup = new Group( wMessageComp, SWT.SHADOW_NONE );
+    Group wMessageSettingsGroup = new Group( wMessageComp, SWT.SHADOW_NONE );
     props.setLook( wMessageSettingsGroup );
     wMessageSettingsGroup.setText( BaseMessages.getString( PKG, "Mail.Group.MessageSettings.Label" ) );
 
-    FormLayout messagesettingsgroupLayout = new FormLayout();
-    messagesettingsgroupLayout.marginWidth = 10;
-    messagesettingsgroupLayout.marginHeight = 10;
-    wMessageSettingsGroup.setLayout( messagesettingsgroupLayout );
+    FormLayout messageSettingsGroupLayout = new FormLayout();
+    messageSettingsGroupLayout.marginWidth = 10;
+    messageSettingsGroupLayout.marginHeight = 10;
+    wMessageSettingsGroup.setLayout( messageSettingsGroupLayout );
 
     // Add date to logfile name?
-    wlAddDate = new Label( wMessageSettingsGroup, SWT.RIGHT );
+    Label wlAddDate = new Label( wMessageSettingsGroup, SWT.RIGHT );
     wlAddDate.setText( BaseMessages.getString( PKG, "Mail.IncludeDate.Label" ) );
     props.setLook( wlAddDate );
-    fdlAddDate = new FormData();
+    FormData fdlAddDate = new FormData();
     fdlAddDate.left = new FormAttachment( 0, 0 );
     fdlAddDate.top = new FormAttachment( 0, margin );
     fdlAddDate.right = new FormAttachment( middle, -2 * margin );
     wlAddDate.setLayoutData( fdlAddDate );
     wAddDate = new Button( wMessageSettingsGroup, SWT.CHECK );
     props.setLook( wAddDate );
-    fdAddDate = new FormData();
+    FormData fdAddDate = new FormData();
     fdAddDate.left = new FormAttachment( middle, -margin );
     fdAddDate.top = new FormAttachment( 0, margin );
     fdAddDate.right = new FormAttachment( 100, 0 );
@@ -1150,17 +1029,17 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // Only send the comment in the mail body
-    wlOnlyComment = new Label( wMessageSettingsGroup, SWT.RIGHT );
+    Label wlOnlyComment = new Label( wMessageSettingsGroup, SWT.RIGHT );
     wlOnlyComment.setText( BaseMessages.getString( PKG, "Mail.OnlyCommentInBody.Label" ) );
     props.setLook( wlOnlyComment );
-    fdlOnlyComment = new FormData();
+    FormData fdlOnlyComment = new FormData();
     fdlOnlyComment.left = new FormAttachment( 0, 0 );
     fdlOnlyComment.top = new FormAttachment( wAddDate, margin );
     fdlOnlyComment.right = new FormAttachment( middle, -2 * margin );
     wlOnlyComment.setLayoutData( fdlOnlyComment );
     wOnlyComment = new Button( wMessageSettingsGroup, SWT.CHECK );
     props.setLook( wOnlyComment );
-    fdOnlyComment = new FormData();
+    FormData fdOnlyComment = new FormData();
     fdOnlyComment.left = new FormAttachment( middle, -margin );
     fdOnlyComment.top = new FormAttachment( wAddDate, margin );
     fdOnlyComment.right = new FormAttachment( 100, 0 );
@@ -1172,17 +1051,17 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // HTML format ?
-    wlUseHTML = new Label( wMessageSettingsGroup, SWT.RIGHT );
+    Label wlUseHTML = new Label( wMessageSettingsGroup, SWT.RIGHT );
     wlUseHTML.setText( BaseMessages.getString( PKG, "Mail.UseHTMLInBody.Label" ) );
     props.setLook( wlUseHTML );
-    fdlUseHTML = new FormData();
+    FormData fdlUseHTML = new FormData();
     fdlUseHTML.left = new FormAttachment( 0, 0 );
     fdlUseHTML.top = new FormAttachment( wOnlyComment, margin );
     fdlUseHTML.right = new FormAttachment( middle, -2 * margin );
     wlUseHTML.setLayoutData( fdlUseHTML );
     wUseHTML = new Button( wMessageSettingsGroup, SWT.CHECK );
     props.setLook( wUseHTML );
-    fdUseHTML = new FormData();
+    FormData fdUseHTML = new FormData();
     fdUseHTML.left = new FormAttachment( middle, -margin );
     fdUseHTML.top = new FormAttachment( wOnlyComment, margin );
     fdUseHTML.right = new FormAttachment( 100, 0 );
@@ -1198,7 +1077,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlEncoding = new Label( wMessageSettingsGroup, SWT.RIGHT );
     wlEncoding.setText( BaseMessages.getString( PKG, "Mail.Encoding.Label" ) );
     props.setLook( wlEncoding );
-    fdlEncoding = new FormData();
+    FormData fdlEncoding = new FormData();
     fdlEncoding.left = new FormAttachment( 0, 0 );
     fdlEncoding.top = new FormAttachment( wUseHTML, margin );
     fdlEncoding.right = new FormAttachment( middle, -2 * margin );
@@ -1207,7 +1086,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wEncoding.setEditable( true );
     props.setLook( wEncoding );
     wEncoding.addModifyListener( lsMod );
-    fdEncoding = new FormData();
+    FormData fdEncoding = new FormData();
     fdEncoding.left = new FormAttachment( middle, -margin );
     fdEncoding.top = new FormAttachment( wUseHTML, margin );
     fdEncoding.right = new FormAttachment( 100, 0 );
@@ -1226,10 +1105,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // Use Priority ?
-    wlUsePriority = new Label( wMessageSettingsGroup, SWT.RIGHT );
+    Label wlUsePriority = new Label( wMessageSettingsGroup, SWT.RIGHT );
     wlUsePriority.setText( BaseMessages.getString( PKG, "Mail.UsePriority.Label" ) );
     props.setLook( wlUsePriority );
-    fdlPriority = new FormData();
+    FormData fdlPriority = new FormData();
     fdlPriority.left = new FormAttachment( 0, 0 );
     fdlPriority.top = new FormAttachment( wEncoding, margin );
     fdlPriority.right = new FormAttachment( middle, -2 * margin );
@@ -1237,7 +1116,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wUsePriority = new Button( wMessageSettingsGroup, SWT.CHECK );
     wUsePriority.setToolTipText( BaseMessages.getString( PKG, "Mail.UsePriority.Tooltip" ) );
     props.setLook( wUsePriority );
-    fdUsePriority = new FormData();
+    FormData fdUsePriority = new FormData();
     fdUsePriority.left = new FormAttachment( middle, -margin );
     fdUsePriority.top = new FormAttachment( wEncoding, margin );
     fdUsePriority.right = new FormAttachment( 100, 0 );
@@ -1271,7 +1150,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wPriority.select( 1 ); // +1: starts at -1
     wPriority.addSelectionListener( selChanged );
     props.setLook( wPriority );
-    fdPriority = new FormData();
+    FormData fdPriority = new FormData();
     fdPriority.left = new FormAttachment( middle, -margin );
     fdPriority.top = new FormAttachment( wUsePriority, margin );
     fdPriority.right = new FormAttachment( 100, 0 );
@@ -1281,7 +1160,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlImportance = new Label( wMessageSettingsGroup, SWT.RIGHT );
     wlImportance.setText( BaseMessages.getString( PKG, "Mail.Importance.Label" ) );
     props.setLook( wlImportance );
-    fdlImportance = new FormData();
+    FormData fdlImportance = new FormData();
     fdlImportance.left = new FormAttachment( 0, 0 );
     fdlImportance.right = new FormAttachment( middle, -2 * margin );
     fdlImportance.top = new FormAttachment( wPriority, margin );
@@ -1295,7 +1174,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wImportance.addSelectionListener( selChanged );
 
     props.setLook( wImportance );
-    fdImportance = new FormData();
+    FormData fdImportance = new FormData();
     fdImportance.left = new FormAttachment( middle, -margin );
     fdImportance.top = new FormAttachment( wPriority, margin );
     fdImportance.right = new FormAttachment( 100, 0 );
@@ -1305,7 +1184,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlSensitivity = new Label( wMessageSettingsGroup, SWT.RIGHT );
     wlSensitivity.setText( BaseMessages.getString( PKG, "Mail.Sensitivity.Label" ) );
     props.setLook( wlSensitivity );
-    fdlSensitivity = new FormData();
+    FormData fdlSensitivity = new FormData();
     fdlSensitivity.left = new FormAttachment( 0, 0 );
     fdlSensitivity.right = new FormAttachment( middle, -2 * margin );
     fdlSensitivity.top = new FormAttachment( wImportance, margin );
@@ -1319,7 +1198,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wSensitivity.addSelectionListener( selChanged );
 
     props.setLook( wSensitivity );
-    fdSensitivity = new FormData();
+    FormData fdSensitivity = new FormData();
     fdSensitivity.left = new FormAttachment( middle, -margin );
     fdSensitivity.top = new FormAttachment( wImportance, margin );
     fdSensitivity.right = new FormAttachment( 100, 0 );
@@ -1338,20 +1217,20 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF MESSAGE GROUP
     // ////////////////////////////////////
 
-    wMessageGroup = new Group( wMessageComp, SWT.SHADOW_NONE );
+    Group wMessageGroup = new Group( wMessageComp, SWT.SHADOW_NONE );
     props.setLook( wMessageGroup );
     wMessageGroup.setText( BaseMessages.getString( PKG, "Mail.Group.Message.Label" ) );
 
-    FormLayout messagegroupLayout = new FormLayout();
-    messagegroupLayout.marginWidth = 10;
-    messagegroupLayout.marginHeight = 10;
-    wMessageGroup.setLayout( messagegroupLayout );
+    FormLayout messageGroupLayout = new FormLayout();
+    messageGroupLayout.marginWidth = 10;
+    messageGroupLayout.marginHeight = 10;
+    wMessageGroup.setLayout( messageGroupLayout );
 
     // Subject line
-    wlSubject = new Label( wMessageGroup, SWT.RIGHT );
+    Label wlSubject = new Label( wMessageGroup, SWT.RIGHT );
     wlSubject.setText( BaseMessages.getString( PKG, "Mail.Subject.Label" ) );
     props.setLook( wlSubject );
-    fdlSubject = new FormData();
+    FormData fdlSubject = new FormData();
     fdlSubject.left = new FormAttachment( 0, -margin );
     fdlSubject.top = new FormAttachment( wMessageSettingsGroup, margin );
     fdlSubject.right = new FormAttachment( middle, -2 * margin );
@@ -1361,7 +1240,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wSubject.setEditable( true );
     props.setLook( wSubject );
     wSubject.addModifyListener( lsMod );
-    fdSubject = new FormData();
+    FormData fdSubject = new FormData();
     fdSubject.left = new FormAttachment( middle, -margin );
     fdSubject.top = new FormAttachment( wMessageSettingsGroup, margin );
     fdSubject.right = new FormAttachment( 100, -margin );
@@ -1379,10 +1258,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       }
     } );
     // Comment line
-    wlComment = new Label( wMessageGroup, SWT.RIGHT );
+    Label wlComment = new Label( wMessageGroup, SWT.RIGHT );
     wlComment.setText( BaseMessages.getString( PKG, "Mail.Comment.Label" ) );
     props.setLook( wlComment );
-    fdlComment = new FormData();
+    FormData fdlComment = new FormData();
     fdlComment.left = new FormAttachment( 0, -margin );
     fdlComment.top = new FormAttachment( wSubject, margin );
     fdlComment.right = new FormAttachment( middle, -2 * margin );
@@ -1392,7 +1271,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wComment.setEditable( true );
     props.setLook( wComment );
     wComment.addModifyListener( lsMod );
-    fdComment = new FormData();
+    FormData fdComment = new FormData();
     fdComment.left = new FormAttachment( middle, -margin );
     fdComment.top = new FormAttachment( wSubject, margin );
     fdComment.right = new FormAttachment( 100, -margin );
@@ -1420,7 +1299,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // / END OF MESSAGE GROUP
     // ///////////////////////////////////////
 
-    fdMessageComp = new FormData();
+    FormData fdMessageComp = new FormData();
     fdMessageComp.left = new FormAttachment( 0, 0 );
     fdMessageComp.top = new FormAttachment( 0, 0 );
     fdMessageComp.right = new FormAttachment( 100, 0 );
@@ -1438,14 +1317,14 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF ATTACHED FILES TAB ///
     // ///////////////////////////////////
 
-    wAttachedTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wAttachedTab = new CTabItem( wTabFolder, SWT.NONE );
     wAttachedTab.setText( BaseMessages.getString( PKG, "Mail.Tab.AttachedFiles.Label" ) );
 
     FormLayout attachedLayout = new FormLayout();
     attachedLayout.marginWidth = 3;
     attachedLayout.marginHeight = 3;
 
-    wAttachedComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wAttachedComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wAttachedComp );
     wAttachedComp.setLayout( attachedLayout );
 
@@ -1453,60 +1332,60 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF Attached files GROUP //
     // ///////////////////////////////
 
-    wAttachedContent = new Group( wAttachedComp, SWT.SHADOW_NONE );
+    Group wAttachedContent = new Group( wAttachedComp, SWT.SHADOW_NONE );
     props.setLook( wAttachedContent );
     wAttachedContent.setText( BaseMessages.getString( PKG, "MailDialog.AttachedContent.Label" ) );
 
-    FormLayout AttachedContentgroupLayout = new FormLayout();
-    AttachedContentgroupLayout.marginWidth = 10;
-    AttachedContentgroupLayout.marginHeight = 10;
-    wAttachedContent.setLayout( AttachedContentgroupLayout );
+    FormLayout attachedContentGroupLayout = new FormLayout();
+    attachedContentGroupLayout.marginWidth = 10;
+    attachedContentGroupLayout.marginHeight = 10;
+    wAttachedContent.setLayout( attachedContentGroupLayout );
 
     // Is Filename defined in a Field
-    wlisattachContentField = new Label( wAttachedContent, SWT.RIGHT );
-    wlisattachContentField.setText( BaseMessages.getString( PKG, "MailDialog.isattachContentField.Label" ) );
-    props.setLook( wlisattachContentField );
-    FormData fdlisattachContentField = new FormData();
-    fdlisattachContentField.left = new FormAttachment( 0, -margin );
-    fdlisattachContentField.top = new FormAttachment( 0, margin );
-    fdlisattachContentField.right = new FormAttachment( middle, -2 * margin );
-    wlisattachContentField.setLayoutData( fdlisattachContentField );
+    Label wlIsAttachContentField = new Label( wAttachedContent, SWT.RIGHT );
+    wlIsAttachContentField.setText( BaseMessages.getString( PKG, "MailDialog.isattachContentField.Label" ) );
+    props.setLook( wlIsAttachContentField );
+    FormData fdlIsAttachContentField = new FormData();
+    fdlIsAttachContentField.left = new FormAttachment( 0, -margin );
+    fdlIsAttachContentField.top = new FormAttachment( 0, margin );
+    fdlIsAttachContentField.right = new FormAttachment( middle, -2 * margin );
+    wlIsAttachContentField.setLayoutData( fdlIsAttachContentField );
 
-    wisattachContentField = new Button( wAttachedContent, SWT.CHECK );
-    props.setLook( wisattachContentField );
-    wisattachContentField.setToolTipText( BaseMessages.getString( PKG, "MailDialog.isattachContentField.Tooltip" ) );
-    FormData fdisattachContentField = new FormData();
-    fdisattachContentField.left = new FormAttachment( middle, -margin );
-    fdisattachContentField.top = new FormAttachment( 0, margin );
-    wisattachContentField.setLayoutData( fdisattachContentField );
-    SelectionAdapter lisattachContentField = new SelectionAdapter() {
+    wIsAttachContentField = new Button( wAttachedContent, SWT.CHECK );
+    props.setLook( wIsAttachContentField );
+    wIsAttachContentField.setToolTipText( BaseMessages.getString( PKG, "MailDialog.isattachContentField.Tooltip" ) );
+    FormData fdIsAttachContentField = new FormData();
+    fdIsAttachContentField.left = new FormAttachment( middle, -margin );
+    fdIsAttachContentField.top = new FormAttachment( 0, margin );
+    wIsAttachContentField.setLayoutData( fdIsAttachContentField );
+    SelectionAdapter lIsAttachContentField = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         activeISAttachContentField();
         input.setChanged();
       }
     };
-    wisattachContentField.addSelectionListener( lisattachContentField );
+    wIsAttachContentField.addSelectionListener( lIsAttachContentField );
 
-    // attache file content field
-    wlattachContentField = new Label( wAttachedContent, SWT.RIGHT );
-    wlattachContentField.setText( BaseMessages.getString( PKG, "MailDialog.attachContentField.Label" ) );
-    props.setLook( wlattachContentField );
-    FormData fdlattachContentField = new FormData();
-    fdlattachContentField.left = new FormAttachment( 0, -margin );
-    fdlattachContentField.top = new FormAttachment( wisattachContentField, margin );
-    fdlattachContentField.right = new FormAttachment( middle, -2 * margin );
-    wlattachContentField.setLayoutData( fdlattachContentField );
+    // attach file content field
+    wlAttachContentField = new Label( wAttachedContent, SWT.RIGHT );
+    wlAttachContentField.setText( BaseMessages.getString( PKG, "MailDialog.attachContentField.Label" ) );
+    props.setLook( wlAttachContentField );
+    FormData fdlAttachContentField = new FormData();
+    fdlAttachContentField.left = new FormAttachment( 0, -margin );
+    fdlAttachContentField.top = new FormAttachment( wIsAttachContentField, margin );
+    fdlAttachContentField.right = new FormAttachment( middle, -2 * margin );
+    wlAttachContentField.setLayoutData( fdlAttachContentField );
 
-    wattachContentField = new CCombo( wAttachedContent, SWT.BORDER | SWT.READ_ONLY );
-    wattachContentField.setEditable( true );
-    props.setLook( wattachContentField );
-    wattachContentField.addModifyListener( lsMod );
-    FormData fdattachContentField = new FormData();
-    fdattachContentField.left = new FormAttachment( middle, -margin );
-    fdattachContentField.top = new FormAttachment( wisattachContentField, margin );
-    fdattachContentField.right = new FormAttachment( 100, -margin );
-    wattachContentField.setLayoutData( fdattachContentField );
-    wattachContentField.addFocusListener( new FocusListener() {
+    wAttachContentField = new CCombo( wAttachedContent, SWT.BORDER | SWT.READ_ONLY );
+    wAttachContentField.setEditable( true );
+    props.setLook( wAttachContentField );
+    wAttachContentField.addModifyListener( lsMod );
+    FormData fdAttachContentField = new FormData();
+    fdAttachContentField.left = new FormAttachment( middle, -margin );
+    fdAttachContentField.top = new FormAttachment( wIsAttachContentField, margin );
+    fdAttachContentField.right = new FormAttachment( 100, -margin );
+    wAttachContentField.setLayoutData( fdAttachContentField );
+    wAttachContentField.addFocusListener( new FocusListener() {
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
       }
 
@@ -1520,26 +1399,26 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // attached content filename field
-    wlattachContentFileNameField = new Label( wAttachedContent, SWT.RIGHT );
-    wlattachContentFileNameField.setText( BaseMessages.getString(
+    wlAttachContentFileNameField = new Label( wAttachedContent, SWT.RIGHT );
+    wlAttachContentFileNameField.setText( BaseMessages.getString(
       PKG, "MailDialog.attachContentFileNameField.Label" ) );
-    props.setLook( wlattachContentFileNameField );
-    FormData fdlattachContentFileNameField = new FormData();
-    fdlattachContentFileNameField.left = new FormAttachment( 0, -margin );
-    fdlattachContentFileNameField.top = new FormAttachment( wattachContentField, margin );
-    fdlattachContentFileNameField.right = new FormAttachment( middle, -2 * margin );
-    wlattachContentFileNameField.setLayoutData( fdlattachContentFileNameField );
+    props.setLook( wlAttachContentFileNameField );
+    FormData fdlAttachContentFileNameField = new FormData();
+    fdlAttachContentFileNameField.left = new FormAttachment( 0, -margin );
+    fdlAttachContentFileNameField.top = new FormAttachment( wAttachContentField, margin );
+    fdlAttachContentFileNameField.right = new FormAttachment( middle, -2 * margin );
+    wlAttachContentFileNameField.setLayoutData( fdlAttachContentFileNameField );
 
-    wattachContentFileNameField = new CCombo( wAttachedContent, SWT.BORDER | SWT.READ_ONLY );
-    wattachContentFileNameField.setEditable( true );
-    props.setLook( wattachContentFileNameField );
-    wattachContentFileNameField.addModifyListener( lsMod );
-    FormData fdattachContentFileNameField = new FormData();
-    fdattachContentFileNameField.left = new FormAttachment( middle, -margin );
-    fdattachContentFileNameField.top = new FormAttachment( wattachContentField, margin );
-    fdattachContentFileNameField.right = new FormAttachment( 100, -margin );
-    wattachContentFileNameField.setLayoutData( fdattachContentFileNameField );
-    wattachContentFileNameField.addFocusListener( new FocusListener() {
+    wAttachContentFileNameField = new CCombo( wAttachedContent, SWT.BORDER | SWT.READ_ONLY );
+    wAttachContentFileNameField.setEditable( true );
+    props.setLook( wAttachContentFileNameField );
+    wAttachContentFileNameField.addModifyListener( lsMod );
+    FormData fdAttachContentFileNameField = new FormData();
+    fdAttachContentFileNameField.left = new FormAttachment( middle, -margin );
+    fdAttachContentFileNameField.top = new FormAttachment( wAttachContentField, margin );
+    fdAttachContentFileNameField.right = new FormAttachment( 100, -margin );
+    wAttachContentFileNameField.setLayoutData( fdAttachContentFileNameField );
+    wAttachContentFileNameField.addFocusListener( new FocusListener() {
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
       }
 
@@ -1570,35 +1449,35 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( wOriginFiles );
     wOriginFiles.setText( BaseMessages.getString( PKG, "MailDialog.OriginAttachedFiles.Label" ) );
 
-    FormLayout OriginFilesgroupLayout = new FormLayout();
-    OriginFilesgroupLayout.marginWidth = 10;
-    OriginFilesgroupLayout.marginHeight = 10;
-    wOriginFiles.setLayout( OriginFilesgroupLayout );
+    FormLayout originFilesGroupLayout = new FormLayout();
+    originFilesGroupLayout.marginWidth = 10;
+    originFilesGroupLayout.marginHeight = 10;
+    wOriginFiles.setLayout( originFilesGroupLayout );
 
     // Is Filename defined in a Field
-    wlisFileDynamic = new Label( wOriginFiles, SWT.RIGHT );
-    wlisFileDynamic.setText( BaseMessages.getString( PKG, "MailDialog.isFileDynamic.Label" ) );
-    props.setLook( wlisFileDynamic );
-    FormData fdlisFileDynamic = new FormData();
-    fdlisFileDynamic.left = new FormAttachment( 0, -margin );
-    fdlisFileDynamic.top = new FormAttachment( wAttachedContent, margin );
-    fdlisFileDynamic.right = new FormAttachment( middle, -2 * margin );
-    wlisFileDynamic.setLayoutData( fdlisFileDynamic );
+    Label wlIsFileDynamic = new Label( wOriginFiles, SWT.RIGHT );
+    wlIsFileDynamic.setText( BaseMessages.getString( PKG, "MailDialog.isFileDynamic.Label" ) );
+    props.setLook( wlIsFileDynamic );
+    FormData fdlIsFileDynamic = new FormData();
+    fdlIsFileDynamic.left = new FormAttachment( 0, -margin );
+    fdlIsFileDynamic.top = new FormAttachment( wAttachedContent, margin );
+    fdlIsFileDynamic.right = new FormAttachment( middle, -2 * margin );
+    wlIsFileDynamic.setLayoutData( fdlIsFileDynamic );
 
-    wisFileDynamic = new Button( wOriginFiles, SWT.CHECK );
-    props.setLook( wisFileDynamic );
-    wisFileDynamic.setToolTipText( BaseMessages.getString( PKG, "MailDialog.isFileDynamic.Tooltip" ) );
-    FormData fdisFileDynamic = new FormData();
-    fdisFileDynamic.left = new FormAttachment( middle, -margin );
-    fdisFileDynamic.top = new FormAttachment( wAttachedContent, margin );
-    wisFileDynamic.setLayoutData( fdisFileDynamic );
-    SelectionAdapter lisFileDynamic = new SelectionAdapter() {
+    wIsFileDynamic = new Button( wOriginFiles, SWT.CHECK );
+    props.setLook( wIsFileDynamic );
+    wIsFileDynamic.setToolTipText( BaseMessages.getString( PKG, "MailDialog.isFileDynamic.Tooltip" ) );
+    FormData fdIsFileDynamic = new FormData();
+    fdIsFileDynamic.left = new FormAttachment( middle, -margin );
+    fdIsFileDynamic.top = new FormAttachment( wAttachedContent, margin );
+    wIsFileDynamic.setLayoutData( fdIsFileDynamic );
+    SelectionAdapter lIsFileDynamic = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        ActiveisFileDynamic();
+        activeIsFileDynamic();
         input.setChanged();
       }
     };
-    wisFileDynamic.addSelectionListener( lisFileDynamic );
+    wIsFileDynamic.addSelectionListener( lIsFileDynamic );
 
     // Filename field
     wlDynamicFilenameField = new Label( wOriginFiles, SWT.RIGHT );
@@ -1606,7 +1485,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( wlDynamicFilenameField );
     FormData fdlFilenameField = new FormData();
     fdlFilenameField.left = new FormAttachment( 0, -margin );
-    fdlFilenameField.top = new FormAttachment( wisFileDynamic, margin );
+    fdlFilenameField.top = new FormAttachment( wIsFileDynamic, margin );
     fdlFilenameField.right = new FormAttachment( middle, -2 * margin );
     wlDynamicFilenameField.setLayoutData( fdlFilenameField );
 
@@ -1616,7 +1495,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wDynamicFilenameField.addModifyListener( lsMod );
     FormData fdFilenameField = new FormData();
     fdFilenameField.left = new FormAttachment( middle, -margin );
-    fdFilenameField.top = new FormAttachment( wisFileDynamic, margin );
+    fdFilenameField.top = new FormAttachment( wIsFileDynamic, margin );
     fdFilenameField.right = new FormAttachment( 100, -margin );
     wDynamicFilenameField.setLayoutData( fdFilenameField );
     wDynamicFilenameField.addFocusListener( new FocusListener() {
@@ -1664,76 +1543,73 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       }
     } );
 
-    // FileFoldername line
-    wlSourceFileFoldername = new Label( wOriginFiles, SWT.RIGHT );
-    wlSourceFileFoldername.setText( BaseMessages.getString( PKG, "MailDialog.FileFoldername.Label" ) );
-    props.setLook( wlSourceFileFoldername );
-    fdlSourceFileFoldername = new FormData();
-    fdlSourceFileFoldername.left = new FormAttachment( 0, 0 );
-    fdlSourceFileFoldername.top = new FormAttachment( wDynamicWildcardField, 2 * margin );
-    fdlSourceFileFoldername.right = new FormAttachment( middle, -margin );
-    wlSourceFileFoldername.setLayoutData( fdlSourceFileFoldername );
+    // FileFolderName line
+    wlSourceFileFolderName = new Label( wOriginFiles, SWT.RIGHT );
+    wlSourceFileFolderName.setText( BaseMessages.getString( PKG, "MailDialog.FileFoldername.Label" ) );
+    props.setLook( wlSourceFileFolderName );
+    FormData fdlSourceFileFolderName = new FormData();
+    fdlSourceFileFolderName.left = new FormAttachment( 0, 0 );
+    fdlSourceFileFolderName.top = new FormAttachment( wDynamicWildcardField, 2 * margin );
+    fdlSourceFileFolderName.right = new FormAttachment( middle, -margin );
+    wlSourceFileFolderName.setLayoutData( fdlSourceFileFolderName );
 
     // Browse Destination folders button ...
     wbSourceFolder = new Button( wOriginFiles, SWT.PUSH | SWT.CENTER );
     props.setLook( wbSourceFolder );
     wbSourceFolder.setText( BaseMessages.getString( PKG, "MailDialog.BrowseFolders.Label" ) );
-    fdbSourceFolder = new FormData();
+    FormData fdbSourceFolder = new FormData();
     fdbSourceFolder.right = new FormAttachment( 100, 0 );
     fdbSourceFolder.top = new FormAttachment( wDynamicWildcardField, 2 * margin );
     wbSourceFolder.setLayoutData( fdbSourceFolder );
 
     // Browse source file button ...
-    wbFileFoldername = new Button( wOriginFiles, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbFileFoldername );
-    wbFileFoldername.setText( BaseMessages.getString( PKG, "MailDialog.BrowseFiles.Label" ) );
-    fdbSourceFileFoldername = new FormData();
-    fdbSourceFileFoldername.right = new FormAttachment( wbSourceFolder, -margin );
-    fdbSourceFileFoldername.top = new FormAttachment( wDynamicWildcardField, 2 * margin );
-    wbFileFoldername.setLayoutData( fdbSourceFileFoldername );
+    wbFileFolderName = new Button( wOriginFiles, SWT.PUSH | SWT.CENTER );
+    props.setLook( wbFileFolderName );
+    wbFileFolderName.setText( BaseMessages.getString( PKG, "MailDialog.BrowseFiles.Label" ) );
+    FormData fdbSourceFileFolderName = new FormData();
+    fdbSourceFileFolderName.right = new FormAttachment( wbSourceFolder, -margin );
+    fdbSourceFileFolderName.top = new FormAttachment( wDynamicWildcardField, 2 * margin );
+    wbFileFolderName.setLayoutData( fdbSourceFileFolderName );
 
-    wSourceFileFoldername = new TextVar( transMeta, wOriginFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wSourceFileFoldername );
-    wSourceFileFoldername.addModifyListener( lsMod );
-    fdSourceFileFoldername = new FormData();
-    fdSourceFileFoldername.left = new FormAttachment( middle, 0 );
-    fdSourceFileFoldername.top = new FormAttachment( wDynamicWildcardField, 2 * margin );
-    fdSourceFileFoldername.right = new FormAttachment( wbFileFoldername, -margin );
-    wSourceFileFoldername.setLayoutData( fdSourceFileFoldername );
+    wSourceFileFolderName = new TextVar( transMeta, wOriginFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wSourceFileFolderName );
+    wSourceFileFolderName.addModifyListener( lsMod );
+    FormData fdSourceFileFolderName = new FormData();
+    fdSourceFileFolderName.left = new FormAttachment( middle, 0 );
+    fdSourceFileFolderName.top = new FormAttachment( wDynamicWildcardField, 2 * margin );
+    fdSourceFileFolderName.right = new FormAttachment( wbFileFolderName, -margin );
+    wSourceFileFolderName.setLayoutData( fdSourceFileFolderName );
 
     // Whenever something changes, set the tooltip to the expanded version:
-    wSourceFileFoldername.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        wSourceFileFoldername.setToolTipText( transMeta.environmentSubstitute( wSourceFileFoldername.getText() ) );
-      }
-    } );
+    wSourceFileFolderName.addModifyListener(
+      e -> wSourceFileFolderName.setToolTipText( transMeta.environmentSubstitute( wSourceFileFolderName.getText() ) ) );
 
-    wbSourceFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSourceFileFoldername, transMeta,
+    wbSourceFolder.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSourceFileFolderName, transMeta,
       new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FOLDER ) ) );
 
-    wbFileFoldername.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSourceFileFoldername, transMeta,
+    wbFileFolderName.addSelectionListener( new SelectionAdapterFileDialogTextVar( log, wSourceFileFolderName, transMeta,
       new SelectionAdapterOptions( transMeta.getBowl(), SelectionOperation.FILE,
         new FilterType[] { FilterType.ALL }, FilterType.ALL  ) ) );
 
 
     // Include sub folders
-    wlincludeSubFolders = new Label( wOriginFiles, SWT.RIGHT );
-    wlincludeSubFolders.setText( BaseMessages.getString( PKG, "MailDialog.includeSubFolders.Label" ) );
-    props.setLook( wlincludeSubFolders );
-    fdlincludeSubFolders = new FormData();
-    fdlincludeSubFolders.left = new FormAttachment( 0, 0 );
-    fdlincludeSubFolders.top = new FormAttachment( wSourceFileFoldername, margin );
-    fdlincludeSubFolders.right = new FormAttachment( middle, -margin );
-    wlincludeSubFolders.setLayoutData( fdlincludeSubFolders );
-    wincludeSubFolders = new Button( wOriginFiles, SWT.CHECK );
-    props.setLook( wincludeSubFolders );
-    wincludeSubFolders.setToolTipText( BaseMessages.getString( PKG, "MailDialog.includeSubFolders.Tooltip" ) );
-    fdincludeSubFolders = new FormData();
-    fdincludeSubFolders.left = new FormAttachment( middle, 0 );
-    fdincludeSubFolders.top = new FormAttachment( wSourceFileFoldername, margin );
-    fdincludeSubFolders.right = new FormAttachment( 100, 0 );
-    wincludeSubFolders.setLayoutData( fdincludeSubFolders );
-    wincludeSubFolders.addSelectionListener( new SelectionAdapter() {
+    Label wlIncludeSubFolders = new Label( wOriginFiles, SWT.RIGHT );
+    wlIncludeSubFolders.setText( BaseMessages.getString( PKG, "MailDialog.includeSubFolders.Label" ) );
+    props.setLook( wlIncludeSubFolders );
+    FormData fdlIncludeSubFolders = new FormData();
+    fdlIncludeSubFolders.left = new FormAttachment( 0, 0 );
+    fdlIncludeSubFolders.top = new FormAttachment( wSourceFileFolderName, margin );
+    fdlIncludeSubFolders.right = new FormAttachment( middle, -margin );
+    wlIncludeSubFolders.setLayoutData( fdlIncludeSubFolders );
+    wIncludeSubFolders = new Button( wOriginFiles, SWT.CHECK );
+    props.setLook( wIncludeSubFolders );
+    wIncludeSubFolders.setToolTipText( BaseMessages.getString( PKG, "MailDialog.includeSubFolders.Tooltip" ) );
+    FormData fdIncludeSubFolders = new FormData();
+    fdIncludeSubFolders.left = new FormAttachment( middle, 0 );
+    fdIncludeSubFolders.top = new FormAttachment( wSourceFileFolderName, margin );
+    fdIncludeSubFolders.right = new FormAttachment( 100, 0 );
+    wIncludeSubFolders.setLayoutData( fdIncludeSubFolders );
+    wIncludeSubFolders.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -1743,27 +1619,24 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlWildcard = new Label( wOriginFiles, SWT.RIGHT );
     wlWildcard.setText( BaseMessages.getString( PKG, "MailDialog.Wildcard.Label" ) );
     props.setLook( wlWildcard );
-    fdlWildcard = new FormData();
+    FormData fdlWildcard = new FormData();
     fdlWildcard.left = new FormAttachment( 0, 0 );
-    fdlWildcard.top = new FormAttachment( wincludeSubFolders, margin );
+    fdlWildcard.top = new FormAttachment( wIncludeSubFolders, margin );
     fdlWildcard.right = new FormAttachment( middle, -margin );
     wlWildcard.setLayoutData( fdlWildcard );
     wWildcard = new TextVar( transMeta, wOriginFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wWildcard );
     wWildcard.setToolTipText( BaseMessages.getString( PKG, "MailDialog.Wildcard.Tooltip" ) );
     wWildcard.addModifyListener( lsMod );
-    fdWildcard = new FormData();
+    FormData fdWildcard = new FormData();
     fdWildcard.left = new FormAttachment( middle, 0 );
-    fdWildcard.top = new FormAttachment( wincludeSubFolders, margin );
-    fdWildcard.right = new FormAttachment( wbFileFoldername, -margin );
+    fdWildcard.top = new FormAttachment( wIncludeSubFolders, margin );
+    fdWildcard.right = new FormAttachment( wbFileFolderName, -margin );
     wWildcard.setLayoutData( fdWildcard );
 
     // Whenever something changes, set the tooltip to the expanded version:
-    wWildcard.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        wWildcard.setToolTipText( transMeta.environmentSubstitute( wWildcard.getText() ) );
-      }
-    } );
+    wWildcard.addModifyListener(
+      e -> wWildcard.setToolTipText( transMeta.environmentSubstitute( wWildcard.getText() ) ) );
     FormData fdOriginFiles = new FormData();
     fdOriginFiles.left = new FormAttachment( 0, margin );
     fdOriginFiles.top = new FormAttachment( wAttachedContent, 2 * margin );
@@ -1782,23 +1655,23 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( wZipGroup );
     wZipGroup.setText( BaseMessages.getString( PKG, "MailDialog.ZipGroup.Label" ) );
 
-    FormLayout ZipGroupgroupLayout = new FormLayout();
-    ZipGroupgroupLayout.marginWidth = 10;
-    ZipGroupgroupLayout.marginHeight = 10;
-    wZipGroup.setLayout( ZipGroupgroupLayout );
+    FormLayout zipGroupGroupLayout = new FormLayout();
+    zipGroupGroupLayout.marginWidth = 10;
+    zipGroupGroupLayout.marginHeight = 10;
+    wZipGroup.setLayout( zipGroupGroupLayout );
 
     // Zip Files?
-    wlZipFiles = new Label( wZipGroup, SWT.RIGHT );
+    Label wlZipFiles = new Label( wZipGroup, SWT.RIGHT );
     wlZipFiles.setText( BaseMessages.getString( PKG, "MailDialog.ZipFiles.Label" ) );
     props.setLook( wlZipFiles );
-    fdlZipFiles = new FormData();
+    FormData fdlZipFiles = new FormData();
     fdlZipFiles.left = new FormAttachment( 0, -margin );
     fdlZipFiles.top = new FormAttachment( wOriginFiles, margin );
     fdlZipFiles.right = new FormAttachment( middle, -2 * margin );
     wlZipFiles.setLayoutData( fdlZipFiles );
     wZipFiles = new Button( wZipGroup, SWT.CHECK );
     props.setLook( wZipFiles );
-    fdZipFiles = new FormData();
+    FormData fdZipFiles = new FormData();
     fdZipFiles.left = new FormAttachment( middle, -margin );
     fdZipFiles.top = new FormAttachment( wOriginFiles, margin );
     fdZipFiles.right = new FormAttachment( 100, -margin );
@@ -1811,21 +1684,21 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // is zipfilename is dynamic?
-    wlisZipFileDynamic = new Label( wZipGroup, SWT.RIGHT );
-    wlisZipFileDynamic.setText( BaseMessages.getString( PKG, "MailDialog.isZipFileDynamic.Label" ) );
-    props.setLook( wlisZipFileDynamic );
-    fdlisZipFileDynamic = new FormData();
-    fdlisZipFileDynamic.left = new FormAttachment( 0, -margin );
-    fdlisZipFileDynamic.top = new FormAttachment( wZipFiles, margin );
-    fdlisZipFileDynamic.right = new FormAttachment( middle, -2 * margin );
-    wlisZipFileDynamic.setLayoutData( fdlisZipFileDynamic );
+    wlIsZipFileDynamic = new Label( wZipGroup, SWT.RIGHT );
+    wlIsZipFileDynamic.setText( BaseMessages.getString( PKG, "MailDialog.isZipFileDynamic.Label" ) );
+    props.setLook( wlIsZipFileDynamic );
+    FormData fdlIsZipFileDynamic = new FormData();
+    fdlIsZipFileDynamic.left = new FormAttachment( 0, -margin );
+    fdlIsZipFileDynamic.top = new FormAttachment( wZipFiles, margin );
+    fdlIsZipFileDynamic.right = new FormAttachment( middle, -2 * margin );
+    wlIsZipFileDynamic.setLayoutData( fdlIsZipFileDynamic );
     wisZipFileDynamic = new Button( wZipGroup, SWT.CHECK );
     props.setLook( wisZipFileDynamic );
-    fdisZipFileDynamic = new FormData();
-    fdisZipFileDynamic.left = new FormAttachment( middle, -margin );
-    fdisZipFileDynamic.top = new FormAttachment( wZipFiles, margin );
-    fdisZipFileDynamic.right = new FormAttachment( 100, -margin );
-    wisZipFileDynamic.setLayoutData( fdisZipFileDynamic );
+    FormData fdIsZipFileDynamic = new FormData();
+    fdIsZipFileDynamic.left = new FormAttachment( middle, -margin );
+    fdIsZipFileDynamic.top = new FormAttachment( wZipFiles, margin );
+    fdIsZipFileDynamic.right = new FormAttachment( 100, -margin );
+    wisZipFileDynamic.setLayoutData( fdIsZipFileDynamic );
     wisZipFileDynamic.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
@@ -1837,7 +1710,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlDynamicZipFileField = new Label( wZipGroup, SWT.RIGHT );
     wlDynamicZipFileField.setText( BaseMessages.getString( PKG, "MailDialog.DynamicZipFileField.Label" ) );
     props.setLook( wlDynamicZipFileField );
-    fdlDynamicZipFileField = new FormData();
+    FormData fdlDynamicZipFileField = new FormData();
     fdlDynamicZipFileField.left = new FormAttachment( 0, -margin );
     fdlDynamicZipFileField.top = new FormAttachment( wisZipFileDynamic, margin );
     fdlDynamicZipFileField.right = new FormAttachment( middle, -2 * margin );
@@ -1847,7 +1720,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wDynamicZipFileField.setEditable( true );
     props.setLook( wDynamicZipFileField );
     wDynamicZipFileField.addModifyListener( lsMod );
-    fdDynamicZipFileField = new FormData();
+    FormData fdDynamicZipFileField = new FormData();
     fdDynamicZipFileField.left = new FormAttachment( middle, -margin );
     fdDynamicZipFileField.top = new FormAttachment( wisZipFileDynamic, margin );
     fdDynamicZipFileField.right = new FormAttachment( 100, -margin );
@@ -1871,7 +1744,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
         transMeta, wZipGroup, BaseMessages.getString( PKG, "MailDialog.ZipFilename.Label" ), BaseMessages
           .getString( PKG, "MailDialog.ZipFilename.Tooltip" ) );
     wZipFilename.addModifyListener( lsMod );
-    fdZipFilename = new FormData();
+    FormData fdZipFilename = new FormData();
     fdZipFilename.left = new FormAttachment( 0, -margin );
     fdZipFilename.top = new FormAttachment( wDynamicZipFileField, margin );
     fdZipFilename.right = new FormAttachment( 100, -4 * margin );
@@ -1883,7 +1756,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
         transMeta, wZipGroup, BaseMessages.getString( PKG, "MailDialog.ZipSizeCondition.Label" ), BaseMessages
           .getString( PKG, "MailDialog.ZipSizeCondition.Tooltip" ) );
     wZipSizeCondition.addModifyListener( lsMod );
-    fdZipSizeCondition = new FormData();
+    FormData fdZipSizeCondition = new FormData();
     fdZipSizeCondition.left = new FormAttachment( 0, -margin );
     fdZipSizeCondition.top = new FormAttachment( wZipFilename, margin );
     fdZipSizeCondition.right = new FormAttachment( 100, -4 * margin );
@@ -1899,7 +1772,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // / END OF Zip Group GROUP
     // ///////////////////////////////////////////////////////////
 
-    fdAttachedComp = new FormData();
+    FormData fdAttachedComp = new FormData();
     fdAttachedComp.left = new FormAttachment( 0, 0 );
     fdAttachedComp.top = new FormAttachment( 0, 0 );
     fdAttachedComp.right = new FormAttachment( 100, 0 );
@@ -1917,19 +1790,19 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     // START OF embedded images TAB ///
     // ///////////////////////////////////
 
-    wembeddedTab = new CTabItem( wTabFolder, SWT.NONE );
-    wembeddedTab.setText( BaseMessages.getString( PKG, "Mail.Tab.embeddedImages.Label" ) );
+    CTabItem wEmbeddedTab = new CTabItem( wTabFolder, SWT.NONE );
+    wEmbeddedTab.setText( BaseMessages.getString( PKG, "Mail.Tab.embeddedImages.Label" ) );
 
     FormLayout embeddedLayout = new FormLayout();
     embeddedLayout.marginWidth = 3;
     embeddedLayout.marginHeight = 3;
 
-    wembeddedComp = new Composite( wTabFolder, SWT.NONE );
-    props.setLook( wembeddedComp );
-    wembeddedComp.setLayout( embeddedLayout );
+    Composite wEmbeddedComp = new Composite( wTabFolder, SWT.NONE );
+    props.setLook( wEmbeddedComp );
+    wEmbeddedComp.setLayout( embeddedLayout );
 
     // ImageFilename line
-    wlImageFilename = new Label( wembeddedComp, SWT.RIGHT );
+    wlImageFilename = new Label( wEmbeddedComp, SWT.RIGHT );
     wlImageFilename.setText( BaseMessages.getString( PKG, "MailDialog.ImageFilename.Label" ) );
     props.setLook( wlImageFilename );
     FormData fdlImageFilename = new FormData();
@@ -1938,7 +1811,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdlImageFilename.right = new FormAttachment( middle, -margin );
     wlImageFilename.setLayoutData( fdlImageFilename );
 
-    wbImageFilename = new Button( wembeddedComp, SWT.PUSH | SWT.CENTER );
+    wbImageFilename = new Button( wEmbeddedComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbImageFilename );
     wbImageFilename.setText( BaseMessages.getString( PKG, "MailDialog.BrowseFiles.Label" ) );
     wbImageFilename.setToolTipText( BaseMessages.getString( PKG, "MailDialog.BrowseFiles.Tooltip" ) );
@@ -1948,30 +1821,27 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdbImageFilename.right = new FormAttachment( 100, -margin );
     wbImageFilename.setLayoutData( fdbImageFilename );
 
-    wbaImageFilename = new Button( wembeddedComp, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbaImageFilename );
-    wbaImageFilename.setText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameAdd.Button" ) );
-    wbaImageFilename.setToolTipText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameAdd.Tooltip" ) );
-    FormData fdbaImageFilename = new FormData();
-    fdbaImageFilename.right = new FormAttachment( wbImageFilename, -margin );
-    fdbaImageFilename.top = new FormAttachment( wStepname, margin );
-    wbaImageFilename.setLayoutData( fdbaImageFilename );
+    wbAddImageFilename = new Button( wEmbeddedComp, SWT.PUSH | SWT.CENTER );
+    props.setLook( wbAddImageFilename );
+    wbAddImageFilename.setText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameAdd.Button" ) );
+    wbAddImageFilename.setToolTipText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameAdd.Tooltip" ) );
+    FormData fdbAddImageFilename = new FormData();
+    fdbAddImageFilename.right = new FormAttachment( wbImageFilename, -margin );
+    fdbAddImageFilename.top = new FormAttachment( wStepname, margin );
+    wbAddImageFilename.setLayoutData( fdbAddImageFilename );
 
-    wImageFilename = new TextVar( transMeta, wembeddedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wImageFilename = new TextVar( transMeta, wEmbeddedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wImageFilename );
     wImageFilename.addModifyListener( lsMod );
     FormData fdImageFilename = new FormData();
     fdImageFilename.left = new FormAttachment( middle, 0 );
     fdImageFilename.top = new FormAttachment( wStepname, margin );
-    fdImageFilename.right = new FormAttachment( wbaImageFilename, -margin );
+    fdImageFilename.right = new FormAttachment( wbAddImageFilename, -margin );
     wImageFilename.setLayoutData( fdImageFilename );
 
     // Whenever something changes, set the tooltip to the expanded version:
-    wImageFilename.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        wImageFilename.setToolTipText( transMeta.environmentSubstitute( wImageFilename.getText() ) );
-      }
-    } );
+    wImageFilename.addModifyListener(
+      e -> wImageFilename.setToolTipText( transMeta.environmentSubstitute( wImageFilename.getText() ) ) );
 
     wbImageFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -1983,14 +1853,13 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
         dialog.setFilterNames( IMAGES_FILE_TYPES );
         if ( dialog.open() != null ) {
           wImageFilename.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-          Random randomgen = new Random();
-          wContentID.setText( Long.toString( Math.abs( randomgen.nextLong() ), 32 ) );
+          wContentID.setText( Long.toString( Math.abs( secureRandom.nextLong() ), 32 ) );
         }
       }
     } );
 
     // ContentID
-    wlContentID = new Label( wembeddedComp, SWT.RIGHT );
+    wlContentID = new Label( wEmbeddedComp, SWT.RIGHT );
     wlContentID.setText( BaseMessages.getString( PKG, "MailDialog.ContentID.Label" ) );
     props.setLook( wlContentID );
     FormData fdlContentID = new FormData();
@@ -1999,37 +1868,37 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdlContentID.right = new FormAttachment( middle, -margin );
     wlContentID.setLayoutData( fdlContentID );
     wContentID =
-      new TextVar( transMeta, wembeddedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+      new TextVar( transMeta, wEmbeddedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
         PKG, "MailDialog.ContentID.Tooltip" ) );
     props.setLook( wContentID );
     wContentID.addModifyListener( lsMod );
     FormData fdContentID = new FormData();
     fdContentID.left = new FormAttachment( middle, 0 );
     fdContentID.top = new FormAttachment( wImageFilename, margin );
-    fdContentID.right = new FormAttachment( wbaImageFilename, -margin );
+    fdContentID.right = new FormAttachment( wbAddImageFilename, -margin );
     wContentID.setLayoutData( fdContentID );
 
     // Buttons to the right of the screen...
-    wbdImageFilename = new Button( wembeddedComp, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbdImageFilename );
-    wbdImageFilename.setText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameDelete.Button" ) );
-    wbdImageFilename.setToolTipText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameDelete.Tooltip" ) );
-    FormData fdbdImageFilename = new FormData();
-    fdbdImageFilename.right = new FormAttachment( 100, 0 );
-    fdbdImageFilename.top = new FormAttachment( wContentID, 40 );
-    wbdImageFilename.setLayoutData( fdbdImageFilename );
+    wbDeleteImageFilename = new Button( wEmbeddedComp, SWT.PUSH | SWT.CENTER );
+    props.setLook( wbDeleteImageFilename );
+    wbDeleteImageFilename.setText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameDelete.Button" ) );
+    wbDeleteImageFilename.setToolTipText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameDelete.Tooltip" ) );
+    FormData fdbDeleteImageFilename = new FormData();
+    fdbDeleteImageFilename.right = new FormAttachment( 100, 0 );
+    fdbDeleteImageFilename.top = new FormAttachment( wContentID, 40 );
+    wbDeleteImageFilename.setLayoutData( fdbDeleteImageFilename );
 
-    wbeImageFilename = new Button( wembeddedComp, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbeImageFilename );
-    wbeImageFilename.setText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameEdit.Button" ) );
-    wbeImageFilename.setToolTipText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameEdit.Tooltip" ) );
-    FormData fdbeImageFilename = new FormData();
-    fdbeImageFilename.right = new FormAttachment( 100, 0 );
-    fdbeImageFilename.left = new FormAttachment( wbdImageFilename, 0, SWT.LEFT );
-    fdbeImageFilename.top = new FormAttachment( wbdImageFilename, margin );
-    wbeImageFilename.setLayoutData( fdbeImageFilename );
+    wbEditImageFilename = new Button( wEmbeddedComp, SWT.PUSH | SWT.CENTER );
+    props.setLook( wbEditImageFilename );
+    wbEditImageFilename.setText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameEdit.Button" ) );
+    wbEditImageFilename.setToolTipText( BaseMessages.getString( PKG, "MailDialog.ImageFilenameEdit.Tooltip" ) );
+    FormData fdbEditImageFilename = new FormData();
+    fdbEditImageFilename.right = new FormAttachment( 100, 0 );
+    fdbEditImageFilename.left = new FormAttachment( wbDeleteImageFilename, 0, SWT.LEFT );
+    fdbEditImageFilename.top = new FormAttachment( wbDeleteImageFilename, margin );
+    wbEditImageFilename.setLayoutData( fdbEditImageFilename );
 
-    wlFields = new Label( wembeddedComp, SWT.NONE );
+    wlFields = new Label( wEmbeddedComp, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "MailDialog.Fields.Label" ) );
     props.setLook( wlFields );
     FormData fdlFields = new FormData();
@@ -2038,12 +1907,11 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdlFields.top = new FormAttachment( wContentID, margin );
     wlFields.setLayoutData( fdlFields );
 
-    int rows =
+    final int fieldsRows =
       input.getEmbeddedImages() == null ? 1 : ( input.getEmbeddedImages().length == 0 ? 0 : input
         .getEmbeddedImages().length );
-    final int FieldsRows = rows;
 
-    ColumnInfo[] colinf =
+    ColumnInfo[] colInf =
       new ColumnInfo[] {
         new ColumnInfo(
           BaseMessages.getString( PKG, "MailDialog.Fields.Image.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
@@ -2051,27 +1919,27 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
           BaseMessages.getString( PKG, "MailDialog.Fields.ContentID.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
           false ), };
 
-    colinf[0].setUsingVariables( true );
-    colinf[0].setToolTip( BaseMessages.getString( PKG, "MailDialog.Fields.Image.Tooltip" ) );
-    colinf[1].setUsingVariables( true );
-    colinf[1].setToolTip( BaseMessages.getString( PKG, "MailDialog.Fields.ContentID.Tooltip" ) );
+    colInf[ 0 ].setUsingVariables( true );
+    colInf[ 0 ].setToolTip( BaseMessages.getString( PKG, "MailDialog.Fields.Image.Tooltip" ) );
+    colInf[ 1 ].setUsingVariables( true );
+    colInf[ 1 ].setToolTip( BaseMessages.getString( PKG, "MailDialog.Fields.ContentID.Tooltip" ) );
 
     wFields =
       new TableView(
-        transMeta, wembeddedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
+        transMeta, wEmbeddedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colInf, fieldsRows, lsMod,
         props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( wlFields, margin );
-    fdFields.right = new FormAttachment( wbeImageFilename, -margin );
+    fdFields.right = new FormAttachment( wbEditImageFilename, -margin );
     fdFields.bottom = new FormAttachment( 100, -margin );
     wFields.setLayoutData( fdFields );
 
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFields.add( new String[] { wImageFilename.getText(), wContentID.getText() } );
+        wFields.add( wImageFilename.getText(), wContentID.getText() );
         wImageFilename.setText( "" );
         wContentID.setText( "" );
         wFields.removeEmptyRows();
@@ -2079,11 +1947,11 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
         wFields.optWidth( true );
       }
     };
-    wbaImageFilename.addSelectionListener( selA );
+    wbAddImageFilename.addSelectionListener( selA );
     wImageFilename.addSelectionListener( selA );
 
     // Delete files from the list of files...
-    wbdImageFilename.addSelectionListener( new SelectionAdapter() {
+    wbDeleteImageFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         int[] idx = wFields.getSelectionIndices();
         wFields.remove( idx );
@@ -2093,7 +1961,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     } );
 
     // Edit the selected file & remove from the list...
-    wbeImageFilename.addSelectionListener( new SelectionAdapter() {
+    wbEditImageFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
@@ -2107,21 +1975,21 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       }
     } );
 
-    fdembeddedComp = new FormData();
-    fdembeddedComp.left = new FormAttachment( 0, 0 );
-    fdembeddedComp.top = new FormAttachment( 0, 0 );
-    fdembeddedComp.right = new FormAttachment( 100, 0 );
-    fdembeddedComp.bottom = new FormAttachment( 100, 0 );
-    wembeddedComp.setLayoutData( wembeddedComp );
+    FormData fdEmbeddedComp = new FormData();
+    fdEmbeddedComp.left = new FormAttachment( 0, 0 );
+    fdEmbeddedComp.top = new FormAttachment( 0, 0 );
+    fdEmbeddedComp.right = new FormAttachment( 100, 0 );
+    fdEmbeddedComp.bottom = new FormAttachment( 100, 0 );
+    wEmbeddedComp.setLayoutData( wEmbeddedComp );
 
-    wembeddedComp.layout();
-    wembeddedTab.setControl( wembeddedComp );
+    wEmbeddedComp.layout();
+    wEmbeddedTab.setControl( wEmbeddedComp );
 
     // ///////////////////////////////////////////////////////////
     // / END OF embedded images TAB
     // ///////////////////////////////////////////////////////////
 
-    fdTabFolder = new FormData();
+    FormData fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
     fdTabFolder.top = new FormAttachment( wStepname, margin );
     fdTabFolder.right = new FormAttachment( 100, 0 );
@@ -2137,16 +2005,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     setButtonPositions( new Button[] { wOK, wCancel }, margin, wTabFolder );
 
     // Add listeners
-    lsCancel = new Listener() {
-      public void handleEvent( Event e ) {
-        cancel();
-      }
-    };
-    lsOK = new Listener() {
-      public void handleEvent( Event e ) {
-        ok();
-      }
-    };
+    lsCancel = e -> cancel();
+    lsOK = e -> ok();
 
     wCancel.addListener( SWT.Selection, lsCancel );
     wOK.addListener( SWT.Selection, lsOK );
@@ -2170,7 +2030,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     setSize();
 
     getData();
-    ActiveisFileDynamic();
+    activeIsFileDynamic();
     SetEnabledEncoding();
     activeUsePriority();
     setDynamicZip();
@@ -2197,181 +2057,181 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
   private void setZip() {
     wZipFilename.setEnabled( wZipFiles.getSelection() );
     wZipSizeCondition.setEnabled( wZipFiles.getSelection() );
-    wlisZipFileDynamic.setEnabled( wZipFiles.getSelection() );
+    wlIsZipFileDynamic.setEnabled( wZipFiles.getSelection() );
     wisZipFileDynamic.setEnabled( wZipFiles.getSelection() );
     setDynamicZip();
   }
 
-  private void ActiveisFileDynamic() {
-    wlDynamicFilenameField.setEnabled( wisFileDynamic.getSelection() );
-    wDynamicFilenameField.setEnabled( wisFileDynamic.getSelection() );
-    wlDynamicWildcardField.setEnabled( wisFileDynamic.getSelection() );
-    wDynamicWildcardField.setEnabled( wisFileDynamic.getSelection() );
-    wWildcard.setEnabled( !wisFileDynamic.getSelection() );
-    wlWildcard.setEnabled( !wisFileDynamic.getSelection() );
-    wSourceFileFoldername.setEnabled( !wisFileDynamic.getSelection() );
-    wlSourceFileFoldername.setEnabled( !wisFileDynamic.getSelection() );
-    wbFileFoldername.setEnabled( !wisFileDynamic.getSelection() );
-    wbSourceFolder.setEnabled( !wisFileDynamic.getSelection() );
+  private void activeIsFileDynamic() {
+    wlDynamicFilenameField.setEnabled( wIsFileDynamic.getSelection() );
+    wDynamicFilenameField.setEnabled( wIsFileDynamic.getSelection() );
+    wlDynamicWildcardField.setEnabled( wIsFileDynamic.getSelection() );
+    wDynamicWildcardField.setEnabled( wIsFileDynamic.getSelection() );
+    wWildcard.setEnabled( !wIsFileDynamic.getSelection() );
+    wlWildcard.setEnabled( !wIsFileDynamic.getSelection() );
+    wSourceFileFolderName.setEnabled( !wIsFileDynamic.getSelection() );
+    wlSourceFileFolderName.setEnabled( !wIsFileDynamic.getSelection() );
+    wbFileFolderName.setEnabled( !wIsFileDynamic.getSelection() );
+    wbSourceFolder.setEnabled( !wIsFileDynamic.getSelection() );
   }
 
   private void getPreviousFields() {
     try {
-      if ( !getpreviousFields ) {
-        getpreviousFields = true;
+      if ( !getPreviousFields ) {
+        getPreviousFields = true;
+
         String destination = null;
         if ( wDestination != null ) {
           destination = wDestination.getText();
+          wDestination.removeAll();
         }
-        wDestination.removeAll();
 
-        String destinationcc = null;
+        String destinationCc = null;
         if ( wDestinationCc != null ) {
-          destinationcc = wDestinationCc.getText();
+          destinationCc = wDestinationCc.getText();
+          wDestinationCc.removeAll();
         }
-        wDestinationCc.removeAll();
 
-        String destinationbcc = null;
-        if ( wDestinationBCc != null ) {
-          destinationbcc = wDestinationBCc.getText();
+        String destinationBcc = null;
+        if ( wDestinationBcc != null ) {
+          destinationBcc = wDestinationBcc.getText();
+          wDestinationBcc.removeAll();
         }
-        wDestinationBCc.removeAll();
 
-        String replyToaddress = null;
+        String replyToAddress = null;
         if ( wReplyToAddresses != null ) {
-          replyToaddress = wReplyToAddresses.getText();
+          replyToAddress = wReplyToAddresses.getText();
+          wReplyToAddresses.removeAll();
         }
-        wReplyToAddresses.removeAll();
 
-        String replyname = null;
+        String replyName = null;
         if ( wReplyName != null ) {
-          replyname = wReplyName.getText();
+          replyName = wReplyName.getText();
+          wReplyName.removeAll();
         }
-        wReplyName.removeAll();
 
-        String replyaddress = null;
+        String replyAddress = null;
         if ( wReply != null ) {
-          replyaddress = wReply.getText();
+          replyAddress = wReply.getText();
+          wReply.removeAll();
         }
-        wReply.removeAll();
 
         String person = null;
         if ( wPerson != null ) {
           person = wPerson.getText();
+          wPerson.removeAll();
         }
-        wPerson.removeAll();
 
         String phone = null;
         if ( wPhone != null ) {
           phone = wPhone.getText();
+          wPhone.removeAll();
         }
-        wPhone.removeAll();
 
-        String servername = null;
+        String serverName = null;
         if ( wServer != null ) {
-          servername = wServer.getText();
+          serverName = wServer.getText();
+          wServer.removeAll();
         }
-        wServer.removeAll();
 
         String port = null;
         if ( wPort != null ) {
           port = wPort.getText();
+          wPort.removeAll();
         }
-        wPort.removeAll();
 
-        String authuser = null;
-        String authpass = null;
-
+        String authUser = null;
         if ( wAuthUser != null ) {
-          authuser = wAuthUser.getText();
+          authUser = wAuthUser.getText();
+          wAuthUser.removeAll();
         }
-        wAuthUser.removeAll();
+
+        String authPass = null;
         if ( wAuthPass != null ) {
-          authpass = wAuthPass.getText();
+          authPass = wAuthPass.getText();
+          wAuthPass.removeAll();
         }
-        wAuthPass.removeAll();
 
         String subject = null;
         if ( wSubject != null ) {
           subject = wSubject.getText();
+          wSubject.removeAll();
         }
-        wSubject.removeAll();
 
         String comment = null;
         if ( wComment != null ) {
           comment = wComment.getText();
+          wComment.removeAll();
         }
-        wComment.removeAll();
 
-        String dynamFile = null;
-        String dynamWildcard = null;
-
+        String dynamicFile = null;
         if ( wDynamicFilenameField != null ) {
-          dynamFile = wDynamicFilenameField.getText();
+          dynamicFile = wDynamicFilenameField.getText();
+          wDynamicFilenameField.removeAll();
         }
-        wDynamicFilenameField.removeAll();
+
+        String dynamicWildcard = null;
         if ( wDynamicWildcardField != null ) {
-          dynamWildcard = wDynamicWildcardField.getText();
+          dynamicWildcard = wDynamicWildcardField.getText();
+          wDynamicWildcardField.removeAll();
         }
-        wDynamicWildcardField.removeAll();
 
-        String dynamZipFile = null;
-
+        String dynamicZipFile = null;
         if ( wDynamicZipFileField != null ) {
-          dynamZipFile = wDynamicZipFileField.getText();
+          dynamicZipFile = wDynamicZipFileField.getText();
+          wDynamicZipFileField.removeAll();
         }
-        wDynamicZipFileField.removeAll();
 
-        String attachcontent = null;
-        if ( wattachContentField != null ) {
-          attachcontent = wattachContentField.getText();
+        String attachContent = null;
+        if ( wAttachContentField != null ) {
+          attachContent = wAttachContentField.getText();
+          wAttachContentField.removeAll();
         }
-        wattachContentField.removeAll();
 
-        String attachcontentfilename = null;
-        if ( wattachContentFileNameField != null ) {
-          attachcontentfilename = wattachContentFileNameField.getText();
+        String attachContentFileName = null;
+        if ( wAttachContentFileNameField != null ) {
+          attachContentFileName = wAttachContentFileNameField.getText();
+          wAttachContentFileNameField.removeAll();
         }
-        wattachContentFileNameField.removeAll();
 
         RowMetaInterface r = transMeta.getPrevStepFields( stepname );
         if ( r != null ) {
-          String[] fieldnames = r.getFieldNames();
-          wDestination.setItems( fieldnames );
-          wDestinationCc.setItems( fieldnames );
-          wDestinationBCc.setItems( fieldnames );
-          wReplyName.setItems( fieldnames );
-          wReply.setItems( fieldnames );
-          wPerson.setItems( fieldnames );
-          wPhone.setItems( fieldnames );
-          wServer.setItems( fieldnames );
-          wPort.setItems( fieldnames );
-          wAuthUser.setItems( fieldnames );
-          wAuthPass.setItems( fieldnames );
-          wSubject.setItems( fieldnames );
-          wComment.setItems( fieldnames );
-          wDynamicFilenameField.setItems( fieldnames );
-          wDynamicWildcardField.setItems( fieldnames );
-          wDynamicZipFileField.setItems( fieldnames );
-          wReplyToAddresses.setItems( fieldnames );
-          wattachContentField.setItems( fieldnames );
-          wattachContentFileNameField.setItems( fieldnames );
-
+          String[] fieldNames = r.getFieldNames();
+          wDestination.setItems( fieldNames );
+          wDestinationCc.setItems( fieldNames );
+          wDestinationBcc.setItems( fieldNames );
+          wReplyName.setItems( fieldNames );
+          wReply.setItems( fieldNames );
+          wPerson.setItems( fieldNames );
+          wPhone.setItems( fieldNames );
+          wServer.setItems( fieldNames );
+          wPort.setItems( fieldNames );
+          wAuthUser.setItems( fieldNames );
+          wAuthPass.setItems( fieldNames );
+          wSubject.setItems( fieldNames );
+          wComment.setItems( fieldNames );
+          wDynamicFilenameField.setItems( fieldNames );
+          wDynamicWildcardField.setItems( fieldNames );
+          wDynamicZipFileField.setItems( fieldNames );
+          wReplyToAddresses.setItems( fieldNames );
+          wAttachContentField.setItems( fieldNames );
+          wAttachContentFileNameField.setItems( fieldNames );
         }
+
         if ( destination != null ) {
           wDestination.setText( destination );
         }
-        if ( destinationcc != null ) {
-          wDestinationCc.setText( destinationcc );
+        if ( destinationCc != null ) {
+          wDestinationCc.setText( destinationCc );
         }
-        if ( destinationbcc != null ) {
-          wDestinationBCc.setText( destinationbcc );
+        if ( destinationBcc != null ) {
+          wDestinationBcc.setText( destinationBcc );
         }
-        if ( replyname != null ) {
-          wReplyName.setText( replyname );
+        if ( replyName != null ) {
+          wReplyName.setText( replyName );
         }
-        if ( replyaddress != null ) {
-          wReply.setText( replyaddress );
+        if ( replyAddress != null ) {
+          wReply.setText( replyAddress );
         }
         if ( person != null ) {
           wPerson.setText( person );
@@ -2379,17 +2239,17 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
         if ( phone != null ) {
           wPhone.setText( phone );
         }
-        if ( servername != null ) {
-          wServer.setText( servername );
+        if ( serverName != null ) {
+          wServer.setText( serverName );
         }
         if ( port != null ) {
           wPort.setText( port );
         }
-        if ( authuser != null ) {
-          wAuthUser.setText( authuser );
+        if ( authUser != null ) {
+          wAuthUser.setText( authUser );
         }
-        if ( authpass != null ) {
-          wAuthPass.setText( authpass );
+        if ( authPass != null ) {
+          wAuthPass.setText( authPass );
         }
         if ( subject != null ) {
           wSubject.setText( subject );
@@ -2397,26 +2257,25 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
         if ( comment != null ) {
           wComment.setText( comment );
         }
-        if ( dynamFile != null ) {
-          wDynamicFilenameField.setText( dynamFile );
+        if ( dynamicFile != null ) {
+          wDynamicFilenameField.setText( dynamicFile );
         }
-        if ( dynamWildcard != null ) {
-          wDynamicWildcardField.setText( dynamWildcard );
+        if ( dynamicWildcard != null ) {
+          wDynamicWildcardField.setText( dynamicWildcard );
         }
-        if ( dynamZipFile != null ) {
-          wDynamicZipFileField.setText( dynamZipFile );
+        if ( dynamicZipFile != null ) {
+          wDynamicZipFileField.setText( dynamicZipFile );
         }
-        if ( replyToaddress != null ) {
-          wReplyToAddresses.setText( replyToaddress );
+        if ( replyToAddress != null ) {
+          wReplyToAddresses.setText( replyToAddress );
         }
-        if ( attachcontent != null ) {
-          wattachContentField.setText( attachcontent );
+        if ( attachContent != null ) {
+          wAttachContentField.setText( attachContent );
         }
-        if ( attachcontentfilename != null ) {
-          wattachContentFileNameField.setText( attachcontentfilename );
+        if ( attachContentFileName != null ) {
+          wAttachContentFileNameField.setText( attachContentFileName );
         }
       }
-
     } catch ( KettleException ke ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "MailDialog.FailedToGetFields.DialogTitle" ), BaseMessages
@@ -2439,15 +2298,14 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlImageFilename.setEnabled( wUseHTML.getSelection() );
     wlImageFilename.setEnabled( wUseHTML.getSelection() );
     wbImageFilename.setEnabled( wUseHTML.getSelection() );
-    wbaImageFilename.setEnabled( wUseHTML.getSelection() );
+    wbAddImageFilename.setEnabled( wUseHTML.getSelection() );
     wImageFilename.setEnabled( wUseHTML.getSelection() );
     wlContentID.setEnabled( wUseHTML.getSelection() );
     wContentID.setEnabled( wUseHTML.getSelection() );
-    wbdImageFilename.setEnabled( wUseHTML.getSelection() );
-    wbeImageFilename.setEnabled( wUseHTML.getSelection() );
+    wbDeleteImageFilename.setEnabled( wUseHTML.getSelection() );
+    wbEditImageFilename.setEnabled( wUseHTML.getSelection() );
     wlFields.setEnabled( wUseHTML.getSelection() );
     wFields.setEnabled( wUseHTML.getSelection() );
-
   }
 
   protected void setSecureConnectiontype() {
@@ -2461,9 +2319,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       gotEncodings = true;
 
       wEncoding.removeAll();
-      ArrayList<Charset> values = new ArrayList<Charset>( Charset.availableCharsets().values() );
-      for ( int i = 0; i < values.size(); i++ ) {
-        Charset charSet = values.get( i );
+      ArrayList<Charset> values = new ArrayList<>( Charset.availableCharsets().values() );
+      for ( Charset charSet : values ) {
         wEncoding.add( charSet.displayName() );
       }
 
@@ -2478,7 +2335,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
 
   protected void setUseAuth() {
     String selectedAuth = wUseAuth.getText();
-    if (selectedAuth.equals( MailMeta.AUTENTICATION_NONE ) ) {
+
+    if ( MailMeta.AUTENTICATION_NONE.equals( selectedAuth ) ) {
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
       wlAuthUser.setEnabled( false );
@@ -2486,6 +2344,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wlAuthPass.setEnabled( false );
       wAuthPass.setEnabled( false );
       wAuthScope.setEnabled( false );
+      wlGrantType.setEnabled( false );
       grantType.setEnabled( false );
       wAuthTokenUrl.setEnabled( false );
       wAuthorizationCode.setEnabled( false );
@@ -2495,7 +2354,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wUseSecAuth.setEnabled( false );
       wlSecureConnectionType.setEnabled( false );
       wSecureConnectionType.setEnabled( false );
-    } else if ( selectedAuth.equals( MailMeta.AUTENTICATION_BASIC ) ) {
+    } else if ( MailMeta.AUTENTICATION_BASIC.equals( selectedAuth ) ) {
       wAuthClientId.setEnabled( false );
       wAuthSecretKey.setEnabled( false );
       wlAuthUser.setEnabled( true );
@@ -2503,6 +2362,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wlAuthPass.setEnabled( true );
       wAuthPass.setEnabled( true );
       wAuthScope.setEnabled( false );
+      wlGrantType.setEnabled( false );
       grantType.setEnabled( false );
       wAuthTokenUrl.setEnabled( false );
       wAuthorizationCode.setEnabled( false );
@@ -2511,25 +2371,27 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wlUseSecAuth.setEnabled( true );
       wUseSecAuth.setEnabled( true );
       setSecureConnectiontype();
-    } else if ( selectedAuth.equals( MailMeta.AUTENTICATION_OAUTH ) ) {
+    } else if ( MailMeta.AUTENTICATION_OAUTH.equals( selectedAuth ) ) {
+      wAuthClientId.setEnabled( true );
+      wAuthSecretKey.setEnabled( true );
       wlAuthUser.setEnabled( true );
       wAuthUser.setEnabled( true );
       wlAuthPass.setEnabled( false );
       wAuthPass.setEnabled( false );
-      wAuthClientId.setEnabled( true );
-      wAuthSecretKey.setEnabled( true );
       wAuthScope.setEnabled( true );
+      wlGrantType.setEnabled( true );
       grantType.setEnabled( true );
       wlUseSecAuth.setEnabled( true );
       wUseSecAuth.setEnabled( true );
       setUseGrantType();
-    }
-    else {
+    } else {
       setSecureConnectiontype();
     }
   }
+
   protected void setUseGrantType() {
     String selectedAuth = grantType.getText();
+
     if ( selectedAuth.equals( MailMeta.GRANTTYPE_CLIENTCREDENTIALS ) ) {
       wAuthTokenUrl.setEnabled( true );
       wAuthorizationCode.setEnabled( false );
@@ -2545,23 +2407,21 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wAuthorizationCode.setEnabled( true );
       wRedirectUri.setEnabled( true );
       wAuthRefreshToken.setEnabled( false );
-    }
-    else {
+    } else {
       setSecureConnectiontype();
     }
-
   }
 
   /**
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    wisattachContentField.setSelection( input.isAttachContentFromField() );
+    wIsAttachContentField.setSelection( input.isAttachContentFromField() );
     if ( input.getAttachContentField() != null ) {
-      wattachContentField.setText( input.getAttachContentField() );
+      wAttachContentField.setText( input.getAttachContentField() );
     }
     if ( input.getAttachContentFileNameField() != null ) {
-      wattachContentFileNameField.setText( input.getAttachContentFileNameField() );
+      wAttachContentFileNameField.setText( input.getAttachContentFileNameField() );
     }
     if ( input.getDestination() != null ) {
       wDestination.setText( input.getDestination() );
@@ -2570,7 +2430,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
       wDestinationCc.setText( input.getDestinationCc() );
     }
     if ( input.getDestinationBCc() != null ) {
-      wDestinationBCc.setText( input.getDestinationBCc() );
+      wDestinationBcc.setText( input.getDestinationBCc() );
     }
     if ( input.getServer() != null ) {
       wServer.setText( input.getServer() );
@@ -2598,7 +2458,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     }
 
     wAddDate.setSelection( input.getIncludeDate() );
-    wisFileDynamic.setSelection( input.isDynamicFilename() );
+    wIsFileDynamic.setSelection( input.isDynamicFilename() );
     if ( input.getDynamicFieldname() != null ) {
       wDynamicFilenameField.setText( input.getDynamicFieldname() );
     }
@@ -2607,14 +2467,14 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     }
 
     if ( input.getSourceFileFoldername() != null ) {
-      wSourceFileFoldername.setText( input.getSourceFileFoldername() );
+      wSourceFileFolderName.setText( input.getSourceFileFoldername() );
     }
 
     if ( input.getSourceWildcard() != null ) {
       wWildcard.setText( input.getSourceWildcard() );
     }
 
-    wincludeSubFolders.setSelection( input.isIncludeSubFolders() );
+    wIncludeSubFolders.setSelection( input.isIncludeSubFolders() );
 
     wZipFiles.setSelection( input.isZipFiles() );
     if ( input.getZipFilename() != null ) {
@@ -2671,7 +2531,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wUseHTML.setSelection( input.isUseHTML() );
 
     if ( input.getEncoding() != null ) {
-      wEncoding.setText( "" + input.getEncoding() );
+      wEncoding.setText( input.getEncoding() );
     } else {
       wEncoding.setText( "UTF-8" );
     }
@@ -2761,12 +2621,12 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     }
 
     stepname = wStepname.getText(); // return value
-    input.setAttachContentFromField( wisattachContentField.getSelection() );
-    input.setAttachContentField( wattachContentField.getText() );
-    input.setAttachContentFileNameField( wattachContentFileNameField.getText() );
+    input.setAttachContentFromField( wIsAttachContentField.getSelection() );
+    input.setAttachContentField( wAttachContentField.getText() );
+    input.setAttachContentFileNameField( wAttachContentFileNameField.getText() );
     input.setDestination( wDestination.getText() );
     input.setDestinationCc( wDestinationCc.getText() );
-    input.setDestinationBCc( wDestinationBCc.getText() );
+    input.setDestinationBCc( wDestinationBcc.getText() );
     input.setServer( wServer.getText() );
     input.setPort( wPort.getText() );
     input.setReplyAddress( wReply.getText() );
@@ -2776,15 +2636,15 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     input.setContactPhone( wPhone.getText() );
     input.setComment( wComment.getText() );
 
-    input.setIncludeSubFolders( wincludeSubFolders.getSelection() );
+    input.setIncludeSubFolders( wIncludeSubFolders.getSelection() );
     input.setIncludeDate( wAddDate.getSelection() );
-    input.setisDynamicFilename( wisFileDynamic.getSelection() );
+    input.setisDynamicFilename( wIsFileDynamic.getSelection() );
     input.setDynamicFieldname( wDynamicFilenameField.getText() );
     input.setDynamicWildcard( wDynamicWildcardField.getText() );
 
     input.setDynamicZipFilenameField( wDynamicZipFileField.getText() );
 
-    input.setSourceFileFoldername( wSourceFileFoldername.getText() );
+    input.setSourceFileFoldername( wSourceFileFolderName.getText() );
     input.setSourceWildcard( wWildcard.getText() );
 
     input.setZipLimitSize( wZipSizeCondition.getText() );
@@ -2845,18 +2705,19 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     input.setSecureConnectionType( wSecureConnectionType.getText() );
     input.setReplyToAddresses( wReplyToAddresses.getText() );
 
-    int nritems = wFields.nrNonEmpty();
+    int nrItems = wFields.nrNonEmpty();
     int nr = 0;
-    for ( int i = 0; i < nritems; i++ ) {
+    for ( int i = 0; i < nrItems; i++ ) {
       String arg = wFields.getNonEmpty( i ).getText( 1 );
-      if ( arg != null && arg.length() != 0 ) {
+      if ( arg != null && !arg.isEmpty() ) {
         nr++;
       }
     }
+
     input.allocate( nr );
 
     nr = 0;
-    for ( int i = 0; i < nritems; i++ ) {
+    for ( int i = 0; i < nrItems; i++ ) {
       String image = wFields.getNonEmpty( i ).getText( 1 );
       String id = wFields.getNonEmpty( i ).getText( 2 );
       input.setEmbeddedImage( i, image );
@@ -2868,11 +2729,11 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
   }
 
   private void activeISAttachContentField() {
-    wOriginFiles.setEnabled( !wisattachContentField.getSelection() );
-    wZipGroup.setEnabled( !wisattachContentField.getSelection() );
-    wlattachContentField.setEnabled( wisattachContentField.getSelection() );
-    wattachContentField.setEnabled( wisattachContentField.getSelection() );
-    wlattachContentFileNameField.setEnabled( wisattachContentField.getSelection() );
-    wattachContentFileNameField.setEnabled( wisattachContentField.getSelection() );
+    wOriginFiles.setEnabled( !wIsAttachContentField.getSelection() );
+    wZipGroup.setEnabled( !wIsAttachContentField.getSelection() );
+    wlAttachContentField.setEnabled( wIsAttachContentField.getSelection() );
+    wAttachContentField.setEnabled( wIsAttachContentField.getSelection() );
+    wlAttachContentFileNameField.setEnabled( wIsAttachContentField.getSelection() );
+    wAttachContentFileNameField.setEnabled( wIsAttachContentField.getSelection() );
   }
 }

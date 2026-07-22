@@ -29,7 +29,6 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -43,6 +42,7 @@ import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -75,6 +75,57 @@ import java.util.List;
 public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private static final String TAG_SERVERNAME = "servername";
+  private static final String TAG_USE_BATCH = "useBatch";
+  private static final String TAG_BATCH_SIZE = "batchSize";
+  private static final String TAG_START_MSG = "startMsg";
+  private static final String TAG_END_MSG = "endMsg";
+  private static final String TAG_STOP_ON_ERROR = "stopOnError";
+  private static final String TAG_USERNAME = "username";
+  private static final String TAG_USE_AUTH = "use_auth";
+  private static final String TAG_AUTH_CLIENT_ID = "auth_clientId";
+  private static final String TAG_AUTH_SECRET_KEY = "auth_secretKey";
+  private static final String TAG_AUTH_SCOPE = "auth_scope";
+  private static final String TAG_AUTH_TOKEN_URL = "auth_tokenUrl";
+  private static final String TAG_AUTH_AUTHORIZATION_CODE = "auth_authorizationCode";
+  private static final String TAG_REDIRECT_URI = "redirectURI";
+  private static final String TAG_REFRESH_TOKEN = "refreshToken";
+  private static final String TAG_USE_GRANT_TYPE = "use_grantType";
+  private static final String TAG_PASSWORD = "password";
+  private static final String TAG_USE_SSL = "usessl";
+  private static final String TAG_SSL_PORT = "sslport";
+  private static final String TAG_RETRIEVE_MAILS = "retrievemails";
+  private static final String TAG_FIRST_MAILS = "firstmails";
+  private static final String TAG_DELETE = "delete";
+  private static final String TAG_PROTOCOL = "protocol";
+  private static final String TAG_VALUE_IMAP_LIST = "valueimaplist";
+  private static final String TAG_IMAP_FIRST_MAILS = "imapfirstmails";
+  private static final String TAG_IMAP_FOLDER = "imapfolder";
+  private static final String TAG_SENDER_SEARCH = "sendersearch";
+  private static final String TAG_NOT_TERM_SENDER_SEARCH = "nottermsendersearch";
+  private static final String TAG_RECIPIENT_SEARCH = "recipientsearch";
+  private static final String TAG_NOT_TERM_RECIPIENT_SEARCH = "notTermRecipientSearch";
+  private static final String TAG_SUBJECT_SEARCH = "subjectsearch";
+  private static final String TAG_NOT_TERM_SUBJECT_SEARCH = "nottermsubjectsearch";
+  private static final String TAG_CONDITION_RECEIVED_DATE = "conditionreceiveddate";
+  private static final String TAG_NOT_TERM_RECEIVED_DATE_SEARCH = "nottermreceiveddatesearch";
+  private static final String TAG_RECEIVED_DATE_1 = "receivedDate1";
+  private static final String TAG_RECEIVED_DATE_2 = "receivedDate2";
+  private static final String TAG_INCLUDE_SUBFOLDERS = "includesubfolders";
+  private static final String TAG_USE_DYNAMIC_FOLDER = "usedynamicfolder";
+  private static final String TAG_FOLDER_FIELD = "folderfield";
+  private static final String TAG_PROXY_USERNAME = "proxyusername";
+  private static final String TAG_USE_PROXY = "useproxy";
+  private static final String TAG_ROW_LIMIT = "rowlimit";
+  private static final String TAG_FIELDS = "fields";
+  private static final String TAG_FIELD = "field";
+  private static final String TAG_NAME = "name";
+  private static final String TAG_COLUMN = "column";
+
+  private static final String STR_8_SPACES = "        ";
+  private static final String STR_6_SPACES = "      ";
+  private static final String STR_Y = "Y";
+
   public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
   public static int DEFAULT_BATCH_SIZE = 500;
 
@@ -82,21 +133,19 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public int valueimaplist;
 
-  private String servername;
-  private String username;
+  private String serverName;
+  private String userName;
   private String password;
   protected VariableSpace variables = new Variables();
   public static String AUTENTICATION_OAUTH = "OAuth";
 
-  public static  String AUTENTICATION_BASIC = "Basic";
+  public static String AUTENTICATION_BASIC = "Basic";
 
-  public static String AUTENTICATION_NONE= "No Auth";
+  public static String GRANTTYPE_CLIENTCREDENTIALS = "client_credentials";
 
-  public static String GRANTTYPE_CLIENTCREDENTIALS="client_credentials";
+  public static String GRANTTYPE_AUTHORIZATION_CODE = "authorization_code";
 
-  public static String GRANTTYPE_AUTHORIZATION_CODE="authorization_code";
-
-  public static String GRANTTYPE_REFRESH_TOKEN="refresh_token";
+  public static String GRANTTYPE_REFRESH_TOKEN = "refresh_token";
 
   private String clientId;
 
@@ -115,14 +164,14 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String grant_type;
 
   private String usingAuthentication;
-  private boolean usessl;
-  private String sslport;
-  private String firstmails;
+  private boolean useSsl;
+  private String sslPort;
+  private String firstMails;
   public int retrievemails;
   private boolean delete;
   private String protocol;
-  private String imapfirstmails;
-  private String imapfolder;
+  private String imapFirstMails;
+  private String imapFolder;
   // search term
   private String senderSearch;
   private boolean notTermSenderSearch;
@@ -133,12 +182,12 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private boolean notTermSubjectSearch;
   private boolean notTermRecipientSearch;
   private boolean notTermReceivedDateSearch;
-  private boolean includesubfolders;
-  private boolean useproxy;
-  private String proxyusername;
-  private String folderfield;
-  private boolean usedynamicfolder;
-  private String rowlimit;
+  private boolean includeSubFolders;
+  private boolean useProxy;
+  private String proxyUserName;
+  private String folderField;
+  private boolean useDynamicFolder;
+  private String rowLimit;
 
   /** The fields ... */
   private MailInputField[] inputFields;
@@ -160,8 +209,8 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     readData( stepnode );
   }
 
-  public void allocate( int nrfields ) {
-    inputFields = new MailInputField[nrfields];
+  public void allocate( int nrFields ) {
+    inputFields = new MailInputField[ nrFields ];
   }
 
   @Override
@@ -179,86 +228,84 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   private void readData( Node stepnode ) {
-    servername = XMLHandler.getTagValue( stepnode, "servername" );
-    username = XMLHandler.getTagValue( stepnode, "username" );
-    usingAuthentication = Const.NVL( XMLHandler.getTagValue( stepnode, "use_auth" ), AUTENTICATION_BASIC );
-    clientId = XMLHandler.getTagValue( stepnode, "auth_clientId" );
-    secretKey = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "auth_secretKey" ) );
-    scope = XMLHandler.getTagValue( stepnode, "auth_scope" );
-    tokenUrl = XMLHandler.getTagValue( stepnode, "auth_tokenUrl" );
-    authorization_code = XMLHandler.getTagValue( stepnode, "auth_authorizationCode" );
-    redirectUri = XMLHandler.getTagValue( stepnode, "redirectURI" );
-    refresh_token = XMLHandler.getTagValue( stepnode, "refreshToken" );
-    grant_type = XMLHandler.getTagValue( stepnode, "use_grantType" );
-    password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "password" ) );
-    usessl = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "usessl" ) );
-    sslport = XMLHandler.getTagValue( stepnode, "sslport" );
-    retrievemails = Const.toInt( XMLHandler.getTagValue( stepnode, "retrievemails" ), -1 );
-    firstmails = XMLHandler.getTagValue( stepnode, "firstmails" );
-    delete = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "delete" ) );
+    serverName = XMLHandler.getTagValue( stepnode, TAG_SERVERNAME );
+    userName = XMLHandler.getTagValue( stepnode, TAG_USERNAME );
+    setUsingAuthentication( XMLHandler.getTagValue( stepnode, TAG_USE_AUTH ) );
+    clientId = XMLHandler.getTagValue( stepnode, TAG_AUTH_CLIENT_ID );
+    secretKey = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, TAG_AUTH_SECRET_KEY ) );
+    scope = XMLHandler.getTagValue( stepnode, TAG_AUTH_SCOPE );
+    tokenUrl = XMLHandler.getTagValue( stepnode, TAG_AUTH_TOKEN_URL );
+    authorization_code = XMLHandler.getTagValue( stepnode, TAG_AUTH_AUTHORIZATION_CODE );
+    redirectUri = XMLHandler.getTagValue( stepnode, TAG_REDIRECT_URI );
+    refresh_token = XMLHandler.getTagValue( stepnode, TAG_REFRESH_TOKEN );
+    grant_type = XMLHandler.getTagValue( stepnode, TAG_USE_GRANT_TYPE );
+    password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, TAG_PASSWORD ) );
+    useSsl = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_USE_SSL ) );
+    sslPort = XMLHandler.getTagValue( stepnode, TAG_SSL_PORT );
+    retrievemails = Const.toInt( XMLHandler.getTagValue( stepnode, TAG_RETRIEVE_MAILS ), -1 );
+    firstMails = XMLHandler.getTagValue( stepnode, TAG_FIRST_MAILS );
+    delete = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_DELETE ) );
 
-    protocol = Const.NVL( XMLHandler.getTagValue( stepnode, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
-    valueimaplist =
-      MailConnectionMeta.getValueImapListByCode( Const.NVL(
-        XMLHandler.getTagValue( stepnode, "valueimaplist" ), "" ) );
-    imapfirstmails = XMLHandler.getTagValue( stepnode, "imapfirstmails" );
-    imapfolder = XMLHandler.getTagValue( stepnode, "imapfolder" );
+    protocol = Const.NVL( XMLHandler.getTagValue( stepnode, TAG_PROTOCOL ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
+    valueimaplist = MailConnectionMeta.getValueImapListByCode( Const.NVL(
+        XMLHandler.getTagValue( stepnode, TAG_VALUE_IMAP_LIST ), "" ) );
+    imapFirstMails = XMLHandler.getTagValue( stepnode, TAG_IMAP_FIRST_MAILS );
+    imapFolder = XMLHandler.getTagValue( stepnode, TAG_IMAP_FOLDER );
     // search term
-    senderSearch = XMLHandler.getTagValue( stepnode, "sendersearch" );
-    notTermSenderSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "nottermsendersearch" ) );
-    recipientSearch = XMLHandler.getTagValue( stepnode, "recipientsearch" );
-    notTermRecipientSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "notTermRecipientSearch" ) );
-    subjectSearch = XMLHandler.getTagValue( stepnode, "subjectsearch" );
-    notTermSubjectSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "nottermsubjectsearch" ) );
-    conditionReceivedDate =
-      MailConnectionMeta.getConditionByCode( Const.NVL( XMLHandler.getTagValue(
-        stepnode, "conditionreceiveddate" ), "" ) );
+    senderSearch = XMLHandler.getTagValue( stepnode, TAG_SENDER_SEARCH );
+    notTermSenderSearch = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_NOT_TERM_SENDER_SEARCH ) );
+    recipientSearch = XMLHandler.getTagValue( stepnode, TAG_RECIPIENT_SEARCH );
+    notTermRecipientSearch = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_NOT_TERM_RECIPIENT_SEARCH ) );
+    subjectSearch = XMLHandler.getTagValue( stepnode, TAG_SUBJECT_SEARCH );
+    notTermSubjectSearch = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_NOT_TERM_SUBJECT_SEARCH ) );
+    conditionReceivedDate = MailConnectionMeta.getConditionByCode( Const.NVL(
+        XMLHandler.getTagValue( stepnode, TAG_CONDITION_RECEIVED_DATE ), "" ) );
     notTermReceivedDateSearch =
-      "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "nottermreceiveddatesearch" ) );
-    receivedDate1 = XMLHandler.getTagValue( stepnode, "receivedDate1" );
-    receivedDate2 = XMLHandler.getTagValue( stepnode, "receivedDate2" );
-    includesubfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includesubfolders" ) );
-    usedynamicfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "usedynamicfolder" ) );
-    folderfield = XMLHandler.getTagValue( stepnode, "folderfield" );
-    proxyusername = XMLHandler.getTagValue( stepnode, "proxyusername" );
-    useproxy = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "useproxy" ) );
-    useBatch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, Tags.USE_BATCH ) );
+      STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_NOT_TERM_RECEIVED_DATE_SEARCH ) );
+    receivedDate1 = XMLHandler.getTagValue( stepnode, TAG_RECEIVED_DATE_1 );
+    receivedDate2 = XMLHandler.getTagValue( stepnode, TAG_RECEIVED_DATE_2 );
+    includeSubFolders = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_INCLUDE_SUBFOLDERS ) );
+    useDynamicFolder = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_USE_DYNAMIC_FOLDER ) );
+    folderField = XMLHandler.getTagValue( stepnode, TAG_FOLDER_FIELD );
+    proxyUserName = XMLHandler.getTagValue( stepnode, TAG_PROXY_USERNAME );
+    useProxy = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_USE_PROXY ) );
+    useBatch = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_USE_BATCH ) );
     try {
-      batchSize = Integer.parseInt( XMLHandler.getTagValue( stepnode, Tags.BATCH_SIZE ) );
+      batchSize = Integer.parseInt( XMLHandler.getTagValue( stepnode, TAG_BATCH_SIZE ) );
     } catch ( NumberFormatException e ) {
       batchSize = DEFAULT_BATCH_SIZE;
     }
-    start = XMLHandler.getTagValue( stepnode, Tags.START_MSG );
-    end = XMLHandler.getTagValue( stepnode, Tags.END_MSG );
-    stopOnError = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, Tags.STOP_ON_ERROR ) );
+    start = XMLHandler.getTagValue( stepnode, TAG_START_MSG );
+    end = XMLHandler.getTagValue( stepnode, TAG_END_MSG );
+    stopOnError = STR_Y.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, TAG_STOP_ON_ERROR ) );
 
-    rowlimit = XMLHandler.getTagValue( stepnode, "rowlimit" );
-    Node fields = XMLHandler.getSubNode( stepnode, "fields" );
-    int nrFields = XMLHandler.countNodes( fields, "field" );
+    rowLimit = XMLHandler.getTagValue( stepnode, TAG_ROW_LIMIT );
+    Node fields = XMLHandler.getSubNode( stepnode, TAG_FIELDS );
+    int nrFields = XMLHandler.countNodes( fields, TAG_FIELD );
 
     allocate( nrFields );
     for ( int i = 0; i < nrFields; i++ ) {
-      Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
+      Node fnode = XMLHandler.getSubNodeByNr( fields, TAG_FIELD, i );
       inputFields[i] = new MailInputField();
-      inputFields[i].setName( XMLHandler.getTagValue( fnode, "name" ) );
-      inputFields[i].setColumn( MailInputField.getColumnByCode( XMLHandler.getTagValue( fnode, "column" ) ) );
+      inputFields[i].setName( XMLHandler.getTagValue( fnode, TAG_NAME ) );
+      inputFields[i].setColumn( MailInputField.getColumnByCode( XMLHandler.getTagValue( fnode, TAG_COLUMN ) ) );
     }
   }
 
   @Override
   public void setDefault() {
-    servername = null;
-    username = null;
+    serverName = null;
+    userName = null;
     password = null;
-    usessl = false;
-    sslport = null;
+    useSsl = false;
+    sslPort = null;
     retrievemails = 0;
-    firstmails = null;
+    firstMails = null;
     delete = false;
     protocol = MailConnectionMeta.PROTOCOL_STRING_POP3;
-    imapfirstmails = "0";
+    imapFirstMails = "0";
     valueimaplist = MailConnectionMeta.VALUE_IMAP_LIST_ALL;
-    imapfolder = null;
+    imapFolder = null;
     // search term
     senderSearch = null;
     notTermSenderSearch = false;
@@ -269,12 +316,12 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     notTermReceivedDateSearch = false;
     recipientSearch = null;
     subjectSearch = null;
-    includesubfolders = false;
-    useproxy = false;
-    proxyusername = null;
-    folderfield = null;
-    usedynamicfolder = false;
-    rowlimit = "0";
+    includeSubFolders = false;
+    useProxy = false;
+    proxyUserName = null;
+    folderField = null;
+    useDynamicFolder = false;
+    rowLimit = "0";
 
     batchSize = DEFAULT_BATCH_SIZE;
     useBatch = false;
@@ -282,80 +329,72 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     end = null;
     stopOnError = true;
 
-    int nrFields = 0;
-    allocate( nrFields );
-
-    for ( int i = 0; i < nrFields; i++ ) {
-      inputFields[i] = new MailInputField( "field" + ( i + 1 ) );
-    }
-
+    allocate( 0 );
   }
 
   @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
-      servername = rep.getStepAttributeString( id_step, "servername" );
-      username = rep.getStepAttributeString( id_step, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "password" ) );
-      usingAuthentication = Const.NVL( rep.getStepAttributeString( id_step, "use_auth" ), AUTENTICATION_BASIC );
-      grant_type = rep.getStepAttributeString( id_step, "use_grantType" );
-      clientId = rep.getStepAttributeString( id_step, "auth_clientId" );
+      serverName = rep.getStepAttributeString( id_step, TAG_SERVERNAME );
+      userName = rep.getStepAttributeString( id_step, TAG_USERNAME );
+      password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, TAG_PASSWORD ) );
+      usingAuthentication = Const.NVL( rep.getStepAttributeString( id_step, TAG_USE_AUTH ), AUTENTICATION_BASIC );
+      grant_type = rep.getStepAttributeString( id_step, TAG_USE_GRANT_TYPE );
+      clientId = rep.getStepAttributeString( id_step, TAG_AUTH_CLIENT_ID );
       secretKey =
-              Encr.decryptPasswordOptionallyEncrypted(  rep.getStepAttributeString( id_step, "auth_secretKey" ) ) ;
-      scope = rep.getStepAttributeString( id_step, "auth_scope" );
-      tokenUrl = rep.getStepAttributeString( id_step, "auth_tokenUrl" );
-      authorization_code = rep.getStepAttributeString( id_step, "auth_authorizationCode" );
-      redirectUri= rep.getStepAttributeString( id_step, "redirectURI" );
-      refresh_token = rep.getStepAttributeString( id_step, "refreshToken" );
-      usessl = rep.getStepAttributeBoolean( id_step, "usessl" );
-      int intSSLPort = (int) rep.getStepAttributeInteger( id_step, "sslport" );
-      sslport = rep.getStepAttributeString( id_step, "sslport" ); // backward compatible.
-      if ( intSSLPort > 0 && Utils.isEmpty( sslport ) ) {
-        sslport = Integer.toString( intSSLPort );
+              Encr.decryptPasswordOptionallyEncrypted(  rep.getStepAttributeString( id_step, TAG_AUTH_SECRET_KEY ) ) ;
+      scope = rep.getStepAttributeString( id_step, TAG_AUTH_SCOPE );
+      tokenUrl = rep.getStepAttributeString( id_step, TAG_AUTH_TOKEN_URL );
+      authorization_code = rep.getStepAttributeString( id_step, TAG_AUTH_AUTHORIZATION_CODE );
+      redirectUri= rep.getStepAttributeString( id_step, TAG_REDIRECT_URI );
+      refresh_token = rep.getStepAttributeString( id_step, TAG_REFRESH_TOKEN );
+      useSsl = rep.getStepAttributeBoolean( id_step, TAG_USE_SSL );
+      int intSSLPort = (int) rep.getStepAttributeInteger( id_step, TAG_SSL_PORT );
+      sslPort = rep.getStepAttributeString( id_step, TAG_SSL_PORT ); // backward compatible.
+      if ( intSSLPort > 0 && Utils.isEmpty( sslPort ) ) {
+        sslPort = Integer.toString( intSSLPort );
       }
 
-      retrievemails = (int) rep.getStepAttributeInteger( id_step, "retrievemails" );
-      firstmails = rep.getStepAttributeString( id_step, "firstmails" );
-      delete = rep.getStepAttributeBoolean( id_step, "delete" );
+      retrievemails = (int) rep.getStepAttributeInteger( id_step, TAG_RETRIEVE_MAILS );
+      firstMails = rep.getStepAttributeString( id_step, TAG_FIRST_MAILS );
+      delete = rep.getStepAttributeBoolean( id_step, TAG_DELETE );
 
       protocol =
-        Const.NVL( rep.getStepAttributeString( id_step, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
+        Const.NVL( rep.getStepAttributeString( id_step, TAG_PROTOCOL ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
-      valueimaplist =
-        MailConnectionMeta.getValueListImapListByCode( Const.NVL( rep.getStepAttributeString(
-          id_step, "valueimaplist" ), "" ) );
-      imapfirstmails = rep.getStepAttributeString( id_step, "imapfirstmails" );
-      imapfolder = rep.getStepAttributeString( id_step, "imapfolder" );
+      valueimaplist = MailConnectionMeta.getValueListImapListByCode( Const.NVL(
+          rep.getStepAttributeString( id_step, TAG_VALUE_IMAP_LIST ), "" ) );
+      imapFirstMails = rep.getStepAttributeString( id_step, TAG_IMAP_FIRST_MAILS );
+      imapFolder = rep.getStepAttributeString( id_step, TAG_IMAP_FOLDER );
       // search term
-      senderSearch = rep.getStepAttributeString( id_step, "sendersearch" );
-      notTermSenderSearch = rep.getStepAttributeBoolean( id_step, "nottermsendersearch" );
-      recipientSearch = rep.getStepAttributeString( id_step, "recipientsearch" );
-      notTermRecipientSearch = rep.getStepAttributeBoolean( id_step, "notTermRecipientSearch" );
-      subjectSearch = rep.getStepAttributeString( id_step, "subjectsearch" );
-      notTermSubjectSearch = rep.getStepAttributeBoolean( id_step, "nottermsubjectsearch" );
-      conditionReceivedDate =
-        MailConnectionMeta.getConditionByCode( Const.NVL( rep.getStepAttributeString(
-          id_step, "conditionreceiveddate" ), "" ) );
-      notTermReceivedDateSearch = rep.getStepAttributeBoolean( id_step, "nottermreceiveddatesearch" );
+      senderSearch = rep.getStepAttributeString( id_step, TAG_SENDER_SEARCH );
+      notTermSenderSearch = rep.getStepAttributeBoolean( id_step, TAG_NOT_TERM_SENDER_SEARCH );
+      recipientSearch = rep.getStepAttributeString( id_step, TAG_RECIPIENT_SEARCH );
+      notTermRecipientSearch = rep.getStepAttributeBoolean( id_step, TAG_NOT_TERM_RECIPIENT_SEARCH );
+      subjectSearch = rep.getStepAttributeString( id_step, TAG_SUBJECT_SEARCH );
+      notTermSubjectSearch = rep.getStepAttributeBoolean( id_step, TAG_NOT_TERM_SUBJECT_SEARCH );
+      conditionReceivedDate = MailConnectionMeta.getConditionByCode( Const.NVL(
+          rep.getStepAttributeString( id_step, TAG_CONDITION_RECEIVED_DATE ), "" ) );
+      notTermReceivedDateSearch = rep.getStepAttributeBoolean( id_step, TAG_NOT_TERM_RECEIVED_DATE_SEARCH );
       receivedDate1 = rep.getStepAttributeString( id_step, "receiveddate1" );
       receivedDate2 = rep.getStepAttributeString( id_step, "receiveddate2" );
-      includesubfolders = rep.getStepAttributeBoolean( id_step, "includesubfolders" );
-      useproxy = rep.getStepAttributeBoolean( id_step, "useproxy" );
-      proxyusername = rep.getStepAttributeString( id_step, "proxyusername" );
-      usedynamicfolder = rep.getStepAttributeBoolean( id_step, "usedynamicfolder" );
-      folderfield = rep.getStepAttributeString( id_step, "folderfield" );
-      rowlimit = rep.getStepAttributeString( id_step, "rowlimit" );
+      includeSubFolders = rep.getStepAttributeBoolean( id_step, TAG_INCLUDE_SUBFOLDERS );
+      useProxy = rep.getStepAttributeBoolean( id_step, TAG_USE_PROXY );
+      proxyUserName = rep.getStepAttributeString( id_step, TAG_PROXY_USERNAME );
+      useDynamicFolder = rep.getStepAttributeBoolean( id_step, TAG_USE_DYNAMIC_FOLDER );
+      folderField = rep.getStepAttributeString( id_step, TAG_FOLDER_FIELD );
+      rowLimit = rep.getStepAttributeString( id_step, TAG_ROW_LIMIT );
       int nrFields = rep.countNrStepAttributes( id_step, "field_name" );
 
-      useBatch = rep.getStepAttributeBoolean( id_step, Tags.USE_BATCH );
+      useBatch = rep.getStepAttributeBoolean( id_step, TAG_USE_BATCH );
       try {
-        batchSize = (int) rep.getStepAttributeInteger( id_step, Tags.BATCH_SIZE );
+        batchSize = (int) rep.getStepAttributeInteger( id_step, TAG_BATCH_SIZE );
       } catch ( Exception e ) {
         batchSize = DEFAULT_BATCH_SIZE;
       }
-      start = rep.getStepAttributeString( id_step, Tags.START_MSG );
-      end = rep.getStepAttributeString( id_step, Tags.END_MSG );
-      stopOnError = rep.getStepAttributeBoolean( id_step, Tags.STOP_ON_ERROR );
+      start = rep.getStepAttributeString( id_step, TAG_START_MSG );
+      end = rep.getStepAttributeString( id_step, TAG_END_MSG );
+      stopOnError = rep.getStepAttributeBoolean( id_step, TAG_STOP_ON_ERROR );
 
       allocate( nrFields );
       for ( int i = 0; i < nrFields; i++ ) {
@@ -375,57 +414,56 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
-
-      rep.saveStepAttribute( id_transformation, id_step, "servername", servername );
-      rep.saveStepAttribute( id_transformation, id_step, "username", username );
-      rep.saveStepAttribute( id_transformation, id_step, "password", Encr
+      rep.saveStepAttribute( id_transformation, id_step, TAG_SERVERNAME, serverName );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_USERNAME, userName );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_PASSWORD, Encr
         .encryptPasswordIfNotUsingVariables( password ) );
-      rep.saveStepAttribute( id_transformation, id_step, "auth_clientId", clientId );
-      rep.saveStepAttribute( id_transformation, id_step, "auth_secretKey", Encr
+      rep.saveStepAttribute( id_transformation, id_step, TAG_AUTH_CLIENT_ID, clientId );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_AUTH_SECRET_KEY, Encr
               .encryptPasswordIfNotUsingVariables( secretKey ) );
-      rep.saveStepAttribute( id_transformation, id_step, "auth_scope", scope );
-      rep.saveStepAttribute( id_transformation, id_step, "auth_tokenUrl", tokenUrl );
-      rep.saveStepAttribute( id_transformation, id_step, "auth_authorizationCode", authorization_code );
-      rep.saveStepAttribute( id_transformation, id_step, "redirectURI", redirectUri );
-      rep.saveStepAttribute( id_transformation, id_step, "refreshToken", refresh_token );
-      rep.saveStepAttribute( id_transformation, id_step, "use_grantType", grant_type );
-      rep.saveStepAttribute( id_transformation, id_step, "use_auth", usingAuthentication );
-      rep.saveStepAttribute( id_transformation, id_step, "usessl", usessl );
-      rep.saveStepAttribute( id_transformation, id_step, "sslport", sslport );
-      rep.saveStepAttribute( id_transformation, id_step, "retrievemails", retrievemails );
-      rep.saveStepAttribute( id_transformation, id_step, "firstmails", firstmails );
-      rep.saveStepAttribute( id_transformation, id_step, "delete", delete );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_AUTH_SCOPE, scope );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_AUTH_TOKEN_URL, tokenUrl );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_AUTH_AUTHORIZATION_CODE, authorization_code );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_REDIRECT_URI, redirectUri );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_REFRESH_TOKEN, refresh_token );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_USE_GRANT_TYPE, grant_type );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_USE_AUTH, usingAuthentication );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_USE_SSL, useSsl );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_SSL_PORT, sslPort );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_RETRIEVE_MAILS, retrievemails );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_FIRST_MAILS, firstMails );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_DELETE, delete );
 
-      rep.saveStepAttribute( id_transformation, id_step, "protocol", protocol );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_PROTOCOL, protocol );
 
-      rep.saveStepAttribute( id_transformation, id_step, "valueimaplist", MailConnectionMeta
+      rep.saveStepAttribute( id_transformation, id_step, TAG_VALUE_IMAP_LIST, MailConnectionMeta
         .getValueImapListCode( valueimaplist ) );
-      rep.saveStepAttribute( id_transformation, id_step, "imapfirstmails", imapfirstmails );
-      rep.saveStepAttribute( id_transformation, id_step, "imapfolder", imapfolder );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_IMAP_FIRST_MAILS, imapFirstMails );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_IMAP_FOLDER, imapFolder );
       // search term
-      rep.saveStepAttribute( id_transformation, id_step, "sendersearch", senderSearch );
-      rep.saveStepAttribute( id_transformation, id_step, "nottermsendersearch", notTermSenderSearch );
-      rep.saveStepAttribute( id_transformation, id_step, "recipientsearch", recipientSearch );
-      rep.saveStepAttribute( id_transformation, id_step, "notTermRecipientSearch", notTermRecipientSearch );
-      rep.saveStepAttribute( id_transformation, id_step, "subjectsearch", subjectSearch );
-      rep.saveStepAttribute( id_transformation, id_step, "nottermsubjectsearch", notTermSubjectSearch );
-      rep.saveStepAttribute( id_transformation, id_step, "conditionreceiveddate", MailConnectionMeta
+      rep.saveStepAttribute( id_transformation, id_step, TAG_SENDER_SEARCH, senderSearch );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_NOT_TERM_SENDER_SEARCH, notTermSenderSearch );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_RECIPIENT_SEARCH, recipientSearch );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_NOT_TERM_RECIPIENT_SEARCH, notTermRecipientSearch );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_SUBJECT_SEARCH, subjectSearch );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_NOT_TERM_SUBJECT_SEARCH, notTermSubjectSearch );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_CONDITION_RECEIVED_DATE, MailConnectionMeta
         .getConditionDateCode( conditionReceivedDate ) );
-      rep.saveStepAttribute( id_transformation, id_step, "nottermreceiveddatesearch", notTermReceivedDateSearch );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_NOT_TERM_RECEIVED_DATE_SEARCH, notTermReceivedDateSearch );
       rep.saveStepAttribute( id_transformation, id_step, "receiveddate1", receivedDate1 );
       rep.saveStepAttribute( id_transformation, id_step, "receiveddate2", receivedDate2 );
-      rep.saveStepAttribute( id_transformation, id_step, "includesubfolders", includesubfolders );
-      rep.saveStepAttribute( id_transformation, id_step, "useproxy", useproxy );
-      rep.saveStepAttribute( id_transformation, id_step, "proxyusername", proxyusername );
-      rep.saveStepAttribute( id_transformation, id_step, "usedynamicfolder", usedynamicfolder );
-      rep.saveStepAttribute( id_transformation, id_step, "folderfield", folderfield );
-      rep.saveStepAttribute( id_transformation, id_step, "rowlimit", rowlimit );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_INCLUDE_SUBFOLDERS, includeSubFolders );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_USE_PROXY, useProxy );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_PROXY_USERNAME, proxyUserName );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_USE_DYNAMIC_FOLDER, useDynamicFolder );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_FOLDER_FIELD, folderField );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_ROW_LIMIT, rowLimit );
 
-      rep.saveStepAttribute( id_transformation, id_step, Tags.USE_BATCH, useBatch );
-      rep.saveStepAttribute( id_transformation, id_step, Tags.BATCH_SIZE, batchSize );
-      rep.saveStepAttribute( id_transformation, id_step, Tags.START_MSG, start );
-      rep.saveStepAttribute( id_transformation, id_step, Tags.END_MSG, end );
-      rep.saveStepAttribute( id_transformation, id_step, Tags.STOP_ON_ERROR, stopOnError );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_USE_BATCH, useBatch );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_BATCH_SIZE, batchSize );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_START_MSG, start );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_END_MSG, end );
+      rep.saveStepAttribute( id_transformation, id_step, TAG_STOP_ON_ERROR, stopOnError );
 
       for ( int i = 0; i < inputFields.length; i++ ) {
         MailInputField field = inputFields[i];
@@ -439,77 +477,68 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  private static final class Tags {
-    static final String USE_BATCH = "useBatch";
-    static final String BATCH_SIZE = "batchSize";
-    static final String START_MSG = "startMsg";
-    static final String END_MSG = "endMsg";
-    static final String STOP_ON_ERROR = "stopOnError";
-  }
-
   @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
-    String tab = "      ";
-    retval.append( "      " ).append( XMLHandler.addTagValue( "servername", servername ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "username", username ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_auth", usingAuthentication ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_grantType", grant_type) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_clientId", clientId ) );
-    retval.append( "      " ).append(
-            XMLHandler.addTagValue( "auth_secretKey",  Encr.encryptPasswordIfNotUsingVariables( secretKey) )  );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_scope", scope ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_tokenUrl", tokenUrl ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_authorizationCode", authorization_code ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "redirectURI", redirectUri ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshToken", refresh_token) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "usessl", usessl ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "sslport", sslport ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "retrievemails", retrievemails ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "firstmails", firstmails ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "delete", delete ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "protocol", protocol ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "valueimaplist", MailConnectionMeta.getValueImapListCode( valueimaplist ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "imapfirstmails", imapfirstmails ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "imapfolder", imapfolder ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SERVERNAME, serverName ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USERNAME, userName ) );
+    retval.append( STR_6_SPACES ).append(
+      XMLHandler.addTagValue( TAG_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_AUTH, usingAuthentication ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_GRANT_TYPE, grant_type) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_CLIENT_ID, clientId ) );
+    retval.append( STR_6_SPACES ).append(
+            XMLHandler.addTagValue( TAG_AUTH_SECRET_KEY,  Encr.encryptPasswordIfNotUsingVariables( secretKey) )  );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_SCOPE, scope ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_TOKEN_URL, tokenUrl ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_AUTHORIZATION_CODE, authorization_code ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_REDIRECT_URI, redirectUri ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_REFRESH_TOKEN, refresh_token) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_SSL, useSsl ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SSL_PORT, sslPort ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_RETRIEVE_MAILS, retrievemails ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_FIRST_MAILS, firstMails ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_DELETE, delete ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_PROTOCOL, protocol ) );
+    retval.append( STR_6_SPACES ).append(
+      XMLHandler.addTagValue( TAG_VALUE_IMAP_LIST, MailConnectionMeta.getValueImapListCode( valueimaplist ) ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_IMAP_FIRST_MAILS, imapFirstMails ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_IMAP_FOLDER, imapFolder ) );
     // search term
-    retval.append( "      " ).append( XMLHandler.addTagValue( "sendersearch", senderSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nottermsendersearch", notTermSenderSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SENDER_SEARCH, senderSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_NOT_TERM_SENDER_SEARCH, notTermSenderSearch ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "recipientsearch", recipientSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "notTermRecipientSearch", notTermRecipientSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "subjectsearch", subjectSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nottermsubjectsearch", notTermSubjectSearch ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "conditionreceiveddate", MailConnectionMeta
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_RECIPIENT_SEARCH, recipientSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_NOT_TERM_RECIPIENT_SEARCH, notTermRecipientSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SUBJECT_SEARCH, subjectSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_NOT_TERM_SUBJECT_SEARCH, notTermSubjectSearch ) );
+    retval.append( STR_6_SPACES ).append(
+      XMLHandler.addTagValue( TAG_CONDITION_RECEIVED_DATE, MailConnectionMeta
         .getConditionDateCode( conditionReceivedDate ) ) );
-    retval.append( "      " ).append(
-      XMLHandler.addTagValue( "nottermreceiveddatesearch", notTermReceivedDateSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "receiveddate1", receivedDate1 ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "receiveddate2", receivedDate2 ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "includesubfolders", includesubfolders ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "useproxy", useproxy ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "proxyusername", proxyusername ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "usedynamicfolder", usedynamicfolder ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "folderfield", folderfield ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "rowlimit", rowlimit ) );
-    retval.append( tab ).append( XMLHandler.addTagValue( Tags.USE_BATCH, useBatch ) );
-    retval.append( tab ).append( XMLHandler.addTagValue( Tags.BATCH_SIZE, batchSize ) );
-    retval.append( tab ).append( XMLHandler.addTagValue( Tags.START_MSG, start ) );
-    retval.append( tab ).append( XMLHandler.addTagValue( Tags.END_MSG, end ) );
-    retval.append( tab ).append( XMLHandler.addTagValue( Tags.STOP_ON_ERROR, stopOnError ) );
+    retval.append( STR_6_SPACES ).append(
+      XMLHandler.addTagValue( TAG_NOT_TERM_RECEIVED_DATE_SEARCH, notTermReceivedDateSearch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( "receiveddate1", receivedDate1 ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( "receiveddate2", receivedDate2 ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_INCLUDE_SUBFOLDERS, includeSubFolders ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_PROXY, useProxy ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_PROXY_USERNAME, proxyUserName ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_DYNAMIC_FOLDER, useDynamicFolder ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_FOLDER_FIELD, folderField ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_ROW_LIMIT, rowLimit ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_BATCH, useBatch ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_BATCH_SIZE, batchSize ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_START_MSG, start ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_END_MSG, end ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_STOP_ON_ERROR, stopOnError ) );
 
     /*
      * Describe the fields to read
      */
     retval.append( "    <fields>" ).append( Const.CR );
-    for ( int i = 0; i < inputFields.length; i++ ) {
+    for ( MailInputField inputField : inputFields ) {
       retval.append( "      <field>" ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", inputFields[i].getName() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "column", inputFields[i].getColumnCode() ) );
+      retval.append( STR_8_SPACES ).append( XMLHandler.addTagValue( TAG_NAME, inputField.getName() ) );
+      retval.append( STR_8_SPACES ).append( XMLHandler.addTagValue( TAG_COLUMN, inputField.getColumnCode() ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
     retval.append( "    </fields>" ).append( Const.CR );
@@ -536,81 +565,81 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getPort() {
-    return sslport;
+    return sslPort;
   }
 
   public void setPort( String sslport ) {
-    this.sslport = sslport;
+    this.sslPort = sslport;
   }
 
   public void setFirstMails( String firstmails ) {
-    this.firstmails = firstmails;
+    this.firstMails = firstmails;
   }
 
   public String getFirstMails() {
-    return firstmails;
+    return firstMails;
   }
 
   public boolean isIncludeSubFolders() {
-    return includesubfolders;
+    return includeSubFolders;
   }
 
   public void setIncludeSubFolders( boolean includesubfolders ) {
-    this.includesubfolders = includesubfolders;
+    this.includeSubFolders = includesubfolders;
   }
 
   /**
    * @return Returns the useproxy.
    */
   public boolean isUseProxy() {
-    return this.useproxy;
+    return this.useProxy;
   }
 
   public void setUseProxy( boolean useprox ) {
-    this.useproxy = useprox;
+    this.useProxy = useprox;
   }
 
   public void setProxyUsername( String username ) {
-    this.proxyusername = username;
+    this.proxyUserName = username;
   }
 
   public String getProxyUsername() {
-    return this.proxyusername;
+    return this.proxyUserName;
   }
 
   /**
    * @return Returns the usedynamicfolder.
    */
   public boolean isDynamicFolder() {
-    return this.usedynamicfolder;
+    return this.useDynamicFolder;
   }
 
   public void setDynamicFolder( boolean usedynamicfolder ) {
-    this.usedynamicfolder = usedynamicfolder;
+    this.useDynamicFolder = usedynamicfolder;
   }
 
   public void setRowLimit( String rowlimit ) {
-    this.rowlimit = rowlimit;
+    this.rowLimit = rowlimit;
   }
 
   public String getRowLimit() {
-    return this.rowlimit;
+    return this.rowLimit;
   }
 
   public void setFolderField( String folderfield ) {
-    this.folderfield = folderfield;
+    this.folderField = folderfield;
   }
 
   public String getFolderField() {
-    return this.folderfield;
+    return this.folderField;
   }
 
   public void setFirstIMAPMails( String firstmails ) {
-    this.imapfirstmails = firstmails;
+    this.imapFirstMails = firstmails;
   }
 
   public String getFirstIMAPMails() {
-    return imapfirstmails;
+    return imapFirstMails;
   }
 
   public void setSenderSearchTerm( String senderSearch ) {
@@ -694,19 +723,19 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setServerName( String servername ) {
-    this.servername = servername;
+    this.serverName = servername;
   }
 
   public String getServerName() {
-    return servername;
+    return serverName;
   }
 
   public void setUserName( String username ) {
-    this.username = username;
+    this.userName = username;
   }
 
   public String getUserName() {
-    return username;
+    return userName;
   }
 
   /**
@@ -777,11 +806,11 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getIMAPFolder() {
-    return imapfolder;
+    return imapFolder;
   }
 
   public void setIMAPFolder( String folder ) {
-    this.imapfolder = folder;
+    this.imapFolder = folder;
   }
 
   /**
@@ -789,14 +818,14 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The usessl to set.
    */
   public void setUseSSL( boolean usessl ) {
-    this.usessl = usessl;
+    this.useSsl = usessl;
   }
 
   /**
    * @return Returns the usessl.
    */
   public boolean isUseSSL() {
-    return usessl;
+    return useSsl;
   }
 
   /**
@@ -904,15 +933,11 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setUsingAuthentication( String usingAuthentication ) {
-
-    if ( usingAuthentication == null || usingAuthentication.isEmpty() || usingAuthentication.equalsIgnoreCase( AUTENTICATION_BASIC ) ) {
-      this.usingAuthentication = AUTENTICATION_BASIC;
-    } else if ( usingAuthentication.equalsIgnoreCase( AUTENTICATION_OAUTH ) ) {
+    if ( AUTENTICATION_OAUTH.equalsIgnoreCase( usingAuthentication ) ) {
       this.usingAuthentication = AUTENTICATION_OAUTH;
-    } else if ( usingAuthentication.equalsIgnoreCase( AUTENTICATION_NONE ) ) {
-      this.usingAuthentication = AUTENTICATION_NONE;
     } else {
-      this.usingAuthentication = usingAuthentication;
+      // All other cases: "Basic" (valid option), null/empty (old option) or unrecognized option
+      this.usingAuthentication = AUTENTICATION_BASIC;
     }
   }
 
@@ -1023,9 +1048,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
         }
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(EntityUtils.toString(response.getEntity()), EmailAuthenticationResponse.class);
-      } catch (HttpException e) {
-        throw new RuntimeException(e);
-      } catch (IOException e) {
+      } catch ( HttpException | IOException e) {
         throw new RuntimeException(e);
       }
     } catch (IOException e) {

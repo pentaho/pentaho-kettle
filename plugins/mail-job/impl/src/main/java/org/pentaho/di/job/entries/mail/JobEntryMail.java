@@ -14,32 +14,6 @@
 package org.pentaho.di.job.entries.mail;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.Consts;
-import org.apache.http.HttpException;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-import org.pentaho.di.core.annotations.JobEntry;
-import org.pentaho.di.core.util.HttpClientManager;
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import jakarta.activation.DataHandler;
 import jakarta.activation.FileDataSource;
 import jakarta.activation.URLDataSource;
@@ -53,21 +27,32 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
-
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
+import org.apache.http.Consts;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.JobTracker;
+import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -76,6 +61,8 @@ import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -83,6 +70,17 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Describes a Mail Job Entry.
@@ -97,19 +95,67 @@ import org.w3c.dom.Node;
         image = "ui/images/MAIL.svg",
         documentationUrl = "http://wiki.pentaho.com/display/EAI/Mail" )
 public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInterface {
+
+  public static final String TAG_FILETYPE = "filetype";
+  public static final String TAG_IMAGE_NAME = "image_name";
+  public static final String TAG_CONTENT_ID = "content_id";
+  public static final String TAG_FILETYPES = "filetypes";
+  public static final String TAG_EMBEDDED_IMAGES = "embeddedimages";
+  public static final String TAG_EMBEDDED_IMAGE = "embeddedimage";
   private static Class<?> PKG = JobEntryMail.class; // for i18n purposes, needed by Translator2!!
+
+  private static final String TAG_SERVER = "server";
+  private static final String TAG_PORT = "port";
+  private static final String TAG_DESTINATION = "destination";
+  private static final String TAG_DESTINATION_CC = "destinationCc";
+  private static final String TAG_DESTINATION_BCC = "destinationBCc";
+  private static final String TAG_REPLYTO = "replyto";
+  private static final String TAG_REPLYTONAME = "replytoname";
+  private static final String TAG_SUBJECT = "subject";
+  private static final String TAG_INCLUDE_DATE = "include_date";
+  private static final String TAG_CONTACT_PERSON = "contact_person";
+  private static final String TAG_CONTACT_PHONE = "contact_phone";
+  private static final String TAG_COMMENT = "comment";
+  private static final String TAG_INCLUDE_FILES = "include_files";
+  private static final String TAG_ZIP_FILES = "zip_files";
+  private static final String TAG_ZIP_NAME = "zip_name";
+  private static final String TAG_USE_GRANT_TYPE = "use_grantType";
+  private static final String TAG_USE_AUTH = "use_auth";
+  private static final String TAG_USE_SECURE_AUTH = "use_secure_auth";
+  private static final String TAG_AUTH_USER = "auth_user";
+  private static final String TAG_AUTH_PASSWORD = "auth_password";
+  private static final String TAG_AUTH_CLIENT_ID = "auth_clientId";
+  private static final String TAG_AUTH_SECRET_KEY = "auth_secretKey";
+  private static final String TAG_AUTH_SCOPE = "auth_scope";
+  private static final String TAG_AUTH_TOKEN_URL = "auth_tokenUrl";
+  private static final String TAG_AUTH_AUTHORIZATION_CODE = "auth_authorizationCode";
+  private static final String TAG_REDIRECT_URI = "redirectURI";
+  private static final String TAG_REFRESH_TOKEN = "refreshToken";
+  private static final String TAG_ONLY_COMMENT = "only_comment";
+  private static final String TAG_USE_HTML = "use_HTML";
+  private static final String TAG_USE_PRIORITY = "use_Priority";
+  private static final String TAG_ENCODING = "encoding";
+  private static final String TAG_PRIORITY = "priority";
+  private static final String TAG_IMPORTANCE = "importance";
+  private static final String TAG_SENSITIVITY = "sensitivity";
+  private static final String TAG_SECURE_CONNECTION_TYPE = "secureconnectiontype";
+  private static final String TAG_REPLY_TO_ADDRESSES = "replyToAddresses";
+
+  private static final String STR_10_SPACES = "          ";
+  private static final String STR_8_SPACES = "        ";
+  private static final String STR_6_SPACES = "      ";
 
   public static String AUTENTICATION_OAUTH = "OAUTH";
 
-  public static  String AUTENTICATION_BASIC = "Basic";
+  public static String AUTENTICATION_BASIC = "Basic";
 
-  public static String AUTENTICATION_NONE= "No Auth";
+  public static String AUTENTICATION_NONE = "No Auth";
 
-  public static String GRANTTYPE_CLIENTCREDENTIALS="client_credentials";
+  public static String GRANTTYPE_CLIENTCREDENTIALS = "client_credentials";
 
-  public static String GRANTTYPE_AUTHORIZATION_CODE="authorization_code";
+  public static String GRANTTYPE_AUTHORIZATION_CODE = "authorization_code";
 
-  public static String GRANTTYPE_REFRESH_TOKEN="refresh_token";
+  public static String GRANTTYPE_REFRESH_TOKEN = "refresh_token";
 
   private String clientId;
 
@@ -136,7 +182,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   /** Caution : It's sender address and NOT reply address **/
   private String replyAddress;
 
-  /** Caution : It's sender name name and NOT reply name **/
+  /** Caution : It's sender name and NOT reply name **/
   private String replyName;
 
   private String subject;
@@ -214,6 +260,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     contentids = new String[nrImages];
   }
 
+  @Override
   public Object clone() {
     JobEntryMail je = (JobEntryMail) super.clone();
     if ( fileType != null ) {
@@ -230,60 +277,57 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return je;
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 600 );
 
     retval.append( super.getXML() );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "server", server ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "port", port ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "destination", destination ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "destinationCc", destinationCc ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "destinationBCc", destinationBCc ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "replyto", replyAddress ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "replytoname", replyName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "subject", subject ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "include_date", includeDate ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "contact_person", contactPerson ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "contact_phone", contactPhone ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "comment", comment ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "include_files", includingFiles ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "zip_files", zipFiles ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "zip_name", zipFilename ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_grantType", grant_type) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SERVER, server ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_PORT, port ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_DESTINATION, destination ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_DESTINATION_CC, destinationCc ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_DESTINATION_BCC, destinationBCc ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_REPLYTO, replyAddress ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_REPLYTONAME, replyName ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SUBJECT, subject ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_INCLUDE_DATE, includeDate ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_CONTACT_PERSON, contactPerson ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_CONTACT_PHONE, contactPhone ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_COMMENT, comment ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_INCLUDE_FILES, includingFiles ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_ZIP_FILES, zipFiles ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_ZIP_NAME, zipFilename ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_GRANT_TYPE, grant_type) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_auth", usingAuthentication ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_secure_auth", usingSecureAuthentication ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_user", authenticationUser ) );
-    retval.append( "      " ).append(
-            XMLHandler
-                    .addTagValue( "auth_password", Encr.encryptPasswordIfNotUsingVariables( authenticationPassword ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_clientId", clientId ) );
-    retval.append( "      " ).append(
-            XMLHandler
-                    .addTagValue( "auth_secretKey",  secretKey)  );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_scope", scope ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_tokenUrl", tokenUrl ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "auth_authorizationCode", authorization_code ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "redirectURI", redirectUri ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshToken", refresh_token) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "only_comment", onlySendComment ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_HTML", useHTML ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "use_Priority", usePriority ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_AUTH, usingAuthentication ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_SECURE_AUTH, usingSecureAuthentication ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_USER, authenticationUser ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_PASSWORD,
+        Encr.encryptPasswordIfNotUsingVariables( authenticationPassword ) ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_CLIENT_ID, clientId ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_SECRET_KEY,  secretKey)  );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_SCOPE, scope ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_TOKEN_URL, tokenUrl ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_AUTH_AUTHORIZATION_CODE, authorization_code ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_REDIRECT_URI, redirectUri ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_REFRESH_TOKEN, refresh_token) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_ONLY_COMMENT, onlySendComment ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_HTML, useHTML ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_USE_PRIORITY, usePriority ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "priority", priority ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "importance", importance ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "sensitivity", sensitivity ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_ENCODING, encoding ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_PRIORITY, priority ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_IMPORTANCE, importance ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SENSITIVITY, sensitivity ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "secureconnectiontype", secureConnectionType ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "replyToAddresses", replyToAddresses ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_SECURE_CONNECTION_TYPE, secureConnectionType ) );
+    retval.append( STR_6_SPACES ).append( XMLHandler.addTagValue( TAG_REPLY_TO_ADDRESSES, replyToAddresses ) );
 
     retval.append( "      <filetypes>" );
     if ( fileType != null ) {
-      for ( int i = 0; i < fileType.length; i++ ) {
-        retval.append( "        " ).append(
-          XMLHandler.addTagValue( "filetype", ResultFile.getTypeCode( fileType[i] ) ) );
+      for ( int j : fileType ) {
+        retval.append( STR_8_SPACES ).append( XMLHandler.addTagValue( TAG_FILETYPE, ResultFile.getTypeCode( j ) ) );
       }
     }
     retval.append( "      </filetypes>" );
@@ -292,8 +336,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     if ( embeddedimages != null ) {
       for ( int i = 0; i < embeddedimages.length; i++ ) {
         retval.append( "        <embeddedimage>" ).append( Const.CR );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "image_name", embeddedimages[i] ) );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "content_id", contentids[i] ) );
+        retval.append( STR_10_SPACES ).append( XMLHandler.addTagValue( TAG_IMAGE_NAME, embeddedimages[i] ) );
+        retval.append( STR_10_SPACES ).append( XMLHandler.addTagValue( TAG_CONTENT_ID, contentids[i] ) );
         retval.append( "        </embeddedimage>" ).append( Const.CR );
       }
     }
@@ -302,187 +346,188 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
-      setServer( XMLHandler.getTagValue( entrynode, "server" ) );
-      setPort( XMLHandler.getTagValue( entrynode, "port" ) );
-      setDestination( XMLHandler.getTagValue( entrynode, "destination" ) );
-      setDestinationCc( XMLHandler.getTagValue( entrynode, "destinationCc" ) );
-      setDestinationBCc( XMLHandler.getTagValue( entrynode, "destinationBCc" ) );
-      setReplyAddress( XMLHandler.getTagValue( entrynode, "replyto" ) );
-      setReplyName( XMLHandler.getTagValue( entrynode, "replytoname" ) );
-      setSubject( XMLHandler.getTagValue( entrynode, "subject" ) );
-      setIncludeDate( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "include_date" ) ) );
-      setContactPerson( XMLHandler.getTagValue( entrynode, "contact_person" ) );
-      setContactPhone( XMLHandler.getTagValue( entrynode, "contact_phone" ) );
-      setComment( XMLHandler.getTagValue( entrynode, "comment" ) );
-      setIncludingFiles( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "include_files" ) ) );
+      setServer( XMLHandler.getTagValue( entrynode, TAG_SERVER ) );
+      setPort( XMLHandler.getTagValue( entrynode, TAG_PORT ) );
+      setDestination( XMLHandler.getTagValue( entrynode, TAG_DESTINATION ) );
+      setDestinationCc( XMLHandler.getTagValue( entrynode, TAG_DESTINATION_CC ) );
+      setDestinationBCc( XMLHandler.getTagValue( entrynode, TAG_DESTINATION_BCC ) );
+      setReplyAddress( XMLHandler.getTagValue( entrynode, TAG_REPLYTO ) );
+      setReplyName( XMLHandler.getTagValue( entrynode, TAG_REPLYTONAME ) );
+      setSubject( XMLHandler.getTagValue( entrynode, TAG_SUBJECT ) );
+      setIncludeDate( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_INCLUDE_DATE ) ) );
+      setContactPerson( XMLHandler.getTagValue( entrynode, TAG_CONTACT_PERSON ) );
+      setContactPhone( XMLHandler.getTagValue( entrynode, TAG_CONTACT_PHONE ) );
+      setComment( XMLHandler.getTagValue( entrynode, TAG_COMMENT ) );
+      setIncludingFiles( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_INCLUDE_FILES ) ) );
 
-      setUsingAuthentication( XMLHandler.getTagValue( entrynode, "use_auth" ) );
-      setUsingSecureAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_secure_auth" ) ) );
-      setAuthenticationUser( XMLHandler.getTagValue( entrynode, "auth_user" ) );
+      setUsingAuthentication( XMLHandler.getTagValue( entrynode, TAG_USE_AUTH ) );
+      setUsingSecureAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_USE_SECURE_AUTH ) ) );
+      setAuthenticationUser( XMLHandler.getTagValue( entrynode, TAG_AUTH_USER ) );
       setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(
-              entrynode, "auth_password" ) ) );
-      setClientId( XMLHandler.getTagValue( entrynode, "auth_clientId" ) );
-      setSecretKey( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "auth_secretKey" ) ) );
-      setScope( XMLHandler.getTagValue( entrynode, "auth_scope" ) );
-      setTokenUrl( XMLHandler.getTagValue( entrynode, "auth_tokenUrl" ) );
-      setAuthorization_code( XMLHandler.getTagValue( entrynode, "auth_authorizationCode" ) );
-      setRedirectUri( XMLHandler.getTagValue( entrynode, "redirectURI" ) );
-      setRefresh_token( XMLHandler.getTagValue( entrynode, "refreshToken" ) );
-      setGrant_type( XMLHandler.getTagValue( entrynode, "use_grantType" ) );
-      setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "only_comment" ) ) );
-      setUseHTML( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_HTML" ) ) );
+              entrynode, TAG_AUTH_PASSWORD ) ) );
+      setClientId( XMLHandler.getTagValue( entrynode, TAG_AUTH_CLIENT_ID ) );
+      setSecretKey( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, TAG_AUTH_SECRET_KEY ) ) );
+      setScope( XMLHandler.getTagValue( entrynode, TAG_AUTH_SCOPE ) );
+      setTokenUrl( XMLHandler.getTagValue( entrynode, TAG_AUTH_TOKEN_URL ) );
+      setAuthorization_code( XMLHandler.getTagValue( entrynode, TAG_AUTH_AUTHORIZATION_CODE ) );
+      setRedirectUri( XMLHandler.getTagValue( entrynode, TAG_REDIRECT_URI ) );
+      setRefresh_token( XMLHandler.getTagValue( entrynode, TAG_REFRESH_TOKEN ) );
+      setGrant_type( XMLHandler.getTagValue( entrynode, TAG_USE_GRANT_TYPE ) );
+      setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_ONLY_COMMENT ) ) );
+      setUseHTML( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_USE_HTML ) ) );
 
-      setUsePriority( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_Priority" ) ) );
+      setUsePriority( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_USE_PRIORITY ) ) );
 
-      setEncoding( XMLHandler.getTagValue( entrynode, "encoding" ) );
-      setPriority( XMLHandler.getTagValue( entrynode, "priority" ) );
-      setImportance( XMLHandler.getTagValue( entrynode, "importance" ) );
-      setSensitivity( XMLHandler.getTagValue( entrynode, "sensitivity" ) );
-      setSecureConnectionType( XMLHandler.getTagValue( entrynode, "secureconnectiontype" ) );
+      setEncoding( XMLHandler.getTagValue( entrynode, TAG_ENCODING ) );
+      setPriority( XMLHandler.getTagValue( entrynode, TAG_PRIORITY ) );
+      setImportance( XMLHandler.getTagValue( entrynode, TAG_IMPORTANCE ) );
+      setSensitivity( XMLHandler.getTagValue( entrynode, TAG_SENSITIVITY ) );
+      setSecureConnectionType( XMLHandler.getTagValue( entrynode, TAG_SECURE_CONNECTION_TYPE ) );
 
-      Node ftsnode = XMLHandler.getSubNode( entrynode, "filetypes" );
-      int nrTypes = XMLHandler.countNodes( ftsnode, "filetype" );
+      Node ftsnode = XMLHandler.getSubNode( entrynode, TAG_FILETYPES );
+      int nrTypes = XMLHandler.countNodes( ftsnode, TAG_FILETYPE );
       allocate( nrTypes );
       for ( int i = 0; i < nrTypes; i++ ) {
-        Node ftnode = XMLHandler.getSubNodeByNr( ftsnode, "filetype", i );
+        Node ftnode = XMLHandler.getSubNodeByNr( ftsnode, TAG_FILETYPE, i );
         fileType[i] = ResultFile.getType( XMLHandler.getNodeValue( ftnode ) );
       }
 
-      setZipFiles( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "zip_files" ) ) );
-      setZipFilename( XMLHandler.getTagValue( entrynode, "zip_name" ) );
-      setReplyToAddresses( XMLHandler.getTagValue( entrynode, "replyToAddresses" ) );
+      setZipFiles( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, TAG_ZIP_FILES ) ) );
+      setZipFilename( XMLHandler.getTagValue( entrynode, TAG_ZIP_NAME ) );
+      setReplyToAddresses( XMLHandler.getTagValue( entrynode, TAG_REPLY_TO_ADDRESSES ) );
 
-      Node images = XMLHandler.getSubNode( entrynode, "embeddedimages" );
+      Node images = XMLHandler.getSubNode( entrynode, TAG_EMBEDDED_IMAGES );
 
       // How many field embedded images ?
-      int nrImages = XMLHandler.countNodes( images, "embeddedimage" );
+      int nrImages = XMLHandler.countNodes( images, TAG_EMBEDDED_IMAGE );
       allocateImages( nrImages );
 
       // Read them all...
       for ( int i = 0; i < nrImages; i++ ) {
-        Node fnode = XMLHandler.getSubNodeByNr( images, "embeddedimage", i );
+        Node fnode = XMLHandler.getSubNodeByNr( images, TAG_EMBEDDED_IMAGE, i );
 
-        embeddedimages[i] = XMLHandler.getTagValue( fnode, "image_name" );
-        contentids[i] = XMLHandler.getTagValue( fnode, "content_id" );
+        embeddedimages[i] = XMLHandler.getTagValue( fnode, TAG_IMAGE_NAME );
+        contentids[i] = XMLHandler.getTagValue( fnode, TAG_CONTENT_ID );
       }
-
     } catch ( KettleException xe ) {
       throw new KettleXMLException( "Unable to load job entry of type 'mail' from XML node", xe );
     }
   }
 
-  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+  @Override
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId idJobEntry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
       // First load the common parts like name & description, then the attributes...
       //
-      server = rep.getJobEntryAttributeString( id_jobentry, "server" );
-      port = rep.getJobEntryAttributeString( id_jobentry, "port" );
-      destination = rep.getJobEntryAttributeString( id_jobentry, "destination" );
-      destinationCc = rep.getJobEntryAttributeString( id_jobentry, "destinationCc" );
-      destinationBCc = rep.getJobEntryAttributeString( id_jobentry, "destinationBCc" );
-      replyAddress = rep.getJobEntryAttributeString( id_jobentry, "replyto" );
-      replyName = rep.getJobEntryAttributeString( id_jobentry, "replytoname" );
-      subject = rep.getJobEntryAttributeString( id_jobentry, "subject" );
-      includeDate = rep.getJobEntryAttributeBoolean( id_jobentry, "include_date" );
-      contactPerson = rep.getJobEntryAttributeString( id_jobentry, "contact_person" );
-      contactPhone = rep.getJobEntryAttributeString( id_jobentry, "contact_phone" );
-      comment = rep.getJobEntryAttributeString( id_jobentry, "comment" );
-      encoding = rep.getJobEntryAttributeString( id_jobentry, "encoding" );
-      priority = rep.getJobEntryAttributeString( id_jobentry, "priority" );
-      importance = rep.getJobEntryAttributeString( id_jobentry, "importance" );
-      sensitivity = rep.getJobEntryAttributeString( id_jobentry, "sensitivity" );
-      includingFiles = rep.getJobEntryAttributeBoolean( id_jobentry, "include_files" );
-      grant_type = rep.getJobEntryAttributeString( id_jobentry, "use_grantType" );
-      usingAuthentication = rep.getJobEntryAttributeString( id_jobentry, "use_auth" );
-      usingSecureAuthentication = rep.getJobEntryAttributeBoolean( id_jobentry, "use_secure_auth" );
-      authenticationUser = rep.getJobEntryAttributeString( id_jobentry, "auth_user" );
+      server = rep.getJobEntryAttributeString( idJobEntry, TAG_SERVER );
+      port = rep.getJobEntryAttributeString( idJobEntry, TAG_PORT );
+      destination = rep.getJobEntryAttributeString( idJobEntry, TAG_DESTINATION );
+      destinationCc = rep.getJobEntryAttributeString( idJobEntry, TAG_DESTINATION_CC );
+      destinationBCc = rep.getJobEntryAttributeString( idJobEntry, TAG_DESTINATION_BCC );
+      replyAddress = rep.getJobEntryAttributeString( idJobEntry, TAG_REPLYTO );
+      replyName = rep.getJobEntryAttributeString( idJobEntry, TAG_REPLYTONAME );
+      subject = rep.getJobEntryAttributeString( idJobEntry, TAG_SUBJECT );
+      includeDate = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_INCLUDE_DATE );
+      contactPerson = rep.getJobEntryAttributeString( idJobEntry, TAG_CONTACT_PERSON );
+      contactPhone = rep.getJobEntryAttributeString( idJobEntry, TAG_CONTACT_PHONE );
+      comment = rep.getJobEntryAttributeString( idJobEntry, TAG_COMMENT );
+      encoding = rep.getJobEntryAttributeString( idJobEntry, TAG_ENCODING );
+      priority = rep.getJobEntryAttributeString( idJobEntry, TAG_PRIORITY );
+      importance = rep.getJobEntryAttributeString( idJobEntry, TAG_IMPORTANCE );
+      sensitivity = rep.getJobEntryAttributeString( idJobEntry, TAG_SENSITIVITY );
+      includingFiles = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_INCLUDE_FILES );
+      grant_type = rep.getJobEntryAttributeString( idJobEntry, TAG_USE_GRANT_TYPE );
+      setUsingAuthentication( rep.getJobEntryAttributeString( idJobEntry, TAG_USE_AUTH ) );
+      usingSecureAuthentication = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_USE_SECURE_AUTH );
+      authenticationUser = rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_USER );
       authenticationPassword =
-              Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "auth_password" ) );
-      clientId = rep.getJobEntryAttributeString( id_jobentry, "auth_clientId" );
+              Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_PASSWORD ) );
+      clientId = rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_CLIENT_ID );
       secretKey =
-              Encr.decryptPasswordOptionallyEncrypted(  rep.getJobEntryAttributeString( id_jobentry, "auth_secretKey" ) ) ;
-      scope = rep.getJobEntryAttributeString( id_jobentry, "auth_scope" );
-      tokenUrl = rep.getJobEntryAttributeString( id_jobentry, "auth_tokenUrl" );
-      authorization_code = rep.getJobEntryAttributeString( id_jobentry, "auth_authorizationCode" );
-      redirectUri= rep.getJobEntryAttributeString( id_jobentry, "redirectURI" );
-      refresh_token = rep.getJobEntryAttributeString( id_jobentry, "refreshToken" );
-      onlySendComment = rep.getJobEntryAttributeBoolean( id_jobentry, "only_comment" );
-      useHTML = rep.getJobEntryAttributeBoolean( id_jobentry, "use_HTML" );
-      usePriority = rep.getJobEntryAttributeBoolean( id_jobentry, "use_Priority" );
-      secureConnectionType = rep.getJobEntryAttributeString( id_jobentry, "secureconnectiontype" );
+              Encr.decryptPasswordOptionallyEncrypted(  rep.getJobEntryAttributeString( idJobEntry,
+                TAG_AUTH_SECRET_KEY ) ) ;
+      scope = rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_SCOPE );
+      tokenUrl = rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_TOKEN_URL );
+      authorization_code = rep.getJobEntryAttributeString( idJobEntry, TAG_AUTH_AUTHORIZATION_CODE );
+      redirectUri= rep.getJobEntryAttributeString( idJobEntry, TAG_REDIRECT_URI );
+      refresh_token = rep.getJobEntryAttributeString( idJobEntry, TAG_REFRESH_TOKEN );
+      onlySendComment = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_ONLY_COMMENT );
+      useHTML = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_USE_HTML );
+      usePriority = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_USE_PRIORITY );
+      secureConnectionType = rep.getJobEntryAttributeString( idJobEntry, TAG_SECURE_CONNECTION_TYPE );
 
-      int nrTypes = rep.countNrJobEntryAttributes( id_jobentry, "file_type" );
+      int nrTypes = rep.countNrJobEntryAttributes( idJobEntry, "file_type" );
       allocate( nrTypes );
 
       for ( int i = 0; i < nrTypes; i++ ) {
-        String typeCode = rep.getJobEntryAttributeString( id_jobentry, i, "file_type" );
+        String typeCode = rep.getJobEntryAttributeString( idJobEntry, i, "file_type" );
         fileType[i] = ResultFile.getType( typeCode );
       }
 
-      zipFiles = rep.getJobEntryAttributeBoolean( id_jobentry, "zip_files" );
-      zipFilename = rep.getJobEntryAttributeString( id_jobentry, "zip_name" );
-      replyToAddresses = rep.getJobEntryAttributeString( id_jobentry, "replyToAddresses" );
+      zipFiles = rep.getJobEntryAttributeBoolean( idJobEntry, TAG_ZIP_FILES );
+      zipFilename = rep.getJobEntryAttributeString( idJobEntry, TAG_ZIP_NAME );
+      replyToAddresses = rep.getJobEntryAttributeString( idJobEntry, TAG_REPLY_TO_ADDRESSES );
 
       // How many arguments?
-      int imagesnr = rep.countNrJobEntryAttributes( id_jobentry, "embeddedimage" );
-      allocateImages( imagesnr );
+      int imagesNr = rep.countNrJobEntryAttributes( idJobEntry, TAG_EMBEDDED_IMAGE );
+      allocateImages( imagesNr );
 
       // Read them all...
-      for ( int a = 0; a < imagesnr; a++ ) {
-        embeddedimages[a] = rep.getJobEntryAttributeString( id_jobentry, a, "embeddedimage" );
-        contentids[a] = rep.getJobEntryAttributeString( id_jobentry, a, "contentid" );
+      for ( int a = 0; a < imagesNr; a++ ) {
+        embeddedimages[a] = rep.getJobEntryAttributeString( idJobEntry, a, TAG_EMBEDDED_IMAGE );
+        contentids[a] = rep.getJobEntryAttributeString( idJobEntry, a, "contentid" );
       }
-
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'mail' from the repository with id_jobentry="
-        + id_jobentry, dbe );
+      throw new KettleException( "Unable to load job entry of type 'mail' from the repository with idJobEntry="
+        + idJobEntry, dbe );
     }
-
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "server", server );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "port", port );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "destination", destination );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "destinationCc", destinationCc );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "destinationBCc", destinationBCc );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "replyto", replyAddress );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "replytoname", replyName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "subject", subject );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "include_date", includeDate );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "contact_person", contactPerson );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "contact_phone", contactPhone );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "comment", comment );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "encoding", encoding );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "priority", priority );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "importance", importance );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "sensitivity", sensitivity );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SERVER, server );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_PORT, port );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_DESTINATION, destination );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_DESTINATION_CC, destinationCc );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_DESTINATION_BCC, destinationBCc );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_REPLYTO, replyAddress );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_REPLYTONAME, replyName );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SUBJECT, subject );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_INCLUDE_DATE, includeDate );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_CONTACT_PERSON, contactPerson );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_CONTACT_PHONE, contactPhone );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_COMMENT, comment );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_ENCODING, encoding );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_PRIORITY, priority );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_IMPORTANCE, importance );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SENSITIVITY, sensitivity );
 
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "include_files", includingFiles );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "use_auth", usingAuthentication );
-      rep.saveJobEntryAttribute(id_job,getObjectId(),"use_grantType",grant_type );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "use_secure_auth", usingSecureAuthentication );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_user", authenticationUser );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_password", Encr
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_INCLUDE_FILES, includingFiles );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_USE_AUTH, usingAuthentication );
+      rep.saveJobEntryAttribute(id_job,getObjectId(), TAG_USE_GRANT_TYPE,grant_type );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_USE_SECURE_AUTH, usingSecureAuthentication );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_USER, authenticationUser );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_PASSWORD, Encr
               .encryptPasswordIfNotUsingVariables( authenticationPassword ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_clientId", clientId );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_secretKey", Encr
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_CLIENT_ID, clientId );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_SECRET_KEY, Encr
               .encryptPasswordIfNotUsingVariables( secretKey ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_scope", scope );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_tokenUrl", tokenUrl );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_authorizationCode", authorization_code );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "redirectURI",  redirectUri );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "refreshToken", refresh_token );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "only_comment", onlySendComment );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "use_HTML", useHTML );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "use_Priority", usePriority );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "secureconnectiontype", secureConnectionType );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_SCOPE, scope );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_TOKEN_URL, tokenUrl );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_AUTH_AUTHORIZATION_CODE, authorization_code );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_REDIRECT_URI,  redirectUri );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_REFRESH_TOKEN, refresh_token );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_ONLY_COMMENT, onlySendComment );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_USE_HTML, useHTML );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_USE_PRIORITY, usePriority );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_SECURE_CONNECTION_TYPE, secureConnectionType );
 
       if ( fileType != null ) {
         for ( int i = 0; i < fileType.length; i++ ) {
@@ -490,23 +535,21 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         }
       }
 
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "zip_files", zipFiles );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "zip_name", zipFilename );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "replyToAddresses", replyToAddresses );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_ZIP_FILES, zipFiles );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_ZIP_NAME, zipFilename );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), TAG_REPLY_TO_ADDRESSES, replyToAddresses );
 
       // save the arguments...
       if ( embeddedimages != null ) {
         for ( int i = 0; i < embeddedimages.length; i++ ) {
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "embeddedimage", embeddedimages[i] );
+          rep.saveJobEntryAttribute( id_job, getObjectId(), i, TAG_EMBEDDED_IMAGE, embeddedimages[i] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "contentid", contentids[i] );
         }
       }
-
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException(
         "Unable to save job entry of type 'mail' to the repository for id_job=" + id_job, dbe );
     }
-
   }
 
   public void setServer( String s ) {
@@ -538,7 +581,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public String getDestinationBCc() {
-
     return destinationBCc;
   }
 
@@ -550,8 +592,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return replyAddress;
   }
 
-  public void setReplyName( String replyname ) {
-    this.replyName = replyname;
+  public void setReplyName( String replyName ) {
+    this.replyName = replyName;
   }
 
   public String getReplyName() {
@@ -768,12 +810,14 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
    *          The usingAuthentication to set.
    */
   public void setUsingAuthentication( String usingAuthentication ) {
-    if ( "Y".equalsIgnoreCase( usingAuthentication ) ) {
+    if ( AUTENTICATION_OAUTH.equalsIgnoreCase( usingAuthentication ) ) {
+      this.usingAuthentication = AUTENTICATION_OAUTH;
+    } else if ( AUTENTICATION_BASIC.equalsIgnoreCase( usingAuthentication )
+                  || "Y".equalsIgnoreCase( usingAuthentication ) ) {
       this.usingAuthentication = AUTENTICATION_BASIC;
-    } else if ( "N".equalsIgnoreCase( usingAuthentication ) ) {
-      this.usingAuthentication = AUTENTICATION_NONE;
     } else {
-      this.usingAuthentication = usingAuthentication;
+      // All other cases: "No Auth" (valid option), "N" (old option), null or unrecognized option
+      this.usingAuthentication = AUTENTICATION_NONE;
     }
   }
 
@@ -838,7 +882,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * @param secureconnectiontype
+   * @param replyToAddresses
    *          the replayToAddresses to set
    */
   public void setReplyToAddresses( String replyToAddresses ) {
@@ -905,6 +949,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     this.priority = priority;
   }
 
+  @Override
   public Result execute( Result result, int nr ) {
     File masterZipfile = null;
 
@@ -925,14 +970,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         // Allow TLS authentication
         props.put( "mail.smtp.starttls.enable", "true" );
       } else {
-
         protocol = "smtps";
-        // required to get rid of a SSL exception :
+        // required to get rid of an SSL exception :
         // nested exception is:
         // javax.net.ssl.SSLException: Unsupported record version Unknown
         props.put( "mail.smtps.quitwait", "false" );
       }
-
     }
 
     props.put( "mail." + protocol + ".host", environmentSubstitute( server ) );
@@ -946,21 +989,13 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
     if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
       props.put( "mail." + protocol + ".auth", "true" );
-
-      /*
-       * authenticator = new Authenticator() { protected PasswordAuthentication getPasswordAuthentication() { return new
-       * PasswordAuthentication( StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")),
-       * StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, "")) ); } };
-       */
-    }
-
-    else if( usingAuthentication.equals(JobEntryMail.AUTENTICATION_OAUTH ) ) {
+    } else if ( usingAuthentication.equals( JobEntryMail.AUTENTICATION_OAUTH ) ) {
       token = getOauthToken( environmentSubstitute( tokenUrl ) );
-      props.put( "mail."+protocol+".auth.xoauth2.disable", "false" );
-      props.put( "mail."+protocol+".auth.mechanisms", "XOAUTH2" );
-      props.put( "mail.transport.protocol", "smtp");
-      props.put( "mail."+protocol+".auth.login.disable", "true" );
-      props.put( "mail."+protocol+".auth.plain.disable", "true" );
+      props.put( "mail." + protocol + ".auth.xoauth2.disable", "false" );
+      props.put( "mail." + protocol + ".auth.mechanisms", "XOAUTH2" );
+      props.put( "mail.transport.protocol", "smtp" );
+      props.put( "mail." + protocol + ".auth.login.disable", "true" );
+      props.put( "mail." + protocol + ".auth.plain.disable", "true" );
       props.setProperty( "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
     }
 
@@ -973,31 +1008,29 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       // set message priority
       if ( usePriority ) {
-        String priority_int = "1";
+        String priorityAsInt = "1";
         if ( priority.equals( "low" ) ) {
-          priority_int = "3";
-        }
-        if ( priority.equals( "normal" ) ) {
-          priority_int = "2";
+          priorityAsInt = "3";
+        } else if ( priority.equals( "normal" ) ) {
+          priorityAsInt = "2";
         }
 
-        msg.setHeader( "X-Priority", priority_int ); // (String)int between 1= high and 3 = low.
+        msg.setHeader( "X-Priority", priorityAsInt ); // (String)int between 1= high and 3 = low.
         msg.setHeader( "Importance", importance );
         // seems to be needed for MS Outlook.
         // where it returns a string of high /normal /low.
         msg.setHeader( "Sensitivity", sensitivity );
         // Possible values are normal, personal, private, company-confidential
-
       }
 
       // Set Mail sender (From)
-      String sender_address = environmentSubstitute( replyAddress );
-      if ( !Utils.isEmpty( sender_address ) ) {
-        String sender_name = environmentSubstitute( replyName );
-        if ( !Utils.isEmpty( sender_name ) ) {
-          sender_address = sender_name + '<' + sender_address + '>';
+      String senderAddress = environmentSubstitute( replyAddress );
+      if ( !Utils.isEmpty( senderAddress ) ) {
+        String senderName = environmentSubstitute( replyName );
+        if ( !Utils.isEmpty( senderName ) ) {
+          senderAddress = senderName + '<' + senderAddress + '>';
         }
-        msg.setFrom( new InternetAddress( sender_address ) );
+        msg.setFrom( new InternetAddress( senderAddress ) );
       } else {
         throw new MessagingException( BaseMessages.getString( PKG, "JobMail.Error.ReplyEmailNotFilled" ) );
       }
@@ -1059,68 +1092,57 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
       if ( !onlySendComment ) {
 
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Job" ) ).append( endRow );
-        messageText.append( "-----" ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobName" ) + "    : " ).append(
-          parentJob.getJobMeta().getName() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobDirectory" ) + "  : " ).append(
-          parentJob.getJobMeta().getRepositoryDirectory() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntry" ) + "   : " ).append(
-          getName() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Job" ) ).append( endRow )
+          .append( "-----" ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobName" ) ).append( "    : " )
+          .append( parentJob.getJobMeta().getName() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobDirectory" ) ).append( "  : " )
+          .append( parentJob.getJobMeta().getRepositoryDirectory() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntry" ) ).append( "   : " )
+          .append( getName() ).append( endRow );
         messageText.append( Const.CR );
       }
 
       if ( includeDate ) {
         messageText
-          .append( endRow ).append( BaseMessages.getString( PKG, "JobMail.Log.Comment.MsgDate" ) + ": " )
+          .append( endRow ).append( BaseMessages.getString( PKG, "JobMail.Log.Comment.MsgDate" ) ).append( ": " )
           .append( XMLHandler.date2string( new Date() ) ).append( endRow ).append( endRow );
       }
       if ( !onlySendComment && result != null ) {
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PreviousResult" ) + ":" ).append(
-          endRow );
-        messageText.append( "-----------------" ).append( endRow );
-        messageText
-          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntryNr" ) + "         : " ).append(
-            result.getEntryNr() ).append( endRow );
-        messageText
-          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Errors" ) + "               : " ).append(
-            result.getNrErrors() ).append( endRow );
-        messageText
-          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesRead" ) + "           : " ).append(
-            result.getNrLinesRead() ).append( endRow );
-        messageText
-          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesWritten" ) + "        : " ).append(
-            result.getNrLinesWritten() ).append( endRow );
-        messageText
-          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesInput" ) + "          : " ).append(
-            result.getNrLinesInput() ).append( endRow );
-        messageText
-          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesOutput" ) + "         : " ).append(
-            result.getNrLinesOutput() ).append( endRow );
-        messageText
-          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesUpdated" ) + "        : " ).append(
-            result.getNrLinesUpdated() ).append( endRow );
-        messageText
-          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesRejected" ) + "       : " ).append(
-            result.getNrLinesRejected() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Status" ) + "  : " ).append(
-          result.getExitStatus() ).append( endRow );
-        messageText
-          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Result" ) + "               : " ).append(
-            result.getResult() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PreviousResult" ) ).append( ":" )
+          .append( endRow ).append( "-----------------" ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntryNr" ) ).append( "         : " )
+          .append( result.getEntryNr() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Errors" ) ).append( "               : " )
+          .append( result.getNrErrors() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesRead" ) ).append( "           : " )
+          .append( result.getNrLinesRead() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesWritten" ) ).append( "        : " )
+          .append( result.getNrLinesWritten() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesInput" ) ).append( "          : " )
+          .append( result.getNrLinesInput() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesOutput" ) ).append( "         : " )
+          .append( result.getNrLinesOutput() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesUpdated" ) ).append( "        : " )
+          .append( result.getNrLinesUpdated() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesRejected" ) ).append( "       : " )
+          .append( result.getNrLinesRejected() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Status" ) ).append( "  : " )
+          .append( result.getExitStatus() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Result" ) ).append( "               : " )
+          .append( result.getResult() ).append( endRow );
         messageText.append( endRow );
       }
 
       if ( !onlySendComment
         && ( !Utils.isEmpty( environmentSubstitute( contactPerson ) ) || !Utils
           .isEmpty( environmentSubstitute( contactPhone ) ) ) ) {
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.ContactInfo" ) + " :" ).append(
-          endRow );
-        messageText.append( "---------------------" ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PersonToContact" ) + " : " ).append(
-          environmentSubstitute( contactPerson ) ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Tel" ) + "  : " ).append(
-          environmentSubstitute( contactPhone ) ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.ContactInfo" ) ).append( " :" )
+          .append( endRow ).append( "---------------------" ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PersonToContact" ) ).append( " : " )
+          .append( environmentSubstitute( contactPerson ) ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Tel" ) ).append( "  : " )
+          .append( environmentSubstitute( contactPhone ) ).append( endRow );
         messageText.append( endRow );
       }
 
@@ -1128,9 +1150,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       if ( !onlySendComment ) {
         JobTracker jobTracker = parentJob.getJobTracker();
         if ( jobTracker != null ) {
-          messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PathToJobentry" ) + ":" ).append(
-            endRow );
-          messageText.append( "------------------------" ).append( endRow );
+          messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PathToJobentry" ) ).append( ':' )
+            .append( endRow ).append( "------------------------" ).append( endRow );
 
           addBacktracking( jobTracker, messageText );
           if ( isUseHTML() ) {
@@ -1142,7 +1163,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       MimeMultipart parts = new MimeMultipart();
       MimeBodyPart part1 = new MimeBodyPart(); // put the text in the
       // Attached files counter
-      int nrattachedFiles = 0;
+      int nrAttachedFiles = 0;
 
       // 1st part
 
@@ -1167,29 +1188,26 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             for ( ResultFile resultFile : resultFiles ) {
               FileObject file = resultFile.getFile();
               if ( file != null && file.exists() ) {
-                boolean found = false;
-                for ( int i = 0; i < fileType.length; i++ ) {
-                  if ( fileType[i] == resultFile.getType() ) {
-                    found = true;
+                for ( int j : fileType ) {
+                  if ( j == resultFile.getType() ) {
+                    // create a data source
+                    MimeBodyPart files = new MimeBodyPart();
+                    URLDataSource fds = new URLDataSource( file.getURL() );
+
+                    // get a data Handler to manipulate this file type;
+                    files.setDataHandler( new DataHandler( fds ) );
+                    // include the file in the data source
+                    files.setFileName( file.getName().getBaseName() );
+
+                    // insist on base64 to preserve line endings
+                    files.addHeader( "Content-Transfer-Encoding", "base64" );
+
+                    // add the part with the file in the BodyPart();
+                    parts.addBodyPart( files );
+                    nrAttachedFiles++;
+                    logBasic( "Added file '" + fds.getName() + "' to the mail message." );
+                    break;
                   }
-                }
-                if ( found ) {
-                  // create a data source
-                  MimeBodyPart files = new MimeBodyPart();
-                  URLDataSource fds = new URLDataSource( file.getURL() );
-
-                  // get a data Handler to manipulate this file type;
-                  files.setDataHandler( new DataHandler( fds ) );
-                  // include the file in the data source
-                  files.setFileName( file.getName().getBaseName() );
-
-                  // insist on base64 to preserve line endings
-                  files.addHeader( "Content-Transfer-Encoding", "base64" );
-
-                  // add the part with the file in the BodyPart();
-                  parts.addBodyPart( files );
-                  nrattachedFiles++;
-                  logBasic( "Added file '" + fds.getName() + "' to the mail message." );
                 }
               }
             }
@@ -1203,34 +1221,29 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
               zipOutputStream = new ZipOutputStream( new FileOutputStream( masterZipfile ) );
 
               for ( ResultFile resultFile : resultFiles ) {
-                boolean found = false;
-                for ( int i = 0; i < fileType.length; i++ ) {
-                  if ( fileType[i] == resultFile.getType() ) {
-                    found = true;
-                  }
-                }
-                if ( found ) {
-                  FileObject file = resultFile.getFile();
-                  ZipEntry zipEntry = new ZipEntry( file.getName().getBaseName() );
-                  zipOutputStream.putNextEntry( zipEntry );
+                for ( int j : fileType ) {
+                  if ( j == resultFile.getType() ) {
+                    FileObject file = resultFile.getFile();
+                    ZipEntry zipEntry = new ZipEntry( file.getName().getBaseName() );
+                    zipOutputStream.putNextEntry( zipEntry );
 
-                  // Now put the content of this file into this archive...
-                  BufferedInputStream inputStream = new BufferedInputStream( KettleVFS.getInputStream( file ) );
-                  try {
-                    int c;
-                    while ( ( c = inputStream.read() ) >= 0 ) {
-                      zipOutputStream.write( c );
+                    // Now put the content of this file into this archive...
+                    try (
+                      BufferedInputStream inputStream = new BufferedInputStream( KettleVFS.getInputStream( file ) ) ) {
+                      int c;
+                      while ( ( c = inputStream.read() ) >= 0 ) {
+                        zipOutputStream.write( c );
+                      }
                     }
-                  } finally {
-                    inputStream.close();
+                    zipOutputStream.closeEntry();
+                    nrAttachedFiles++;
+                    logBasic( "Added file '" + file.getName().getURI() + "' to the mail message in a zip archive." );
+                    break;
                   }
-                  zipOutputStream.closeEntry();
-                  nrattachedFiles++;
-                  logBasic( "Added file '" + file.getName().getURI() + "' to the mail message in a zip archive." );
                 }
               }
             } catch ( Exception e ) {
-              logError( "Error zipping attachement files into file ["
+              logError( "Error zipping attachment files into file ["
                 + masterZipfile.getPath() + "] : " + e.toString() );
               logError( Const.getStackTracker( e ) );
               result.setNrErrors( 1 );
@@ -1240,7 +1253,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                   zipOutputStream.finish();
                   zipOutputStream.close();
                 } catch ( IOException e ) {
-                  logError( "Unable to close attachement zip file archive : " + e.toString() );
+                  logError( "Unable to close attachment zip file archive : " + e.toString() );
                   logError( Const.getStackTracker( e ) );
                   result.setNrErrors( 1 );
                 }
@@ -1311,7 +1324,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         }
       }
 
-      if ( nrEmbeddedImages > 0 && nrattachedFiles == 0 ) {
+      if ( nrEmbeddedImages > 0 && nrAttachedFiles == 0 ) {
         // If we need to embedd images...
         // We need to create a "multipart/related" message.
         // otherwise image will appear as attached file
@@ -1320,12 +1333,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       // put all parts together
       msg.setContent( parts );
 
-      Transport transport = null;
-      try {
-        transport = session.getTransport( protocol );
-        String authPass = getPassword( authenticationPassword );
-
+      try ( Transport transport = session.getTransport( protocol ) ) {
         if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
+          String authPass = getPassword( authenticationPassword );
+
           if ( !Utils.isEmpty( port ) ) {
             transport.connect(
               environmentSubstitute( Const.NVL( server, "" ) ),
@@ -1338,28 +1349,23 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
               environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
               authPass );
           }
-        }
-        else if( usingAuthentication.equals(  JobEntryMail.AUTENTICATION_OAUTH ) ) {
+        } else if ( usingAuthentication.equals( JobEntryMail.AUTENTICATION_OAUTH ) ) {
           if ( !Utils.isEmpty( port ) ) {
             transport.connect(
-                    environmentSubstitute( Const.NVL( server, "" ) ),
-                    Integer.parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ),
-                    environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
-                    this.token.getAccessToken() );
+              environmentSubstitute( Const.NVL( server, "" ) ),
+              Integer.parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ),
+              environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+              this.token.getAccessToken() );
           } else {
             transport.connect(
-                    environmentSubstitute( Const.NVL( server, "" ) ),
-                    environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
-                    this.token.getAccessToken() );
+              environmentSubstitute( Const.NVL( server, "" ) ),
+              environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+              this.token.getAccessToken() );
           }
         } else {
           transport.connect();
         }
         transport.sendMessage( msg, msg.getAllRecipients() );
-      } finally {
-        if ( transport != null ) {
-          transport.close();
-        }
       }
     } catch ( IOException e ) {
       logError( "Problem while sending message: " + e.toString() );
@@ -1376,8 +1382,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           Address[] invalid = sfex.getInvalidAddresses();
           if ( invalid != null ) {
             logError( "    ** Invalid Addresses" );
-            for ( int i = 0; i < invalid.length; i++ ) {
-              logError( "         " + invalid[i] );
+            for ( Address invalidAddress : invalid ) {
+              logError( "         " + invalidAddress );
               result.setNrErrors( 1 );
             }
           }
@@ -1385,8 +1391,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           Address[] validUnsent = sfex.getValidUnsentAddresses();
           if ( validUnsent != null ) {
             logError( "    ** ValidUnsent Addresses" );
-            for ( int i = 0; i < validUnsent.length; i++ ) {
-              logError( "         " + validUnsent[i] );
+            for ( Address validUnsentAddress : validUnsent ) {
+              logError( "         " + validUnsentAddress );
               result.setNrErrors( 1 );
             }
           }
@@ -1394,8 +1400,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           Address[] validSent = sfex.getValidSentAddresses();
           if ( validSent != null ) {
             // System.out.println("    ** ValidSent Addresses");
-            for ( int i = 0; i < validSent.length; i++ ) {
-              logError( "         " + validSent[i] );
+            for ( Address validSentAddress : validSent ) {
+              logError( "         " + validSentAddress );
               result.setNrErrors( 1 );
             }
           }
@@ -1412,11 +1418,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
     }
 
-    if ( result.getNrErrors() > 0 ) {
-      result.setResult( false );
-    } else {
-      result.setResult( true );
-    }
+    result.setResult( result.getNrErrors() <= 0 );
 
     return result;
   }
@@ -1434,20 +1436,17 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     if ( jer != null ) {
       messageText.append( " : " );
       if ( jer.getJobEntryName() != null ) {
-        messageText.append( " : " );
-        messageText.append( jer.getJobEntryName() );
+        messageText.append( " : " ).append( jer.getJobEntryName() );
       }
       if ( jer.getResult() != null ) {
         messageText.append( " : " );
-        messageText.append( "[" + jer.getResult().toString() + "]" );
+        messageText.append( '[' ).append( jer.getResult().toString() ).append( ']' );
       }
       if ( jer.getReason() != null ) {
-        messageText.append( " : " );
-        messageText.append( jer.getReason() );
+        messageText.append( " : " ).append( jer.getReason() );
       }
       if ( jer.getComment() != null ) {
-        messageText.append( " : " );
-        messageText.append( jer.getComment() );
+        messageText.append( " : " ).append( jer.getComment() );
       }
       if ( jer.getLogDate() != null ) {
         messageText.append( " (" );
@@ -1463,10 +1462,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
 
+  @Override
   public boolean isUnconditional() {
     return true;
   }
@@ -1525,9 +1526,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         }
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue( EntityUtils.toString( response.getEntity() ), EmailAuthenticationResponse.class );
-      } catch ( HttpException e ) {
-        throw new RuntimeException( e );
-      } catch ( IOException e ) {
+      } catch ( HttpException | IOException e ) {
         throw new RuntimeException( e );
       }
     } catch ( IOException e ) {
@@ -1535,6 +1534,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
+  @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
     String realServername = jobMeta.environmentSubstitute( server );
@@ -1548,13 +1548,13 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
 
-    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "server", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, TAG_SERVER, remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     JobEntryValidatorUtils.andValidator()
       .validate( jobMeta.getBowl(), this, "replyAddress", remarks, AndValidator.putValidators(
           JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.emailValidator() ) );
 
-    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "destination", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, TAG_DESTINATION, remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
     if ( usingAuthentication.equals( AUTENTICATION_BASIC ) ) {
@@ -1564,14 +1564,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
     }
 
-    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, "port", remarks,
+    JobEntryValidatorUtils.andValidator().validate( jobMeta.getBowl(), this, TAG_PORT, remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
-
   }
 
   public String getPassword( String authPassword ) {
     return Encr.decryptPasswordOptionallyEncrypted(
         environmentSubstitute( Const.NVL( authPassword, "" ) ) );
   }
-
 }
