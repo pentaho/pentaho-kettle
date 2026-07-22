@@ -90,12 +90,12 @@ public class MetaInject extends BaseStep implements StepInterface {
     // Read the data from all input steps and keep it in memory...
     // Skip the step from which we stream data. Keep that available for runtime action.
     //
-    data.rowMap = new HashMap<String, List<RowMetaAndData>>();
+    data.rowMap = new HashMap<>();
     for ( String prevStepName : getTransMeta().getPrevStepNames( getStepMeta() ) ) {
       // Don't read from the streaming source step
       //
       if ( !data.streaming || !prevStepName.equalsIgnoreCase( data.streamingSourceStepname ) ) {
-        List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+        List<RowMetaAndData> list = new ArrayList<>();
         RowSet rowSet = findInputRowSet( prevStepName );
         Object[] row = getRowFrom( rowSet );
         while ( row != null ) {
@@ -213,7 +213,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       waitUntilFinished( injectTrans );
     }
 
-    // let the transformation complete it's execution to allow for any customizations to MDI to happen in the init methods of steps
+    // let the transformation complete its execution to allow for any customizations to MDI to happen in the init methods of steps
     if ( log.isDetailed() ) {
       logDetailed( "XML of transformation after injection: " + data.transMeta.getXML() );
     }
@@ -270,7 +270,7 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     OutputStream os = null;
     try {
-      //don't clear all of the clone's data before copying from the source object
+      // don't clear all the clone's data before copying from the source object
       TransMeta generatedTransMeta = (TransMeta) data.transMeta.realClone( false );
       File injectedKtrFile = new File( targetFilePath );
 
@@ -311,7 +311,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       repoSaveLock.lock();
 
       // clone the transMeta associated with the data, this is the generated meta injection transformation
-      // don't clear all of the clone's data before copying from the source object
+      // don't clear all the clone's data before copying from the source object
       final TransMeta generatedTrans = (TransMeta) data.transMeta.realClone( false );
       // the targetFilePath holds the absolute repo path that is the requested destination of this generated
       // transformation, extract the file name (no extension) and the containing directory and adjust the generated
@@ -322,7 +322,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       generatedTrans.setName( fileName );
       // remove the last targetPath element, so we're left with the target directory path
       targetPath.remove( targetPath.size() - 1 );
-      if ( targetPath.size() > 0 ) {
+      if ( !targetPath.isEmpty() ) {
         final String dirPath = String.join( RepositoryDirectory.DIRECTORY_SEPARATOR, targetPath );
         RepositoryDirectoryInterface directory = getRepository().findDirectory( dirPath );
         // if the directory does not exist, try to create it
@@ -339,8 +339,8 @@ public class MetaInject extends BaseStep implements StepInterface {
         }
         generatedTrans.setRepositoryDirectory( data.transMeta.getRepositoryDirectory() );
       }
-      // set the objectId, in case the injected transformation already exists in the repo, so that is is updated in
-      // the repository - the objectId will remain null, if the transformation is begin generated for the first time,
+      // set the objectId, in case the injected transformation already exists in the repo, so that it is updated in
+      // the repository - the objectId will remain null, if the transformation is being generated for the first time,
       // in which a new ktr will be created in the repo
       generatedTrans.setObjectId( getRepository().getTransformationID( fileName, generatedTrans.getRepositoryDirectory() ) );
       getRepository().save( generatedTrans, null, null, true );
@@ -372,7 +372,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         // We also know which step to read the data from. (source)
         //
         if ( source.getStepname() != null ) {
-          // from specified steo
+          // from specified step
           List<RowMetaAndData> rows = data.rowMap.get( source.getStepname() );
           if ( rows != null && !rows.isEmpty() ) {
             // Which metadata key is this referencing? Find the attribute key in the metadata entries...
@@ -421,8 +421,10 @@ public class MetaInject extends BaseStep implements StepInterface {
     boolean wasInjection = false;
     for ( Map.Entry<TargetStepAttribute, SourceStepField> entry  : meta.getTargetSourceMapping().entrySet() ) {
       TargetStepAttribute target = entry.getKey();
-      SourceStepField source = entry.getValue();
+
       if ( target.getStepname().equalsIgnoreCase( targetStep ) ) {
+        SourceStepField source = entry.getValue();
+
         // This is the step to collect data for...
         // We also know which step to read the data from. (source)
         //
@@ -462,7 +464,7 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     // Create a new list of metadata injection entries...
     //
-    List<StepInjectionMetaEntry> inject = new ArrayList<StepInjectionMetaEntry>();
+    List<StepInjectionMetaEntry> inject = new ArrayList<>();
 
     // Collect all the metadata for this target step...
     //
@@ -475,7 +477,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         // We also know which step to read the data from. (source)
         //
         List<RowMetaAndData> rows = data.rowMap.get( source.getStepname() );
-        if ( rows != null && rows.size() > 0 ) {
+        if ( rows != null && !rows.isEmpty() ) {
           // Which metadata key is this referencing? Find the attribute key in the metadata entries...
           //
           StepInjectionMetaEntry entry = findMetaEntry( metadataEntries, target.getAttributeKey() );
@@ -489,13 +491,12 @@ public class MetaInject extends BaseStep implements StepInterface {
               //
               StepInjectionMetaEntry metaEntries = findMetaEntry( inject, entry.getKey() );
               if ( metaEntries == null ) {
-
                 StepInjectionMetaEntry rootEntry = findDetailRootEntry( metadataEntries, entry );
 
                 // Inject an empty copy
                 //
                 metaEntries = rootEntry.clone();
-                metaEntries.setDetails( new ArrayList<StepInjectionMetaEntry>() );
+                metaEntries.setDetails( new ArrayList<>() );
                 inject.add( metaEntries );
 
                 // We also need to pre-populate the whole grid: X rows by Y attributes
@@ -505,7 +506,7 @@ public class MetaInject extends BaseStep implements StepInterface {
                 for ( int i = 0; i < rows.size(); i++ ) {
                   StepInjectionMetaEntry metaCopy = metaEntry.clone();
                   metaEntries.getDetails().add( metaCopy );
-                  metaCopy.setDetails( new ArrayList<StepInjectionMetaEntry>() );
+                  metaCopy.setDetails( new ArrayList<>() );
 
                   for ( StepInjectionMetaEntry me : metaEntry.getDetails() ) {
                     StepInjectionMetaEntry meCopy = me.clone();
@@ -515,8 +516,7 @@ public class MetaInject extends BaseStep implements StepInterface {
 
                 // From now on we can simply refer to the correct X,Y coordinate.
               } else {
-                StepInjectionMetaEntry rootEntry = findDetailRootEntry( inject, metaEntries );
-                metaEntries = rootEntry;
+                metaEntries = findDetailRootEntry( inject, metaEntries );
               }
 
               for ( int i = 0; i < rows.size(); i++ ) {
@@ -669,7 +669,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         // Get a mapping between the step name and the injection...
         //
         // Get new injection info
-        data.stepInjectionMetasMap = new HashMap<String, StepMetaInterface>();
+        data.stepInjectionMetasMap = new HashMap<>();
         for ( StepMeta stepMeta : data.transMeta.getUsedSteps() ) {
           StepMetaInterface meta = stepMeta.getStepMetaInterface();
           if ( BeanInjectionInfo.isInjectionSupported( meta.getClass() ) ) {
@@ -677,7 +677,7 @@ public class MetaInject extends BaseStep implements StepInterface {
           }
         }
         // Get old injection info
-        data.stepInjectionMap = new HashMap<String, StepMetaInjectionInterface>();
+        data.stepInjectionMap = new HashMap<>();
         for ( StepMeta stepMeta : data.transMeta.getUsedSteps() ) {
           StepMetaInjectionInterface injectionInterface =
             stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
@@ -708,7 +708,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     Set<String> existedStepNames = convertToUpperCaseSet( data.transMeta.getStepNames() );
     Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
     Set<TargetStepAttribute> unavailableTargetSteps = getUnavailableTargetSteps( targetMap, data.transMeta );
-    Set<String> alreadyMarkedSteps = new HashSet<String>();
+    Set<String> alreadyMarkedSteps = new HashSet<>();
     for ( TargetStepAttribute currentTarget : unavailableTargetSteps ) {
       if ( alreadyMarkedSteps.contains( currentTarget.getStepname() ) ) {
         continue;
@@ -742,7 +742,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   public static Set<TargetStepAttribute> getUnavailableTargetSteps( Map<TargetStepAttribute, SourceStepField> targetMap,
                                                                     TransMeta injectedTransMeta ) {
     Set<String> usedStepNames = getUsedStepsForReferencendTransformation( injectedTransMeta );
-    Set<TargetStepAttribute> unavailableTargetSteps = new HashSet<TargetStepAttribute>();
+    Set<TargetStepAttribute> unavailableTargetSteps = new HashSet<>();
     for ( TargetStepAttribute currentTarget : targetMap.keySet() ) {
       if ( !usedStepNames.contains( currentTarget.getStepname().toUpperCase() ) ) {
         unavailableTargetSteps.add( currentTarget );
@@ -778,7 +778,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   }
 
   private static Set<String> getUsedStepsForReferencendTransformation( TransMeta transMeta ) {
-    Set<String> usedStepNames = new HashSet<String>();
+    Set<String> usedStepNames = new HashSet<>();
     for ( StepMeta currentStep : transMeta.getUsedSteps() ) {
       usedStepNames.add( currentStep.getName().toUpperCase() );
     }
@@ -789,7 +789,7 @@ public class MetaInject extends BaseStep implements StepInterface {
                                                                 TransMeta sourceTransMeta, StepMeta stepMeta ) {
     String[] stepNamesArray = sourceTransMeta.getPrevStepNames( stepMeta );
     Set<String> existedStepNames = convertToUpperCaseSet( stepNamesArray );
-    Set<SourceStepField> unavailableSourceSteps = new HashSet<SourceStepField>();
+    Set<SourceStepField> unavailableSourceSteps = new HashSet<>();
     for ( SourceStepField currentSource : targetMap.values() ) {
       if ( currentSource.getStepname() != null ) {
         if ( !existedStepNames.contains( currentSource.getStepname().toUpperCase() ) ) {
@@ -804,7 +804,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
     Set<SourceStepField> unavailableSourceSteps =
       getUnavailableSourceSteps( targetMap, getTransMeta(), getStepMeta() );
-    Set<String> alreadyMarkedSteps = new HashSet<String>();
+    Set<String> alreadyMarkedSteps = new HashSet<>();
     for ( SourceStepField currentSource : unavailableSourceSteps ) {
       if ( alreadyMarkedSteps.contains( currentSource.getStepname() ) ) {
         continue;
@@ -823,7 +823,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     if ( array == null ) {
       return Collections.emptySet();
     }
-    Set<String> strings = new HashSet<String>();
+    Set<String> strings = new HashSet<>();
     for ( String currentString : array ) {
       strings.add( currentString.toUpperCase() );
     }
