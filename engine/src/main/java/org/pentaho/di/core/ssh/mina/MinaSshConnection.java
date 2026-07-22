@@ -239,18 +239,28 @@ public class MinaSshConnection implements SshConnection {
   }
 
   private void waitForConnection( ConnectFuture cf ) throws SshConnectionException {
-    long extendedTimeout = config.getConnectTimeoutMillis() > 0 ? config.getConnectTimeoutMillis() : 60000; // Default 60 seconds
+    // PDI-20898: In MINA SSHD 2.x await(0L) behaves like a non-blocking poll and can return
+    // immediately without waiting for connection completion. Use no-argument await() for
+    // non-positive timeouts; it waits
+    // until the connection is established with no deadline imposed.
+    long connectTimeout = config.getConnectTimeoutMillis();
     boolean connected;
 
     try {
-      connected = cf.await( extendedTimeout );
+      if ( connectTimeout > 0 ) {
+        connected = cf.await( connectTimeout );
+      } else {
+        connected = cf.await();
+      }
     } catch ( IOException e ) {
       throw new SshConnectionException( "SSH connection failed during await", e );
     }
 
-
     if ( !connected ) {
-      throw new SshTimeoutException( "SSH connection timed out after " + extendedTimeout + "ms" );
+      if ( connectTimeout > 0 ) {
+        throw new SshTimeoutException( "SSH connection timed out after " + connectTimeout + "ms" );
+      }
+      throw new SshTimeoutException( "SSH connection failed while waiting with no configured timeout" );
     }
 
     if ( !cf.isConnected() ) {
@@ -354,7 +364,9 @@ public class MinaSshConnection implements SshConnection {
 
   private boolean performPublicKeyAuth() throws IOException {
     AuthFuture authFuture = session.auth();
-    boolean success = authFuture.verify( config.getConnectTimeoutMillis() ).isSuccess();
+    long timeout = config.getConnectTimeoutMillis();
+    // PDI-20898: verify(0L) throws TimeoutException immediately; use no-arg verify() for infinite wait.
+    boolean success = ( timeout > 0 ? authFuture.verify( timeout ) : authFuture.verify() ).isSuccess();
 
     if ( success ) {
       log( DEBUG, "SSH public key authentication successful" );
@@ -383,7 +395,9 @@ public class MinaSshConnection implements SshConnection {
       log( DEBUG, "Added password identity for SSH authentication" );
 
       AuthFuture authFuture = session.auth();
-      boolean success = authFuture.verify( config.getConnectTimeoutMillis() ).isSuccess();
+      long timeout = config.getConnectTimeoutMillis();
+      // PDI-20898: verify(0L) throws TimeoutException immediately; use no-arg verify() for infinite wait.
+      boolean success = ( timeout > 0 ? authFuture.verify( timeout ) : authFuture.verify() ).isSuccess();
 
       if ( success ) {
         log( DEBUG, "SSH password authentication successful" );
@@ -419,7 +433,12 @@ public class MinaSshConnection implements SshConnection {
       try ( var ch = session.createExecChannel( command ) ) {
         ch.setOut( stdout );
         ch.setErr( stderr );
-        ch.open().verify( timeoutMs );
+        // PDI-20898: verify(0L) throws TimeoutException immediately; use no-arg verify() for infinite wait.
+        if ( timeoutMs > 0 ) {
+          ch.open().verify( timeoutMs );
+        } else {
+          ch.open().verify();
+        }
 
         // Wait for the command to complete and exit status to be available
         Set<ClientChannelEvent> events = ch.waitFor(
