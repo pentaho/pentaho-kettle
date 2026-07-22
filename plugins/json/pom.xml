@@ -31,7 +31,7 @@
   </licenses>
 
   <properties>
-    <json-path.version>2.5.0</json-path.version>
+    <json-path.version>2.10.0</json-path.version>
     <minidev-asm.version>1.0.2</minidev-asm.version>
   </properties>
 
