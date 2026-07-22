@@ -5175,22 +5175,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private boolean canRepoSaveOrOverwrite( EngineMetaInterface meta, String fileType, RepositoryObject repositoryObject ) throws KettleException {
     if ( rep.exists( repositoryObject.getName(), repositoryObject.getRepositoryDirectory(), StringUtils.equals( FileDialogOperation.TRANSFORMATION, fileType ) ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ) ) {
-      MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
-      // "This file already exists.  Do you want to overwrite it?"
-      mb.setMessage( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE + meta.getFileType()
-              + MESSAGE, Const.createName( repositoryObject.getName() ) ) );
-      // "This file already exists!"
-      mb.setText( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE_TITLE ) );
-      if ( mb.open() == SWT.YES ) {
-        // user wants to overwrite the file
-        return true;
-      } else {
-        // user does wants to overwrite the file
-        return false;
-      }
+      return confirmRepositoryOverwrite( meta, repositoryObject );
     }
     // the file does not exist
     return true;
+  }
+
+  boolean confirmRepositoryOverwrite( EngineMetaInterface meta, RepositoryObject repositoryObject ) {
+    MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
+    // "This file already exists.  Do you want to overwrite it?"
+    mb.setMessage( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE + meta.getFileType()
+      + MESSAGE, Const.createName( repositoryObject.getName() ) ) );
+    // "This file already exists!"
+    mb.setText( BaseMessages.getString( PKG, SPOON_DIALOG_PROMPT_OVERWRITE_FILE_TITLE ) );
+    return mb.open() == SWT.YES;
   }
 
   public void addFileListener( FileListener listener ) {

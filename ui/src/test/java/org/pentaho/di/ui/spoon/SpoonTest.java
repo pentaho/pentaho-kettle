@@ -696,12 +696,14 @@ public class SpoonTest {
 
   @Test
   public void saveToRepositoryJobSuccessfulSaveChecksDuplicate() throws Exception {
-    assertSaveToRepositoryChecksDuplicate( mock( JobMeta.class ), "filename", RepositoryObjectType.JOB, true );
+    assertSaveToRepositoryChecksDuplicate( mock( JobMeta.class ), LastUsedFile.FILE_TYPE_JOB, RepositoryObjectType.JOB,
+      true );
   }
 
   @Test
   public void saveToRepositoryJobFailedSaveChecksDuplicate() throws Exception {
-    assertSaveToRepositoryChecksDuplicate( mock( JobMeta.class ), "filename", RepositoryObjectType.JOB, false );
+    assertSaveToRepositoryChecksDuplicate( mock( JobMeta.class ), LastUsedFile.FILE_TYPE_JOB, RepositoryObjectType.JOB,
+      false );
   }
 
   @Test
@@ -738,20 +740,14 @@ public class SpoonTest {
       eq( FileDialogOperation.ORIGIN_SPOON ) );
     doReturn( "newTrans" ).when( repositoryObject ).getName();
 
-    EngineMetaInterface engineMeta = (EngineMetaInterface) metaData;
-    doCallRealMethod().when( spoon ).saveToRepository( engineMeta, true );
+    doCallRealMethod().when( spoon ).saveToRepository( metaData, true );
 
-    doReturn( saveConfirmed ).when( spoon ).saveToRepositoryConfirmed( engineMeta );
-    spoon.saveToRepository( engineMeta, true );
-
-    long confirmationDialogChecks = Mockito.mockingDetails( spoon ).getInvocations().stream()
-      .filter( invocation -> "saveToRepositoryConfirmed".equals( invocation.getMethod().getName() ) )
-      .filter( invocation -> invocation.getArguments().length == 1 && invocation.getArguments()[0] == engineMeta )
-      .count();
-    assertEquals( "Expected overwrite confirmation check to be invoked once via saveToRepositoryConfirmed", 1,
-      confirmationDialogChecks );
+    doReturn( saveConfirmed ).when( spoon ).saveToRepositoryConfirmed( metaData );
+    spoon.saveToRepository( metaData, true );
 
     verify( spoon.rep, times( 1 ) ).exists( "newTrans", newDirMock, objectType );
+    verify( spoon, Mockito.description( "Expected repository save confirmation to be invoked once" ) )
+      .saveToRepositoryConfirmed( metaData );
     verify( metaData, times( 1 ) ).setRepositoryDirectory( newDirMock );
     verify( metaData, times( 1 ) ).setName( "newTrans" );
     if ( saveConfirmed ) {
@@ -763,6 +759,39 @@ public class SpoonTest {
       verify( metaData, times( 1 ) ).setRepositoryDirectory( dirMock );
       verify( metaData, times( 1 ) ).setName( "trans" );
     }
+  }
+
+  @Test
+  public void saveToRepositoryDoesNotSaveWhenOverwriteDeclined() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, "NotMainSpoonPerspective", true,
+      true, LastUsedFile.FILE_TYPE_JOB, null, true, false );
+
+    RepositoryDirectoryInterface originalDir = mock( RepositoryDirectoryInterface.class );
+    doReturn( originalDir ).when( mockJobMeta ).getRepositoryDirectory();
+    doReturn( "original" ).when( mockJobMeta ).getName();
+
+    RepositoryDirectoryInterface targetDir = mock( RepositoryDirectoryInterface.class );
+    RepositoryObject repositoryObject = mock( RepositoryObject.class );
+    doReturn( targetDir ).when( repositoryObject ).getRepositoryDirectory();
+    doReturn( "existing" ).when( repositoryObject ).getName();
+
+    FileDialogOperation fileDlgOp = mock( FileDialogOperation.class );
+    doReturn( repositoryObject ).when( fileDlgOp ).getRepositoryObject();
+    doReturn( fileDlgOp ).when( spoon ).getFileDialogOperation( any(), eq( FileDialogOperation.SAVE ),
+      eq( FileDialogOperation.ORIGIN_SPOON ) );
+    doReturn( true ).when( spoon.rep ).exists( "existing", targetDir, RepositoryObjectType.JOB );
+    doReturn( false ).when( spoon ).confirmRepositoryOverwrite( mockJobMeta, repositoryObject );
+    doCallRealMethod().when( spoon ).saveToRepository( mockJobMeta, true );
+
+    assertFalse( spoon.saveToRepository( mockJobMeta, true ) );
+
+    verify( spoon, Mockito.description( "Expected overwrite confirmation to be presented for an existing repository object" ) )
+      .confirmRepositoryOverwrite( mockJobMeta, repositoryObject );
+    verify( spoon, never() ).saveToRepositoryConfirmed( mockJobMeta );
+    verify( mockJobMeta, never() ).setRepositoryDirectory( targetDir );
+    verify( mockJobMeta, never() ).setName( "existing" );
+    verify( spoon.delegates.tabs, never() ).renameTabs();
   }
 
   private static void prepareSetSaveTests( Spoon spoon, LogChannelInterface log, SpoonPerspective spoonPerspective,
