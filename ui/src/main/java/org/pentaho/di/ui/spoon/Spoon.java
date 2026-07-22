@@ -5903,18 +5903,21 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
             final RepositoryDirectoryInterface oldDir = meta.getRepositoryDirectory();
             final String oldName = meta.getName();
-            meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
-            meta.setName( repositoryObject.getName() );
-            final boolean saved = saveToRepositoryConfirmed( meta );
-            // rename the tab only if the meta object was successfully saved
-            if ( saved ) {
-              delegates.tabs.renameTabs();
-            } else {
-              // if the object wasn't successfully saved, set the name and directory back to their original values
-              meta.setRepositoryDirectory( oldDir );
-              meta.setName( oldName );
+            if ( canRepoSaveOrOverwrite( meta, fileType, repositoryObject ) ) {
+              meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
+              meta.setName( repositoryObject.getName() );
+              final boolean saved = saveToRepositoryConfirmed( meta );
+              // rename the tab only if the meta object was successfully saved
+              if ( saved ) {
+                delegates.tabs.renameTabs();
+              } else {
+                // if the object wasn't successfully saved, set the name and directory back to their original values
+                meta.setRepositoryDirectory( oldDir );
+                meta.setName( oldName );
+              }
+              return saved;
             }
-            return saved;
+            return false;
           }
         } catch ( KettleException ke ) {
           //Ignore
