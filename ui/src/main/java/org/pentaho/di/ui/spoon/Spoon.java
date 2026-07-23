@@ -5882,44 +5882,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
 
       if ( ask_name ) {
-        try {
-          String fileType = meta.getFileType().equals( LastUsedFile.FILE_TYPE_TRANSFORMATION )
-            ? FileDialogOperation.TRANSFORMATION : FileDialogOperation.JOB;
-          FileDialogOperation fileDialogOperation = getFileDialogOperation( executionBowl,  FileDialogOperation.SAVE,
-            FileDialogOperation.ORIGIN_SPOON );
-          fileDialogOperation.setFileType( fileType );
-          fileDialogOperation.setFilter( deriveFileFilterFromFileType( fileType ) );
-          setFileOperationPathForRepositoryFile( fileDialogOperation, meta );
-          //Set the filename so it can be used as the default filename in the save dialog
-          String fileName = ( meta.getFilename() == null || meta.getFilename().length() == 0 )
-                  ? meta.getName() : meta.getFilename();
-          fileDialogOperation.setFilename( fileName );
-          fileDialogOperation.setProviderFilter( evaluateFileBrowserProviderFilter() );
-          ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
-            fileDialogOperation );
-          if ( fileDialogOperation.getRepositoryObject() != null ) {
-            RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
-            final RepositoryDirectoryInterface oldDir = meta.getRepositoryDirectory();
-            final String oldName = meta.getName();
-            if ( canRepoSaveOrOverwrite( meta, fileType, repositoryObject ) ) {
-              meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
-              meta.setName( repositoryObject.getName() );
-              final boolean saved = saveToRepositoryConfirmed( meta );
-              // rename the tab only if the meta object was successfully saved
-              if ( saved ) {
-                delegates.tabs.renameTabs();
-              } else {
-                // if the object wasn't successfully saved, set the name and directory back to their original values
-                meta.setRepositoryDirectory( oldDir );
-                meta.setName( oldName );
-              }
-              return saved;
-            }
-            return false;
-          }
-        } catch ( KettleException ke ) {
-          //Ignore
-        }
+        return saveToRepositoryWithNewName( meta );
       } else {
         return saveToRepositoryConfirmed( meta );
       }
@@ -5933,6 +5896,54 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       mb.open();
     }
     return false;
+  }
+
+  private boolean saveToRepositoryWithNewName( EngineMetaInterface meta ) {
+    try {
+      String fileType = meta.getFileType().equals( LastUsedFile.FILE_TYPE_TRANSFORMATION )
+        ? FileDialogOperation.TRANSFORMATION : FileDialogOperation.JOB;
+      FileDialogOperation fileDialogOperation = getFileDialogOperation( executionBowl, FileDialogOperation.SAVE,
+        FileDialogOperation.ORIGIN_SPOON );
+      fileDialogOperation.setFileType( fileType );
+      fileDialogOperation.setFilter( deriveFileFilterFromFileType( fileType ) );
+      setFileOperationPathForRepositoryFile( fileDialogOperation, meta );
+      //Set the filename so it can be used as the default filename in the save dialog
+      String fileName = ( meta.getFilename() == null || meta.getFilename().length() == 0 )
+        ? meta.getName() : meta.getFilename();
+      fileDialogOperation.setFilename( fileName );
+      fileDialogOperation.setProviderFilter( evaluateFileBrowserProviderFilter() );
+      ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveNew.id,
+        fileDialogOperation );
+      if ( fileDialogOperation.getRepositoryObject() == null ) {
+        return false;
+      }
+
+      RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
+      return saveRepositoryObjectWithNewName( meta, fileType, repositoryObject );
+    } catch ( KettleException ke ) {
+      //Ignore
+      return false;
+    }
+  }
+
+  private boolean saveRepositoryObjectWithNewName( EngineMetaInterface meta, String fileType,
+                                                    RepositoryObject repositoryObject ) throws KettleException {
+    if ( !canRepoSaveOrOverwrite( meta, fileType, repositoryObject ) ) {
+      return false;
+    }
+
+    final RepositoryDirectoryInterface oldDir = meta.getRepositoryDirectory();
+    final String oldName = meta.getName();
+    meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
+    meta.setName( repositoryObject.getName() );
+    final boolean saved = saveToRepositoryConfirmed( meta );
+    if ( saved ) {
+      delegates.tabs.renameTabs();
+    } else {
+      meta.setRepositoryDirectory( oldDir );
+      meta.setName( oldName );
+    }
+    return saved;
   }
 
   public boolean saveToRepositoryCheckSecurity( EngineMetaInterface meta ) {
