@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -201,18 +202,13 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     String root = request.getRequestURI() == null ? StatusServletUtils.PENTAHO_ROOT
       : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
     String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
     int numberOfTailLines = Const.toInt( request.getParameter( "tail" ), 0 );
     int startLineNr = Const.toInt( request.getParameter( "from" ), 0 );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
-    if ( useXML ) {
-      response.setContentType( TEXT_XML );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-    } else {
-      response.setContentType( "text/html;charset=UTF-8" );
-    }
+    String encoding = contentTypeAndHeader( useXML, response, null, StandardCharsets.UTF_8.name() ); 
 
     //Either jobName or id is required parameter
 
@@ -275,9 +271,6 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
               logText = logText.substring( StringUtils.lastOrdinalIndexOf(  logText, "\n", numberOfTailLines + 1 ) + 1 );
             }*/
 
-            response.setContentType( TEXT_XML );
-            response.setCharacterEncoding( Const.XML_ENCODING );
-
             SlaveServerJobStatus jobStatus = new SlaveServerJobStatus( jobName, id, job.getStatus() );
             jobStatus.setFirstLoggingLineNr( startLineNr );
             jobStatus.setLastLoggingLineNr( lastLineNr );
@@ -319,8 +312,6 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         int lastLineNr = KettleLogStore.getLastBufferLineNr();
         int tableBorder = 0;
 
-        response.setContentType( "text/html" );
-
         out.println( "<HTML>" );
         out.println( "<HEAD>" );
         out
@@ -329,10 +320,10 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         if ( EnvUtil.getSystemProperty( Const.KETTLE_CARTE_REFRESH_STATUS, "N" ).equalsIgnoreCase( "Y" ) ) {
           out.println( "<META http-equiv=\"Refresh\" content=\"10;url="
             + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-            + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
+            + URLEncoder.encode( Const.NVL( jobName, "" ), encoding ) + "&id=" + URLEncoder.encode( id, encoding )
             + "\">" );
         }
-        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
         if ( isJettyMode() ) {
           out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/carte.css\" />" );
         } else {
@@ -451,23 +442,22 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     }
   }
 
-  private void printResponse( HttpServletResponse response, boolean useXML, PrintWriter out, String message ) {
-    if ( useXML ) {
-      response.setContentType( TEXT_XML );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-      out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
+  private void printResponse( HttpServletResponse response, boolean useXML, PrintWriter out, String message ) throws IOException {
+    
+    String encoding = contentTypeAndHeader( useXML, response, out, StandardCharsets.UTF_8.name() );
+    
+    if ( !useXML ) {
       out.println( new WebResult( WebResult.STRING_ERROR, message ) );
     } else {
       String h1End = "</H1>";
       String h1 = "<H1>";
       String hrefEnd = "</a><p>";
-      response.setContentType( "text/html;charset=UTF-8" );
       out.println( "<HTML>" );
       out.println( "<HEAD>" );
       out.println( "<TITLE>Start job</TITLE>" );
       out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
         + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">" );
-      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
       out.println( h1 + Encode.forHtml( message ) + h1End );

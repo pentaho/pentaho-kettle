@@ -22,6 +22,7 @@ import org.pentaho.di.i18n.PackageMessages;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,10 +35,6 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
 
   public BodyHttpServlet() {
     messages = new PackageMessages( this.getClass() );
-  }
-
-  protected boolean useXML( HttpServletRequest request ) {
-    return "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
   }
 
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws IOException {
@@ -84,13 +81,13 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
   }
 
   protected void beginHtml( HttpServletResponse response, PrintWriter out ) throws IOException {
-    response.setContentType( "text/html;charset=UTF-8" );
+    String encoding = contentTypeAndHeader( false, response, null, StandardCharsets.UTF_8.name() );
     out.println( "<HTML>" );
     out.println( "<HEAD>" );
     out.println( "<TITLE>" );
     out.println( Encode.forHtml( getTitle() ) );
     out.println( "</TITLE>" );
-    out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+    out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
     out.println( "</HEAD>" );
     out.println( "<BODY>" );
   }
@@ -102,9 +99,7 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
   }
 
   protected void startXml( HttpServletResponse response, PrintWriter out ) throws IOException {
-    response.setContentType( "text/xml" );
-    response.setCharacterEncoding( Const.XML_ENCODING );
-    out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
+    contentTypeAndHeader( true, response, out, Const.XML_ENCODING );
   }
 
   abstract WebResult generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML )

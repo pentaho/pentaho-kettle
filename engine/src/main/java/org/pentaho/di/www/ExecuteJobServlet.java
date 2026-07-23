@@ -195,7 +195,9 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     String levelOption = request.getParameter( "level" );
 
     PrintWriter out = response.getWriter();
-
+    
+    contentTypeAndHeader( true, response, out, null );
+    
     Repository repository;
     try {
       repository = openRepository( repOption, userOption, passOption );
@@ -224,12 +226,6 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
         PKG, "ExecuteJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ke ) );
       out.println( new WebResult( WebResult.STRING_ERROR, message ) );
       return;
-    }
-
-    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
-      response.setCharacterEncoding( encoding );
-      response.setContentType( "text/html; charset=" + encoding );
     }
 
     JobMeta jobMeta;
@@ -307,7 +303,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     try {
       runJob( job );
       WebResult webResult = new WebResult( WebResult.STRING_OK, "Job started", carteObjectId );
-      out.println( webResult.getXML() );
+      out.println( webResult );
       out.flush();
 
     } catch ( Exception executionException ) {

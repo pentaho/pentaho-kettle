@@ -17,6 +17,7 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -140,28 +141,24 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
 
     String transName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
-    response.setCharacterEncoding( "UTF-8" );
-
     PrintWriter out = response.getWriter();
+    
+    String encoding = contentTypeAndHeader( useXML, response, out, StandardCharsets.UTF_8.name() );
+    
     try {
-      if ( useXML ) {
-        response.setContentType( "text/xml" );
-        response.setCharacterEncoding( Const.XML_ENCODING );
-        out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
-      } else {
-
-        response.setContentType( "text/html;charset=UTF-8" );
+      if ( !useXML ) {
+        
         out.println( "<HTML>" );
         out.println( "<HEAD>" );
         out.println( "<TITLE>" + BaseMessages.getString( PKG, "PauseTransServlet.PauseTrans" ) + "</TITLE>" );
         out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
           + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-          + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">" );
-        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+          + URLEncoder.encode( transName, encoding ) + "&id=" + URLEncoder.encode( id, encoding ) + "\">" );
+        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
       }

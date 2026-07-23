@@ -15,20 +15,25 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Enumeration;
 import java.util.List;
+
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.pentaho.di.core.bowl.Bowl;
-import org.pentaho.di.core.bowl.DefaultBowl;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.repository.Repository;
+import jakarta.ws.rs.core.MediaType;
 
 
 public class BaseHttpServlet extends HttpServlet {
@@ -91,6 +96,41 @@ public class BaseHttpServlet extends HttpServlet {
     this.jettyMode = isJetty;
   }
 
+  protected boolean useXML( HttpServletRequest request ) {
+    return "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+  }
+  
+
+  /**
+   * Sets contentType and encoding headers on the response. Also can optionally print the <?xml ...> declaration line.
+   * @param isXml A boolean indicating if the header should be written for xml or html
+   * @param response The HttpServlet Response to set the content type and character encoding
+   * @param outputWriter When a non-null value is passed and isXml is true, the <?xml> declaration is written to the Writer
+   * @param defaultEncoding A default encoding that should be used if no others are provided.
+   * @return  Returns the encoding that was used
+   * @throws IOException
+   */
+  protected String contentTypeAndHeader(boolean isXml, HttpServletResponse response, Writer outputWriter, String defaultEncoding  ) throws IOException {
+    if( isXml ) {
+      String xmlEncoding = Const.NVL( defaultEncoding, Const.XML_ENCODING );
+      response.setContentType( MediaType.APPLICATION_XML );
+      response.setCharacterEncoding( xmlEncoding );
+      if( outputWriter != null ) {
+        outputWriter.append( XMLHandler.getXMLHeader( xmlEncoding ) );
+      }
+      return xmlEncoding;
+    } else {
+      String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", defaultEncoding );
+      if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
+        response.setCharacterEncoding( encoding );
+        response.setContentType( "text/html; charset=" + encoding );
+      } else {
+        response.setContentType( MediaType.TEXT_HTML );
+      }
+      return encoding;
+    }
+  }
+  
   protected void doPut( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     doGet( request, response );

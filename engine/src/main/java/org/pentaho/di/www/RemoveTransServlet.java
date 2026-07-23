@@ -16,6 +16,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -145,20 +146,13 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
 
     String transName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-    } else {
-      response.setContentType( "text/html;charset=UTF-8" );
-    }
-
-    response.setCharacterEncoding( "UTF-8" );
-
     PrintWriter out = response.getWriter();
+    
+    String encoding = contentTypeAndHeader( useXML, response, out, StandardCharsets.UTF_8.name() );
 
     // ID is optional...
     //
@@ -188,17 +182,12 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
       getTransformationMap().removeTransformation( entry );
 
       if ( useXML ) {
-        response.setContentType( "text/xml" );
-        response.setCharacterEncoding( Const.XML_ENCODING );
-        out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
-        out.print( WebResult.OK.getXML() );
+        out.print( WebResult.OK );
       } else {
-        response.setContentType( "text/html;charset=UTF-8" );
-
         out.println( "<HTML>" );
         out.println( "<HEAD>" );
         out.println( "<TITLE>" + BaseMessages.getString( PKG, "RemoveTransServlet.TransRemoved" ) + "</TITLE>" );
-        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; " + encoding + "\">" );
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
         out.println( "<H3>"
