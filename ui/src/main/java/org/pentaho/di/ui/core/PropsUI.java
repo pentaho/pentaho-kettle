@@ -99,8 +99,6 @@ public class PropsUI extends Props {
 
   private static final String STRING_SHOW_BRANDING_GRAPHICS = "ShowBrandingGraphics";
 
-  private static final String STRING_ONLY_SHOW_ACTIVE_FILE = "OnlyShowActiveFileInTree";
-
   private static final String SHOW_TOOL_TIPS = "ShowToolTips";
 
   private static final String SHOW_HELP_TOOL_TIPS = "ShowHelpToolTips";
@@ -1204,15 +1202,6 @@ public class PropsUI extends Props {
 
   public void setBrandingActive( boolean active ) {
     properties.setProperty( STRING_SHOW_BRANDING_GRAPHICS, active ? YES : NO );
-  }
-
-  public boolean isOnlyActiveFileShownInTree() {
-    String show = properties.getProperty( STRING_ONLY_SHOW_ACTIVE_FILE, YES );
-    return YES.equalsIgnoreCase( show );
-  }
-
-  public void setOnlyActiveFileShownInTree( boolean show ) {
-    properties.setProperty( STRING_ONLY_SHOW_ACTIVE_FILE, show ? YES : NO );
   }
 
   public boolean showToolTips() {
