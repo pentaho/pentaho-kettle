@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-engine</artifactId>
-  <version>10.2.0.7-399</version>
+  <version>10.2.0.7-CUST-336</version>
   <packaging>jar</packaging>
 
   <name>PDI Engine</name>
@@ -95,19 +95,19 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.7-399</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pdi-engine-api</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.7-399</version>
     </dependency>
 
     <!-- Pentaho dependencies -->
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pentaho-registry</artifactId>
-      <version>${pentaho-registry.version}</version>
+      <version>10.2.0.7-399</version>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -122,19 +122,19 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>mondrian</artifactId>
-      <version>${mondrian.version}</version>
+      <version>10.2.0.7-399</version>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.7-399</version>
     </dependency>
 
     <!-- Reporting dependencies -->
     <dependency>
       <groupId>org.pentaho.reporting.library</groupId>
       <artifactId>libformula</artifactId>
-      <version>${pentaho-reporting.version}</version>
+      <version>10.2.0.7-399</version>
     </dependency>
 
 
@@ -843,7 +843,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
+      <version>10.2.0.7-399</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -888,7 +888,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${pentaho-metastore.version}</version>
+      <version>10.2.0.7-399</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>

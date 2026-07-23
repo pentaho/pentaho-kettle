@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>ftp-delete</artifactId>
-  <version>10.2.0.7-399</version>
+  <version>10.2.0.7-CUST-336</version>
   <packaging>pom</packaging>
 
   <name>PDI FTP Delete Plugins</name>
@@ -44,19 +44,19 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-engine</artifactId>
-        <version>${pdi.version}</version>
+        <version>10.2.0.7-CUST-336</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${pdi.version}</version>
+        <version>10.2.0.7-399</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-ui-swt</artifactId>
-        <version>${pdi.version}</version>
+        <version>10.2.0.7-399</version>
         <scope>provided</scope>
       </dependency>
 
@@ -89,14 +89,14 @@
       <dependency>
        <groupId>pentaho-kettle</groupId>
        <artifactId>kettle-core</artifactId>
-       <version>${pdi.version}</version>
+       <version>10.2.0.7-399</version>
        <classifier>tests</classifier>
        <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>pentaho-kettle</groupId>
          <artifactId>kettle-engine</artifactId>
-         <version>${pdi.version}</version>
+         <version>10.2.0.7-CUST-336</version>
          <classifier>tests</classifier>
          <scope>test</scope>
        </dependency>
