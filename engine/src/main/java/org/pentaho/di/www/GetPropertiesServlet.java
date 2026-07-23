@@ -54,7 +54,6 @@ public class GetPropertiesServlet extends BodyHttpServlet {
 
   @Override
   protected void startXml( HttpServletResponse response, PrintWriter out ) throws IOException {
-    response.setContentType( "text/xml" );
-    response.setCharacterEncoding( Const.XML_ENCODING );
+    contentTypeAndHeader( true, response, null, Const.XML_ENCODING );
   }
 }

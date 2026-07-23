@@ -171,7 +171,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       logDebug( "Addition of transformation requested" );
     }
 
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
 
     PrintWriter out = response.getWriter();
     BufferedReader in = request.getReader();
@@ -179,11 +179,8 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       logDetailed( "Encoding: " + request.getCharacterEncoding() );
     }
 
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      out.print( XMLHandler.getXMLHeader() );
-    } else {
-      response.setContentType( "text/html" );
+    contentTypeAndHeader(useXML, response, out, null );
+    if ( !useXML ) {
       out.println( "<HTML>" );
       out.println( "<HEAD><TITLE>Add transformation</TITLE></HEAD>" );
       out.println( "<BODY>" );

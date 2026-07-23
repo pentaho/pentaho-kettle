@@ -39,6 +39,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.UUID;
 
@@ -156,12 +157,10 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
 
     response.setStatus( HttpServletResponse.SC_OK );
 
-    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
-      response.setCharacterEncoding( encoding );
-      response.setContentType( "text/html; charset=" + encoding );
-    }
     PrintWriter out = response.getWriter();
+    
+    //When running transformations with runTrans, the transformation may print output to the response.
+    contentTypeAndHeader( false, response, null, StandardCharsets.UTF_8.name() );
 
     try {
 

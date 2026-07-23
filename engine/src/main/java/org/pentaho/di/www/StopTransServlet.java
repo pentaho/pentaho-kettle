@@ -17,6 +17,7 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -146,23 +147,21 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
     String transName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
     boolean inputOnly = "Y".equalsIgnoreCase( request.getParameter( "inputOnly" ) );
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
 
     PrintWriter out = response.getWriter();
+    
+    String encoding = contentTypeAndHeader( useXML, response, out, StandardCharsets.UTF_8.name() );
+    
     try {
-      if ( useXML ) {
-        response.setContentType( "text/xml" );
-        response.setCharacterEncoding( Const.XML_ENCODING );
-        out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
-      } else {
-        response.setContentType( "text/html;charset=UTF-8" );
+      if ( !useXML ) {
         out.println( "<HTML>" );
         out.println( "<HEAD>" );
         out.println( "<TITLE>" + BaseMessages.getString( PKG, "StopTransServlet.StopTrans" ) + "</TITLE>" );
         out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
           + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-          + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
-        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+          + URLEncoder.encode( transName, encoding ) + "\">" );
+        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
       }
@@ -198,19 +197,19 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
         String message = BaseMessages.getString( PKG, "StopTransServlet.TransSopRequested", transName );
 
         if ( useXML ) {
-          out.println( new WebResult( WebResult.STRING_OK, message, id ).getXML() );
+          out.println( new WebResult( WebResult.STRING_OK, message, id ) );
         } else {
           out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-            + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+            + URLEncoder.encode( transName, encoding ) + "&id=" + URLEncoder.encode( id, encoding ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToTransStatusPage" ) + "</a><p>" );
         }
       } else {
         String message = BaseMessages.getString( PKG, "StopTransServlet.CanNotFindTrans", transName );
 
         if ( useXML ) {
-          out.println( new WebResult( WebResult.STRING_ERROR, message, id ).getXML() );
+          out.println( new WebResult( WebResult.STRING_ERROR, message, id ) );
         } else {
           out.println( "<H1>" + Encode.forHtml( message ) + "</H1>" );
           out.println( "<a href=\""
@@ -221,7 +220,7 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
       }
     } catch ( Exception ex ) {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR, Const.getStackTracker( ex ) ).getXML() );
+        out.println( new WebResult( WebResult.STRING_ERROR, Const.getStackTracker( ex ) ) );
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );

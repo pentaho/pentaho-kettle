@@ -17,6 +17,7 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import jakarta.servlet.ServletException;
@@ -161,13 +162,15 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
     String jobName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
     String fetchJobConfigFromEntryStr = request.getParameter( "fetchJobConfigFromEntry" );
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
     boolean fetchJobConfigFromEntry = "Y".equalsIgnoreCase( fetchJobConfigFromEntryStr );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
     PrintWriter out = response.getWriter();
 
+    String encoding = contentTypeAndHeader( useXML, response, out, StandardCharsets.UTF_8.name() );
+    
     //Either jobName or id is required parameter
     String h1End = "</H1>";
     String h1 = "<H1>";
@@ -177,18 +180,14 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
       response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
       String message = BaseMessages.getString( PKG, "StartJobServlet.Log.JobNameOrIdIsMandatory" );
       if ( useXML ) {
-        response.setContentType( "text/xml" );
-        response.setCharacterEncoding( Const.XML_ENCODING );
-        out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
         out.println( new WebResult( WebResult.STRING_ERROR, message ) );
       } else {
-        response.setContentType( "text/html;charset=UTF-8" );
         out.println( "<HTML>" );
         out.println( "<HEAD>" );
         out.println( "<TITLE>Start job</TITLE>" );
         out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">" );
-        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
         out.println( h1 + Encode.forHtml( message ) + h1End );
@@ -201,19 +200,14 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
       return;
     }
 
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-      out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
-    } else {
-      response.setContentType( "text/html;charset=UTF-8" );
+    if ( !useXML ) {
       out.println( "<HTML>" );
       out.println( "<HEAD>" );
       out.println( "<TITLE>Start job</TITLE>" );
       out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
-        + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( jobName, "UTF-8" )
+        + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( jobName, encoding )
         + "\">" );
-      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
     }
@@ -287,7 +281,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
 
         String message = BaseMessages.getString( PKG, "StartJobServlet.Log.JobStarted", jobName );
         if ( useXML ) {
-          out.println( new WebResult( WebResult.STRING_OK, message, id ).getXML() );
+          out.println( new WebResult( WebResult.STRING_OK, message, id ) );
         } else {
 
           out.println( h1 + Encode.forHtml( message ) + h1End );

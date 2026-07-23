@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -190,23 +191,17 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
     String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
     prefix = encodeUriComponents( prefix );
     root = encodeUriComponents( root );
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
     boolean useLightTheme = "Y".equalsIgnoreCase( request.getParameter( "useLightTheme" ) );
-
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-    } else {
-      response.setContentType( "text/html;charset=UTF-8" );
-    }
 
     PrintWriter out = response.getWriter();
 
+    String encoding = contentTypeAndHeader( useXML, response, out, StandardCharsets.UTF_8.name() );
+    
     List<CarteObjectEntry> transEntries = getTransformationMap().getTransformationObjects();
     List<CarteObjectEntry> jobEntries = getJobMap().getJobObjects();
 
     if ( useXML ) {
-      out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
       SlaveServerStatus serverStatus = new SlaveServerStatus();
       serverStatus.setStatusDescription( "Online" );
 
@@ -242,7 +237,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "<HTML>" );
       out.println( "<HEAD><TITLE>"
         + BaseMessages.getString( PKG, "GetStatusServlet.KettleSlaveServerStatus" ) + "</TITLE>" );
-      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
 
       int tableBorder = 1;
       if ( !useLightTheme ) {

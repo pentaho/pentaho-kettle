@@ -153,7 +153,7 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       logDebug( "Addition of job requested" );
     }
 
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
 
     PrintWriter out = response.getWriter();
     BufferedReader in = request.getReader(); // read from the client
@@ -161,11 +161,9 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       logDetailed( "Encoding: " + request.getCharacterEncoding() );
     }
 
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      out.print( XMLHandler.getXMLHeader() );
-    } else {
-      response.setContentType( "text/html" );
+    contentTypeAndHeader( useXML, response, out, null );
+    
+    if ( !useXML ) {
       out.println( "<HTML>" );
       out.println( "<HEAD><TITLE>Add job</TITLE></HEAD>" );
       out.println( "<BODY>" );

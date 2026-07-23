@@ -236,13 +236,9 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
 
     response.setStatus( HttpServletResponse.SC_OK );
 
-    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
-      response.setCharacterEncoding( encoding );
-      response.setContentType( "text/html; charset=" + encoding );
-    }
-
     PrintWriter out = response.getWriter();
+    
+    contentTypeAndHeader( true, response, out, null );
 
     if ( transOption == null ) {
       response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
