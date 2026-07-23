@@ -794,6 +794,48 @@ public class SpoonTest {
     verify( spoon.delegates.tabs, never() ).renameTabs();
   }
 
+  @Test
+  public void saveToRepositoryReturnsFalseWhenNameDialogIsCancelled() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, "NotMainSpoonPerspective", true,
+      true, LastUsedFile.FILE_TYPE_JOB, null, true, false );
+
+    RepositoryDirectoryInterface currentDir = mock( RepositoryDirectoryInterface.class );
+    doReturn( currentDir ).when( mockJobMeta ).getRepositoryDirectory();
+    doReturn( "current/path" ).when( currentDir ).getPath();
+
+    FileDialogOperation fileDlgOp = mock( FileDialogOperation.class );
+    doReturn( fileDlgOp ).when( spoon ).getFileDialogOperation( any(), eq( FileDialogOperation.SAVE ),
+      eq( FileDialogOperation.ORIGIN_SPOON ) );
+    doReturn( null ).when( fileDlgOp ).getRepositoryObject();
+    doCallRealMethod().when( spoon ).saveToRepository( mockJobMeta, true );
+
+    assertFalse( spoon.saveToRepository( mockJobMeta, true ) );
+
+    verify( spoon, never() ).saveToRepositoryConfirmed( mockJobMeta );
+    verify( spoon.rep, never() ).exists( anyString(), any( RepositoryDirectoryInterface.class ),
+      any( RepositoryObjectType.class ) );
+  }
+
+  @Test
+  public void saveToRepositoryWithoutNamePromptUsesDefaultDirectory() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, "NotMainSpoonPerspective", true,
+      true, LastUsedFile.FILE_TYPE_JOB, null, true, false );
+
+    RepositoryDirectoryInterface defaultDir = mock( RepositoryDirectoryInterface.class );
+    doReturn( null ).when( mockJobMeta ).getRepositoryDirectory();
+    doReturn( defaultDir ).when( spoon.rep ).getDefaultSaveDirectory( mockJobMeta );
+    doReturn( true ).when( spoon ).saveToRepositoryConfirmed( mockJobMeta );
+    doCallRealMethod().when( spoon ).saveToRepository( mockJobMeta, false );
+
+    assertTrue( spoon.saveToRepository( mockJobMeta, false ) );
+
+    verify( mockJobMeta ).setRepositoryDirectory( defaultDir );
+    verify( spoon ).saveToRepositoryConfirmed( mockJobMeta );
+    verify( spoon, never() ).getFileDialogOperation( any(), anyString(), anyString() );
+  }
+
   private static void prepareSetSaveTests( Spoon spoon, LogChannelInterface log, SpoonPerspective spoonPerspective,
       AbstractMeta metaData, boolean repIsNull, boolean basicLevel, String perspectiveID, boolean saveToRepository,
       boolean saveXMLFile, String fileType, String filename, boolean objectIdIsNull, boolean canSave )
