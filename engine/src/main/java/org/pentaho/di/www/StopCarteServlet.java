@@ -16,6 +16,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -60,14 +61,9 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
     }
 
     response.setStatus( HttpServletResponse.SC_OK );
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
 
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-    } else {
-      response.setContentType( "text/html" );
-    }
+    contentTypeAndHeader( useXML, response, null, StandardCharsets.UTF_8.name() );
 
     PrintStream out = new PrintStream( response.getOutputStream() );
     final Carte carte = CarteSingleton.getCarte();

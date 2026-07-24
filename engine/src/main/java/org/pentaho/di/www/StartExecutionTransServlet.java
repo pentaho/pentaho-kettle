@@ -17,6 +17,7 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +27,6 @@ import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
@@ -142,22 +142,20 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
 
     String transName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
 
     PrintWriter out = response.getWriter();
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
-    } else {
-      response.setContentType( "text/html;charset=UTF-8" );
+    String encoding = contentTypeAndHeader( useXML, response, out, StandardCharsets.UTF_8.name() );
+    
+    if ( !useXML ) {
       out.println( "<HTML>" );
       out.println( "<HEAD>" );
       out.println( "<TITLE>"
         + BaseMessages.getString( PKG, "PrepareExecutionTransServlet.TransPrepareExecution" ) + "</TITLE>" );
       out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
         + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "?name="
-        + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
-      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+        + URLEncoder.encode( transName, encoding ) + "\">" );
+      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
     }
