@@ -40,12 +40,13 @@ public class TargetStepAttribute {
     }
 
     TargetStepAttribute target = (TargetStepAttribute) obj;
-    return stepname.equalsIgnoreCase( target.getStepname() ) && attributeKey.equals( target.getAttributeKey() );
+    return stepname.equalsIgnoreCase( target.getStepname() ) && attributeKey.equals( target.getAttributeKey() )
+      && detail == target.isDetail();
   }
 
   @Override
   public int hashCode() {
-    return stepname.hashCode() ^ attributeKey.hashCode();
+    return stepname.hashCode() ^ attributeKey.hashCode() ^ Boolean.hashCode( detail );
   }
 
   /**
