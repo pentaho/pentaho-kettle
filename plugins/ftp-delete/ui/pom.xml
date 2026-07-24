@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>ftp-delete</artifactId>
-    <version>10.2.0.7-399</version>
+    <version>10.2.0.7-CUST-336</version>
   </parent>
 
   <artifactId>ftp-delete-plugins-ui</artifactId>
