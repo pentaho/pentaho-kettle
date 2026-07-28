@@ -13,6 +13,7 @@
 
 package org.pentaho.di.job.entries.getpop;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -152,6 +153,58 @@ public class MailConnectionTest {
   public void folderExistsTest() {
     boolean actual = conn.folderExists( "a/b" );
     Assert.assertTrue( "Folder B exists", actual );
+  }
+
+  @Test
+  public void concatTargetPathPreservesUriSchemesTest() {
+    Assert.assertEquals( "pvfs://sample_connection/example-workspace/demo-user/mail-target/PDI-20925-attachment.txt",
+      MailConnection.concatTargetPath( "pvfs://sample_connection/example-workspace/demo-user/mail-target",
+        "PDI-20925-attachment.txt" ) );
+  }
+
+  @Test
+  public void concatTargetPathPreservesUriSchemesWithTrailingSlashTest() {
+    Assert.assertEquals( "pvfs://sample_connection/example-workspace/demo-user/mail-target/PDI-20925-attachment.txt",
+      MailConnection.concatTargetPath( "pvfs://sample_connection/example-workspace/demo-user/mail-target/",
+        "PDI-20925-attachment.txt" ) );
+  }
+
+  @Test
+  public void concatTargetPathPreservesUriSchemesWithTrailingBackslashTest() {
+    Assert.assertEquals( "file://C:\\tmp\\mail\\attachment.txt",
+      MailConnection.concatTargetPath( "file://C:\\tmp\\mail\\", "attachment.txt" ) );
+  }
+
+  @Test
+  public void concatTargetPathSupportsLocalFolderTest() {
+    Assert.assertEquals( FilenameUtils.concat( "/tmp/mail", "attachment.txt" ),
+      MailConnection.concatTargetPath( "/tmp/mail", "attachment.txt" ) );
+  }
+
+  @Test
+  public void concatTargetPathSupportsWindowsFolderTest() {
+    Assert.assertEquals( FilenameUtils.concat( "C:\\tmp\\mail", "attachment.txt" ),
+      MailConnection.concatTargetPath( "C:\\tmp\\mail", "attachment.txt" ) );
+  }
+
+  @Test
+  public void concatTargetPathNullFolderNameThrowsTest() {
+    try {
+      MailConnection.concatTargetPath( null, "attachment.txt" );
+      Assert.fail( "Expected IllegalArgumentException when folderName is null" );
+    } catch ( IllegalArgumentException expected ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void concatTargetPathNullFileNameThrowsTest() {
+    try {
+      MailConnection.concatTargetPath( "pvfs://sample_connection/example-workspace/demo-user/mail-target", null );
+      Assert.fail( "Expected IllegalArgumentException when fileName is null" );
+    } catch ( IllegalArgumentException expected ) {
+      // expected
+    }
   }
 
   private static void makeAFile( String path ) throws IOException {
