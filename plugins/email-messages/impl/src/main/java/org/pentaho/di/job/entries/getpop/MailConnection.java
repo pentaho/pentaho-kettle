@@ -835,7 +835,8 @@ public class MailConnection {
     if ( ( ext.length() == 1 ) ) { // only a "."
       ext = "";
     }
-    String rtn = "", base = FilenameUtils.concat( folderName, fileNameRoot );
+    String rtn = ""; 
+    String base = concatTargetPath( folderName, fileNameRoot );
     int baseSz = base.length();
     StringBuilder build = new StringBuilder( baseSz ).append( base );
     int i = -1;
@@ -847,6 +848,18 @@ public class MailConnection {
     } while ( KettleVFS.fileExists( rtn ) );
 
     return rtn;
+  }
+
+  @VisibleForTesting
+  static String concatTargetPath( String folderName, String fileName ) {
+    if ( folderName == null || fileName == null ) {
+      throw new IllegalArgumentException( "Cannot have null arguments to concatTargetPath" );
+    }
+    if ( KettleVFS.hasSchemePattern( folderName ) ) {
+      // Preserve URI schemes such as pvfs:// and avoid File-path normalization from FilenameUtils.concat.
+      return folderName + ( folderName.endsWith( "/" ) || folderName.endsWith( "\\" ) ? "" : "/" ) + fileName;
+    }
+    return FilenameUtils.concat( folderName, fileName );
   }
 
   private static void saveFile( String foldername, String filename, InputStream input ) throws KettleException {
