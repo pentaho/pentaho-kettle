@@ -1336,12 +1336,12 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
       } else if ( !( selectedNode instanceof RecentTree ) || !( (RecentTree) selectedNode ).getChildren().isEmpty() ) {
         stackLayout.topControl = fileTableViewer.getControl();
         stackLayout.topControl.getParent().layout();
+      }
 
-        if ( !System.getProperty( "user.home" ).equals( fileDialogOperation.getPath() ) && !isFileTreeProcessing ) {
-          // To prevent recursive looping at startup
-          isFileTreeProcessing = true;
-          setPreviousSelection( selectedNode );
-        }
+      if ( !System.getProperty( "user.home" ).equals( fileDialogOperation.getPath() ) && !isFileTreeProcessing ) {
+        // To prevent recursive looping at startup
+        isFileTreeProcessing = true;
+        setPreviousSelection( selectedNode );
       }
 
       processState();
