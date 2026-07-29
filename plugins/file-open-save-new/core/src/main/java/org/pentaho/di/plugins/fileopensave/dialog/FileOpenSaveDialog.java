@@ -17,6 +17,7 @@ package org.pentaho.di.plugins.fileopensave.dialog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -34,7 +35,7 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.SashForm;
@@ -188,13 +189,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   private String parentPath;
   private String type;
 
-  /**
-   * separate VFS connection name variable is no longer needed
-   * @deprecated
-   * The connection name is in the URI since full pvfs paths are being used.
-   */
-  @Deprecated
-  private String connection;
   private String provider;
   private String providerFilter;
   private String command = FileDialogOperation.OPEN;
@@ -267,8 +261,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   // Top Right Buttons
   private FlatButton flatBtnAdd;
-
-  private FlatButton flatBtnRefresh;
 
   private FlatButton flatBtnUp;
 
@@ -623,10 +615,10 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     boolean isFileEqual = false;
     if ( file instanceof VFSFile ) {
       if ( file instanceof VFSLocation ) {
-        String pathName = ( (VFSLocation) file ).getConnectionPath();
+        String pathName = file.getPath();
         pathName = pathName.substring( 0, pathName.length() - 1 ); // Removes last "/" for comparison
         isFileEqual = pathName.equals( fileName );
-      } else if ( ( (VFSFile) file ).getConnectionPath().equals( fileName ) ) {
+      } else if ( file.getPath().equals( fileName ) ) {
         isFileEqual = true;
       }
     } else if ( file.getPath().equals( fileName )
@@ -640,13 +632,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
 
   // Sorts file list in increasing order by path length
   private void sortFileList( List<File> children ) {
-    if ( children.get( 0 ) instanceof VFSFile ) {
-      children.sort(
-        ( f1, f2 ) -> ( (VFSFile) f2 ).getConnectionPath().length() - ( ( (VFSFile) f1 ).getConnectionPath()
-          .length() ) );
-    } else {
-      children.sort( ( f1, f2 ) -> ( f2 ).getPath().length() - ( ( f1 ).getPath().length() ) );
-    }
+    children.sort( ( f1, f2 ) -> f2.getPath().length() - ( f1.getPath().length() ) );
   }
 
   private String[] getStringsAtEachDirectory( String targetPath, char pathSplitter ) {
@@ -1049,16 +1035,15 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           }
         } );
 
-    flatBtnRefresh =
-      new FlatButton( fileButtons, SWT.NONE ).setEnabledImage( rasterImage( "img/Refresh.S_D.svg", 32, 32 ) )
-        .setDisabledImage( rasterImage( "img/Refresh.S_D_disabled.svg", 32, 32 ) )
-        .setToolTipText( BaseMessages.getString( PKG, "file-open-save-plugin.app.refresh.button" ) )
-        .setLayoutData( new RowData() ).setEnabled( true ).addListener( new SelectionAdapter() {
-          @Override
-          public void widgetSelected( SelectionEvent selectionEvent ) {
-            refreshDisplay( selectionEvent );
-          }
-        } );
+    new FlatButton( fileButtons, SWT.NONE ).setEnabledImage( rasterImage( "img/Refresh.S_D.svg", 32, 32 ) )
+      .setDisabledImage( rasterImage( "img/Refresh.S_D_disabled.svg", 32, 32 ) )
+      .setToolTipText( BaseMessages.getString( PKG, "file-open-save-plugin.app.refresh.button" ) )
+      .setLayoutData( new RowData() ).setEnabled( true ).addListener( new SelectionAdapter() {
+        @Override
+        public void widgetSelected( SelectionEvent selectionEvent ) {
+          refreshDisplay( selectionEvent );
+        }
+      } );
 
     txtNav = new Text( buttons, SWT.BORDER );
 
@@ -1128,9 +1113,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           path = path.substring( 0, path.length() - 1 );
         }
 
-        if ( file.get() instanceof VFSFile && ( (VFSFile) file.get() ).getConnectionPath().equals( path ) ) {
-          break;
-        }
         if ( file.get().getPath().equals( path ) ) {
           break;
         }
@@ -1169,30 +1151,15 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   private Optional<File> getFileMatch( String path, List<File> childrenAsFiles ) {
-    Optional<File> file;
-    if ( childrenAsFiles.get( 0 ) instanceof VFSFile ) {
-      file = childrenAsFiles.stream().filter( f -> {
-          boolean pathIsLonger = path.length() > ( (VFSFile) f ).getConnectionPath().length();
-          if ( pathIsLonger ) {
-            return path.startsWith( ( (VFSFile) f ).getConnectionPath() );
-          } else {
-            return ( (VFSFile) f ).getConnectionPath().startsWith( path );
-          }
-        } ).sorted(
-          ( f1, f2 ) -> ( (VFSFile) f2 ).getConnectionPath().length() - ( (VFSFile) f1 ).getConnectionPath().length() )
-        .filter( f -> path.contains( ( (VFSFile) f ).getConnectionPath() ) ).findFirst();
-    } else {
-      file = childrenAsFiles.stream().filter( f -> {
-          boolean pathIsLonger = path.length() > f.getPath().length();
-          if ( pathIsLonger ) {
-            return path.startsWith( f.getPath() );
-          } else {
-            return f.getPath().startsWith( path );
-          }
-        } ).sorted( ( f1, f2 ) -> f2.getPath().length() - f1.getPath().length() )
-        .filter( f -> path.contains( f.getPath() ) ).findFirst();
-    }
-    return file;
+    return childrenAsFiles.stream().filter( f -> {
+      boolean pathIsLonger = path.length() > f.getPath().length();
+      if ( pathIsLonger ) {
+        return path.startsWith( f.getPath() );
+      } else {
+        return f.getPath().startsWith( path );
+      }
+    } ).sorted( ( f1, f2 ) -> f2.getPath().length() - f1.getPath().length() )
+      .filter( f -> path.contains( f.getPath() ) ).findFirst();
   }
 
   public void refreshDisplay( SelectionEvent selectionEvent ) {
@@ -1440,18 +1407,17 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
           renameItem.setEnabled( true );
         }
         if ( selectedItems.size() > 0 ) {
+          var srcItemName = selectedItems.stream().findFirst().get().getName();
           if ( selectionIndices.length == 0 ) {
             IStructuredSelection treeViewerSelection = (IStructuredSelection) treeViewer.getSelection();
             File destFolder = (File) treeViewerSelection.getFirstElement();
-            if ( !StringUtils.equalsIgnoreCase( destFolder.getName(),
-              selectedItems.stream().findFirst().get().getName() ) ) {
+            if ( !Strings.CI.equals( destFolder.getName(), srcItemName ) ) {
               pasteItem.setEnabled( true );
             }
-          } else if ( StringUtils.equalsIgnoreCase(
-            fileTableViewer.getTable().getItem( selectionIndices[ 0 ] ).getText( 1 ), "Folder" ) ) {
-            if ( !StringUtils.equalsIgnoreCase(
-              fileTableViewer.getTable().getItem( selectionIndices[ 0 ] ).getText( 0 ),
-              selectedItems.stream().findFirst().get().getName() ) ) {
+          } else {
+            var destRow = fileTableViewer.getTable().getItem( selectionIndices[ 0 ] );
+            if ( Strings.CI.equals( destRow.getText( 1 ), "Folder" ) &&
+              !Strings.CI.equals( destRow.getText( 0 ), srcItemName ) ) {
               pasteItem.setEnabled( true );
             }
           }
@@ -1460,18 +1426,16 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     } );
 
     //Setup the JFace view sorter (in case the user wants to sort the columns)
-    fileTableViewer.setSorter( new ViewerSorter() {
+    fileTableViewer.setComparator( new ViewerComparator() {
       @Override
       public int compare( Viewer viewer, Object e1, Object e2 ) {
-        
         if( fileTableViewerComparator != null ) {
           return fileTableViewerComparator.compare( e1, e2 );
         }
         return DEFAULT_FILE_TABLE_VIEWER_COMPARATOR.compare( e1, e2 );
-        
       }
     });
-    
+
     // Mouse Listner added to capture an event when the user click on empty space on Dialogue which deselects the
     // file/folder
     fileTableViewer.getTable().addMouseListener( new MouseListener() {
@@ -1997,7 +1961,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     type = f.getType();
     provider = f.getProvider();
     name = f.getName();
-    connection = ( f instanceof VFSFile ) ? ( (VFSFile) f ).getConnection() : null;
     objectId = ( f instanceof RepositoryFile ) ? ( (RepositoryFile) f ).getObjectId() : null;
 
     if ( isSaveState() ) {
@@ -2013,18 +1976,13 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
         new ErrorDialog( getShell(), "Error",
           "Error getting parent of parent file", e, false );
       }
-      if ( f instanceof VFSFile ) {
-        path =
-          ( f instanceof Directory ) ? ( (VFSFile) f ).getConnectionPath() : ( (VFSFile) f ).getConnectionParentPath();
+      if ( f instanceof VFSFile vfsFile ) {
+        path = ( f instanceof Directory ) ? vfsFile.getPath() : vfsFile.getParent();
         parentPath = path;
       }
     } else {
       path = f.getPath();
       parentPath = f.getParent();
-      if ( f instanceof VFSFile ) {
-        path = ( (VFSFile) f ).getConnectionPath();
-        parentPath = ( (VFSFile) f ).getConnectionParentPath();
-      }
     }
     if ( f instanceof RepositoryFile ) {
       // path should be null, but we don't set this null until the end; it's used as an internal state variable too much
@@ -2089,7 +2047,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     messageList.add( BaseMessages.getString( PKG, title ) );
     String messageBefore;
     String messageAfter;
-    if ( StringUtils.equalsIgnoreCase( fileType, "file" ) && fileSelectionCount == 1 ) {
+    if ( Strings.CI.equals( fileType, "file" ) && fileSelectionCount == 1 ) {
       messageBefore = BaseMessages.getString( PKG, "file-open-save-plugin.error.delete-" + fileType + ".message" );
       messageAfter = "?";
     } else {
@@ -2239,26 +2197,6 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
     this.type = type;
   }
 
-  /**
-   * Separate VFS connection name variable is no longer needed.
-   * @deprecated
-   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
-   */
-  @Deprecated
-  public String getConnection() {
-    return connection;
-  }
-
-  /**
-   * Separate VFS connection name variable is no longer needed.
-   * @deprecated
-   * The connection name is in the URI since full {@value org.pentaho.di.connections.vfs.provider.ConnectionFileProvider#SCHEME } paths are being used.
-   */
-  @Deprecated
-  public void setConnection( String connection ) {
-    this.connection = connection;
-  }
-
   public String getProvider() {
     return provider;
   }
@@ -2347,7 +2285,7 @@ public class FileOpenSaveDialog extends Dialog implements FileDetails {
   }
 
   protected String getNavigationPath( File file ) {
-    return file instanceof VFSFile ? ( (VFSFile) file ).getConnectionPath() : ( file ).getPath();
+    return file.getPath();
   }
 
   protected LogChannelInterface getLog() {

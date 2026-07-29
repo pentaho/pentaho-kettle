@@ -20,6 +20,5 @@ public interface FileDetails {
   String getPath();
   String getParentPath();
   String getType();
-  String getConnection();
   String getProvider();
 }
