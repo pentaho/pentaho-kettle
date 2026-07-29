@@ -2694,7 +2694,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         EnterNumberDialog end = new EnterNumberDialog( shell, 100, shellText, lineText );
         int nrLines = end.open();
         if ( nrLines >= 0 ) {
-          List<String> linesList = getFirst( nrLines, skipHeaders );
+          List<String> linesList = getFirst( info, nrLines, skipHeaders );
           if ( linesList != null && linesList.size() > 0 ) {
             String firstlines = "";
             for ( String aLinesList : linesList ) {
@@ -2728,9 +2728,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   }
 
   // Get the first x lines
-  private List<String> getFirst( int nrlines, boolean skipHeaders ) throws KettleException {
+  private List<String> getFirst( TextFileInputMeta meta, int nrlines, boolean skipHeaders ) throws KettleException {
     TextFileInputHelper helper = (TextFileInputHelper) input.getStepHelperInterface();
-    return helper.getFirst( input, transMeta, nrlines, skipHeaders );
+    return helper.getFirst( meta, transMeta, nrlines, skipHeaders );
   }
 
   private void getFixed() {
@@ -2742,7 +2742,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     Shell sh = new Shell( shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
 
     try {
-      List<String> rows = getFirst( 50, false );
+      List<String> rows = getFirst( info, 50, false );
       TextFileInputHelper helper = (TextFileInputHelper) input.getStepHelperInterface();
       fields =  helper.getFields( info, rows );
 
