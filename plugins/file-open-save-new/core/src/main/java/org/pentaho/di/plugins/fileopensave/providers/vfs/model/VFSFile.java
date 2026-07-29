@@ -23,7 +23,6 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseEntity;
 import org.pentaho.di.plugins.fileopensave.api.providers.EntityType;
 import org.pentaho.di.plugins.fileopensave.api.providers.File;
-import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
 import org.pentaho.di.plugins.fileopensave.providers.vfs.VFSFileProvider;
 
 import java.util.Date;

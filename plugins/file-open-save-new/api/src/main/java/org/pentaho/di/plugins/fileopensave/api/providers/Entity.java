@@ -14,8 +14,6 @@
 
 package org.pentaho.di.plugins.fileopensave.api.providers;
 
-import org.pentaho.di.plugins.fileopensave.api.providers.exception.FileException;
-
 import java.util.Date;
 
 /**

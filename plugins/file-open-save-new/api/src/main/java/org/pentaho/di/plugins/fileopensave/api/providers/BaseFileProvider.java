@@ -35,7 +35,6 @@ public abstract class BaseFileProvider<T extends File> implements FileProvider<T
   public void setFileProperties( FileDetails fileDetails, FileDialogOperation fileDialogOperation ) {
     fileDialogOperation.setPath( fileDetails.getPath() );
     fileDialogOperation.setFilename( fileDetails.getName() );
-    fileDialogOperation.setConnection( null );
     fileDialogOperation.setProvider( fileDetails.getProvider() );
   }
 
