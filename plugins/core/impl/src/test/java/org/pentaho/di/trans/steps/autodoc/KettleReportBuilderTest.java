@@ -88,6 +88,23 @@ public class KettleReportBuilderTest {
   }
 
   @Test
+  public void imageColumnUsesDrawableTypeWithoutPixelation() {
+    ReportSubjectLocation location =
+      new ReportSubjectLocation( "sample.ktr", null, null, RepositoryObjectType.TRANSFORMATION );
+    KettleFileTableModel model =
+      new KettleFileTableModel( DefaultBowl.getInstance(), mock( LoggingObjectInterface.class ),
+        Collections.singletonList( location ) );
+
+    Object imageValue = model.getValueAt( 0, KettleFileTableModel.Field.image.ordinal() );
+
+    assertEquals( Drawable.class, KettleFileTableModel.Field.image.getClazz() );
+    assertEquals( Drawable.class, model.getColumnClass( KettleFileTableModel.Field.image.ordinal() ) );
+    assertTrue( imageValue instanceof Drawable );
+    assertTrue( imageValue instanceof TransJobDrawable );
+    assertTrue( ! ( (TransJobDrawable) imageValue ).isPixelateImages() );
+  }
+
+  @Test
   public void pdfImageColumnUsesDrawableType() {
     ReportSubjectLocation location =
       new ReportSubjectLocation( "sample.ktr", null, null, RepositoryObjectType.TRANSFORMATION );
@@ -95,9 +112,13 @@ public class KettleReportBuilderTest {
       new KettleFileTableModel( DefaultBowl.getInstance(), mock( LoggingObjectInterface.class ),
         Collections.singletonList( location ) );
 
+    Object imageValue = model.getValueAt( 0, KettleFileTableModel.Field.pdf_image.ordinal() );
+
     assertEquals( Drawable.class, KettleFileTableModel.Field.pdf_image.getClazz() );
     assertEquals( Drawable.class, model.getColumnClass( KettleFileTableModel.Field.pdf_image.ordinal() ) );
-    assertTrue( model.getValueAt( 0, KettleFileTableModel.Field.pdf_image.ordinal() ) instanceof Drawable );
+    assertTrue( imageValue instanceof Drawable );
+    assertTrue( imageValue instanceof TransJobDrawable );
+    assertTrue( ( (TransJobDrawable) imageValue ).isPixelateImages() );
   }
 
   private KettleReportBuilder createReportBuilder( OutputType outputType ) {
