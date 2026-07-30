@@ -39,11 +39,6 @@
           <artifactId>kettle-engine</artifactId>
           <scope>provided</scope>
       </dependency>
-      <dependency>
-          <groupId>com.healthmarketscience.jackcess</groupId>
-          <artifactId>jackcess</artifactId>
-          <scope>compile</scope>
-      </dependency>
 
       <dependency>
           <groupId>pentaho-kettle</groupId>
