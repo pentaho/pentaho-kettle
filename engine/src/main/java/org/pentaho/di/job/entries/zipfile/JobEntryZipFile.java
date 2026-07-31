@@ -416,6 +416,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                   + localrealZipfilename + BaseMessages.getString( PKG, "JobZipFiles.Zip_FileNameChange1.Label" ) );
               }
             } else if ( ifZipFileExists == 1 && Fileexists ) {
+              if ( !isLocalFile( realZipfilename ) ) {
+                logError( BaseMessages.getString( PKG, "JobZipFiles.Append_LocalFileOnly.Label", realZipfilename ) );
+                return false;
+              }
               fileZip = getFile( localrealZipfilename );
               tempFile = createTemporaryZipFile( fileZip );
               Files.move( fileZip.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
@@ -669,6 +673,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     File parentDirectory = zipFile.getAbsoluteFile().getParentFile();
     String prefix = zipFile.getName().length() < 3 ? "zip" : zipFile.getName();
     return File.createTempFile( prefix, null, parentDirectory );
+  }
+
+  static boolean isLocalFile( String filename ) {
+    return filename != null && ( filename.startsWith( "file:" ) || !KettleVFS.hasSchemePattern( filename ) );
   }
 
   private void deleteTemporaryZipFile( File tempFile ) {

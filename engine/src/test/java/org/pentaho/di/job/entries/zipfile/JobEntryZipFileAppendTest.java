@@ -32,6 +32,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipFile;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class JobEntryZipFileAppendTest {
@@ -121,6 +122,15 @@ public class JobEntryZipFileAppendTest {
       Files.deleteIfExists( directory.toPath() );
     }
   }
+
+  @Test
+  public void appendOnlySupportsLocalTargets() {
+    assertTrue( JobEntryZipFile.isLocalFile( "/tmp/archive.zip" ) );
+    assertTrue( JobEntryZipFile.isLocalFile( "file:///tmp/archive.zip" ) );
+    assertFalse( JobEntryZipFile.isLocalFile( "s3://bucket/archive.zip" ) );
+    assertFalse( JobEntryZipFile.isLocalFile( "hdfs://namenode/archive.zip" ) );
+  }
+
   private File writeFile( File directory, String name, String content ) throws IOException {
     return writeFile( directory, name, content.getBytes( StandardCharsets.UTF_8 ) );
   }
